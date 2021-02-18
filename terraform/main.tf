@@ -17,3 +17,19 @@ module "filebeat" {
   mount_config_file = "${var.docker_appdata}/filebeat/filebeat.yml"
   elasticsearch     = module.elasticsearch.hostname
 }
+
+module "loki" {
+  source = "./modules/loki/loki"
+  providers = {
+    docker = docker.compute_1
+  }
+}
+
+module "promtail" {
+  source = "./modules/loki/promtail"
+  providers = {
+    docker = docker.compute_1
+  }
+
+  loki = module.loki.hostname
+}
