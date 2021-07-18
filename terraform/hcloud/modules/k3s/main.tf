@@ -3,6 +3,11 @@ variable "hcloud_token" {
   sensitive = true
 }
 
+variable "ssh_key" {
+  type      = string
+  sensitive = true
+}
+
 provider "hcloud" {
   token = var.hcloud_token
 }
@@ -11,7 +16,7 @@ module "cluster" {
   source       = "cicdteam/k3s/hcloud"
   version      = "0.1.2"
   hcloud_token = var.hcloud_token
-  ssh_keys     = []
+  ssh_keys     = [var.ssh_key]
 
   master_type = "cx31"
 
