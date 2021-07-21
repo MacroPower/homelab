@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "dependencies": [
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "consul"
+        }
+      },
+      "version": "f0577633491ac1ee4895a73b7c2c521f1a39fefa",
+      "sum": "Po3c1Ic96ngrJCtOazic/7OsLkoILOKZWXWyZWl+od8="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "grafana"
+        }
+      },
+      "version": "2a6bdb7df17539b27869bab8b04eab0cc69a7abb",
+      "sum": "YPEFkz23hURqxRNdECHcxfDeLiKNv+xDMvMtVvQELTE="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "jaeger-agent-mixin"
+        }
+      },
+      "version": "f0577633491ac1ee4895a73b7c2c521f1a39fefa",
+      "sum": "DsdBoqgx5kE3zc6fMYnfiGjW2+9Mx2OXFieWm1oFHgY="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "ksonnet-util"
+        }
+      },
+      "version": "f0577633491ac1ee4895a73b7c2c521f1a39fefa",
+      "sum": "OxgtIWL4hjvG0xkMwUzZ7Yjs52zUhLhaVQpwHCbqf8A="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "memcached"
+        }
+      },
+      "version": "f0577633491ac1ee4895a73b7c2c521f1a39fefa",
+      "sum": "dTOeEux3t9bYSqP2L/uCuLo/wUDpCKH4w+4OD9fePUk="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/loki.git",
+          "subdir": "production/ksonnet/loki"
+        }
+      },
+      "version": "1ed19f7380fb2248d2794b01a7091b3c5774f9c6",
+      "sum": "i27fS9sssvYd9Ywyq6uoB52EUWTaOPxo9DczCBVBuaM="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/loki.git",
+          "subdir": "production/ksonnet/promtail"
+        }
+      },
+      "version": "1ed19f7380fb2248d2794b01a7091b3c5774f9c6",
+      "sum": "TUQ2eVsh5G6OTy7IKn+S80yOxphRqbHRh5eMl/y0UPk="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/k8s-libsonnet.git",
+          "subdir": "1.20"
+        }
+      },
+      "version": "91008dbd2ea5734288467d6dcafef7c285c3f7e6",
+      "sum": "z5Pu+Nq2lZ2fgHOIdlQKqaZ30DMNx1u5VJ9be0o1FEI="
+    }
+  ],
+  "legacyImports": false
+}
