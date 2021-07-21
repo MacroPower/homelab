@@ -29,6 +29,12 @@ $(JB): $(BINGO_DIR)/jb.mod
 	@echo "(re)installing $(GOBIN)/jb-v0.4.0"
 	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=jb.mod -o=$(GOBIN)/jb-v0.4.0 "github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb"
 
+JSONNETFMT := $(GOBIN)/jsonnetfmt-v0.17.0
+$(JSONNETFMT): $(BINGO_DIR)/jsonnetfmt.mod
+	@# Install binary/ries using Go 1.14+ build command. This is using bwplotka/bingo-controlled, separate go module with pinned dependencies.
+	@echo "(re)installing $(GOBIN)/jsonnetfmt-v0.17.0"
+	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=jsonnetfmt.mod -o=$(GOBIN)/jsonnetfmt-v0.17.0 "github.com/google/go-jsonnet/cmd/jsonnetfmt"
+
 TK := $(GOBIN)/tk-v0.17.1
 $(TK): $(BINGO_DIR)/tk.mod
 	@# Install binary/ries using Go 1.14+ build command. This is using bwplotka/bingo-controlled, separate go module with pinned dependencies.
