@@ -1,4 +1,3 @@
-local grafana = import 'grafana/grafana.libsonnet';
 local gateway = import 'loki/gateway.libsonnet';
 local loki = import 'loki/loki.libsonnet';
 local minio = import 'minio.libsonnet';
@@ -17,16 +16,12 @@ function(apiServer='https://localhost:6443') {
     },
     spec: {
       apiServer: apiServer,
-      namespace: 'loki',
+      namespace: 'monitoring',
       injectLabels: true,
       resourceDefaults: {},
       expectVersions: {},
     },
-    data: loki + promtail + gateway + minio + grafana {
-      _images+:: {
-        grafana: 'grafana/grafana:latest',
-      },
-
+    data: loki + promtail + gateway + minio {
       _config+:: {
         local config = self,
 
@@ -76,12 +71,19 @@ function(apiServer='https://localhost:6443') {
 
         replication_factor: 1,
         consul_replicas: 1,
+        memcached_replicas: 1,
+        queryFrontend+: {
+          replicas: 1,
+        },
       },
 
       ingester_container+::
         klegacy.util.resourcesRequests(null, null),
 
       querier_container+::
+        klegacy.util.resourcesRequests(null, null),
+
+      query_frontend_container+::
         klegacy.util.resourcesRequests(null, null),
 
       compactor_container+::

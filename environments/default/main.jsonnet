@@ -6,7 +6,7 @@ function(apiServer='https://localhost:6443') {
     apiVersion: 'tanka.dev/v1alpha1',
     kind: 'Environment',
     metadata: {
-      name: 'environments/loki',
+      name: 'environments/default',
     },
     spec: {
       apiServer: apiServer,
@@ -16,7 +16,7 @@ function(apiServer='https://localhost:6443') {
       expectVersions: {},
     },
     data: {
-      ns: k.core.v1.namespace.new('loki'),
+      monitoringNs: k.core.v1.namespace.new('monitoring'),
     },
   },
 }
