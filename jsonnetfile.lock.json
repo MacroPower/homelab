@@ -140,7 +140,7 @@
         }
       },
       "version": "e15ab56a4eea721d1e958888fd13c4b95af4d17d",
-      "sum": "sijGC0MquY17CHfKWh/yTNBcljANLHYbFtY49RjBeww="
+      "sum": "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU="
     },
     {
       "source": {
@@ -234,6 +234,16 @@
       "version": "6eeded0fdf760e81af75d9c44ce539ab77da4505",
       "sum": "VK0c3sQ3ksiM6JQsAVfWmL5NbzGv9llMfXFNXfFdJ+A=",
       "name": "prometheus"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/thanos-io/kube-thanos.git",
+          "subdir": "jsonnet/kube-thanos"
+        }
+      },
+      "version": "e1a68590f56034ca1a43d59401f03e72fd01ac5f",
+      "sum": "9g4HwpZ8Vpi950O6x92HNM47Yqa0+Nfv+7YbwwKpt3o="
     },
     {
       "source": {

@@ -1,9 +1,8 @@
-local gateway = import 'loki/gateway.libsonnet';
-local loki = import 'loki/loki.libsonnet';
-local minio = import 'minio.libsonnet';
-local promtail = import 'promtail/promtail.libsonnet';
+local gateway = import 'github.com/grafana/loki/production/ksonnet/loki/gateway.libsonnet';
+local loki = import 'github.com/grafana/loki/production/ksonnet/loki/loki.libsonnet';
+local promtail = import 'github.com/grafana/loki/production/ksonnet/promtail/promtail.libsonnet';
 
-local klegacy = import 'ksonnet-util/kausal.libsonnet';
+local klegacy = import 'github.com/grafana/jsonnet-libs/ksonnet-util/kausal.libsonnet';
 local k = import 'lib/k.libsonnet';
 
 function(apiServer='https://localhost:6443') {
@@ -21,7 +20,7 @@ function(apiServer='https://localhost:6443') {
       resourceDefaults: {},
       expectVersions: {},
     },
-    data: loki + promtail + gateway + minio {
+    data: loki + promtail + gateway {
       _config+:: {
         local config = self,
 
@@ -30,9 +29,9 @@ function(apiServer='https://localhost:6443') {
 
         storage_backend: 's3',
         boltdb_shipper_shared_store: 's3',
-        s3_access_key: 'loki',
+        s3_access_key: 'minio-test',
         s3_secret_access_key: 'XprhX1ygmIWNxJT85PoVtg5ITbEV4C',
-        s3_address: 'minio.loki.svc.cluster.local:9000',
+        s3_address: 'minio.default.svc.cluster.local:9000',
         s3_bucket_name: 'loki-test',
         s3_path_style: true,
 

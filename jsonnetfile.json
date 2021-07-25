@@ -5,7 +5,7 @@
       "source": {
         "git": {
           "remote": "https://github.com/grafana/jsonnet-libs.git",
-          "subdir": "ksonnet-util"
+          "subdir": "grafana"
         }
       },
       "version": "master"
@@ -14,7 +14,7 @@
       "source": {
         "git": {
           "remote": "https://github.com/grafana/jsonnet-libs.git",
-          "subdir": "grafana"
+          "subdir": "ksonnet-util"
         }
       },
       "version": "master"
@@ -54,6 +54,15 @@
         }
       },
       "version": "release-0.8"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/thanos-io/kube-thanos.git",
+          "subdir": "jsonnet/kube-thanos"
+        }
+      },
+      "version": "main"
     }
   ],
   "legacyImports": true

@@ -10,11 +10,11 @@ local util = (import 'github.com/grafana/jsonnet-libs/ksonnet-util/util.libsonne
   _config+:: {
     s3_access_key: error 'must set s3_access_key',
     s3_secret_access_key: error 'must set s3_secret_access_key',
-    s3_bucket_name: error 'must set s3_bucket_name',
+    s3_bucket_names: error 'must set s3_bucket_names',
   },
 
   minio: {
-    local buckets = [$._config.s3_bucket_name],
+    local buckets = $._config.s3_bucket_names,
 
     container::
       container.new('minio', 'minio/minio')
