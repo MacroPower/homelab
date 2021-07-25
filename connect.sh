@@ -35,8 +35,6 @@ echo "$rawconfig" | jq -r '.clusters[0].cluster["certificate-authority-data"]' |
 echo "$rawconfig" | jq -r '.users[0].user["client-certificate-data"]' | base64 -d >$cert_file
 echo "$rawconfig" | jq -r '.users[0].user["client-key-data"]' | base64 -d >$key_file
 
-
-
 # create cluster entry in local kubectl config
 kubectl config set-cluster $CLUSTER \
     --server=$K8S_API \
@@ -55,3 +53,5 @@ kubectl config set-context $CLUSTER \
     --user=$CLUSTER
 
 kubectl config use-context $CLUSTER
+
+kubectl config view -ojson --raw > .kubeconfig

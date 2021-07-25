@@ -33,6 +33,11 @@ override.tf.json
 .terraformrc
 terraform.rc
 
+# Vendor directories (Go/Jsonnet)
 **/vendor
 
+# Potential sensitive files
 .kubeconfig
+.htpasswd
+**/.secrets
+**/.hidden
