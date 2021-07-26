@@ -29,3 +29,8 @@ A major goal of this project is to force myself to use proper security
 practices. Ideally I will keep all config / endpoints public, and
 allow anyone interested to test things. I may even create some
 bounties, who knows. :)
+
+## Related
+
+- https://github.com/MacroPower/dotfiles
+- https://github.com/MacroPower/vscode-settings
