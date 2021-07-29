@@ -22,10 +22,7 @@ function(apiServer='https://localhost:6443') {
 
       minio: minio {
         _config+:: {
-          s3_access_key: 'minio-test',
-          s3_secret_access_key: 'XprhX1ygmIWNxJT85PoVtg5ITbEV4C',
-          s3_address: 'minio.monitoring.svc.cluster.local:9000',
-          s3_bucket_names: ['loki-test', 'thanos-test'],
+          bucketNames: ['loki-test', 'thanos-test'],
         },
       },
     },

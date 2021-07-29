@@ -8,13 +8,19 @@ local util = (import 'github.com/grafana/jsonnet-libs/ksonnet-util/util.libsonne
 
 {
   _config+:: {
-    s3_access_key: error 'must set s3_access_key',
-    s3_secret_access_key: error 'must set s3_secret_access_key',
-    s3_bucket_names: error 'must set s3_bucket_names',
+    accessKey: {
+      name: 'minio-key',
+      key: 'minio-access-key',
+    },
+    secretKey: {
+      name: 'minio-key',
+      key: 'minio-secret-key',
+    },
+    bucketNames: error 'must set bucketNames',
   },
 
   minio: {
-    local buckets = $._config.s3_bucket_names,
+    local buckets = $._config.bucketNames,
 
     container::
       container.new('minio', 'minio/minio')
@@ -22,9 +28,9 @@ local util = (import 'github.com/grafana/jsonnet-libs/ksonnet-util/util.libsonne
         ['/bin/sh', '-euc', std.join(' ', ['mkdir', '-p'] + ['/data/' + bucket for bucket in buckets] + ['&&', 'minio', 'server', '/data'])]
       )
       + container.withEnv([
-        { name: 'MINIO_ACCESS_KEY', value: $._config.s3_access_key },
+        { name: 'MINIO_ACCESS_KEY', valueFrom: { secretKeyRef: $._config.accessKey } },
+        { name: 'MINIO_SECRET_KEY', valueFrom: { secretKeyRef: $._config.secretKey } },
         { name: 'MINIO_PROMETHEUS_AUTH_TYPE', value: 'public' },
-        { name: 'MINIO_SECRET_KEY', value: $._config.s3_secret_access_key },
       ])
       + container.withImagePullPolicy('Always')
       + container.withPorts(containerPort.newNamed(9000, 'http-metrics'))
