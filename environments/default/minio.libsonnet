@@ -39,7 +39,7 @@ local util = (import 'github.com/grafana/jsonnet-libs/ksonnet-util/util.libsonne
 
     persistentVolumeClaim::
       persistentVolumeClaim.new('minio-data')
-      + persistentVolumeClaim.spec.resources.withRequests({ storage: '1Gi' })
+      + persistentVolumeClaim.spec.resources.withRequests({ storage: '10Gi' })
       + persistentVolumeClaim.spec.withAccessModes(['ReadWriteOnce']),
 
     // TODO: even though this is a StatefulSet, minio is not configured to run in a distributed mode.
