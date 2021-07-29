@@ -1,13 +1,12 @@
 local t = import 'github.com/thanos-io/kube-thanos/jsonnet/kube-thanos/thanos.libsonnet';
 
-// For an example with every option and component, please check all.jsonnet
-
 local commonConfig = {
   config+:: {
     local cfg = self,
     namespace: 'monitoring',
     version: 'v0.22.0',
     image: 'quay.io/thanos/thanos:' + cfg.version,
+    replicaLabels: ['prometheus_replica', 'rule_replica'],
     objectStorageConfig: {
       name: 'thanos-objectstorage',
       key: 'thanos.yaml',
@@ -25,6 +24,12 @@ local commonConfig = {
   },
 };
 
+local c = t.compact(commonConfig.config {
+  replicas: 1,
+  serviceMonitor: true,
+  deduplicationReplicaLabels: super.replicaLabels,  // reuse same labels for deduplication
+});
+
 local s = t.store(commonConfig.config {
   replicas: 2,
   serviceMonitor: true,
@@ -32,7 +37,6 @@ local s = t.store(commonConfig.config {
 
 local q = t.query(commonConfig.config {
   replicas: 2,
-  replicaLabels: ['prometheus_replica', 'rule_replica'],
   serviceMonitor: true,
 });
 
@@ -52,7 +56,6 @@ local finalQ = t.query(q.config {
 
 function(apiServer='https://localhost:6443') {
   env: {
-    local this = self,
     apiVersion: 'tanka.dev/v1alpha1',
     kind: 'Environment',
     metadata: {
@@ -66,7 +69,8 @@ function(apiServer='https://localhost:6443') {
       expectVersions: {},
     },
     data:
-      { ['thanos-store-' + name]: s[name] for name in std.objectFields(s) } +
+      { ['thanos-compact-' + name]: c[name] for name in std.objectFields(c) if c[name] != null } +
+      { ['thanos-store-' + name]: s[name] for name in std.objectFields(s) if s[name] != null } +
       { ['thanos-sidecar-' + name]: sc[name] for name in std.objectFields(sc) if sc[name] != null } +
       { ['thanos-query-' + name]: finalQ[name] for name in std.objectFields(finalQ) if finalQ[name] != null },
   },
