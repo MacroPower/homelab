@@ -6,7 +6,7 @@ IaC and such for my homelab / personal cloud. Mostly k8s via Tanka.
 
 - Build cluster with TF, add ssh authorized key if needed.
 - Run `./connect.sh <server> <port>`
-- Create secrets e.g. `kubectl create secret generic thanos-objectstorage --from-file=thanos.yaml=thanos.yaml -n monitoring`
+- Create secrets, each environment has its own README that describes what is needed.
 - Apply envs as needed `tk apply environments/<name>/ --tla-str "apiServer=https://...:6443"`
   - Note: Always apply `default` before other environments. There are a few races as well that require you to apply twice.
 
