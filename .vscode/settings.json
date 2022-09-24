@@ -1,5 +1,0 @@
-{
-    "jsonnet.libPaths": ["/workspaces/homelab/vendor", "/workspaces/homelab/lib"],
-    "jsonnet.executablePath": "/go/bin/jb",
-    "jsonnet.fmtExecutablePath": "/go/bin/jsonnetfmt",
-}
