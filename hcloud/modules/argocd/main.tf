@@ -1,14 +1,28 @@
-terraform {
-  required_providers {
-    kubernetes = {
-      source = "hashicorp/kubernetes"
-      version = "2.13.1"
-    }
-  }
+variable "apiserver_url" {
+  type      = string
+  sensitive = true
+}
+
+variable "client_certificate_data" {
+  type      = string
+  sensitive = true
+}
+
+variable "client_key_data" {
+  type      = string
+  sensitive = true
+}
+
+variable "certificate_authority_data" {
+  type      = string
+  sensitive = true
 }
 
 provider "kubernetes" {
-  config_path = "~/.kube/config"
+  host                   = var.apiserver_url
+  client_certificate     = var.client_certificate_data
+  client_key             = var.client_key_data
+  cluster_ca_certificate = var.certificate_authority_data
 }
 
 resource "kubernetes_namespace" "argocd_namespace" {
