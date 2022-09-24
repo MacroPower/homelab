@@ -12,7 +12,7 @@ provider "hcloud" {
   token = var.hcloud_token
 }
 
-module "cluster" {
+module "k8s" {
   source  = "tibordp/dualstack-k8s/hcloud"
   version = "1.0.1"
 
@@ -40,18 +40,21 @@ output "load_balancer_ipv4" {
   value = module.k8s.load_balancer.ipv4
 }
 
-output "host" {
+output "apiserver_url" {
   value = module.k8s.apiserver_url
 }
 
-output "client_certificate" {
-  value = module.k8s.client_certificate_data
+output "client_certificate_data" {
+  value     = module.k8s.client_certificate_data
+  sensitive = true
 }
 
-output "client_key" {
-  value = module.k8s.client_key_data
+output "client_key_data" {
+  value     = module.k8s.client_key_data
+  sensitive = true
 }
 
-output "cluster_ca_certificate" {
-  value = module.k8s.certificate_authority_data
+output "certificate_authority_data" {
+  value     = module.k8s.certificate_authority_data
+  sensitive = true
 }
