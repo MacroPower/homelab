@@ -14,3 +14,7 @@ module "k3s" {
   hcloud_token = var.hcloud_token
   ssh_key      = var.ssh_key
 }
+
+module "argocd" {
+  source = "./modules/argocd"
+}
