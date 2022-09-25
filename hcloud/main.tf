@@ -16,7 +16,7 @@ module "k8s" {
 }
 
 provider "kubectl" {
-  host                   = module.k8s.apiserver_url
+  host                   = "https://${module.k8s.load_balancer_ipv4}:6443"
   client_certificate     = module.k8s.client_certificate_data
   client_key             = module.k8s.client_key_data
   cluster_ca_certificate = module.k8s.certificate_authority_data
