@@ -4,7 +4,6 @@ metadata:
   name: jaeger-operator
   namespace: argocd
 spec:
-  project: default
   destination:
     namespace: observability
   source:
