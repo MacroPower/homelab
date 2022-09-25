@@ -16,6 +16,9 @@ module "k8s" {
 }
 
 provider "kubectl" {
+  alias = "k8s"
+
+  load_config_file       = false
   host                   = "https://${module.k8s.load_balancer_ipv4}:6443"
   client_certificate     = module.k8s.client_certificate_data
   client_key             = module.k8s.client_key_data
@@ -28,4 +31,8 @@ module "argocd" {
   depends_on = [
     module.k8s,
   ]
+
+  providers = {
+    kubectl = kubectl.k8s
+  }
 }
