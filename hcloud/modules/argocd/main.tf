@@ -11,4 +11,6 @@ locals {
 resource "kubectl_manifest" "argocd" {
   for_each  = local.install_dict
   yaml_body = each.value
+
+  override_namespace = "argocd"
 }

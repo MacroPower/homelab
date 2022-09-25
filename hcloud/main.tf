@@ -37,12 +37,19 @@ module "namespaces" {
   }
 }
 
+resource "time_sleep" "wait_30_seconds" {
+  depends_on = [
+    module.namespaces,
+  ]
+
+  create_duration = "30s"
+}
+
 module "argocd" {
   source = "./modules/argocd"
 
   depends_on = [
-    module.cluster,
-    module.namespaces,
+    time_sleep.wait_30_seconds,
   ]
 
   providers = {
