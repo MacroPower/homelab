@@ -21,7 +21,7 @@ module "cluster" {
   master_type = "cx31"
 
   node_groups = {
-    "cx31" = 3
+    "cx31" = 1
   }
 }
 

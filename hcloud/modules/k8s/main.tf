@@ -35,7 +35,7 @@ module "k8s" {
 
   ssh_private_key_path = "${path.module}/k8s_key"
 
-  worker_count = 3
+  worker_count = 2
   master_count = 2
 
   control_plane_lb_type = "lb11"
