@@ -17,9 +17,22 @@ resource "tls_private_key" "k8s_key" {
   rsa_bits  = 4096
 }
 
-resource "local_file" "k8s_key_file" {
-  filename = "${path.module}/k8s_key"
-  content  = tls_private_key.k8s_key.private_key_openssh
+locals {
+  random_id = uuid()
+}
+
+resource "null_resource" "k8s_key_file" {
+  triggers = {
+    ip = local.random_id
+  }
+  provisioner "local-exec" {
+    command = "echo ${tls_private_key.k8s_key.private_key_openssh} >>${path.module}/k8s_key; chmod 600 ${path.module}/k8s_key"
+  }
+}
+
+resource "hcloud_ssh_key" "k8s_public_key" {
+  name       = "k8s-terraform"
+  public_key = tls_private_key.k8s_key.public_key_openssh
 }
 
 module "k8s" {
@@ -27,7 +40,7 @@ module "k8s" {
   version = "1.0.1"
 
   name               = "k8s"
-  hcloud_ssh_key     = var.ssh_key
+  hcloud_ssh_key     = "k8s-terraform"
   hcloud_token       = var.hcloud_token
   location           = "hel1"
   master_server_type = "cx31"
