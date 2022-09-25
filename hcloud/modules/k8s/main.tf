@@ -26,7 +26,7 @@ resource "null_resource" "k8s_key_file" {
     ip = local.random_id
   }
   provisioner "local-exec" {
-    command = "echo ${tls_private_key.k8s_key.private_key_openssh} >>${path.module}/k8s_key; chmod 600 ${path.module}/k8s_key"
+    command = "echo \"${tls_private_key.k8s_key.private_key_openssh}\" >>${path.module}/k8s_key; chmod 600 ${path.module}/k8s_key"
   }
 }
 
