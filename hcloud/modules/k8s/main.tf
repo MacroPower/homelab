@@ -39,6 +39,10 @@ module "k8s" {
   source  = "tibordp/dualstack-k8s/hcloud"
   version = "1.0.1"
 
+  depends_on = [
+    hcloud_ssh_key.k8s_public_key,
+  ]
+
   name               = "k8s"
   hcloud_ssh_key     = "k8s-terraform"
   hcloud_token       = var.hcloud_token
