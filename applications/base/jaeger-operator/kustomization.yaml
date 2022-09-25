@@ -1,6 +1,3 @@
-helmCharts:
-- name: jaeger-operator
-  repo: https://jaegertracing.github.io/helm-charts
-  version: 2.35.0
-  releaseName: jaeger-operator
-  namespace: observability
+resources:
+  - namespace.yaml
+  - release.yaml
