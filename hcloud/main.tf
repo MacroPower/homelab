@@ -8,13 +8,6 @@ variable "ssh_key" {
   sensitive = true
 }
 
-module "k3s" {
-  source = "./modules/k3s"
-
-  hcloud_token = var.hcloud_token
-  ssh_key      = var.ssh_key
-}
-
 module "k8s" {
   source = "./modules/k8s"
 
