@@ -12,6 +12,16 @@ provider "hcloud" {
   token = var.hcloud_token
 }
 
+resource "tls_private_key" "k8s_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "local_file" "k8s_key_file" {
+  filename = "${path.module}/k8s_key"
+  content  = tls_private_key.k8s_key.private_key_openssh
+}
+
 module "k8s" {
   source  = "tibordp/dualstack-k8s/hcloud"
   version = "1.0.1"
@@ -22,6 +32,8 @@ module "k8s" {
   location           = "hel1"
   master_server_type = "cx31"
   worker_server_type = "cx31"
+
+  ssh_private_key_path = "${path.module}/k8s_key"
 
   worker_count = 3
   master_count = 2
