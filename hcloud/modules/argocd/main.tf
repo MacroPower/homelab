@@ -1,22 +1,23 @@
-resource "kubernetes_namespace" "argocd_namespace" {
-  metadata {
-    name = "argocd"
+resource "kubectl_manifest" "argocd_namespace" {
+    yaml_body = <<YAML
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argocd
+YAML
+}
+
+locals {
+  install_split_doc  = split("---", file("${path.module}/install/install.yaml"))
+  install_valid_yaml = [for doc in local.install_split_doc : doc if try(yamldecode(doc).metadata.name, "") != ""]
+
+  install_dict = {
+    for doc in toset(local.install_valid_yaml) :
+      "${yamldecode(doc).kind}-${yamldecode(doc).metadata.name}" => doc
   }
 }
 
-resource "kubernetes_manifest" "argocd_install" {
-  depends_on = [
-    kubernetes_namespace.argocd_namespace
-  ]
-  for_each = {
-    for value in [
-      for yaml in split(
-        "\n---\n",
-        "\n${replace(file("${path.module}/install/install.yaml"), "/(?m)^---[[:blank:]]*(#.*)?$/", "---")}\n"
-      ) :
-      yamldecode(yaml)
-      if trimspace(replace(yaml, "/(?m)(^[[:blank:]]*(#.*)?$)+/", "")) != ""
-    ] : "${value["kind"]}--${value["metadata"]["name"]}" => value
-  }
-  manifest = each.value
+resource "kubectl_manifest" "argocd" {
+  for_each  = local.install_dict
+  yaml_body = each.value
 }

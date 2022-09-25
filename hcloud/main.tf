@@ -22,7 +22,7 @@ module "k8s" {
   ssh_key      = var.ssh_key
 }
 
-provider "kubernetes" {
+provider "kubectl" {
   host                   = module.k8s.apiserver_url
   client_certificate     = module.k8s.client_certificate_data
   client_key             = module.k8s.client_key_data
