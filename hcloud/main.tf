@@ -8,8 +8,8 @@ variable "ssh_key" {
   sensitive = true
 }
 
-module "k8s" {
-  source = "./modules/k8s"
+module "cluster" {
+  source = "./modules/cluster"
 
   hcloud_token = var.hcloud_token
   ssh_key      = var.ssh_key
@@ -19,18 +19,17 @@ provider "kubectl" {
   alias = "k8s"
 
   load_config_file       = false
-  host                   = "https://${module.k8s.load_balancer_ipv4}:6443"
-  client_certificate     = module.k8s.client_certificate_data
-  client_key             = module.k8s.client_key_data
-  cluster_ca_certificate = module.k8s.certificate_authority_data
+  host                   = "https://${module.cluster.load_balancer_ipv4}:6443"
+  client_certificate     = module.cluster.client_certificate_data
+  client_key             = module.cluster.client_key_data
+  cluster_ca_certificate = module.cluster.certificate_authority_data
 }
-
 
 module "namespaces" {
   source = "./modules/namespaces"
 
   depends_on = [
-    module.k8s,
+    module.cluster,
   ]
 
   providers = {
@@ -42,7 +41,7 @@ module "argocd" {
   source = "./modules/argocd"
 
   depends_on = [
-    module.k8s,
+    module.cluster,
     module.namespaces,
   ]
 
