@@ -1,12 +1,3 @@
-resource "kubectl_manifest" "argocd_namespace" {
-    yaml_body = <<YAML
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: argocd
-YAML
-}
-
 locals {
   install_split_doc  = split("---", file("${path.module}/install/install.yaml"))
   install_valid_yaml = [for doc in local.install_split_doc : doc if try(yamldecode(doc).metadata.name, "") != ""]

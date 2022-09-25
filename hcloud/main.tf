@@ -25,11 +25,25 @@ provider "kubectl" {
   cluster_ca_certificate = module.k8s.certificate_authority_data
 }
 
+
+module "namespaces" {
+  source = "./modules/namespaces"
+
+  depends_on = [
+    module.k8s,
+  ]
+
+  providers = {
+    kubectl = kubectl.k8s
+  }
+}
+
 module "argocd" {
   source = "./modules/argocd"
 
   depends_on = [
     module.k8s,
+    module.namespaces,
   ]
 
   providers = {
