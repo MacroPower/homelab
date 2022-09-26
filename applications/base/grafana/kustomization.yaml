@@ -10,3 +10,4 @@ helmCharts:
     env:
       JAEGER_AGENT_HOST: localhost
       JAEGER_AGENT_PORT: '6831'
+      ANALYTICS_REPORTING_ENABLED: 'false'
