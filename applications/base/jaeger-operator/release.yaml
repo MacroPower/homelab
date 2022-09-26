@@ -12,5 +12,8 @@ spec:
     targetRevision: 2.35.0
     helm:
       releaseName: jaeger-operator
-      valueFiles:
-        - values.yaml
+      parameters:
+        - name: image.repository
+          value: macropower/jaeger-operator
+        - name: image.tag
+          value: '1.38.0'
