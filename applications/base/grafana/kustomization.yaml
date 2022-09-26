@@ -1,0 +1,12 @@
+helmCharts:
+- name: grafana
+  repo: https://grafana.github.io/helm-charts
+  version: 6.39.0
+  releaseName: grafana
+  namespace: observability
+  valuesInline:
+    annotations:
+      "sidecar.jaegertracing.io/inject": "true"
+    env:
+      JAEGER_AGENT_HOST: localhost
+      JAEGER_AGENT_PORT: '6831'
