@@ -1,4 +1,15 @@
 resources:
   - namespace.yaml
-  - release.yaml
-  - all-in-one.yaml
+
+helmCharts:
+- name: jaeger-operator
+  repo: https://jaegertracing.github.io/helm-charts
+  version: 2.35.0
+  releaseName: jaeger-operator
+  namespace: observability
+  valuesInline:
+    image:
+      repository: macropower/jaeger-operator
+      tag: '1.38.1'
+    rbac:
+      clusterRole: true

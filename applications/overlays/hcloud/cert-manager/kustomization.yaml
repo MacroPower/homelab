@@ -3,15 +3,3 @@ kind: Kustomization
 
 resources:
   - ../../../base/cert-manager
-
-patchesStrategicMerge:
-- |-
-  apiVersion: argoproj.io/v1alpha1
-  kind: Application
-  metadata:
-    name: cert-manager
-    namespace: argocd
-  spec:
-    project: default
-    destination:
-      server: https://kubernetes.default.svc
