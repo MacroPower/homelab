@@ -1,0 +1,71 @@
+namespace: observability
+
+helmCharts:
+- name: fluent-bit
+  repo: https://fluent.github.io/helm-charts
+  version: 0.20.8
+  releaseName: fluent-bit
+  namespace: observability
+  valuesInline:
+    logLevel: info
+
+    env:
+      - name: LOKI_HTTP_USER
+        valueFrom:
+          secretKeyRef:
+            name: fluent-bit-credentials
+            key: LOKI_HTTP_USER
+      - name: LOKI_HTTP_PASS
+        valueFrom:
+          secretKeyRef:
+            name: fluent-bit-credentials
+            key: LOKI_HTTP_PASS
+
+    config:
+      inputs: |
+        [INPUT]
+            Name tail
+            Path /var/log/containers/*.log
+            multiline.parser docker, cri
+            Tag kube.*
+            Mem_Buf_Limit 100MB
+            Skip_Long_Lines On
+        [INPUT]
+            Name systemd
+            Tag host.*
+            Systemd_Filter _SYSTEMD_UNIT=kubelet.service
+            Read_From_Tail On
+      outputs: |
+        [OUTPUT]
+            Name        loki
+            Match       *
+            Host        logs-prod-us-central1.grafana.net
+            port        443
+            tls         on
+            tls.verify  on
+            http_user   ${LOKI_HTTP_USER}
+            http_passwd ${LOKI_HTTP_PASS}
+
+            auto_kubernetes_labels on
+
+patches:
+  - target:
+      group: apps
+      version: v1
+      kind: DaemonSet
+      name: fluent-bit
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/livenessProbe
+        value:
+          exec:
+            command:
+              - /fluent-bit/bin/fluent-bit
+              - --help
+      - op: replace
+        path: /spec/template/spec/containers/0/readinessProbe
+        value:
+          exec:
+            command:
+              - /fluent-bit/bin/fluent-bit
+              - --help
