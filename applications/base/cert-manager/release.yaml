@@ -12,5 +12,6 @@ spec:
     targetRevision: v1.9.1
     helm:
       releaseName: cert-manager
-      valueFiles:
-        - values.yaml
+      parameters:
+        - name: installCRDs
+          value: 'true'
