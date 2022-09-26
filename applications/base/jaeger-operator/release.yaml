@@ -17,3 +17,5 @@ spec:
           value: macropower/jaeger-operator
         - name: image.tag
           value: '1.38.0'
+        - name: rbac.clusterRole
+          value: 'true'
