@@ -3,8 +3,8 @@
 # Declare variables to be passed into your templates.
 
 image:
-  repository: jaegertracing/jaeger-operator
-  tag: 1.37.0
+  repository: macropower/jaeger-operator
+  tag: 1.38.0
   pullPolicy: IfNotPresent
   imagePullSecrets: []
 
