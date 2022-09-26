@@ -12,7 +12,7 @@ spec:
           - path: applications/overlays/hcloud/*
   template:
     metadata:
-      name: 'hcloud-applications'
+      name: 'hcloud-{{path.basename}}'
     spec:
       project: default
       syncPolicy:
