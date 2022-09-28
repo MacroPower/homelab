@@ -1,0 +1,31 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: observability
+
+helmCharts:
+- name: kube-prometheus-stack
+  repo: https://prometheus-community.github.io/helm-charts
+  version: 40.1.2
+  releaseName: kube-prometheus-stack
+  namespace: observability
+  includeCRDs: true
+  valuesInline:
+    global:
+      rbac:
+        create: true
+        createAggregateClusterRoles: true
+
+    grafana:
+      enabled: false
+
+    kubeStateMetrics:
+      enabled: true
+
+    nodeExporter:
+      enabled: true
+
+    prometheusOperator:
+      admissionWebhooks:
+        certManager:
+          enabled: true
