@@ -1,15 +1,16 @@
 #!/bin/bash
 
-MASTER_NODE_USER=$1
-MASTER_NODE_HOST=$2
+MASTER_NODE_USER=root
+MASTER_NODE_HOST=$1
+MASTER_NODE_PORT=$2
 
 K8S_API=https://$MASTER_NODE_HOST:6443
-CLUSTER=hetzner
+CLUSTER=hcloud
 
 ###################
 
 echo "Checking SSH connection to $MASTER_NODE_HOST"
-if ! ssh -q -o StrictHostKeyChecking=no -o BatchMode=yes -o ConnectTimeout=5 $MASTER_NODE_USER@$MASTER_NODE_HOST exit; then
+if ! ssh -q -o StrictHostKeyChecking=no -o BatchMode=yes -o ConnectTimeout=5 -p $MASTER_NODE_PORT $MASTER_NODE_USER@$MASTER_NODE_HOST exit; then
     echo
     echo "Can't connect... please check your ssh key and config"
     echo
@@ -17,7 +18,7 @@ if ! ssh -q -o StrictHostKeyChecking=no -o BatchMode=yes -o ConnectTimeout=5 $MA
 fi
 
 sshrun() {
-    ssh -q -o StrictHostKeyChecking=no $MASTER_NODE_USER@$MASTER_NODE_HOST -- $@
+    ssh -q -o StrictHostKeyChecking=no -p $MASTER_NODE_PORT $MASTER_NODE_USER@$MASTER_NODE_HOST -- $@
 }
 
 while ! sshrun 'kubectl cluster-info'; do
