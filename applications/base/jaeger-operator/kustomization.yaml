@@ -9,6 +9,7 @@ helmCharts:
   version: 2.35.0
   releaseName: jaeger-operator
   namespace: observability
+  includeCRDs: true
   valuesInline:
     image:
       repository: macropower/jaeger-operator
