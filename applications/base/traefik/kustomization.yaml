@@ -17,16 +17,6 @@ helmCharts:
       annotations:
         "sidecar.jaegertracing.io/inject": "true"
 
-      # Workaround for file permissions.
-      # https://github.com/traefik/traefik-helm-chart/issues/164
-      initContainers:
-        - name: volume-permissions
-          image: busybox:1.35.0
-          command: ["sh", "-c", "touch /data/acme.json && chmod -Rv 600 /data/* && chown 65532:65532 /data/acme.json"]
-          volumeMounts:
-            - name: data
-              mountPath: /data
-
     tracing:
       jaeger:
         samplingServerURL: http://localhost:5778/sampling
@@ -34,64 +24,31 @@ helmCharts:
         samplingParam: 1.0
         localAgentHostPort: 127.0.0.1:6831
 
-    env:
-      - name: NAMECHEAP_API_USER
-        valueFrom:
-          secretKeyRef:
-            name: traefik-credentials
-            key: NAMECHEAP_API_USER
-      - name: NAMECHEAP_API_KEY
-        valueFrom:
-          secretKeyRef:
-            name: traefik-credentials
-            key: NAMECHEAP_API_KEY
+    providers:
+      kubernetesIngress:
+        enabled: true
+        publishedService:
+          enabled: true
+          pathOverride: "kube-system/traefik"
 
-    persistence:
-      enabled: true
-      name: data
-      accessMode: ReadWriteOnce
-      size: 128Mi
-      storageClass: "hcloud-volumes"
-      path: /data
-
-    certResolvers:
-      letsencrypt:
-        # for challenge options cf. https://doc.traefik.io/traefik/https/acme/
-        email: jacobcolvin1+letsencrypt@gmail.com
-
-        # CA server to use.
-        # Staging: "https://acme-staging-v02.api.letsencrypt.org/directory"
-        # Production: "https://acme-v02.api.letsencrypt.org/directory"
-        caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
-
-        dnsChallenge:
-          # also add the provider's required configuration under env
-          # or expand then from secrets/configmaps with envfrom
-          # cf. https://doc.traefik.io/traefik/https/acme/#providers
-          provider: namecheap
-          # add futher options for the dns challenge as needed
-          # cf. https://doc.traefik.io/traefik/https/acme/#dnschallenge
-          delayBeforeCheck: 30
-          resolvers:
-            - 1.1.1.1
-            - 8.8.8.8
-        tlsChallenge: true
-        httpChallenge:
-          entryPoint: "web"
-        # match the path to persistence
-        storage: /data/acme.json
+    service:
+      annotations:
+        "load-balancer.hetzner.cloud/ipv6-disabled": "true"
+        "load-balancer.hetzner.cloud/disable-private-ingress": "true"
 
     ports:
       websecure:
         tls:
           enabled: true
-          certResolver: letsencrypt
-          domains:
-            - main: c.macro.network
-              sans:
-                - "*.c.macro.network"
-    
-    service:
-      annotations:
-        "load-balancer.hetzner.cloud/ipv6-disabled": "true"
-        "load-balancer.hetzner.cloud/disable-private-ingress": "true"
+
+    tlsStore:
+      default:
+        defaultCertificate:
+          secretName: cloudflare-tls
+
+    tlsOptions:
+      default:
+        clientAuth:
+          secretNames:
+            - cloudflare-mtls
+          clientAuthType: RequireAndVerifyClientCert
