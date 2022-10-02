@@ -90,3 +90,8 @@ helmCharts:
             - main: c.macro.network
               sans:
                 - "*.c.macro.network"
+    
+    service:
+      annotations:
+        "load-balancer.hetzner.cloud/ipv6-disabled": "true"
+        "load-balancer.hetzner.cloud/disable-private-ingress": "true"

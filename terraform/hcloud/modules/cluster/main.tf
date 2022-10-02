@@ -93,10 +93,18 @@ module "kube-hetzner" {
   ]
 
   # * LB location and type, the latter will depend on how much load you want it to handle, see https://www.hetzner.com/cloud/load-balancer
-  load_balancer_type     = "lb11"
-  load_balancer_location = "hel1"
+  load_balancer_type         = "lb11"
+  load_balancer_location     = "hel1"
+  load_balancer_disable_ipv6 = true
 
-  ### The following values are entirely optional (and can be removed from this if unused)
+  # When this is enabled, rather than the first node, all external traffic will be routed via a control-plane loadbalancer, allowing for high availability.
+  # The default is false.
+  use_control_plane_lb = true
+
+  # Use the klipper LB, instead of the default Hetzner one, that has an advantage of dropping the cost of the setup,
+  # Automatically "true" in the case of single node cluster.
+  # It can work with any ingress controller that you choose to deploy.
+  enable_klipper_metal_lb = false
 
   # You can refine a base domain name to be use in this form of nodename.base_domain for setting the reserve dns inside Hetzner
   # base_domain = "mycluster.example.com"
@@ -106,11 +114,6 @@ module "kube-hetzner" {
 
   # If you want to disable the Traefik ingress controller, to use the Nginx ingress controller for instance, you can can set this to "false". Default is "true".
   enable_traefik = false
-  
-  # Use the klipper LB, instead of the default Hetzner one, that has an advantage of dropping the cost of the setup,
-  # Automatically "true" in the case of single node cluster.
-  # It can work with any ingress controller that you choose to deploy.
-  enable_klipper_metal_lb = false
 
   # If you want to disable the metric server, you can! Default is "true".
   enable_metrics_server = false
@@ -130,7 +133,56 @@ module "kube-hetzner" {
 
   # Adding extra firewall rules, like opening a port
   # More info on the format here https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/firewall
-  # extra_firewall_rules = [
+  extra_firewall_rules = [
+    {
+      direction       = "out"
+      protocol        = "icmp"
+      port            = ""
+      source_ips      = []
+      destination_ips = ["::/0"]
+    },
+
+    # DNS
+    {
+      direction       = "out"
+      protocol        = "tcp"
+      port            = "53"
+      source_ips      = []
+      destination_ips = ["::/0"]
+    },
+    {
+      direction       = "out"
+      protocol        = "udp"
+      port            = "53"
+      source_ips      = []
+      destination_ips = ["::/0"]
+    },
+
+    # HTTP(s)
+    {
+      direction       = "out"
+      protocol        = "tcp"
+      port            = "80"
+      source_ips      = []
+      destination_ips = ["::/0"]
+    },
+    {
+      direction       = "out"
+      protocol        = "tcp"
+      port            = "443"
+      source_ips      = []
+      destination_ips = ["::/0"]
+    },
+
+    #NTP
+    {
+      direction       = "out"
+      protocol        = "udp"
+      port            = "123"
+      source_ips      = []
+      destination_ips = ["::/0"]
+    }
+  ]
   #   # For Postgres
   #   {
   #     direction       = "in"
@@ -158,11 +210,11 @@ module "kube-hetzner" {
 
   # IP Addresses to use for the DNS Servers, set to an empty list to use the ones provided by Hetzner, defaults to ["1.1.1.1", " 1.0.0.1", "8.8.8.8"].
   # For rancher installs, best to leave it as default.
-  dns_servers = []
-
-  # When this is enabled, rather than the first node, all external traffic will be routed via a control-plane loadbalancer, allowing for high availability.
-  # The default is false.
-  use_control_plane_lb = true
+  dns_servers = [
+    "8.8.8.8",
+    "8.8.4.4",
+    "1.1.1.1",
+  ]
 
   enable_rancher = false
 
