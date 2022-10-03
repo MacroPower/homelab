@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: timescaledb-init-scripts
+  labels:
+    app.kubernetes.io/component: scripts
+data:
+  postgres_extra_init.sh: |
+    psql -d "$URL" <<__SQL__
+      \connect postgres
+      CREATE EXTENSION timescaledb_toolkit;
+      CREATE EXTENSION pg_stat_statements;
+
+      CREATE ROLE tsdb;
+      CREATE DATABASE tsdb OWNER tsdb;
+
+      CREATE ROLE readonly;
+      GRANT pg_monitor TO readonly;
+
+      \connect tsdb
+      CREATE EXTENSION timescaledb_toolkit;
+      CREATE EXTENSION pg_stat_statements;
+
+      ALTER DEFAULT PRIVILEGES IN SCHEMA tsdb
+      GRANT SELECT ON TABLES TO readonly;
+    __SQL__
