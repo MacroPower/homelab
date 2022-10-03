@@ -3,3 +3,4 @@ kind: Kustomization
 
 resources:
   - ../../../base/jaeger-all-in-one
+  - ingress.yaml
