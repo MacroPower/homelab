@@ -4,7 +4,7 @@ metadata:
   name: jaeger
   namespace: observability
 spec:
-  strategy: allInOne
+  strategy: allinone
   allInOne:
     image: jaegertracing/all-in-one:latest
     options:
