@@ -29,3 +29,16 @@ helmCharts:
       admissionWebhooks:
         certManager:
           enabled: true
+    
+    # # Max series is 10k.
+    # prometheus:
+    #   prometheusSpec:
+    #     remoteWrite:
+    #       - url: https://prometheus-us-central1.grafana.net/api/prom/push
+    #         basicAuth:
+    #           username:
+    #             name: grafana-cloud-prom-credentials
+    #             key: GRAFANA_PROM_USER
+    #           password:
+    #             name: grafana-cloud-prom-credentials
+    #             key: GRAFANA_PROM_PASS
