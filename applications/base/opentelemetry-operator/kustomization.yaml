@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: observability
+
+helmCharts:
+  - name: opentelemetry-operator
+    repo: https://open-telemetry.github.io/opentelemetry-helm-charts
+    version: 0.13.0
+    releaseName: opentelemetry-operator
+    namespace: observability
+    includeCRDs: true
+    valuesInline:
+      manager:
+        collectorImage:
+          repository: otel/opentelemetry-collector-contrib
+          tag: 0.61.0
+
+      serviceMonitor:
+        enabled: true

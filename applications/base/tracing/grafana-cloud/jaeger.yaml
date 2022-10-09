@@ -1,0 +1,23 @@
+apiVersion: jaegertracing.io/v1
+kind: Jaeger
+metadata:
+  name: grafana-cloud-jaeger
+  namespace: observability
+spec:
+  strategy: production
+  query:
+    replicas: 0
+  collector:
+    replicas: 0
+  storage:
+    # Storage may not matter for this config, but it's required for the 
+    # 'production' strategy.
+    type: grpc-plugin
+    grpcPlugin:
+      image: jaegertracing/protobuf:0.3.1
+  ingress:
+    enabled: false
+  agent:
+    image: jaegertracing/jaeger-agent:1.38.1
+    options:
+      reporter.grpc.host-port: grafana-cloud-otel-collector.observability.svc.cluster.local:14250
