@@ -18,6 +18,8 @@ helmCharts:
 
     grafana:
       enabled: false
+      forceDeployDatasources: true
+      forceDeployDashboards: true
 
     kubeStateMetrics:
       enabled: true

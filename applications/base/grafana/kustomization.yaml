@@ -16,3 +16,19 @@ helmCharts:
       JAEGER_AGENT_HOST: localhost
       JAEGER_AGENT_PORT: '6831'
       ANALYTICS_REPORTING_ENABLED: 'false'
+
+    sidecar:
+      alerts:
+        enabled: false
+        label: grafana_alert
+      dashboards:
+        enabled: true
+        label: grafana_dashboard
+        provider:
+          allowUiUpdates: true
+      datasources:
+        enabled: true
+        label: grafana_datasource
+      plugins:
+        enabled: true
+        label: grafana_plugin
