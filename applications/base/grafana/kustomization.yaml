@@ -32,3 +32,18 @@ helmCharts:
       plugins:
         enabled: true
         label: grafana_plugin
+
+configMapGenerator:
+  - name: grafana-dashboard-grafana-cloud-usage
+    behavior: add
+    files:
+      - grafana-cloud-usage.json=dashboards/grafana-cloud-usage.json
+
+  - name: grafana-dashboard-k8s-home
+    behavior: add
+    files:
+      - k8s-home.json=dashboards/k8s-home.json
+
+generatorOptions:
+  labels:
+    grafana_dashboard: '1'
