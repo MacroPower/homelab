@@ -49,6 +49,7 @@ helmCharts:
               http_user   ${LOKI_HTTP_USER}
               http_passwd ${LOKI_HTTP_PASS}
 
+              labels job=fluentbit
               auto_kubernetes_labels on
 
 patches:
