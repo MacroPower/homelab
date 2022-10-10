@@ -79,6 +79,9 @@ helmCharts:
               # - source_labels: [__meta_kubernetes_service_name]
               #   action: drop
               #   regex: 'node-exporter'
+              - source_labels: [jobLabel]
+                action: replace
+                target_label: job
 
           # Example scrape config for pods
           #
@@ -114,6 +117,9 @@ helmCharts:
               - source_labels: [__meta_kubernetes_pod_name]
                 action: replace
                 target_label: kubernetes_pod_name
+              - source_labels: [jobLabel]
+                action: replace
+                target_label: job
 
     # # Max series is 10k.
     # prometheus:
