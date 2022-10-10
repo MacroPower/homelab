@@ -35,8 +35,11 @@ helmCharts:
               Skip_Long_Lines On
           [INPUT]
               Name systemd
+              Path /var/log/journal
               Tag host.*
               Systemd_Filter _SYSTEMD_UNIT=kubelet.service
+              Systemd_Filter _SYSTEMD_UNIT=k3s.service
+              Systemd_Filter _SYSTEMD_UNIT=k3s-agent.service
               Read_From_Tail On
         outputs: |
           [OUTPUT]
@@ -51,6 +54,14 @@ helmCharts:
 
               labels job=fluentbit
               auto_kubernetes_labels on
+
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+        - key: CriticalAddonsOnly
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists
 
 patches:
   - target:
