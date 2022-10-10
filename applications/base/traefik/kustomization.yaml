@@ -4,51 +4,51 @@ kind: Kustomization
 namespace: kube-system
 
 helmCharts:
-- name: traefik
-  repo: https://helm.traefik.io/traefik
-  version: 10.30.1
-  releaseName: traefik
-  includeCRDs: true
-  valuesInline:
-    deployment:
-      kind: Deployment
-      replicas: 1
+  - name: traefik
+    repo: https://helm.traefik.io/traefik
+    version: 10.30.1
+    releaseName: traefik
+    includeCRDs: true
+    valuesInline:
+      deployment:
+        kind: Deployment
+        replicas: 1
 
-      annotations:
-        "sidecar.jaegertracing.io/inject": "true"
+        annotations:
+          'sidecar.jaegertracing.io/inject': 'true'
 
-    tracing:
-      jaeger:
-        samplingServerURL: http://localhost:5778/sampling
-        samplingType: const
-        samplingParam: 1.0
-        localAgentHostPort: 127.0.0.1:6831
+      tracing:
+        jaeger:
+          samplingServerURL: http://localhost:5778/sampling
+          samplingType: const
+          samplingParam: 1.0
+          localAgentHostPort: 127.0.0.1:6831
 
-    providers:
-      kubernetesIngress:
-        enabled: true
-        publishedService:
+      providers:
+        kubernetesIngress:
           enabled: true
-          pathOverride: "kube-system/traefik"
+          publishedService:
+            enabled: true
+            pathOverride: 'kube-system/traefik'
 
-    service:
-      annotations:
-        "load-balancer.hetzner.cloud/ipv6-disabled": "true"
-        "load-balancer.hetzner.cloud/disable-private-ingress": "true"
+      service:
+        annotations:
+          'load-balancer.hetzner.cloud/ipv6-disabled': 'true'
+          'load-balancer.hetzner.cloud/disable-private-ingress': 'true'
 
-    ports:
-      websecure:
-        tls:
-          enabled: true
+      ports:
+        websecure:
+          tls:
+            enabled: true
 
-    tlsStore:
-      default:
-        defaultCertificate:
-          secretName: cloudflare-tls
+      tlsStore:
+        default:
+          defaultCertificate:
+            secretName: cloudflare-tls
 
-    tlsOptions:
-      default:
-        clientAuth:
-          secretNames:
-            - cloudflare-mtls
-          clientAuthType: RequireAndVerifyClientCert
+      tlsOptions:
+        default:
+          clientAuth:
+            secretNames:
+              - cloudflare-mtls
+            clientAuthType: RequireAndVerifyClientCert

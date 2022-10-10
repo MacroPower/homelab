@@ -10,7 +10,7 @@ spec:
   collector:
     replicas: 0
   storage:
-    # Storage may not matter for this config, but it's required for the 
+    # Storage may not matter for this config, but it's required for the
     # 'production' strategy.
     type: grpc-plugin
     grpcPlugin:

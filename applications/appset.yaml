@@ -18,7 +18,7 @@ metadata:
   name: argocd-cmd-params-cm
   namespace: argocd
 data:
-  server.insecure: "true"
+  server.insecure: 'true'
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet

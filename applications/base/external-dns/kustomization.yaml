@@ -4,22 +4,22 @@ kind: Kustomization
 namespace: kube-system
 
 helmCharts:
-- name: external-dns
-  repo: https://kubernetes-sigs.github.io/external-dns
-  version: 1.11.0
-  releaseName: external-dns
-  valuesInline:
-    env:
-      - # The token should be granted Zone Read, DNS Edit privileges, and access
-        # to All zones.
-        name: CF_API_TOKEN
-        valueFrom:
-          secretKeyRef:
-            name: cloudflare-credentials
-            key: CF_API_TOKEN
-    sources:
-      - ingress
-      - service
-    policy: sync
-    provider: cloudflare
-    logLevel: debug
+  - name: external-dns
+    repo: https://kubernetes-sigs.github.io/external-dns
+    version: 1.11.0
+    releaseName: external-dns
+    valuesInline:
+      env:
+        - # The token should be granted Zone Read, DNS Edit privileges, and access
+          # to All zones.
+          name: CF_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: cloudflare-credentials
+              key: CF_API_TOKEN
+      sources:
+        - ingress
+        - service
+      policy: sync
+      provider: cloudflare
+      logLevel: debug

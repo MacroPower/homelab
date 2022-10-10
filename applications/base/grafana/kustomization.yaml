@@ -4,34 +4,34 @@ kind: Kustomization
 namespace: observability
 
 helmCharts:
-- name: grafana
-  repo: https://grafana.github.io/helm-charts
-  version: 6.39.0
-  releaseName: grafana
-  namespace: observability
-  valuesInline:
-    annotations:
-      "sidecar.jaegertracing.io/inject": "true"
-    env:
-      JAEGER_AGENT_HOST: localhost
-      JAEGER_AGENT_PORT: '6831'
-      ANALYTICS_REPORTING_ENABLED: 'false'
+  - name: grafana
+    repo: https://grafana.github.io/helm-charts
+    version: 6.39.0
+    releaseName: grafana
+    namespace: observability
+    valuesInline:
+      annotations:
+        'sidecar.jaegertracing.io/inject': 'true'
+      env:
+        JAEGER_AGENT_HOST: localhost
+        JAEGER_AGENT_PORT: '6831'
+        ANALYTICS_REPORTING_ENABLED: 'false'
 
-    sidecar:
-      alerts:
-        enabled: false
-        label: grafana_alert
-      dashboards:
-        enabled: true
-        label: grafana_dashboard
-        provider:
-          allowUiUpdates: true
-      datasources:
-        enabled: true
-        label: grafana_datasource
-      plugins:
-        enabled: true
-        label: grafana_plugin
+      sidecar:
+        alerts:
+          enabled: false
+          label: grafana_alert
+        dashboards:
+          enabled: true
+          label: grafana_dashboard
+          provider:
+            allowUiUpdates: true
+        datasources:
+          enabled: true
+          label: grafana_datasource
+        plugins:
+          enabled: true
+          label: grafana_plugin
 
 configMapGenerator:
   - name: grafana-dashboard-grafana-cloud-usage

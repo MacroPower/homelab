@@ -4,9 +4,9 @@ metadata:
   name: grafana-ingress
   namespace: observability
   annotations:
-    "external-dns.alpha.kubernetes.io/hostname": "grafana.macro.network"
-    "external-dns.alpha.kubernetes.io/cloudflare-proxied": "true"
-    "traefik.ingress.kubernetes.io/router.entrypoints": "websecure"
+    'external-dns.alpha.kubernetes.io/hostname': 'grafana.macro.network'
+    'external-dns.alpha.kubernetes.io/cloudflare-proxied': 'true'
+    'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure'
 spec:
   tls:
     - hosts:

@@ -4,15 +4,15 @@ kind: Kustomization
 namespace: observability
 
 helmCharts:
-- name: jaeger-operator
-  repo: https://jaegertracing.github.io/helm-charts
-  version: 2.35.0
-  releaseName: jaeger-operator
-  namespace: observability
-  includeCRDs: true
-  valuesInline:
-    image:
-      repository: macropower/jaeger-operator
-      tag: '1.38.1'
-    rbac:
-      clusterRole: true
+  - name: jaeger-operator
+    repo: https://jaegertracing.github.io/helm-charts
+    version: 2.35.0
+    releaseName: jaeger-operator
+    namespace: observability
+    includeCRDs: true
+    valuesInline:
+      image:
+        repository: macropower/jaeger-operator
+        tag: '1.38.1'
+      rbac:
+        clusterRole: true

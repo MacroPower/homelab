@@ -4,60 +4,60 @@ kind: Kustomization
 namespace: timescale
 
 helmCharts:
-- name: timescaledb-single
-  repo: https://charts.timescale.com
-  version: 0.17.0
-  releaseName: timescaledb-single
-  namespace: timescale
-  valuesInline:
-    replicaCount: 1
+  - name: timescaledb-single
+    repo: https://charts.timescale.com
+    version: 0.17.0
+    releaseName: timescaledb-single
+    namespace: timescale
+    valuesInline:
+      replicaCount: 1
 
-    secrets:
-      credentialsSecretName: "timescaledb-credentials"
+      secrets:
+        credentialsSecretName: 'timescaledb-credentials'
 
-    env:
-      - name: PATRONI_tsdb_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: timescaledb-credentials
-            key: PATRONI_tsdb_PASSWORD
-      - name: PATRONI_tsdb_OPTIONS
-        value: login
+      env:
+        - name: PATRONI_tsdb_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: timescaledb-credentials
+              key: PATRONI_tsdb_PASSWORD
+        - name: PATRONI_tsdb_OPTIONS
+          value: login
 
-      - name: PATRONI_readonly_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: timescaledb-credentials
-            key: PATRONI_readonly_PASSWORD
-      - name: PATRONI_readonly_OPTIONS
-        value: login
+        - name: PATRONI_readonly_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: timescaledb-credentials
+              key: PATRONI_readonly_PASSWORD
+        - name: PATRONI_readonly_OPTIONS
+          value: login
 
-    postInit:
-      - configMap:
-          name: timescaledb-init-scripts
+      postInit:
+        - configMap:
+            name: timescaledb-init-scripts
 
-    loadBalancer:
-      enabled: false
-
-    persistentVolumes:
-      # For sanity reasons, the actual PGDATA and wal directory will be subdirectories of the Volume mounts,
-      # this allows Patroni/a human/an automated operator to move directories during bootstrap, which cannot
-      # be done if we did not use subdirectories
-      # https://www.postgresql.org/docs/current/creating-cluster.html#CREATING-CLUSTER-MOUNT-POINTS
-      data:
-        enabled: true
-        size: 10Gi
-        storageClass: "hcloud-volumes"
-        subPath: ""
-        mountPath: "/var/lib/postgresql"
-        annotations: {}
-        accessModes:
-          - ReadWriteOnce
-      wal:
+      loadBalancer:
         enabled: false
 
-    prometheus:
-      enabled: true
+      persistentVolumes:
+        # For sanity reasons, the actual PGDATA and wal directory will be subdirectories of the Volume mounts,
+        # this allows Patroni/a human/an automated operator to move directories during bootstrap, which cannot
+        # be done if we did not use subdirectories
+        # https://www.postgresql.org/docs/current/creating-cluster.html#CREATING-CLUSTER-MOUNT-POINTS
+        data:
+          enabled: true
+          size: 10Gi
+          storageClass: 'hcloud-volumes'
+          subPath: ''
+          mountPath: '/var/lib/postgresql'
+          annotations: {}
+          accessModes:
+            - ReadWriteOnce
+        wal:
+          enabled: false
+
+      prometheus:
+        enabled: true
 
 resources:
   - init.yaml
