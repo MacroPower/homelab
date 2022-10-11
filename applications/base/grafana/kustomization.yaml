@@ -44,6 +44,12 @@ configMapGenerator:
     files:
       - k8s-home.json=dashboards/k8s-home.json
 
+  # https://grafana.com/grafana/dashboards/14584-argocd/
+  - name: grafana-dashboard-argocd
+    behavior: add
+    files:
+      - argocd.json=dashboards/argocd.json
+
 generatorOptions:
   labels:
     grafana_dashboard: '1'
