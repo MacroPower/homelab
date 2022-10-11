@@ -34,6 +34,15 @@ helmCharts:
 
       prometheus:
         prometheusSpec:
+          serviceMonitorSelectorNilUsesHelmValues: false
+          serviceMonitorSelector: {}
+
+          podMonitorSelectorNilUsesHelmValues: false
+          podMonitorSelector: {}
+
+          probeSelectorNilUsesHelmValues: false
+          probeSelector: {}
+
           additionalScrapeConfigs:
             # Scrape config for service endpoints.
             #

@@ -12,6 +12,14 @@ helmCharts:
     valuesInline:
       logLevel: info
 
+      dashboards:
+        enabled: true
+        labelKey: grafana_dashboard
+        namespace: observability
+
+      serviceMonitor:
+        enabled: false
+
       env:
         - name: LOKI_HTTP_USER
           valueFrom:
@@ -84,3 +92,6 @@ patches:
             command:
               - /fluent-bit/bin/fluent-bit
               - --help
+
+resources:
+  - service-monitor.yaml
