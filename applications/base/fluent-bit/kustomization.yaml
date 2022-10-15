@@ -21,16 +21,16 @@ helmCharts:
         enabled: false
 
       env:
-        - name: LOKI_HTTP_USER
+        - name: GRAFANA_CLOUD_LOKI_USER
           valueFrom:
             secretKeyRef:
               name: fluent-bit-credentials
-              key: LOKI_HTTP_USER
-        - name: LOKI_HTTP_PASS
+              key: GRAFANA_CLOUD_LOKI_USER
+        - name: GRAFANA_CLOUD_LOKI_PASS
           valueFrom:
             secretKeyRef:
               name: fluent-bit-credentials
-              key: LOKI_HTTP_PASS
+              key: GRAFANA_CLOUD_LOKI_PASS
 
       config:
         inputs: |
@@ -57,8 +57,8 @@ helmCharts:
               port        443
               tls         on
               tls.verify  on
-              http_user   ${LOKI_HTTP_USER}
-              http_passwd ${LOKI_HTTP_PASS}
+              http_user   ${GRAFANA_CLOUD_LOKI_USER}
+              http_passwd ${GRAFANA_CLOUD_LOKI_PASS}
 
               labels job=fluentbit
               auto_kubernetes_labels on
@@ -94,4 +94,5 @@ patches:
               - --help
 
 resources:
+  - secrets.yaml
   - service-monitor.yaml

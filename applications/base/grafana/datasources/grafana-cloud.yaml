@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-cloud-datasources-tpl
+
+data:
+  config.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: grafanacloud-traces
+        type: tempo
+        access: proxy
+        url: https://tempo-us-central1.grafana.net/tempo
+        basicAuth: true
+        basicAuthUser: {{ .GRAFANA_CLOUD_TEMPO_USER }}
+        jsonData:
+          tracesToLogs:
+            datasourceUid: grafanacloud-logs
+        secureJsonFields:
+          basicAuthPassword: true
+        secureJsonData:
+          basicAuthPassword: '{{ .GRAFANA_CLOUD_TEMPO_PASS_RO }}'
+        version: 1
+
+      - name: grafanacloud-logs
+        type: loki
+        access: proxy
+        url: https://logs-prod-us-central1.grafana.net
+        basicAuth: true
+        basicAuthUser: {{ .GRAFANA_CLOUD_LOKI_USER }}
+        jsonData:
+          derivedFields:
+            - name: traceID
+              datasourceUid: grafanacloud-traces
+              matcherRegex: 'traceID=(\\w+)'
+              url: '${__value.raw}'
+        secureJsonFields:
+          basicAuthPassword: true
+        secureJsonData:
+          basicAuthPassword: '{{ .GRAFANA_CLOUD_LOKI_PASS_RO }}'
+        version: 1
+
+      - name: grafanacloud-usage
+        type: prometheus
+        access: proxy
+        url: https://billing.grafana.net/api/prom
+        basicAuth: true
+        basicAuthUser: {{ .GRAFANA_CLOUD_PROM_BILLING_USER }}
+        secureJsonFields:
+          basicAuthPassword: true
+        secureJsonData:
+          basicAuthPassword: '{{ .GRAFANA_CLOUD_PROM_BILLING_PASS_RO }}'
+        version: 1

@@ -15,11 +15,14 @@ helmCharts:
           name: CF_API_TOKEN
           valueFrom:
             secretKeyRef:
-              name: cloudflare-credentials
-              key: CF_API_TOKEN
+              name: external-dns-credentials
+              key: CLOUDFLARE_API_TOKEN
       sources:
         - ingress
         - service
       policy: sync
       provider: cloudflare
       logLevel: debug
+
+resources:
+  - secrets.yaml

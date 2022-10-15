@@ -44,11 +44,14 @@ helmCharts:
       tlsStore:
         default:
           defaultCertificate:
-            secretName: cloudflare-tls
+            secretName: cloudflare-origin-ca
 
       tlsOptions:
         default:
           clientAuth:
             secretNames:
-              - cloudflare-mtls
+              - cloudflare-authenticated-origin-pull-ca
             clientAuthType: RequireAndVerifyClientCert
+
+resources:
+  - secrets.yaml

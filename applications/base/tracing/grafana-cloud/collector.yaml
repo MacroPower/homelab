@@ -6,16 +6,11 @@ spec:
   mode: deployment
 
   env:
-    - name: GRAFANA_TRACES_URL
+    - name: GRAFANA_CLOUD_TEMPO_AUTH
       valueFrom:
         secretKeyRef:
-          name: grafana-cloud-traces-credentials
-          key: GRAFANA_TRACES_URL
-    - name: GRAFANA_TRACES_AUTH
-      valueFrom:
-        secretKeyRef:
-          name: grafana-cloud-traces-credentials
-          key: GRAFANA_TRACES_AUTH
+          name: grafana-cloud-tracing-credentials
+          key: GRAFANA_CLOUD_TEMPO_AUTH
 
   config: |
     receivers:
@@ -36,7 +31,7 @@ spec:
       otlp:
         endpoint: "tempo-us-central1.grafana.net:443"
         headers:
-          authorization: "Basic ${GRAFANA_TRACES_AUTH}"
+          authorization: "Basic ${GRAFANA_CLOUD_TEMPO_AUTH}"
       logging:
 
     service:

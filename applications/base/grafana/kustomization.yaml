@@ -53,3 +53,7 @@ configMapGenerator:
 generatorOptions:
   labels:
     grafana_dashboard: '1'
+
+resources:
+  - datasources/grafana-cloud.yaml
+  - datasources/grafana-cloud-secrets.yaml

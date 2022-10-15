@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: kube-system
+
+helmCharts:
+  - name: external-secrets
+    repo: https://charts.external-secrets.io
+    version: '0.6.0'
+    releaseName: external-secrets
+    namespace: kube-system
+    includeCRDs: true
+    valuesInline:
+      # Use custom serviceMonitor.
+      serviceMonitor:
+        enabled: false
+      metrics:
+        service:
+          enabled: true
+
+      # Disable this when support for cert-manager is added.
+      certController:
+        create: true
+
+resources:
+  - doppler-store.yaml
+  - service-monitor.yaml

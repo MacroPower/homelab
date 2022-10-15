@@ -60,4 +60,5 @@ helmCharts:
         enabled: true
 
 resources:
+  - secrets.yaml
   - init.yaml
