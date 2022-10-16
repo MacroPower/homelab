@@ -12,7 +12,7 @@ helmCharts:
     valuesInline:
       deployment:
         kind: Deployment
-        replicas: 1
+        replicas: 3
 
         annotations:
           'sidecar.jaegertracing.io/inject': 'true'
