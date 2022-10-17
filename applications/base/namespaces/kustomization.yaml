@@ -5,3 +5,4 @@ resources:
   - observability.yaml
   - timescale.yaml
   - automation.yaml
+  - media.yaml
