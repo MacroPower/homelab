@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: twitch-channel-points-miner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: twitch-channel-points-miner
+  template:
+    metadata:
+      labels:
+        app: twitch-channel-points-miner
+    spec:
+      containers:
+        - name: twitch-channel-points-miner
+          image: tkdalex/twitch-channel-points-miner-v2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+              name: http-analytics
+          volumeMounts:
+            - mountPath: /usr/src/app/analytics
+              name: analytics-volume
+            - mountPath: /usr/src/app/cookies/Cookie.pkl
+              name: cookies-volume
+              subPath: Cookie.pkl
+            - mountPath: /usr/src/app/logs
+              name: logs-volume
+            - mountPath: /usr/src/app/run.py
+              name: run-volume
+              subPath: run.py
+              readOnly: true
+      volumes:
+        - name: analytics-volume
+          emptyDir: {}
+        - name: cookies-volume
+          secret:
+            secretName: twitch-channel-points-miner-cookies
+            optional: false
+        - name: logs-volume
+          emptyDir: {}
+        - name: run-volume
+          secret:
+            secretName: twitch-channel-points-miner
+            optional: false
