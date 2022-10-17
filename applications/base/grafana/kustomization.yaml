@@ -12,10 +12,16 @@ helmCharts:
     valuesInline:
       annotations:
         'sidecar.jaegertracing.io/inject': 'true'
+
       env:
         JAEGER_AGENT_HOST: localhost
         JAEGER_AGENT_PORT: '6831'
         ANALYTICS_REPORTING_ENABLED: 'false'
+
+      admin:
+        existingSecret: grafana-credentials
+        userKey: GRAFANA_ADMIN_USER
+        passwordKey: GRAFANA_ADMIN_PASS
 
       sidecar:
         alerts:
@@ -55,5 +61,6 @@ generatorOptions:
     grafana_dashboard: '1'
 
 resources:
+  - secrets.yaml
   - datasources/grafana-cloud.yaml
   - datasources/grafana-cloud-secrets.yaml
