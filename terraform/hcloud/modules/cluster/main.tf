@@ -181,7 +181,16 @@ module "kube-hetzner" {
       port            = "123"
       source_ips      = []
       destination_ips = ["::/0"]
-    }
+    },
+
+    #CIFS/SMB
+    {
+      direction       = "out"
+      protocol        = "tcp"
+      port            = "445"
+      source_ips      = []
+      destination_ips = ["0.0.0.0/0", "::/0"]
+    },
   ]
   #   # For Postgres
   #   {

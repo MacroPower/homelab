@@ -12,7 +12,7 @@ spec:
     storage:
       customVolume: false
       pvcName: mediaserver-pvc
-      pvcStorageClass: 'hcloud-volumes'
+      pvcStorageClass: []
       size: 10Gi
       subPaths:
         config: config
