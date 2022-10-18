@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prowlarr-init-scripts-tpl
+  labels:
+    app.kubernetes.io/component: scripts
+data:
+  prowlarr_db_init.sh: |
+    export PGUSER=postgres
+    export PGPASSWORD={{ .POSTGRES_DB_PASS }}
+    export PGHOST=timescaledb-single.timescale.svc.cluster.local
+    export PGDATABASE=postgres
+    export PGSSLMODE=require
+
+    psql <<__SQL__
+      \connect postgres
+      CREATE ROLE prowlarr LOGIN PASSWORD '{{ .PROWLARR_DB_PASS }}';
+      CREATE DATABASE prowlarrmain OWNER prowlarr;
+      CREATE DATABASE prowlarrlogs OWNER prowlarr;
+
+      \connect prowlarrmain
+      CREATE EXTENSION pg_stat_statements;
+
+      \connect prowlarrlogs
+      CREATE EXTENSION pg_stat_statements;
+
+    __SQL__
+
+    exit 0
+
+  prowlarr_cfg_init.sh: |
+    cp /tmp/config.xml /config/config.xml
+    chmod 666 /config/config.xml

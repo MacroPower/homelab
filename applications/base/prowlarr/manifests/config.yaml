@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prowlarr-config-tpl
+data:
+  config.xml: |
+    <Config>
+      <UrlBase></UrlBase>
+      <LogLevel>info</LogLevel>
+      <UpdateMechanism>Docker</UpdateMechanism>
+      <BindAddress>*</BindAddress>
+      <EnableSsl>False</EnableSsl>
+      <LaunchBrowser>True</LaunchBrowser>
+      <ApiKey>{{ .PROWLARR_API_KEY }}</ApiKey>
+      <AuthenticationMethod>None</AuthenticationMethod>
+      <Branch>master</Branch>
+      <SslCertPath></SslCertPath>
+      <SslCertPassword></SslCertPassword>
+      <InstanceName>Prowlarr</InstanceName>
+      <PostgresUser>prowlarr</PostgresUser>
+      <PostgresPassword>{{ .PROWLARR_DB_PASS }}</PostgresPassword>
+      <PostgresPort>5432</PostgresPort>
+      <PostgresHost>timescaledb-single.timescale.svc.cluster.local</PostgresHost>
+      <PostgresMainDb>prowlarrmain</PostgresMainDb>
+      <PostgresLogDb>prowlarrlogs</PostgresLogDb>
+    </Config>
