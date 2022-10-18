@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: radarr-init-scripts-tpl
+  labels:
+    app.kubernetes.io/component: scripts
+data:
+  radarr_db_init.sh: |
+    export PGUSER=postgres
+    export PGPASSWORD={{ .POSTGRES_DB_PASS }}
+    export PGHOST=timescaledb-single.timescale.svc.cluster.local
+    export PGDATABASE=postgres
+    export PGSSLMODE=require
+
+    psql <<__SQL__
+      \connect postgres
+      CREATE ROLE radarr LOGIN PASSWORD '{{ .RADARR_DB_PASS }}';
+      CREATE DATABASE radarrmain OWNER radarr;
+      CREATE DATABASE radarrlogs OWNER radarr;
+
+      \connect radarrmain
+      CREATE EXTENSION pg_stat_statements;
+
+      \connect radarrlogs
+      CREATE EXTENSION pg_stat_statements;
+
+    __SQL__
+
+    exit 0
+
+  radarr_cfg_init.sh: |
+    cp /tmp/config.xml /config/config.xml
+    chmod 666 /config/config.xml

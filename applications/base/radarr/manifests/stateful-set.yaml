@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: radarr
+  labels:
+    app: radarr
+
+spec:
+  replicas: 1
+  serviceName: radarr
+  selector:
+    matchLabels:
+      app: radarr
+
+  template:
+    metadata:
+      labels:
+        app: radarr
+
+    spec:
+      securityContext:
+        fsGroup: 1000
+
+      initContainers:
+        - name: init-db
+          image: postgres:14
+          command:
+            - bash
+            - /scripts/radarr_db_init.sh
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+
+        - name: init-cfg
+          image: busybox:1.35.0
+          command:
+            - sh
+            - /scripts/radarr_cfg_init.sh
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+            - name: config-file
+              mountPath: /tmp/config.xml
+              subPath: config.xml
+            - name: config
+              mountPath: /config
+
+      containers:
+        - name: radarr
+          image: linuxserver/radarr:4.2.4
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 7878
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
+            periodSeconds: 20
+          volumeMounts:
+            - name: config
+              mountPath: /config
+          env:
+            - name: TZ
+              value: 'America/New_York'
+            - name: PGID
+              value: '1000'
+            - name: PUID
+              value: '1000'
+
+        # - name: exportarr
+
+      volumes:
+        - name: config-file
+          secret:
+            secretName: radarr-config
+            optional: false
+        - name: config
+          emptyDir: {}
+        - name: scripts
+          secret:
+            secretName: radarr-init-scripts
+            optional: false
