@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: radarr
   labels:
-    app: radarr
+    'app.kubernetes.io/name': radarr
 spec:
   type: ClusterIP
   ports:
@@ -12,4 +12,20 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: radarr
+    'app.kubernetes.io/name': radarr
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: radarr-exporter
+  labels:
+    'app.kubernetes.io/name': radarr
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9707
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+  selector:
+    'app.kubernetes.io/name': radarr

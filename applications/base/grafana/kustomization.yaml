@@ -56,6 +56,12 @@ configMapGenerator:
     files:
       - argocd.json=dashboards/argocd.json
 
+  # https://github.com/onedr0p/exportarr/tree/master/examples/grafana
+  - name: grafana-dashboard-servarr
+    behavior: add
+    files:
+      - servarr.json=dashboards/servarr.json
+
 generatorOptions:
   labels:
     grafana_dashboard: '1'

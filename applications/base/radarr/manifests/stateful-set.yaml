@@ -3,19 +3,19 @@ kind: StatefulSet
 metadata:
   name: radarr
   labels:
-    app: radarr
+    'app.kubernetes.io/name': radarr
 
 spec:
   replicas: 1
   serviceName: radarr
   selector:
     matchLabels:
-      app: radarr
+      'app.kubernetes.io/name': radarr
 
   template:
     metadata:
       labels:
-        app: radarr
+        'app.kubernetes.io/name': radarr
 
     spec:
       securityContext:
@@ -78,7 +78,43 @@ spec:
             - name: PUID
               value: '1000'
 
-        # - name: exportarr
+        - name: radarr-exporter
+          image: ghcr.io/onedr0p/exportarr:v1.1.0
+          imagePullPolicy: IfNotPresent
+          args:
+            - radarr
+          env:
+            - name: PORT
+              value: '9707'
+            - name: URL
+              value: 'http://localhost:7878'
+            - name: APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: radarr-credentials
+                  key: RADARR_API_KEY
+          ports:
+            - name: metrics
+              containerPort: 9707
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+            failureThreshold: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+            failureThreshold: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
 
       volumes:
         - name: config-file

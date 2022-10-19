@@ -4,9 +4,11 @@ kind: Kustomization
 namespace: media
 
 resources:
+  - manifests/secrets.yaml
   - manifests/config.yaml
   - manifests/config-secrets.yaml
   - manifests/init-scripts.yaml
   - manifests/init-scripts-secrets.yaml
   - manifests/stateful-set.yaml
   - manifests/service.yaml
+  - manifests/service-monitor.yaml
