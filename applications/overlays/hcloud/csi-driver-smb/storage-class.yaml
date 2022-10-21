@@ -20,6 +20,5 @@ mountOptions:
   - gid=1001
   - noperm
   - mfsymlinks
-  - nobrl
-  - cache=none
+  - cache=strict
   - noserverino # required to prevent data corruption
