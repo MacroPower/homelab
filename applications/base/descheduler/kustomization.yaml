@@ -37,12 +37,10 @@ helmCharts:
               nodeResourceUtilizationThresholds:
                 thresholds:
                   cpu: 10
-                  memory: 10
-                  pods: 10
+                  memory: 30
                 targetThresholds:
                   cpu: 50
-                  memory: 50
-                  pods: 50
+                  memory: 60
 
       serviceMonitor:
         enabled: true
