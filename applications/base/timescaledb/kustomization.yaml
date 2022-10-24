@@ -84,6 +84,9 @@ helmCharts:
           repo1-retention-full: 2
           repo1-type: s3
           repo1-cipher-type: 'none'
+          repo1-storage-port: '9000'
+          repo1-storage-verify-tls: 'n'
+          repo1-s3-uri-style: 'path'
 
         # Overriding the archive-push/archive-get sections is most useful in
         # very high througput situations. Look at values/high_throuhgput_example.yaml for more details
