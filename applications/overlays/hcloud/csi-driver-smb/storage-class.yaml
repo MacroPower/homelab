@@ -11,14 +11,10 @@ parameters:
   'csi.storage.k8s.io/provisioner-secret-namespace': 'kube-system'
   'csi.storage.k8s.io/node-stage-secret-name': 'smb-credentials'
   'csi.storage.k8s.io/node-stage-secret-namespace': 'kube-system'
-reclaimPolicy: Delete # available values: Delete, Retain
+reclaimPolicy: Retain # available values: Delete, Retain
 volumeBindingMode: Immediate
 mountOptions:
   - dir_mode=0777
   - file_mode=0777
   - uid=1001
   - gid=1001
-  - noperm
-  - mfsymlinks
-  - cache=strict
-  - noserverino # required to prevent data corruption

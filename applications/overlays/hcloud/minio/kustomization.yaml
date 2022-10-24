@@ -6,10 +6,11 @@ resources:
 
 patches:
   - target:
+      group: apps
       version: v1
-      kind: PersistentVolumeClaim
+      kind: StatefulSet
       name: minio
     patch: |-
       - op: replace
-        path: /spec/storageClassName
+        path: /spec/volumeClaimTemplates/0/spec/storageClassName
         value: 'smb'
