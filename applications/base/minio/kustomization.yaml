@@ -39,11 +39,45 @@ helmCharts:
 
       ## List of users to be created after minio install
       ##
-      users: []
+      users:
+        ## Username, password and policy to be assigned to the user
+        ## Default policies are [readonly|readwrite|writeonly|consoleAdmin|diagnostics]
+        ## Add new policies as explained here https://min.io/docs/minio/kubernetes/upstream/administration/identity-access-management.html#access-management
+        ## NOTE: this will fail if LDAP is enabled in your MinIO deployment
+        ## make sure to disable this if you are using LDAP.
+        - accessKey: timescale-pgbackrest
+          existingSecret: minio-timescale-pgbackrest-credentials
+          existingSecretKey: password
+          policy: readwrite
 
       ## List of buckets to be created after minio install
       ##
-      buckets: []
+      buckets:
+        #   # Name of the bucket
+        # - name: bucket1
+        #   # Policy to be set on the
+        #   # bucket [none|download|upload|public]
+        #   policy: none
+        #   # Purge if bucket exists already
+        #   purge: false
+        #   # set versioning for
+        #   # bucket [true|false]
+        #   versioning: false
+        #   # set objectlocking for
+        #   # bucket [true|false] NOTE: versioning is enabled by default if you use locking
+        #   objectlocking: false
+        # - name: bucket2
+        #   policy: none
+        #   purge: false
+        #   versioning: true
+        #   # set objectlocking for
+        #   # bucket [true|false] NOTE: versioning is enabled by default if you use locking
+        #   objectlocking: false
+        - name: timescale-pgbackrest
+          policy: none
+          purge: false
+          versioning: false
+          objectlocking: false
 
       metrics:
         serviceMonitor:
