@@ -25,6 +25,7 @@ helmCharts:
 
       secrets:
         credentialsSecretName: 'timescaledb-credentials'
+        pgbackrestSecretName: 'pgbackrest-credentials'
 
       env:
         - name: PATRONI_tsdb_PASSWORD
@@ -69,6 +70,51 @@ helmCharts:
 
       prometheus:
         enabled: true
+
+      backup:
+        enabled: true
+        pgBackRest:
+          # https://pgbackrest.org/configuration.html
+          # Although not impossible, care should be taken not to include secrets
+          # in these parameters. Use Kubernetes Secrets to specify S3 Keys, Secrets etc.
+          compress-type: lz4
+          process-max: 4
+          start-fast: 'y'
+          repo1-retention-diff: 2
+          repo1-retention-full: 2
+          repo1-type: s3
+          repo1-cipher-type: 'none'
+
+        # Overriding the archive-push/archive-get sections is most useful in
+        # very high througput situations. Look at values/high_throuhgput_example.yaml for more details
+        pgBackRest:archive-push: {}
+        pgBackRest:archive-get: {}
+        jobs:
+          # name: needs to adhere to the kubernetes restrictions
+          # type: can be full, incr or diff, see https://pgbackrest.org/user-guide.html
+          # schedule: https://en.wikipedia.org/wiki/Cron#CRON_expression
+          - name: full-weekly
+            type: full
+            schedule: '12 02 * * 0'
+          - name: incremental-daily
+            type: incr
+            schedule: '12 02 * * 1-6'
+
+      # When creating a *new* deployment, the default is to initialize (using initdb) the database.
+      # If however, you want to initialize the database using an existing backup, you can do so by
+      # configuring this section.
+      #
+      # WARNING: You *should not* run 2 identically named deployments in separate Kubernetes
+      #          clusters using the same S3 bucket for backups.
+      bootstrapFromBackup:
+        enabled: false
+        # Setting the s3 path is mandatory to avoid overwriting an already existing backup,
+        # and to be sure the restore is explicitly the one requested.
+        repo1-path:
+        # Here you can (optionally) provide a Secret to configure the restore process further.
+        # For example, if you need to specify a different restore bucket, you should set
+        # PGBACKREST_REPO1_S3_BUCKET: <base64 encoded value of the bucket> in these secrets
+        secretName: pgbackrest-credentials
 
 resources:
   - secrets.yaml
