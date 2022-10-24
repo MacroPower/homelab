@@ -6,3 +6,4 @@ resources:
   - timescale.yaml
   - automation.yaml
   - media.yaml
+  - data.yaml

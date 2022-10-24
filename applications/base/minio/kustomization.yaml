@@ -1,0 +1,68 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: data
+
+helmCharts:
+  - name: minio
+    repo: https://charts.min.io/
+    version: 4.0.15
+    releaseName: minio
+    namespace: data
+    valuesInline:
+      # Additational pod annotations
+      podAnnotations: {}
+
+      # Additional pod labels
+      podLabels: {}
+
+      existingSecret: 'minio-credentials'
+
+      mode: standalone
+
+      # Number of drives attached to a node
+      drivesPerNode: 1
+      # Number of MinIO containers running
+      replicas: 4
+      # Number of expanded MinIO clusters
+      pools: 1
+
+      persistence:
+        enabled: true
+        storageClass: ''
+        accessMode: ReadWriteOnce
+        size: 100Gi
+
+      resources:
+        requests:
+          memory: 256Mi
+
+      ## List of users to be created after minio install
+      ##
+      users: []
+
+      ## List of buckets to be created after minio install
+      ##
+      buckets: []
+
+      metrics:
+        serviceMonitor:
+          enabled: true
+          # scrape each node/pod individually for additional metrics
+          includeNode: true
+          public: true
+          additionalLabels: {}
+          # for node metrics
+          relabelConfigs: {}
+          # for cluster metrics
+          relabelConfigsCluster:
+            {}
+            # metricRelabelings:
+            #   - regex: (server|pod)
+            #     action: labeldrop
+          # namespace: monitoring
+          # interval: 30s
+          # scrapeTimeout: 10s
+
+resources:
+  - secrets.yaml
