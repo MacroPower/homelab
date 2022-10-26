@@ -1,0 +1,25 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: minio-selfsigned-issuer
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: minio-serving-cert
+spec:
+  secretName: minio-service-cert
+  dnsNames:
+    - 'minio-svc'
+    - 'minio-svc.data.svc.cluster.local'
+    - '*.minio-svc'
+    - '*.minio-svc.data.svc.cluster.local'
+    - 'minio'
+    - 'minio.data.svc.cluster.local'
+    - 'minio-console'
+    - 'minio-console.data.svc.cluster.local'
+  issuerRef:
+    kind: Issuer
+    name: minio-selfsigned-issuer

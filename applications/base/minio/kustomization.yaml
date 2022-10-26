@@ -6,7 +6,7 @@ namespace: data
 helmCharts:
   - name: minio
     repo: https://charts.min.io/
-    version: 4.0.15
+    version: 5.0.0
     releaseName: minio
     namespace: data
     valuesInline:
@@ -17,6 +17,12 @@ helmCharts:
       podLabels: {}
 
       existingSecret: 'minio-credentials'
+
+      tls:
+        enabled: true
+        certSecret: 'minio-service-cert'
+        publicCrt: tls.crt
+        privateKey: tls.key
 
       # Number of drives attached to a node
       drivesPerNode: 1
@@ -105,3 +111,4 @@ helmCharts:
 
 resources:
   - secrets.yaml
+  - certificate.yaml
