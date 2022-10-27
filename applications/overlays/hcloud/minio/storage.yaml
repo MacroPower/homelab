@@ -1,7 +1,7 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: smb
+  name: minio-smb
 provisioner: smb.csi.k8s.io
 parameters:
   source: '//u321988-sub1.your-storagebox.de/u321988-sub1'
@@ -18,7 +18,3 @@ mountOptions:
   - file_mode=0777
   - uid=1001
   - gid=1001
-  - noperm
-  - mfsymlinks
-  - cache=strict
-  - noserverino # required to prevent data corruption
