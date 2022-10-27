@@ -17,6 +17,9 @@ helmCharts:
         annotations:
           'sidecar.jaegertracing.io/inject': 'true'
 
+      additionalArguments:
+        - --serverstransport.insecureskipverify=true
+
       tracing:
         jaeger:
           samplingServerURL: http://localhost:5778/sampling
