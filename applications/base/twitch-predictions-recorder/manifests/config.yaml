@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: twitch-predictions-config
+data:
+  streamers.txt: |
+    moonmoon
+    clintstevens
+    evample2
+    sips_
+    ster
+    jerma985
+    barbarousking
+    rocketleague
