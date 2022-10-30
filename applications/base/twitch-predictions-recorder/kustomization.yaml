@@ -3,9 +3,73 @@ kind: Kustomization
 
 namespace: automation
 
+helmCharts:
+  - name: twitch-predictions-recorder
+    repo: https://jacobcolvin.com/helm-charts/
+    version: '0.1.0'
+    releaseName: twitch-predictions-recorder
+    namespace: automation
+
+    valuesInline:
+      streamers:
+        - moonmoon
+        - clintstevens
+        - evample2
+        - sips_
+        - ster
+        - jerma985
+        - barbarousking
+        - rocketleague
+
+      extraEnv:
+        - name: TWITCH_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: twitch-predictions-credentials
+              key: TWITCH_PREDICTIONS_CLIENT_ID
+        - name: TWITCH_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: twitch-predictions-credentials
+              key: TWITCH_PREDICTIONS_SECRET
+        - name: DB_TYPE
+          value: 'postgres'
+        - name: DB_PG_HOST
+          value: 'timescaledb-single.timescale.svc.cluster.local'
+        - name: DB_PG_PORT
+          value: '5432'
+        - name: DB_PG_SSL_MODE
+          value: 'require'
+        - name: DB_PG_USER
+          value: 'twitchpredictions'
+        - name: DB_PG_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: twitch-predictions-credentials
+              key: TWITCH_PREDICTIONS_DB_PASS
+        - name: DB_PG_DB_NAME
+          value: 'twitchpredictions'
+        - name: DB_TIME_ZONE
+          value: 'America/New_York'
+
+      initContainers:
+        - name: init-db
+          image: postgres:14
+          command:
+            - bash
+            - /scripts/twitch_predictions_db_init.sh
+          volumeMounts:
+            - name: twitch-predictions-init-scripts
+              mountPath: /scripts
+
+      extraSecretMounts:
+        - name: twitch-predictions-init-scripts
+          optional: false
+
+      serviceMonitor:
+        enabled: true
+
 resources:
-  - manifests/secrets.yaml
-  - manifests/config.yaml
-  - manifests/init-scripts.yaml
-  - manifests/init-scripts-secrets.yaml
-  - manifests/deployment.yaml
+  - secrets.yaml
+  - init-scripts.yaml
+  - init-scripts-secrets.yaml
