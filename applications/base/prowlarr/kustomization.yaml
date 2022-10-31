@@ -3,10 +3,55 @@ kind: Kustomization
 
 namespace: media
 
+helmCharts:
+  - name: servarr
+    repo: https://jacobcolvin.com/helm-charts/
+    version: '0.1.2'
+    releaseName: prowlarr
+    namespace: media
+
+    valuesInline:
+      nameOverride: prowlarr
+
+      image:
+        repository: linuxserver/prowlarr
+        tag: 0.4.7-develop
+
+      configSecretName: prowlarr-config
+
+      service:
+        type: ClusterIP
+        port: 9696
+
+      metrics:
+        enabled: false
+
+        secretName: prowlarr-credentials
+        secretKey: PROWLARR_API_KEY
+
+      serviceMonitor:
+        enabled: false
+
+      extraInitContainers:
+        - name: init-db
+          image: postgres:14
+          command:
+            - bash
+            - /scripts/prowlarr_db_init.sh
+          volumeMounts:
+            - name: prowlarr-init-scripts
+              mountPath: /scripts
+
+      extraSecretMounts:
+        - name: prowlarr-init-scripts
+          optional: false
+
+      podSecurityContext:
+        fsGroup: 1000
+
 resources:
-  - manifests/config.yaml
-  - manifests/config-secrets.yaml
-  - manifests/init-scripts.yaml
-  - manifests/init-scripts-secrets.yaml
-  - manifests/stateful-set.yaml
-  - manifests/service.yaml
+  - secrets.yaml
+  - config.yaml
+  - config-secrets.yaml
+  - init-scripts.yaml
+  - init-scripts-secrets.yaml
