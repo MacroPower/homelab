@@ -17,9 +17,6 @@ helmCharts:
         enabled: false
 
       env:
-        email: admin@example.com
-        password: admin
-
         variables:
           - name: PGADMIN_SERVER_JSON_FILE
             value: /pgadmin4/servers.json
@@ -35,4 +32,29 @@ helmCharts:
         enabled: false
 
 resources:
+  - secrets.yaml
   - servers.yaml
+
+patchesStrategicMerge:
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: pgadmin4
+    spec:
+      template:
+        spec:
+          containers:
+            - name: pgadmin4
+              env:
+                - name: PGADMIN_DEFAULT_EMAIL
+                  value: null
+                  valueFrom:
+                    secretKeyRef:
+                      key: PGADMIN_DEFAULT_EMAIL
+                      name: pgadmin-credentials
+                - name: PGADMIN_DEFAULT_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: PGADMIN_DEFAULT_PASSWORD
+                      name: pgadmin-credentials
