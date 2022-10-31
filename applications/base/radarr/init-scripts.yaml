@@ -27,7 +27,3 @@ data:
     __SQL__
 
     exit 0
-
-  radarr_cfg_init.sh: |
-    cp /tmp/config.xml /config/config.xml
-    chmod 666 /config/config.xml

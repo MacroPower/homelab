@@ -3,12 +3,55 @@ kind: Kustomization
 
 namespace: media
 
+helmCharts:
+  - name: servarr
+    repo: https://jacobcolvin.com/helm-charts/
+    version: '0.1.2'
+    releaseName: radarr
+    namespace: media
+
+    valuesInline:
+      nameOverride: radarr
+
+      image:
+        repository: linuxserver/radarr
+        tag: '4.2.4'
+
+      configSecretName: radarr-config
+
+      service:
+        type: ClusterIP
+        port: 7878
+
+      metrics:
+        enabled: true
+
+        secretName: radarr-credentials
+        secretKey: RADARR_API_KEY
+
+      serviceMonitor:
+        enabled: true
+
+      extraInitContainers:
+        - name: init-db
+          image: postgres:14
+          command:
+            - bash
+            - /scripts/radarr_db_init.sh
+          volumeMounts:
+            - name: radarr-init-scripts
+              mountPath: /scripts
+
+      extraSecretMounts:
+        - name: radarr-init-scripts
+          optional: false
+
+      podSecurityContext:
+        fsGroup: 1000
+
 resources:
-  - manifests/secrets.yaml
-  - manifests/config.yaml
-  - manifests/config-secrets.yaml
-  - manifests/init-scripts.yaml
-  - manifests/init-scripts-secrets.yaml
-  - manifests/stateful-set.yaml
-  - manifests/service.yaml
-  - manifests/service-monitor.yaml
+  - secrets.yaml
+  - config.yaml
+  - config-secrets.yaml
+  - init-scripts.yaml
+  - init-scripts-secrets.yaml
