@@ -20,8 +20,12 @@ helmCharts:
         chttpd:
           bind_address: any
           require_valid_user: true
+          enable_cors: true
         httpd:
           WWW-Authenticate: 'Basic realm="administrator"'
+        cors:
+          credentials: true
+          origins: 'http://localhost, https://localhost, https://6.nomie.app'
 
       persistentVolume:
         enabled: true
