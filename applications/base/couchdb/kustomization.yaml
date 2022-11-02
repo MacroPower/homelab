@@ -1,0 +1,79 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: data
+
+helmCharts:
+  - name: couchdb
+    repo: https://apache.github.io/couchdb-helm
+    version: '3.6.1'
+    releaseName: single
+    namespace: data
+    valuesInline:
+      clusterSize: 1
+
+      createAdminSecret: false
+
+      couchdbConfig:
+        couchdb:
+          uuid: e40e2b0a6fb242339a9a089070c1bc46
+        chttpd:
+          bind_address: any
+          require_valid_user: true
+        httpd:
+          WWW-Authenticate: 'Basic realm="administrator"'
+
+      persistentVolume:
+        enabled: true
+        storageClass: 'hcloud-volumes'
+        size: 10Gi
+        accessModes:
+          - ReadWriteOnce
+
+      prometheusPort:
+        enabled: true
+        bind_address: '0.0.0.0'
+        port: 17986
+
+patchesStrategicMerge:
+  - |
+    apiVersion:  apps/v1
+    kind: StatefulSet
+    metadata:
+      name:
+        single-couchdb
+    spec:
+      template:
+        spec:
+          initContainers:
+            - name: init-dbs
+              image: curlimages/curl:7.86.0
+              command: ['sh', '/scripts/init-dbs.sh']
+              env:
+                - name: COUCHDB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: single-couchdb
+                      key: adminUsername
+                - name: COUCHDB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: single-couchdb
+                      key: adminPassword
+                - name: COUCHDB_NOMIE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: single-couchdb
+                      key: nomiePassword
+              volumeMounts:
+                - name: init-scripts
+                  mountPath: /scripts
+          volumes:
+            - name: init-scripts
+              configMap:
+                name: couchdb-init-scripts
+                optional: false
+
+resources:
+  - secrets.yaml
+  - init-scripts.yaml

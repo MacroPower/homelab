@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: couchdb-init-scripts
+data:
+  init-dbs.sh: |
+    BASE_URL="http://localhost:5984"
+    CREDS="$(echo -n "${COUCHDB_USER}:${COUCHDB_PASSWORD}" | base64)"
+    AUTH_HEADER="Authorization: Basic $CREDS"
+
+    echo "Testing connectivity..."
+    curl -X GET $BASE_URL -H "$AUTH_HEADER"
+
+    echo "Showing databases..."
+    curl -X GET "${BASE_URL}/_all_dbs" -H "$AUTH_HEADER"
+
+    echo "Creating databases..."
+    curl -X PUT "${BASE_URL}/nomie" -H "$AUTH_HEADER"
+
+    NOMIE_USER='{"_id":"org.couchdb.user:nomie","name":"nomie","type":"user","roles":[],"password":"'$COUCHDB_NOMIE_PASSWORD'"}'
+    NOMIE_SEC='{"members":{"roles":["_admin"]},"admins":{"roles":["_admin"],"names":["nomie"]}}'
+
+    curl -X PUT "${BASE_URL}/_users" -H "$AUTH_HEADER" --data-raw "$NOMIE_USER"
+    curl -X PUT "${BASE_URL}/nomie/_security" -H "$AUTH_HEADER" --data-raw "$NOMIE_SEC"
+
+    echo "Showing databases..."
+    curl -X GET "${BASE_URL}/_all_dbs" -H "$AUTH_HEADER"
