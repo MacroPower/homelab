@@ -4,7 +4,7 @@ metadata:
   name: couchdb-init-scripts
 data:
   init-dbs.sh: |
-    BASE_URL="http://localhost:5984"
+    BASE_URL="http://single-couchdb.data.svc.cluster.local:5984"
     CREDS="$(echo -n "${COUCHDB_USER}:${COUCHDB_PASSWORD}" | base64)"
     AUTH_HEADER="Authorization: Basic $CREDS"
 
