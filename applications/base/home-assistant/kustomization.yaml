@@ -4,5 +4,11 @@ kind: Kustomization
 namespace: automation
 
 resources:
-  - secrets.yaml
   - database.yaml
+  - secrets.yaml
+  - config.yaml
+  - manifests/init.yaml
+  - manifests/pvc.yaml
+  - manifests/deployment.yaml
+  - manifests/service.yaml
+  - manifests/servicemonitor.yaml

@@ -1,0 +1,24 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: home-assistant-storage
+provisioner: smb.csi.k8s.io
+parameters:
+  source: '//u321988-sub1.your-storagebox.de/u321988-sub1'
+  # if csi.storage.k8s.io/provisioner-secret is provided, will create a sub directory
+  # with PV name under source
+  'csi.storage.k8s.io/provisioner-secret-name': 'smb-credentials'
+  'csi.storage.k8s.io/provisioner-secret-namespace': 'kube-system'
+  'csi.storage.k8s.io/node-stage-secret-name': 'smb-credentials'
+  'csi.storage.k8s.io/node-stage-secret-namespace': 'kube-system'
+reclaimPolicy: Retain # available values: Delete, Retain
+volumeBindingMode: Immediate
+mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+  - uid=1001
+  - gid=1001
+  - noperm
+  - mfsymlinks
+  - cache=strict
+  - noserverino # required to prevent data corruption

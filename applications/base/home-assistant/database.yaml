@@ -1,14 +1,42 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: home-assistant-db-credentials
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: default
+
+  target:
+    name: home-assistant-db-credentials
+
+    template:
+      engineVersion: v2
+      data:
+        username: 'homeassistant'
+        password: '{{ .HOME_ASSISTANT_DB_PASS }}'
+        endpoint: 'timescaledb-single.timescale.svc.cluster.local'
+        port: '5432'
+
+  data:
+    - secretKey: HOME_ASSISTANT_DB_PASS
+      remoteRef:
+        key: HOME_ASSISTANT_DB_PASS
+
+---
 apiVersion: postgresql.sql.crossplane.io/v1alpha1
 kind: Role
 metadata:
   name: homeassistant
 spec:
+  deletionPolicy: Orphan
+
   forProvider:
     privileges:
       login: true
 
     passwordSecretRef:
-      name: home-assistant-credentials
+      name: home-assistant-db-credentials
       key: password
       namespace: automation
 
@@ -21,8 +49,11 @@ kind: Database
 metadata:
   name: homeassistant
 spec:
+  deletionPolicy: Orphan
+
   forProvider:
     owner: homeassistant
+    encoding: utf8
 
   providerConfigRef:
     name: timescaledb-single-provider-config

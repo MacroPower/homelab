@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: home-assistant-config
+data:
+  configuration.yaml: |
+    # Loads default set of integrations. Do not remove.
+    default_config:
+
+    # Load frontend themes from the themes folder
+    frontend:
+      themes: !include_dir_merge_named themes
+
+    # Text to speech
+    tts:
+      - platform: google_translate
+
+    automation: !include automations.yaml
+    script: !include scripts.yaml
+    scene: !include scenes.yaml
+
+    # https://www.home-assistant.io/integrations/recorder
+    recorder:
+      db_url: !secret psql_string
+      db_retry_wait: 15 # Wait 15 seconds before retrying
+      exclude:
+        domains:
+          - updater
+        event_types:
+          - call_service # Don't record service calls
+
+  automations.yaml: |
+    []
+
+  scripts.yaml: ''
+
+  scenes.yaml: ''
