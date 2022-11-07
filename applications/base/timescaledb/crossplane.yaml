@@ -4,6 +4,7 @@ metadata:
   name: timescaledb-single-provider-config
 spec:
   defaultDatabase: postgres
+  sslMode: require
   credentials:
     source: PostgreSQLConnectionSecret
     connectionSecretRef:

@@ -10,7 +10,7 @@ spec:
     passwordSecretRef:
       name: home-assistant-credentials
       key: password
-      namespace: home-assistant
+      namespace: automation
 
   providerConfigRef:
     name: timescaledb-single-provider-config

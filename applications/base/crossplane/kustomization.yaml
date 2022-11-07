@@ -22,9 +22,9 @@ helmCharts:
         enabled: true
 
       rbacManager:
-        deploy: false
+        deploy: true
 
       metrics:
-        enabled: false
+        enabled: true
 
 resources: []
