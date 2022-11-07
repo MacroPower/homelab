@@ -1,0 +1,11 @@
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: ProviderConfig
+metadata:
+  name: timescaledb-single-provider-config
+spec:
+  defaultDatabase: postgres
+  credentials:
+    source: PostgreSQLConnectionSecret
+    connectionSecretRef:
+      namespace: timescale
+      name: crossplane-credentials

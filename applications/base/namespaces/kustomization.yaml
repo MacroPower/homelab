@@ -7,3 +7,4 @@ resources:
   - automation.yaml
   - media.yaml
   - data.yaml
+  - crossplane.yaml

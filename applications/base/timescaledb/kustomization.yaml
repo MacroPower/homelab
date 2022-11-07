@@ -122,3 +122,4 @@ helmCharts:
 resources:
   - secrets.yaml
   - init.yaml
+  - crossplane.yaml
