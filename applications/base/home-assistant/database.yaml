@@ -1,0 +1,42 @@
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Role
+metadata:
+  name: homeassistant
+spec:
+  forProvider:
+    privileges:
+      login: true
+
+    passwordSecretRef:
+      name: home-assistant-credentials
+      key: password
+      namespace: home-assistant
+
+  providerConfigRef:
+    name: timescaledb-single-provider-config
+
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Database
+metadata:
+  name: homeassistant
+spec:
+  forProvider:
+    owner: homeassistant
+
+  providerConfigRef:
+    name: timescaledb-single-provider-config
+
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Extension
+metadata:
+  name: pg-stat-statements-extension
+spec:
+  forProvider:
+    extension: pg_stat_statements
+    databaseRef:
+      name: homeassistant
+
+  providerConfigRef:
+    name: timescaledb-single-provider-config
