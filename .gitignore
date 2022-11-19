@@ -37,7 +37,7 @@ terraform.rc
 **/vendor
 
 # Potential sensitive files
-.kubeconfig
+**/*kubeconfig*
 .htpasswd
 **/.secrets
 **/.hidden
