@@ -20,7 +20,7 @@ helmCharts:
       sources:
         - ingress
         - service
-      policy: sync
+      policy: upsert-only
       provider: cloudflare
       logLevel: debug
 
