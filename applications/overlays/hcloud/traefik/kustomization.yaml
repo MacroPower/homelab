@@ -3,3 +3,16 @@ kind: Kustomization
 
 resources:
   - ../../../base/traefik
+
+patches:
+  - target:
+      group:
+      version: v1
+      kind: Service
+      name: traefik
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          'load-balancer.hetzner.cloud/ipv6-disabled': 'true'
+          'load-balancer.hetzner.cloud/disable-private-ingress': 'true'

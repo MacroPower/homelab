@@ -34,11 +34,6 @@ helmCharts:
             enabled: true
             pathOverride: 'kube-system/traefik'
 
-      service:
-        annotations:
-          'load-balancer.hetzner.cloud/ipv6-disabled': 'true'
-          'load-balancer.hetzner.cloud/disable-private-ingress': 'true'
-
       ports:
         websecure:
           tls:
