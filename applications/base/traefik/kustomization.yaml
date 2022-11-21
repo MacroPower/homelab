@@ -19,6 +19,7 @@ helmCharts:
 
       additionalArguments:
         - --serverstransport.insecureskipverify=true
+        - --log.level=DEBUG
 
       tracing:
         jaeger:
