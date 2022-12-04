@@ -6,7 +6,7 @@ namespace: automation
 helmCharts:
   - name: rclone
     repo: https://jacobcolvin.com/helm-charts/
-    version: '0.1.2'
+    version: '0.1.3'
     releaseName: rclone
     namespace: automation
 
@@ -24,14 +24,3 @@ helmCharts:
 
 resources:
   - secrets.yaml
-
-patches:
-  - target:
-      group: apps
-      version: v1
-      kind: Deployment
-      name: rclone
-    patch: |-
-      - op: replace
-        path: /spec/template/spec/containers/0/args/3
-        value: '--rc-addr=:5572'
