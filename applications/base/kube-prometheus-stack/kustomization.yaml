@@ -43,6 +43,10 @@ helmCharts:
           probeSelectorNilUsesHelmValues: false
           probeSelector: {}
 
+          resources:
+            requests:
+              memory: 640Mi
+
       # # Max series is 10k.
       # prometheus:
       #   prometheusSpec:
