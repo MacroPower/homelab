@@ -1,0 +1,37 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: automation
+
+helmCharts:
+  - name: rclone
+    repo: https://jacobcolvin.com/helm-charts/
+    version: '0.1.2'
+    releaseName: rclone
+    namespace: automation
+
+    valuesInline:
+      image:
+        repository: rclone/rclone
+        tag: '1.60.1'
+
+      configSecretName: rclone-config
+
+      dataMount:
+        emptyDir: {}
+        # persistentVolumeClaim:
+        #   claimName: myclaim
+
+resources:
+  - secrets.yaml
+
+patches:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: rclone
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/args/3
+        value: '--rc-addr=:5572'
