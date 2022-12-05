@@ -45,7 +45,7 @@ helmCharts:
 
           resources:
             requests:
-              memory: 640Mi
+              memory: 2048Mi
 
       # # Max series is 10k.
       # prometheus:
