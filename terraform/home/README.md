@@ -40,5 +40,43 @@ Later, you can configure your personal SSH key, plus any others, as SSH
 authorized keys. This means you won't have to have your other SSH key(s) stored
 in TF vars or the TF state.
 
+## Disk sizing
+
+With larger nodes, the default partitions may be too small for the amount of
+images/etc on each node, and your node experience DiskPressure. This will result
+in the node trying to free space, which it likely won't be able to do. In this
+case, you can resize:
+
+```sh
+btrfs filesystem resize +10g /var
+```
+
+Parted can be helpful outside btrfs:
+
+```sh
+transactional-update shell <<<"zypper install parted"
+```
+
+## Upgrades
+
+For single node clusters, you need to run upgrades manually.
+
+Upgrade MicroOS:
+
+```sh
+transactional-update
+reboot
+```
+
+Upgrade K3s:
+
+Note that you don't need to use transactional-update for this. The k3s script
+will do it for you.
+
+```sh
+curl -sfL https://get.k3s.io | sh -
+reboot
+```
+
 [kube-hetzner]: https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner
 [microos-dl]: https://en.opensuse.org/Portal:MicroOS/Downloads
