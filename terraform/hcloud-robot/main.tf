@@ -1,3 +1,14 @@
+terraform {
+  cloud {
+    organization = "MacroPower"
+    hostname     = "app.terraform.io"
+
+    workspaces {
+      name = "hcloud-robot"
+    }
+  }
+}
+
 resource "random_integer" "ssh_port" {
   min = 40000
   max = 50000
