@@ -1,14 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: automation
-
 helmCharts:
   - name: rclone
     repo: https://jacobcolvin.com/helm-charts/
-    version: '0.1.3'
+    version: '0.2.0'
     releaseName: rclone
-    namespace: automation
 
     valuesInline:
       image:
@@ -17,10 +14,11 @@ helmCharts:
 
       configSecretName: rclone-config
 
-      dataMount:
-        emptyDir: {}
-        # persistentVolumeClaim:
-        #   claimName: myclaim
+      extraPVCMounts:
+        - name: tv
+        - name: movies
+        - name: music
+        - name: anime
 
 resources:
   - secrets.yaml
