@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rclone-init-scripts
+  labels:
+    'app': rclone
+    'app.kubernetes.io/instance': rclone
+    'release': single
+  annotations:
+    'helm.sh/hook': post-install
+    'helm.sh/hook-delete-policy': hook-succeeded
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: init
+          image: curlimages/curl:7.86.0
+          command: ['sh', '/scripts/init.sh']
+          env:
+            - name: RCLONE_WEBDAV_USER
+              valueFrom:
+                secretKeyRef:
+                  name: rclone-credentials
+                  key: RCLONE_WEBDAV_USER
+            - name: RCLONE_WEBDAV_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: rclone-credentials
+                  key: RCLONE_WEBDAV_PASS
+          volumeMounts:
+            - name: init-scripts
+              mountPath: /scripts
+      volumes:
+        - name: init-scripts
+          configMap:
+            name: rclone-init-scripts
+            optional: false

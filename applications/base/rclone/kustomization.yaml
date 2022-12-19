@@ -22,3 +22,21 @@ helmCharts:
 
 resources:
   - secrets.yaml
+  - init-scripts.yaml
+  - init-job.yaml
+
+patchesStrategicMerge:
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: rclone
+    spec:
+      template:
+        spec:
+          containers:
+            - name: rclone
+              ports:
+                - name: webdav
+                  containerPort: 8080
+                  protocol: TCP
