@@ -9,7 +9,9 @@ data:
       "_async": true,
       "command": "serve",
       "arg": ["webdav", "/userdata"],
-      "addr": ":8080",
+      "opt": {
+        "addr": ":50000"
+      },
       "user": "${RCLONE_WEBDAV_USER}",
       "pass": "${RCLONE_WEBDAV_PASS}"
     }' http://rclone.media.svc.cluster.local:5572/core/command

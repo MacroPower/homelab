@@ -38,5 +38,5 @@ patchesStrategicMerge:
             - name: rclone
               ports:
                 - name: webdav
-                  containerPort: 8080
+                  containerPort: 50000
                   protocol: TCP
