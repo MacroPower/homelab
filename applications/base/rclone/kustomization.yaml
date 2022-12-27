@@ -4,7 +4,7 @@ kind: Kustomization
 helmCharts:
   - name: rclone
     repo: https://jacobcolvin.com/helm-charts/
-    version: '0.2.0'
+    version: '0.3.0'
     releaseName: rclone
 
     valuesInline:
@@ -20,23 +20,12 @@ helmCharts:
         - name: music
         - name: anime
 
+      extraPorts:
+        - name: webdav
+          containerPort: 50000
+          protocol: TCP
+
 resources:
   - secrets.yaml
   - init-scripts.yaml
   - init-job.yaml
-
-patchesStrategicMerge:
-  - |-
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: rclone
-    spec:
-      template:
-        spec:
-          containers:
-            - name: rclone
-              ports:
-                - name: webdav
-                  containerPort: 50000
-                  protocol: TCP
