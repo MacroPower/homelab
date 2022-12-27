@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rclone-init-scripts
+data:
+  init.sh: |
+    OUTPUT=$(
+    curl -v -X POST -H 'Content-Type: application/json' -d '{
+      "_async": true,
+      "command": "serve",
+      "arg": ["restic", "ResticHCloudRobot:/"],
+      "opt": {
+        "addr": ":50001"
+      },
+      "user": "${RCLONE_RESTIC_USER}",
+      "pass": "${RCLONE_RESTIC_PASS}"
+    }' http://rclone.backup.svc.cluster.local:5572/core/command
+    )
+
+    echo $OUTPUT
+
+    echo $OUTPUT | grep "jobid"

@@ -8,3 +8,4 @@ resources:
   - media.yaml
   - data.yaml
   - crossplane.yaml
+  - backup.yaml
