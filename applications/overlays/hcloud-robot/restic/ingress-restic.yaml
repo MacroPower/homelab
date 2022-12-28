@@ -1,31 +1,38 @@
-apiVersion: cert-manager.io/v1
-kind: Issuer
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
 metadata:
-  name: backup-self-signed-issuer
+  name: cloudflare-credentials
 spec:
-  selfSigned: {}
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: default
 
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: backup-root-cert
-spec:
-  secretName: backup-root-cert
-  duration: 43800h0m0s
-  issuerRef:
-    name: backup-self-signed-issuer
-  commonName: macro.network
-  isCA: true
+  target:
+    name: cloudflare-credentials
+
+  data:
+    - secretKey: CLOUDFLARE_API_TOKEN
+      remoteRef:
+        key: CLOUDFLARE_API_TOKEN
 
 ---
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: backup-root-issuer
+  name: letsencrypt-prod
 spec:
-  ca:
-    secretName: backup-root-cert
+  acme:
+    email: jacobcolvin1@gmail.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+      - dns01:
+          cloudflare:
+            email: jacobcolvin1@gmail.com
+            apiTokenSecretRef:
+              name: cloudflare-credentials
+              key: CLOUDFLARE_API_TOKEN
 
 ---
 apiVersion: cert-manager.io/v1
@@ -34,11 +41,13 @@ metadata:
   name: restic-cert
 spec:
   secretName: restic-cert
-  duration: 8760h0m0s
+  duration: 2160h0m0s # 90d
+  renewBefore: 720h0m0s # 30d
   issuerRef:
-    name: backup-root-issuer
+    name: letsencrypt-prod
   dnsNames:
     - robot-restic.macro.network
+    - robot-restic-webdav.macro.network
 
 ---
 apiVersion: external-secrets.io/v1beta1
@@ -109,6 +118,7 @@ metadata:
     'traefik.ingress.kubernetes.io/router.tls.options': 'kube-system-no-client-auth@kubernetescrd'
     'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure'
     'traefik.ingress.kubernetes.io/router.middlewares': 'backup-restic-auth@kubernetescrd'
+    'cert-manager.io/issuer': 'letsencrypt-prod'
 spec:
   tls:
     - hosts:
@@ -137,6 +147,7 @@ metadata:
     'traefik.ingress.kubernetes.io/router.tls.options': 'kube-system-no-client-auth@kubernetescrd'
     'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure'
     'traefik.ingress.kubernetes.io/router.middlewares': 'backup-restic-auth@kubernetescrd'
+    'cert-manager.io/issuer': 'letsencrypt-prod'
 spec:
   tls:
     - hosts:
