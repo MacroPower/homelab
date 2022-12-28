@@ -1,19 +1,19 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: rclone-webdav-ingress
+  name: media-webdav-ingress
   namespace: media
   annotations:
-    'external-dns.alpha.kubernetes.io/hostname': 'robot-rclone-webdav.macro.network'
+    'external-dns.alpha.kubernetes.io/hostname': 'robot-media-webdav.macro.network'
     'external-dns.alpha.kubernetes.io/cloudflare-proxied': 'false'
     'traefik.ingress.kubernetes.io/router.tls.options': kube-system-non-proxied@kubernetescrd
     'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure'
 spec:
   tls:
     - hosts:
-        - robot-rclone-webdav.macro.network
+        - robot-media-webdav.macro.network
   rules:
-    - host: robot-rclone-webdav.macro.network
+    - host: robot-media-webdav.macro.network
       http:
         paths:
           - path: /

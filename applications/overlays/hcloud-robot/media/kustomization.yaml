@@ -4,5 +4,6 @@ kind: Kustomization
 namespace: media
 
 resources:
-  - rclone
+  - ../../../base/media
+  - ingress-webdav.yaml
   - claims.yaml
