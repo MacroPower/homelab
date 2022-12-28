@@ -79,6 +79,26 @@ spec:
     removeHeader: true
 
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rclone-restic
+spec:
+  selector:
+    app.kubernetes.io/name: rclone
+    app.kubernetes.io/instance: rclone
+  ports:
+    - name: restic
+      port: 50001
+      targetPort: restic
+      protocol: TCP
+    - name: restic-webdav
+      port: 50002
+      targetPort: restic-webdav
+      protocol: TCP
+  type: ClusterIP
+
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -107,17 +127,29 @@ spec:
                   number: 50001
 
 ---
-apiVersion: v1
-kind: Service
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  name: rclone-restic
+  name: restic-webdav-ingress
+  annotations:
+    'external-dns.alpha.kubernetes.io/hostname': 'robot-restic-webdav.macro.network'
+    'external-dns.alpha.kubernetes.io/cloudflare-proxied': 'false'
+    'traefik.ingress.kubernetes.io/router.tls.options': 'kube-system-no-client-auth@kubernetescrd'
+    'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure'
+    'traefik.ingress.kubernetes.io/router.middlewares': 'backup-restic-auth@kubernetescrd'
 spec:
-  selector:
-    app.kubernetes.io/name: rclone
-    app.kubernetes.io/instance: rclone
-  ports:
-    - name: restic
-      port: 50001
-      targetPort: restic
-      protocol: TCP
-  type: ClusterIP
+  tls:
+    - hosts:
+        - robot-restic-webdav.macro.network
+      secretName: restic-cert
+  rules:
+    - host: robot-restic-webdav.macro.network
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rclone-restic
+                port:
+                  number: 50002

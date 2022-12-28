@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: rclone-init-scripts
 data:
-  init.sh: |
+  init-restic.sh: |
     # Stop any previous jobs.
     curl -v -X POST -H 'Content-Type: application/json' -d '{
     }' http://rclone.backup.svc.cluster.local:5572/job/stopgroup?group=job/restic
@@ -16,6 +16,27 @@ data:
       "arg": ["restic", "ResticHCloudRobot:/"],
       "opt": {
         "addr": ":50001"
+      }
+    }' http://rclone.backup.svc.cluster.local:5572/core/command
+    )
+
+    echo $OUTPUT
+
+    echo $OUTPUT | grep "jobid"
+
+  init-webdav.sh: |
+    # Stop any previous jobs.
+    curl -v -X POST -H 'Content-Type: application/json' -d '{
+    }' http://rclone.backup.svc.cluster.local:5572/job/stopgroup?group=job/webdav
+
+    OUTPUT=$(
+    curl -v -X POST -H 'Content-Type: application/json' -d '{
+      "_async": true,
+      "_group": "job/webdav",
+      "command": "serve",
+      "arg": ["webdav", "ResticHCloudRobot:/"],
+      "opt": {
+        "addr": ":50002"
       }
     }' http://rclone.backup.svc.cluster.local:5572/core/command
     )

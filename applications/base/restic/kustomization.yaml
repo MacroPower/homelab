@@ -20,6 +20,9 @@ helmCharts:
         - name: restic
           containerPort: 50001
           protocol: TCP
+        - name: restic-webdav
+          containerPort: 50002
+          protocol: TCP
 
 resources:
   - secrets.yaml

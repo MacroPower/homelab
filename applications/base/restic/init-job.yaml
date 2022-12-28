@@ -15,9 +15,15 @@ spec:
     spec:
       restartPolicy: OnFailure
       containers:
-        - name: init
+        - name: init-restic
           image: curlimages/curl:7.86.0
-          command: ['sh', '/scripts/init.sh']
+          command: ['sh', '/scripts/init-restic.sh']
+          volumeMounts:
+            - name: init-scripts
+              mountPath: /scripts
+        - name: init-webdav
+          image: curlimages/curl:7.86.0
+          command: ['sh', '/scripts/init-webdav.sh']
           volumeMounts:
             - name: init-scripts
               mountPath: /scripts
