@@ -4,16 +4,6 @@ metadata:
   name: rclone-init-scripts
 data:
   init.sh: |
-    if [[ -z ${RCLONE_WEBDAV_USER} ]]; then
-      echo "RCLONE_WEBDAV_USER is not set"
-      exit 1
-    fi
-
-    if [[ -z ${RCLONE_WEBDAV_PASS} ]]; then
-      echo "RCLONE_WEBDAV_PASS is not set"
-      exit 1
-    fi
-
     # Stop any previous jobs.
     curl -v -X POST -H 'Content-Type: application/json' -d '{
     }' http://rclone.media.svc.cluster.local:5572/job/stopgroup?group=job/webdav
@@ -25,9 +15,7 @@ data:
       "command": "serve",
       "arg": ["webdav", "/userdata"],
       "opt": {
-        "addr": ":50000",
-        "user": "${RCLONE_WEBDAV_USER}",
-        "pass": "${RCLONE_WEBDAV_PASS}"
+        "addr": ":50000"
       }
     }' http://rclone.media.svc.cluster.local:5572/core/command
     )

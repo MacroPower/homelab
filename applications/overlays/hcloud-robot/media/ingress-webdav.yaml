@@ -45,6 +45,44 @@ spec:
     - robot-media-webdav.macro.network
 
 ---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: rclone-credentials
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: default
+
+  target:
+    name: rclone-credentials
+    template:
+      type: kubernetes.io/basic-auth
+      engineVersion: v2
+      data:
+        username: '{{ .RCLONE_WEBDAV_USER }}'
+        password: '{{ .RCLONE_WEBDAV_PASS }}'
+
+  data:
+    - secretKey: RCLONE_WEBDAV_USER
+      remoteRef:
+        key: RCLONE_WEBDAV_USER
+
+    - secretKey: RCLONE_WEBDAV_PASS
+      remoteRef:
+        key: RCLONE_WEBDAV_PASS
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: webdav-auth
+spec:
+  basicAuth:
+    secret: rclone-credentials
+    removeHeader: true
+
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -55,6 +93,7 @@ metadata:
     'external-dns.alpha.kubernetes.io/cloudflare-proxied': 'false'
     'traefik.ingress.kubernetes.io/router.tls.options': 'kube-system-no-client-auth@kubernetescrd'
     'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure'
+    'traefik.ingress.kubernetes.io/router.middlewares': 'media-webdav-auth@kubernetescrd'
 spec:
   tls:
     - hosts:
