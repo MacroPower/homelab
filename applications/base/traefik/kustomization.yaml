@@ -51,6 +51,7 @@ helmCharts:
             secretNames:
               - cloudflare-authenticated-origin-pull-ca
             clientAuthType: RequireAndVerifyClientCert
+        'non-proxied': {}
 
 resources:
   - secrets.yaml
