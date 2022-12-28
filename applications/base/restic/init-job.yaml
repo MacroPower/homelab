@@ -18,17 +18,6 @@ spec:
         - name: init
           image: curlimages/curl:7.86.0
           command: ['sh', '/scripts/init.sh']
-          env:
-            - name: RCLONE_RESTIC_USER
-              valueFrom:
-                secretKeyRef:
-                  name: rclone-credentials
-                  key: RCLONE_RESTIC_USER
-            - name: RCLONE_RESTIC_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: rclone-credentials
-                  key: RCLONE_RESTIC_PASS
           volumeMounts:
             - name: init-scripts
               mountPath: /scripts

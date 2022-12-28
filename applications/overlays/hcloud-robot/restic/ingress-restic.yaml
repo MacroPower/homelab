@@ -1,0 +1,123 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: backup-self-signed-issuer
+spec:
+  selfSigned: {}
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: backup-root-cert
+spec:
+  secretName: backup-root-cert
+  duration: 43800h0m0s
+  issuerRef:
+    name: backup-self-signed-issuer
+  commonName: macro.network
+  isCA: true
+
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: backup-root-issuer
+spec:
+  ca:
+    secretName: backup-root-cert
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: restic-cert
+spec:
+  secretName: restic-cert
+  duration: 8760h0m0s
+  issuerRef:
+    name: backup-root-issuer
+  dnsNames:
+    - robot-restic.macro.network
+
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: rclone-credentials
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: default
+
+  target:
+    name: rclone-credentials
+    template:
+      type: kubernetes.io/basic-auth
+      engineVersion: v2
+      data:
+        username: '{{ .RCLONE_RESTIC_USER }}'
+        password: '{{ .RCLONE_RESTIC_PASS }}'
+
+  data:
+    - secretKey: RCLONE_RESTIC_USER
+      remoteRef:
+        key: RCLONE_RESTIC_USER
+
+    - secretKey: RCLONE_RESTIC_PASS
+      remoteRef:
+        key: RCLONE_RESTIC_PASS
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: restic-auth
+spec:
+  basicAuth:
+    secret: rclone-credentials
+    removeHeader: true
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: restic-ingress
+  annotations:
+    'external-dns.alpha.kubernetes.io/hostname': 'robot-restic.macro.network'
+    'external-dns.alpha.kubernetes.io/cloudflare-proxied': 'false'
+    'traefik.ingress.kubernetes.io/router.tls.options': 'kube-system-no-client-auth@kubernetescrd'
+    'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure'
+    'traefik.ingress.kubernetes.io/router.middlewares': 'backup-restic-auth@kubernetescrd'
+spec:
+  tls:
+    - hosts:
+        - robot-restic.macro.network
+      secretName: restic-cert
+  rules:
+    - host: robot-restic.macro.network
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rclone-restic
+                port:
+                  number: 50001
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rclone-restic
+spec:
+  selector:
+    app.kubernetes.io/name: rclone
+    app.kubernetes.io/instance: rclone
+  ports:
+    - name: restic
+      port: 50001
+      targetPort: restic
+      protocol: TCP
+  type: ClusterIP

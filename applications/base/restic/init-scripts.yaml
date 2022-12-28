@@ -4,16 +4,19 @@ metadata:
   name: rclone-init-scripts
 data:
   init.sh: |
+    # Stop any previous jobs.
+    curl -v -X POST -H 'Content-Type: application/json' -d '{
+    }' http://rclone.backup.svc.cluster.local:5572/job/stopgroup?group=job/restic
+
     OUTPUT=$(
     curl -v -X POST -H 'Content-Type: application/json' -d '{
       "_async": true,
+      "_group": "job/restic",
       "command": "serve",
       "arg": ["restic", "ResticHCloudRobot:/"],
       "opt": {
         "addr": ":50001"
-      },
-      "user": "${RCLONE_RESTIC_USER}",
-      "pass": "${RCLONE_RESTIC_PASS}"
+      }
     }' http://rclone.backup.svc.cluster.local:5572/core/command
     )
 
