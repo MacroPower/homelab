@@ -6,7 +6,7 @@ namespace: media
 helmCharts:
   - name: transmission
     repo: https://jacobcolvin.com/helm-charts/
-    version: '0.4.1'
+    version: '0.6.0'
     releaseName: transmission
     namespace: media
 
@@ -25,6 +25,9 @@ helmCharts:
           ports:
             tcp: 51402
             udp: 51402
+
+      flood:
+        enabled: true
 
 resources:
   - config.yaml
