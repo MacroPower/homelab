@@ -1,0 +1,101 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: backup
+
+helmCharts:
+  - name: stash
+    repo: https://charts.appscode.com/stable/
+    version: 'v2022.12.11'
+    releaseName: stash
+    namespace: backup
+    includeCRDs: true
+    valuesInline:
+      features:
+        license: foobar
+        enterprise: true
+
+      stash-enterprise:
+        licenseApiService: ''
+        operator:
+          registry: macropower
+          repository: openstash
+          tag: v0.1.1
+
+        crdInstaller:
+          registry: stashed
+          repository: stash-crd-installer
+          tag: v0.23.0
+          enabled: true
+
+      stash-catalog:
+        # Docker registry fqdn used to pull Stash related images.
+        # Set this to use docker registry hosted at ${registryFQDN}/${registry}/${image}
+        registryFQDN: ''
+        image:
+          # Docker registry used to pull Postgres addon image
+          registry: ''
+        # Number of seconds to wait for the database to be ready before backup/restore process.
+        waitTimeout: 300
+        elasticsearch:
+          enabled: false
+        mariadb:
+          enabled: false
+        mongodb:
+          enabled: false
+        mysql:
+          enabled: false
+        perconaxtradb:
+          enabled: false
+        postgres:
+          # If true, deploys PostgreSQL addon
+          enabled: true
+          backup:
+            # Postgres dump command, can either be: pg_dumpall  or pg_dump
+            cmd: 'pg_dumpall'
+            # Arguments to pass to `backup.cmd` command during backup process
+            args: ''
+          restore:
+            # Arguments to pass to `psql` command during restore process
+            args: ''
+        redis:
+          enabled: false
+        nats:
+          enabled: false
+        etcd:
+          enabled: false
+        kubedump:
+          enabled: false
+        vault:
+          enabled: false
+
+patches:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: stash-stash-enterprise
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/args
+        value:
+          - run
+          - --v=3
+          - --docker-registry=macropower
+          - --image=openstash
+          - --image-tag=v0.1.1
+          - --secure-port=8443
+          - --audit-log-path=-
+          - --tls-cert-file=/var/serving-cert/tls.crt
+          - --tls-private-key-file=/var/serving-cert/tls.key
+          - --enable-mutating-webhook=true
+          - --enable-validating-webhook=true
+          - --bypass-validating-webhook-xray=false
+          - --use-kubeapiserver-fqdn-for-aks=true
+          - --cron-job-psp=baseline
+          - --backup-job-psp=baseline
+          - --restore-job-psp=baseline
+          - --license-file=/var/run/secrets/appscode/license/key.txt
+          - --license-apiservice=
+
+# - --pushgateway-url={{ include "pushgateway-url" . }}
