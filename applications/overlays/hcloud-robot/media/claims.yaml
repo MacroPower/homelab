@@ -2,6 +2,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: tv
+  annotations:
+    'k8up.io/backup': 'true'
 spec:
   storageClassName: local-disk-1
   volumeName: local-pv-3b43c787
@@ -17,6 +19,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: movies
+  annotations:
+    'k8up.io/backup': 'true'
 spec:
   storageClassName: local-disk-2
   volumeName: local-pv-80127441
@@ -32,6 +36,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: music
+  annotations:
+    'k8up.io/backup': 'true'
 spec:
   storageClassName: local-disk-1
   volumeName: local-pv-adea8668
@@ -47,6 +53,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: anime
+  annotations:
+    'k8up.io/backup': 'true'
 spec:
   storageClassName: local-disk-2
   volumeName: local-pv-e2a5e83a

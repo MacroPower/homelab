@@ -7,3 +7,4 @@ resources:
   - ../../../base/media
   - ingress-webdav.yaml
   - claims.yaml
+  - backup.yaml
