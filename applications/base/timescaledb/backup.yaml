@@ -1,0 +1,46 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: restic-credentials
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: default
+
+  target:
+    name: restic-credentials
+
+  data:
+    - secretKey: repo-key
+      remoteRef:
+        key: RESTIC_TIMESCALEDB_REPO_KEY
+
+---
+apiVersion: k8up.io/v1
+kind: Schedule
+metadata:
+  name: restic-schedule
+spec:
+  backend:
+    rest:
+      url: http://rclone-restic.backup.svc.cluster.local:50001/macropower/timescaledb
+    repoPasswordSecretRef:
+      name: restic-credentials
+      key: repo-key
+  backup:
+    schedule: '0 4 * * *' # 04:00
+    failedJobsHistoryLimit: 2
+    successfulJobsHistoryLimit: 2
+  check:
+    schedule: '0 1 * * 1' # 01:00 on Monday
+    failedJobsHistoryLimit: 2
+    successfulJobsHistoryLimit: 2
+  prune:
+    schedule: '0 1 * * 0' # 00:00 on Monday
+    failedJobsHistoryLimit: 2
+    successfulJobsHistoryLimit: 2
+    retention:
+      keepLast: 3
+      keepDaily: 7
+      keepWeekly: 5
+      keepMonthly: 12
