@@ -59,7 +59,7 @@ helmCharts:
         data:
           enabled: true
           size: 10Gi
-          storageClass: 'hcloud-volumes'
+          storageClass: '-'
           subPath: ''
           mountPath: '/var/lib/postgresql'
           annotations: {}
