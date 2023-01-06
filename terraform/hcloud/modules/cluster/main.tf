@@ -84,11 +84,11 @@ module "kube-hetzner" {
   agent_nodepools = [
     {
       name        = "agent-small-hel1",
-      server_type = "cx21",
+      server_type = "cx31",
       location    = "hel1",
       labels      = [],
       taints      = [],
-      count       = 4
+      count       = 2
     },
   ]
 
@@ -99,7 +99,7 @@ module "kube-hetzner" {
 
   # When this is enabled, rather than the first node, all external traffic will be routed via a control-plane loadbalancer, allowing for high availability.
   # The default is false.
-  use_control_plane_lb = true
+  use_control_plane_lb = false
 
   # Use the klipper LB, instead of the default Hetzner one, that has an advantage of dropping the cost of the setup,
   # Automatically "true" in the case of single node cluster.
