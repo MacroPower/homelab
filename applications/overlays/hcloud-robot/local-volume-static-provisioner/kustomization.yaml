@@ -12,6 +12,11 @@ helmCharts:
     includeCRDs: true
     valuesInline:
       classes:
+        - name: local-ssd-1
+          hostDir: /mnt/ssd1
+          volumeMode: Filesystem
+          storageClass:
+            reclaimPolicy: Retain
         - name: local-disk-1
           hostDir: /mnt/disk1
           volumeMode: Filesystem
