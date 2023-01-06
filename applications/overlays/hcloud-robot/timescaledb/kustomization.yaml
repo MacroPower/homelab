@@ -1,0 +1,32 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../base/timescaledb
+
+patches:
+  - target:
+      group: apps
+      version: v1
+      kind: StatefulSet
+      name: timescaledb-single
+    patch: |-
+      - op: replace
+        path: /spec/volumeClaimTemplates
+        value:
+          - metadata:
+              name: storage-volume
+              labels:
+                app: timescaledb-single
+                release: timescaledb-single
+                cluster-name: timescaledb-single
+                purpose: data-directory
+            spec:
+              storageClassName: local-ssd-1
+              volumeName: local-pv-e0150421
+              accessModes:
+                - ReadWriteOnce
+              volumeMode: Filesystem
+              resources:
+                requests:
+                  storage: 50Gi
