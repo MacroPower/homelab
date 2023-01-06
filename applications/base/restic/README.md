@@ -25,9 +25,9 @@ You may have to URL-encode the password.
 
 ## Relica
 
-To use [Relica][relica], you will need to use the webdav endpoint. Also, the
-cert must be valid since Relica does not pass the its environment to RClone
-(thus you can't ignore self-signed certs).
+To use [Relica][relica], you will need to add a WebDDAV endpoint. Also, the cert
+must be valid since Relica does not pass the its environment to RClone (thus you
+can't ignore self-signed certs).
 
 Also, Windows users, in case you need to adjust the launch script, you can find
 the launch command here:

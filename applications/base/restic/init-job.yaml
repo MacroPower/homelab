@@ -21,12 +21,6 @@ spec:
           volumeMounts:
             - name: init-scripts
               mountPath: /scripts
-        - name: init-webdav
-          image: curlimages/curl:7.86.0
-          command: ['sh', '/scripts/init-webdav.sh']
-          volumeMounts:
-            - name: init-scripts
-              mountPath: /scripts
       volumes:
         - name: init-scripts
           configMap:
