@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: speedtest-ingress
+  namespace: observability
+  annotations:
+    'external-dns.alpha.kubernetes.io/hostname': 'robot-speedtest.macro.network'
+    'external-dns.alpha.kubernetes.io/cloudflare-proxied': 'true'
+    'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure'
+spec:
+  tls:
+    - hosts:
+        - robot-speedtest.macro.network
+  rules:
+    - host: robot-speedtest.macro.network
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: openspeedtest
+                port:
+                  number: 3000
