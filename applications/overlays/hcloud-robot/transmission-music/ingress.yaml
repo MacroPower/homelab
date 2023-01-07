@@ -1,0 +1,50 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: transmission-music-ingress
+  namespace: media
+  annotations:
+    'external-dns.alpha.kubernetes.io/hostname': 'transmission-music.macro.network'
+    'external-dns.alpha.kubernetes.io/cloudflare-proxied': 'true'
+    'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure'
+spec:
+  tls:
+    - hosts:
+        - transmission-music.macro.network
+  rules:
+    - host: transmission-music.macro.network
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: transmission-music
+                port:
+                  number: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: transmission-music-flood-ingress
+  namespace: media
+  annotations:
+    'external-dns.alpha.kubernetes.io/hostname': 'flood-music.macro.network'
+    'external-dns.alpha.kubernetes.io/cloudflare-proxied': 'true'
+    'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure'
+spec:
+  tls:
+    - hosts:
+        - flood-music.macro.network
+  rules:
+    - host: flood-music.macro.network
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: transmission-music-flood
+                port:
+                  number: 3001
