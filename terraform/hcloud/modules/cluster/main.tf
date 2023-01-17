@@ -84,7 +84,7 @@ module "kube-hetzner" {
   agent_nodepools = [
     {
       name        = "agent-small-hel1",
-      server_type = "cx31",
+      server_type = "cx21",
       location    = "hel1",
       labels      = [],
       taints      = [],
