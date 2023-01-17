@@ -24,6 +24,13 @@ helmCharts:
         passwordKey: GRAFANA_ADMIN_PASS
 
       sidecar:
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 50m
+            memory: 50Mi
         alerts:
           enabled: false
           label: grafana_alert
@@ -38,6 +45,14 @@ helmCharts:
         plugins:
           enabled: true
           label: grafana_plugin
+
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 50m
+          memory: 128Mi
 
 configMapGenerator:
   - name: grafana-dashboard-grafana-cloud-usage

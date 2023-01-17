@@ -31,6 +31,14 @@ helmCharts:
         admissionWebhooks:
           certManager:
             enabled: true
+        prometheusConfigReloader:
+          resources:
+            requests:
+              cpu: 10m
+              memory: 50Mi
+            limits:
+              cpu: 200m
+              memory: 50Mi
 
       prometheus:
         prometheusSpec:
@@ -45,7 +53,20 @@ helmCharts:
 
           resources:
             requests:
-              memory: 2048Mi
+              cpu: 100m
+              memory: 2Gi
+            limits:
+              cpu: 1
+              memory: 2Gi
+
+      alertmanager:
+        alertmanagerSpec:
+          requests:
+            cpu: 50m
+            memory: 50Mi
+          limits:
+            cpu: 200m
+            memory: 200Mi
 
       # # Max series is 10k.
       # prometheus:

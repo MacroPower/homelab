@@ -39,7 +39,7 @@ helmCharts:
               Path /var/log/containers/*.log
               multiline.parser docker, cri
               Tag kube.*
-              Mem_Buf_Limit 100MB
+              Mem_Buf_Limit 10MB
               Skip_Long_Lines On
           [INPUT]
               Name systemd
@@ -62,6 +62,14 @@ helmCharts:
 
               labels job=fluentbit
               auto_kubernetes_labels on
+
+      resources:
+        limits:
+          cpu: 100m
+          memory: 256Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
 
       tolerations:
         - effect: NoSchedule

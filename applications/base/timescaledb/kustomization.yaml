@@ -79,6 +79,14 @@ helmCharts:
         'k8up.io/backupcommand': sh -c 'PGUSER="postgres" PGPASSWORD="$PATRONI_SUPERUSER_PASSWORD" pg_dumpall --clean'
         'k8up.io/file-extension': .sql
 
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+
 resources:
   - secrets.yaml
   - init.yaml
