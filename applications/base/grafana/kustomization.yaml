@@ -56,26 +56,57 @@ helmCharts:
 
 configMapGenerator:
   - name: grafana-dashboard-grafana-cloud-usage
-    behavior: add
+    behavior: create
     files:
       - grafana-cloud-usage.json=dashboards/grafana-cloud-usage.json
 
   - name: grafana-dashboard-k8s-home
-    behavior: add
+    behavior: create
     files:
       - k8s-home.json=dashboards/k8s-home.json
 
+  - name: grafana-dashboard-k8s-oversized-requests
+    behavior: create
+    files:
+      - k8s-oversized-requests.json=dashboards/k8s-oversized-requests.json
+
   # https://grafana.com/grafana/dashboards/14584-argocd/
   - name: grafana-dashboard-argocd
-    behavior: add
+    behavior: create
     files:
       - argocd.json=dashboards/argocd.json
 
   # https://github.com/onedr0p/exportarr/tree/master/examples/grafana
   - name: grafana-dashboard-servarr
-    behavior: add
+    behavior: create
     files:
       - servarr.json=dashboards/servarr.json
+
+  # https://github.com/dotdc/grafana-dashboards-kubernetes
+  - name: grafana-dashboard-k8s-system-api-server
+    behavior: create
+    files:
+      - k8s-system-api-server.json=dashboards/k8s-system-api-server.json
+  - name: grafana-dashboard-k8s-system-coredns
+    behavior: create
+    files:
+      - k8s-system-coredns.json=dashboards/k8s-system-coredns.json
+  - name: grafana-dashboard-k8s-views-global
+    behavior: create
+    files:
+      - k8s-views-global.json=dashboards/k8s-views-global.json
+  - name: grafana-dashboard-k8s-views-namespaces
+    behavior: create
+    files:
+      - k8s-views-namespaces.json=dashboards/k8s-views-namespaces.json
+  - name: grafana-dashboard-k8s-views-nodes
+    behavior: create
+    files:
+      - k8s-views-nodes.json=dashboards/k8s-views-nodes.json
+  - name: grafana-dashboard-k8s-views-pods
+    behavior: create
+    files:
+      - k8s-views-pods.json=dashboards/k8s-views-pods.json
 
 generatorOptions:
   labels:
