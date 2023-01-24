@@ -15,7 +15,7 @@ helmCharts:
       deschedulerPolicy:
         strategies:
           RemoveDuplicates:
-            enabled: true
+            enabled: false
           RemovePodsHavingTooManyRestarts:
             enabled: true
           RemovePodsViolatingNodeTaints:
