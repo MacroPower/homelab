@@ -1,0 +1,54 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: observability
+
+helmCharts:
+  - name: robusta
+    repo: https://robusta-charts.storage.googleapis.com
+    version: '0.10.10'
+    releaseName: robusta
+
+    valuesInline:
+      clusterName: "'{{ env.ROBUSTA_CLUSTER_NAME }}'"
+      globalConfig:
+        signing_key: '{{ env.ROBUSTA_SIGNING_KEY }}'
+        account_id: '{{ env.ROBUSTA_ACCOUNT_ID }}'
+        prometheus_url: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
+
+      sinksConfig:
+        - robusta_sink:
+            name: robusta_ui_sink
+            token: '{{ env.ROBUSTA_UI_SINK_TOKEN }}'
+        - pagerduty_sink:
+            name: main_pagerduty_sink
+            api_key: '{{ env.ROBUSTA_PAGERDUTY_SINK_API_KEY }}'
+        - discord_sink:
+            name: main_discord_sink
+            url: '{{ env.ROBUSTA_DISCORD_WEBHOOK_URL }}'
+
+      enableServiceMonitors: true
+
+      enablePlatformPlaybooks: true
+
+      runner:
+        sendAdditionalTelemetry: true
+        additional_env_froms:
+          - secretRef:
+              name: robusta-config
+              optional: false
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+
+      kubewatch:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 128Mi
+
+      rsa: ~
+
+resources:
+  - secrets.yaml

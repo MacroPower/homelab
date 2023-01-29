@@ -60,6 +60,55 @@ helmCharts:
               memory: 2Gi
 
       alertmanager:
+        config:
+          global:
+            resolve_timeout: 5m
+          inhibit_rules:
+            - source_matchers:
+                - 'severity = critical'
+              target_matchers:
+                - 'severity =~ warning|info'
+              equal:
+                - 'namespace'
+                - 'alertname'
+            - source_matchers:
+                - 'severity = warning'
+              target_matchers:
+                - 'severity = info'
+              equal:
+                - 'namespace'
+                - 'alertname'
+            - source_matchers:
+                - 'alertname = InfoInhibitor'
+              target_matchers:
+                - 'severity = info'
+              equal:
+                - 'namespace'
+          route:
+            group_by: ['namespace']
+            group_wait: 30s
+            group_interval: 5m
+            repeat_interval: 12h
+            receiver: 'null'
+            routes:
+              - receiver: 'null'
+                matchers:
+                  - alertname =~ "InfoInhibitor|Watchdog"
+              - receiver: 'robusta'
+                group_by: ['...']
+                matchers:
+                  - alertname =~ ".+"
+                repeat_interval: 4h
+                continue: true
+          receivers:
+            - name: 'null'
+            - name: 'robusta'
+              webhook_configs:
+                - url: 'http://robusta-runner.observability.svc.cluster.local/api/alerts'
+                  send_resolved: true
+          templates:
+            - '/etc/alertmanager/config/*.tmpl'
+
         alertmanagerSpec:
           requests:
             cpu: 50m
