@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: kube-system
+
+helmCharts:
+  - name: vpa
+    repo: https://charts.fairwinds.com/stable
+    version: '1.6.0'
+    releaseName: vpa
+    includeCRDs: true
+
+    valuesInline:
+      recommender:
+        image:
+          tag: '0.12.0'
+
+        extraArgs:
+          prometheus-address: |
+            http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
+          storage: prometheus
+
+      updater:
+        enabled: false
+        image:
+          tag: '0.12.0'
+
+      admissionController:
+        enabled: false

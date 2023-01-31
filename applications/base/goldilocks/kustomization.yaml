@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: kube-system
+
+helmCharts:
+  - name: goldilocks
+    repo: https://charts.fairwinds.com/stable
+    version: '6.4.0'
+    releaseName: goldilocks
+
+    valuesInline:
+      dashboard:
+        replicaCount: 1
