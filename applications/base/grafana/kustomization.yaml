@@ -25,12 +25,11 @@ helmCharts:
 
       sidecar:
         resources:
-          limits:
-            cpu: 100m
-            memory: 100Mi
           requests:
             cpu: 50m
-            memory: 50Mi
+            memory: 128Mi
+          limits:
+            memory: 128Mi
         alerts:
           enabled: false
           label: grafana_alert
@@ -47,11 +46,10 @@ helmCharts:
           label: grafana_plugin
 
       resources:
-        limits:
-          cpu: 100m
-          memory: 128Mi
         requests:
           cpu: 50m
+          memory: 128Mi
+        limits:
           memory: 128Mi
 
 configMapGenerator:

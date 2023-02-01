@@ -37,7 +37,6 @@ helmCharts:
               cpu: 10m
               memory: 50Mi
             limits:
-              cpu: 200m
               memory: 50Mi
 
       prometheus:
@@ -62,10 +61,9 @@ helmCharts:
 
           resources:
             requests:
-              cpu: 100m
+              cpu: 500m
               memory: 2Gi
             limits:
-              cpu: 1
               memory: 2Gi
 
       alertmanager:
@@ -119,12 +117,12 @@ helmCharts:
             - '/etc/alertmanager/config/*.tmpl'
 
         alertmanagerSpec:
-          requests:
-            cpu: 50m
-            memory: 50Mi
-          limits:
-            cpu: 200m
-            memory: 200Mi
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 128Mi
 
       # # Max series is 10k.
       # prometheus:

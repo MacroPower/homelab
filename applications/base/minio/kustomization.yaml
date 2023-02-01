@@ -46,6 +46,9 @@ helmCharts:
 
       resources:
         requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
           memory: 256Mi
 
       ## List of users to be created after minio install
