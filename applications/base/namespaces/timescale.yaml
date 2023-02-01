@@ -4,3 +4,18 @@ metadata:
   name: timescale
   labels:
     goldilocks.fairwinds.com/enabled: 'true'
+
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: timescale-limit-range
+  namespace: timescale
+spec:
+  limits:
+    - default:
+        memory: 128Mi
+      defaultRequest:
+        memory: 128Mi
+        cpu: 50m
+      type: Container

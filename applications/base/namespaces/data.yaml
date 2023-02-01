@@ -4,3 +4,18 @@ metadata:
   name: data
   labels:
     goldilocks.fairwinds.com/enabled: 'true'
+
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: data-limit-range
+  namespace: data
+spec:
+  limits:
+    - default:
+        memory: 128Mi
+      defaultRequest:
+        memory: 128Mi
+        cpu: 50m
+      type: Container

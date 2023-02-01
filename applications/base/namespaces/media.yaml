@@ -4,3 +4,18 @@ metadata:
   name: media
   labels:
     goldilocks.fairwinds.com/enabled: 'true'
+
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: media-limit-range
+  namespace: media
+spec:
+  limits:
+    - default:
+        memory: 4096Mi
+      defaultRequest:
+        memory: 4096Mi
+        cpu: 500m
+      type: Container

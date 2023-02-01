@@ -4,3 +4,18 @@ metadata:
   name: backup
   labels:
     goldilocks.fairwinds.com/enabled: 'true'
+
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: backup-limit-range
+  namespace: backup
+spec:
+  limits:
+    - default:
+        memory: 128Mi
+      defaultRequest:
+        memory: 128Mi
+        cpu: 50m
+      type: Container

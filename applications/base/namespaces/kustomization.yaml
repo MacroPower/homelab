@@ -9,3 +9,5 @@ resources:
   - data.yaml
   - crossplane.yaml
   - backup.yaml
+  - kube-system.yaml
+  - argocd.yaml

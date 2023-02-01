@@ -4,3 +4,18 @@ metadata:
   name: automation
   labels:
     goldilocks.fairwinds.com/enabled: 'true'
+
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: automation-limit-range
+  namespace: automation
+spec:
+  limits:
+    - default:
+        memory: 128Mi
+      defaultRequest:
+        memory: 128Mi
+        cpu: 50m
+      type: Container

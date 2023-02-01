@@ -4,4 +4,3 @@ kind: Kustomization
 resources:
   - application-controller.yaml
   - service-monitor.yaml
-  - limit.yaml
