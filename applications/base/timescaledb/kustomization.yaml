@@ -12,6 +12,10 @@ helmCharts:
     valuesInline:
       replicaCount: 1
 
+      image:
+        repository: timescale/timescaledb-ha
+        tag: pg14.6-ts2.9.2-p0
+
       patroni:
         postgresql:
           pg_hba:
@@ -27,14 +31,6 @@ helmCharts:
         credentialsSecretName: 'timescaledb-credentials'
 
       env:
-        - name: PATRONI_tsdb_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: timescaledb-credentials
-              key: PATRONI_tsdb_PASSWORD
-        - name: PATRONI_tsdb_OPTIONS
-          value: login
-
         - name: PATRONI_readonly_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -80,12 +76,12 @@ helmCharts:
         'k8up.io/file-extension': .sql
 
       resources:
-        limits:
-          cpu: 500m
-          memory: 512Mi
         requests:
-          cpu: 100m
-          memory: 128Mi
+          cpu: 300m
+          memory: 512Mi
+        limits:
+          cpu: 1000m
+          memory: 2Gi
 
 resources:
   - secrets.yaml

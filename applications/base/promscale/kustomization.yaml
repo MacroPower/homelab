@@ -1,0 +1,49 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: timescale
+
+helmCharts:
+  - name: promscale
+    repo: https://charts.timescale.com
+    version: '15.0.0'
+    releaseName: promscale
+    namespace: timescale
+    valuesInline:
+      replicaCount: 1
+
+      # image:
+      #   repository: timescale/promscale
+      #   tag: ""
+
+      connectionSecretName: 'promscale-credentials'
+
+      extraEnv:
+        - name: PROMSCALE_DB_HOST
+          value: timescaledb-single.timescale.svc.cluster.local
+        - name: PROMSCALE_DB_PORT
+          value: 5432
+        - name: PROMSCALE_DB_SSL_MODE
+          value: prefer
+        - name: PROMSCALE_DB_NAME
+          value: tsdb
+
+      # promscale configuration options. Values presented in this section are defaults. For full list of settings
+      # and their default values go to https://github.com/timescale/promscale/blob/master/docs/configuration.md
+      # Note that configuration options set here can be overriden by extraEnv as well as extraArgs.
+      # Arguments passed in extraArgs take precedence over any other option.
+      config:
+        startup.dataset.config: |
+          metrics:
+            compress_data: true
+            default_retention_period: 90d
+          traces:
+            default_retention_period: 30d
+
+      serviceMonitor:
+        enabled: true
+
+      resources: {}
+
+resources:
+  - database.yaml

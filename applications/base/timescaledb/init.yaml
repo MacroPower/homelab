@@ -11,16 +11,6 @@ data:
       CREATE EXTENSION timescaledb_toolkit;
       CREATE EXTENSION pg_stat_statements;
 
-      CREATE ROLE tsdb;
-      CREATE DATABASE tsdb OWNER tsdb;
-
       CREATE ROLE readonly;
       GRANT pg_monitor TO readonly;
-
-      \connect tsdb
-      CREATE EXTENSION timescaledb_toolkit;
-      CREATE EXTENSION pg_stat_statements;
-
-      ALTER DEFAULT PRIVILEGES IN SCHEMA tsdb
-      GRANT SELECT ON TABLES TO readonly;
     __SQL__

@@ -1,0 +1,83 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: promscale-credentials
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: default
+
+  target:
+    name: promscale-credentials
+
+  data:
+    - secretKey: PROMSCALE_DB_USER
+      remoteRef:
+        key: PROMSCALE_DB_USER
+
+    - secretKey: PROMSCALE_DB_PASSWORD
+      remoteRef:
+        key: PROMSCALE_DB_PASSWORD
+
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Role
+metadata:
+  name: tsdb
+spec:
+  deletionPolicy: Orphan
+
+  forProvider:
+    privileges:
+      login: true
+
+    passwordSecretRef:
+      name: promscale-credentials
+      key: PROMSCALE_DB_PASSWORD
+      namespace: timescale
+
+  providerConfigRef:
+    name: timescaledb-single-provider-config
+
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Database
+metadata:
+  name: tsdb
+spec:
+  deletionPolicy: Orphan
+
+  forProvider:
+    owner: tsdb
+    encoding: utf8
+
+  providerConfigRef:
+    name: timescaledb-single-provider-config
+
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Extension
+metadata:
+  name: promscale-extension
+spec:
+  forProvider:
+    extension: promscale_extension
+    databaseRef:
+      name: tsdb
+
+  providerConfigRef:
+    name: timescaledb-single-provider-config
+
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Extension
+metadata:
+  name: timescaledb-toolkit-extension
+spec:
+  forProvider:
+    extension: timescaledb_toolkit
+    databaseRef:
+      name: tsdb
+
+  providerConfigRef:
+    name: timescaledb-single-provider-config
