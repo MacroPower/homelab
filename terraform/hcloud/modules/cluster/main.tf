@@ -27,8 +27,8 @@ module "kube-hetzner" {
   # Then fill or edit the below values. Only the first values starting with a * are obligatory; the rest can remain with their default values, or you
   # could adapt them to your needs.
 
-  source = "kube-hetzner/kube-hetzner/hcloud"
-  version = "1.5.6"
+  source  = "kube-hetzner/kube-hetzner/hcloud"
+  version = "1.7.0"
 
   # Note that some values, notably "location" and "public_key" have no effect after initializing the cluster.
   # This is to keep Terraform from re-provisioning all nodes at once, which would lose data. If you want to update
@@ -88,7 +88,7 @@ module "kube-hetzner" {
       location    = "hel1",
       labels      = [],
       taints      = [],
-      count       = 2
+      count       = 3
     },
   ]
 
