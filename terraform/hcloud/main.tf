@@ -14,6 +14,11 @@ variable "hcloud_token" {
   sensitive = true
 }
 
+variable "doppler_token" {
+  type      = string
+  sensitive = true
+}
+
 variable "ssh_key" {
   type      = string
   sensitive = true
@@ -239,5 +244,7 @@ module "kube-hetzner" {
   enable_rancher = false
 
   # Extra values that will be passed to the `extra-manifests/kustomization.yaml.tpl` if its present.
-  # extra_kustomize_parameters={}
+  extra_kustomize_parameters = {
+    doppler_token_b64 = base64encode(var.doppler_token)
+  }
 }

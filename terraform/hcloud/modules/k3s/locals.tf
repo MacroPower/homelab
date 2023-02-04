@@ -321,7 +321,7 @@ locals {
   }
 
   ingress_controller_install_resources = {
-    "traefik" = ["traefik_ingress.yaml"]
+    "traefik" = []
     "nginx"   = ["nginx_ingress.yaml"]
   }
 

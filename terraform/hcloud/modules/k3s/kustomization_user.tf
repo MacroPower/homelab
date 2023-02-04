@@ -4,6 +4,10 @@ locals {
 }
 
 resource "null_resource" "kustomization_user" {
+  triggers = {
+    always = timestamp()
+  }
+
   count = local.user_kustomization_exists ? 1 : 0
   connection {
     user           = "root"

@@ -278,17 +278,8 @@ resource "null_resource" "kustomization" {
         "kubectl -n system-upgrade wait --for=condition=available --timeout=180s deployment/system-upgrade-controller",
         "sleep 5", # important as the system upgrade controller CRDs sometimes don't get ready right away, especially with Cilium.
         "kubectl -n system-upgrade apply -f /var/post_install/plans.yaml"
-      ],
-      local.has_external_load_balancer ? [] : [
-        <<-EOT
-      timeout 180 bash <<EOF
-      until [ -n "\$(kubectl get -n ${lookup(local.ingress_controller_namespace_names, local.ingress_controller)} service/${lookup(local.ingress_controller_service_names, local.ingress_controller)} --output=jsonpath='{.status.loadBalancer.ingress[0].${var.lb_hostname != "" ? "hostname" : "ip"}}' 2> /dev/null)" ]; do
-          echo "Waiting for load-balancer to get an IP..."
-          sleep 2
-      done
-      EOF
-      EOT
-    ])
+      ]
+    )
   }
 
   depends_on = [
