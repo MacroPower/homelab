@@ -62,9 +62,9 @@ helmCharts:
           resources:
             requests:
               cpu: 500m
-              memory: 2Gi
+              memory: 1496Mi
             limits:
-              memory: 2Gi
+              memory: 1496Mi
 
       alertmanager:
         config:
