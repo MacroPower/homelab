@@ -73,3 +73,17 @@ resources:
   - secrets.yaml
   - init-scripts.yaml
   - init-scripts-secrets.yaml
+
+patches:
+  - target:
+      group: app
+      version: v1
+      kind: Deployment
+      name: twitch-predictions-recorder
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/livenessProbe/initialDelaySeconds
+        value: 60
+      - op: add
+        path: /spec/template/spec/containers/0/readinessProbe/initialDelaySeconds
+        value: 60
