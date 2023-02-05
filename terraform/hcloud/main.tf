@@ -107,7 +107,7 @@ module "kube-hetzner" {
       location    = "hel1",
       labels      = [],
       taints      = [],
-      count       = 3
+      count       = 4
     },
   ]
 
