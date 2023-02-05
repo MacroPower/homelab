@@ -39,3 +39,18 @@ patches:
             memory: 768Mi
           limits:
             memory: 768Mi
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: argocd-repo-server
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: 1
+            memory: 512Mi
