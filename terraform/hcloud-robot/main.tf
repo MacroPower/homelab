@@ -14,6 +14,11 @@ resource "random_integer" "ssh_port" {
   max = 50000
 }
 
+variable "doppler_token" {
+  type      = string
+  sensitive = true
+}
+
 module "k3s" {
   source = "./modules/k3s"
 
@@ -63,4 +68,9 @@ module "k3s" {
   ssh_port = random_integer.ssh_port.result
 
   dns_servers = []
+
+  # Extra values that will be passed to the `extra-manifests/kustomization.yaml.tpl` if its present.
+  extra_kustomize_parameters = {
+    doppler_token_b64 = base64encode(var.doppler_token)
+  }
 }
