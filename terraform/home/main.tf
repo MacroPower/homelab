@@ -37,10 +37,9 @@ module "k3s" {
     },
   ]
 
-  # Single node config
   allow_scheduling_on_control_plane = true
-  automatically_upgrade_k3s         = false
-  automatically_upgrade_os          = false
+  automatically_upgrade_k3s         = true
+  automatically_upgrade_os          = true
   enable_klipper_metal_lb           = true
 
   ssh_public_key             = var.ssh_public_key
@@ -49,11 +48,11 @@ module "k3s" {
 
   cni_plugin = "flannel"
 
-  enable_traefik        = false
   enable_metrics_server = false
-  enable_longhorn       = false
+  enable_longhorn       = true
   enable_cert_manager   = false
   enable_rancher        = false
+  disable_hetzner_csi   = true
 
   dns_servers = [
     "10.0.0.1",

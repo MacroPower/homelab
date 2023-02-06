@@ -3,16 +3,19 @@ module "control_planes" {
 
   for_each = local.control_plane_nodes
 
-  name                       = "${var.use_cluster_name_in_node_name ? "${var.cluster_name}-" : ""}${each.value.nodepool_name}"
-  ipv4_address               = each.value.ipv4_address
-  os_device                  = each.value.os_device
-  network_interface          = each.value.network_interface
-  ssh_port                   = var.ssh_port
-  ssh_public_key             = var.ssh_public_key
-  ssh_private_key            = var.ssh_private_key
-  ssh_additional_public_keys = var.ssh_additional_public_keys
-  packages_to_install        = local.packages_to_install
-  dns_servers                = var.dns_servers
+  name                         = "${var.use_cluster_name_in_node_name ? "${var.cluster_name}-" : ""}${each.value.nodepool_name}"
+  ipv4_address                 = each.value.ipv4_address
+  os_device                    = each.value.os_device
+  network_interface            = each.value.network_interface
+  ssh_port                     = var.ssh_port
+  ssh_public_key               = var.ssh_public_key
+  ssh_private_key              = var.ssh_private_key
+  ssh_additional_public_keys   = var.ssh_additional_public_keys
+  packages_to_install          = local.packages_to_install
+  dns_servers                  = var.dns_servers
+  k3s_registries               = var.k3s_registries
+  k3s_registries_update_script = local.k3s_registries_update_script
+  opensuse_microos_mirror_link = var.opensuse_microos_mirror_link
 
   automatically_upgrade_os = var.automatically_upgrade_os
 }
@@ -43,7 +46,7 @@ resource "null_resource" "control_planes" {
             module.control_planes[keys(module.control_planes)[1]].private_ipv4_address :
           module.control_planes[keys(module.control_planes)[0]].private_ipv4_address}:6443"
           token                       = random_password.k3s_token.result
-          disable-cloud-controller    = false
+          disable-cloud-controller    = true
           disable                     = local.disable_extras
           kubelet-arg                 = local.kubelet_arg
           kube-controller-manager-arg = local.kube_controller_manager_arg
@@ -56,11 +59,12 @@ resource "null_resource" "control_planes" {
         },
         lookup(local.cni_k3s_settings, var.cni_plugin, {}),
         {
-          tls-san = [
+          tls-san = concat([
             module.control_planes[each.key].ipv4_address
-          ]
+          ], var.additional_tls_sans)
         },
-        local.etcd_s3_snapshots
+        local.etcd_s3_snapshots,
+        var.control_planes_custom_config
       )
     )
 

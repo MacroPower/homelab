@@ -15,7 +15,7 @@ resource "null_resource" "first_control_plane" {
           node-name                   = module.control_planes[keys(module.control_planes)[0]].name
           token                       = random_password.k3s_token.result
           cluster-init                = true
-          disable-cloud-controller    = false
+          disable-cloud-controller    = true
           disable                     = local.disable_extras
           kubelet-arg                 = local.kubelet_arg
           kube-controller-manager-arg = local.kube_controller_manager_arg
@@ -27,9 +27,10 @@ resource "null_resource" "first_control_plane" {
         },
         lookup(local.cni_k3s_settings, var.cni_plugin, {}),
         {
-          tls-san = [module.control_planes[keys(module.control_planes)[0]].ipv4_address]
+          tls-san = concat([module.control_planes[keys(module.control_planes)[0]].ipv4_address], var.additional_tls_sans)
         },
-        local.etcd_s3_snapshots
+        local.etcd_s3_snapshots,
+        var.control_planes_custom_config
       )
     )
 
@@ -97,6 +98,9 @@ resource "null_resource" "kustomization" {
           "https://github.com/weaveworks/kured/releases/download/${local.kured_version}/kured-${local.kured_version}-dockerhub.yaml",
           "https://raw.githubusercontent.com/rancher/system-upgrade-controller/master/manifests/system-upgrade-controller.yaml",
         ],
+        var.disable_hetzner_csi ? [] : [
+          "hcloud-csi.yml"
+        ],
         lookup(local.ingress_controller_install_resources, local.ingress_controller, []),
         lookup(local.cni_install_resources, var.cni_plugin, []),
         var.enable_longhorn ? ["longhorn.yaml"] : [],
@@ -106,8 +110,8 @@ resource "null_resource" "kustomization" {
       ),
       patchesStrategicMerge = concat(
         [
-          file("${path.module}/kustomize/kured.yaml"),
           file("${path.module}/kustomize/system-upgrade-controller.yaml"),
+          "kured.yaml",
         ],
         lookup(local.cni_install_resource_patches, var.cni_plugin, [])
       )
@@ -115,14 +119,14 @@ resource "null_resource" "kustomization" {
     destination = "/var/post_install/kustomization.yaml"
   }
 
-  # Upload traefik config
+  # Upload traefik ingress controller config
   provisioner "file" {
     content = templatefile(
-      "${path.module}/templates/traefik_config.yaml.tpl",
+      "${path.module}/templates/traefik_ingress.yaml.tpl",
       {
-        values = indent(4, trimspace(local.traefik_ingress_values))
+        values = indent(4, trimspace(local.traefik_values))
     })
-    destination = "/var/post_install/traefik_config.yaml"
+    destination = "/var/post_install/traefik_ingress.yaml"
   }
 
   # Upload nginx ingress controller config
@@ -130,17 +134,30 @@ resource "null_resource" "kustomization" {
     content = templatefile(
       "${path.module}/templates/nginx_ingress.yaml.tpl",
       {
-        values = indent(4, trimspace(local.nginx_ingress_values))
+        values = indent(4, trimspace(local.nginx_values))
     })
     destination = "/var/post_install/nginx_ingress.yaml"
   }
 
-  # Upload the calico patch config
+  # Upload the CCM patch config
+  provisioner "file" {
+    content = templatefile(
+      "${path.module}/templates/ccm.yaml.tpl",
+      {
+        cluster_cidr_ipv4   = local.cluster_cidr_ipv4
+        default_lb_location = var.load_balancer_location
+        using_klipper_lb    = local.using_klipper_lb
+    })
+    destination = "/var/post_install/ccm.yaml"
+  }
+
+  # Upload the calico patch config, for the kustomization of the calico manifest
+  # This method is a stub which could be replaced by a more practical helm implementation
   provisioner "file" {
     content = templatefile(
       "${path.module}/templates/calico.yaml.tpl",
       {
-        cluster_cidr_ipv4 = local.cluster_cidr_ipv4
+        values = trimspace(local.calico_values)
     })
     destination = "/var/post_install/calico.yaml"
   }
@@ -170,7 +187,9 @@ resource "null_resource" "kustomization" {
     content = templatefile(
       "${path.module}/templates/longhorn.yaml.tpl",
       {
-        values = indent(4, trimspace(local.longhorn_values))
+        longhorn_namespace  = var.longhorn_namespace
+        longhorn_repository = var.longhorn_repository
+        values              = indent(4, trimspace(local.longhorn_values))
     })
     destination = "/var/post_install/longhorn.yaml"
   }
@@ -196,6 +215,15 @@ resource "null_resource" "kustomization" {
     destination = "/var/post_install/rancher.yaml"
   }
 
+  provisioner "file" {
+    content = templatefile(
+      "${path.module}/templates/kured.yaml.tpl",
+      {
+        options = local.kured_options
+      }
+    )
+    destination = "/var/post_install/kured.yaml"
+  }
   # Deploy our post-installation kustomization
   provisioner "remote-exec" {
     inline = concat([
@@ -231,17 +259,8 @@ resource "null_resource" "kustomization" {
         "kubectl -n system-upgrade wait --for=condition=available --timeout=180s deployment/system-upgrade-controller",
         "sleep 5", # important as the system upgrade controller CRDs sometimes don't get ready right away, especially with Cilium.
         "kubectl -n system-upgrade apply -f /var/post_install/plans.yaml"
-      ],
-      local.has_external_load_balancer ? [] : [
-        <<-EOT
-      timeout 180 bash <<EOF
-      until [ -n "\$(kubectl get -n kube-system service/${lookup(local.ingress_controller_service_names, local.ingress_controller)} --output=jsonpath='{.status.loadBalancer.ingress[0].ip}' 2> /dev/null)" ]; do
-          echo "Waiting for load-balancer to get an IP..."
-          sleep 2
-      done
-      EOF
-      EOT
-    ])
+      ]
+    )
   }
 
   depends_on = [

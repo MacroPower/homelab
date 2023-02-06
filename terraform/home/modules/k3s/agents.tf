@@ -3,16 +3,19 @@ module "agents" {
 
   for_each = local.agent_nodes
 
-  name                       = "${var.use_cluster_name_in_node_name ? "${var.cluster_name}-" : ""}${each.value.nodepool_name}"
-  ipv4_address               = each.value.ipv4_address
-  os_device                  = each.value.os_device
-  network_interface          = each.value.network_interface
-  ssh_port                   = var.ssh_port
-  ssh_public_key             = var.ssh_public_key
-  ssh_private_key            = var.ssh_private_key
-  ssh_additional_public_keys = var.ssh_additional_public_keys
-  packages_to_install        = local.packages_to_install
-  dns_servers                = var.dns_servers
+  name                         = "${var.use_cluster_name_in_node_name ? "${var.cluster_name}-" : ""}${each.value.nodepool_name}"
+  ipv4_address                 = each.value.ipv4_address
+  os_device                    = each.value.os_device
+  network_interface            = each.value.network_interface
+  ssh_port                     = var.ssh_port
+  ssh_public_key               = var.ssh_public_key
+  ssh_private_key              = var.ssh_private_key
+  ssh_additional_public_keys   = var.ssh_additional_public_keys
+  packages_to_install          = local.packages_to_install
+  dns_servers                  = var.dns_servers
+  k3s_registries               = var.k3s_registries
+  k3s_registries_update_script = local.k3s_registries_update_script
+  opensuse_microos_mirror_link = var.opensuse_microos_mirror_link
 
   automatically_upgrade_os = var.automatically_upgrade_os
 }

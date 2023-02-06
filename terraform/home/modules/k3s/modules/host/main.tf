@@ -19,40 +19,6 @@ resource "random_string" "identity_file" {
   upper   = false
 }
 
-locals {
-  # ssh_agent_identity is not set if the private key is passed directly, but if ssh agent is used, the public key tells ssh agent which private key to use.
-  # For terraforms provisioner.connection.agent_identity, we need the public key as a string.
-  ssh_agent_identity = var.ssh_private_key == null ? var.ssh_public_key : null
-  # shared flags for ssh to ignore host keys for all connections during provisioning.
-  ssh_args = "-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o IdentitiesOnly=yes"
-
-  # ssh_client_identity is used for ssh "-i" flag, its the private key if that is set, or a public key
-  # if an ssh agent is used.
-  ssh_client_identity = var.ssh_private_key == null ? var.ssh_public_key : var.ssh_private_key
-
-  # Final list of packages to install
-  needed_packages = join(" ", concat(["k3s-selinux"], var.packages_to_install))
-
-  # the hosts name with its unique suffix attached
-  name = "${var.name}-${random_string.server.id}"
-
-  cloudinit_config = templatefile(
-    "${path.module}/templates/cloud.cfg.tpl",
-    {}
-  )
-
-  cloudinit_userdata_config = templatefile(
-    "${path.module}/templates/userdata.yaml.tpl",
-    {
-      hostname          = local.name
-      sshPort           = var.ssh_port
-      sshAuthorizedKeys = concat([var.ssh_public_key], var.ssh_additional_public_keys)
-      dnsServers        = var.dns_servers
-      networkInterface  = var.network_interface
-    }
-  )
-}
-
 resource "null_resource" "k3s_host" {
   lifecycle {
     create_before_destroy = true
@@ -89,7 +55,7 @@ resource "null_resource" "k3s_host" {
 
     inline = [
       "set -ex",
-      "wget --timeout=5 --waitretry=5 --tries=5 --retry-connrefused --inet4-only https://ftp.gwdg.de/pub/opensuse/repositories/devel:/kubic:/images/openSUSE_Tumbleweed/openSUSE-MicroOS.x86_64-OpenStack-Cloud.qcow2",
+      "wget --timeout=5 --waitretry=5 --tries=5 --retry-connrefused --inet4-only ${var.opensuse_microos_mirror_link}",
       "apt-get install -y libguestfs-tools",
       "mkdir -p /mnt/disk",
       "guestmount -a $(ls -a | grep -ie '^opensuse.*microos.*qcow2$') -m \"/dev/sda3:/:subvol=@/root\" --rw /mnt/disk",
@@ -136,20 +102,19 @@ resource "null_resource" "k3s_host" {
     inline = [<<-EOT
       set -ex
 
-      transactional-update shell <<<"
-zypper --gpg-auto-import-keys install -y k3s-selinux && \
-ls -l /etc/cloud/cloud.cfg.d && \
-{ tee /etc/cloud/cloud.cfg << EOFCLOUDCFG
+      transactional-update shell <<< "zypper --no-gpg-checks --non-interactive install https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner/raw/master/.extra/k3s-selinux-next.rpm"
+      transactional-update --continue shell <<< "zypper --gpg-auto-import-keys install -y ${local.needed_packages}"
+      transactional-update --continue shell <<< "
+      ls -l /etc/cloud/cloud.cfg.d && \
+      { tee /etc/cloud/cloud.cfg << EOFCLOUDCFG
 ${replace(local.cloudinit_config, "\"", "\\\"")}
 EOFCLOUDCFG
-} && \
-{ tee /etc/cloud/cloud.cfg.d/init.cfg << EOFCLOUDUSERDATA
+      } && \
+      { tee /etc/cloud/cloud.cfg.d/init.cfg << EOFCLOUDUSERDATA
 ${replace(local.cloudinit_userdata_config, "\"", "\\\"")}
 EOFCLOUDUSERDATA
-} && \
-cloud-init init --local
-      "
-
+      }"
+      transactional-update --continue shell <<< "cloud-init init --local"
       sleep 1 && udevadm settle
       EOT
     ]
@@ -182,7 +147,8 @@ cloud-init init --local
 
   # Enable open-iscsi
   provisioner "remote-exec" {
-    inline = [<<-EOT
+    inline = [
+      <<-EOT
       set -ex
       if [[ $(systemctl list-units --all -t service --full --no-legend "iscsid.service" | sed 's/^\s*//g' | cut -f1 -d' ') == iscsid.service ]]; then
         systemctl enable --now iscsid
@@ -192,7 +158,8 @@ cloud-init init --local
   }
 
   provisioner "remote-exec" {
-    inline = var.automatically_upgrade_os ? [<<-EOT
+    inline = var.automatically_upgrade_os ? [
+      <<-EOT
       echo "Automatic OS updates are enabled"
       EOT
       ] : [
@@ -201,5 +168,14 @@ cloud-init init --local
       systemctl --now disable transactional-update.timer
       EOT
     ]
+  }
+
+  provisioner "file" {
+    content     = var.k3s_registries
+    destination = "/tmp/registries.yaml"
+  }
+
+  provisioner "remote-exec" {
+    inline = [var.k3s_registries_update_script]
   }
 }
