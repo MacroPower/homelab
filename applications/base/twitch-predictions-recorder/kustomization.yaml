@@ -52,27 +52,12 @@ helmCharts:
         - name: DB_TIME_ZONE
           value: 'America/New_York'
 
-      initContainers:
-        - name: init-db
-          image: postgres:14
-          command:
-            - bash
-            - /scripts/twitch_predictions_db_init.sh
-          volumeMounts:
-            - name: twitch-predictions-init-scripts
-              mountPath: /scripts
-
-      extraSecretMounts:
-        - name: twitch-predictions-init-scripts
-          optional: false
-
       serviceMonitor:
         enabled: true
 
 resources:
   - secrets.yaml
-  - init-scripts.yaml
-  - init-scripts-secrets.yaml
+  - database.yaml
 
 patches:
   - target:

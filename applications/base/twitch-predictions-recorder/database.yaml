@@ -1,0 +1,47 @@
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Role
+metadata:
+  name: twitchpredictions
+spec:
+  deletionPolicy: Orphan
+
+  forProvider:
+    privileges:
+      login: true
+
+    passwordSecretRef:
+      name: twitch-predictions-credentials
+      key: TWITCH_PREDICTIONS_DB_PASS
+      namespace: automation
+
+  providerConfigRef:
+    name: timescaledb-single-provider-config
+
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Database
+metadata:
+  name: twitchpredictions
+spec:
+  deletionPolicy: Orphan
+
+  forProvider:
+    owner: twitchpredictions
+    encoding: utf8
+
+  providerConfigRef:
+    name: timescaledb-single-provider-config
+
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Extension
+metadata:
+  name: twitchpredictions-timescaledb-toolkit
+spec:
+  forProvider:
+    extension: timescaledb_toolkit
+    databaseRef:
+      name: twitchpredictions
+
+  providerConfigRef:
+    name: timescaledb-single-provider-config
