@@ -1,8 +1,3 @@
-variable "ipv4_address" {
-  description = "IPv4 address"
-  type        = string
-}
-
 variable "ssh_public_key" {
   description = "SSH public Key"
   type        = string
@@ -20,7 +15,7 @@ variable "ssh_additional_public_keys" {
   default     = []
 }
 
-variable "primary_dns" {
-  description = "Primary DNS"
-  type        = string
+variable "doppler_token" {
+  type      = string
+  sensitive = true
 }

@@ -13,6 +13,12 @@ variable "network_interface" {
   type        = string
 }
 
+variable "os_device" {
+  description = "OS Device"
+  type        = string
+  default     = "/dev/sda"
+}
+
 variable "ssh_port" {
   description = "SSH port"
   type        = number

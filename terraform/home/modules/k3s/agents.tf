@@ -5,6 +5,7 @@ module "agents" {
 
   name                       = "${var.use_cluster_name_in_node_name ? "${var.cluster_name}-" : ""}${each.value.nodepool_name}"
   ipv4_address               = each.value.ipv4_address
+  os_device                  = each.value.os_device
   network_interface          = each.value.network_interface
   ssh_port                   = var.ssh_port
   ssh_public_key             = var.ssh_public_key

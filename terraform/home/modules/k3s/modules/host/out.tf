@@ -19,7 +19,3 @@ output "name" {
 output "id" {
   value = random_string.server.id
 }
-
-output "host_verified" {
-  value = null_resource.k3s_host_verify.id
-}

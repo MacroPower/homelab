@@ -32,6 +32,7 @@ locals {
         nodepool_name : nodepool_obj.name,
         ipv4_address : nodepool_obj.ipv4_address,
         network_interface : nodepool_obj.network_interface,
+        os_device : nodepool_obj.os_device,
         labels : concat(local.default_control_plane_labels, nodepool_obj.labels),
         taints : concat(local.default_control_plane_taints, nodepool_obj.taints),
         index : node_index
@@ -46,6 +47,7 @@ locals {
         nodepool_name : nodepool_obj.name,
         ipv4_address : nodepool_obj.ipv4_address,
         network_interface : nodepool_obj.network_interface,
+        os_device : nodepool_obj.os_device,
         longhorn_volume_size : lookup(nodepool_obj, "longhorn_volume_size", 0),
         labels : concat(local.default_agent_labels, nodepool_obj.labels),
         taints : concat(local.default_agent_taints, nodepool_obj.taints),

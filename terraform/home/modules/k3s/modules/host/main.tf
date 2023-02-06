@@ -11,6 +11,14 @@ resource "random_string" "server" {
   }
 }
 
+resource "random_string" "identity_file" {
+  length  = 20
+  lower   = true
+  special = false
+  numeric = true
+  upper   = false
+}
+
 locals {
   # ssh_agent_identity is not set if the private key is passed directly, but if ssh agent is used, the public key tells ssh agent which private key to use.
   # For terraforms provisioner.connection.agent_identity, we need the public key as a string.
@@ -58,20 +66,78 @@ resource "null_resource" "k3s_host" {
     port           = var.ssh_port
   }
 
+  # Prepare ssh identity file
+  provisioner "local-exec" {
+    command = <<-EOT
+      install -b -m 600 /dev/null /tmp/${random_string.identity_file.id}
+      echo "${local.ssh_client_identity}" > /tmp/${random_string.identity_file.id}
+    EOT
+  }
+
+  # Install MicroOS
   provisioner "remote-exec" {
+    connection {
+      user           = "root"
+      private_key    = var.ssh_private_key
+      agent_identity = local.ssh_agent_identity
+      host           = var.ipv4_address
+
+      # We cannot use different ports here as this runs inside Hetzner Rescue image and thus uses the
+      # standard 22 TCP port.
+      port = 22
+    }
+
+    inline = [
+      "set -ex",
+      "wget --timeout=5 --waitretry=5 --tries=5 --retry-connrefused --inet4-only https://ftp.gwdg.de/pub/opensuse/repositories/devel:/kubic:/images/openSUSE_Tumbleweed/openSUSE-MicroOS.x86_64-OpenStack-Cloud.qcow2",
+      "apt-get install -y libguestfs-tools",
+      "mkdir -p /mnt/disk",
+      "guestmount -a $(ls -a | grep -ie '^opensuse.*microos.*qcow2$') -m \"/dev/sda3:/:subvol=@/root\" --rw /mnt/disk",
+      "mkdir -p /mnt/disk/.ssh",
+      "chmod 700 /mnt/disk/.ssh",
+      "echo \"${var.ssh_public_key}\" | tee /mnt/disk/.ssh/authorized_keys",
+      "chmod 600 /mnt/disk/.ssh/authorized_keys",
+      "guestunmount /mnt/disk",
+      "sleep 3",
+      "qemu-img convert -p -f qcow2 -O host_device $(ls -a | grep -ie '^opensuse.*microos.*qcow2$') ${var.os_device}",
+    ]
+  }
+
+  # Issue a reboot command.
+  provisioner "local-exec" {
+    command = <<-EOT
+      ssh ${local.ssh_args} -i /tmp/${random_string.identity_file.id} root@${var.ipv4_address} '(sleep 2; reboot)&'; sleep 3
+    EOT
+  }
+
+  # Wait for MicroOS to reboot and be ready.
+  provisioner "local-exec" {
+    command = <<-EOT
+      until ssh ${local.ssh_args} -i /tmp/${random_string.identity_file.id} -o ConnectTimeout=2 root@${var.ipv4_address} true 2> /dev/null
+      do
+        echo "Waiting for MicroOS to reboot and become available..."
+        sleep 3
+      done
+    EOT
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      user           = "root"
+      private_key    = var.ssh_private_key
+      agent_identity = local.ssh_agent_identity
+      host           = var.ipv4_address
+
+      # We cannot use different ports here as this is pre cloud-init and thus uses the
+      # standard 22 TCP port.
+      port = 22
+    }
+
     inline = [<<-EOT
       set -ex
 
       transactional-update shell <<<"
-zypper remove -y busybox-hostname ; \
-zypper --gpg-auto-import-keys install -y \
-    cloud-init k3s-selinux && \
-zypper --gpg-auto-import-keys install -y --no-recommends \
-    patterns-microos-base patterns-microos-base-zypper patterns-microos-basesystem patterns-microos-defaults patterns-containers-container_runtime && \
-systemctl enable cloud-init-local.service && \
-systemctl enable cloud-init.service && \
-systemctl enable cloud-config.service && \
-systemctl enable cloud-final.service && \
+zypper --gpg-auto-import-keys install -y k3s-selinux && \
 ls -l /etc/cloud/cloud.cfg.d && \
 { tee /etc/cloud/cloud.cfg << EOFCLOUDCFG
 ${replace(local.cloudinit_config, "\"", "\\\"")}
@@ -87,6 +153,31 @@ cloud-init init --local
       sleep 1 && udevadm settle
       EOT
     ]
+  }
+
+  # Issue a reboot command.
+  provisioner "local-exec" {
+    command = <<-EOT
+      ssh ${local.ssh_args} -i /tmp/${random_string.identity_file.id} root@${var.ipv4_address} '(sleep 3; reboot)&'; sleep 3
+    EOT
+  }
+
+  # Wait for MicroOS to reboot and be ready
+  provisioner "local-exec" {
+    command = <<-EOT
+      until ssh ${local.ssh_args} -i /tmp/${random_string.identity_file.id} -o ConnectTimeout=2 -p ${var.ssh_port} root@${var.ipv4_address} true 2> /dev/null
+      do
+        echo "Waiting for MicroOS to reboot and become available..."
+        sleep 3
+      done
+    EOT
+  }
+
+  # Cleanup ssh identity file
+  provisioner "local-exec" {
+    command = <<-EOT
+      rm /tmp/${random_string.identity_file.id}
+    EOT
   }
 
   # Enable open-iscsi
@@ -109,50 +200,6 @@ cloud-init init --local
       echo "Automatic OS updates are disabled"
       systemctl --now disable transactional-update.timer
       EOT
-    ]
-  }
-
-  provisioner "remote-exec" {
-    connection {
-      user           = "root"
-      private_key    = var.ssh_private_key
-      agent_identity = local.ssh_agent_identity
-      host           = var.ipv4_address
-      port           = var.ssh_port
-
-      allow_missing_exit_status = true
-    }
-
-    inline = [
-      "reboot"
-    ]
-  }
-}
-
-resource "time_sleep" "wait_60_seconds" {
-  depends_on = [null_resource.k3s_host]
-
-  create_duration = "60s"
-}
-
-resource "null_resource" "k3s_host_verify" {
-  depends_on = [time_sleep.wait_60_seconds]
-
-  triggers = {
-    always_run = "${timestamp()}"
-  }
-
-  connection {
-    user           = "root"
-    private_key    = var.ssh_private_key
-    agent_identity = local.ssh_agent_identity
-    host           = var.ipv4_address
-    port           = var.ssh_port
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "echo \"Hello world!\""
     ]
   }
 }

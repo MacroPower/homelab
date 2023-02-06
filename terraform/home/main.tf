@@ -1,3 +1,14 @@
+terraform {
+  cloud {
+    organization = "MacroPower"
+    hostname     = "app.terraform.io"
+
+    workspaces {
+      name = "home"
+    }
+  }
+}
+
 module "k3s" {
   source = "./modules/k3s"
 
@@ -6,8 +17,9 @@ module "k3s" {
   control_plane_nodepools = [
     {
       name              = "control-plane-1",
-      ipv4_address      = var.ipv4_address
+      ipv4_address      = "10.0.5.1"
       network_interface = "enp2s0"
+      os_device         = "/dev/sda"
       labels            = [],
       taints            = [],
       count             = 1
@@ -16,8 +28,9 @@ module "k3s" {
   agent_nodepools = [
     {
       name              = "agent-1",
-      ipv4_address      = var.ipv4_address
+      ipv4_address      = "10.0.5.1"
       network_interface = "enp2s0"
+      os_device         = "/dev/sda"
       labels            = [],
       taints            = [],
       count             = 0
@@ -42,5 +55,15 @@ module "k3s" {
   enable_cert_manager   = false
   enable_rancher        = false
 
-  dns_servers = [var.primary_dns, "8.8.8.8"]
+  dns_servers = [
+    "10.0.0.1",
+    "8.8.8.8",
+    "8.8.4.4",
+    "1.1.1.1",
+  ]
+
+  # Extra values that will be passed to the `extra-manifests/kustomization.yaml.tpl` if its present.
+  extra_kustomize_parameters = {
+    doppler_token_b64 = base64encode(var.doppler_token)
+  }
 }
