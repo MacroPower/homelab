@@ -11,3 +11,4 @@ resources:
   - backup.yaml
   - kube-system.yaml
   - argocd.yaml
+  - linkerd.yaml
