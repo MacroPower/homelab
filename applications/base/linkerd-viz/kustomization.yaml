@@ -11,13 +11,13 @@ helmCharts:
     namespace: linkerd
     valuesInline:
       grafana:
-        url: grafana.observability.svc.cluster.local:3000
+        url: http://grafana.observability.svc.cluster.local:3000
 
       # jaegerUrl:
 
       prometheus:
         enabled: false
-      prometheusUrl: kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
+      prometheusUrl: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
 
       dashboard:
         resources:
