@@ -136,3 +136,15 @@ helmCharts:
       #           password:
       #             name: grafana-cloud-prom-credentials
       #             key: GRAFANA_PROM_PASS
+
+patches:
+  - target:
+      group: apiextensions.k8s.io
+      version: v1
+      kind: CustomResourceDefinition
+      name: prometheuses.monitoring.coreos.com
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          'argocd.argoproj.io/sync-options': 'Replace=true'
