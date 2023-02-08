@@ -1,0 +1,36 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Must not set a namespace since it needs to deploy into other namespaces.
+
+helmCharts:
+  - name: linkerd-viz
+    repo: https://helm.linkerd.io/edge
+    version: '30.4.8-edge'
+    releaseName: linkerd-viz
+    namespace: linkerd
+    valuesInline:
+      grafana:
+        url: grafana.observability.svc.cluster.local:3000
+
+      # jaegerUrl:
+
+      prometheus:
+        enabled: false
+      prometheusUrl: kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
+
+      dashboard:
+        resources:
+          cpu:
+            request: 50m
+          memory:
+            request: 128Mi
+            limit: 512Mi
+
+      metricsAPI:
+        resources:
+          cpu:
+            request: 50m
+          memory:
+            request: 128Mi
+            limit: 512Mi
