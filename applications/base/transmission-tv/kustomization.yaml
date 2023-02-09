@@ -29,6 +29,20 @@ helmCharts:
       flood:
         enabled: true
 
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            memory: 512Mi
+
+      resources:
+        requests:
+          cpu: 500m
+          memory: 4096Mi
+        limits:
+          memory: 4096Mi
+
 resources:
   - config.yaml
   - config-secrets.yaml

@@ -49,6 +49,13 @@ helmCharts:
       podSecurityContext:
         fsGroup: 1000
 
+      resources:
+        requests:
+          cpu: 100m
+          memory: 2048Mi
+        limits:
+          memory: 2048Mi
+
 resources:
   - secrets.yaml
   - config.yaml

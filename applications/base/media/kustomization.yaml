@@ -28,6 +28,13 @@ helmCharts:
           containerPort: 50000
           protocol: TCP
 
+      resources:
+        requests:
+          cpu: 100m
+          memory: 2048Mi
+        limits:
+          memory: 2048Mi
+
 resources:
   - secrets.yaml
   - init-scripts.yaml
