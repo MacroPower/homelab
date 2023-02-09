@@ -4,6 +4,8 @@ metadata:
   name: data
   labels:
     goldilocks.fairwinds.com/enabled: 'true'
+  annotations:
+    linkerd.io/inject: enabled
 
 ---
 apiVersion: v1

@@ -4,6 +4,8 @@ metadata:
   name: automation
   labels:
     goldilocks.fairwinds.com/enabled: 'true'
+  annotations:
+    linkerd.io/inject: enabled
 
 ---
 apiVersion: v1
