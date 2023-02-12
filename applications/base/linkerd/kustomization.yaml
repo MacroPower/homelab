@@ -10,18 +10,5 @@ helmCharts:
     releaseName: linkerd-crds
     namespace: linkerd
 
-  - name: linkerd2-cni
-    repo: https://helm.linkerd.io/edge
-    version: '30.6.1-edge'
-    releaseName: linkerd-cni
-    namespace: linkerd
-    valuesInline:
-      # Normally /opt/cni/bin and /etc/cni/net.d, the k3s flannel CNI is abnormal.
-      destCNIBinDir: /var/lib/rancher/k3s/data/current/bin
-      destCNINetDir: /var/lib/rancher/k3s/agent/etc/cni/net.d
-      privileged: true
-
-      logLevel: debug
-
 resources:
   - identity.yaml

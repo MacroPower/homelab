@@ -8,7 +8,7 @@ helmCharts:
     repo: https://helm.linkerd.io/edge
     version: '30.4.8-edge'
     releaseName: linkerd-viz
-    namespace: linkerd
+    namespace: linkerd-viz
     valuesInline:
       grafana:
         url: http://grafana.observability.svc.cluster.local:3000

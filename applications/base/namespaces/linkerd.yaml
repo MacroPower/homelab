@@ -2,5 +2,24 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: linkerd
+  annotations:
+    linkerd.io/inject: disabled
+  labels:
+    goldilocks.fairwinds.com/enabled: 'true'
+    linkerd.io/is-control-plane: 'true'
+    config.linkerd.io/admission-webhooks: disabled
+    linkerd.io/control-plane-ns: linkerd
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: linkerd-cni
+  labels:
+    goldilocks.fairwinds.com/enabled: 'true'
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: linkerd-viz
   labels:
     goldilocks.fairwinds.com/enabled: 'true'
