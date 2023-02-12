@@ -14,3 +14,6 @@ helmCharts:
       privileged: false
 
       logLevel: debug
+
+resources:
+  - namespace.yaml

@@ -7,8 +7,10 @@ helmCharts:
     version: '1.11.2-edge'
     releaseName: linkerd-control-plane
     namespace: linkerd
+
+    # https://github.com/linkerd/linkerd2/blob/main/charts/linkerd-control-plane/values.yaml
     valuesInline:
-      cniEnabled: true
+      cniEnabled: false
 
       identity:
         issuer:

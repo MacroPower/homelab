@@ -9,13 +9,7 @@ metadata:
     linkerd.io/is-control-plane: 'true'
     config.linkerd.io/admission-webhooks: disabled
     linkerd.io/control-plane-ns: linkerd
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: linkerd-cni
-  labels:
-    goldilocks.fairwinds.com/enabled: 'true'
+    pod-security.kubernetes.io/enforce: privileged
 ---
 apiVersion: v1
 kind: Namespace
