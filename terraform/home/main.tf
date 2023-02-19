@@ -10,7 +10,7 @@ terraform {
 }
 
 module "k3s" {
-  source = "./modules/k3s"
+  source = "github.com/MacroPower/terraform-kube-microos"
 
   cluster_name = "home"
 
@@ -18,8 +18,9 @@ module "k3s" {
     {
       name              = "control-plane-1",
       ipv4_address      = "10.0.5.1"
-      network_interface = "enp2s0"
-      os_device         = "/dev/sda"
+      network_interface = "eth0"
+      os_device         = "/dev/vda"
+      longhorn_devices  = ["/dev/vdb"]
       labels            = [],
       taints            = [],
       count             = 1
@@ -29,30 +30,32 @@ module "k3s" {
     {
       name              = "agent-1",
       ipv4_address      = "10.0.5.1"
-      network_interface = "enp2s0"
-      os_device         = "/dev/sda"
+      network_interface = "eth0"
+      os_device         = "/dev/vda"
       labels            = [],
       taints            = [],
       count             = 0
     },
   ]
 
-  allow_scheduling_on_control_plane = true
-  automatically_upgrade_k3s         = true
-  automatically_upgrade_os          = true
-  enable_klipper_metal_lb           = true
-
   ssh_public_key             = var.ssh_public_key
   ssh_private_key            = var.ssh_private_key
   ssh_additional_public_keys = var.ssh_additional_public_keys
 
-  cni_plugin = "flannel"
+  allow_scheduling_on_control_plane = true
 
-  enable_metrics_server = false
-  enable_longhorn       = true
-  enable_cert_manager   = false
-  enable_rancher        = false
-  disable_hetzner_csi   = true
+  automatically_upgrade_k3s = false
+  automatically_upgrade_os  = false
+
+  enable_klipper_metal_lb = true
+  enable_metrics_server   = false
+  enable_longhorn         = true
+  longhorn_fstype         = "xfs"
+  enable_cert_manager     = false
+  enable_rancher          = false
+  disable_hetzner_csi     = true
+  cni_plugin              = "flannel"
+  ingress_controller      = "none"
 
   dns_servers = [
     "10.0.0.1",
