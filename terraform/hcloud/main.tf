@@ -122,5 +122,7 @@ module "kube-hetzner" {
   # Extra values that will be passed to the `extra-manifests/kustomization.yaml.tpl` if its present.
   extra_kustomize_parameters = {
     doppler_token_b64 = base64encode(var.doppler_token)
+    cluster_cidr_ipv4 = "10.42.0.0/16"
+    ccm_version       = "v1.13.2"
   }
 }
