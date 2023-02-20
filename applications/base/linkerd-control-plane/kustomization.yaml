@@ -4,7 +4,7 @@ kind: Kustomization
 helmCharts:
   - name: linkerd-control-plane
     repo: https://helm.linkerd.io/edge
-    version: '1.11.2-edge'
+    version: '1.11.4-edge'
     releaseName: linkerd-control-plane
     namespace: linkerd
 

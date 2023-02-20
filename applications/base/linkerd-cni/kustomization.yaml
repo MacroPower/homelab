@@ -4,7 +4,7 @@ kind: Kustomization
 helmCharts:
   - name: linkerd2-cni
     repo: https://helm.linkerd.io/edge
-    version: '30.6.1-edge'
+    version: '30.7.1-edge'
     releaseName: linkerd-cni
     namespace: linkerd-cni
     valuesInline:
