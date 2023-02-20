@@ -10,6 +10,7 @@ helmCharts:
     releaseName: openspeedtest
     namespace: observability
 
+    # https://github.com/openspeedtest/Helm-chart/blob/main/values.yaml
     valuesInline:
       image:
         repository: openspeedtest/latest
@@ -19,3 +20,15 @@ helmCharts:
       service:
         type: ClusterIP
         port: 3000
+
+patches:
+  - target:
+      group:
+      version: v1
+      kind: Service
+      name: openspeedtest
+    patch: |-
+      - op: add
+        path: /metadata/labels
+        value:
+          'mirror.linkerd.io/exported': 'true'
