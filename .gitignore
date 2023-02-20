@@ -5,6 +5,8 @@
 *.tfstate
 *.tfstate.*
 
+*kustomization_backup.yaml
+
 # Crash log files
 crash.log
 
@@ -42,3 +44,6 @@ terraform.rc
 .htpasswd
 **/.secrets
 **/.hidden
+
+# Linkerd binary
+linkerd
