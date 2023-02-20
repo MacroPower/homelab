@@ -32,3 +32,7 @@ patches:
         path: /metadata/labels
         value:
           'mirror.linkerd.io/exported': 'true'
+      - op: add
+        path: /metadata/annotations
+        value:
+          'argocd.argoproj.io/sync-options': 'Prune=false'

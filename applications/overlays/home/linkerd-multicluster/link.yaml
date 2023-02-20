@@ -5,7 +5,7 @@ metadata:
   namespace: linkerd-multicluster
 spec:
   clusterCredentialsSecret: cluster-credentials-hcloud
-  gatewayAddress: 65.109.43.36,2a01:4f9:c01d:88a::1,10.0.0.3
+  gatewayAddress: "65.109.43.36"
   gatewayIdentity: linkerd-gateway.linkerd-multicluster.serviceaccount.identity.linkerd.cluster.local
   gatewayPort: "4143"
   probeSpec:
@@ -131,7 +131,7 @@ spec:
         - -namespace=linkerd-multicluster
         - -enable-pprof=false
         - hcloud
-        image: cr.l5d.io/linkerd/controller:edge-23.2.1
+        image: cr.l5d.io/linkerd/controller:edge-23.2.2
         name: service-mirror
         securityContext:
           allowPrivilegeEscalation: false

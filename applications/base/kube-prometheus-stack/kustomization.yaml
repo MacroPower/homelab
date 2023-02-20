@@ -45,6 +45,8 @@ helmCharts:
         service:
           labels:
             mirror.linkerd.io/exported: 'true'
+          annotations:
+            argocd.argoproj.io/sync-options: Prune=false
 
         prometheusSpec:
           serviceMonitorSelectorNilUsesHelmValues: false
@@ -79,6 +81,7 @@ helmCharts:
                   namespaces:
                     names:
                       - 'linkerd'
+                      - 'linkerd-viz'
               relabel_configs:
                 - source_labels:
                     - __meta_kubernetes_pod_container_port_name
@@ -93,7 +96,7 @@ helmCharts:
                 - role: pod
               relabel_configs:
                 - source_labels:
-                    - __meta_kubernetes_pod_label_linkerd_io_control_plane_component
+                    - __meta_kubernetes_pod_label_component
                     - __meta_kubernetes_pod_container_port_name
                   action: keep
                   regex: linkerd-service-mirror;admin-http$
