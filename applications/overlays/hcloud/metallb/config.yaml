@@ -1,0 +1,46 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: main
+spec:
+  addresses:
+    - 95.216.182.216/32
+
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: main
+spec:
+  ipAddressPools:
+    - main
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fip-controller-config
+data:
+  config.json: |
+    {
+      "hcloudFloatingIPs": [ "95.216.182.216" ],
+      "nodeAddressType": "external"
+    }
+
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: fip-controller-secrets
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: default
+
+  target:
+    name: fip-controller-secrets
+
+  data:
+    - secretKey: HCLOUD_API_TOKEN
+      remoteRef:
+        key: HCLOUD_API_TOKEN
