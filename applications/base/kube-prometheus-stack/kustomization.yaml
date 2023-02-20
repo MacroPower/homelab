@@ -10,6 +10,8 @@ helmCharts:
     releaseName: kube-prometheus-stack
     namespace: observability
     includeCRDs: true
+
+    # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
     valuesInline:
       global:
         rbac:
@@ -40,6 +42,10 @@ helmCharts:
               memory: 50Mi
 
       prometheus:
+        service:
+          labels:
+            mirror.linkerd.io/exported: 'true'
+
         prometheusSpec:
           serviceMonitorSelectorNilUsesHelmValues: false
           serviceMonitorSelector: {}
