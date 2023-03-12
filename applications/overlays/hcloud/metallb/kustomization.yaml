@@ -5,6 +5,4 @@ namespace: kube-system
 
 resources:
   - ../../../base/metallb
-  - https://raw.githubusercontent.com/cbeneke/hcloud-fip-controller/master/deploy/rbac.yaml
-  - https://raw.githubusercontent.com/cbeneke/hcloud-fip-controller/master/deploy/deployment.yaml
   - config.yaml
