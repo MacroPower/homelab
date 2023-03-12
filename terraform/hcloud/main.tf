@@ -101,6 +101,41 @@ module "kube-hetzner" {
 
   restrict_outbound_traffic = false
 
+  extra_firewall_rules = [
+    {
+      description     = "HTTP"
+      direction       = "in"
+      protocol        = "tcp"
+      port            = "80"
+      source_ips      = ["0.0.0.0/0", "::/0"]
+      destination_ips = [] # Won't be used for this rule
+    },
+    {
+      description     = "HTTPS"
+      direction       = "in"
+      protocol        = "tcp"
+      port            = "443"
+      source_ips      = ["0.0.0.0/0", "::/0"]
+      destination_ips = [] # Won't be used for this rule
+    },
+    {
+      description     = "Linkerd Gateway"
+      direction       = "in"
+      protocol        = "tcp"
+      port            = "4143"
+      source_ips      = ["0.0.0.0/0", "::/0"]
+      destination_ips = [] # Won't be used for this rule
+    },
+    {
+      description     = "Linkerd Gateway"
+      direction       = "in"
+      protocol        = "tcp"
+      port            = "4191"
+      source_ips      = ["0.0.0.0/0", "::/0"]
+      destination_ips = [] # Won't be used for this rule
+    },
+  ]
+
   automatically_upgrade_k3s = true
   automatically_upgrade_os  = true
 
