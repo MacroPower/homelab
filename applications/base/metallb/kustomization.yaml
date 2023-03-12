@@ -6,7 +6,7 @@ namespace: kube-system
 helmCharts:
   - name: metallb
     repo: https://metallb.github.io/metallb
-    version: '0.13.7'
+    version: '0.13.9'
     releaseName: metallb
     namespace: kube-system
     includeCRDs: true
