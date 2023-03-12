@@ -12,3 +12,6 @@ helmCharts:
     valuesInline:
       gateway:
         replicas: 2
+
+        serviceAnnotations:
+          metallb.universe.tf/allow-shared-ip: main

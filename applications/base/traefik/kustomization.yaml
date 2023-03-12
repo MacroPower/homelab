@@ -9,6 +9,8 @@ helmCharts:
     version: 21.2.0
     releaseName: traefik
     includeCRDs: true
+
+    # https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml
     valuesInline:
       deployment:
         kind: Deployment
@@ -20,6 +22,10 @@ helmCharts:
       additionalArguments:
         - --serverstransport.insecureskipverify=true
         - --log.level=DEBUG
+
+      service:
+        annotations:
+          metallb.universe.tf/allow-shared-ip: main
 
       tracing:
         jaeger:
