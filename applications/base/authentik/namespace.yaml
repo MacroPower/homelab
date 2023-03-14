@@ -4,3 +4,5 @@ metadata:
   name: authentik
   labels:
     goldilocks.fairwinds.com/enabled: 'true'
+  annotations:
+    linkerd.io/inject: enabled

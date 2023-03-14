@@ -48,18 +48,13 @@ helmCharts:
 
       postgresql:
         enabled: true
-        auth:
-          existingSecret: authentik-credentials
-
-          secretKeys:
-            adminPasswordKey: AUTHENTIK_DB_ADMIN_PASS
-            userPasswordKey: AUTHENTIK_DB_USER_PASS
-            replicationPasswordKey: AUTHENTIK_DB_REPLICATION_PASS
+        existingSecret: authentik-postgres-credentials
 
       redis:
         enabled: true
         architecture: standalone
         auth:
+          enabled: true
           existingSecret: authentik-credentials
           existingSecretPasswordKey: AUTHENTIK_REDIS_PASS
 
@@ -76,18 +71,18 @@ helmCharts:
       #      name: special-config
 
       envValueFrom:
-        AUTHENTIK_POSTGRESQL__PASSWORD:
+        AUTHENTIK_SECRET_KEY:
           secretKeyRef:
-            key: AUTHENTIK_DB_USER_PASS
+            key: AUTHENTIK_SECRET_KEY
             name: authentik-credentials
         AUTHENTIK_REDIS__PASSWORD:
           secretKeyRef:
             key: AUTHENTIK_REDIS_PASS
             name: authentik-credentials
-        AUTHENTIK_SECRET_KEY:
+        AUTHENTIK_POSTGRESQL__PASSWORD:
           secretKeyRef:
-            key: AUTHENTIK_SECRET_KEY
-            name: authentik-credentials
+            key: postgresql-password
+            name: authentik-postgres-credentials
 
       service:
         # -- Service that is created to access authentik
