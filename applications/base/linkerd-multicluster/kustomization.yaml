@@ -15,3 +15,6 @@ helmCharts:
 
         serviceAnnotations:
           metallb.universe.tf/allow-shared-ip: main
+
+resources:
+  - namespace.yaml
