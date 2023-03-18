@@ -161,3 +161,43 @@ module "kube-hetzner" {
     ccm_version       = "v1.13.2"
   }
 }
+
+data "hcloud_servers" "agents" {
+  with_selector = "role=agent_node"
+}
+
+resource "hcloud_floating_ip" "agent_ip" {
+  type      = "ipv4"
+  server_id = data.hcloud_servers.agents.servers[0].id
+}
+
+resource "random_string" "identity_file" {
+  length  = 20
+  lower   = true
+  special = false
+  numeric = true
+  upper   = false
+}
+
+resource "null_resource" "agent_floating_ip" {
+  for_each = { for i, v in data.hcloud_servers.agents.servers: v.name => v }
+
+  triggers = {
+    agent_id = each.key
+  }
+
+  connection {
+    user           = "root"
+    private_key    = tls_private_key.k8s_key.private_key_openssh
+    agent_identity = tls_private_key.k8s_key.public_key_openssh
+    host           = each.value.ipv4_address
+    port           = random_integer.ssh_port.result
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo \"Adding ${hcloud_floating_ip.agent_ip.ip_address}\"",
+      "ip addr add ${hcloud_floating_ip.agent_ip.ip_address} dev eth0",
+    ]
+  }
+}
