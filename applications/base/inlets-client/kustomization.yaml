@@ -58,5 +58,5 @@ patches:
           - inlets
           - client
           - "--url=wss://prometheus-tunnel.macro.network"
-          - "--upstream=tcp:9090=prometheus-operated.observability.svc.cluster.local:9090"
+          - "--upstream=http://prometheus-operated.observability.svc.cluster.local:9090"
           - "--token-from=/etc/inlets/token"
