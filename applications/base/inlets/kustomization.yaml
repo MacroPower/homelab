@@ -1,0 +1,79 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: inlets
+
+helmCharts:
+  - name: inlets-tcp-server
+    repo: https://inlets.github.io/inlets-pro/charts/
+    version: '0.6.1'
+    releaseName: prometheus-tunnel
+    namespace: inlets
+
+    # https://github.com/inlets/inlets-pro/blob/master/chart/inlets-tcp-server/values.yaml
+    valuesInline:
+      replicaCount: 1
+
+      image:
+        # https://github.com/cubed-it/inlets
+        repository: ghcr.io/cubed-it/inlets
+        pullPolicy: IfNotPresent
+        tag: "4.0.0"
+
+      tokenSecretName: prometheus-tunnel-token
+
+      controlPlane:
+        type: ClusterIP
+        port: 8123
+
+      dataPlane:
+        type: ClusterIP
+        ports:
+        - targetPort: 8122
+          protocol: TCP
+          name: default
+          port: 8122
+        - targetPort: 9090
+          protocol: TCP
+          name: prometheus
+          port: 9090
+
+      ingress:
+        domain: prometheus-tunnel.macro.network
+        annotations:
+          'kubernetes.io/ingress.class': 'traefik'
+          'external-dns.alpha.kubernetes.io/hostname': 'prometheus-tunnel.macro.network'
+          'external-dns.alpha.kubernetes.io/cloudflare-proxied': 'false'
+          'traefik.ingress.kubernetes.io/router.tls.options': 'kube-system-no-client-auth@kubernetescrd'
+          'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure'
+          'cert-manager.io/issuer': 'letsencrypt-prod'
+
+      resources:
+        limits:
+          memory: 128Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+
+resources:
+  - namespace.yaml
+  - secrets.yaml
+  - issuer.yaml
+
+patches:
+  # https://github.com/inlets/inlets-pro/blob/master/chart/inlets-tcp-server/templates/deployment.yaml
+  # https://github.com/cubed-it/inlets/blob/master/cmd/server.go
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: prometheus-tunnel
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/command
+        value:
+          - inlets
+          - server
+          - "--port=8122"
+          - "--control-port=8123"
+          - "--token-from=/etc/inlets/token"

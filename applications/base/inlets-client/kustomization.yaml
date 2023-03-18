@@ -1,0 +1,62 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: inlets
+
+helmCharts:
+  - name: inlets-tcp-client
+    repo: https://inlets.github.io/inlets-pro/charts/
+    version: '0.5.2'
+    releaseName: prometheus-tunnel
+    namespace: inlets
+
+    # https://github.com/inlets/inlets-pro/blob/master/chart/inlets-tcp-client/values.yaml
+    valuesInline:
+      replicaCount: 1
+
+      image:
+        # https://github.com/cubed-it/inlets
+        repository: ghcr.io/cubed-it/inlets
+        pullPolicy: IfNotPresent
+        tag: "4.0.0"
+
+      tokenSecretName: prometheus-tunnel-token
+
+      url: wss://prometheus-tunnel.macro.network
+      upstream: prometheus
+
+      autoTLS: false
+
+      # comma-separated list of TCP ports to forward
+      # i.e. for Istio/Nginx/Traefik:
+      # ports: 80,443
+      ports: 9090
+
+      resources:
+        limits:
+          memory: 128Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+
+resources:
+  - namespace.yaml
+  - secrets.yaml
+
+patches:
+  # https://github.com/inlets/inlets-pro/blob/master/chart/inlets-tcp-client/templates/deployment.yaml
+  # https://github.com/cubed-it/inlets/blob/master/cmd/client.go
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: prometheus-tunnel-inlets-tcp-client
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/command
+        value:
+          - inlets
+          - client
+          - "--url=wss://prometheus-tunnel.macro.network"
+          - "--upstream=tcp:9090=prometheus-operated.observability.svc.cluster.local:9090"
+          - "--token-from=/etc/inlets/token"
