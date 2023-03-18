@@ -24,6 +24,55 @@ variable "ssh_key" {
   sensitive = true
 }
 
+variable "control_plane_nodepools" {
+  description = "Number of control plane nodes."
+  type = list(object({
+    name        = string
+    server_type = string
+    location    = string
+    backups     = optional(bool)
+    labels      = list(string)
+    taints      = list(string)
+    count       = number
+  }))
+
+  default = [
+    {
+      name        = "control-plane-hel1",
+      server_type = "cpx11",
+      location    = "hel1",
+      labels      = [],
+      taints      = [],
+      count       = 3
+    }
+  ]
+}
+
+variable "agent_nodepools" {
+  description = "Number of agent nodes."
+  type = list(object({
+    name        = string
+    server_type = string
+    location    = string
+    backups     = optional(bool)
+    floating_ip = optional(bool)
+    labels      = list(string)
+    taints      = list(string)
+    count       = number
+  }))
+
+  default = [
+    {
+      name        = "agent-hel1",
+      server_type = "cpx31",
+      location    = "hel1",
+      labels      = [],
+      taints      = [],
+      count       = 2
+    },
+  ]
+}
+
 provider "hcloud" {
   token = var.hcloud_token
 }
@@ -68,27 +117,8 @@ module "kube-hetzner" {
   # * For Hetzner locations see https://docs.hetzner.com/general/others/data-centers-and-connection/
   network_region = "eu-central" # change to `us-east` if location is ash
 
-  control_plane_nodepools = [
-    {
-      name        = "control-plane-hel1",
-      server_type = "cpx11",
-      location    = "hel1",
-      labels      = [],
-      taints      = [],
-      count       = 3
-    }
-  ]
-
-  agent_nodepools = [
-    {
-      name        = "agent-small-hel1",
-      server_type = "cx21",
-      location    = "hel1",
-      labels      = [],
-      taints      = [],
-      count       = 4
-    },
-  ]
+  control_plane_nodepools = var.control_plane_nodepools
+  agent_nodepools         = var.agent_nodepools
 
   # * LB location and type, the latter will depend on how much load you want it to handle, see https://www.hetzner.com/cloud/load-balancer
   load_balancer_type         = "lb11"
@@ -97,7 +127,7 @@ module "kube-hetzner" {
 
   # When this is enabled, rather than the first node, all external traffic will be routed via a control-plane loadbalancer, allowing for high availability.
   # The default is false.
-  use_control_plane_lb = false
+  use_control_plane_lb = true
 
   restrict_outbound_traffic = false
 
@@ -162,42 +192,22 @@ module "kube-hetzner" {
   }
 }
 
-data "hcloud_servers" "agents" {
-  with_selector = "role=agent_node"
-}
+module "floating-ip" {
+  source = "./modules/floating-ip"
 
-resource "hcloud_floating_ip" "agent_ip" {
-  type      = "ipv4"
-  server_id = data.hcloud_servers.agents.servers[0].id
-}
-
-resource "random_string" "identity_file" {
-  length  = 20
-  lower   = true
-  special = false
-  numeric = true
-  upper   = false
-}
-
-resource "null_resource" "agent_floating_ip" {
-  for_each = { for i, v in data.hcloud_servers.agents.servers: v.name => v }
-
-  triggers = {
-    agent_id = each.key
+  providers = {
+    hcloud = hcloud
   }
 
-  connection {
-    user           = "root"
-    private_key    = tls_private_key.k8s_key.private_key_openssh
-    agent_identity = tls_private_key.k8s_key.public_key_openssh
-    host           = each.value.ipv4_address
-    port           = random_integer.ssh_port.result
-  }
+  nodepools = var.agent_nodepools
 
-  provisioner "remote-exec" {
-    inline = [
-      "echo \"Adding ${hcloud_floating_ip.agent_ip.ip_address}\"",
-      "ip addr add ${hcloud_floating_ip.agent_ip.ip_address} dev eth0",
-    ]
-  }
+  # Customize the SSH port (by default 22)
+  ssh_port = random_integer.ssh_port.result
+
+  ssh_public_key  = tls_private_key.k8s_key.public_key_openssh
+  ssh_private_key = tls_private_key.k8s_key.private_key_openssh
+
+  depends_on = [
+    module.kube-hetzner
+  ]
 }

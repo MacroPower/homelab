@@ -36,10 +36,10 @@ patches:
         value:
           requests:
             cpu: 200m
-            memory: 768Mi
+            memory: 512Mi
           limits:
             cpu: 1
-            memory: 768Mi
+            memory: 1024Mi
   - target:
       group: apps
       version: v1
@@ -51,7 +51,7 @@ patches:
         value:
           requests:
             cpu: 200m
-            memory: 768Mi
+            memory: 512Mi
           limits:
             cpu: 1
-            memory: 768Mi
+            memory: 1024Mi
