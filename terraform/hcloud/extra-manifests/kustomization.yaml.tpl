@@ -38,3 +38,6 @@ patchesStrategicMerge:
                 - "--allow-untagged-cloud"
                 - "--allocate-node-cidrs=true"
                 - "--cluster-cidr=${cluster_cidr_ipv4}"
+              env:
+                - name: "HCLOUD_LOAD_BALANCERS_ENABLED"
+                  value: "false"
