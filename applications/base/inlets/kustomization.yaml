@@ -7,7 +7,7 @@ helmCharts:
   - name: inlets-tcp-server
     repo: https://inlets.github.io/inlets-pro/charts/
     version: '0.6.1'
-    releaseName: prometheus-tunnel
+    releaseName: linkerd-tunnel
     namespace: inlets
 
     # https://github.com/inlets/inlets-pro/blob/master/chart/inlets-tcp-server/values.yaml
@@ -20,7 +20,7 @@ helmCharts:
         pullPolicy: IfNotPresent
         tag: "4.0.0"
 
-      tokenSecretName: prometheus-tunnel-token
+      tokenSecretName: linkerd-tunnel-token
 
       controlPlane:
         type: ClusterIP
@@ -33,16 +33,24 @@ helmCharts:
           protocol: TCP
           name: default
           port: 8122
-        - targetPort: 9090
+        - targetPort: 6443
           protocol: TCP
-          name: prometheus
-          port: 9090
+          name: kube
+          port: 6443
+        - targetPort: 4143
+          protocol: TCP
+          name: linkerd-proxy
+          port: 4143
+        - targetPort: 4191
+          protocol: TCP
+          name: linkerd-admin
+          port: 4191
 
       ingress:
-        domain: prometheus-tunnel.macro.network
+        domain: linkerd-tunnel.macro.network
         annotations:
           'kubernetes.io/ingress.class': 'traefik'
-          'external-dns.alpha.kubernetes.io/hostname': 'prometheus-tunnel.macro.network'
+          'external-dns.alpha.kubernetes.io/hostname': 'linkerd-tunnel.macro.network'
           'external-dns.alpha.kubernetes.io/cloudflare-proxied': 'false'
           'traefik.ingress.kubernetes.io/router.tls.options': 'kube-system-no-client-auth@kubernetescrd'
           'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure'
@@ -67,7 +75,7 @@ patches:
       group: apps
       version: v1
       kind: Deployment
-      name: prometheus-tunnel
+      name: linkerd-tunnel
     patch: |-
       - op: replace
         path: /spec/template/spec/containers/0/command
@@ -76,4 +84,5 @@ patches:
           - server
           - "--port=8122"
           - "--control-port=8123"
+          - "--disable-transport-wrapping"
           - "--token-from=/etc/inlets/token"

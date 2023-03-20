@@ -7,7 +7,7 @@ helmCharts:
   - name: inlets-tcp-client
     repo: https://inlets.github.io/inlets-pro/charts/
     version: '0.5.2'
-    releaseName: prometheus-tunnel
+    releaseName: linkerd-tunnel
     namespace: inlets
 
     # https://github.com/inlets/inlets-pro/blob/master/chart/inlets-tcp-client/values.yaml
@@ -20,17 +20,7 @@ helmCharts:
         pullPolicy: IfNotPresent
         tag: "4.0.0"
 
-      tokenSecretName: prometheus-tunnel-token
-
-      url: wss://prometheus-tunnel.macro.network
-      upstream: prometheus
-
-      autoTLS: false
-
-      # comma-separated list of TCP ports to forward
-      # i.e. for Istio/Nginx/Traefik:
-      # ports: 80,443
-      ports: 9090
+      tokenSecretName: linkerd-tunnel-token
 
       resources:
         limits:
@@ -50,13 +40,14 @@ patches:
       group: apps
       version: v1
       kind: Deployment
-      name: prometheus-tunnel-inlets-tcp-client
+      name: linkerd-tunnel-inlets-tcp-client
     patch: |-
       - op: replace
         path: /spec/template/spec/containers/0/command
         value:
           - inlets
           - client
-          - "--url=wss://prometheus-tunnel.macro.network"
-          - "--upstream=http://prometheus-operated.observability.svc.cluster.local:9090"
+          - "--url=wss://linkerd-tunnel.macro.network"
+          - "--upstream=tcp:6443=kubernetes.default.svc.cluster.local:443,tcp:4143=linkerd-gateway.linkerd-multicluster.svc.cluster.local:4143,tcp:4191=linkerd-gateway.linkerd-multicluster.svc.cluster.local:4191"
           - "--token-from=/etc/inlets/token"
+          - "--strict-forwarding=false"
