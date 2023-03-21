@@ -48,6 +48,6 @@ patches:
           - inlets
           - client
           - "--url=wss://linkerd-tunnel.macro.network"
-          - "--upstream=tcp:6443=kubernetes.default.svc.cluster.local:443,tcp:6143=linkerd-gateway.linkerd-multicluster.svc.cluster.local:4143,tcp:6191=linkerd-gateway.linkerd-multicluster.svc.cluster.local:4191"
+          - "--upstream=tcp:6443=kubernetes.default.svc.cluster.local:443,tcp:4143=linkerd-gateway.linkerd-multicluster.svc.cluster.local:4143,tcp:4191=linkerd-gateway.linkerd-multicluster.svc.cluster.local:4191"
           - "--token-from=/etc/inlets/token"
           - "--strict-forwarding=false"
