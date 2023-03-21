@@ -23,7 +23,7 @@ helmCharts:
       tokenSecretName: linkerd-tunnel-token
 
       podAnnotations:
-        config.linkerd.io/opaque-ports: 6443,6143,6191
+        config.linkerd.io/opaque-ports: 6443,6143
 
       controlPlane:
         type: ClusterIP
@@ -32,10 +32,6 @@ helmCharts:
       dataPlane:
         type: ClusterIP
         ports:
-        - targetPort: 8122
-          protocol: TCP
-          name: default
-          port: 8122
         - targetPort: 6443
           protocol: TCP
           name: kube
@@ -85,7 +81,19 @@ patches:
         value:
           - inlets
           - server
-          - "--port=8122"
+          - "--port=6191"
           - "--control-port=8123"
           - "--disable-transport-wrapping"
           - "--token-from=/etc/inlets/token"
+
+  - target:
+      version: v1
+      kind: Service
+      name: linkerd-tunnel-data
+    patch: |-
+      - op: replace
+        path: /spec/ports/1/port
+        value: 4143
+      - op: replace
+        path: /spec/ports/2/port
+        value: 4191
