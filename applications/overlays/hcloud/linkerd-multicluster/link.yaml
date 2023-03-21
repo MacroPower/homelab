@@ -7,11 +7,11 @@ spec:
   clusterCredentialsSecret: cluster-credentials-home
   gatewayAddress: linkerd-tunnel-data.inlets.svc.cluster.local
   gatewayIdentity: linkerd-gateway.linkerd-multicluster.serviceaccount.identity.linkerd.cluster.local
-  gatewayPort: "4143"
+  gatewayPort: "6143"
   probeSpec:
     path: /ready
     period: 3s
-    port: "4191"
+    port: "6191"
   selector:
     matchLabels:
       mirror.linkerd.io/exported: "true"

@@ -23,9 +23,7 @@ helmCharts:
       tokenSecretName: linkerd-tunnel-token
 
       podAnnotations:
-        config.linkerd.io/admin-port: 6191
-        config.linkerd.io/inbound-port: 6143
-        config.linkerd.io/opaque-ports: 6443,4143,4191
+        config.linkerd.io/opaque-ports: 6443,6143,6191
 
       controlPlane:
         type: ClusterIP
@@ -42,14 +40,14 @@ helmCharts:
           protocol: TCP
           name: kube
           port: 6443
-        - targetPort: 4143
+        - targetPort: 6143
           protocol: TCP
           name: linkerd-proxy
-          port: 4143
-        - targetPort: 4191
+          port: 6143
+        - targetPort: 6191
           protocol: TCP
           name: linkerd-admin
-          port: 4191
+          port: 6191
 
       ingress:
         domain: linkerd-tunnel.macro.network
