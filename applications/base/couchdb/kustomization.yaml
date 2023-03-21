@@ -6,7 +6,7 @@ namespace: data
 helmCharts:
   - name: couchdb
     repo: https://apache.github.io/couchdb-helm
-    version: '3.6.1'
+    version: '3.6.4'
     releaseName: single
     namespace: data
     valuesInline:
