@@ -37,14 +37,14 @@ helmCharts:
           protocol: TCP
           name: kube
           port: 6443
-        - targetPort: 4143
+        - targetPort: 6143
           protocol: TCP
           name: linkerd-proxy
-          port: 4143
-        - targetPort: 4191
+          port: 6143
+        - targetPort: 6191
           protocol: TCP
           name: linkerd-admin
-          port: 4191
+          port: 6191
 
       ingress:
         domain: linkerd-tunnel.macro.network

@@ -5,3 +5,13 @@ resources:
   - ../../../base/linkerd-multicluster
   - secrets.yaml
   - link.yaml
+
+patches:
+  - target:
+      version: v1
+      kind: Service
+      name: linkerd-gateway
+    patch: |-
+      - op: replace
+        path: /spec/type
+        value: ClusterIP
