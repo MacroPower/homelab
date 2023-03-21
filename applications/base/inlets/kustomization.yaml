@@ -22,6 +22,11 @@ helmCharts:
 
       tokenSecretName: linkerd-tunnel-token
 
+      podAnnotations:
+        config.linkerd.io/admin-port: 6191
+        config.linkerd.io/inbound-port: 6143
+        config.linkerd.io/opaque-ports: 6443,4143,4191
+
       controlPlane:
         type: ClusterIP
         port: 8123

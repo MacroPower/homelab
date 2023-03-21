@@ -5,3 +5,4 @@ metadata:
   labels:
     goldilocks.fairwinds.com/enabled: 'true'
     linkerd.io/extension: multicluster
+    pod-security.kubernetes.io/enforce: privileged

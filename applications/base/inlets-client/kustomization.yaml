@@ -22,6 +22,9 @@ helmCharts:
 
       tokenSecretName: linkerd-tunnel-token
 
+      podAnnotations:
+        config.linkerd.io/opaque-ports: 6443,4143,4191
+
       resources:
         limits:
           memory: 128Mi
