@@ -24,6 +24,7 @@ helmCharts:
 
       podAnnotations:
         config.linkerd.io/opaque-ports: 6443,6143
+        config.linkerd.io/enable-debug-sidecar: "true"
 
       controlPlane:
         type: ClusterIP
