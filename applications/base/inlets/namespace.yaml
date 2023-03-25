@@ -4,5 +4,5 @@ metadata:
   name: inlets
   labels:
     goldilocks.fairwinds.com/enabled: 'true'
-  annotations:
-    linkerd.io/inject: enabled
+  # annotations:
+  #   linkerd.io/inject: enabled

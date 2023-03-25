@@ -93,6 +93,9 @@ patches:
       name: linkerd-tunnel-data
     patch: |-
       - op: replace
+        path: /spec/clusterIP
+        value: None
+      - op: replace
         path: /spec/ports/1/port
         value: 4143
       - op: replace
