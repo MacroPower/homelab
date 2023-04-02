@@ -5,7 +5,7 @@ metadata:
   namespace: linkerd-multicluster
 spec:
   clusterCredentialsSecret: cluster-credentials-home
-  gatewayAddress: linkerd-tunnel-data.inlets.svc.cluster.local
+  gatewayAddress: 95.216.182.216
   gatewayIdentity: linkerd-gateway.linkerd-multicluster.serviceaccount.identity.linkerd.cluster.local
   gatewayPort: "6143"
   probeSpec:

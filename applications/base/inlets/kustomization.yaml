@@ -4,57 +4,97 @@ kind: Kustomization
 namespace: inlets
 
 helmCharts:
-  - name: inlets-tcp-server
-    repo: https://inlets.github.io/inlets-pro/charts/
-    version: '0.6.1'
+  - name: template
+    repo: https://jacobcolvin.com/helm-charts/
+    version: "0.1.1"
     releaseName: linkerd-tunnel
     namespace: inlets
 
     # https://github.com/inlets/inlets-pro/blob/master/chart/inlets-tcp-server/values.yaml
     valuesInline:
-      replicaCount: 1
-
       image:
         # https://github.com/cubed-it/inlets
         repository: ghcr.io/cubed-it/inlets
         pullPolicy: IfNotPresent
         tag: "4.0.0"
 
-      tokenSecretName: linkerd-tunnel-token
+      controller:
+        replicas: 1
+
+      command:
+        - inlets
+        - server
+        - "--port=6191"
+        - "--control-port=8123"
+        - "--disable-transport-wrapping"
+        - "--token-from=/etc/inlets/token"
+
+      service:
+        main:
+          type: ClusterIP
+          ports:
+            http:
+              port: 8123
+              protocol: TCP
+        data-plane-kube:
+          type: ClusterIP
+          ports:
+            kube:
+              port: 6443
+              protocol: TCP
+        data-plane-linkerd:
+          type: LoadBalancer
+          annotations:
+            metallb.universe.tf/allow-shared-ip: main
+          ports:
+            proxy:
+              port: 6143
+              protocol: TCP
+            admin:
+              port: 6191
+              protocol: TCP
+
+      serviceAccount:
+        create: true
+        name: ""
+
+      persistence:
+        config:
+          enabled: true
+          name: linkerd-tunnel-token
+          type: secret
+          mountPath: /etc/inlets
+          readOnly: true
 
       podAnnotations:
         config.linkerd.io/opaque-ports: 6443,6143
         config.linkerd.io/enable-debug-sidecar: "true"
 
-      controlPlane:
-        type: ClusterIP
-        port: 8123
-
-      dataPlane:
-        type: ClusterIP
-        ports:
-        - targetPort: 6443
-          protocol: TCP
-          name: kube
-          port: 6443
-        - targetPort: 6143
-          protocol: TCP
-          name: linkerd-proxy
-          port: 6143
-        - targetPort: 6191
-          protocol: TCP
-          name: linkerd-admin
-          port: 6191
-
       ingress:
-        domain: linkerd-tunnel.macro.network
-        annotations:
-          'kubernetes.io/ingress.class': 'traefik'
-          'external-dns.alpha.kubernetes.io/hostname': 'linkerd-tunnel.macro.network'
-          'external-dns.alpha.kubernetes.io/cloudflare-proxied': 'false'
-          'traefik.ingress.kubernetes.io/router.tls.options': 'kube-system-no-client-auth@kubernetescrd'
-          'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure'
-          'cert-manager.io/issuer': 'letsencrypt-prod'
+        main:
+          enabled: true
+          hosts:
+            - host: linkerd-tunnel.macro.network
+              paths:
+                - path: /
+                  pathType: Prefix
+          tls:
+            - hosts: [linkerd-tunnel.macro.network]
+              secretName: linkerd-tunnel-cert
+          annotations:
+            "external-dns.alpha.kubernetes.io/hostname": "linkerd-tunnel.macro.network"
+            "external-dns.alpha.kubernetes.io/cloudflare-proxied": "false"
+            "traefik.ingress.kubernetes.io/router.tls.options": "kube-system-no-client-auth@kubernetescrd"
+            "traefik.ingress.kubernetes.io/router.entrypoints": "websecure"
+            "cert-manager.io/issuer": "letsencrypt-prod"
+
+      probes:
+        liveness:
+          enabled: false
+        readiness:
+          enabled: false
+        startup:
+          enabled: false
 
       resources:
         limits:
@@ -67,37 +107,3 @@ resources:
   - namespace.yaml
   - secrets.yaml
   - issuer.yaml
-
-patches:
-  # https://github.com/inlets/inlets-pro/blob/master/chart/inlets-tcp-server/templates/deployment.yaml
-  # https://github.com/cubed-it/inlets/blob/master/cmd/server.go
-  - target:
-      group: apps
-      version: v1
-      kind: Deployment
-      name: linkerd-tunnel
-    patch: |-
-      - op: replace
-        path: /spec/template/spec/containers/0/command
-        value:
-          - inlets
-          - server
-          - "--port=6191"
-          - "--control-port=8123"
-          - "--disable-transport-wrapping"
-          - "--token-from=/etc/inlets/token"
-
-  - target:
-      version: v1
-      kind: Service
-      name: linkerd-tunnel-data
-    patch: |-
-      - op: replace
-        path: /spec/clusterIP
-        value: None
-      - op: replace
-        path: /spec/ports/1/port
-        value: 4143
-      - op: replace
-        path: /spec/ports/2/port
-        value: 4191
