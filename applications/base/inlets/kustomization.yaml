@@ -66,10 +66,6 @@ helmCharts:
           mountPath: /etc/inlets
           readOnly: true
 
-      podAnnotations:
-        config.linkerd.io/skip-outbound-ports: "6443,6143,6191"
-        config.linkerd.io/enable-debug-sidecar: "true"
-
       ingress:
         main:
           enabled: true
