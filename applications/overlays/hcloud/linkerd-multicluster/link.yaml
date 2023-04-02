@@ -160,6 +160,8 @@ metadata:
     mirror.linkerd.io/mirrored-gateway: "true"
     mirror.linkerd.io/cluster-name: home
 spec:
+  type: ExternalName
+  externalName: linkerd-tunnel-data-plane.inlets.svc.cluster.local
   ports:
   - name: mc-probe
     port: 6191

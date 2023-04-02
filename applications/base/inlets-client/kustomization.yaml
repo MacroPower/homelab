@@ -23,7 +23,7 @@ helmCharts:
       tokenSecretName: linkerd-tunnel-token
 
       podAnnotations:
-        config.linkerd.io/opaque-ports: 6443,6143
+        config.linkerd.io/skip-outbound-ports: "6443,6143,6191,4143,4191"
         config.linkerd.io/enable-debug-sidecar: "true"
 
       resources:

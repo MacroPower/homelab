@@ -36,22 +36,22 @@ helmCharts:
             http:
               port: 8123
               protocol: TCP
-        data-plane-kube:
+        data-plane:
           type: ClusterIP
           ports:
             kube:
               port: 6443
               protocol: TCP
-        data-plane-linkerd:
+            admin:
+              port: 6191
+              protocol: TCP
+        data-plane-lb:
           type: LoadBalancer
           annotations:
             metallb.universe.tf/allow-shared-ip: main
           ports:
             proxy:
               port: 6143
-              protocol: TCP
-            admin:
-              port: 6191
               protocol: TCP
 
       serviceAccount:
@@ -67,7 +67,7 @@ helmCharts:
           readOnly: true
 
       podAnnotations:
-        config.linkerd.io/opaque-ports: 6443,6143
+        config.linkerd.io/skip-outbound-ports: "6443,6143,6191"
         config.linkerd.io/enable-debug-sidecar: "true"
 
       ingress:
