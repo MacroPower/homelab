@@ -4,38 +4,21 @@ kind: Kustomization
 namespace: inlets
 
 helmCharts:
-  - name: template
+  - name: inlets-server
     repo: https://jacobcolvin.com/helm-charts/
     version: "0.1.1"
     releaseName: linkerd-tunnel
     namespace: inlets
 
-    # https://github.com/inlets/inlets-pro/blob/master/chart/inlets-tcp-server/values.yaml
+    # https://github.com/MacroPower/helm-charts/blob/main/charts/inlets-server/values.yaml
     valuesInline:
-      image:
-        # https://github.com/cubed-it/inlets
-        repository: ghcr.io/cubed-it/inlets
-        pullPolicy: IfNotPresent
-        tag: "4.0.0"
-
-      controller:
-        replicas: 1
-
-      command:
-        - inlets
-        - server
-        - "--port=6191"
-        - "--control-port=8123"
-        - "--disable-transport-wrapping"
-        - "--token-from=/etc/inlets/token"
+      inlets:
+        port: 6191
+        disableTransportWrapping: true
+        tokenSecretName: linkerd-tunnel-token
+        tokenSecretKey: token
 
       service:
-        main:
-          type: ClusterIP
-          ports:
-            http:
-              port: 8123
-              protocol: TCP
         data-plane:
           type: ClusterIP
           ports:
@@ -54,18 +37,6 @@ helmCharts:
               port: 6143
               protocol: TCP
 
-      serviceAccount:
-        create: true
-        name: ""
-
-      persistence:
-        config:
-          enabled: true
-          name: linkerd-tunnel-token
-          type: secret
-          mountPath: /etc/inlets
-          readOnly: true
-
       ingress:
         main:
           enabled: true
@@ -83,14 +54,6 @@ helmCharts:
             "traefik.ingress.kubernetes.io/router.tls.options": "kube-system-no-client-auth@kubernetescrd"
             "traefik.ingress.kubernetes.io/router.entrypoints": "websecure"
             "cert-manager.io/issuer": "letsencrypt-prod"
-
-      probes:
-        liveness:
-          enabled: false
-        readiness:
-          enabled: false
-        startup:
-          enabled: false
 
       resources:
         limits:
