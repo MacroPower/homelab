@@ -58,9 +58,8 @@ module "k3s" {
 
   dns_servers = [
     "10.0.0.1",
-    "8.8.8.8",
-    "8.8.4.4",
     "1.1.1.1",
+    "8.8.8.8",
   ]
 
   # Extra values that will be passed to the `extra-manifests/kustomization.yaml.tpl` if its present.
