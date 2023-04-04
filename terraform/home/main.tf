@@ -20,7 +20,6 @@ module "k3s" {
       ipv4_address      = "10.0.5.1"
       network_interface = "eth0"
       os_device         = "/dev/vda"
-      longhorn_devices  = ["/dev/vdb"]
       labels            = [],
       taints            = [],
       count             = 1
@@ -28,13 +27,13 @@ module "k3s" {
   ]
   agent_nodepools = [
     {
-      name              = "agent-1",
-      ipv4_address      = "10.0.5.1"
-      network_interface = "eth0"
-      os_device         = "/dev/vda"
+      name              = "agent-4",
+      ipv4_address      = "10.0.5.5"
+      network_interface = "eno0"
+      os_device         = "/dev/nvme0n1"
       labels            = [],
       taints            = [],
-      count             = 0
+      count             = 1
     },
   ]
 
