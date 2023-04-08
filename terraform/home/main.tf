@@ -18,7 +18,6 @@ module "k3s" {
     {
       name              = "control-plane-1",
       ipv4_address      = "10.0.5.1"
-      network_interface = "eth0"
       os_device         = "/dev/vda"
       labels            = [],
       taints            = [],
@@ -29,7 +28,6 @@ module "k3s" {
     {
       name              = "agent-4",
       ipv4_address      = "10.0.5.5"
-      network_interface = "eno0"
       os_device         = "/dev/nvme0n1"
       labels            = [],
       taints            = [],
@@ -41,12 +39,13 @@ module "k3s" {
   ssh_private_key            = var.ssh_private_key
   ssh_additional_public_keys = var.ssh_additional_public_keys
 
-  allow_scheduling_on_control_plane = true
+  allow_scheduling_on_control_plane = false
 
+  initial_k3s_channel       = "v1.26"
   automatically_upgrade_k3s = false
   automatically_upgrade_os  = false
 
-  enable_klipper_metal_lb = true
+  enable_klipper_metal_lb = false
   enable_metrics_server   = false
   enable_longhorn         = true
   longhorn_fstype         = "xfs"
