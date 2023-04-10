@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-ingress
+  namespace: argocd
+  annotations:
+    "external-dns.alpha.kubernetes.io/hostname": "argocd-home.macro.network"
+    "external-dns.alpha.kubernetes.io/target": "h.macro.network"
+    "external-dns.alpha.kubernetes.io/cloudflare-proxied": "false"
+    "traefik.ingress.kubernetes.io/router.tls.options": "kube-system-no-client-auth@kubernetescrd"
+    "traefik.ingress.kubernetes.io/router.entrypoints": "websecure"
+spec:
+  tls:
+    - hosts:
+        - argocd-home.macro.network
+  rules:
+    - host: argocd-home.macro.network
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  number: 80

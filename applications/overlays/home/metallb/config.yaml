@@ -1,0 +1,30 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: main
+spec:
+  addresses:
+    - 10.2.0.0/24
+
+---
+apiVersion: metallb.io/v1beta1
+kind: BGPAdvertisement
+metadata:
+  name: main
+spec:
+  ipAddressPools:
+    - main
+  aggregationLength: 32
+  localPref: 100
+  communities:
+    - 65535:65282
+
+---
+apiVersion: metallb.io/v1beta2
+kind: BGPPeer
+metadata:
+  name: bgppeer-10.0.0.1
+spec:
+  myASN: 64513
+  peerASN: 64512
+  peerAddress: 10.0.0.1
