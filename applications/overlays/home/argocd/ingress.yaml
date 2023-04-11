@@ -8,9 +8,9 @@ metadata:
 spec:
   tls:
     - hosts:
-        - argocd.h.macro.network
+        - argocd.home.macro.network
   rules:
-    - host: argocd.h.macro.network
+    - host: argocd.home.macro.network
       http:
         paths:
           - path: /

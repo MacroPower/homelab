@@ -1,19 +1,19 @@
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
-  name: cloudflare-credentials
+  name: dns-credentials
 spec:
   secretStoreRef:
     kind: ClusterSecretStore
     name: default
 
   target:
-    name: cloudflare-credentials
+    name: dns-credentials
 
   data:
-    - secretKey: CLOUDFLARE_API_TOKEN
+    - secretKey: EXTERNAL_DNS_RFC2136_TSIG_SECRET
       remoteRef:
-        key: CLOUDFLARE_API_TOKEN
+        key: EXTERNAL_DNS_RFC2136_TSIG_SECRET
 
 ---
 apiVersion: cert-manager.io/v1
@@ -27,12 +27,18 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-prod
     solvers:
-      - dns01:
-          cloudflare:
-            email: jacobcolvin1@gmail.com
-            apiTokenSecretRef:
-              name: cloudflare-credentials
-              key: CLOUDFLARE_API_TOKEN
+      - selector:
+          dnsZones:
+            - home.macro.network
+        dns01:
+          cnameStrategy: None
+          rfc2136:
+            nameserver: 10.0.0.1:53
+            tsigKeyName: home.macro.network
+            tsigAlgorithm: HMACSHA256
+            tsigSecretSecretRef:
+              name: dns-credentials
+              key: EXTERNAL_DNS_RFC2136_TSIG_SECRET
 
 ---
 apiVersion: cert-manager.io/v1
@@ -46,5 +52,4 @@ spec:
   issuerRef:
     name: letsencrypt-prod
   dnsNames:
-    - "h.macro.network"
-    - "*.h.macro.network"
+    - "*.home.macro.network"
