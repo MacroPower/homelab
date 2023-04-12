@@ -1,44 +1,9 @@
-apiVersion: external-secrets.io/v1beta1
-kind: ExternalSecret
-metadata:
-  name: dns-credentials
-spec:
-  secretStoreRef:
-    kind: ClusterSecretStore
-    name: default
-
-  target:
-    name: dns-credentials
-
-  data:
-    - secretKey: EXTERNAL_DNS_RFC2136_TSIG_SECRET
-      remoteRef:
-        key: EXTERNAL_DNS_RFC2136_TSIG_SECRET
-
----
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: letsencrypt-prod
+  name: traefik-selfsigned-issuer
 spec:
-  acme:
-    email: jacobcolvin1@gmail.com
-    server: https://acme-v02.api.letsencrypt.org/directory
-    privateKeySecretRef:
-      name: letsencrypt-prod
-    solvers:
-      - selector:
-          dnsZones:
-            - home.macro.network
-        dns01:
-          cnameStrategy: None
-          rfc2136:
-            nameserver: 10.0.0.1:53
-            tsigKeyName: home.macro.network
-            tsigAlgorithm: HMACSHA256
-            tsigSecretSecretRef:
-              name: dns-credentials
-              key: EXTERNAL_DNS_RFC2136_TSIG_SECRET
+  selfSigned: {}
 
 ---
 apiVersion: cert-manager.io/v1
@@ -47,9 +12,9 @@ metadata:
   name: traefik-cert
 spec:
   secretName: traefik-cert
-  duration: 2160h0m0s # 90d
-  renewBefore: 720h0m0s # 30d
   issuerRef:
-    name: letsencrypt-prod
+    kind: Issuer
+    name: traefik-selfsigned-issuer
   dnsNames:
+    - "home.macro.network"
     - "*.home.macro.network"
