@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: authentik-ingress
+  namespace: authentik
+  annotations:
+    "traefik.ingress.kubernetes.io/router.entrypoints": "websecure"
+spec:
+  tls:
+    - hosts:
+        - authentik.home.macro.network
+  rules:
+    - host: authentik.home.macro.network
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: authentik
+                port:
+                  number: 80
