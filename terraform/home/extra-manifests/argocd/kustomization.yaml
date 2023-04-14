@@ -15,7 +15,7 @@ patches:
       - op: add
         path: /data
         value:
-          kustomize.buildOptions: --enable-helm
+          kustomize.buildOptions: --enable-helm --load-restrictor LoadRestrictionsNone
   - target:
       version: v1
       kind: ConfigMap

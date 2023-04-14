@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: goldilocks
+spec:
+  source:
+    chart: goldilocks
+    repoURL: https://charts.fairwinds.com/stable
+    targetRevision: 6.4.0
+    helm:
+      releaseName: goldilocks
+      parameters:
+        - name: dashboard.replicaCount
+          value: "1"
+  destination:
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

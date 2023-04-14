@@ -17,8 +17,8 @@ spec:
       project: default
       syncPolicy:
         automated:
-          prune: true
-          selfHeal: true
+          prune: false
+          selfHeal: false
       source:
         repoURL: https://github.com/MacroPower/homelab
         targetRevision: HEAD
