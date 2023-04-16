@@ -7,6 +7,9 @@ spec:
   sources:
     - repoURL: ""
       path: applications/base/goldilocks
+      directory:
+        jsonnet:
+          extVars: []
       ref: repo
     - chart: goldilocks
       repoURL: https://charts.fairwinds.com/stable

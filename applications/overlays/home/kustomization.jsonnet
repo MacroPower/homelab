@@ -30,6 +30,8 @@ local merge(resource) = {
 };
 
 [
-    resource + merge(resource).resources
+    if resource.kind == 'Application'
+    then resource + merge(resource).resources
+    else resource
     for resource in resources
 ]
