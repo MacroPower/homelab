@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "dependencies": [
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "ksonnet-util"
+        }
+      },
+      "version": "e0b90a4435817ad642d8d049e7dd975264cb960e",
+      "sum": "0y3AFX9LQSpfWTxWKSwoLgbt0Wc9nnCwhMH2szKzHv0="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/docsonnet.git",
+          "subdir": "doc-util"
+        }
+      },
+      "version": "2eae33a828320269c42acf38e808479a33e416db",
+      "sum": "lppHbNARpG3YTpuSv94X9TyIE9TfV3CyTVceIHSRxpc="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/k8s-libsonnet.git",
+          "subdir": "1.20"
+        }
+      },
+      "version": "9e5b48eee32913938d3cac30f183b49ecd9fe13a",
+      "sum": "KXx5RVXiqTJQo2GVfrD8DIvlm292s0TxfTKT8I591+c="
+    }
+  ],
+  "legacyImports": false
+}

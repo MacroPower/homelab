@@ -10,6 +10,9 @@ spec:
       directory:
         jsonnet:
           extVars: []
+          libs:
+            - applications/vendor
+            - applications/lib
       ref: repo
     - chart: goldilocks
       repoURL: https://charts.fairwinds.com/stable

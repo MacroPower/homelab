@@ -7,7 +7,13 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/MacroPower/homelab'
-    path: applications/overlays/home
+    path: applications/environments/home
+    directory:
+      exclude: spec.json
+      jsonnet:
+        libs:
+          - applications/vendor
+          - applications/lib
     targetRevision: argo-apps
   destination:
     server: 'https://kubernetes.default.svc'
