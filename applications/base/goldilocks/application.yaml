@@ -5,16 +5,16 @@ metadata:
 spec:
   project: default
   sources:
-    - repoURL: ""
+    - repoURL: replaced-by-ks
       path: applications/base/goldilocks
+      ref: repo
     - chart: goldilocks
       repoURL: https://charts.fairwinds.com/stable
       targetRevision: 6.4.0
       helm:
         releaseName: goldilocks
-        parameters:
-          - name: dashboard.replicaCount
-            value: "1"
+        valueFiles:
+          - $repo/applications/base/goldilocks/values.yaml
   destination:
     namespace: goldilocks
   syncPolicy:
