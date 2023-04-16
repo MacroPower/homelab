@@ -42,9 +42,9 @@
           if source.repoURL != ''
         ] + [
           source {
-            directory: {
-              jsonnet: {
-                extVars: [
+            directory+: {
+              jsonnet+: {
+                extVars+: [
                   {
                     name: k,
                     value: extVars[k],

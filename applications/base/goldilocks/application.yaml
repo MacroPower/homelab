@@ -11,6 +11,7 @@ spec:
         jsonnet:
           extVars: []
           libs:
+            - vendor
             - applications/vendor
             - applications/lib
       ref: repo
