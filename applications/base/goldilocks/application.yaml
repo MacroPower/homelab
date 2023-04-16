@@ -5,7 +5,7 @@ metadata:
 spec:
   project: default
   sources:
-    - repoURL: replaced-by-ks
+    - repoURL: ""
       path: applications/base/goldilocks
       ref: repo
     - chart: goldilocks
