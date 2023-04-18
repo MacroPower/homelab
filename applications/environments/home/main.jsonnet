@@ -1,4 +1,5 @@
 local apps = [
+  import 'fluent-bit/main.jsonnet',
   import 'goldilocks/main.jsonnet',
 ];
 
