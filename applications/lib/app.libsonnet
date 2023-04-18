@@ -1,29 +1,78 @@
 {
-  from(app):: app {
-    local metadata = app.metadata,
-    local spec = app.spec,
+  new(name, path, namespace, project='default'):: {
+    local this = self,
 
-    withNamespace(namespace='argocd'):: self {
-      metadata+: {
+    apiVersion: 'argoproj.io/v1alpha1',
+    kind: 'Application',
+    metadata: {
+      name: name,
+    },
+    spec: {
+      project: project,
+      sources: [],
+      destination: {
         namespace: namespace,
+      },
+      syncPolicy: {
+        automated: {
+          prune: true,
+          selfHeal: true,
+        },
       },
     },
 
-    withRepo(repoURL='https://github.com/MacroPower/homelab', targetRevision='HEAD'):: self {
+    extVars:: [],
+
+    withChart(name, repoURL, targetRevision, releaseName='', values=''):: self {
       spec+: {
-        sources: [
-          source
-          for source in spec.sources
-          if source.repoURL != ''
-        ] + [
-          source {
-            repoURL: repoURL,
-            targetRevision: targetRevision,
-          }
-          for source in spec.sources
-          if source.repoURL == ''
-        ],
+        sources+: [{
+          chart: name,
+          repoURL: repoURL,
+          targetRevision: targetRevision,
+          helm: {
+            [if releaseName != '' then 'releaseName']: releaseName,
+            [if values != '' then 'valueFiles']: [
+              '$base/%(path)s/%(values)s' % {
+                path: path,
+                values: values,
+              },
+            ],
+          },
+        }],
       },
+    },
+
+    withBase(repoURL, targetRevision='HEAD', jsonnetLibs=['applications/vendor', 'applications/lib']):: self {
+      spec+: {
+        sources+: [{
+          ref: 'base',
+          repoURL: repoURL,
+          path: path,
+          targetRevision: targetRevision,
+          directory: {
+            jsonnet: {
+              extVars: this.extVars,
+              libs: jsonnetLibs,
+            },
+          },
+        }],
+      },
+    },
+
+    withSource(source):: self {
+      spec+: {
+        sources+: [source],
+      },
+    },
+
+    withExtVars(extVars):: self {
+      extVars+:: [
+        {
+          name: k,
+          value: extVars[k],
+        }
+        for k in std.objectFields(extVars)
+      ],
     },
 
     withDestinationServer(destinationServer='https://kubernetes.default.svc'):: self {
@@ -34,29 +83,9 @@
       },
     },
 
-    withExtVars(extVars):: self {
-      spec+: {
-        sources: [
-          source
-          for source in spec.sources
-          if source.repoURL != ''
-        ] + [
-          source {
-            directory+: {
-              jsonnet+: {
-                extVars+: [
-                  {
-                    name: k,
-                    value: extVars[k],
-                  }
-                  for k in std.objectFields(extVars)
-                ],
-              },
-            },
-          }
-          for source in spec.sources
-          if std.objectHas(source, 'directory') && std.objectHas(source.directory, 'jsonnet')
-        ],
+    withAppNamespace(namespace='argocd'):: self {
+      metadata+: {
+        namespace: namespace,
       },
     },
   },

@@ -8,9 +8,6 @@ local ingressTLS = k.networking.v1.ingressTLS;
 local ingressHost = std.extVar('ingressHost');
 local ingressAnnotations = std.parseYaml(std.extVar('ingressAnnotations'));
 
-// local ingressHost = '';
-// local ingressAnnotations = {};
-
 ingress.new('ingress') +
 ingress.mixin.metadata.withAnnotationsMixin(ingressAnnotations {
   'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure',

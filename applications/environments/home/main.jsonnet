@@ -1,15 +1,14 @@
-local app = import '../../lib/app.libsonnet';
-
-local resources = [
-  import 'goldilocks/kustomization.jsonnet',
+local apps = [
+  import 'goldilocks/main.jsonnet',
 ];
 
 [
-  if resource.kind == 'Application'
-  then app.from(resource)
-       .withRepo(targetRevision='argo-apps')
-       .withDestinationServer('https://kubernetes.default.svc')
-       .withNamespace('argocd')
-  else resource
-  for resource in resources
+  app
+  .withAppNamespace('argocd')
+  .withDestinationServer('https://kubernetes.default.svc')
+  .withBase(
+    repoURL='https://github.com/MacroPower/homelab',
+    targetRevision='argo-apps'
+  )
+  for app in apps
 ]
