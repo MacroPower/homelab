@@ -6,6 +6,12 @@ local apps = [
   app
   .withAppNamespace('argocd')
   .withDestinationServer('https://kubernetes.default.svc')
+  .withExtVars({
+    ingressHost: '%s.home.macro.network' % app.metadata.name,
+    ingressAnnotations: |||
+      'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure'
+    |||,
+  })
   .withBase(
     repoURL='https://github.com/MacroPower/homelab',
     targetRevision='argo-apps'

@@ -21,7 +21,8 @@
       },
     },
 
-    extVars:: [],
+    extVars:: {},
+    extVarsMixin:: {},
 
     withChart(name, repoURL, targetRevision, releaseName='', values=''):: self {
       spec+: {
@@ -42,6 +43,21 @@
       },
     },
 
+    getExtVars():: [
+      {
+        name: k,
+        value: this.extVars[k],
+      }
+      for k in std.objectFields(this.extVars)
+      if !std.objectHas(this.extVarsMixin, k)
+    ] + [
+      {
+        name: k,
+        value: this.extVarsMixin[k],
+      }
+      for k in std.objectFields(this.extVarsMixin)
+    ],
+
     withBase(repoURL, targetRevision='HEAD', jsonnetLibs=['applications/vendor', 'applications/lib']):: self {
       spec+: {
         sources+: [{
@@ -51,7 +67,7 @@
           targetRevision: targetRevision,
           directory: {
             jsonnet: {
-              extVars: this.extVars,
+              extVars: this.getExtVars(),
               libs: jsonnetLibs,
             },
           },
@@ -65,14 +81,12 @@
       },
     },
 
+    withExtVarsMixin(extVars):: self {
+      extVarsMixin+:: extVars,
+    },
+
     withExtVars(extVars):: self {
-      extVars+:: [
-        {
-          name: k,
-          value: extVars[k],
-        }
-        for k in std.objectFields(extVars)
-      ],
+      extVars+:: extVars,
     },
 
     withDestinationServer(destinationServer='https://kubernetes.default.svc'):: self {
