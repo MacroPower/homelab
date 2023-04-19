@@ -1,0 +1,10 @@
+# Use custom serviceMonitor.
+serviceMonitor:
+  enabled: false
+metrics:
+  service:
+    enabled: true
+
+# Disable this when support for cert-manager is added.
+certController:
+  create: true

@@ -1,14 +1,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: observability
-
 helmCharts:
   - name: kube-prometheus-stack
     repo: https://prometheus-community.github.io/helm-charts
     version: 41.9.1
     releaseName: kube-prometheus-stack
-    namespace: observability
+    namespace: prometheus
     includeCRDs: true
 
     # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
@@ -233,3 +231,6 @@ patches:
         path: /metadata/annotations
         value:
           'argocd.argoproj.io/sync-options': 'Replace=true'
+
+resources:
+  - namespace.yaml

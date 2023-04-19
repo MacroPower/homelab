@@ -1,0 +1,35 @@
+inlets:
+  port: 6191
+  disableTransportWrapping: true
+  tokenSecretName: linkerd-tunnel-token
+  tokenSecretKey: token
+
+service:
+  data-plane:
+    type: ClusterIP
+    ports:
+      kube:
+        port: 6443
+        protocol: TCP
+      admin:
+        port: 6191
+        protocol: TCP
+  data-plane-lb:
+    type: LoadBalancer
+    annotations:
+      metallb.universe.tf/allow-shared-ip: main
+    ports:
+      proxy:
+        port: 6143
+        protocol: TCP
+
+ingress:
+  main:
+    enabled: false
+
+resources:
+  limits:
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi

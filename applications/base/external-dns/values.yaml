@@ -1,0 +1,13 @@
+env:
+  # The token should be granted Zone Read, DNS Edit privileges, and access to All zones.
+  - name: CF_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: external-dns-credentials
+        key: CLOUDFLARE_API_TOKEN
+sources:
+  - ingress
+  - service
+policy: upsert-only
+provider: cloudflare
+logLevel: debug

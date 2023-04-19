@@ -7,8 +7,6 @@ resources:
   - automation.yaml
   - media.yaml
   - data.yaml
-  - crossplane.yaml
   - backup.yaml
   - kube-system.yaml
-  - argocd.yaml
   - linkerd.yaml

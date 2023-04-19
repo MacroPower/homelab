@@ -1,0 +1,21 @@
+inlets:
+  url: wss://linkerd-tunnel.macro.network
+  strictForwarding: false
+  tokenSecretName: linkerd-tunnel-token
+  tokenSecretKey: token
+  upstreams:
+    - target: http://linkerd-gateway.linkerd-multicluster.svc.cluster.local:4191
+    - match: tcp:6443
+      target: kubernetes.default.svc.cluster.local:443
+    - match: tcp:6143
+      target: linkerd-gateway.linkerd-multicluster.svc.cluster.local:4143
+
+podAnnotations:
+  config.linkerd.io/skip-outbound-ports: 4143,4191
+
+resources:
+  limits:
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi

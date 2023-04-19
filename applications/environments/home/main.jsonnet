@@ -1,6 +1,18 @@
 local apps = [
+  import 'argocd/main.jsonnet',
+  import 'authentik/main.jsonnet',
+  import 'cert-manager/main.jsonnet',
+  import 'crossplane/main.jsonnet',
+  import 'descheduler/main.jsonnet',
+  import 'external-secrets/main.jsonnet',
   import 'fluent-bit/main.jsonnet',
   import 'goldilocks/main.jsonnet',
+  import 'grafana/main.jsonnet',
+  import 'inlets-client/main.jsonnet',
+  import 'jaeger-operator/main.jsonnet',
+  import 'k8s-event-logger/main.jsonnet',
+  import 'k8up/main.jsonnet',
+  import 'kube-prometheus-stack/main.jsonnet',
 ];
 
 [

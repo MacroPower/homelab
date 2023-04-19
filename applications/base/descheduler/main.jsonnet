@@ -1,0 +1,3 @@
+[
+  import 'namespace.libsonnet',
+]
