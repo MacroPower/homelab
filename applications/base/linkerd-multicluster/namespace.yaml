@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: linkerd-multicluster
-  labels:
-    goldilocks.fairwinds.com/enabled: 'true'
-    linkerd.io/extension: multicluster
-    pod-security.kubernetes.io/enforce: privileged

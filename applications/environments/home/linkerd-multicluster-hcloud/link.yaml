@@ -1,3 +1,8 @@
+# linkerd --context=hcloud multicluster link --cluster-name hcloud \
+#   --gateway-addresses "95.216.182.216" \
+#   --api-server-address "https://65.109.222.239:6443"
+
+---
 apiVersion: multicluster.linkerd.io/v1alpha1
 kind: Link
 metadata:

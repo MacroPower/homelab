@@ -23,6 +23,12 @@
 
     extVars:: {},
     extVarsMixin:: {},
+    sourceMixin:: [],
+    chartParams:: {},
+
+    withChartParams(params={}):: self {
+      chartParams+:: params,
+    },
 
     withChart(name, repoURL, targetRevision, releaseName='', values=''):: self {
       spec+: {
@@ -37,6 +43,13 @@
                 path: path,
                 values: values,
               },
+            ],
+            parameters: [
+              {
+                name: k,
+                value: this.chartParams[k],
+              }
+              for k in std.objectFields(this.chartParams)
             ],
           },
         }],
@@ -77,14 +90,19 @@
             path: path,
             targetRevision: targetRevision,
           } + directory,
+        ] + [
+          {
+            repoURL: repoURL,
+            path: path,
+            targetRevision: targetRevision,
+          } + directory
+          for path in this.sourceMixin
         ],
       },
     },
 
-    withSource(source):: self {
-      spec+: {
-        sources+: [source],
-      },
+    withSourceMixin(path):: self {
+      sourceMixin+:: [path],
     },
 
     withExtVarsMixin(extVars):: self {

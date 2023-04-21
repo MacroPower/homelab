@@ -1,0 +1,24 @@
+grafana:
+  url: http://grafana.grafana.svc.cluster.local:3000
+
+# jaegerUrl:
+
+prometheus:
+  enabled: false
+prometheusUrl: http://prometheus-operated.prometheus.svc.cluster.local:9090
+
+dashboard:
+  resources:
+    cpu:
+      request: 50m
+    memory:
+      request: 128Mi
+      limit: 512Mi
+
+metricsAPI:
+  resources:
+    cpu:
+      request: 50m
+    memory:
+      request: 128Mi
+      limit: 512Mi

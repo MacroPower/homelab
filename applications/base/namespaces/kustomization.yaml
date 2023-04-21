@@ -9,4 +9,3 @@ resources:
   - data.yaml
   - backup.yaml
   - kube-system.yaml
-  - linkerd.yaml

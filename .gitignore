@@ -43,4 +43,4 @@ terraform.rc
 **/.hidden
 
 # Linkerd binary
-linkerd
+/linkerd

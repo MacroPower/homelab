@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: linkerd-cni
-  labels:
-    goldilocks.fairwinds.com/enabled: 'true'

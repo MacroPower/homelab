@@ -13,6 +13,11 @@ local apps = [
   import 'k8s-event-logger/main.jsonnet',
   import 'k8up/main.jsonnet',
   import 'kube-prometheus-stack/main.jsonnet',
+  import 'linkerd/main.jsonnet',
+  import 'linkerd-control-plane/main.jsonnet',
+  import 'linkerd-multicluster/main.jsonnet',
+  import 'linkerd-multicluster-hcloud/application.jsonnet',
+  import 'linkerd-viz/main.jsonnet',
 ];
 
 [
