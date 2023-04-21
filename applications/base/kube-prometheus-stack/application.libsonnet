@@ -4,4 +4,5 @@ app.new(
   name='kube-prometheus-stack',
   path='applications/base/kube-prometheus-stack',
   namespace='prometheus',
-).withExtVars({})
+  renderer='kustomize',
+)

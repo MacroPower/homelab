@@ -1,5 +1,5 @@
 {
-  new(name, path, namespace, project='default'):: {
+  new(name, path, namespace, project='default', renderer='jsonnet'):: {
     local this = self,
 
     apiVersion: 'argoproj.io/v1alpha1',
@@ -59,19 +59,25 @@
     ],
 
     withBase(repoURL, targetRevision='HEAD', jsonnetLibs=['applications/vendor', 'applications/lib']):: self {
-      spec+: {
-        sources+: [{
-          ref: 'base',
-          repoURL: repoURL,
-          path: path,
-          targetRevision: targetRevision,
+      local directory =
+        if renderer == 'jsonnet' then {
           directory: {
             jsonnet: {
               extVars: this.getExtVars(),
               libs: jsonnetLibs,
             },
           },
-        }],
+        } else {
+        },
+      spec+: {
+        sources+: [
+          {
+            ref: 'base',
+            repoURL: repoURL,
+            path: path,
+            targetRevision: targetRevision,
+          } + directory,
+        ],
       },
     },
 
