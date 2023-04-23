@@ -5,7 +5,7 @@ resources:
   - ./namespaces
   - ./argocd
   - secrets.yaml
-  - application-set.yaml
+  - apps.yaml
 
 patches:
   - target:
