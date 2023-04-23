@@ -1,0 +1,46 @@
+deployment:
+  kind: Deployment
+  replicas: 3
+
+  annotations:
+    sidecar.jaegertracing.io/inject: "true"
+
+additionalArguments:
+  - --serverstransport.insecureskipverify=true
+  - --log.level=INFO
+
+# service:
+#   annotations:
+#     metallb.universe.tf/allow-shared-ip: main
+
+tracing:
+  jaeger:
+    samplingServerURL: http://localhost:5778/sampling
+    samplingType: const
+    samplingParam: 1.0
+    localAgentHostPort: 127.0.0.1:6831
+
+providers:
+  kubernetesIngress:
+    enabled: true
+    publishedService:
+      enabled: true
+      pathOverride: kube-system/traefik
+
+ports:
+  websecure:
+    tls:
+      enabled: true
+
+tlsStore:
+  default:
+    defaultCertificate:
+      secretName: traefik-cert
+
+tlsOptions:
+  default:
+    clientAuth:
+      secretNames:
+        - cloudflare-authenticated-origin-pull-ca
+      clientAuthType: RequireAndVerifyClientCert
+  no-client-auth: {}

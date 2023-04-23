@@ -1,0 +1,31 @@
+nameOverride: anime
+
+configSecretName: transmission-anime-config
+
+persistence:
+  enabled: true
+  existingClaim: anime
+
+service:
+  peer:
+    type: LoadBalancer
+    ports:
+      tcp: 51403
+      udp: 51403
+
+flood:
+  enabled: true
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      memory: 512Mi
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 4096Mi
+  limits:
+    memory: 4096Mi

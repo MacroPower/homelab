@@ -5,6 +5,7 @@ local apps = [
   import 'crossplane/main.jsonnet',
   import 'coredns/application.jsonnet',
   import 'descheduler/main.jsonnet',
+  import 'external-dns/main.jsonnet',
   import 'external-secrets/main.jsonnet',
   import 'fluent-bit/main.jsonnet',
   import 'goldilocks/main.jsonnet',
@@ -26,6 +27,8 @@ local apps = [
   import 'pgadmin/main.jsonnet',
   import 'rclone-restic/main.jsonnet',
   import 'robusta/main.jsonnet',
+  import 'traefik/application.jsonnet',
+  import 'vpa/main.jsonnet',
 ];
 
 [

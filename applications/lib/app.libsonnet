@@ -21,13 +21,33 @@
       },
     },
 
+    basePath:: path,
     extVars:: {},
     extVarsMixin:: {},
     sourceMixin:: [],
-    chartParams:: {},
 
     withChartParams(params={}):: self {
-      chartParams+:: params,
+      spec+: {
+        sources: [
+          source {
+            helm+: {
+              parameters: [
+                {
+                  name: k,
+                  value: params[k],
+                }
+                for k in std.objectFields(params)
+              ],
+            },
+          }
+          for source in this.spec.sources
+          if std.objectHas(source, 'chart')
+        ] + [
+          source
+          for source in this.spec.sources
+          if !std.objectHas(source, 'chart')
+        ],
+      },
     },
 
     withChart(name, repoURL, targetRevision, releaseName='', values=''):: self {
@@ -43,13 +63,6 @@
                 path: path,
                 values: values,
               },
-            ],
-            parameters: [
-              {
-                name: k,
-                value: this.chartParams[k],
-              }
-              for k in std.objectFields(this.chartParams)
             ],
           },
         }],
@@ -87,7 +100,7 @@
           {
             ref: 'base',
             repoURL: repoURL,
-            path: path,
+            path: this.basePath,
             targetRevision: targetRevision,
           } + directory,
         ] + [
@@ -99,6 +112,10 @@
           for path in this.sourceMixin
         ],
       },
+    },
+
+    withBasePath(path):: self {
+      basePath:: path,
     },
 
     withSourceMixin(path):: self {

@@ -1,0 +1,44 @@
+nameOverride: sonarr
+
+image:
+  repository: macropower/sonarr
+  tag: pg-1
+
+configSecretName: sonarr-config
+
+service:
+  type: ClusterIP
+  port: 8989
+
+metrics:
+  enabled: true
+
+  secretName: sonarr-credentials
+  secretKey: SONARR_API_KEY
+
+serviceMonitor:
+  enabled: true
+
+extraInitContainers:
+  - name: init-db
+    image: postgres:14
+    command:
+      - bash
+      - /scripts/sonarr_db_init.sh
+    volumeMounts:
+      - name: sonarr-init-scripts
+        mountPath: /scripts
+
+extraSecretMounts:
+  - name: sonarr-init-scripts
+    optional: false
+
+podSecurityContext:
+  fsGroup: 1000
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 2048Mi
+  limits:
+    memory: 2048Mi

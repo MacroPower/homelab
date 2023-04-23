@@ -1,0 +1,31 @@
+nameOverride: music
+
+configSecretName: transmission-music-config
+
+persistence:
+  enabled: true
+  existingClaim: music
+
+service:
+  peer:
+    type: LoadBalancer
+    ports:
+      tcp: 51404
+      udp: 51404
+
+flood:
+  enabled: true
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      memory: 512Mi
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 4096Mi
+  limits:
+    memory: 4096Mi
