@@ -9,6 +9,5 @@ app.new(
   name='k8s-event-logger',
   repoURL='https://charts.deliveryhero.io/',
   targetRevision='1.1',
-  releaseName='k8s-event-logger',
-  values='values.yaml'
+  releaseName='k8s-event-logger'
 )
