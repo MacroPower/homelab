@@ -3,6 +3,7 @@ local apps = [
   import 'authentik/main.jsonnet',
   import 'cert-manager/main.jsonnet',
   import 'crossplane/main.jsonnet',
+  import 'coredns/application.jsonnet',
   import 'descheduler/main.jsonnet',
   import 'external-secrets/main.jsonnet',
   import 'fluent-bit/main.jsonnet',
