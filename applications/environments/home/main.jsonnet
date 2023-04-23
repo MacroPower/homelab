@@ -10,6 +10,7 @@ local apps = [
   import 'goldilocks/main.jsonnet',
   import 'grafana/main.jsonnet',
   import 'inlets-client/main.jsonnet',
+  import 'jaeger-aio/main.jsonnet',
   import 'jaeger-operator/main.jsonnet',
   import 'k8s-event-logger/main.jsonnet',
   import 'k8up/main.jsonnet',

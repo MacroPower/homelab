@@ -1,7 +1,7 @@
 grafana:
   url: http://grafana.grafana.svc.cluster.local:3000
 
-# jaegerUrl:
+jaegerUrl: jaeger-aio-query.jaeger.svc.cluster.local:16686
 
 prometheus:
   enabled: false
