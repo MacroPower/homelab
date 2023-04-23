@@ -35,11 +35,80 @@ patches:
         path: /spec/template/spec/containers/0/resources
         value:
           requests:
-            cpu: 200m
-            memory: 1Gi
-          limits:
-            cpu: 1
+            cpu: 500m
             memory: 2Gi
+          limits:
+            cpu: 500m
+            memory: 2Gi
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: argocd-applicationset-controller
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            cpu: 50m
+            memory: 100Mi
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: argocd-dex-server
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            cpu: 50m
+            memory: 100Mi
+      - op: add
+        path: /spec/template/spec/initContainers/0/resources
+        value:
+          requests:
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            cpu: 50m
+            memory: 100Mi
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: argocd-notifications-controller
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            cpu: 50m
+            memory: 100Mi
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: argocd-redis
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            cpu: 50m
+            memory: 250Mi
+          limits:
+            cpu: 50m
+            memory: 250Mi
   - target:
       group: apps
       version: v1
@@ -50,8 +119,32 @@ patches:
         path: /spec/template/spec/containers/0/resources
         value:
           requests:
-            cpu: 200m
-            memory: 1Gi
+            cpu: 500m
+            memory: 500Mi
           limits:
-            cpu: 1
-            memory: 2Gi
+            cpu: 500m
+            memory: 500Mi
+      - op: add
+        path: /spec/template/spec/initContainers/0/resources
+        value:
+          requests:
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            cpu: 50m
+            memory: 100Mi
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: argocd-server
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            cpu: 200m
+            memory: 250Mi
+          limits:
+            cpu: 200m
+            memory: 250Mi
