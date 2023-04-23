@@ -7,7 +7,6 @@ local apps = [
   import 'descheduler/main.jsonnet',
   import 'external-dns/main.jsonnet',
   import 'external-secrets/main.jsonnet',
-  import 'fluent-bit/main.jsonnet',
   import 'goldilocks/main.jsonnet',
   import 'grafana/main.jsonnet',
   import 'inlets-client/main.jsonnet',
