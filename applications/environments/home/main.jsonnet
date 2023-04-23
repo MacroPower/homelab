@@ -19,6 +19,12 @@ local apps = [
   import 'linkerd-multicluster/main.jsonnet',
   import 'linkerd-multicluster-hcloud/application.jsonnet',
   import 'linkerd-viz/main.jsonnet',
+  import 'metallb/application.jsonnet',
+  import 'metrics-server/main.jsonnet',
+  import 'openspeedtest/main.jsonnet',
+  import 'pgadmin/main.jsonnet',
+  import 'rclone-restic/main.jsonnet',
+  import 'robusta/main.jsonnet',
 ];
 
 [
