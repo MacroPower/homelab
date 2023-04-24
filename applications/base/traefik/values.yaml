@@ -25,7 +25,7 @@ providers:
     enabled: true
     publishedService:
       enabled: true
-      pathOverride: kube-system/traefik
+      pathOverride: traefik/traefik
 
 ports:
   websecure:
