@@ -60,6 +60,10 @@ envValueFrom:
     secretKeyRef:
       key: AUTHENTIK_SECRET_KEY
       name: authentik-credentials
+  AUTHENTIK_BOOTSTRAP_TOKEN:
+    secretKeyRef:
+      key: AUTHENTIK_BOOTSTRAP_TOKEN
+      name: authentik-credentials
   AUTHENTIK_REDIS__PASSWORD:
     secretKeyRef:
       key: AUTHENTIK_REDIS_PASS
