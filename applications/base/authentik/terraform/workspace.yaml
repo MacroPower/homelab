@@ -1,0 +1,22 @@
+apiVersion: tf.upbound.io/v1beta1
+kind: Workspace
+metadata:
+  name: authentik
+spec:
+  providerConfigRef:
+    name: authentik
+  forProvider:
+    # For simple cases you can use an inline source to specify the content of
+    # main.tf as opaque, inline HCL.
+    source: Inline
+    module: |
+      resource "random_id" "example" {
+        byte_length = 4
+      }
+
+      output "test" {
+        value = random_id.example.hex
+      }
+  writeConnectionSecretToRef:
+    namespace: authentik
+    name: terraform-workspace-authentik
