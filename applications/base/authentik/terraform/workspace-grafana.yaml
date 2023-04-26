@@ -1,0 +1,67 @@
+apiVersion: tf.upbound.io/v1beta1
+kind: Workspace
+metadata:
+  name: authentik-grafana
+spec:
+  providerConfigRef:
+    name: authentik
+  writeConnectionSecretToRef:
+    namespace: grafana
+    name: authentik-grafana
+  forProvider:
+    source: Inline
+    module: |
+      data "authentik_flow" "default-authorization-flow" {
+        slug = "default-provider-authorization-explicit-consent"
+      }
+
+      data "authentik_scope_mapping" "scopes" {
+        managed_list = [
+          "goauthentik.io/providers/oauth2/scope-email",
+          "goauthentik.io/providers/oauth2/scope-openid",
+          "goauthentik.io/providers/oauth2/scope-profile",
+        ]
+      }
+
+      resource "random_password" "grafana-client-id" {
+        length  = 40
+        lower   = true
+        numeric = true
+        upper   = false
+        special = false
+      }
+
+      resource "random_password" "grafana-client-secret" {
+        length  = 128
+        lower   = true
+        numeric = true
+        upper   = true
+        special = true
+      }
+
+      resource "authentik_provider_oauth2" "grafana-auth-provider" {
+        name          = "grafana"
+        client_id     = random_password.grafana-client-id.result
+        client_secret = random_password.grafana-client-secret.result
+        redirect_uris = [
+          "https://grafana.home.macro.network/login/generic_oauth",
+        ]
+        property_mappings  = data.authentik_scope_mapping.scopes.ids
+        authorization_flow = data.authentik_flow.default-authorization-flow.id
+      }
+
+      resource "authentik_application" "grafana-application" {
+        name              = "grafana.home.macro.network"
+        slug              = "grafana"
+        protocol_provider = authentik_provider_oauth2.grafana-auth-provider.id
+      }
+
+      output "grafana_client_id" {
+        value     = random_password.grafana-client-id.result
+        sensitive = true
+      }
+
+      output "grafana_client_secret" {
+        value     = random_password.grafana-client-secret.result
+        sensitive = true
+      }

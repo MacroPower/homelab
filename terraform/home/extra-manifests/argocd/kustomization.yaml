@@ -25,6 +25,7 @@ patches:
         path: /data
         value:
           server.insecure: 'true'
+          server.disable.auth: 'true'
   - target:
       group: apps
       version: v1

@@ -8,5 +8,7 @@ ingress.new(
   host=ingressHost,
   serviceName='jaeger-aio-query',
   servicePort=16686,
-  annotations=ingressAnnotations,
+  annotations=ingressAnnotations {
+    'traefik.ingress.kubernetes.io/router.middlewares': 'traefik-authentik@kubernetescrd',
+  },
 )

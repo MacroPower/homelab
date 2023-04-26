@@ -5,6 +5,31 @@ env:
   JAEGER_AGENT_HOST: localhost
   JAEGER_AGENT_PORT: "6831"
   ANALYTICS_REPORTING_ENABLED: "false"
+  GF_SERVER_DOMAIN: grafana.home.macro.network
+  GF_SERVER_ROOT_URL: https://grafana.home.macro.network
+  GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
+  GF_AUTH_GENERIC_OAUTH_NAME: "authentik"
+  GF_AUTH_GENERIC_OAUTH_SCOPES: "openid profile email"
+  GF_AUTH_GENERIC_OAUTH_TLS_SKIP_VERIFY_INSECURE: "true"
+  GF_AUTH_GENERIC_OAUTH_AUTH_URL: "https://authentik.home.macro.network/application/o/authorize/"
+  GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "https://authentik.home.macro.network/application/o/token/"
+  GF_AUTH_GENERIC_OAUTH_API_URL: "https://authentik.home.macro.network/application/o/userinfo/"
+  GF_AUTH_SIGNOUT_REDIRECT_URL: "https://authentik.home.macro.network/application/o/grafana/end-session/"
+  # Optionally enable auto-login (bypasses Grafana login screen)
+  GF_AUTH_OAUTH_AUTO_LOGIN: "true"
+  # Optionally map user groups to Grafana roles
+  GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: >
+    contains(groups[*], 'Grafana Admins') && 'Admin' || contains(groups[*], 'Grafana Editors') && 'Editor' || 'Viewer'
+
+envValueFrom:
+  GF_AUTH_GENERIC_OAUTH_CLIENT_ID:
+    secretKeyRef:
+      name: authentik-grafana
+      key: grafana_client_id
+  GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET:
+    secretKeyRef:
+      name: authentik-grafana
+      key: grafana_client_secret
 
 admin:
   existingSecret: grafana-credentials

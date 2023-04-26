@@ -8,5 +8,7 @@ ingress.new(
   host=ingressHost,
   serviceName='argocd-server',
   servicePort=80,
-  annotations=ingressAnnotations,
+  annotations=ingressAnnotations {
+    'traefik.ingress.kubernetes.io/router.middlewares': 'traefik-authentik@kubernetescrd',
+  },
 )
