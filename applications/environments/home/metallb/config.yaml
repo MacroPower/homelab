@@ -4,7 +4,7 @@ metadata:
   name: main
 spec:
   addresses:
-    - 10.2.0.0/24
+    - 10.2.0.32-10.2.0.63
 
 ---
 apiVersion: metallb.io/v1beta1
@@ -14,7 +14,7 @@ metadata:
 spec:
   ipAddressPools:
     - main
-  aggregationLength: 32
+  aggregationLength: 27
   localPref: 100
   communities:
     - 65535:65282

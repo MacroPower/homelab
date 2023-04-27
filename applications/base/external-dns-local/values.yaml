@@ -7,7 +7,7 @@ env:
 sources:
   - ingress
   - service
-policy: upsert-only
+policy: sync
 provider: rfc2136
 extraArgs:
   - --rfc2136-host=10.0.0.1

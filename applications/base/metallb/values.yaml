@@ -1,4 +1,5 @@
 controller:
+  logLevel: debug
   resources:
     requests:
       cpu: 100m
@@ -8,6 +9,7 @@ controller:
       memory: 100Mi
 
 speaker:
+  logLevel: debug
   resources:
     requests:
       cpu: 100m
@@ -15,10 +17,19 @@ speaker:
     limits:
       cpu: 100m
       memory: 100Mi
+  frr:
+    enabled: false
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+      limits:
+        cpu: 100m
+        memory: 100Mi
 
 prometheus:
   namespace: prometheus
   serviceAccount: kube-prometheus-stack-prometheus
 
   serviceMonitor:
-    enabled: true
+    enabled: false
