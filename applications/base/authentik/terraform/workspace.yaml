@@ -17,14 +17,14 @@ spec:
 
       resource "authentik_provider_proxy" "domain-forward-auth-provider" {
         name               = "domain-forward-auth-provider"
-        cookie_domain      = "home.macro.network"
-        external_host      = "https://authentik.home.macro.network"
+        cookie_domain      = "macro.network"
+        external_host      = "https://authentik.macro.network"
         mode               = "forward_domain"
         authorization_flow = data.authentik_flow.default-authorization-flow.id
       }
 
       resource "authentik_application" "domain-forward-auth-application" {
-        name              = "home.macro.network"
+        name              = "macro.network"
         slug              = "domain-forward-auth-application"
         protocol_provider = authentik_provider_proxy.domain-forward-auth-provider.id
       }

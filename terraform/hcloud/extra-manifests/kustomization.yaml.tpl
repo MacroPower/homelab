@@ -5,8 +5,8 @@ resources:
   - ./namespaces
   - ./argocd
   - secrets.yaml
-  - application-set.yaml
   - https://github.com/hetznercloud/hcloud-cloud-controller-manager/releases/download/${ccm_version}/ccm-networks.yaml
+  - apps.yaml
 
 patches:
   - target:
