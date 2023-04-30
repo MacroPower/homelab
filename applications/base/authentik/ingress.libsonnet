@@ -1,10 +1,11 @@
 local ingress = import '../../lib/ingress.libsonnet';
 
+local ingressHost = std.extVar('ingressHost');
 local ingressAnnotations = std.parseYaml(std.extVar('ingressAnnotations'));
 
 ingress.new(
   name='authentik-ingress',
-  host='authentik.macro.network',
+  host=ingressHost,
   serviceName='authentik',
   servicePort=80,
   annotations=ingressAnnotations,
