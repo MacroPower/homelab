@@ -40,3 +40,7 @@ tlsOptions:
         - cloudflare-authenticated-origin-pull-ca
       clientAuthType: RequireAndVerifyClientCert
   no-client-auth: {}
+
+service:
+  spec:
+    externalTrafficPolicy: Local
