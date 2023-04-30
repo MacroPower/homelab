@@ -88,6 +88,7 @@
       local directory =
         if renderer == 'jsonnet' then {
           directory: {
+            include: '*.jsonnet',
             jsonnet: {
               extVars: this.getExtVars(),
               libs: jsonnetLibs,
