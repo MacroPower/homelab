@@ -39,7 +39,7 @@ variable "control_plane_nodepools" {
   default = [
     {
       name        = "control-plane-hel1",
-      server_type = "cpx11",
+      server_type = "cx21",
       location    = "hel1",
       labels      = [],
       taints      = [],
