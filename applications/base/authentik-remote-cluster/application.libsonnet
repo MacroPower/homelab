@@ -10,5 +10,4 @@ app.new(
   repoURL='https://charts.goauthentik.io/',
   targetRevision='1.0.3',
   releaseName='authentik-remote-cluster',
-  values='values.yaml'
 )

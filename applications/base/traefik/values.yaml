@@ -9,10 +9,6 @@ additionalArguments:
   - --serverstransport.insecureskipverify=true
   - --log.level=INFO
 
-# service:
-#   annotations:
-#     metallb.universe.tf/allow-shared-ip: main
-
 tracing:
   jaeger:
     samplingServerURL: http://localhost:5778/sampling
