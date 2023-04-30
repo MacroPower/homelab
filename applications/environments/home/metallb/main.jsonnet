@@ -1,4 +1,4 @@
-local base = import '../../../base/metallb/main.libsonnet';
+local ns = import '../../../base/metallb/namespace.libsonnet';
 local config = std.parseYaml(importstr 'config.yaml');
 
-base + config
+[ns] + config
