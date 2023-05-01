@@ -20,6 +20,8 @@ local apps = [
   import 'metrics-server/application.libsonnet',
   import 'openspeedtest/application.libsonnet',
   import 'opentelemetry-operator/application.libsonnet',
+  import 'prometheus/application.libsonnet',
+  import 'prometheus-stack/application.libsonnet',
   import 'rclone-restic/application.libsonnet',
   import 'traefik/application.libsonnet',
   import 'vpa/application.libsonnet',
