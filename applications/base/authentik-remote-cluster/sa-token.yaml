@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: authentik-sa-token
+  annotations:
+    kubernetes.io/service-account.name: authentik-remote-cluster
+type: kubernetes.io/service-account-token
