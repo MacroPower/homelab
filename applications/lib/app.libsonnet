@@ -50,7 +50,7 @@
       },
     },
 
-    withChart(name, repoURL, targetRevision, releaseName='', values=''):: self {
+    withChart(name, repoURL, targetRevision, releaseName='', values='', skipCrds=false):: self {
       spec+: {
         sources+: [{
           chart: name,
@@ -58,6 +58,7 @@
           targetRevision: targetRevision,
           helm: {
             [if releaseName != '' then 'releaseName']: releaseName,
+            [if skipCrds then 'skipCrds']: true,
             [if values != '' then 'valueFiles']: [
               '$base/%(path)s/%(values)s' % {
                 path: path,

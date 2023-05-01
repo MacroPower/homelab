@@ -1,8 +1,8 @@
 local app = import '../../lib/app.libsonnet';
 
 app.new(
-  name='kube-prometheus-stack',
-  path='applications/base/kube-prometheus-stack',
+  name='prometheus',
+  path='applications/base/prometheus',
   namespace='prometheus',
   renderer='kustomize',
 )

@@ -1,0 +1,210 @@
+# https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
+
+global:
+  rbac:
+    create: true
+    createAggregateClusterRoles: true
+
+grafana:
+  enabled: false
+  forceDeployDatasources: true
+  forceDeployDashboards: true
+
+kubeStateMetrics:
+  enabled: true
+
+nodeExporter:
+  enabled: true
+
+prometheusOperator:
+  admissionWebhooks:
+    certManager:
+      enabled: true
+  prometheusConfigReloader:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 50Mi
+      limits:
+        memory: 50Mi
+
+prometheus:
+  service:
+    labels:
+      mirror.linkerd.io/exported: "true"
+    annotations:
+      argocd.argoproj.io/sync-options: Prune=false
+
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelector: {}
+
+    podMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelector: {}
+
+    probeSelectorNilUsesHelmValues: false
+    probeSelector: {}
+
+    extraArgs:
+      enable-feature: exemplar-storage
+
+    retention: 1d
+
+    # # Max series is 10k.
+    # remoteWrite:
+    #   - url: https://prometheus-us-central1.grafana.net/api/prom/push
+    #     basicAuth:
+    #       username:
+    #         name: grafana-cloud-prom-credentials
+    #         key: GRAFANA_PROM_USER
+    #       password:
+    #         name: grafana-cloud-prom-credentials
+    #         key: GRAFANA_PROM_PASS
+
+    resources:
+      requests:
+        cpu: 500m
+        memory: 6Gi
+      limits:
+        cpu: 500m
+        memory: 6Gi
+
+    additionalScrapeConfigs:
+      - job_name: "linkerd-controller"
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - "linkerd"
+                - "linkerd-viz"
+        relabel_configs:
+          - source_labels:
+              - __meta_kubernetes_pod_container_port_name
+            action: keep
+            regex: admin-http
+          - source_labels: [__meta_kubernetes_pod_container_name]
+            action: replace
+            target_label: component
+
+      - job_name: "linkerd-service-mirror"
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels:
+              - __meta_kubernetes_pod_label_component
+              - __meta_kubernetes_pod_container_port_name
+            action: keep
+            regex: linkerd-service-mirror;admin-http$
+          - source_labels: [__meta_kubernetes_pod_container_name]
+            action: replace
+            target_label: component
+
+      - job_name: "linkerd-proxy"
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels:
+              - __meta_kubernetes_pod_container_name
+              - __meta_kubernetes_pod_container_port_name
+              - __meta_kubernetes_pod_label_linkerd_io_control_plane_ns
+            action: keep
+            regex: ^linkerd-proxy;linkerd-admin;linkerd$
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_pod_name]
+            action: replace
+            target_label: pod
+          # special case k8s' "job" label, to not interfere with prometheus' "job"
+          # label
+          # __meta_kubernetes_pod_label_linkerd_io_proxy_job=foo =>
+          # k8s_job=foo
+          - source_labels: [__meta_kubernetes_pod_label_linkerd_io_proxy_job]
+            action: replace
+            target_label: k8s_job
+          # drop __meta_kubernetes_pod_label_linkerd_io_proxy_job
+          - action: labeldrop
+            regex: __meta_kubernetes_pod_label_linkerd_io_proxy_job
+          # __meta_kubernetes_pod_label_linkerd_io_proxy_deployment=foo =>
+          # deployment=foo
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_linkerd_io_proxy_(.+)
+          # drop all labels that we just made copies of in the previous labelmap
+          - action: labeldrop
+            regex: __meta_kubernetes_pod_label_linkerd_io_proxy_(.+)
+          # __meta_kubernetes_pod_label_linkerd_io_foo=bar =>
+          # foo=bar
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_linkerd_io_(.+)
+          # Copy all pod labels to tmp labels
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+            replacement: __tmp_pod_label_$1
+          # Take `linkerd_io_` prefixed labels and copy them without the prefix
+          - action: labelmap
+            regex: __tmp_pod_label_linkerd_io_(.+)
+            replacement: __tmp_pod_label_$1
+          # Drop the `linkerd_io_` originals
+          - action: labeldrop
+            regex: __tmp_pod_label_linkerd_io_(.+)
+          # Copy tmp labels into real labels
+          - action: labelmap
+            regex: __tmp_pod_label_(.+)
+
+alertmanager:
+  config:
+    global:
+      resolve_timeout: 5m
+    inhibit_rules:
+      - source_matchers:
+          - "severity = critical"
+        target_matchers:
+          - "severity =~ warning|info"
+        equal:
+          - "namespace"
+          - "alertname"
+      - source_matchers:
+          - "severity = warning"
+        target_matchers:
+          - "severity = info"
+        equal:
+          - "namespace"
+          - "alertname"
+      - source_matchers:
+          - "alertname = InfoInhibitor"
+        target_matchers:
+          - "severity = info"
+        equal:
+          - "namespace"
+    route:
+      group_by: ["namespace"]
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+      receiver: "null"
+      routes:
+        - receiver: "null"
+          matchers:
+            - alertname =~ "InfoInhibitor|Watchdog"
+        - receiver: "robusta"
+          group_by: ["..."]
+          matchers:
+            - alertname =~ ".+"
+          repeat_interval: 4h
+          continue: true
+    receivers:
+      - name: "null"
+      - name: "robusta"
+        webhook_configs:
+          - url: "http://robusta-runner.observability.svc.cluster.local/api/alerts"
+            send_resolved: true
+    templates:
+      - "/etc/alertmanager/config/*.tmpl"
+
+  alertmanagerSpec:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 128Mi
