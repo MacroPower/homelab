@@ -22,18 +22,18 @@ spec:
         slug = "default-provider-authorization-explicit-consent"
       }
 
-      resource "authentik_provider_proxy" "domain-forward-auth-provider" {
-        name               = "domain-forward-auth-provider"
+      resource "authentik_provider_proxy" "home-domain-forward-auth-provider" {
+        name               = "home-domain-forward-auth-provider"
         cookie_domain      = "home.macro.network"
         external_host      = "https://authentik.home.macro.network"
         mode               = "forward_domain"
         authorization_flow = data.authentik_flow.default-authorization-flow.id
       }
 
-      resource "authentik_application" "domain-forward-auth-application" {
+      resource "authentik_application" "home-domain-forward-auth-application" {
         name              = "home.macro.network"
-        slug              = "domain-forward-auth-application"
-        protocol_provider = authentik_provider_proxy.domain-forward-auth-provider.id
+        slug              = "home-domain-forward-auth-application"
+        protocol_provider = authentik_provider_proxy.home-domain-forward-auth-provider.id
       }
 
       variable "authentik_cluster_credentials_hcloud" {
@@ -44,4 +44,18 @@ spec:
       resource "authentik_service_connection_kubernetes" "hcloud-service-connection" {
         name       = "hcloud"
         kubeconfig = jsonencode(yamldecode(var.authentik_cluster_credentials_hcloud))
+      }
+
+      resource "authentik_provider_proxy" "hcloud-domain-forward-auth-provider" {
+        name               = "hcloud-domain-forward-auth-provider"
+        cookie_domain      = "macro.network"
+        external_host      = "https://authentik.macro.network"
+        mode               = "forward_domain"
+        authorization_flow = data.authentik_flow.default-authorization-flow.id
+      }
+
+      resource "authentik_application" "hcloud-domain-forward-auth-application" {
+        name              = "macro.network"
+        slug              = "hcloud-domain-forward-auth-application"
+        protocol_provider = authentik_provider_proxy.hcloud-domain-forward-auth-provider.id
       }
