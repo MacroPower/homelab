@@ -6,7 +6,7 @@ local ingressAnnotations = std.parseYaml(std.extVar('ingressAnnotations'));
 ingress.new(
   name='authentik-ingress',
   host=ingressHost,
-  serviceName='authentik-home',
-  servicePort=80,
+  serviceName='ak-outpost-hcloud',
+  servicePort=9000,
   annotations=ingressAnnotations,
 )
