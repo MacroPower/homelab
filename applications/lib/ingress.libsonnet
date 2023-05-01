@@ -8,6 +8,7 @@ local net = k.networking.v1;
       net.ingress.new(name) +
       net.ingress.mixin.metadata.withLabelsMixin(labels) +
       net.ingress.mixin.metadata.withAnnotationsMixin(annotations) +
+      net.ingress.mixin.spec.withTls(net.ingressTLS.withHosts(host)) +
       net.ingress.mixin.spec.withRules([
         net.ingressRule.mixin.withHost(host) +
         net.ingressRule.mixin.http.withPaths(
@@ -20,7 +21,7 @@ local net = k.networking.v1;
 
     if tlsSecretName != '' then
       ingress +
-      net.ingress.mixin.spec.withTls(net.ingressTLS.withHosts(host) + net.ingressTLS.withSecretName(tlsSecretName))
+      net.ingress.mixin.spec.withTls(net.ingressTLS.withSecretName(tlsSecretName))
     else
       ingress,
 }
