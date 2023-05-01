@@ -10,6 +10,13 @@ spec:
     name: terraform-workspace-authentik
   forProvider:
     source: Inline
+    varFiles:
+      - source: SecretKey
+        format: HCL
+        secretKeyRef:
+          namespace: authentik
+          name: authentik-cluster-credentials
+          key: authentik.tfvars
     module: |
       data "authentik_flow" "default-authorization-flow" {
         slug = "default-provider-authorization-explicit-consent"
@@ -27,4 +34,14 @@ spec:
         name              = "home.macro.network"
         slug              = "domain-forward-auth-application"
         protocol_provider = authentik_provider_proxy.domain-forward-auth-provider.id
+      }
+
+      variable "authentik_cluster_credentials_hcloud" {
+        type      = string
+        sensitive = true
+      }
+
+      resource "authentik_service_connection_kubernetes" "hcloud-service-connection" {
+        name       = "hcloud"
+        kubeconfig = jsonencode(yamldecode(var.authentik_cluster_credentials_hcloud))
       }

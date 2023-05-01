@@ -28,7 +28,7 @@
       spec+: {
         target+: {
           template: {
-            type: type,
+            [if type != '' then 'type']: type,
             engineVersion: 'v2',
             data: data,
           },
