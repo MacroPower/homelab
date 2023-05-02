@@ -5,7 +5,7 @@ local net = k.networking.v1;
 local mergeMiddlewares(annotations, middleware) =
   if std.objectHas(annotations, 'traefik.ingress.kubernetes.io/router.middlewares')
   then
-    '%s,%s' % [middleware, annotations['traefik.ingress.kubernetes.io/router.middlewares']]
+    '%s,%s' % [annotations['traefik.ingress.kubernetes.io/router.middlewares'], middleware]
   else
     middleware;
 

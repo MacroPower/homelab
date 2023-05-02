@@ -1,8 +1,7 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
-  name: authentik
-  namespace: traefik
+  name: ak-outpost
 spec:
   forwardAuth:
     address: http://authentik.authentik.svc.cluster.local/outpost.goauthentik.io/auth/traefik

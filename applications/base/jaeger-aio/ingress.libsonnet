@@ -1,5 +1,5 @@
 local ingress = import '../../lib/ingress.libsonnet';
-local ns = import 'namespace.libsonnet';
+local ns = import '../jaeger-operator/namespace.libsonnet';
 
 local ingressHost = std.extVar('ingressHost');
 local ingressAnnotations = std.parseYaml(std.extVar('ingressAnnotations'));
@@ -11,6 +11,6 @@ ingress.new(
   serviceName='jaeger-aio-query',
   servicePort=16686,
   annotations=ingressAnnotations {
-    'traefik.ingress.kubernetes.io/router.middlewares': 'traefik-authentik@kubernetescrd',
+    'traefik.ingress.kubernetes.io/router.middlewares': 'authentik-ak-outpost@kubernetescrd',
   },
 )

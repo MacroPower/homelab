@@ -1,0 +1,9 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: ak-outpost-l5d-header-middleware
+  namespace: authentik
+spec:
+  headers:
+    customRequestHeaders:
+      l5d-dst-override: ak-outpost.authentik.svc.cluster.local:9000

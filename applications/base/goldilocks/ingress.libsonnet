@@ -11,6 +11,6 @@ ingress.new(
   serviceName='goldilocks-dashboard',
   servicePort=80,
   annotations=ingressAnnotations {
-    'traefik.ingress.kubernetes.io/router.middlewares': 'traefik-authentik@kubernetescrd',
+    'traefik.ingress.kubernetes.io/router.middlewares': 'authentik-ak-outpost@kubernetescrd',
   },
 )
