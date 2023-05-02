@@ -5,4 +5,4 @@ local ns = import 'namespace.libsonnet';
 local secrets = std.parseYaml(importstr 'secrets.yaml');
 local tf = import 'terraform/terraform.libsonnet';
 
-[ns] + [ingress] + secrets + tf
+[ns] + ingress + secrets + tf

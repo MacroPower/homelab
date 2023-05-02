@@ -2,5 +2,4 @@
 
 [
   import 'namespace.libsonnet',
-  import 'ingress.libsonnet',
-]
+] + import 'ingress.libsonnet'

@@ -5,6 +5,7 @@ local ingressAnnotations = std.parseYaml(std.extVar('ingressAnnotations'));
 
 ingress.new(
   name='argocd-ingress',
+  namespace='argocd',
   host=ingressHost,
   serviceName='argocd-server',
   servicePort=80,

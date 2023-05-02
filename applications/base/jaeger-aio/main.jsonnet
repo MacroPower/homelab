@@ -1,4 +1,3 @@
 [
-  import 'ingress.libsonnet',
   std.parseYaml(importstr 'jaeger.yaml'),
-]
+] + import 'ingress.libsonnet'
