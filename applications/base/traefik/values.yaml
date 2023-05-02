@@ -9,13 +9,6 @@ additionalArguments:
   - --serverstransport.insecureskipverify=true
   - --log.level=INFO
 
-tracing:
-  jaeger:
-    samplingServerURL: http://localhost:5778/sampling
-    samplingType: const
-    samplingParam: 1.0
-    localAgentHostPort: 127.0.0.1:6831
-
 providers:
   kubernetesIngress:
     enabled: true
