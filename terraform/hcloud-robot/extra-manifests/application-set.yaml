@@ -7,7 +7,7 @@ spec:
   generators:
     - git:
         repoURL: https://github.com/MacroPower/homelab
-        revision: HEAD
+        revision: robot
         directories:
           - path: applications/overlays/hcloud-robot/*
   template:
@@ -21,7 +21,7 @@ spec:
           selfHeal: true
       source:
         repoURL: https://github.com/MacroPower/homelab
-        targetRevision: HEAD
+        targetRevision: robot
         path: '{{path}}'
       destination:
         server: https://kubernetes.default.svc

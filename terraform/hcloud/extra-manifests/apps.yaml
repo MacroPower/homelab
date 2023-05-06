@@ -14,7 +14,7 @@ spec:
         libs:
           - applications/vendor
           - applications/lib
-    targetRevision: argo-apps
+    targetRevision: main
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: argocd

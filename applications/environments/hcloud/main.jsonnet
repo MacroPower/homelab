@@ -40,7 +40,7 @@ local apps = [
   })
   .withBase(
     repoURL='https://github.com/MacroPower/homelab',
-    targetRevision='argo-apps'
+    targetRevision='main',
   )
   for app in apps
 ]
