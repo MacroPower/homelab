@@ -1,7 +1,7 @@
 local k = import '../../../lib/k.libsonnet';
 
 k.core.v1.configMap.new('coredns', data={
-  'Corefile': |||
+  Corefile: |||
     .:53 {
         errors
         health
