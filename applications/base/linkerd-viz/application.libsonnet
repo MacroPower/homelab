@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='linkerd-viz',
   repoURL='https://helm.linkerd.io/edge',
-  targetRevision='30.4.10-edge',
+  targetRevision='30.9.1-edge',
   releaseName='linkerd-viz',
   values='values.yaml'
 )

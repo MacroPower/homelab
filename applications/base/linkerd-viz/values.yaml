@@ -1,3 +1,6 @@
+enablePodAntiAffinity: true
+defaultLogFormat: json
+
 grafana:
   url: http://grafana.grafana.svc.cluster.local:3000
 
@@ -8,17 +11,41 @@ prometheus:
 prometheusUrl: http://prometheus-operated.prometheus.svc.cluster.local:9090
 
 dashboard:
+  replicas: 2
   resources:
     cpu:
       request: 50m
+      limit: 50m
     memory:
       request: 128Mi
-      limit: 512Mi
+      limit: 128Mi
 
 metricsAPI:
+  replicas: 2
   resources:
     cpu:
       request: 50m
+      limit: 50m
     memory:
       request: 128Mi
-      limit: 512Mi
+      limit: 128Mi
+
+tap:
+  replicas: 2
+  resources:
+    cpu:
+      request: 50m
+      limit: 50m
+    memory:
+      request: 128Mi
+      limit: 128Mi
+
+tapInjector:
+  replicas: 2
+  resources:
+    cpu:
+      request: 50m
+      limit: 50m
+    memory:
+      request: 128Mi
+      limit: 128Mi

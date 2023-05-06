@@ -1,2 +1,4 @@
+enablePodAntiAffinity: true
+
 gateway:
   replicas: 2

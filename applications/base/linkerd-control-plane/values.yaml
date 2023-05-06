@@ -17,3 +17,61 @@ identityTrustAnchorsPEM: |-
   PEJyu/f5ckbhbdI0EN/QTgubIikCIFsYUA+mf40Gl9vaq7XsLilDmG01wf8cMH1i
   aeiQ7W0k
   -----END CERTIFICATE-----
+
+# -- Create PodDisruptionBudget resources for each control plane workload
+enablePodDisruptionBudget: true
+
+# -- Specify a deployment strategy for each control plane workload
+deploymentStrategy:
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 25%
+
+# -- add PodAntiAffinity to each control plane workload
+enablePodAntiAffinity: true
+
+# nodeAffinity:
+
+# proxy configuration
+proxy:
+  logFormat: json
+  resources:
+    cpu:
+      limit: 100m
+      request: 10m
+    memory:
+      limit: 250Mi
+      request: 50Mi
+
+proxyInit:
+  logFormat: json
+
+networkValidator:
+  logFormat: json
+
+# controller configuration
+controllerReplicas: 3
+controllerLogFormat: json
+controllerResources: &controller_resources
+  cpu: &controller_resources_cpu
+    limit: 100m
+    request: 100m
+  memory: &controller_resources_memory
+    limit: 250Mi
+    request: 250Mi
+destinationResources: *controller_resources
+
+# identity configuration
+identityResources:
+  cpu: *controller_resources_cpu
+  memory: *controller_resources_memory
+
+# heartbeat configuration
+heartbeatResources: *controller_resources
+
+# proxy injector configuration
+proxyInjectorResources: *controller_resources
+webhookFailurePolicy: Fail
+
+# service profile validator configuration
+spValidatorResources: *controller_resources

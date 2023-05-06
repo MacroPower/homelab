@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='linkerd-multicluster',
   repoURL='https://helm.linkerd.io/edge',
-  targetRevision='30.5.1-edge',
+  targetRevision='30.8.1-edge',
   releaseName='linkerd-multicluster',
   values='values.yaml'
 )

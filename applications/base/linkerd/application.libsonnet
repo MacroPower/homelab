@@ -8,6 +8,6 @@ app.new(
 ).withChart(
   name='linkerd-crds',
   repoURL='https://helm.linkerd.io/edge',
-  targetRevision='1.5.0-edge',
+  targetRevision='1.7.0-edge',
   releaseName='linkerd-crds',
 )

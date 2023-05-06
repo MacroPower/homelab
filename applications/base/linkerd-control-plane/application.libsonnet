@@ -7,7 +7,7 @@ app.new(
 ).withChart(
   name='linkerd-control-plane',
   repoURL='https://helm.linkerd.io/edge',
-  targetRevision='1.11.4-edge',
+  targetRevision='1.13.1-edge',
   releaseName='linkerd-control-plane',
   values='values.yaml'
 )
