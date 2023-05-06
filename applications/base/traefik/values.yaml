@@ -2,12 +2,17 @@ deployment:
   kind: Deployment
   replicas: 3
 
-  annotations:
-    sidecar.jaegertracing.io/inject: "true"
-
 additionalArguments:
   - --serverstransport.insecureskipverify=true
   - --log.level=INFO
+
+tracing:
+  jaeger:
+    propagation: b3
+    collector:
+      endpoint: http://linkerd-collector.linkerd-jaeger.svc.cluster.local:14268/api/traces?format=jaeger.thrift
+    samplingType: const
+    samplingParam: 1.0
 
 providers:
   kubernetesIngress:

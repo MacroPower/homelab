@@ -1,0 +1,24 @@
+collector:
+  enabled: false
+
+jaeger:
+  enabled: false
+
+webhook:
+  collectorSvcAddr: linkerd-collector.linkerd-jaeger.svc.cluster.local:55678
+  # -- service account associated with the collector instance
+  collectorSvcAccount: collector
+
+  failurePolicy: Ignore
+
+  resources:
+    cpu:
+      # -- Maximum amount of CPU units that the jaeger-injector container can use
+      limit:
+      # -- Amount of CPU units that the jaeger-injector container requests
+      request:
+    memory:
+      # -- Maximum amount of memory that jaeger-injector container can use
+      limit:
+      # -- Amount of memory that the jaeger-injector container requests
+      request:
