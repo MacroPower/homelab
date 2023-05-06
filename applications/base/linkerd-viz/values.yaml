@@ -1,4 +1,4 @@
-enablePodAntiAffinity: true
+enablePodAntiAffinity: false
 defaultLogFormat: json
 
 grafana:

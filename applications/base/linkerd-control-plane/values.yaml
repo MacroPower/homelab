@@ -28,7 +28,7 @@ deploymentStrategy:
     maxSurge: 25%
 
 # -- add PodAntiAffinity to each control plane workload
-enablePodAntiAffinity: true
+enablePodAntiAffinity: false
 
 # nodeAffinity:
 
