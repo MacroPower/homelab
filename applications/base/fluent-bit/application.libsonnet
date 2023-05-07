@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='fluent-bit',
   repoURL='https://fluent.github.io/helm-charts',
-  targetRevision='0.27.0',
+  targetRevision='0.28.0',
   releaseName='fluent-bit',
   values='values.yaml'
 )
