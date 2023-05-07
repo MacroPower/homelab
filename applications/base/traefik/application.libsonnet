@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='traefik',
   repoURL='https://helm.traefik.io/traefik',
-  targetRevision='21.2.0',
+  targetRevision='23.0.1',
   releaseName='traefik',
   values='values.yaml'
 )

@@ -43,4 +43,7 @@ tlsOptions:
       secretNames:
         - cloudflare-authenticated-origin-pull-ca
       clientAuthType: RequireAndVerifyClientCert
-  no-client-auth: {}
+    minVersion: VersionTLS12
+  no-client-auth:
+    clientAuth: {}
+    minVersion: VersionTLS12
