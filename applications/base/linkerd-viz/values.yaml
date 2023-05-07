@@ -12,7 +12,7 @@ prometheusUrl: http://prometheus-operated.prometheus.svc.cluster.local:9090
 
 dashboard:
   replicas: 2
-  enforcedHostRegexp: ^linkerd-viz(\..+)?\.macro.network$
+  enforcedHostRegexp: ^(linkerd-viz(\..+)?\.macro.network)|(web.linkerd-viz.svc.cluster.local:8084)$
   resources:
     cpu:
       request: 50m

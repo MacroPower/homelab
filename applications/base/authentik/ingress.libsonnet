@@ -10,5 +10,12 @@ ingress.new(
   host=ingressHost,
   serviceName='authentik',
   servicePort=80,
-  annotations=ingressAnnotations,
+  annotations=ingressAnnotations {
+    'gethomepage.dev/enabled': 'true',
+    'gethomepage.dev/name': 'Authentik',
+    'gethomepage.dev/description': 'Identity Provider',
+    'gethomepage.dev/group': 'Cluster Management',
+    'gethomepage.dev/icon': 'authentik',
+    'gethomepage.dev/podSelector': '',
+  },
 )

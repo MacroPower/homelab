@@ -9,6 +9,7 @@ local apps = [
   import 'external-secrets/application.libsonnet',
   import 'goldilocks/application.libsonnet',
   import 'grafana/application.libsonnet',
+  import 'homepage/application.libsonnet',
   import 'inlets-client/application.libsonnet',
   import 'jaeger-aio/application.libsonnet',
   import 'jaeger-operator/application.libsonnet',

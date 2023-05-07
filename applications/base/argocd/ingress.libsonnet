@@ -11,5 +11,11 @@ ingress.new(
   servicePort=80,
   annotations=ingressAnnotations {
     'traefik.ingress.kubernetes.io/router.middlewares': 'authentik-ak-outpost@kubernetescrd',
+    'gethomepage.dev/enabled': 'true',
+    'gethomepage.dev/name': 'Argo CD',
+    'gethomepage.dev/description': 'GitOps',
+    'gethomepage.dev/group': 'Cluster Management',
+    'gethomepage.dev/icon': 'argocd',
+    'gethomepage.dev/podSelector': '',
   },
 )

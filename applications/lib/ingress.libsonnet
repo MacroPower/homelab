@@ -20,11 +20,14 @@ local mergeMiddlewares(annotations, middleware) =
         net.ingress.mixin.spec.withTls(net.ingressTLS.withHosts(host)) +
         net.ingress.mixin.spec.withTls(net.ingressTLS.withSecretName(tlsSecretName));
 
+    local service = '%s.%s.svc.cluster.local:%s' % [serviceName, namespace, servicePort];
+
     local ingress =
       net.ingress.new(name) +
       net.ingress.mixin.metadata.withLabelsMixin(labels) +
       net.ingress.mixin.metadata.withAnnotationsMixin(annotations {
         'traefik.ingress.kubernetes.io/router.middlewares': mergeMiddlewares(annotations, '%s-%s@kubernetescrd' % [namespace, middlewareName]),
+        [if !std.objectHas(annotations, 'gethomepage.dev/ping') then 'gethomepage.dev/ping']: 'http://%s' % service,
       }) +
       tls +
       net.ingress.mixin.spec.withRules([
@@ -48,7 +51,7 @@ local mergeMiddlewares(annotations, middleware) =
       spec: {
         headers: {
           customRequestHeaders: {
-            'l5d-dst-override': '%s.%s.svc.cluster.local:%s' % [serviceName, namespace, servicePort],
+            'l5d-dst-override': service,
           },
         },
       },

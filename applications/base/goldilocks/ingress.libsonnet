@@ -12,5 +12,11 @@ ingress.new(
   servicePort=80,
   annotations=ingressAnnotations {
     'traefik.ingress.kubernetes.io/router.middlewares': 'authentik-ak-outpost@kubernetescrd',
+    'gethomepage.dev/enabled': 'true',
+    'gethomepage.dev/name': 'Goldilocks',
+    'gethomepage.dev/description': 'Resource Recommendations',
+    'gethomepage.dev/group': 'Cluster Management',
+    'gethomepage.dev/icon': 'https://simpleicons.org/icons/saturn.svg',
+    'gethomepage.dev/podSelector': '',
   },
 )

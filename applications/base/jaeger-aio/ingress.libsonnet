@@ -12,5 +12,11 @@ ingress.new(
   servicePort=16686,
   annotations=ingressAnnotations {
     'traefik.ingress.kubernetes.io/router.middlewares': 'authentik-ak-outpost@kubernetescrd',
+    'gethomepage.dev/enabled': 'true',
+    'gethomepage.dev/name': 'Jaeger',
+    'gethomepage.dev/description': 'Tracing',
+    'gethomepage.dev/group': 'Observability',
+    'gethomepage.dev/icon': 'jaeger',
+    'gethomepage.dev/podSelector': '',
   },
 )

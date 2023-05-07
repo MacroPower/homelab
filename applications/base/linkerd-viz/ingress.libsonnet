@@ -12,5 +12,11 @@ ingress.new(
   servicePort=8084,
   annotations=ingressAnnotations {
     'traefik.ingress.kubernetes.io/router.middlewares': 'authentik-ak-outpost@kubernetescrd',
+    'gethomepage.dev/enabled': 'true',
+    'gethomepage.dev/name': 'Linkerd Viz',
+    'gethomepage.dev/description': 'Service Mesh Dashboard',
+    'gethomepage.dev/group': 'Observability',
+    'gethomepage.dev/icon': 'https://cncf-branding.netlify.app/img/projects/linkerd/icon/color/linkerd-icon-color.png',
+    'gethomepage.dev/podSelector': '',
   },
 )

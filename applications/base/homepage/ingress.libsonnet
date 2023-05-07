@@ -5,18 +5,18 @@ local ingressHost = std.extVar('ingressHost');
 local ingressAnnotations = std.parseYaml(std.extVar('ingressAnnotations'));
 
 ingress.new(
-  name='grafana-ingress',
+  name='homepage-ingress',
   namespace=ns.metadata.name,
   host=ingressHost,
-  serviceName='grafana',
-  servicePort=80,
+  serviceName='homepage',
+  servicePort=3000,
   annotations=ingressAnnotations {
     'gethomepage.dev/enabled': 'true',
-    'gethomepage.dev/name': 'Grafana',
-    'gethomepage.dev/description': 'Dashboarding',
-    'gethomepage.dev/group': 'Observability',
-    'gethomepage.dev/icon': 'grafana',
+    'gethomepage.dev/name': 'Homepage',
+    'gethomepage.dev/description': 'Homepage',
+    'gethomepage.dev/group': 'Apps',
+    'gethomepage.dev/icon': 'homepage',
     'gethomepage.dev/podSelector': '',
-    'gethomepage.dev/ping': '',
+    'gethomepage.dev/ping': 'http://localhost:3000/',
   },
 )
