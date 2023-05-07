@@ -4,10 +4,12 @@ local ns = import 'namespace.libsonnet';
 local ingressHost = std.extVar('ingressHost');
 local ingressAnnotations = std.parseYaml(std.extVar('ingressAnnotations'));
 
+local ingressHostDomain = std.join('.', std.split(ingressHost, '.')[1:]);
+
 ingress.new(
   name='prometheus-ingress',
   namespace=ns.metadata.name,
-  host=ingressHost,
+  host='prometheus.%s' % ingressHostDomain,
   serviceName='prometheus-operated',
   servicePort=9090,
   annotations=ingressAnnotations {
@@ -17,6 +19,22 @@ ingress.new(
     'gethomepage.dev/description': 'Monitoring System & TSDB',
     'gethomepage.dev/group': 'Observability',
     'gethomepage.dev/icon': 'prometheus',
+    'gethomepage.dev/podSelector': '',
+  },
+) +
+ingress.new(
+  name='alertmanager-ingress',
+  namespace=ns.metadata.name,
+  host='alertmanager.%s' % ingressHostDomain,
+  serviceName='alertmanager-operated',
+  servicePort=9093,
+  annotations=ingressAnnotations {
+    'traefik.ingress.kubernetes.io/router.middlewares': 'authentik-ak-outpost@kubernetescrd',
+    'gethomepage.dev/enabled': 'true',
+    'gethomepage.dev/name': 'Alertmanager',
+    'gethomepage.dev/description': 'Alert Routing System',
+    'gethomepage.dev/group': 'Observability',
+    'gethomepage.dev/icon': 'https://simpleicons.org/icons/prometheus.svg',
     'gethomepage.dev/podSelector': '',
   },
 )
