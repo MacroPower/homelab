@@ -21,6 +21,11 @@ config:
   services: []
 
   widgets:
+    - logo:
+        icon: kubernetes
+    - greeting:
+        text_size: xl
+        text: 'Unknown'
     - kubernetes:
         cluster:
           show: true
