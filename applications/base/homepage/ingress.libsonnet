@@ -11,6 +11,7 @@ ingress.new(
   serviceName='homepage',
   servicePort=3000,
   annotations=ingressAnnotations {
+    'traefik.ingress.kubernetes.io/router.middlewares': 'authentik-ak-outpost@kubernetescrd',
     'gethomepage.dev/enabled': 'true',
     'gethomepage.dev/name': 'Homepage',
     'gethomepage.dev/description': 'Homepage',
