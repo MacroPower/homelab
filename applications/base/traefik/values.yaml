@@ -5,6 +5,12 @@ deployment:
 additionalArguments:
   - --serverstransport.insecureskipverify=true
   - --log.level=INFO
+  - --api.dashboard=true
+  - --api.insecure=true
+
+ingressRoute:
+  dashboard:
+    enabled: false
 
 tracing:
   jaeger:
