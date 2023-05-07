@@ -61,6 +61,11 @@ config:
         icon: mdi-chart-bell-curve-cumulative
       Cluster Management:
         icon: mdi-tools
+    background:
+      blur: sm # sm, "", md, xl... see https://tailwindcss.com/docs/backdrop-blur
+      # saturate: 50 # 0, 50, 100... see https://tailwindcss.com/docs/backdrop-saturate
+      brightness: 75
+    theme: dark
     providers:
       longhorn:
         url: http://longhorn-frontend.longhorn-system.svc.cluster.local
