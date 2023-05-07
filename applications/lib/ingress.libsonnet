@@ -28,6 +28,7 @@ local mergeMiddlewares(annotations, middleware) =
       net.ingress.mixin.metadata.withAnnotationsMixin(annotations {
         'traefik.ingress.kubernetes.io/router.middlewares': mergeMiddlewares(annotations, '%s-%s@kubernetescrd' % [namespace, middlewareName]),
         [if !std.objectHas(annotations, 'gethomepage.dev/ping') then 'gethomepage.dev/ping']: 'http://%s' % service,
+        [if !std.objectHas(annotations, 'gethomepage.dev/external') then 'gethomepage.dev/external']: 'true',
       }) +
       tls +
       net.ingress.mixin.spec.withRules([
