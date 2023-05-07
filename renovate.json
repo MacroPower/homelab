@@ -2,5 +2,20 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:base"
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": [
+        "(^|/)applications/base/.+/application\\.libsonnet$",
+        "(^|/)applications/environments/.+/application\\.libsonnet$"
+      ],
+      "matchStrings": [
+        ".*\\.withChart\\((\\n.*?)* *name='(?<depName>.*)',?[^\\)]*",
+        ".*\\.withChart\\((\\n.*?)* *repoURL='(?<registryUrl>.*)',?[^\\)]*",
+        ".*\\.withChart\\((\\n.*?)* *targetRevision='(?<currentValue>.*)',?[^\\)]*"
+      ],
+      "matchStringsStrategy": "combination",
+      "datasourceTemplate": "helm"
+    }
   ]
 }
