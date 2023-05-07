@@ -34,7 +34,7 @@ ingress.new(
     'gethomepage.dev/name': 'Alertmanager',
     'gethomepage.dev/description': 'Alert Routing System',
     'gethomepage.dev/group': 'Observability',
-    'gethomepage.dev/icon': 'https://simpleicons.org/icons/prometheus.svg',
+    'gethomepage.dev/icon': 'https://cncf-branding.netlify.app/img/projects/prometheus/icon/white/prometheus-icon-white.svg',
     'gethomepage.dev/podSelector': '',
   },
 )

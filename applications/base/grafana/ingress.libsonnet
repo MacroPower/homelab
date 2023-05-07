@@ -13,7 +13,7 @@ ingress.new(
   annotations=ingressAnnotations {
     'gethomepage.dev/enabled': 'true',
     'gethomepage.dev/name': 'Grafana',
-    'gethomepage.dev/description': 'Dashboarding',
+    'gethomepage.dev/description': 'Visualization Platform',
     'gethomepage.dev/group': 'Observability',
     'gethomepage.dev/icon': 'grafana',
     'gethomepage.dev/podSelector': '',

@@ -16,7 +16,7 @@ ingress.new(
     'gethomepage.dev/name': 'Linkerd Viz',
     'gethomepage.dev/description': 'Service Mesh Dashboard',
     'gethomepage.dev/group': 'Observability',
-    'gethomepage.dev/icon': 'https://cncf-branding.netlify.app/img/projects/linkerd/icon/color/linkerd-icon-color.png',
+    'gethomepage.dev/icon': 'https://cncf-branding.netlify.app/img/projects/linkerd/icon/color/linkerd-icon-color.svg',
     'gethomepage.dev/podSelector': '',
   },
 )
