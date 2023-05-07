@@ -26,6 +26,8 @@ config:
     - greeting:
         text_size: xl
         text: 'Unknown'
+    - logo:
+        icon: mdi-drag-vertical
     - kubernetes:
         cluster:
           show: true
@@ -35,12 +37,14 @@ config:
         nodes:
           show: false
     - logo:
-        icon: mdi-drag-horizontal-variant
+        icon: mdi-drag-vertical
     - longhorn:
         expanded: true
         total: true
         labels: false
         nodes: false
+    - logo:
+        icon: mdi-drag-vertical
     - search:
         provider: google
         focus: false
