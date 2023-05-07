@@ -8,6 +8,6 @@ app.new(
 ).withChart(
   name='authentik-remote-cluster',
   repoURL='https://charts.goauthentik.io/',
-  targetRevision='1.0.3',
+  targetRevision='1.1.2',
   releaseName='authentik-remote-cluster',
 )
