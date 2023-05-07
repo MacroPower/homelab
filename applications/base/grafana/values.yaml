@@ -1,9 +1,10 @@
 env:
   ANALYTICS_REPORTING_ENABLED: "false"
+  GF_SERVER_PROTOCOL: http
   GF_SERVER_DOMAIN: grafana.home.macro.network
   GF_SERVER_ROOT_URL: https://grafana.home.macro.network
   GF_TRACING_OPENTELEMETRY_JAEGER_ADDRESS: http://linkerd-collector.linkerd-jaeger.svc.cluster.local:14268/api/traces
-  GF_TRACING_OPENTELEMETRY_JAEGER_PROPAGATION: b3
+  GF_TRACING_OPENTELEMETRY_JAEGER_PROPAGATION: w3c # TODO: Change this to "b3"
   GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
   GF_AUTH_GENERIC_OAUTH_NAME: "authentik"
   GF_AUTH_GENERIC_OAUTH_SCOPES: "openid profile email"
