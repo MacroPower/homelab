@@ -32,9 +32,9 @@ helmCharts:
         resources:
           requests:
             cpu: 100m
-            memory: 512Mi
+            memory: 4Gi
           limits:
-            memory: 512Mi
+            memory: 8Gi
 
       resources:
         requests:
