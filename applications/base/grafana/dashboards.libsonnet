@@ -25,4 +25,6 @@ local dashboard(name, data) =
   dashboard(name='k8s-views-namespaces', data=(importstr 'dashboards/k8s-views-namespaces.json')),
   dashboard(name='k8s-views-nodes', data=(importstr 'dashboards/k8s-views-nodes.json')),
   dashboard(name='k8s-views-pods', data=(importstr 'dashboards/k8s-views-pods.json')),
+
+  dashboard(name='pfsense-net-quality', data=(importstr 'dashboards/pfsense-net-quality.json')),
 ]

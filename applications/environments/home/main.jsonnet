@@ -7,6 +7,7 @@ local apps = [
   import 'descheduler/application.libsonnet',
   import 'external-dns/application.libsonnet',
   import 'external-secrets/application.libsonnet',
+  import 'external-services/application.libsonnet',
   import 'goldilocks/application.libsonnet',
   import 'grafana/application.libsonnet',
   import 'homepage/application.libsonnet',
