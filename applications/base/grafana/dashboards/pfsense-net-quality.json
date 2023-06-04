@@ -24,14 +24,13 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 23,
+  "id": 5,
   "links": [],
   "liveNow": false,
   "panels": [
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "$datasource"
       },
       "fieldConfig": {
         "defaults": {
@@ -121,8 +120,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "$datasource"
           },
           "exemplar": true,
           "expr": "max_over_time(ping_maximum_response_ms[$__interval])",
@@ -137,8 +135,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "$datasource"
       },
       "fieldConfig": {
         "defaults": {
@@ -228,8 +225,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "$datasource"
           },
           "exemplar": true,
           "expr": "sum(ping_average_response_ms) + (sum(ping_standard_deviation_ms) / 2)",
@@ -240,8 +236,7 @@
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "$datasource"
           },
           "exemplar": true,
           "expr": "(sum(ping_average_response_ms) - (sum(ping_standard_deviation_ms)) / 2) > 0 or vector(0)",
@@ -253,8 +248,7 @@
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "$datasource"
           },
           "exemplar": true,
           "expr": "sum(ping_maximum_response_ms)",
@@ -266,8 +260,7 @@
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "$datasource"
           },
           "exemplar": true,
           "expr": "sum(ping_minimum_response_ms)",
@@ -283,8 +276,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "$datasource"
       },
       "fieldConfig": {
         "defaults": {
@@ -374,8 +366,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "$datasource"
           },
           "exemplar": true,
           "expr": "max_over_time(dns_query_query_time_ms[$__interval])",
@@ -390,8 +381,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "$datasource"
       },
       "fieldConfig": {
         "defaults": {
@@ -470,8 +460,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "$datasource"
           },
           "exemplar": true,
           "expr": "avg_over_time(ping_percent_packet_loss[$__interval])",
@@ -486,8 +475,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "$datasource"
       },
       "fieldConfig": {
         "defaults": {
@@ -563,8 +551,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "$datasource"
           },
           "exemplar": true,
           "expr": "rate(net_drop_out{job=\"pfsense-telegraf\"}[$__rate_interval]) != 0",
@@ -574,8 +561,7 @@
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "$datasource"
           },
           "exemplar": true,
           "expr": "rate(net_drop_in{job=\"pfsense-telegraf\"}[$__rate_interval]) != 0",
@@ -590,8 +576,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "$datasource"
       },
       "fieldConfig": {
         "defaults": {
@@ -667,8 +652,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "$datasource"
           },
           "exemplar": true,
           "expr": "rate(net_err_out{job=\"pfsense-telegraf\"}[$__rate_interval]) != 0",
@@ -679,8 +663,7 @@
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "$datasource"
           },
           "exemplar": true,
           "expr": "rate(net_err_in{job=\"pfsense-telegraf\"}[$__rate_interval]) != 0",
@@ -700,16 +683,35 @@
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "prometheus",
+          "value": "prometheus"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      }
+    ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "pfSense Network Quality",
   "uid": "9NCty-f7z",
-  "version": 26,
+  "version": 4,
   "weekStart": ""
 }
