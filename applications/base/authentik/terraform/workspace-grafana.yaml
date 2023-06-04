@@ -23,6 +23,10 @@ spec:
         ]
       }
 
+      data "authentik_user" "akadmin" {
+        username = "akadmin"
+      }
+
       resource "random_password" "grafana-client-id" {
         length  = 40
         lower   = true
@@ -54,6 +58,16 @@ spec:
         name              = "grafana.home.macro.network"
         slug              = "grafana"
         protocol_provider = authentik_provider_oauth2.grafana-auth-provider.id
+      }
+
+      resource "authentik_group" "grafana-admins" {
+        name   = "Grafana Admins"
+        users  = [data.authentik_user.akadmin.id]
+      }
+
+      resource "authentik_group" "grafana-editors" {
+        name   = "Grafana Editors"
+        parent = authentik_group.grafana-admins.id
       }
 
       output "grafana_client_id" {
