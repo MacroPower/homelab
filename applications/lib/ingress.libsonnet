@@ -17,8 +17,10 @@ local mergeMiddlewares(annotations, middleware) =
       if tlsSecretName == '' then
         net.ingress.mixin.spec.withTls(net.ingressTLS.withHosts(host))
       else
-        net.ingress.mixin.spec.withTls(net.ingressTLS.withHosts(host)) +
-        net.ingress.mixin.spec.withTls(net.ingressTLS.withSecretName(tlsSecretName));
+        net.ingress.mixin.spec.withTls(
+          net.ingressTLS.withHosts(host) +
+          net.ingressTLS.withSecretName(tlsSecretName)
+        );
 
     local service = '%s.%s.svc.cluster.local:%s' % [serviceName, namespace, servicePort];
 
