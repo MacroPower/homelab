@@ -37,7 +37,7 @@ local apps = [
   .withAppNamespace('argocd')
   .withDestinationServer('https://kubernetes.default.svc')
   .withExtVars({
-    ingressHost: '%s.seedbox.macro.network' % app.metadata.name,
+    ingressHost: '%s-sb.macro.network' % app.metadata.name,
     ingressAnnotations: |||
       'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure'
       'external-dns.alpha.kubernetes.io/cloudflare-proxied': 'true'

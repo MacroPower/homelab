@@ -1,5 +1,5 @@
 local app = import '../../../base/authentik-remote-cluster/application.libsonnet';
 
 app.withExtVarsMixin({
-  ingressHost: 'authentik.seedbox.macro.network',
+  ingressHost: 'authentik-sb.macro.network',
 })

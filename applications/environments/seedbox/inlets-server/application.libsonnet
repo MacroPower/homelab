@@ -1,5 +1,5 @@
 local app = import '../../../base/inlets-server/application.libsonnet';
 
 app.withExtVarsMixin({
-  ingressHost: 'linkerd-tunnel.seedbox.macro.network',
+  ingressHost: 'linkerd-tunnel-sb.macro.network',
 })
