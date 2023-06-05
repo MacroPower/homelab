@@ -59,3 +59,27 @@ spec:
         slug              = "hcloud-domain-forward-auth-application"
         protocol_provider = authentik_provider_proxy.hcloud-domain-forward-auth-provider.id
       }
+
+      variable "authentik_cluster_credentials_seedbox" {
+        type      = string
+        sensitive = true
+      }
+
+      resource "authentik_service_connection_kubernetes" "seedbox-service-connection" {
+        name       = "seedbox"
+        kubeconfig = jsonencode(yamldecode(var.authentik_cluster_credentials_seedbox))
+      }
+
+      resource "authentik_provider_proxy" "seedbox-domain-forward-auth-provider" {
+        name               = "seedbox-domain-forward-auth-provider"
+        cookie_domain      = "macro.network"
+        external_host      = "https://authentik-sb.macro.network"
+        mode               = "forward_domain"
+        authorization_flow = data.authentik_flow.default-authorization-flow.id
+      }
+
+      resource "authentik_application" "seedbox-domain-forward-auth-application" {
+        name              = "seedbox.macro.network"
+        slug              = "seedbox-domain-forward-auth-application"
+        protocol_provider = authentik_provider_proxy.seedbox-domain-forward-auth-provider.id
+      }
