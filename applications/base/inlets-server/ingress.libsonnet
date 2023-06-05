@@ -7,7 +7,7 @@ local ingressAnnotations = std.parseYaml(std.extVar('ingressAnnotations'));
 ingress.new(
   name='inlets-ingress',
   namespace=ns.metadata.name,
-  host='linkerd-tunnel.macro.network',
+  host=ingressHost,
   serviceName='linkerd-tunnel',
   servicePort=8123,
   tlsSecretName='linkerd-tunnel-cert',
