@@ -1,0 +1,35 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: cloudflare-credentials
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: default
+
+  target:
+    name: cloudflare-credentials
+
+  data:
+    - secretKey: CLOUDFLARE_API_TOKEN
+      remoteRef:
+        key: CLOUDFLARE_API_TOKEN
+
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    email: jacobcolvin1@gmail.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+      - dns01:
+          cloudflare:
+            email: jacobcolvin1@gmail.com
+            apiTokenSecretRef:
+              name: cloudflare-credentials
+              key: CLOUDFLARE_API_TOKEN
