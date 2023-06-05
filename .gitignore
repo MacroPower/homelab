@@ -41,6 +41,7 @@ terraform.rc
 .htpasswd
 **/.secrets
 **/.hidden
+spec.json
 
 # Linkerd binary
 /linkerd
