@@ -15,38 +15,34 @@ dashboard:
   enforcedHostRegexp: ^(linkerd-viz(\..+)?\.macro.network)|(web.linkerd-viz.svc.cluster.local:8084)$
   resources:
     cpu:
-      request: 50m
-      limit: 50m
+      request: 10m
     memory:
-      request: 128Mi
-      limit: 128Mi
+      request: 100Mi
+      limit: 100Mi
 
 metricsAPI:
   replicas: 2
   resources:
     cpu:
-      request: 50m
-      limit: 50m
+      request: 10m
     memory:
-      request: 128Mi
-      limit: 128Mi
+      request: 100Mi
+      limit: 100Mi
 
 tap:
   replicas: 2
   resources:
     cpu:
-      request: 50m
-      limit: 50m
+      request: 10m
     memory:
-      request: 128Mi
-      limit: 128Mi
+      request: 100Mi
+      limit: 100Mi
 
 tapInjector:
   replicas: 2
   resources:
     cpu:
-      request: 50m
-      limit: 50m
+      request: 10m
     memory:
-      request: 128Mi
-      limit: 128Mi
+      request: 100Mi
+      limit: 100Mi

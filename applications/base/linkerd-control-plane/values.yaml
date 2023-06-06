@@ -37,7 +37,6 @@ proxy:
   logFormat: json
   resources:
     cpu:
-      limit: 100m
       request: 10m
     memory:
       limit: 250Mi
@@ -54,8 +53,7 @@ controllerReplicas: 3
 controllerLogFormat: json
 controllerResources: &controller_resources
   cpu: &controller_resources_cpu
-    limit: 100m
-    request: 100m
+    request: 50m
   memory: &controller_resources_memory
     limit: 250Mi
     request: 250Mi

@@ -13,12 +13,7 @@ webhook:
 
   resources:
     cpu:
-      # -- Maximum amount of CPU units that the jaeger-injector container can use
-      limit:
-      # -- Amount of CPU units that the jaeger-injector container requests
-      request:
+      request: 10m
     memory:
-      # -- Maximum amount of memory that jaeger-injector container can use
-      limit:
-      # -- Amount of memory that the jaeger-injector container requests
-      request:
+      limit: 100Mi
+      request: 100Mi
