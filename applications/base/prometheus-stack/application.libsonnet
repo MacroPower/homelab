@@ -2,7 +2,7 @@ local app = import '../../lib/app.libsonnet';
 local ns = import 'namespace.libsonnet';
 
 app.new(
-  name='prometheus-stack',
+  name='kube-prometheus-stack',
   path='applications/base/prometheus-stack',
   namespace=ns.metadata.name,
 ).withChart(
