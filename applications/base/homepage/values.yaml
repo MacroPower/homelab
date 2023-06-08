@@ -15,7 +15,7 @@ config:
               target: _self
         - Seedbox:
             - abbr: SB
-              href: https://homepage-robot.macro.network/
+              href: https://homepage-sb.macro.network/
               target: _self
 
   services: []
@@ -61,6 +61,8 @@ config:
         icon: mdi-chart-bell-curve-cumulative
       Cluster Management:
         icon: mdi-tools
+      Media:
+        icon: mdi-multimedia
     background:
       blur: sm # sm, "", md, xl... see https://tailwindcss.com/docs/backdrop-blur
       # saturate: 50 # 0, 50, 100... see https://tailwindcss.com/docs/backdrop-saturate

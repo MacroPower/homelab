@@ -43,6 +43,7 @@ local apps = [
   .withDestinationServer('https://kubernetes.default.svc')
   .withExtVars({
     ingressHost: '%s.home.macro.network' % app.metadata.name,
+    ingressSuffix: '.home.macro.network',
     ingressAnnotations: |||
       'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure'
     |||,

@@ -1,15 +1,13 @@
 local ingress = import '../../lib/ingress.libsonnet';
 local ns = import 'namespace.libsonnet';
 
-local ingressHost = std.extVar('ingressHost');
+local ingressSuffix = std.extVar('ingressSuffix');
 local ingressAnnotations = std.parseYaml(std.extVar('ingressAnnotations'));
-
-local ingressHostDomain = std.join('.', std.split(ingressHost, '.')[1:]);
 
 ingress.new(
   name='prometheus-ingress',
   namespace=ns.metadata.name,
-  host='prometheus.%s' % ingressHostDomain,
+  host='prometheus%s' % ingressSuffix,
   serviceName='prometheus-operated',
   servicePort=9090,
   annotations=ingressAnnotations {
@@ -25,7 +23,7 @@ ingress.new(
 ingress.new(
   name='alertmanager-ingress',
   namespace=ns.metadata.name,
-  host='alertmanager.%s' % ingressHostDomain,
+  host='alertmanager%s' % ingressSuffix,
   serviceName='alertmanager-operated',
   servicePort=9093,
   annotations=ingressAnnotations {

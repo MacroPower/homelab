@@ -1,5 +1,5 @@
 local ingress = import '../../lib/ingress.libsonnet';
-local ns = import '../transmission/namespace.libsonnet';
+local ns = import 'namespace.libsonnet';
 
 local ingressHost = std.extVar('ingressHost');
 local ingressAnnotations = std.parseYaml(std.extVar('ingressAnnotations'));
@@ -20,7 +20,7 @@ ingress.new(
     'gethomepage.dev/name': 'Transmission WebDAV',
     'gethomepage.dev/description': 'WebDAV Server for Transmission Data',
     'gethomepage.dev/group': 'Media',
-    'gethomepage.dev/icon': 'https://simpleicons.org/icons/saturn.svg',
+    'gethomepage.dev/icon': 'files',
     'gethomepage.dev/podSelector': '',
   },
 )

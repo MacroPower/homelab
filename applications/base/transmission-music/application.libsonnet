@@ -1,5 +1,5 @@
 local app = import '../../lib/app.libsonnet';
-local ns = import '../transmission/namespace.libsonnet';
+local ns = import 'namespace.libsonnet';
 
 app.new(
   name='transmission-music',
