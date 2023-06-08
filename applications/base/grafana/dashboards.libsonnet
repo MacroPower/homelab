@@ -11,6 +11,7 @@ local dashboard(name, data) =
   dashboard(name='k8s-home', data=(importstr 'dashboards/k8s-home.json')),
   dashboard(name='k8s-oversized-requests', data=(importstr 'dashboards/k8s-oversized-requests.json')),
   dashboard(name='grafana-cloud-usage', data=(importstr 'dashboards/grafana-cloud-usage.json')),
+  dashboard(name='pfsense-net-quality', data=(importstr 'dashboards/pfsense-net-quality.json')),
 
   // https://grafana.com/grafana/dashboards/14584-argocd/
   dashboard(name='argocd', data=(importstr 'dashboards/argocd.json')),
@@ -25,6 +26,4 @@ local dashboard(name, data) =
   dashboard(name='k8s-views-namespaces', data=(importstr 'dashboards/k8s-views-namespaces.json')),
   dashboard(name='k8s-views-nodes', data=(importstr 'dashboards/k8s-views-nodes.json')),
   dashboard(name='k8s-views-pods', data=(importstr 'dashboards/k8s-views-pods.json')),
-
-  dashboard(name='pfsense-net-quality', data=(importstr 'dashboards/pfsense-net-quality.json')),
 ]

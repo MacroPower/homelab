@@ -1,4 +1,41 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__elements": [],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "8.4.4"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "5.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -25,7 +62,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": 12,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -78,13 +114,15 @@
         "justifyMode": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "fields": "",
           "values": false
         },
         "textMode": "value_and_name"
       },
-      "pluginVersion": "9.5.1",
+      "pluginVersion": "9.2.4",
       "targets": [
         {
           "datasource": {
@@ -110,9 +148,7 @@
         "defaults": {
           "custom": {
             "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
+            "displayMode": "auto",
             "inspect": false
           },
           "mappings": [],
@@ -153,11 +189,11 @@
       },
       "id": 60,
       "options": {
-        "cellHeight": "sm",
         "footer": {
-          "countRows": false,
           "fields": "",
-          "reducer": ["sum"],
+          "reducer": [
+            "sum"
+          ],
           "show": false
         },
         "showHeader": true,
@@ -168,7 +204,7 @@
           }
         ]
       },
-      "pluginVersion": "9.5.1",
+      "pluginVersion": "9.2.4",
       "targets": [
         {
           "datasource": {
@@ -228,7 +264,9 @@
           "options": {
             "fields": {
               "group": {
-                "aggregations": ["lastNotNull"],
+                "aggregations": [
+                  "lastNotNull"
+                ],
                 "operation": "groupby"
               },
               "job": {
@@ -236,7 +274,9 @@
                 "operation": "groupby"
               },
               "namespace": {
-                "aggregations": ["lastNotNull"],
+                "aggregations": [
+                  "lastNotNull"
+                ],
                 "operation": "groupby"
               },
               "removed_release": {
@@ -244,7 +284,9 @@
                 "operation": "groupby"
               },
               "resource": {
-                "aggregations": ["lastNotNull"],
+                "aggregations": [
+                  "lastNotNull"
+                ],
                 "operation": "groupby"
               },
               "version": {
@@ -536,7 +578,7 @@
           "refId": "A"
         }
       ],
-      "title": "API Server - HTTP Requets Latency by instance",
+      "title": "API Server - HTTP Requests Latency by instance",
       "type": "timeseries"
     },
     {
@@ -630,7 +672,7 @@
           "refId": "A"
         }
       ],
-      "title": "API Server - HTTP Requets Latency by verb",
+      "title": "API Server - HTTP Requests Latency by verb",
       "type": "timeseries"
     },
     {
@@ -1200,16 +1242,19 @@
     }
   ],
   "refresh": "30s",
-  "schemaVersion": 38,
+  "schemaVersion": 37,
   "style": "dark",
-  "tags": ["Kubernetes", "Prometheus"],
+  "tags": [
+    "Kubernetes",
+    "Prometheus"
+  ],
   "templating": {
     "list": [
       {
         "current": {
-          "selected": true,
-          "text": "prometheus",
-          "value": "prometheus"
+          "selected": false,
+          "text": "Prometheus",
+          "value": "Prometheus"
         },
         "hide": 0,
         "includeAll": false,
@@ -1281,6 +1326,6 @@
   "timezone": "",
   "title": "Kubernetes / System / API Server",
   "uid": "k8s_system_apisrv",
-  "version": 2,
+  "version": 12,
   "weekStart": ""
 }
