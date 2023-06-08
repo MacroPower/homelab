@@ -1,5 +1,5 @@
 # linkerd --context=home multicluster link --cluster-name home \
-#   --gateway-addresses "95.216.182.216" \
+#   --gateway-addresses "h.macro.network" \
 #   --api-server-address "https://linkerd-tunnel-data-plane.inlets.svc.cluster.local:6443"
 
 ---
@@ -10,13 +10,13 @@ metadata:
   namespace: linkerd-multicluster
 spec:
   clusterCredentialsSecret: cluster-credentials-home
-  gatewayAddress: 95.216.182.216
+  gatewayAddress: h.macro.network
   gatewayIdentity: linkerd-gateway.linkerd-multicluster.serviceaccount.identity.linkerd.cluster.local
-  gatewayPort: "6143"
+  gatewayPort: "4143"
   probeSpec:
     path: /ready
     period: 3s
-    port: "6191"
+    port: "4191"
   selector:
     matchLabels:
       mirror.linkerd.io/exported: "true"
@@ -165,10 +165,8 @@ metadata:
     mirror.linkerd.io/mirrored-gateway: "true"
     mirror.linkerd.io/cluster-name: home
 spec:
-  type: ExternalName
-  externalName: linkerd-tunnel-data-plane.inlets.svc.cluster.local
   ports:
   - name: mc-probe
-    port: 6191
+    port: 4191
     protocol: TCP
 ---

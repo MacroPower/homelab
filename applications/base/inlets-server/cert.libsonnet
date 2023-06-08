@@ -8,8 +8,8 @@ local ingressHost = std.extVar('ingressHost');
   },
   spec: {
     secretName: 'linkerd-tunnel-cert',
-    duration: '2160h0m0s', // 90d
-    renewBefore: '720h0m0s', // 30d
+    duration: '2160h0m0s',  // 90d
+    renewBefore: '720h0m0s',  // 30d
     issuerRef: {
       name: 'letsencrypt-prod',
     },
