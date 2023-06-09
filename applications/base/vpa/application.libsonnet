@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='vpa',
   repoURL='https://charts.fairwinds.com/stable',
-  targetRevision='1.6.0',
+  targetRevision='1.7.5',
   releaseName='vpa',
   values='values.yaml'
 )
