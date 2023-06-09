@@ -1,0 +1,171 @@
+# linkerd --context=hcloud-robot multicluster link --cluster-name seedbox \
+#   --gateway-addresses "95.216.39.62"
+
+---
+apiVersion: multicluster.linkerd.io/v1alpha1
+kind: Link
+metadata:
+  name: seedbox
+  namespace: linkerd-multicluster
+spec:
+  clusterCredentialsSecret: cluster-credentials-seedbox
+  gatewayAddress: 95.216.39.62
+  gatewayIdentity: linkerd-gateway.linkerd-multicluster.serviceaccount.identity.linkerd.cluster.local
+  gatewayPort: "4143"
+  probeSpec:
+    path: /ready
+    period: 3s
+    port: "4191"
+  selector:
+    matchLabels:
+      mirror.linkerd.io/exported: "true"
+  targetClusterDomain: cluster.local
+  targetClusterLinkerdNamespace: linkerd
+  targetClusterName: seedbox
+---
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: linkerd-service-mirror-access-local-resources-seedbox
+  labels:
+    linkerd.io/extension: multicluster
+    component: service-mirror
+    mirror.linkerd.io/cluster-name: seedbox
+rules:
+- apiGroups: [""]
+  resources: ["endpoints", "services"]
+  verbs: ["list", "get", "watch", "create", "delete", "update"]
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["list", "get", "watch"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: linkerd-service-mirror-access-local-resources-seedbox
+  labels:
+    linkerd.io/extension: multicluster
+    component: service-mirror
+    mirror.linkerd.io/cluster-name: seedbox
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: linkerd-service-mirror-access-local-resources-seedbox
+subjects:
+- kind: ServiceAccount
+  name: linkerd-service-mirror-seedbox
+  namespace: linkerd-multicluster
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: linkerd-service-mirror-read-remote-creds-seedbox
+  namespace: linkerd-multicluster
+  labels:
+    linkerd.io/extension: multicluster
+    component: service-mirror
+    mirror.linkerd.io/cluster-name: seedbox
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["cluster-credentials-seedbox"]
+    verbs: ["list", "get", "watch"]
+  - apiGroups: ["multicluster.linkerd.io"]
+    resources: ["links"]
+    verbs: ["list", "get", "watch"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: linkerd-service-mirror-read-remote-creds-seedbox
+  namespace: linkerd-multicluster
+  labels:
+    linkerd.io/extension: multicluster
+    component: service-mirror
+    mirror.linkerd.io/cluster-name: seedbox
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: linkerd-service-mirror-read-remote-creds-seedbox
+subjects:
+  - kind: ServiceAccount
+    name: linkerd-service-mirror-seedbox
+    namespace: linkerd-multicluster
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: linkerd-service-mirror-seedbox
+  namespace: linkerd-multicluster
+  labels:
+    linkerd.io/extension: multicluster
+    component: service-mirror
+    mirror.linkerd.io/cluster-name: seedbox
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    linkerd.io/extension: multicluster
+    component: service-mirror
+    mirror.linkerd.io/cluster-name: seedbox
+  name: linkerd-service-mirror-seedbox
+  namespace: linkerd-multicluster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: linkerd-service-mirror
+      mirror.linkerd.io/cluster-name: seedbox
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+        config.alpha.linkerd.io/proxy-wait-before-exit-seconds: "0"
+      labels:
+        component: linkerd-service-mirror
+        mirror.linkerd.io/cluster-name: seedbox
+    spec:
+      containers:
+      - args:
+        - service-mirror
+        - -log-level=info
+        - -event-requeue-limit=3
+        - -namespace=linkerd-multicluster
+        - -enable-pprof=false
+        - seedbox
+        image: cr.l5d.io/linkerd/controller:edge-23.2.2
+        name: service-mirror
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 2103
+          seccompProfile:
+            type: RuntimeDefault
+        ports:
+        - containerPort: 9999
+          name: admin-http
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: linkerd-service-mirror-seedbox
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: probe-gateway-seedbox
+  namespace: linkerd-multicluster
+  labels:
+    mirror.linkerd.io/mirrored-gateway: "true"
+    mirror.linkerd.io/cluster-name: seedbox
+spec:
+  ports:
+  - name: mc-probe
+    port: 4191
+    protocol: TCP
+---

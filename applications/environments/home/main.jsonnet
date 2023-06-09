@@ -23,6 +23,7 @@ local apps = [
   import 'linkerd-jaeger/application.libsonnet',
   import 'linkerd-multicluster/application.libsonnet',
   import 'linkerd-multicluster-hcloud/application.libsonnet',
+  import 'linkerd-multicluster-seedbox/application.libsonnet',
   import 'linkerd-viz/application.libsonnet',
   import 'metallb/application.libsonnet',
   import 'metrics-server/application.libsonnet',
