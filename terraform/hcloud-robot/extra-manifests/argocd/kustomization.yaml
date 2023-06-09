@@ -36,10 +36,9 @@ patches:
         path: /spec/template/spec/containers/0/resources
         value:
           requests:
-            cpu: 500m
+            cpu: 100m
             memory: 2Gi
           limits:
-            cpu: 500m
             memory: 2Gi
   - target:
       group: apps
@@ -54,7 +53,6 @@ patches:
             cpu: 50m
             memory: 100Mi
           limits:
-            cpu: 50m
             memory: 100Mi
   - target:
       group: apps
@@ -66,19 +64,17 @@ patches:
         path: /spec/template/spec/containers/0/resources
         value:
           requests:
-            cpu: 50m
+            cpu: 10m
             memory: 100Mi
           limits:
-            cpu: 50m
             memory: 100Mi
       - op: add
         path: /spec/template/spec/initContainers/0/resources
         value:
           requests:
-            cpu: 50m
+            cpu: 10m
             memory: 100Mi
           limits:
-            cpu: 50m
             memory: 100Mi
   - target:
       group: apps
@@ -90,10 +86,10 @@ patches:
         path: /spec/template/spec/containers/0/resources
         value:
           requests:
-            cpu: 50m
+            cpu: 10m
             memory: 100Mi
           limits:
-            cpu: 50m
+            cpu: 10m
             memory: 100Mi
   - target:
       group: apps
@@ -120,19 +116,17 @@ patches:
         path: /spec/template/spec/containers/0/resources
         value:
           requests:
-            cpu: 500m
+            cpu: 100m
             memory: 500Mi
           limits:
-            cpu: 500m
             memory: 500Mi
       - op: add
         path: /spec/template/spec/initContainers/0/resources
         value:
           requests:
-            cpu: 50m
+            cpu: 10m
             memory: 100Mi
           limits:
-            cpu: 50m
             memory: 100Mi
   - target:
       group: apps
@@ -144,8 +138,7 @@ patches:
         path: /spec/template/spec/containers/0/resources
         value:
           requests:
-            cpu: 200m
+            cpu: 50m
             memory: 250Mi
           limits:
-            cpu: 200m
             memory: 250Mi

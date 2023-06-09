@@ -18,14 +18,14 @@ flood:
 
   resources:
     requests:
-      cpu: 100m
+      cpu: 50m
       memory: 512Mi
     limits:
       memory: 512Mi
 
 resources:
   requests:
-    cpu: 500m
+    cpu: 250m
     memory: 4096Mi
   limits:
     memory: 4096Mi

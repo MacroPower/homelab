@@ -17,7 +17,7 @@ extraPorts:
 
 resources:
   requests:
-    cpu: 100m
+    cpu: 50m
     memory: 2048Mi
   limits:
     memory: 2048Mi
