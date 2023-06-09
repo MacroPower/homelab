@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='k8up',
   repoURL='https://k8up-io.github.io/k8up',
-  targetRevision='4.0.1',
+  targetRevision='4.2.2',
   releaseName='k8up',
   values='values.yaml'
 )
