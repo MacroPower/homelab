@@ -1,1 +1,8 @@
 installCRDs: true
+
+extraArgs:
+  - --logging-format=json
+
+prometheus:
+  servicemonitor:
+    enabled: true
