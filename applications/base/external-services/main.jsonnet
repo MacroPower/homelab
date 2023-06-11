@@ -1,4 +1,4 @@
 local ns = import 'namespace.libsonnet';
-local pfsense = std.parseYaml(importstr 'pfsense.yaml');
+local services = import 'services.libsonnet';
 
-[ns] + pfsense
+[ns] + services
