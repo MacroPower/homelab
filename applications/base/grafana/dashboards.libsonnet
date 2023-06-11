@@ -12,6 +12,14 @@ local dashboard(name, data) =
   dashboard(name='k8s-oversized-requests', data=(importstr 'dashboards/k8s-oversized-requests.json')),
   dashboard(name='grafana-cloud-usage', data=(importstr 'dashboards/grafana-cloud-usage.json')),
   dashboard(name='pfsense-net-quality', data=(importstr 'dashboards/pfsense-net-quality.json')),
+  dashboard(name='windows-node', data=(importstr 'dashboards/windows-node.json')),
+  dashboard(name='windows-node-processes', data=(importstr 'dashboards/windows-node-processes.json')),
+
+  // https://github.com/rfmoz/grafana-dashboards/tree/master/prometheus
+  dashboard(name='node-exporter-full', data=(importstr 'dashboards/node-exporter-full.json')) +
+  k.core.v1.configMap.mixin.metadata.withAnnotations({
+    'argocd.argoproj.io/sync-options': 'Replace=true',
+  }),
 
   // https://grafana.com/grafana/dashboards/14584-argocd/
   dashboard(name='argocd', data=(importstr 'dashboards/argocd.json')),
