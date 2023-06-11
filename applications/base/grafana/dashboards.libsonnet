@@ -21,6 +21,9 @@ local dashboard(name, data) =
   // https://github.com/rfmoz/grafana-dashboards/tree/master/prometheus
   dashboard(name='node-exporter-full', data=(importstr 'dashboards/node-exporter-full.json')),
 
+  // https://grafana.com/grafana/dashboards/16523-windows-status-prometheus/
+  dashboard(name='windows-summary', data=(importstr 'dashboards/windows-summary.json')),
+
   // https://grafana.com/grafana/dashboards/14584-argocd/
   dashboard(name='argocd', data=(importstr 'dashboards/argocd.json')),
 
