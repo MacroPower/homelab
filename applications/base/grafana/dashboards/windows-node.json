@@ -26,14 +26,14 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 15794,
   "graphTooltip": 1,
-  "id": 24,
+  "id": 2,
   "links": [],
   "liveNow": false,
   "panels": [
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "description": "",
       "fieldConfig": {
@@ -92,14 +92,14 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.5.2",
+      "pluginVersion": "9.5.1",
       "repeat": "host",
       "repeatDirection": "v",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "exemplar": false,
           "expr": "windows_os_time{instance=~\"$server\"} - on () windows_system_system_up_time ",
@@ -118,7 +118,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -178,12 +178,12 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "9.5.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "exemplar": true,
           "expr": "100 - (avg by (instance) (irate(windows_cpu_time_total{mode=\"idle\", instance=~\"$server\"}[$__rate_interval])) * 100)",
@@ -200,7 +200,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -260,12 +260,12 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "9.5.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "expr": "(windows_cs_physical_memory_bytes{instance=~\"$server\"} - windows_os_physical_memory_free_bytes{instance=~\"$server\"}) / windows_cs_physical_memory_bytes{instance=~\"$server\"} * 100",
           "format": "time_series",
@@ -279,7 +279,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -339,12 +339,12 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "9.5.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "expr": "(sum(windows_logical_disk_size_bytes{volume!~\"Harddisk.*\", instance=\"$server\"}) by (instance) - sum(windows_logical_disk_free_bytes{volume!~\"Harddisk.*\", instance=\"$server\"}) by (instance)) / sum(windows_logical_disk_size_bytes{volume!~\"Harddisk.*\", instance=\"$server\"}) by (instance) * 100",
           "format": "time_series",
@@ -358,7 +358,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -419,12 +419,12 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "9.5.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "exemplar": true,
           "expr": "(sum(irate(windows_net_bytes_total{instance=\"$server\"}[$__rate_interval])) > 1)* 8",
@@ -438,7 +438,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "exemplar": true,
           "expr": "  sum(irate(windows_net_bytes_total{instance=~\"$server\",nic=\"Red_Hat_VirtIO_Ethernet_Adapter\"}[$__rate_interval])) / sum(windows_net_current_bandwidth{instance=~\"$server\",nic=\"Red_Hat_VirtIO_Ethernet_Adapter\"}/8) * 100",
@@ -456,7 +456,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -517,12 +517,12 @@
         "showUnfilled": true,
         "valueMode": "color"
       },
-      "pluginVersion": "9.5.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "expr": "100 - (windows_logical_disk_free_bytes{instance=~\"$server\"} / windows_logical_disk_size_bytes{instance=~\"$server\"})*100",
           "format": "time_series",
@@ -535,7 +535,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "expr": "windows_logical_disk_free_bytes{instance=~\"$server\"}",
           "hide": true,
@@ -550,7 +550,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "description": "",
       "fieldConfig": {
@@ -609,14 +609,14 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.5.2",
+      "pluginVersion": "9.5.1",
       "repeat": "host",
       "repeatDirection": "v",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "expr": "windows_cs_logical_processors{instance=~\"$server\"}",
           "format": "time_series",
@@ -631,7 +631,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "description": "",
       "fieldConfig": {
@@ -690,14 +690,14 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.5.2",
+      "pluginVersion": "9.5.1",
       "repeat": "host",
       "repeatDirection": "v",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "expr": "windows_cs_physical_memory_bytes{instance=~\"$server\"}",
           "format": "time_series",
@@ -712,7 +712,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -827,7 +827,7 @@
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "exemplar": true,
           "expr": "sum by (mode) (rate(windows_cpu_time_total{instance=~\"$server\"}[$__rate_interval]))",
@@ -861,7 +861,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -922,12 +922,12 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "9.5.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "expr": "windows_memory_swap_page_operations_total{instance=\"$server\"}",
           "format": "time_series",
@@ -944,7 +944,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1028,7 +1028,7 @@
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "expr": "windows_cs_physical_memory_bytes{instance=~\"$server\"}",
           "format": "time_series",
@@ -1059,7 +1059,7 @@
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "expr": "windows_os_physical_memory_free_bytes{instance=~\"$server\"}",
           "format": "time_series",
@@ -1090,7 +1090,7 @@
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "expr": "windows_os_virtual_memory_bytes{instance=~\"$server\"}",
           "format": "time_series",
@@ -1118,7 +1118,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "expr": "windows_os_virtual_memory_free_bytes{instance=~\"$server\"}",
           "format": "time_series",
@@ -1133,7 +1133,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1217,7 +1217,7 @@
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "exemplar": true,
           "expr": "rate(windows_net_bytes_sent_total{instance=~\"$server\"}[$__rate_interval]) >0",
@@ -1250,7 +1250,7 @@
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "exemplar": true,
           "expr": "- rate(windows_net_bytes_received_total{instance=~\"$server\"}[$__rate_interval]) <0",
@@ -1284,7 +1284,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1364,7 +1364,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "expr": "(avg without (cpu) (sum(irate(windows_cpu_time_total{instance=\"$server\",mode!=\"idle\"}[5m])) by (mode)))* 100",
           "format": "time_series",
@@ -1383,7 +1383,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "fill": 2,
       "fillGradient": 0,
@@ -1415,7 +1415,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "9.5.2",
+      "pluginVersion": "9.5.1",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1430,7 +1430,7 @@
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "exemplar": true,
           "expr": "irate(windows_logical_disk_write_bytes_total{instance=~\"$server\", volume !~\"HarddiskVolume.+\"}[$__rate_interval])",
@@ -1463,7 +1463,7 @@
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "exemplar": true,
           "expr": "- irate(windows_logical_disk_read_bytes_total{instance=~\"$server\", volume !~\"HarddiskVolume.+\"}[$__rate_interval])",
@@ -1526,7 +1526,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1608,7 +1608,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "exemplar": true,
           "expr": "sum(increase(windows_net_bytes_received_total{instance=\"$server\"}[$__interval])) by (instance)",
@@ -1621,7 +1621,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "exemplar": true,
           "expr": "sum(increase(windows_net_bytes_sent_total{instance=\"$server\"}[$__interval])) by (instance)",
@@ -1638,7 +1638,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1722,7 +1722,7 @@
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "exemplar": true,
           "expr": "irate(windows_net_packets_outbound_discarded_total{instance=~\"$server\"}[$__rate_interval]) + irate(windows_net_packets_outbound_errors_total{instance=~\"$server\"}[$__rate_interval])",
@@ -1755,7 +1755,7 @@
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "exemplar": true,
           "expr": "irate(windows_net_packets_outbound_discarded_total{instance=~\"$server\"}[$__rate_interval]) + irate(windows_net_packets_outbound_errors_total{instance=~\"$server\"}[$__rate_interval])",
@@ -1789,7 +1789,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1798,8 +1798,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               },
               {
                 "color": "#EAB839",
@@ -1838,7 +1837,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "9.5.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "application": {
@@ -1846,7 +1845,7 @@
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "expr": "windows_logical_disk_free_bytes{instance=~\"$server\", volume !~\"HarddiskVolume.+\"}",
           "format": "time_series",
@@ -1878,7 +1877,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1920,8 +1919,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1962,7 +1960,7 @@
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "exemplar": true,
           "expr": "rate(windows_logical_disk_split_ios_total{instance=~\"$server\", volume !~\"HarddiskVolume.+\"}[$__rate_interval])",
@@ -1996,7 +1994,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -2038,8 +2036,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2076,7 +2073,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "expr": "windows_os_processes{instance=\"$server\"}",
           "format": "time_series",
@@ -2093,7 +2090,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -2135,8 +2132,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2207,7 +2203,7 @@
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "expr": "sum(windows_service_state{instance=~\"$server\"}) by (state)",
           "format": "time_series",
@@ -2237,7 +2233,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "SCtNRB4Gk"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -2279,8 +2275,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2321,7 +2316,7 @@
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "SCtNRB4Gk"
+            "uid": "${datasource}"
           },
           "exemplar": true,
           "expr": "windows_system_threads{instance=~\"$server\"}",
@@ -2362,16 +2357,17 @@
       {
         "current": {
           "selected": false,
-          "text": "Prometheus-unraid",
-          "value": "Prometheus-unraid"
+          "text": "prometheus",
+          "value": "prometheus"
         },
         "hide": 0,
         "includeAll": false,
         "label": "datasource",
         "multi": false,
-        "name": "DS_PROMETHEUS",
+        "name": "datasource",
         "options": [],
         "query": "prometheus",
+        "queryValue": "",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -2382,7 +2378,7 @@
         "auto_count": 500,
         "auto_min": "30s",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "60s",
           "value": "60s"
         },
@@ -2409,7 +2405,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "SCtNRB4Gk"
+          "uid": "${datasource}"
         },
         "definition": "label_values(windows_cpu_time_total, instance)",
         "hide": 0,
@@ -2455,6 +2451,6 @@
   "timezone": "browser",
   "title": "Windows Exporter Dashboard",
   "uid": "7UlnHoGZz",
-  "version": 11,
+  "version": 3,
   "weekStart": ""
 }

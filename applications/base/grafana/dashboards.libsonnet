@@ -5,6 +5,9 @@ local dashboard(name, data) =
     ['%s.json' % name]: data,
   }) + k.core.v1.configMap.metadata.withLabels({
     grafana_dashboard: '1',
+  }) +
+  k.core.v1.configMap.mixin.metadata.withAnnotations({
+    'argocd.argoproj.io/sync-options': 'Replace=true',
   });
 
 [
@@ -16,10 +19,7 @@ local dashboard(name, data) =
   dashboard(name='windows-node-processes', data=(importstr 'dashboards/windows-node-processes.json')),
 
   // https://github.com/rfmoz/grafana-dashboards/tree/master/prometheus
-  dashboard(name='node-exporter-full', data=(importstr 'dashboards/node-exporter-full.json')) +
-  k.core.v1.configMap.mixin.metadata.withAnnotations({
-    'argocd.argoproj.io/sync-options': 'Replace=true',
-  }),
+  dashboard(name='node-exporter-full', data=(importstr 'dashboards/node-exporter-full.json')),
 
   // https://grafana.com/grafana/dashboards/14584-argocd/
   dashboard(name='argocd', data=(importstr 'dashboards/argocd.json')),
