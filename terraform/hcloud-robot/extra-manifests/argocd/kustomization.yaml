@@ -39,6 +39,7 @@ patches:
             cpu: 100m
             memory: 2Gi
           limits:
+            cpu: 100m
             memory: 2Gi
   - target:
       group: apps
@@ -53,6 +54,7 @@ patches:
             cpu: 50m
             memory: 100Mi
           limits:
+            cpu: 50m
             memory: 100Mi
   - target:
       group: apps
@@ -67,6 +69,7 @@ patches:
             cpu: 10m
             memory: 100Mi
           limits:
+            cpu: 10m
             memory: 100Mi
       - op: add
         path: /spec/template/spec/initContainers/0/resources
@@ -119,6 +122,7 @@ patches:
             cpu: 100m
             memory: 500Mi
           limits:
+            cpu: 100m
             memory: 500Mi
       - op: add
         path: /spec/template/spec/initContainers/0/resources
@@ -127,6 +131,7 @@ patches:
             cpu: 10m
             memory: 100Mi
           limits:
+            cpu: 10m
             memory: 100Mi
   - target:
       group: apps
@@ -141,4 +146,5 @@ patches:
             cpu: 50m
             memory: 250Mi
           limits:
+            cpu: 50m
             memory: 250Mi
