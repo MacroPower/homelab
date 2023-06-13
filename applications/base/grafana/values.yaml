@@ -47,6 +47,7 @@ sidecar:
   dashboards:
     enabled: true
     label: grafana_dashboard
+    searchNamespace: ALL
     provider:
       allowUiUpdates: true
   datasources:
