@@ -1,10 +1,31 @@
 image:
   repository: rclone/rclone
-  tag: 1.60.1
+  tag: 1.63.0
 
-configSecretName: rclone-config
+init: |
+  rclone rcd \
+    --rc-web-gui \
+    --rc-web-gui-no-open-browser \
+    --rc-no-auth \
+    --rc-addr=:5572 &
 
-extraPorts:
-  - name: restic
-    containerPort: 50001
-    protocol: TCP
+  rclone serve restic Restic:/ \
+    --addr=:50001 &
+
+  wait -n
+  exit $?
+
+service:
+  main:
+    ports:
+      restic:
+        enabled: true
+        port: 50001
+        protocol: TCP
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 2048Mi
+  limits:
+    memory: 2048Mi
