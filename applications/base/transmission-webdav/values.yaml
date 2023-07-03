@@ -1,19 +1,49 @@
 image:
   repository: rclone/rclone
-  tag: 1.60.1
+  tag: 1.63.0
 
-configSecretName: rclone-config
+init: |
+  rclone rcd \
+    --rc-web-gui \
+    --rc-web-gui-no-open-browser \
+    --rc-no-auth \
+    --rc-addr=:5572 &
 
-extraPVCMounts:
-  - name: tv
-  - name: movies
-  - name: music
-  - name: anime
+  rclone serve webdav /userdata \
+    --addr=:50000 &
 
-extraPorts:
-  - name: webdav
-    containerPort: 50000
-    protocol: TCP
+  wait -n
+  exit $?
+
+persistence:
+  tv:
+    enabled: true
+    type: pvc
+    existingClaim: tv
+    mountPath: /userdata/tv
+  movies:
+    enabled: true
+    type: pvc
+    existingClaim: movies
+    mountPath: /userdata/movies
+  music:
+    enabled: true
+    type: pvc
+    existingClaim: music
+    mountPath: /userdata/music
+  anime:
+    enabled: true
+    type: pvc
+    existingClaim: anime
+    mountPath: /userdata/anime
+
+service:
+  main:
+    ports:
+      webdav:
+        enabled: true
+        port: 50000
+        protocol: TCP
 
 resources:
   requests:

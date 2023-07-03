@@ -8,7 +8,7 @@ ingress.new(
   name='transmission-webdav-ingress',
   namespace=ns.metadata.name,
   host=ingressHost,
-  serviceName='transmission-webdav-rclone',
+  serviceName='transmission-webdav',
   servicePort=50000,
   tlsSecretName='transmission-webdav-cert',
   annotations=ingressAnnotations {

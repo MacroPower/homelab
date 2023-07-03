@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='rclone',
   repoURL='https://jacobcolvin.com/helm-charts/',
-  targetRevision='0.3.0',
+  targetRevision='1.0.0',
   releaseName='transmission-webdav',
   values='values.yaml'
 )
