@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='linkerd2-cni',
   repoURL='https://helm.linkerd.io/edge',
-  targetRevision='30.7.1-edge',
+  targetRevision='30.8.1',
   releaseName='linkerd-cni',
   values='values.yaml'
 )
