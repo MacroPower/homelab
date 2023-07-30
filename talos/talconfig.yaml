@@ -1,0 +1,113 @@
+clusterName: home
+talosVersion: v1.4.7
+kubernetesVersion: v1.27.4
+endpoint: https://kube.home.macro.network:6443
+cniConfig:
+  name: none
+
+additionalMachineCertSans:
+  - kube.home.macro.network
+
+nodes:
+  - hostname: knode01.home.macro.network
+    ipAddress: 10.0.5.1
+    installDisk: /dev/vda
+    controlPlane: true
+    nodeLabels:
+      rack: rack01
+      zone: az01
+    nameservers:
+      - 10.0.0.1
+    networkInterfaces:
+      - interface: eth0
+        dhcp: true
+
+  - hostname: knode02.home.macro.network
+    ipAddress: 10.0.5.2
+    installDisk: /dev/sda
+    controlPlane: true
+    nodeLabels:
+      rack: rack01
+      zone: az02
+    nameservers:
+      - 10.0.0.1
+    networkInterfaces:
+      - interface: eth0
+        dhcp: true
+
+  - hostname: knode13.home.macro.network
+    ipAddress: 10.0.5.13
+    installDisk: /dev/nvme0n1
+    controlPlane: false
+    nodeLabels:
+      rack: rack01
+      zone: az01
+    nameservers:
+      - 10.0.0.1
+    networkInterfaces:
+      - interface: eth4
+        dhcp: true
+
+controlPlane:
+  inlinePatch:
+    cluster:
+      aescbcEncryptionSecret: ${AESCBC_ENCRYPTION_KEY}
+      secretboxEncryptionSecret: ${SECRETBOX_ENCRYPTION_KEY}
+      aggregatorCA:
+        crt: ${K8S_AGGREGATOR_CERT}
+        key: ${K8S_AGGREGATOR_CERT_KEY}
+      apiServer:
+        disablePodSecurityPolicy: true
+        admissionControl: []
+      ca:
+        crt: ${K8S_CERT}
+        key: ${K8S_CERT_KEY}
+      controllerManager:
+        extraArgs:
+          bind-address: 0.0.0.0
+      etcd:
+        ca:
+          crt: ${ETCD_CERT}
+          key: ${ETCD_CERT_KEY}
+        extraArgs:
+          listen-metrics-urls: http://0.0.0.0:2381
+      scheduler:
+        extraArgs:
+          bind-address: 0.0.0.0
+      proxy:
+        # Replaced by Cillium.
+        disabled: true
+      id: ${CLUSTER_ID}
+      secret: ${CLUSTER_SECRET}
+      serviceAccount:
+        key: ${K8S_SERVICEACCOUNT_KEY}
+      token: ${CLUSTER_TOKEN}
+    machine:
+      ca:
+        crt: ${OS_CERT}
+        key: ${OS_CERT_KEY}
+      kubelet:
+        extraArgs:
+          feature-gates: GracefulNodeShutdown=true,MixedProtocolLBService=true
+      token: ${TRUSTEDINFO_TOKEN}
+
+worker:
+  inlinePatch:
+    cluster:
+      aescbcEncryptionSecret: ${AESCBC_ENCRYPTION_KEY}
+      ca:
+        crt: ${K8S_CERT}
+        key: ${K8S_CERT_KEY}
+      id: ${CLUSTER_ID}
+      secret: ${CLUSTER_SECRET}
+      token: ${CLUSTER_TOKEN}
+    machine:
+      ca:
+        crt: ${OS_CERT}
+        key: ${OS_CERT_KEY}
+      certSANs:
+        - kube.home.macro.network
+      kubelet:
+        extraArgs:
+          feature-gates: GracefulNodeShutdown=true,MixedProtocolLBService=true
+      token: ${TRUSTEDINFO_TOKEN}

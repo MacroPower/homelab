@@ -1,0 +1,71 @@
+configs:
+  # General Argo CD configuration
+  ## Ref: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/argocd-cm.yaml
+  cm: {}
+
+  # Argo CD configuration parameters
+  ## Ref: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/argocd-cmd-params-cm.yaml
+  params:
+    server.insecure: true
+    server.disable.auth: true
+
+redis-ha:
+  enabled: true
+  replicas: 3
+  redis:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 250Mi
+      limits:
+        cpu: 50m
+        memory: 250Mi
+
+controller:
+  replicas: 3
+  resources:
+    requests:
+      cpu: 500m
+      memory: 2Gi
+    limits:
+      cpu: 500m
+      memory: 2Gi
+
+server:
+  replicas: 3
+  resources:
+    requests:
+      cpu: 200m
+      memory: 250Mi
+    limits:
+      cpu: 200m
+      memory: 250Mi
+
+repoServer:
+  replicas: 3
+  resources:
+  requests:
+    cpu: 500m
+    memory: 500Mi
+  limits:
+    cpu: 500m
+    memory: 500Mi
+
+applicationSet:
+  replicaCount: 3
+  resources: &StdResources
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 50m
+      memory: 100Mi
+
+notifications:
+  resources: *StdResources
+
+dex:
+  resources: *StdResources
+
+  initImage:
+    resources: *StdResources
