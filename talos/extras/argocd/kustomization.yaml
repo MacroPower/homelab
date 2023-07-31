@@ -6,22 +6,13 @@ helmCharts:
     repo: https://argoproj.github.io/argo-helm
     version: 5.42.0
     releaseName: argo-cd
-    namespace: argo-cd
+    namespace: argocd
     valuesFile: values.yaml
 
 resources:
   - namespace.yaml
 
 patches:
-  - target:
-      version: v1
-      kind: ConfigMap
-      name: argocd-cm
-    patch: |-
-      - op: add
-        path: /data
-        value:
-          kustomize.buildOptions: --enable-helm --load-restrictor LoadRestrictionsNone
   - target:
       group: apps
       version: v1

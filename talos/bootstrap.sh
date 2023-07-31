@@ -22,8 +22,10 @@ sleep 20
 
 kubectl kustomize extras/cillium/ --enable-helm | kubectl apply -f -
 kubectl kustomize extras/kubelet-csr-approver/ --enable-helm | kubectl apply -f -
-kubectl kustomize extras/argo-cd/ --enable-helm | kubectl apply -f -
+kubectl kustomize extras/argocd/ --enable-helm | kubectl apply -f -
 
 doppler run -p talhelper -c main envsubst < extras/doppler/secrets.yaml | kubectl apply -f -
 
 kubectl certificate approve $(kubectl get csr --sort-by=.metadata.creationTimestamp | grep Pending | awk '{print $1}')
+
+kubectl kustomize extras/argocd-apps/ | kubectl apply -f -
