@@ -48,6 +48,19 @@ nodes:
       - interface: eth4
         dhcp: true
 
+  - hostname: knode15.home.macro.network
+    ipAddress: 10.0.5.15
+    installDisk: /dev/nvme0n1
+    controlPlane: false
+    nodeLabels:
+      rack: rack01
+      zone: az03
+    nameservers:
+      - 10.0.0.1
+    networkInterfaces:
+      - interface: eth4
+        dhcp: true
+
 controlPlane:
   inlinePatch:
     cluster:

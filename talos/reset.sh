@@ -1,4 +1,5 @@
 talosctl reset --graceful=false --reboot -e knode13.home.macro.network -n knode13.home.macro.network
+talosctl reset --graceful=false --reboot -e knode15.home.macro.network -n knode15.home.macro.network
 
 sleep 10
 
