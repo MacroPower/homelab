@@ -6,7 +6,7 @@
   </sup></sup>
   <h2 align="center">Homelab</h2>
   <p align="center">
-    Infrastructure as code for my homelab and personal cloud, powered by <a href="https://github.com/MacroPower/terraform-kube-microos">k3s-on-MicroOS</a>.
+    Infrastructure as code for my homelab and personal cloud.
   </p>
   <hr>
 </p>
