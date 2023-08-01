@@ -26,5 +26,6 @@ nvme format -s1 /dev/nvme0nX
 ## Verification
 
 ```sh
-debugfs -w /dev/sdX
+apt-get install testdisk
+sudo photorec
 ```
