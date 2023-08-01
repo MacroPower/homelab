@@ -12,9 +12,11 @@
 
 ## 📖 Overview
 
-This repository declares all of my infrastructure and Kubernetes clusters, both self-hosted and in [Hetzner Cloud](https://www.hetzner.com/).
+This repository declares all of my infrastructure and Kubernetes clusters, both self-hosted and in [Hetzner Cloud](https://www.hetzner.com/). I also host all of my documentation here.
 
-My clusters use [Talos](https://talos.dev/), as well as [k3s-on-MicroOS](https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner).
+Admittedly, both usages of "all" describe the end goal of this repo, not the current state. But, I will get there some day.
+
+My clusters use [Talos](https://talos.dev/), as well as [k3s-on-MicroOS](https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner). Most of the configuration is written in [Jsonnet](https://jsonnet.org/).
 
 ---
 
@@ -30,6 +32,11 @@ My clusters use [Talos](https://talos.dev/), as well as [k3s-on-MicroOS](https:/
 - [Argo CD](https://github.com/argoproj/argo-cd): Reconciles kubernetes clusters with this repository.
 - [Jsonnet](https://jsonnet.org/): Configuration language I use to describe Argo applications.
 - [Renovate](https://github.com/renovatebot/renovate): Automatic updates for applications via pull requests.
+
+### Secrets
+
+- [Doppler](https://www.doppler.com/): Hosted secrets management platform.
+- [External Secrets](https://external-secrets.io): Synchronizes secrets from Doppler into Kubernetes.
 
 ### Networking
 
@@ -50,36 +57,37 @@ My clusters use [Talos](https://talos.dev/), as well as [k3s-on-MicroOS](https:/
 Overview of this repo's structure, there's more info in the README files for each:
 
 ```sh
-📁 applications    # Kubernetes applications
+📁 applications  # Kubernetes applications
 ├─📁 base          # Application base config
 ├─📁 environments  # Application cluster customizations
-│ ├─📁 hcloud      # Customizations for Hetzner cluster
-│ ├─📁 home        # Customizations for home cluster
-│ └─📁 seedbox     # Customizations for seedbox cluster
+│ ├─📁 hcloud        # Customizations for Hetzner cluster
+│ ├─📁 home          # Customizations for home cluster
+│ └─📁 seedbox       # Customizations for seedbox cluster
 └─📁 lib           # Jsonnet libraries
 
-📁 terraform       # IaC defined via Terraform
-├─📁 hcloud        ## IaC for Hetzner Cloud
-└─📁 hcloud-robot  ## IaC for Hetzner Cloud (Robot)
+📁 terraform     # IaC defined via Terraform
+├─📁 hcloud        # IaC for Hetzner Cloud
+└─📁 hcloud-robot  # IaC for Hetzner Cloud (Robot)
 ```
 
 ---
 
 ## 🔧 Hardware
 
-| Device                    | Count | OS Disk Size | Data Disk Size      | Ram   | Operating System | Purpose                       |
-| ------------------------- | ----- | ------------ | ------------------- | ----- | ---------------- | ----------------------------- |
-| Turing Pi 2               | 3     | 1GB NAND     | N/A                 | 128MB | TPi BMC Firmware | 4-Node Cluster Board          |
-| Raspberry Pi CM4          | 3     | 32GB eMMC    | N/A                 | 8GB   | Talos Linux      | Kubernetes Control Plane      |
-| M11SDV-8C+-LN4F           | 3     | 64GB SATADOM | 4TB SSD (rook-ceph) | 128GB | Talos Linux      | Kubernetes Workers (x86)      |
-| Turing RK1 \*\*           | 3     | 32GB eMMC    | 1TB SSD (rook-ceph) | 32GB  | Talos Linux      | Kubernetes Workers (arm64)    |
-| Netgate XG-7100           | 1     | 32GB eMMC    | N/A                 | 8GB   | pfSense          | Router / Security Gateway     |
-| TP-Link T1700G-28TQ       | 1     | N/A          | N/A                 | N/A   | N/A              | 1G Ethernet / 10G SFP+ Switch |
-| MikroTik CRS317-1G-16S+RM | 1     | N/A          | N/A                 | N/A   | N/A              | 10G SFP+ Switch               |
-| Raspberry Pi 4B           | 1     | 32GB SD Card | N/A                 | 4GB   | PiKVM            | Network KVM                   |
-| Wattbox WB-800-IPVM       | 1     | N/A          | N/A                 | N/A   | N/A              | PDU                           |
+| Device                      | Count | OS Disk Size    | Data Disk Size     | Ram   | Operating System | Purpose                       |
+| --------------------------- | ----- | --------------- | ------------------ | ----- | ---------------- | ----------------------------- |
+| Turing Pi 2                 | 3     | 1GB NAND        | N/A                | 128MB | TPi BMC Firmware | 4-Node Cluster Board          |
+| Raspberry Pi CM4            | 3     | 32GB eMMC       | N/A                | 8GB   | Talos Linux      | Kubernetes Control Plane      |
+| Supermicro M11SDV-8C+-LN4F  | 3     | 64GB SATADOM \* | 4TB SSD            | 128GB | Talos Linux      | Kubernetes Workers (x86)      |
+| Turing RK1 \*               | 3     | 32GB eMMC       | 1TB SSD            | 32GB  | Talos Linux      | Kubernetes Workers (arm64)    |
+| Supermicro X10SRA / E5-2690 | 1     | 16GB Flash      | 46TB HDD + 2TB SSD | 16GB  | Unraid           | Storage Server                |
+| Netgate XG-7100             | 1     | 32GB eMMC       | N/A                | 8GB   | pfSense          | Router / Security Gateway     |
+| TP-Link T1700G-28TQ         | 1     | N/A             | N/A                | N/A   | N/A              | 1G Ethernet / 10G SFP+ Switch |
+| MikroTik CRS317-1G-16S+RM   | 1     | N/A             | N/A                | N/A   | N/A              | 10G SFP+ Switch               |
+| Raspberry Pi 4B             | 1     | 32GB SD Card    | N/A                | 4GB   | PiKVM            | Network KVM                   |
+| Wattbox WB-800-IPVM         | 1     | N/A             | N/A                | N/A   | N/A              | PDU                           |
 
-^ \*\* Pending
+<sup>\* == Pending</sup>
 
 ---
 
