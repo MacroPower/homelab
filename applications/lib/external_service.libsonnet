@@ -28,8 +28,8 @@ local core = k.core.v1;
       core.servicePort.withTargetPort(port);
 
     local service =
-      core.service.new(name, {}, servicePort) +
-      core.serviceSpec.withType('ClusterIP') +
+      core.service.newWithoutSelector(name) +
+      core.service.spec.withPorts(servicePort) +
       core.service.mixin.metadata.withLabelsMixin({
         'app.kubernetes.io/name': name,
       });
