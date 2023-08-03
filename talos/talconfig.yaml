@@ -11,7 +11,7 @@ additionalMachineCertSans:
 nodes:
   - hostname: knode01.home.macro.network
     ipAddress: 10.0.5.1
-    installDisk: /dev/vda
+    installDisk: /dev/mmcblk0
     controlPlane: true
     nodeLabels:
       rack: rack01
@@ -24,7 +24,7 @@ nodes:
 
   - hostname: knode02.home.macro.network
     ipAddress: 10.0.5.2
-    installDisk: /dev/sda
+    installDisk: /dev/mmcblk0
     controlPlane: true
     nodeLabels:
       rack: rack01
