@@ -129,3 +129,9 @@ Technically however, I hope this repo is quite unique. I've intentionally tried 
 ## 🔏 License
 
 See [LICENSE](./LICENSE)
+
+---
+
+<p align="center">
+  <a href="#"><img src="docs/img/peepoK8S.png"></a>
+</p>
