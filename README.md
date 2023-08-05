@@ -72,6 +72,26 @@ Overview of this repo's structure, there's more info in the README files for eac
 
 ---
 
+## ☁️ Cloud Dependencies
+
+Although the majority of my infrastructure and workloads are self-hosted, there are certain key components of my setup that rely on cloud services.
+
+| Service                                             | Use                                                            | Cost           |
+| --------------------------------------------------- | -------------------------------------------------------------- | -------------- |
+| [Hetzner Cloud](https://www.hetzner.com/)           | Cloud compute and storage                                      | ~$40/mo        |
+| [AWS](https://aws.amazon.com/)                      | Cloud cold storage (S3 Deep Glacier)                           | ~$10/mo        |
+| [Google Cloud](https://cloud.google.com/)           | Cloud storage                                                  | ~$20/mo        |
+| [Cloudflare](https://www.cloudflare.com/)           | DNS, Certs, Proxy, WAF                                         | Free           |
+| [Doppler](https://doppler.com/)                     | Secrets with [External Secrets](https://external-secrets.io/)  | Free           |
+| [GitHub](https://github.com/)                       | Hosting this repository and continuous integration/deployments | Free           |
+| [Renovate](https://github.com/renovatebot/renovate) | Automatic updates for applications via pull requests           | Free           |
+| [Docker Hub](https://hub.docker.com/)               | Docker image registry                                          | Free           |
+| [Robusta](https://home.robusta.dev/)                | Alerts / notifications and runbook automation                  | Free           |
+| [Terraform Cloud](https://www.terraform.io/)        | Storing Terraform state                                        | Free           |
+|                                                     |                                                                | Total: ~$70/mo |
+
+---
+
 ## 🔧 Hardware
 
 | Device                      | Count | OS Disk Size    | Data Disk Size     | Ram   | Operating System | Purpose                       |
