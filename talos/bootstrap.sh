@@ -15,7 +15,7 @@ talosctl bootstrap -e kube.home.macro.network -n knode01.home.macro.network
 echo "Waiting..."
 sleep 60
 
-talosctl kubeconfig -e kube.home.macro.network -n knode01.home.macro.network
+talosctl kubeconfig -e kube.home.macro.network -n kube.home.macro.network
 
 echo "Waiting..."
 sleep 20
