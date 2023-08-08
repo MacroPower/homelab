@@ -20,7 +20,7 @@ talosctl kubeconfig -e kube.home.macro.network -n knode01.home.macro.network
 echo "Waiting..."
 sleep 20
 
-kubectl kustomize extras/cillium/ --enable-helm | kubectl apply -f -
+kubectl kustomize extras/cilium/ --enable-helm | kubectl apply -f -
 kubectl kustomize extras/kubelet-csr-approver/ --enable-helm | kubectl apply -f -
 kubectl kustomize extras/argocd/ --enable-helm | kubectl apply -f -
 

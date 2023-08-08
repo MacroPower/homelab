@@ -8,6 +8,11 @@ cniConfig:
 additionalMachineCertSans:
   - kube.home.macro.network
 
+clusterPodNets:
+  - 10.244.0.0/16
+clusterSvcNets:
+  - 10.96.0.0/12
+
 nodes:
   - hostname: knode01.home.macro.network
     ipAddress: 10.0.5.1
