@@ -27,6 +27,8 @@ local apps = [
   import 'prometheus-stack/application.libsonnet',
   import 'rclone-restic/application.libsonnet',
   import 'robusta/application.libsonnet',
+  import 'rook-ceph-cluster/application.libsonnet',
+  import 'rook-ceph-operator/application.libsonnet',
   import 'traefik/application.libsonnet',
   import 'vpa/application.libsonnet',
 ];

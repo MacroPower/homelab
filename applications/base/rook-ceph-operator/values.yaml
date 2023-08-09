@@ -1,0 +1,20 @@
+crds:
+  enabled: true
+
+csi:
+  kubeletDirPath: /var/lib/kubelet
+  enableGrpcMetrics: true
+  csiAddons:
+    enabled: true
+  serviceMonitor:
+    enabled: true
+  topology:
+    enabled: true
+    domainLabels:
+      - topology.kubernetes.io/region
+      - topology.kubernetes.io/zone
+
+monitoring:
+  enabled: true
+
+resources: {}
