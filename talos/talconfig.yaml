@@ -19,8 +19,8 @@ nodes:
     installDisk: /dev/mmcblk0
     controlPlane: true
     nodeLabels:
-      rack: rack01
-      zone: az01
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az01
     nameservers:
       - 10.0.0.1
     networkInterfaces:
@@ -32,8 +32,8 @@ nodes:
     installDisk: /dev/mmcblk0
     controlPlane: true
     nodeLabels:
-      rack: rack01
-      zone: az02
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az02
     nameservers:
       - 10.0.0.1
     networkInterfaces:
@@ -45,8 +45,8 @@ nodes:
     installDisk: /dev/mmcblk0
     controlPlane: true
     nodeLabels:
-      rack: rack01
-      zone: az03
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az03
     nameservers:
       - 10.0.0.1
     networkInterfaces:
@@ -58,8 +58,8 @@ nodes:
     installDisk: /dev/nvme0n1
     controlPlane: false
     nodeLabels:
-      rack: rack01
-      zone: az01
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az01
     nameservers:
       - 10.0.0.1
     networkInterfaces:
@@ -68,11 +68,11 @@ nodes:
 
   - hostname: knode14.home.macro.network
     ipAddress: 10.0.5.14
-    installDisk: /dev/nvme0n1
+    installDisk: /dev/sda
     controlPlane: false
     nodeLabels:
-      rack: rack01
-      zone: az02
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az02
     nameservers:
       - 10.0.0.1
     networkInterfaces:
@@ -84,8 +84,8 @@ nodes:
     installDisk: /dev/nvme0n1
     controlPlane: false
     nodeLabels:
-      rack: rack01
-      zone: az03
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az03
     nameservers:
       - 10.0.0.1
     networkInterfaces:
