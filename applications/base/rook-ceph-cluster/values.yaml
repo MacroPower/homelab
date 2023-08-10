@@ -46,7 +46,7 @@ cephClusterSpec:
 cephBlockPools:
   - name: ceph-blockpool
     spec:
-      failureDomain: host
+      failureDomain: zone
       replicated:
         size: 1
         requireSafeReplicaSize: false
@@ -64,11 +64,12 @@ cephFileSystems:
   - name: ceph-filesystem
     spec:
       metadataPool:
+        failureDomain: zone
         replicated:
           size: 1
           requireSafeReplicaSize: false
       dataPools:
-        - failureDomain: host
+        - failureDomain: zone
           replicated:
             size: 1
             requireSafeReplicaSize: false
@@ -95,12 +96,12 @@ cephObjectStores:
   - name: ceph-objectstore
     spec:
       metadataPool:
-        failureDomain: host
+        failureDomain: zone
         replicated:
           size: 1
           requireSafeReplicaSize: false
       dataPool:
-        failureDomain: host
+        failureDomain: zone
         erasureCoded:
           dataChunks: 2
           codingChunks: 1
