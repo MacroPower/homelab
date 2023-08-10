@@ -25,6 +25,14 @@ cephClusterSpec:
     enabled: true
     urlPrefix: /
     ssl: false
+  mgr:
+    modules:
+      - name: pg_autoscaler
+        enabled: true
+      - name: orchestrator
+        enabled: true
+      - name: rook
+        enabled: true
   storage:
     useAllNodes: false
     useAllDevices: false
