@@ -115,7 +115,7 @@ cephObjectStores:
           limits:
             cpu: 2000m
             memory: 4Gi
-        instances: 1
+        instances: 2
     storageClass:
       enabled: true
       name: ceph-bucket
