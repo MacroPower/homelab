@@ -133,6 +133,7 @@ controlPlane:
       kubelet:
         extraArgs:
           feature-gates: GracefulNodeShutdown=true,MixedProtocolLBService=true
+          rotate-server-certificates: true
       token: ${TRUSTEDINFO_TOKEN}
 
 worker:
@@ -154,4 +155,5 @@ worker:
       kubelet:
         extraArgs:
           feature-gates: GracefulNodeShutdown=true,MixedProtocolLBService=true
+          rotate-server-certificates: true
       token: ${TRUSTEDINFO_TOKEN}

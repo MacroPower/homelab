@@ -1,1 +1,5 @@
-providerRegex: ^knode\d\d\.home\.macro\.network$
+providerRegex: ^knode\d\d\$
+
+metrics:
+  serviceMonitor:
+    enabled: true
