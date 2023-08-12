@@ -4,6 +4,7 @@ local apps = [
   import 'cert-manager/application.libsonnet',
   import 'crossplane/application.libsonnet',
   import 'csi-addons/application.libsonnet',
+  import 'csi-driver-iscsi/application.libsonnet',
   import 'coredns/application.libsonnet',
   import 'descheduler/application.libsonnet',
   import 'external-dns/application.libsonnet',

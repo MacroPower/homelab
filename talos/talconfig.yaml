@@ -156,4 +156,7 @@ worker:
         extraArgs:
           feature-gates: GracefulNodeShutdown=true,MixedProtocolLBService=true
           rotate-server-certificates: true
+      install:
+        extensions:
+          - image: ghcr.io/siderolabs/iscsi-tools:v0.1.4
       token: ${TRUSTEDINFO_TOKEN}
