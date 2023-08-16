@@ -1,4 +1,4 @@
-providerRegex: ^knode\d\d\$
+providerRegex: ^knode\d\d$
 
 metrics:
   serviceMonitor:
