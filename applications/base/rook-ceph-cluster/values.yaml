@@ -39,7 +39,13 @@ cephClusterSpec:
     config:
       osdsPerDevice: "1"
     nodes:
+      - name: knode13
+        devices:
+          - name: "/dev/nvme0n1"
       - name: knode14
+        devices:
+          - name: "/dev/nvme0n1"
+      - name: knode15
         devices:
           - name: "/dev/nvme0n1"
 

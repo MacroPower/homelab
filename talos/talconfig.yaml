@@ -55,7 +55,7 @@ nodes:
 
   - hostname: knode13.home.macro.network
     ipAddress: 10.0.5.13
-    installDisk: /dev/nvme0n1
+    installDisk: /dev/sda
     controlPlane: false
     nodeLabels:
       topology.kubernetes.io/region: rack01
@@ -81,7 +81,7 @@ nodes:
 
   - hostname: knode15.home.macro.network
     ipAddress: 10.0.5.15
-    installDisk: /dev/nvme0n1
+    installDisk: /dev/sda
     controlPlane: false
     nodeLabels:
       topology.kubernetes.io/region: rack01
