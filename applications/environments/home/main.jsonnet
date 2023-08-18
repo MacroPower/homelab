@@ -19,6 +19,7 @@ local apps = [
   import 'jaeger-operator/application.libsonnet',
   import 'k8s-event-logger/application.libsonnet',
   import 'k8up/application.libsonnet',
+  import 'local-ai/application.libsonnet',
   import 'metallb/application.libsonnet',
   import 'metrics-server/application.libsonnet',
   import 'openspeedtest/application.libsonnet',

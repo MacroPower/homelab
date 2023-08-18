@@ -1,0 +1,69 @@
+replicaCount: 1
+
+deployment:
+  image: quay.io/go-skynet/local-ai:latest
+  env:
+    threads: 8
+    context_size: 512
+  modelsPath: "/models"
+
+resources:
+  limits:
+    cpu: 8
+    memory: 64Gi
+  requests:
+    cpu: 8
+    memory: 64Gi
+
+# Prompt templates to include
+# Note: the keys of this map will be the names of the prompt template files
+promptTemplates:
+  {}
+  # ggml-gpt4all-j.tmpl: |
+  #   The prompt below is a question to answer, a task to complete, or a conversation to respond to; decide which and write an appropriate response.
+  #   ### Prompt:
+  #   {{.Input}}
+  #   ### Response:
+
+# Models to download at runtime
+models:
+  # Whether to force download models even if they already exist
+  forceDownload: false
+
+  # The list of URLs to download models from
+  # Note: the name of the file will be the name of the loaded model
+  list:
+    - url: "https://gpt4all.io/models/ggml-gpt4all-j.bin"
+      # basicAuth: base64EncodedCredentials
+
+  # Persistent storage for models and prompt templates.
+  # PVC and HostPath are mutually exclusive. If both are enabled,
+  # PVC configuration takes precedence. If neither are enabled, ephemeral
+  # storage is used.
+  persistence:
+    pvc:
+      enabled: true
+      size: 32Gi
+      accessModes:
+        - ReadWriteOnce
+
+      annotations: {}
+
+      # Optional
+      storageClass: ~
+
+service:
+  type: ClusterIP
+  port: 80
+  annotations: {}
+  # If using an AWS load balancer, you'll need to override the default 60s load balancer idle timeout
+  # service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "1200"
+
+ingress:
+  enabled: false
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
