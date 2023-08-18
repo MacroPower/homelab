@@ -62,7 +62,7 @@ cephBlockPools:
       reclaimPolicy: Delete
       allowVolumeExpansion: true
       # See https://github.com/rook/rook/blob/master/Documentation/ceph-block.md#provision-storage for available configuration
-      parameters:
+      parameters: &blockParameters
         # (optional) mapOptions is a comma-separated list of map options.
         # For krbd options refer
         # https://docs.ceph.com/docs/master/man/8/rbd/#kernel-rbd-krbd-options
@@ -96,6 +96,18 @@ cephBlockPools:
         # will set default as `ext4`. Note that `xfs` is not recommended due to potential deadlock
         # in hyperconverged settings where the volume is mounted on the same node as the osds.
         csi.storage.k8s.io/fstype: ext4
+  - name: ceph-blockpool-nonreplicated
+    spec:
+      replicated:
+        size: 1
+        requireSafeReplicaSize: false
+    storageClass:
+      enabled: true
+      name: ceph-block-nonreplicated
+      isDefault: false
+      reclaimPolicy: Delete
+      allowVolumeExpansion: true
+      parameters: *blockParameters
 
 cephFileSystems:
   - name: ceph-filesystem
