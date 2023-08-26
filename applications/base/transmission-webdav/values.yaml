@@ -32,13 +32,7 @@ service:
   main:
     ports:
       http:
-        enabled: false
-        primary: false
-      webdav:
-        enabled: true
-        primary: true
         port: 50000
-        protocol: TCP
 
 resources:
   requests:
