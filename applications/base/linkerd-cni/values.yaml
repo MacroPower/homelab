@@ -1,6 +1,0 @@
-# Normally /opt/cni/bin and /etc/cni/net.d, the k3s flannel CNI is abnormal.
-destCNIBinDir: /var/lib/rancher/k3s/data/current/bin
-destCNINetDir: /var/lib/rancher/k3s/agent/etc/cni/net.d
-privileged: false
-
-logLevel: debug

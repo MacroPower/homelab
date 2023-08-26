@@ -21,21 +21,21 @@ helmCharts:
         type: ClusterIP
         port: 3000
 
-patches:
-  - target:
-      group:
-      version: v1
-      kind: Service
-      name: openspeedtest
-    patch: |-
-      - op: add
-        path: /metadata/labels
-        value:
-          'mirror.linkerd.io/exported': 'true'
-      - op: add
-        path: /metadata/annotations
-        value:
-          'argocd.argoproj.io/compare-options': 'IgnoreExtraneous'
+# patches:
+#   - target:
+#       group:
+#       version: v1
+#       kind: Service
+#       name: openspeedtest
+#     patch: |-
+#       - op: add
+#         path: /metadata/labels
+#         value:
+#           'mirror.linkerd.io/exported': 'true'
+#       - op: add
+#         path: /metadata/annotations
+#         value:
+#           'argocd.argoproj.io/compare-options': 'IgnoreExtraneous'
 
 resources:
   - namespace.yaml

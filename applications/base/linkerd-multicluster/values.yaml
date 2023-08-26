@@ -1,4 +1,0 @@
-enablePodAntiAffinity: false
-
-gateway:
-  replicas: 2

@@ -40,8 +40,7 @@ My clusters use [Talos](https://talos.dev/), as well as [k3s-on-MicroOS](https:/
 
 ### Networking
 
-- [Cilium](https://cilium.io): eBPF-based CNI.
-- [Linkerd](https://linkerd.io): Service mesh, allows for multi-cluster communication.
+- [Cilium](https://cilium.io): eBPF-based CNI and service mesh.
 - [Authentik](https://goauthentik.io): Identity Provider.
 - [MetalLB](https://metallb.universe.tf/): Load-balancer implementation supporting L2 & BGP.
 

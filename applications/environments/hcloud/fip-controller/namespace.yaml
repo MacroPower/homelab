@@ -2,5 +2,3 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: fip-controller
-  annotations:
-    linkerd.io/inject: enabled
