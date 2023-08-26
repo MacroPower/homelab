@@ -2,17 +2,8 @@ local k = import 'k.libsonnet';
 
 local net = k.networking.v1;
 
-local mergeMiddlewares(annotations, middleware) =
-  if std.objectHas(annotations, 'traefik.ingress.kubernetes.io/router.middlewares')
-  then
-    '%s,%s' % [annotations['traefik.ingress.kubernetes.io/router.middlewares'], middleware]
-  else
-    middleware;
-
 {
   new(name, namespace, host, serviceName, servicePort=80, tlsSecretName='', labels={}, annotations={})::
-    local middlewareName = '%s-l5d-header-middleware' % name;
-
     local tls =
       if tlsSecretName == '' then
         net.ingress.mixin.spec.withTls(net.ingressTLS.withHosts(host))
@@ -28,7 +19,6 @@ local mergeMiddlewares(annotations, middleware) =
       net.ingress.new(name) +
       net.ingress.mixin.metadata.withLabelsMixin(labels) +
       net.ingress.mixin.metadata.withAnnotationsMixin(annotations {
-        'traefik.ingress.kubernetes.io/router.middlewares': mergeMiddlewares(annotations, '%s-%s@kubernetescrd' % [namespace, middlewareName]),
         [if !std.objectHas(annotations, 'gethomepage.dev/ping') then 'gethomepage.dev/ping']: 'http://%s' % service,
         [if !std.objectHas(annotations, 'gethomepage.dev/external') then 'gethomepage.dev/external']: 'true',
       }) +
@@ -43,20 +33,5 @@ local mergeMiddlewares(annotations, middleware) =
         ),
       ]);
 
-
-    [ingress, {
-      apiVersion: 'traefik.containo.us/v1alpha1',
-      kind: 'Middleware',
-      metadata: {
-        name: middlewareName,
-        namespace: namespace,
-      },
-      spec: {
-        headers: {
-          customRequestHeaders: {
-            'l5d-dst-override': service,
-          },
-        },
-      },
-    }],
+    [ingress],
 }
