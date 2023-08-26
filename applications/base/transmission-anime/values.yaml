@@ -19,13 +19,13 @@ flood:
   resources:
     requests:
       cpu: 50m
-      memory: 512Mi
+      memory: 1Gi
     limits:
-      memory: 512Mi
+      memory: 2Gi
 
 resources:
   requests:
     cpu: 250m
-    memory: 4096Mi
+    memory: 4Gi
   limits:
-    memory: 4096Mi
+    memory: 8Gi

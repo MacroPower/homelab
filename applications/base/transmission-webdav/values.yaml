@@ -48,6 +48,6 @@ service:
 resources:
   requests:
     cpu: 50m
-    memory: 2048Mi
+    memory: 2Gi
   limits:
-    memory: 2048Mi
+    memory: 4Gi
