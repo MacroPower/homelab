@@ -9,7 +9,6 @@ local apps = [
   import 'fip-controller/application.libsonnet',
   import 'goldilocks/application.libsonnet',
   import 'homepage/application.libsonnet',
-  import 'inlets-server/application.libsonnet',
   import 'jaeger-operator/application.libsonnet',
   import 'k8s-event-logger/application.libsonnet',
   import 'metallb/application.libsonnet',
