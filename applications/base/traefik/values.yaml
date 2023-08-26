@@ -12,13 +12,13 @@ ingressRoute:
   dashboard:
     enabled: false
 
-tracing:
-  jaeger:
-    propagation: b3
-    collector:
-      endpoint: http://linkerd-collector.linkerd-jaeger.svc.cluster.local:14268/api/traces?format=jaeger.thrift
-    samplingType: const
-    samplingParam: 1.0
+# tracing:
+#   jaeger:
+#     propagation: b3
+#     collector:
+#       endpoint: http://linkerd-collector.linkerd-jaeger.svc.cluster.local:14268/api/traces?format=jaeger.thrift
+#     samplingType: const
+#     samplingParam: 1.0
 
 providers:
   kubernetesIngress:
