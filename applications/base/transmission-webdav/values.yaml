@@ -3,17 +3,8 @@ image:
   tag: 1.63.0
 
 init: |
-  rclone rcd \
-    --rc-web-gui \
-    --rc-web-gui-no-open-browser \
-    --rc-no-auth \
-    --rc-addr=:5572 &
-
   rclone serve webdav /userdata \
-    --addr=:50000 &
-
-  wait -n
-  exit $?
+    --addr=:50000
 
 persistence:
   tv:
@@ -40,8 +31,12 @@ persistence:
 service:
   main:
     ports:
+      http:
+        enabled: false
+        primary: false
       webdav:
         enabled: true
+        primary: true
         port: 50000
         protocol: TCP
 
