@@ -6,9 +6,9 @@ app.new(
   path='applications/base/transmission-webdav',
   namespace=ns.metadata.name,
 ).withChart(
-  name='sftpgo',
-  repoURL='https://charts.sagikazarmark.dev',
-  targetRevision='0.19.0',
+  name='rclone',
+  repoURL='https://jacobcolvin.com/helm-charts/',
+  targetRevision='1.0.0',
   releaseName='transmission-webdav',
   values='values.yaml'
 )

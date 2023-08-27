@@ -1,46 +1,38 @@
-sftpd:
-  # -- Enable SFTP service.
-  enabled: false
+image:
+  repository: rclone/rclone
+  tag: 1.63.0
 
-ftpd:
-  # -- Enable FTP service.
-  enabled: false
+init: |
+  rclone serve webdav /userdata \
+    --addr=:50000
 
-webdavd:
-  # -- Enable WebDAV service.
-  enabled: true
-
-httpd:
-  # -- Enable HTTP service.
-  enabled: true
-
-volumes:
-  - name: tv
-    persistentVolumeClaim:
-      claimName: tv
-  - name: movies
-    persistentVolumeClaim:
-      claimName: movies
-  - name: music
-    persistentVolumeClaim:
-      claimName: music
-  - name: anime
-    persistentVolumeClaim:
-      claimName: anime
-
-volumeMounts:
-  - name: tv
+persistence:
+  tv:
+    enabled: true
+    type: pvc
+    existingClaim: tv
     mountPath: /userdata/tv
-    readOnly: true
-  - name: movies
+  movies:
+    enabled: true
+    type: pvc
+    existingClaim: movies
     mountPath: /userdata/movies
-    readOnly: true
-  - name: music
+  music:
+    enabled: true
+    type: pvc
+    existingClaim: music
     mountPath: /userdata/music
-    readOnly: true
-  - name: anime
+  anime:
+    enabled: true
+    type: pvc
+    existingClaim: anime
     mountPath: /userdata/anime
-    readOnly: true
+
+service:
+  main:
+    ports:
+      http:
+        port: 50000
 
 resources:
   requests:
