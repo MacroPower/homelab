@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='metallb',
   repoURL='https://metallb.github.io/metallb',
-  targetRevision='0.13.10',
+  targetRevision='0.13.11',
   releaseName='metallb',
   values='values.yaml'
 )
