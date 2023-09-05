@@ -1,6 +1,5 @@
 local apps = [
   import 'argocd/application.libsonnet',
-  import 'authentik-remote-cluster/application.libsonnet',
   import 'cert-manager/application.libsonnet',
   import 'crossplane/application.libsonnet',
   import 'descheduler/application.libsonnet',
