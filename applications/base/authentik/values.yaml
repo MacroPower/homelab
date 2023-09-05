@@ -34,6 +34,10 @@ geoip:
 postgresql:
   enabled: true
   existingSecret: authentik-postgres-credentials
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
 
 redis:
   enabled: true
@@ -42,6 +46,11 @@ redis:
     enabled: true
     existingSecret: authentik-credentials
     existingSecretPasswordKey: AUTHENTIK_REDIS_PASS
+  master:
+    persistence:
+      enabled: true
+      accessModes:
+        - ReadWriteOnce
 
 # -- List of config maps to mount blueprints from. Only keys in the
 # configmap ending with ".yaml" wil be discovered and applied
@@ -60,9 +69,17 @@ envValueFrom:
     secretKeyRef:
       key: AUTHENTIK_SECRET_KEY
       name: authentik-credentials
+  AUTHENTIK_BOOTSTRAP_PASSWORD:
+    secretKeyRef:
+      key: AUTHENTIK_BOOTSTRAP_PASSWORD
+      name: authentik-credentials
   AUTHENTIK_BOOTSTRAP_TOKEN:
     secretKeyRef:
       key: AUTHENTIK_BOOTSTRAP_TOKEN
+      name: authentik-credentials
+  AUTHENTIK_BOOTSTRAP_EMAIL:
+    secretKeyRef:
+      key: AUTHENTIK_BOOTSTRAP_EMAIL
       name: authentik-credentials
   AUTHENTIK_REDIS__PASSWORD:
     secretKeyRef:
