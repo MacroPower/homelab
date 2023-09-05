@@ -1,7 +1,7 @@
 manager:
   collectorImage:
     repository: otel/opentelemetry-collector-contrib
-    tag: 0.76.1
+    tag: 0.84.0
   resources:
     limits:
       cpu: 100m
