@@ -34,7 +34,9 @@ models:
   # Note: the name of the file will be the name of the loaded model
   list:
     - url: "https://gpt4all.io/models/ggml-gpt4all-j.bin"
-      # basicAuth: base64EncodedCredentials
+    - url: "github:go-skynet/model-gallery/stablediffusion.yaml"
+    - url: "https://huggingface.co/TheBloke/WizardLM-70B-V1.0-GGML/resolve/main/wizardlm-70b-v1.0.ggmlv3.q5_K_S.bin"
+    - url: "https://huggingface.co/TheBloke/WizardLM-7B-uncensored-GGML/resolve/main/WizardLM-7B-uncensored.ggmlv3.q8_0.bin"
 
   # Persistent storage for models and prompt templates.
   # PVC and HostPath are mutually exclusive. If both are enabled,
@@ -43,7 +45,7 @@ models:
   persistence:
     pvc:
       enabled: true
-      size: 32Gi
+      size: 300Gi
       accessModes:
         - ReadWriteOnce
 
