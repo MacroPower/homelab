@@ -10,8 +10,8 @@ service:
   peer:
     type: LoadBalancer
     ports:
-      tcp: 51404
-      udp: 51404
+      tcp: 51405
+      udp: 51405
 
 flood:
   enabled: true
