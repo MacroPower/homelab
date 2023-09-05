@@ -58,3 +58,18 @@ spec:
   resources:
     requests:
       storage: 100Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: audio
+spec:
+  storageClassName: local-disk-1
+  volumeName: local-pv-12a34aa1
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 100Gi

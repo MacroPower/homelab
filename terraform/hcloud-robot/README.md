@@ -64,6 +64,7 @@ Create subvolumes:
 ```sh
 btrfs subvolume create /mnt/disk1/tv
 btrfs subvolume create /mnt/disk1/music
+btrfs subvolume create /mnt/disk1/audio
 btrfs subvolume create /mnt/disk2/anime
 btrfs subvolume create /mnt/disk2/movies
 ```
@@ -74,6 +75,7 @@ Edit /etc/fstab:
 UUID=b5570ff7-e9bf-41d7-a1cd-f4cb353d6879 /mnt/disk1        btrfs defaults               0 0
 UUID=b5570ff7-e9bf-41d7-a1cd-f4cb353d6879 /mnt/disk1/tv     btrfs defaults,subvol=tv     0 0
 UUID=b5570ff7-e9bf-41d7-a1cd-f4cb353d6879 /mnt/disk1/music  btrfs defaults,subvol=music  0 0
+UUID=b5570ff7-e9bf-41d7-a1cd-f4cb353d6879 /mnt/disk1/audio  btrfs defaults,subvol=audio  0 0
 UUID=55d3afc8-696b-4a00-8397-e0927388399e /mnt/disk2        btrfs defaults               0 0
 UUID=55d3afc8-696b-4a00-8397-e0927388399e /mnt/disk2/anime  btrfs defaults,subvol=anime  0 0
 UUID=55d3afc8-696b-4a00-8397-e0927388399e /mnt/disk2/movies btrfs defaults,subvol=movies 0 0

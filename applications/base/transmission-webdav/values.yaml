@@ -27,6 +27,11 @@ persistence:
     type: pvc
     existingClaim: anime
     mountPath: /userdata/anime
+  audio:
+    enabled: true
+    type: pvc
+    existingClaim: audio
+    mountPath: /userdata/audio
 
 service:
   main:

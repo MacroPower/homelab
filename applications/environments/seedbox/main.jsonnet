@@ -20,6 +20,7 @@ local apps = [
   import 'traefik/application.libsonnet',
   import 'transmission/application.libsonnet',
   import 'transmission-anime/application.libsonnet',
+  import 'transmission-audio/application.libsonnet',
   import 'transmission-movies/application.libsonnet',
   import 'transmission-music/application.libsonnet',
   import 'transmission-tv/application.libsonnet',
