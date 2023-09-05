@@ -16,7 +16,7 @@ ingress.new(
     'gethomepage.dev/name': 'Goldilocks',
     'gethomepage.dev/description': 'Resource Recommendations',
     'gethomepage.dev/group': 'Cluster Management',
-    'gethomepage.dev/icon': 'https://simpleicons.org/icons/saturn.svg',
+    'gethomepage.dev/icon': 'si-saturn',
     'gethomepage.dev/podSelector': '',
   },
 )
