@@ -7,7 +7,7 @@ app.new(
 ).withChart(
   name='cert-manager',
   repoURL='https://charts.jetstack.io',
-  targetRevision='v1.12.1',
+  targetRevision='v1.12.4',
   releaseName='cert-manager',
   values='values.yaml'
 )
