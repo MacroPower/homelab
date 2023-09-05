@@ -7,6 +7,6 @@ app.new(
 ).withChart(
   name='metrics-server',
   repoURL='https://kubernetes-sigs.github.io/metrics-server/',
-  targetRevision='3.10.0',
+  targetRevision='3.11.0',
   releaseName='metrics-server',
 )
