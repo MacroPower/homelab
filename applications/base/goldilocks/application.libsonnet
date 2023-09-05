@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='goldilocks',
   repoURL='https://charts.fairwinds.com/stable',
-  targetRevision='6.7.0',
+  targetRevision='7.1.2',
   releaseName='goldilocks',
   values='values.yaml'
 )
