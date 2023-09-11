@@ -50,16 +50,20 @@ prometheus:
 
     retention: 1d
 
-    # # Max series is 10k.
-    # remoteWrite:
-    #   - url: https://prometheus-us-central1.grafana.net/api/prom/push
-    #     basicAuth:
-    #       username:
-    #         name: grafana-cloud-prom-credentials
-    #         key: GRAFANA_PROM_USER
-    #       password:
-    #         name: grafana-cloud-prom-credentials
-    #         key: GRAFANA_PROM_PASS
+    # Max series is 10k.
+    remoteWrite:
+      - url: https://prometheus-us-central1.grafana.net/api/prom/push
+        basicAuth:
+          username:
+            name: grafana-cloud-prom-credentials
+            key: GRAFANA_CLOUD_PROM_USER
+          password:
+            name: grafana-cloud-prom-credentials
+            key: GRAFANA_CLOUD_PROM_PASS
+        writeRelabelConfigs:
+          - sourceLabels: [__name__]
+            regex: '(^osrs_ge_item_high_5m|^osrs_ge_item_low_5m)'
+            action: keep
 
     resources:
       requests:
