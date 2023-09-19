@@ -1066,6 +1066,8 @@ prometheus:
               |Zaryte crossbow\
               |Bandos coif\
               |Dragon sq shield\
+              |Amulet of glory\
+              |Cosmic rune\
               )$"
             action: keep
 
