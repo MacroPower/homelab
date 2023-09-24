@@ -52,7 +52,7 @@ models:
       annotations: {}
 
       # Optional
-      storageClass: ~
+      storageClass: ceph-filesystem
 
 service:
   type: ClusterIP
