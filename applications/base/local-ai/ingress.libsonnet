@@ -75,7 +75,7 @@ local ingressAnnotations = std.parseYaml(std.extVar('ingressAnnotations'));
       tls: [
         {
           hosts: [
-            'local-ai',
+            ingressHost,
           ],
         },
       ],
