@@ -1,8 +1,9 @@
 {
-  data(key, remoteKey=''):: {
+  data(key, remoteKey='', decodingStrategy=''):: {
     secretKey: key,
     remoteRef: {
       key: if remoteKey == '' then key else remoteKey,
+      [if decodingStrategy != '' then 'decodingStrategy']: decodingStrategy,
     },
   },
 

@@ -30,5 +30,6 @@
   import 'rook-ceph-cluster/application.libsonnet',
   import 'rook-ceph-operator/application.libsonnet',
   import 'traefik/application.libsonnet',
+  import 'twitch-channel-points-miner/application.libsonnet',
   import 'vpa/application.libsonnet',
 ]

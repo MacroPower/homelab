@@ -1,0 +1,11 @@
+configMaps:
+  config:
+    enabled: false
+
+persistence:
+  config:
+    enabled: true
+    name: twitch-config
+  cookie:
+    enabled: true
+    name: twitch-cookie
