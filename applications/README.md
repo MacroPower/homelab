@@ -9,10 +9,10 @@ imported by any environment. They can be extended and/or manipulated as needed.
 
 ### Adding Applications
 
-Reference `application.libsonnet` in the environment's `main.jsonnet` file:
+Reference `application.libsonnet` in the environment's `imports.libsonnet` file:
 
 ```jsonnet
-local apps = [
+[
   import '<app>/application.libsonnet',
 ]
 ```
