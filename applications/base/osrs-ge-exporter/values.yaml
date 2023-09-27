@@ -7,3 +7,17 @@ serviceMonitor:
         path: /metrics
         interval: 15s
         scrapeTimeout: 5s
+
+prometheusRule:
+  main:
+    enabled: true
+    groups:
+      - name: osrs-ge-exporter.rules
+        rules:
+          - record: :osrs_ge_ha_profit:sum
+            expr: |-
+              sum(
+                (osrs_ge_item_limit * ((osrs_ge_item_high_alch - osrs_ge_item_low_latest) > 1000))
+                and
+                (osrs_ge_item_low_volume_5m > 15)
+              )
