@@ -45,6 +45,9 @@ prometheus:
     probeSelectorNilUsesHelmValues: false
     probeSelector: {}
 
+    ruleSelectorNilUsesHelmValues: false
+    ruleSelector: {}
+
     extraArgs:
       enable-feature: exemplar-storage
 
