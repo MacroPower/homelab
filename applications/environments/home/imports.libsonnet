@@ -32,4 +32,5 @@
   import 'traefik/application.libsonnet',
   import 'twitch-channel-points-miner/application.libsonnet',
   import 'vpa/application.libsonnet',
+  import 'wakatime-exporter/application.libsonnet',
 ]

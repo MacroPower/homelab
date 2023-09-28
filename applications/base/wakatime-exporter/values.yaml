@@ -1,0 +1,10 @@
+env:
+  WAKA_API_KEY:
+    valueFrom:
+      secretKeyRef:
+        name: wakatime-credentials
+        key: WAKATIME_API_KEY
+
+serviceMonitor:
+  main:
+    enabled: true
