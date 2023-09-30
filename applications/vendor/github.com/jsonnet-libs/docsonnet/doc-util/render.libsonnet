@@ -1,402 +1,441 @@
 {
   local root = self,
 
-  templates: {
-    package: |||
-      # %(name)s
+  render(obj):
+    assert std.isObject(obj) && '#' in obj : 'error: object is not a docsonnet package';
+    local package = self.package(obj);
+    package.toFiles(),
 
-      %(content)s
-    |||,
+  findPackages(obj, path=[]): {
+    local find(obj, path, parentWasPackage=true) =
+      std.foldl(
+        function(acc, k)
+          acc
+          + (
+            // If matches a package but warn if also has an object docstring
+            if '#' in obj[k] && '#' + k in obj
+               && !std.objectHasAll(obj[k]['#'], 'ignore')
+            then std.trace(
+              'warning: %s both defined as object and package' % k,
+              [root.package(obj[k], path + [k], parentWasPackage)]
+            )
+            // If matches a package, return it
+            else if '#' in obj[k]
+                    && !std.objectHasAll(obj[k]['#'], 'ignore')
+            then [root.package(obj[k], path + [k], parentWasPackage)]
+            // If not, keep looking
+            else find(obj[k], path + [k], parentWasPackage=false)
+          ),
+        std.filter(
+          function(k)
+            !std.startsWith(k, '#')
+            && std.isObject(obj[k]),
+          std.objectFieldsAll(obj)
+        ),
+        []
+      ),
 
-    indexPage: |||
-      # %(prefix)s%(name)s
+    packages: find(obj, path),
 
-      %(index)s
-    |||,
+    hasPackages(): std.length(self.packages) > 0,
 
-    index: |||
-      ## Index
+    toIndex(relativeTo=[]):
+      if self.hasPackages()
+      then
+        std.join('\n', [
+          '* ' + p.link(relativeTo)
+          for p in self.packages
+        ])
+        + '\n'
+      else '',
 
-      %s
-    |||,
-
-    sectionTitle: '%(abbr)s %(prefix)s%(name)s',
-
-    sectionLink: '* [`%(abbr)s %(linkName)s`](#%(link)s)',
-
-    value: '* `%(prefix)s%(name)s` (`%(type)s`): `"%(value)s"` - %(help)s',
-
-    section: |||
-      %(headerDepth)s %(title)s
-
-      %(content)s
-    |||,
+    toFiles():
+      std.foldl(
+        function(acc, p)
+          acc
+          + { [p.path]: p.toString() }
+          + p.packages.toFiles(),
+        self.packages,
+        {}
+      ),
   },
 
-  joinPathPrefixes(prefixes, sep='/')::
-    std.join(sep, prefixes)
-    + (if std.length(prefixes) > 0
-       then sep
-       else ''),
+  package(obj, path=[], parentWasPackage=true): {
+    local this = self,
+    local doc = obj['#'],
 
-  joinPrefixes(prefixes, sep='.')::
-    std.join(sep, prefixes)
-    + (if std.length(prefixes) > 0
-       then sep
-       else ''),
+    packages: root.findPackages(obj, path),
+    fields: root.fields(obj),
 
-  renderSectionTitle(section, prefixes)::
-    root.templates.sectionTitle % {
-      name: section.name,
-      abbr: section.type.abbr,
-      prefix: root.joinPrefixes(prefixes),
-    },
+    local pathsuffix =
+      (if self.packages.hasPackages()
+       then '/index.md'
+       else '.md'),
 
-  renderValues(values, prefixes=[])::
-    if std.length(values) > 0
-    then
-      std.join('\n', [
-        root.templates.value
-        % value {
-          prefix: root.joinPrefixes(prefixes),
-        }
-        for value in values
-      ]) + '\n'
-    else '',
+    // filepath on disk
+    path:
+      std.join('/', path)
+      + pathsuffix,
 
-  renderSections(sections, depth=0, prefixes=[])::
-    if std.length(sections) > 0
-    then
-      std.join('\n', [
-        root.templates.section
-        % {
-          headerDepth: std.join('', [
-            '#'
-            for d in std.range(0, depth + 2)
-          ]),
-          title: root.renderSectionTitle(
-            section,
-            prefixes,
-          ),
-          content: section.content,
-        }
-        + root.renderValues(
-          section.values,
-          prefixes + [section.name]
-        )
-        + root.renderSections(
-          section.subSections,
-          depth + 1,
-          prefixes + [section.name]
-        )
-        for section in sections
-      ])
-    else '',
+    link(relativeTo):
+      local relativepath = root.util.getRelativePath(path, relativeTo);
+      '[%s](%s)' % [
+        std.join('.', relativepath),
+        std.join('/', relativepath)
+        + pathsuffix,
+      ],
 
-  renderPackage(package)::
-    (root.templates.package % package)
-    + (
-      if std.length(package.subPackages) > 0
-      then
-        '## Subpackages\n\n'
-        + std.join('\n', [
-          '* [%(name)s](%(path)s)' % {
-            name: sub.name,
-            path: package.name + '/' + sub.name + '.md',
-          }
-          for sub in package.subPackages
-        ]) + '\n\n'
-      else ''
-    )
-    + (if std.length(package.sections) > 0
-       then (root.templates.index % root.index(package.sections))
-       else '')
-    + (if std.length(package.values) > 0
-          || std.length(package.sections) > 0
-       then
-         '\n## Fields\n\n'
-         + root.renderValues(package.values)
-         + root.renderSections(package.sections)
-       else ''),
+    toFiles():
+      { 'README.md': this.toString() }
+      + self.packages.toFiles(),
 
-  index(sections, depth=0, prefixes=[])::
-    std.join('\n', [
+    toString():
+      std.join(
+        '\n',
+        [
+          '# ' + doc.name + '\n',
+          std.get(doc, 'help', ''),
+          '',
+        ]
+        + (if self.packages.hasPackages()
+           then [
+             '## Subpackages\n\n'
+             + self.packages.toIndex(path),
+           ]
+           else [])
+        + (if self.fields.hasFields()
+           then [
+             '## Index\n\n'
+             + self.fields.toIndex()
+             + '\n## Fields\n'
+             + self.fields.toString(),
+           ]
+           else [])
+      ),
+  },
+
+  fields(obj, path=[]): {
+    values: root.findValues(obj, path),
+    functions: root.findFunctions(obj, path),
+    objects: root.findObjects(obj, path),
+
+    hasFields():
+      std.any([
+        self.values.hasFields(),
+        self.functions.hasFields(),
+        self.objects.hasFields(),
+      ]),
+
+    toIndex():
       std.join('', [
-        ' '
-        for d in std.range(0, (depth * 2) - 1)
-      ])
-      + (root.templates.sectionLink % {
-           abbr: section.type.abbr,
-           linkName: section.linkName,
-           link:
-             std.asciiLower(
-               std.strReplace(
-                 std.strReplace(root.renderSectionTitle(section, prefixes), '.', '')
-                 , ' ', '-'
-               )
-             ),
-         })
-      + (
-        if std.length(section.subSections) > 0
-        then '\n' + root.index(
-          section.subSections,
-          depth + 1,
-          prefixes + [section.name]
-        )
-        else ''
+        self.functions.toIndex(),
+        self.objects.toIndex(),
+      ]),
+
+    toString():
+      std.join('', [
+        self.values.toString(),
+        self.functions.toString(),
+        self.objects.toString(),
+      ]),
+  },
+
+  findObjects(obj, path=[]): {
+    local keys =
+      std.filter(
+        root.util.filter('object', obj),
+        std.objectFieldsAll(obj)
+      ),
+
+    local undocumentedKeys =
+      std.filter(
+        function(k)
+          std.all([
+            !std.startsWith(k, '#'),
+            std.isObject(obj[k]),
+            !std.objectHasAll(obj[k], 'ignore'),
+            !('#' + k in obj),  // not documented in parent
+            !('#' in obj[k]),  // not a sub package
+          ]),
+        std.objectFieldsAll(obj)
+      ),
+
+    objects:
+      std.foldl(
+        function(acc, k)
+          acc + [
+            root.obj(
+              root.util.realkey(k),
+              obj[k],
+              obj[root.util.realkey(k)],
+              path,
+            ),
+          ],
+        keys,
+        []
       )
-      for section in sections
+      + std.foldl(
+        function(acc, k)
+          local o = root.obj(
+            k,
+            { object: { help: '' } },
+            obj[k],
+            path,
+          );
+          acc
+          + (if o.fields.hasFields()
+             then [o]
+             else []),
+        undocumentedKeys,
+        []
+      ),
+
+    hasFields(): std.length(self.objects) > 0,
+
+    toIndex():
+      if self.hasFields()
+      then
+        std.join('', [
+          std.join(
+            '',
+            [' ' for d in std.range(0, (std.length(path) * 2) - 1)]
+            + ['* ', f.link]
+            + ['\n']
+            + (if f.fields.hasFields()
+               then [f.fields.toIndex()]
+               else [])
+          )
+          for f in self.objects
+        ])
+      else '',
+
+    toString():
+      if self.hasFields()
+      then
+        std.join('', [
+          o.toString()
+          for o in self.objects
+        ])
+      else '',
+  },
+
+  obj(name, doc, obj, path): {
+    fields: root.fields(obj, path + [name]),
+
+    path: std.join('.', path + [name]),
+    fragment: root.util.fragment(std.join('', path + [name])),
+    link: '[`obj %s`](#obj-%s)' % [name, self.fragment],
+
+    toString():
+      std.join(
+        '\n',
+        [root.util.title('obj ' + self.path, std.length(path) + 2)]
+        + (if std.get(doc.object, 'help', '') != ''
+           then [doc.object.help]
+           else [])
+        + [self.fields.toString()]
+      ),
+  },
+
+  findFunctions(obj, path=[]): {
+    local keys =
+      std.filter(
+        root.util.filter('function', obj),
+        std.objectFieldsAll(obj)
+      ),
+
+    functions:
+      std.foldl(
+        function(acc, k)
+          acc + [
+            root.func(
+              root.util.realkey(k),
+              obj[k],
+              path,
+            ),
+          ],
+        keys,
+        []
+      ),
+
+    hasFields(): std.length(self.functions) > 0,
+
+    toIndex():
+      if self.hasFields()
+      then
+        std.join('', [
+          std.join(
+            '',
+            [' ' for d in std.range(0, (std.length(path) * 2) - 1)]
+            + ['* ', f.link]
+            + ['\n']
+          )
+          for f in self.functions
+        ])
+      else '',
+
+    toString():
+      if self.hasFields()
+      then
+        std.join('', [
+          f.toString()
+          for f in self.functions
+        ])
+      else '',
+  },
+
+  func(name, doc, path): {
+    path: std.join('.', path + [name]),
+    fragment: root.util.fragment(std.join('', path + [name])),
+    link: '[`fn %s(%s)`](#fn-%s)' % [name, self.args, self.fragment],
+
+    args: std.join(', ', [
+      if arg.default != null
+      then std.join('=', [
+        arg.name,
+        std.manifestJsonEx(arg.default, '', ''),
+      ])
+      else arg.name
+      for arg in doc['function'].args
     ]),
 
-  sections: {
-    base: {
-      subSections: [],
-      values: [],
-    },
-    object(key, doc, obj, depth):: self.base {
-      name: std.strReplace(key, '#', ''),
-
-      local processed = root.prepare(obj, depth=depth + 1),
-
-      subSections: processed.sections,
-
-      values: processed.values,
-
-      type: { full: 'object', abbr: 'obj' },
-
-      abbr: self.type.abbr,
-
-      doc:
-        if self.type.full in doc
-        then doc[self.type.full]
-        else { help: '' },
-
-      help: self.doc.help,
-
-      linkName: self.name,
-
-      content:
-        if self.help != ''
-        then self.help + '\n'
-        else '',
-    },
-
-    'function'(key, doc):: self.base {
-      name: std.strReplace(key, '#', ''),
-
-      type: { full: 'function', abbr: 'fn' },
-
-      abbr: self.type.abbr,
-
-      doc: doc[self.type.full],
-
-      help: self.doc.help,
-
-      args: std.join(', ', [
-        if arg.default != null
-        then arg.name + '=' + (
-          if arg.type == 'string'
-          then "'%s'" % arg.default
-          else std.toString(arg.default)
-        )
-        else arg.name
-        for arg in self.doc.args
-      ]),
-
-      enums: std.join('', [
-        if arg.enums != null
-        then '\n\nAccepted values for `%s` are ' % arg.name
-             + (
+    args_list:
+      if std.length(doc['function'].args) > 0
+      then
+        '\nPARAMETERS:\n\n'
+        + std.join('\n', [
+          '* **%s** (`%s`)' % [arg.name, arg.type]
+          + (if arg.default != null
+             then std.join('=', [
+               '\n   - default value: `%s`' % std.manifestJsonEx(arg.default, '', ''),
+             ])
+             else '')
+          + (if arg.enums != null
+             then std.join('=', [
+               '\n   - valid values: %s' %
                std.join(', ', [
-                 std.toString(item)
+                 '`%s`' % std.manifestJsonEx(item, '', '')
                  for item in arg.enums
-               ])
-             )
-        else ''
-        for arg in self.doc.args
-      ]),
+               ]),
+             ])
+             else '')
+          for arg in doc['function'].args
+        ])
+      else '',
 
-      linkName: '%(name)s(%(args)s)' % self,
-
-      content:
-        (|||
-           ```ts
-           %(name)s(%(args)s)
-           ```
-
-         ||| % self)
-        + '%(help)s' % self
-        + '%(enums)s' % self,
-      // odd concatenation to prevent unintential newline changes
-
-    },
-
-    value(key, doc, obj):: self.base {
-      name: std.strReplace(key, '#', ''),
-      type: doc.value.type,
-      help: doc.value.help,
-      value: obj,
-    },
-
-    package(doc, root):: {
-      name: doc.name,
-      content:
+    toString():
+      std.join('\n', [
+        root.util.title('fn ' + self.path, std.length(path) + 2),
         |||
-          %(help)s
-        ||| % doc
-        + (if 'installTemplate' in doc
-           then |||
-
-             ## Install
-
-             ```
-             %(install)s
-             ```
-           ||| % doc.installTemplate % doc
-           else '')
-        + (if 'usageTemplate' in doc
-           then |||
-
-             ## Usage
-
-             ```jsonnet
-             %(usage)s
-             ```
-           ||| % doc.usageTemplate % doc
-           else ''),
-    },
+          ```jsonnet
+          %s(%s)
+          ```
+          %s
+        ||| % [self.path, self.args, self.args_list],
+        std.get(doc['function'], 'help', ''),
+      ]),
   },
 
-  prepare(obj, depth=0)::
-    std.foldl(
-      function(acc, key)
-        acc +
-        // Package definition
-        if key == '#'
-        then root.sections.package(
-          obj[key],
-          (depth == 0)
-        )
+  findValues(obj, path=[]): {
+    local keys =
+      std.filter(
+        root.util.filter('value', obj),
+        std.objectFieldsAll(obj)
+      ),
 
+    values:
+      std.foldl(
+        function(acc, k)
+          acc + [
+            root.val(
+              root.util.realkey(k),
+              obj[k],
+              obj[root.util.realkey(k)],
+              path,
+            ),
+          ],
+        keys,
+        []
+      ),
 
-        // Field definition
-        else if std.startsWith(key, '#')
-        then (
-          local realKey = key[1:];
+    hasFields(): std.length(self.values) > 0,
 
-          if !std.isObject(obj[key])
-          then
-            std.trace(
-              'INFO: docstring "%s" cannot be parsed, ignored while rendering.' % key,
-              {}
-            )
+    toString():
+      if self.hasFields()
+      then
+        std.join('\n', [
+          '* ' + f.toString()
+          for f in self.values
+        ]) + '\n'
+      else '',
+  },
 
-          else if 'value' in obj[key]
-          then {
-            values+: [root.sections.value(
-              key,
-              obj[key],
-              obj[realKey]
-            )],
-          }
-          else if 'function' in obj[key]
-          then {
-            functionSections+: [root.sections['function'](
-              key,
-              obj[key],
-            )],
-          }
-          else if 'object' in obj[key]
-          then {
-            objectSections+: [root.sections.object(
-              key,
-              obj[key],
-              obj[realKey],
-              depth
-            )],
-          }
-          else
-            std.trace(
-              'INFO: docstring "%s" cannot be parsed, ignored while rendering.' % key,
-              {}
-            )
-        )
-
-        // subPackage definition
-        else if std.isObject(obj[key]) && '#' in obj[key]
-        then {
-          subPackages+: [root.prepare(obj[key])],
-        }
-
-        // undocumented object
-        else if std.isObject(obj[key]) && !('#' + key in obj)
-        then (
-          local section = root.sections.object(
-            key,
-            {},
-            obj[key],
-            depth
-          );
-          // only add if has documented subSections or values
-          if std.length(section.subSections) > 0
-             || std.length(section.values) > 0
-          then { objectSections+: [section] }
-          else {}
-        )
-
-        else {},
-      std.objectFieldsAll(obj),
-      {
-        functionSections: [],
-        objectSections: [],
-
-        sections:
-          self.functionSections
-          + self.objectSections,
-        subPackages: [],
-        values: [],
-      }
-    ),
-
-  renderIndexPage(package, prefixes)::
-    root.templates.indexPage % {
-      name: package.name,
-      prefix: root.joinPrefixes(prefixes),
-      index: std.join('\n', [
-        '* [%(name)s](%(name)s.md)' % sub
-        for sub in package.subPackages
+  val(name, doc, obj, path): {
+    toString():
+      std.join(' ', [
+        '`%s`' % std.join('.', path + [name]),
+        '(`%s`):' % doc.value.type,
+        '`"%s"`' % obj,
+        '-',
+        std.get(doc.value, 'help', ''),
       ]),
-    },
+  },
 
-  renderFiles(package, prefixes=[]):
-    local key =
-      if std.length(prefixes) > 0
-      then package.name + '.md'
-      else 'README.md';
-    local path = root.joinPathPrefixes(prefixes);
-    {
-      [path + key]: root.renderPackage(package),
-    }
-    + (
-      if std.length(package.subPackages) > 0
-      then {
-        [path + package.name + '/index.md']: root.renderIndexPage(package, prefixes),
-      }
-      else {}
-    )
-    + std.foldl(
-      function(acc, sub)
-        acc + sub,
-      [
-        root.renderFiles(
-          sub,
-          prefixes=prefixes + [package.name]
+  util: {
+    realkey(key):
+      assert std.startsWith(key, '#') : 'Key %s not a docstring key' % key;
+      key[1:],
+    title(title, depth=0):
+      std.join(
+        '',
+        ['\n']
+        + ['#' for i in std.range(0, depth)]
+        + [' ', title, '\n']
+      ),
+    fragment(title):
+      std.asciiLower(
+        std.strReplace(
+          std.strReplace(title, '.', '')
+          , ' ', '-'
         )
-        for sub in package.subPackages
-      ],
-      {}
-    ),
+      ),
+    filter(type, obj):
+      function(k)
+        std.all([
+          std.startsWith(k, '#'),
+          std.isObject(obj[k]),
+          !std.objectHasAll(obj[k], 'ignore'),
+          type in obj[k],
+          root.util.realkey(k) in obj,
+        ]),
 
-  render(obj):
-    self.renderFiles(self.prepare(obj)),
+    getRelativePath(path, relativeTo):
+      local shortest = std.min(std.length(relativeTo), std.length(path));
+
+      local commonIndex =
+        std.foldl(
+          function(acc, i) (
+            if acc.stop
+            then acc
+            else
+              acc + {
+                // stop count if path diverges
+                local stop = relativeTo[i] != path[i],
+                stop: stop,
+                count+: if stop then 0 else 1,
+              }
+          ),
+          std.range(0, shortest - 1),
+          { stop: false, count: 0 }
+        ).count;
+
+      local _relativeTo = relativeTo[commonIndex:];
+      local _path = path[commonIndex:];
+
+      // prefix for relative difference
+      local prefix = ['..' for i in std.range(0, std.length(_relativeTo) - 1)];
+
+      // return path with prefix
+      prefix + _path,
+  },
 }

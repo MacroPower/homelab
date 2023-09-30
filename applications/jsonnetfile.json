@@ -23,7 +23,7 @@
       "source": {
         "git": {
           "remote": "https://github.com/jsonnet-libs/k8s-libsonnet.git",
-          "subdir": "1.20"
+          "subdir": "1.27"
         }
       },
       "version": "main"
