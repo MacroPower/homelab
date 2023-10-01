@@ -6,14 +6,11 @@ globalConfig:
 
 sinksConfig:
   - robusta_sink:
-    name: robusta_ui_sink
-    token: "{{ env.ROBUSTA_UI_SINK_TOKEN }}"
-  - pagerduty_sink:
-    name: main_pagerduty_sink
-    api_key: "{{ env.ROBUSTA_PAGERDUTY_SINK_API_KEY }}"
+      name: robusta_ui_sink
+      token: "{{ env.ROBUSTA_UI_SINK_TOKEN }}"
   - discord_sink:
-    name: main_discord_sink
-    url: "{{ env.ROBUSTA_DISCORD_WEBHOOK_URL }}"
+      name: main_discord_sink
+      url: "{{ env.ROBUSTA_DISCORD_WEBHOOK_URL }}"
 
 enableServiceMonitors: true
 
