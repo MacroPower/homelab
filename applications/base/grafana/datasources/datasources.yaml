@@ -9,6 +9,7 @@ data:
     datasources:
       - name: prometheus
         type: prometheus
+        isDefault: true
         access: proxy
         url: http://kube-prometheus-stack-prometheus.prometheus.svc:9090
         version: 1
@@ -27,6 +28,7 @@ data:
 
       - name: loki
         type: loki
+        isDefault: true
         access: proxy
         url: http://loki-gateway.loki.svc:80
         version: 1
