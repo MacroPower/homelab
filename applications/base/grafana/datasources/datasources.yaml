@@ -25,6 +25,12 @@ data:
         url: http://kube-prometheus-stack-prometheus-seedbox.prometheus.svc:9090
         version: 1
 
+      - name: loki
+        type: loki
+        access: proxy
+        url: http://loki-gateway.loki.svc:80
+        version: 1
+
       - name: grafanacloud-traces
         type: tempo
         access: proxy
