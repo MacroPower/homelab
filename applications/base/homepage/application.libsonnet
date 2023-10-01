@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='homepage',
   repoURL='https://jameswynn.github.io/helm-charts',
-  targetRevision='1.2.1',
+  targetRevision='1.2.3',
   releaseName='homepage',
   values='values.yaml'
 )
