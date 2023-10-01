@@ -6,7 +6,7 @@ namespace: openspeedtest
 helmCharts:
   - name: openspeedtest
     repo: https://openspeedtest.github.io/Helm-chart/
-    version: '0.1.1'
+    version: '0.1.2'
     releaseName: openspeedtest
     namespace: openspeedtest
 
