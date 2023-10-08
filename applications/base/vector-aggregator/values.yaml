@@ -1,5 +1,7 @@
 role: Stateless-Aggregator
 
+replicas: 2
+
 customConfig:
   data_dir: /vector-data-dir
   api:
@@ -75,3 +77,10 @@ customConfig:
       inputs:
         - vector_metrics
       address: 0.0.0.0:9090
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 100Mi
+  limits:
+    memory: 100Mi
