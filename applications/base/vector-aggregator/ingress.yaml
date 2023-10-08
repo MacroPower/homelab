@@ -1,0 +1,42 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteUDP
+metadata:
+  name: pfsense-syslog
+spec:
+  entryPoints:
+    - pfsensesyslog
+  routes:
+    - services:
+        - name: vector-aggregator
+          port: 5140
+          weight: 10
+          nativeLB: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteUDP
+metadata:
+  name: talos-kernel
+spec:
+  entryPoints:
+    - taloskernel
+  routes:
+    - services:
+        - name: vector-aggregator
+          port: 6050
+          weight: 10
+          nativeLB: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteUDP
+metadata:
+  name: talos-system
+spec:
+  entryPoints:
+    - talossystem
+  routes:
+    - services:
+        - name: vector-aggregator
+          port: 6051
+          weight: 10
+          nativeLB: true

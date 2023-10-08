@@ -135,6 +135,13 @@ controlPlane:
           feature-gates: GracefulNodeShutdown=true,MixedProtocolLBService=true
           rotate-server-certificates: true
       token: ${TRUSTEDINFO_TOKEN}
+      install:
+        extraKernelArgs:
+          - "talos.logging.kernel=udp://syslog.home.macro.network:6050/"
+      logging:
+        destinations:
+          - endpoint: "udp://syslog.home.macro.network:6051/"
+            format: json_lines
 
 worker:
   inlinePatch:
@@ -157,3 +164,10 @@ worker:
           feature-gates: GracefulNodeShutdown=true,MixedProtocolLBService=true
           rotate-server-certificates: true
       token: ${TRUSTEDINFO_TOKEN}
+      install:
+        extraKernelArgs:
+          - "talos.logging.kernel=udp://syslog.home.macro.network:6050/"
+      logging:
+        destinations:
+          - endpoint: "udp://syslog.home.macro.network:6051/"
+            format: json_lines

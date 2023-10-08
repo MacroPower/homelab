@@ -8,6 +8,22 @@ customConfig:
     enabled: true
     address: 0.0.0.0:8686
   sources:
+    talos_kernel_logs:
+      address: 0.0.0.0:6050
+      type: socket
+      mode: udp
+      max_length: 102400
+      decoding:
+        codec: json
+      host_key: __host
+    talos_service_logs:
+      address: 0.0.0.0:6051
+      type: socket
+      mode: udp
+      max_length: 102400
+      decoding:
+        codec: json
+      host_key: __host
     journal_logs:
       type: vector
       address: 0.0.0.0:6000
@@ -62,27 +78,11 @@ customConfig:
           }
         }
   sinks:
-    loki_journal:
-      type: loki
-      inputs:
-        - journal_logs
-      endpoint: http://loki-gateway.loki.svc.cluster.local:80
-      encoding:
-        codec: json
-      batch:
-        max_bytes: 2049000
-      out_of_order_action: accept
-      remove_label_fields: true
-      remove_timestamp: true
-      labels:
-        hostname: >-
-          {{`{{ host }}`}}
-        source: kubernetes-journal
     loki_kubernetes:
       type: loki
       inputs:
         - kubernetes_logs_remap
-      endpoint: http://loki-gateway.loki.svc.cluster.local:80
+      endpoint: &lokiGateway http://loki-gateway.loki.svc.cluster.local:80
       encoding:
         codec: raw_message
       batch:
@@ -108,11 +108,57 @@ customConfig:
         source: kubernetes-pods
         stream: >-
           {{`{{ .stream }}`}}
+    loki_journal:
+      type: loki
+      inputs:
+        - journal_logs
+      endpoint: *lokiGateway
+      encoding:
+        codec: json
+      batch:
+        max_bytes: 2049000
+      out_of_order_action: accept
+      remove_label_fields: true
+      remove_timestamp: true
+      labels:
+        hostname: >-
+          {{`{{ host }}`}}
+        source: kubernetes-journal
+    talos_kernel:
+      type: loki
+      inputs:
+        - talos_kernel_logs
+      endpoint: *lokiGateway
+      encoding:
+        codec: json
+        except_fields: ["__host"]
+      batch:
+        max_bytes: 1048576
+      out_of_order_action: accept
+      labels:
+        hostname: >-
+          {{`{{ __host }}`}}
+        source: "talos-kernel"
+    talos_service:
+      type: loki
+      inputs:
+        - talos_service_logs
+      endpoint: *lokiGateway
+      encoding:
+        codec: json
+        except_fields: ["__host"]
+      batch:
+        max_bytes: 524288
+      out_of_order_action: accept
+      labels:
+        hostname: >-
+          {{`{{ __host }}`}}
+        source: "talos-service"
     loki_pfsense:
       type: loki
       inputs:
         - pfsense_logs_remap
-      endpoint: http://loki-gateway.loki.svc.cluster.local:80
+      endpoint: *lokiGateway
       encoding:
         codec: json
       batch:

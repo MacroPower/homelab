@@ -7,4 +7,12 @@ app.withBasePath('applications/environments/home/traefik').withChartParams({
   'ports.pfsensesyslog.port': '5140',
   'ports.pfsensesyslog.exposedPort': '5140',
   'ports.pfsensesyslog.protocol': 'UDP',
+  'ports.taloskernel.expose': 'true',
+  'ports.taloskernel.port': '6050',
+  'ports.taloskernel.exposedPort': '6050',
+  'ports.taloskernel.protocol': 'UDP',
+  'ports.talossystem.expose': 'true',
+  'ports.talossystem.port': '6051',
+  'ports.talossystem.exposedPort': '6051',
+  'ports.talossystem.protocol': 'UDP',
 })
