@@ -95,6 +95,13 @@ read:
   persistence:
     storageClass: ~
     size: 50Gi
+  extraArgs: &extraArgs
+    - -config.expand-env=true
+  extraEnvFrom: &extraEnvFrom
+    - configMapRef:
+        name: loki-bucket
+    - secretRef:
+        name: loki-bucket
   extraVolumeMounts:
     - name: rules
       mountPath: /rules
@@ -107,26 +114,16 @@ write:
   persistence:
     storageClass: ~
     size: 50Gi
-  extraArgs:
-    - -config.expand-env=true
-  extraEnvFrom:
-    - configMapRef:
-        name: loki-bucket
-    - secretRef:
-        name: loki-bucket
+  extraArgs: *extraArgs
+  extraEnvFrom: *extraEnvFrom
 
 backend:
   replicas: 2
   persistence:
     storageClass: ~
     size: 50Gi
-  extraArgs:
-    - -config.expand-env=true
-  extraEnvFrom:
-    - configMapRef:
-        name: loki-bucket
-    - secretRef:
-        name: loki-bucket
+  extraArgs: *extraArgs
+  extraEnvFrom: *extraEnvFrom
   extraVolumeMounts:
     - name: rules
       mountPath: /rules/fake
