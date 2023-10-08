@@ -36,6 +36,9 @@ spec:
         external_host      = "https://${var.authentik_cluster_external_host}"
         mode               = "forward_domain"
         authorization_flow = data.authentik_flow.default-authorization-flow.id
+
+        # Kind of workaround for https://github.com/goauthentik/authentik/issues/6886
+        access_token_validity = "minutes=60"
       }
 
       resource "authentik_application" "domain-forward-auth-application" {
