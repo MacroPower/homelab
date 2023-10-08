@@ -107,6 +107,13 @@ write:
   persistence:
     storageClass: ~
     size: 10Gi
+  extraArgs:
+    - -config.expand-env=true
+  extraEnvFrom:
+    - configMapRef:
+        name: loki-bucket
+    - secretRef:
+        name: loki-bucket
 
 backend:
   replicas: 2
