@@ -21,8 +21,14 @@ ingressRoute:
 #     samplingParam: 1.0
 
 providers:
+  kubernetesCRD:
+    enabled: true
+    allowCrossNamespace: true
+    allowExternalNameServices: true
   kubernetesIngress:
     enabled: true
+    allowCrossNamespace: true
+    allowExternalNameServices: true
     publishedService:
       enabled: true
       pathOverride: traefik/traefik
