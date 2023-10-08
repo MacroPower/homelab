@@ -3,9 +3,9 @@ schedule: "*/10 * * * *"
 deschedulerPolicy:
   strategies:
     RemoveDuplicates:
-      enabled: false
-    RemovePodsHavingTooManyRestarts:
       enabled: true
+    RemovePodsHavingTooManyRestarts:
+      enabled: false
     RemovePodsViolatingNodeTaints:
       enabled: true
     RemovePodsViolatingNodeAffinity:
@@ -18,7 +18,7 @@ deschedulerPolicy:
     RemovePodsViolatingTopologySpreadConstraint:
       enabled: true
       params:
-        includeSoftConstraints: false
+        includeSoftConstraints: true
     LowNodeUtilization:
       enabled: true
       params:
@@ -33,9 +33,9 @@ deschedulerPolicy:
 resources:
   requests:
     cpu: 50m
-    memory: 256Mi
+    memory: 250Mi
   limits:
-    memory: 256Mi
+    memory: 250Mi
 
 serviceMonitor:
   enabled: true
