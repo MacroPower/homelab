@@ -55,10 +55,21 @@ customConfig:
       labels:
         app: >-
           {{`{{ custom_app_name }}`}}
+        component: >-
+          {{`{{ .pod_labels."app.kubernetes.io/component" }}`}}
+        container: >-
+          {{`{{ .container_name }}`}}
+        instance: >-
+          {{`{{ .pod_labels."app.kubernetes.io/instance" }}`}}
         namespace: >-
-          {{`{{ kubernetes.pod_namespace }}`}}
+          {{`{{ .pod_namespace }}`}}
         node: >-
-          {{`{{ kubernetes.pod_node_name }}`}}
+          {{`{{ .pod_node_name }}`}}
+        pod: >-
+          {{`{{ .pod_name }}`}}
+        source: vector
+        stream: >-
+          {{`{{ .stream }}`}}
     prom_exporter:
       type: prometheus_exporter
       inputs:

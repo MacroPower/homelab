@@ -13,6 +13,8 @@ customConfig:
         container_name: container_name
         pod_labels: pod_labels
         pod_name: pod_name
+        pod_namespace: pod_namespace
+        pod_node_name: pod_node_name
         pod_annotations: ""
       namespace_annotation_fields:
         namespace_labels: ""
