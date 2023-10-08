@@ -94,7 +94,7 @@ read:
   replicas: 2
   persistence:
     storageClass: ~
-    size: 10Gi
+    size: 50Gi
   extraVolumeMounts:
     - name: rules
       mountPath: /rules
@@ -106,7 +106,7 @@ write:
   replicas: 2
   persistence:
     storageClass: ~
-    size: 10Gi
+    size: 50Gi
   extraArgs:
     - -config.expand-env=true
   extraEnvFrom:
@@ -119,7 +119,7 @@ backend:
   replicas: 2
   persistence:
     storageClass: ~
-    size: 10Gi
+    size: 50Gi
   extraArgs:
     - -config.expand-env=true
   extraEnvFrom:
