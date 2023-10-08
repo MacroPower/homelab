@@ -46,7 +46,7 @@ customConfig:
         - kubernetes_logs_remap
       endpoint: http://loki-gateway.loki.svc.cluster.local:80
       encoding:
-        codec: json
+        codec: raw_message
       batch:
         max_bytes: 2049000
       out_of_order_action: accept
