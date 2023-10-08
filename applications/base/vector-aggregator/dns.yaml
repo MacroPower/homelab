@@ -1,0 +1,12 @@
+---
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: syslog
+spec:
+  endpoints:
+    - dnsName: syslog.home.macro.network
+      recordTTL: 300
+      recordType: A
+      targets:
+        - 10.0.6.1
