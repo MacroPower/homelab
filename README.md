@@ -16,8 +16,6 @@ This repository declares all of my infrastructure and Kubernetes clusters, both 
 
 Admittedly, both usages of "all" describe the end goal of this repo, not the current state. But, I will get there some day.
 
-My clusters use [Talos](https://talos.dev/), as well as [k3s-on-MicroOS](https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner). Most of the configuration is written in [Jsonnet](https://jsonnet.org/).
-
 ---
 
 ## 🎨 Components
@@ -28,7 +26,7 @@ My clusters use [Talos](https://talos.dev/), as well as [k3s-on-MicroOS](https:/
 
 ### Cluster management
 
-- [Talos](https://www.talos.dev): Immutable [Kubernetes](https://kubernetes.io/) OS; built using [talhelper](https://github.com/budimanjojo/talhelper).
+- [Talos](https://www.talos.dev): Immutable Kubernetes OS; built using [talhelper](https://github.com/budimanjojo/talhelper).
 - [Argo CD](https://github.com/argoproj/argo-cd): Reconciles kubernetes clusters with this repository.
 - [Jsonnet](https://jsonnet.org/): Configuration language I use to describe Argo applications.
 - [Renovate](https://github.com/renovatebot/renovate): Automatic updates for applications via pull requests.
@@ -40,14 +38,24 @@ My clusters use [Talos](https://talos.dev/), as well as [k3s-on-MicroOS](https:/
 
 ### Networking
 
-- [Cilium](https://cilium.io): eBPF-based CNI and service mesh.
+- [Cilium](https://cilium.io): eBPF-based CNI & service mesh.
 - [Authentik](https://goauthentik.io): Identity Provider.
 - [MetalLB](https://metallb.universe.tf/): Load-balancer implementation supporting L2 & BGP.
+- [Traefik](https://traefik.io): Ingress controller & reverse proxy.
 
 ### Observability
 
 - [Prometheus](https://prometheus.io): Monitoring system & TSDB.
+- [Jaeger](https://www.jaegertracing.io): Distributed tracing system.
+- [Loki](https://grafana.com/oss/loki/): Log aggregation system.
+- [Vector](https://vector.dev): Log collector, transformer, and router.
 - [Grafana](https://grafana.com): Visualization platform.
+- [Robusta](https://home.robusta.dev): Alerts / notifications and runbook automation.
+
+### Storage
+
+- [Rook](https://rook.io): Storage operator for Ceph.
+- [Ceph](https://ceph.io): Distributed object, block, and file storage.
 
 ---
 
@@ -75,19 +83,20 @@ Overview of this repo's structure, there's more info in the README files for eac
 
 Although the majority of my infrastructure and workloads are self-hosted, there are certain key components of my setup that rely on cloud services.
 
-| Service                                             | Use                                                            | Cost           |
-| --------------------------------------------------- | -------------------------------------------------------------- | -------------- |
-| [Hetzner Cloud](https://www.hetzner.com/)           | Cloud compute and storage                                      | ~$40/mo        |
-| [AWS](https://aws.amazon.com/)                      | Cloud cold storage (S3 Deep Glacier)                           | ~$10/mo        |
-| [Google Cloud](https://cloud.google.com/)           | Cloud storage                                                  | ~$20/mo        |
-| [Cloudflare](https://www.cloudflare.com/)           | DNS, Certs, Proxy, WAF                                         | Free           |
-| [Doppler](https://doppler.com/)                     | Secrets with [External Secrets](https://external-secrets.io/)  | Free           |
-| [GitHub](https://github.com/)                       | Hosting this repository and continuous integration/deployments | Free           |
-| [Renovate](https://github.com/renovatebot/renovate) | Automatic updates for applications via pull requests           | Free           |
-| [Docker Hub](https://hub.docker.com/)               | Docker image registry                                          | Free           |
-| [Robusta](https://home.robusta.dev/)                | Alerts / notifications and runbook automation                  | Free           |
-| [Terraform Cloud](https://www.terraform.io/)        | Storing Terraform state                                        | Free           |
-|                                                     |                                                                | Total: ~$70/mo |
+| Service                                              | Use                                                            | Cost           |
+| ---------------------------------------------------- | -------------------------------------------------------------- | -------------- |
+| [Hetzner Cloud](https://www.hetzner.com/)            | Cloud compute and storage                                      | ~$40/mo        |
+| [AWS](https://aws.amazon.com/)                       | Cloud cold storage (S3 Deep Glacier)                           | ~$10/mo        |
+| [Google Cloud](https://cloud.google.com/)            | Cloud storage                                                  | ~$20/mo        |
+| [Cloudflare](https://www.cloudflare.com/)            | DNS, Certs, Proxy, WAF                                         | Free           |
+| [Doppler](https://doppler.com/)                      | Secrets with [External Secrets](https://external-secrets.io/)  | Free           |
+| [GitHub](https://github.com/)                        | Hosting this repository and continuous integration/deployments | Free           |
+| [Renovate](https://github.com/renovatebot/renovate)  | Automatic updates for applications via pull requests           | Free           |
+| [Docker Hub](https://hub.docker.com/)                | Docker image registry                                          | Free           |
+| [Robusta](https://home.robusta.dev/)                 | Alerts / notifications and runbook automation                  | Free           |
+| [Terraform Cloud](https://www.terraform.io/)         | Storing Terraform state                                        | Free           |
+| [Grafana Cloud](https://grafana.com/products/cloud/) | Hosted Grafana & Prometheus, used for misc public projects     | Free           |
+|                                                      |                                                                | Total: ~$70/mo |
 
 ---
 
@@ -118,6 +127,7 @@ Over time I've taken a ton of inspiration from the K8s@Home community, notably:
 - https://github.com/szinn/k8s-homelab
 - https://github.com/budimanjojo/home-cluster
 - https://github.com/buroa/k8s-gitops
+- https://github.com/coolguy1771/home-ops
 
 And probably more that I've forgotten about over time.
 
