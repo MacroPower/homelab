@@ -9,7 +9,7 @@ git config user.name "[bot] MacroPower"
 
 GRAPH=$(prometheus_ascii \
     --server.endpoint="http://prometheus-operated.prometheus.svc:9090" \
-	--query.selector="wakatime_cumulative_seconds_total" \
+	--query.selector="sum(wakatime_cumulative_seconds_total)" \
 	--graph.width="100" \
 	--graph.height="12" \
 	--query.duration="168h")
