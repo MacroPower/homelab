@@ -33,3 +33,9 @@ customConfig:
       inputs:
         - vector_metrics
       address: 0.0.0.0:9090
+
+tolerations:
+  - effect: NoSchedule
+    operator: Exists
+  - effect: NoExecute
+    operator: Exists
