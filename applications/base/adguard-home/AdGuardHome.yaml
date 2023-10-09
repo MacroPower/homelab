@@ -19,14 +19,17 @@ dns:
   ratelimit_whitelist: []
   refuse_any: true
   upstream_dns:
-    - https://dns10.quad9.net/dns-query
+    - 10.0.0.1
   upstream_dns_file: ""
   bootstrap_dns:
     - 9.9.9.10
     - 149.112.112.10
     - 2620:fe::10
     - 2620:fe::fe:10
-  fallback_dns: []
+  fallback_dns:
+    - 1.1.1.1
+    - 8.8.8.8
+    - 8.8.4.4
   all_servers: false
   fastest_addr: false
   fastest_timeout: 1s
@@ -58,7 +61,8 @@ dns:
   upstream_timeout: 10s
   private_networks: []
   use_private_ptr_resolvers: true
-  local_ptr_upstreams: []
+  local_ptr_upstreams:
+    - 10.0.0.1
   use_dns64: false
   dns64_prefixes: []
   serve_http3: false
@@ -86,7 +90,7 @@ querylog:
   file_enabled: false
 statistics:
   ignored: []
-  interval: 24h
+  interval: 2160h
   enabled: true
 filters:
   - enabled: true
