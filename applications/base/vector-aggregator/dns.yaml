@@ -9,4 +9,4 @@ spec:
       recordTTL: 300
       recordType: A
       targets:
-        - 10.0.6.1
+        - 10.0.6.10

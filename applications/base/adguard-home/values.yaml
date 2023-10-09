@@ -6,7 +6,7 @@ service:
   dns:
     type: LoadBalancer
     annotations:
-      metallb.universe.tf/loadBalancerIPs: '10.0.6.2'
+      metallb.universe.tf/loadBalancerIPs: '10.0.6.1'
     ports:
       tcp:
         enabled: true
