@@ -2,6 +2,11 @@ image:
   repository: adguard/adguardhome
   tag: 'v0.107.38'
 
+controller:
+  replicas: 3
+  # Valid options are deployment, daemonset, statefulset or cronjob
+  type: statefulset
+
 service:
   dns:
     type: LoadBalancer
@@ -37,6 +42,13 @@ persistence:
     type: emptyDir
     mountPath: /opt/adguardhome/conf
   data:
-    enabled: true
+    enabled: false
+
+volumeClaimTemplates:
+  - name: data
+    labels: {}
+    annotations: {}
     mountPath: /opt/adguardhome/work
-    type: emptyDir
+    accessMode: ReadWriteOnce
+    storageClass: ceph-block
+    size: 10Gi
