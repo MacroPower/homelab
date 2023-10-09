@@ -3,5 +3,6 @@
 local ns = import 'namespace.libsonnet';
 local ingress = import 'ingress.libsonnet';
 local config = import 'config.libsonnet';
+local certs = std.parseYaml(importstr 'certs.yaml');
 
-[ns] + ingress + config
+[ns] + ingress + config + certs

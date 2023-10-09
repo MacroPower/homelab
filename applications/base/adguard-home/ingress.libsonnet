@@ -1,13 +1,13 @@
 local ingress = import '../../lib/ingress.libsonnet';
 local ns = import 'namespace.libsonnet';
 
-local ingressHost = std.extVar('ingressHost');
+local ingressSuffix = std.extVar('ingressSuffix');
 local ingressAnnotations = std.parseYaml(std.extVar('ingressAnnotations'));
 
 ingress.new(
   name='adguard-home-ingress',
   namespace=ns.metadata.name,
-  host=ingressHost,
+  host='adguard%s' % ingressSuffix,
   serviceName='adguard-home',
   servicePort=3000,
   annotations=ingressAnnotations {
@@ -18,5 +18,17 @@ ingress.new(
     'gethomepage.dev/group': 'Apps',
     'gethomepage.dev/icon': 'adguard-home',
     'gethomepage.dev/podSelector': '',
+  },
+) +
+ingress.new(
+  name='dns-ingress',
+  namespace=ns.metadata.name,
+  host='dns%s' % ingressSuffix,
+  serviceName='adguard-home-https',
+  servicePort=3001,
+  tlsSecretName='dns-cert',
+  httpIngressPath='/dns-query',
+  annotations=ingressAnnotations {
+    'cert-manager.io/issuer': 'letsencrypt-prod',
   },
 )

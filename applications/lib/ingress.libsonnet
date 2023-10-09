@@ -3,7 +3,18 @@ local k = import 'k.libsonnet';
 local net = k.networking.v1;
 
 {
-  new(name, namespace, host, serviceName, servicePort=80, tlsSecretName='', labels={}, annotations={})::
+  new(
+    name,
+    namespace,
+    host,
+    serviceName,
+    servicePort=80,
+    tlsSecretName='',
+    httpIngressPath='/',
+    httpIngressPathType='Prefix',
+    labels={},
+    annotations={},
+  )::
     local tls =
       if tlsSecretName == '' then
         net.ingress.mixin.spec.withTls(net.ingressTLS.withHosts(host))
@@ -26,8 +37,8 @@ local net = k.networking.v1;
       net.ingress.mixin.spec.withRules([
         net.ingressRule.mixin.withHost(host) +
         net.ingressRule.mixin.http.withPaths(
-          net.httpIngressPath.withPath('/') +
-          net.httpIngressPath.withPathType('Prefix') +
+          net.httpIngressPath.withPath(httpIngressPath) +
+          net.httpIngressPath.withPathType(httpIngressPathType) +
           net.httpIngressPath.backend.service.withName(serviceName) +
           net.httpIngressPath.backend.service.port.withNumber(servicePort)
         ),

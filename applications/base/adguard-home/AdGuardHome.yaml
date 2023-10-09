@@ -19,7 +19,9 @@ dns:
   ratelimit_whitelist: []
   refuse_any: true
   upstream_dns:
-    - 10.0.0.1
+    - https://1.1.1.1/dns-query
+    - https://8.8.8.8/dns-query
+    - "[/home.macro.network/]10.0.0.1"
   upstream_dns_file: ""
   bootstrap_dns:
     - 9.9.9.10
@@ -27,10 +29,9 @@ dns:
     - 2620:fe::10
     - 2620:fe::fe:10
   fallback_dns:
-    - 1.1.1.1
-    - 8.8.8.8
-    - 8.8.4.4
-  all_servers: false
+    - https://1.0.0.1/dns-query
+    - https://8.8.4.4/dns-query
+  all_servers: true
   fastest_addr: false
   fastest_timeout: 1s
   allowed_clients: []
@@ -68,10 +69,10 @@ dns:
   serve_http3: false
   use_http3_upstreams: false
 tls:
-  enabled: false
-  server_name: ""
+  enabled: true
+  server_name: dns.home.macro.network
   force_https: false
-  port_https: 443
+  port_https: 3001
   port_dns_over_tls: 853
   port_dns_over_quic: 853
   port_dnscrypt: 0
@@ -79,8 +80,8 @@ tls:
   allow_unencrypted_doh: false
   certificate_chain: ""
   private_key: ""
-  certificate_path: ""
-  private_key_path: ""
+  certificate_path: /opt/adguardhome/certs/tls.crt
+  private_key_path: /opt/adguardhome/certs/tls.key
   strict_sni_check: false
 querylog:
   ignored: []
