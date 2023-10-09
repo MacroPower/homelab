@@ -98,10 +98,6 @@ filters:
     url: https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/pro.txt
     name: HaGeZi's Pro DNS Blocklist
     id: 1
-  - enabled: true
-    url: https://raw.githubusercontent.com/ph00lt0/blocklists/master/blocklist.txt
-    name: ph00lt0 - Blocklist
-    id: 2
 whitelist_filters: []
 user_rules: []
 dhcp:
