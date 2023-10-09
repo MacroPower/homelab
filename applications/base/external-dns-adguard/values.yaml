@@ -1,0 +1,28 @@
+image:
+  repository: gcr.io/k8s-staging-external-dns/external-dns
+  tag: 'v20230925-v0.13.6-100-g8251b6dd'
+  pullPolicy: IfNotPresent
+
+sources:
+  - ingress
+  - service
+  - crd
+policy: sync
+provider: webhook
+extraArgs:
+  - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
+  - --crd-source-kind=DNSEndpoint
+  - --webhook-provider-url=http://external-dns-provider-adguard.external-dns.svc:8888
+
+logFormat: json
+logLevel: debug
+
+rbac:
+  create: true
+  additionalPermissions:
+    - apiGroups: ["externaldns.k8s.io"]
+      resources: ["dnsendpoints"]
+      verbs: ["get","watch","list"]
+    - apiGroups: ["externaldns.k8s.io"]
+      resources: ["dnsendpoints/status"]
+      verbs: ["*"]

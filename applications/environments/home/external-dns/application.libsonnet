@@ -1,1 +1,1 @@
-import '../../../base/external-dns-local/application.libsonnet'
+import '../../../base/external-dns-adguard/application.libsonnet'
