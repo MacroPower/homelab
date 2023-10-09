@@ -1,0 +1,42 @@
+image:
+  repository: adguard/adguardhome
+  tag: 'v0.107.38'
+
+service:
+  dns:
+    type: LoadBalancer
+    annotations:
+      metallb.universe.tf/loadBalancerIPs: '10.0.6.2'
+    ports:
+      tcp:
+        enabled: true
+        port: 53
+        protocol: TCP
+        targetPort: 53
+      udp:
+        enabled: true
+        port: 53
+        protocol: UDP
+        targetPort: 53
+
+configMaps:
+  config:
+    enabled: false
+
+persistence:
+  config:
+    enabled: true
+    name: adguard-home-config
+    type: configMap
+    subPath:
+      - path: AdGuardHome.yaml
+        mountPath: /tmp/AdGuardHome.yaml
+        readOnly: true
+  config-data:
+    enabled: true
+    type: emptyDir
+    mountPath: /opt/adguardhome/conf
+  data:
+    enabled: true
+    mountPath: /opt/adguardhome/work
+    type: emptyDir
