@@ -84,3 +84,10 @@ volumeClaimTemplates:
     accessMode: ReadWriteOnce
     storageClass: ceph-block
     size: 10Gi
+
+resources:
+  requests:
+    cpu: 20m
+    memory: 250Mi
+  limits:
+    memory: 250Mi
