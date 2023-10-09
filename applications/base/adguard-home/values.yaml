@@ -14,8 +14,6 @@ service:
       http:
         port: 3000
   https:
-    annotations:
-      traefik.ingress.kubernetes.io/service.serversscheme: https
     ports:
       httpdns:
         port: 3001

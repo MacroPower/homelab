@@ -77,7 +77,7 @@ tls:
   port_dns_over_quic: 853
   port_dnscrypt: 0
   dnscrypt_config_file: ""
-  allow_unencrypted_doh: false
+  allow_unencrypted_doh: true
   certificate_chain: ""
   private_key: ""
   certificate_path: /opt/adguardhome/certs/tls.crt
