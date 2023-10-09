@@ -72,7 +72,7 @@ tls:
   enabled: true
   server_name: dns.home.macro.network
   force_https: false
-  port_https: 3001
+  port_https: 443
   port_dns_over_tls: 853
   port_dns_over_quic: 853
   port_dnscrypt: 0

@@ -24,8 +24,8 @@ ingress.new(
   name='dns-ingress',
   namespace=ns.metadata.name,
   host='dns%s' % ingressSuffix,
-  serviceName='adguard-home-https',
-  servicePort=3001,
+  serviceName='adguard-home',
+  servicePort=3000,
   tlsSecretName='dns-cert',
   httpIngressPath='/dns-query',
   annotations=ingressAnnotations {

@@ -13,10 +13,6 @@ service:
     ports:
       http:
         port: 3000
-  https:
-    ports:
-      httpdns:
-        port: 3001
   dns:
     type: LoadBalancer
     annotations:
