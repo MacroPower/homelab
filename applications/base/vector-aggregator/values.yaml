@@ -175,6 +175,6 @@ customConfig:
 resources:
   requests:
     cpu: 10m
-    memory: 100Mi
+    memory: 1Gi
   limits:
-    memory: 100Mi
+    memory: 1Gi
