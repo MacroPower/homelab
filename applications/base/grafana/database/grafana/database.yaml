@@ -1,0 +1,12 @@
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Database
+metadata:
+  name: grafana
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    owner: grafana
+    encoding: utf8
+  providerConfigRef:
+    name: grafana

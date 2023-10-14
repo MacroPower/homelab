@@ -13,6 +13,12 @@ spec:
       protocol: http
       domain: grafana.home.macro.network
       root_url: https://grafana.home.macro.network
+    database:
+      type: postgres
+      host: grafana-rw.grafana.svc:5432
+      name: grafana
+      user: grafana
+      ssl_mode: require
     log:
       mode: console
     log.console:
@@ -33,6 +39,7 @@ spec:
         contains(groups[*], 'Grafana Admins') && 'Admin' || contains(groups[*], 'Grafana Editors') && 'Editor' || 'Viewer'
   deployment:
     spec:
+      replicas: 2
       template:
         spec:
           containers:
@@ -65,6 +72,11 @@ spec:
                     secretKeyRef:
                       name: authentik-grafana
                       key: grafana_client_secret
+                - name: GF_DATABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-database-credentials
+                      key: GRAFANA_DB_PASS
               volumeMounts:
                 - mountPath: /etc/grafana/provisioning/dashboards
                   name: provisioning-config

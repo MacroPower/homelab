@@ -1,0 +1,13 @@
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: ProviderConfig
+metadata:
+  name: grafana
+spec:
+  defaultDatabase: postgres
+  sslMode: require
+  credentials:
+    source: PostgreSQLConnectionSecret
+    connectionSecretRef:
+      namespace: grafana
+      name: grafana-superuser

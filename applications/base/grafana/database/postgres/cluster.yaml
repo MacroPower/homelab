@@ -1,0 +1,12 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: grafana
+spec:
+  instances: 3
+  imageName: ghcr.io/cloudnative-pg/postgresql:13.12
+  primaryUpdateStrategy: unsupervised
+  storage:
+    storageClass: ceph-block
+    size: 10Gi
