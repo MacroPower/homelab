@@ -1,0 +1,6 @@
+replicaCount: 2
+
+resources: {}
+
+monitoring:
+  podMonitorEnabled: true
