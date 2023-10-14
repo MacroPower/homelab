@@ -1,0 +1,50 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: grafanacloud-tempo
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasource:
+    name: grafanacloud-tempo
+    type: tempo
+    access: proxy
+    url: https://tempo-us-central1.grafana.net/tempo
+    basicAuth: true
+    basicAuthUser: ${GRAFANA_CLOUD_TEMPO_USER}
+    jsonData:
+      tracesToLogs:
+        datasourceUid: grafanacloud-loki
+    secureJsonData:
+      basicAuthPassword: ${GRAFANA_CLOUD_TEMPO_PASS}
+  valuesFrom:
+    - targetPath: basicAuthUser
+      valueFrom:
+        secretKeyRef:
+          name: grafanacloud-tempo-credentials
+          key: GRAFANA_CLOUD_TEMPO_USER
+    - targetPath: secureJsonData.basicAuthPassword
+      valueFrom:
+        secretKeyRef:
+          name: grafanacloud-tempo-credentials
+          key: GRAFANA_CLOUD_TEMPO_PASS
+
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: grafanacloud-tempo-credentials
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: default
+  target:
+    name: grafanacloud-tempo-credentials
+  data:
+    - secretKey: GRAFANA_CLOUD_TEMPO_USER
+      remoteRef:
+        key: GRAFANA_CLOUD_TEMPO_USER
+    - secretKey: GRAFANA_CLOUD_TEMPO_PASS
+      remoteRef:
+        key: GRAFANA_CLOUD_TEMPO_PASS

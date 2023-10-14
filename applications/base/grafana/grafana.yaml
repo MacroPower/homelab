@@ -1,0 +1,94 @@
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: grafana
+  labels:
+    dashboards: grafana
+spec:
+  config:
+    analytics:
+      reporting_enabled: "false"
+    server:
+      protocol: http
+      domain: grafana.home.macro.network
+      root_url: https://grafana.home.macro.network
+    log:
+      mode: console
+    log.console:
+      level: info
+      format: json
+    auth:
+      oauth_auto_login: "true"
+      signout_redirect_url: "https://authentik.home.macro.network/application/o/grafana/end-session/"
+    auth.generic_oauth:
+      enabled: "true"
+      name: "authentik"
+      scopes: "openid email profile"
+      tls_skip_verify_insecure: "true"
+      auth_url: "https://authentik.home.macro.network/application/o/authorize/"
+      token_url: "http://authentik.authentik.svc/application/o/token/"
+      api_url: "http://authentik.authentik.svc/application/o/userinfo/"
+      role_attribute_path: >-
+        contains(groups[*], 'Grafana Admins') && 'Admin' || contains(groups[*], 'Grafana Editors') && 'Editor' || 'Viewer'
+  deployment:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: grafana
+              image: grafana/grafana:10.1.5
+              resources:
+                requests:
+                  cpu: 250m
+                  memory: 1Gi
+                limits:
+                  memory: 1Gi
+              env:
+                - name: GF_SECURITY_ADMIN_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: GRAFANA_ADMIN_USER
+                      name: grafana-credentials
+                - name: GF_SECURITY_ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: GRAFANA_ADMIN_PASS
+                      name: grafana-credentials
+                - name: GF_AUTH_GENERIC_OAUTH_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: authentik-grafana
+                      key: grafana_client_id
+                - name: GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: authentik-grafana
+                      key: grafana_client_secret
+              volumeMounts:
+                - mountPath: /etc/grafana/provisioning/dashboards
+                  name: provisioning-config
+                - mountPath: /var/lib/grafana/dashboards
+                  name: dashboards
+            - image: 'ghcr.io/kiwigrid/k8s-sidecar:1.24.5'
+              name: k8s-sidecar
+              env:
+                - name: LABEL
+                  value: "grafana_dashboard"
+                - name: LABEL_VALUE
+                  value: "1"
+                - name: FOLDER
+                  value: /var/lib/grafana/dashboards
+                - name: NAMESPACE
+                  value: ALL
+                - name: RESOURCE
+                  value: configmap
+              volumeMounts:
+                - mountPath: /var/lib/grafana/dashboards
+                  name: dashboards
+          volumes:
+            - name: dashboards
+              emptyDir: {}
+            - name: provisioning-config
+              configMap:
+                name: provisioning-config

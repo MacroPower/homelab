@@ -1,0 +1,51 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: grafanacloud-usage
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasource:
+    name: grafanacloud-usage
+    type: prometheus
+    access: proxy
+    url: https://billing.grafana.net/api/prom
+    basicAuth: true
+    basicAuthUser: ${GRAFANA_CLOUD_PROM_BILLING_USER}
+    jsonData:
+      tlsSkipVerify: true
+      timeInterval: "5s"
+    secureJsonData:
+      basicAuthPassword: ${GRAFANA_CLOUD_PROM_BILLING_PASS_RO}
+    editable: true
+  valuesFrom:
+    - targetPath: basicAuthUser
+      valueFrom:
+        secretKeyRef:
+          name: grafanacloud-usage-credentials
+          key: GRAFANA_CLOUD_PROM_BILLING_USER
+    - targetPath: secureJsonData.basicAuthPassword
+      valueFrom:
+        secretKeyRef:
+          name: grafanacloud-usage-credentials
+          key: GRAFANA_CLOUD_PROM_BILLING_PASS_RO
+
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: grafanacloud-usage-credentials
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: default
+  target:
+    name: grafanacloud-usage-credentials
+  data:
+    - secretKey: GRAFANA_CLOUD_PROM_BILLING_USER
+      remoteRef:
+        key: GRAFANA_CLOUD_PROM_BILLING_USER
+    - secretKey: GRAFANA_CLOUD_PROM_BILLING_PASS_RO
+      remoteRef:
+        key: GRAFANA_CLOUD_PROM_BILLING_PASS_RO

@@ -8,8 +8,8 @@ ingress.new(
   name='grafana-ingress',
   namespace=ns.metadata.name,
   host=ingressHost,
-  serviceName='grafana',
-  servicePort=80,
+  serviceName='grafana-service',
+  servicePort=3000,
   annotations=ingressAnnotations {
     'gethomepage.dev/enabled': 'true',
     'gethomepage.dev/name': 'Grafana',
@@ -17,6 +17,6 @@ ingress.new(
     'gethomepage.dev/group': 'Observability',
     'gethomepage.dev/icon': 'grafana',
     'gethomepage.dev/podSelector': '',
-    'gethomepage.dev/ping': 'http://grafana.grafana.svc.cluster.local/api/health',
+    'gethomepage.dev/ping': 'http://grafana-service.grafana.svc:3000/api/health',
   },
 )

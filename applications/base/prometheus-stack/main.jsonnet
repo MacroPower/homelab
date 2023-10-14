@@ -2,5 +2,6 @@
 
 local ingress = import 'ingress.libsonnet';
 local secrets = std.parseYaml(importstr 'secrets.yaml');
+local grafana = std.parseYaml(importstr 'grafana.yaml');
 
-ingress + secrets
+ingress + secrets + grafana
