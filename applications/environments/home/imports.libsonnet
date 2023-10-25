@@ -3,6 +3,7 @@
   import 'argocd/application.libsonnet',
   import 'authentik/application.libsonnet',
   import 'cert-manager/application.libsonnet',
+  import 'cilium/application.libsonnet',
   import 'cloudnative-pg/application.libsonnet',
   import 'coredns/application.libsonnet',
   import 'crossplane/application.libsonnet',

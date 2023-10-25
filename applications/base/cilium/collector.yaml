@@ -1,0 +1,80 @@
+---
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: otelcol-hubble
+spec:
+  mode: daemonset
+  image: ghcr.io/cilium/hubble-otel/otelcol:v0.1.1
+  env:
+    - name: NODE_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.hostIP
+  # # No arm64 image available yet.
+  # tolerations:
+  #   - effect: NoSchedule
+  #     operator: Exists
+  #   - effect: NoExecute
+  #     operator: Exists
+  config: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:55690
+      hubble:
+        endpoint: ${NODE_IP}:4244
+        buffer_size: 100
+        include_flow_types:
+          # this sets an L7 flow filter, removing this section will
+          # disable filtering and result all types of flows being turned
+          # into spans;
+          # other type filters can be set, the names are same as what's
+          # used in 'hubble observe -t <type>'
+          traces: ["trace","l7"]
+        tls:
+          insecure_skip_verify: true
+          ca_file: /var/run/hubble-tls/ca.crt
+          cert_file: /var/run/hubble-tls/client.crt
+          key_file: /var/run/hubble-tls/client.key
+
+    processors:
+      batch:
+        timeout: 30s
+        send_batch_size: 100
+
+    exporters:
+      jaeger:
+        endpoint: jaeger-aio-collector.jaeger.svc:14250
+        tls:
+          insecure: true
+
+    service:
+      telemetry:
+        logs:
+          level: info
+      pipelines:
+        traces:
+          receivers: [hubble, otlp]
+          processors: [batch]
+          exporters: [jaeger]
+
+  volumes:
+    - name: hubble-tls
+      projected:
+        defaultMode: 256
+        sources:
+          - secret:
+              name: hubble-relay-client-certs
+              items:
+                - key: tls.crt
+                  path: client.crt
+                - key: tls.key
+                  path: client.key
+                - key: ca.crt
+                  path: ca.crt
+  volumeMounts:
+    - name: hubble-tls
+      mountPath: /var/run/hubble-tls
+      readOnly: true

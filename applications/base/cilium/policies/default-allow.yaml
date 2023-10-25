@@ -1,0 +1,13 @@
+---
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: default-allow
+spec:
+  endpointSelector: {}
+  egress:
+    - toEntities:
+        - cluster
+        - world
+    - toEndpoints:
+        - {}
