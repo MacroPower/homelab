@@ -15,4 +15,14 @@ app.withBasePath('applications/environments/home/traefik').withChartParams({
   'ports.talossystem.port': '6051',
   'ports.talossystem.exposedPort': '6051',
   'ports.talossystem.protocol': 'UDP',
-})
+  'tracing.openTelemetry.grpc': '{}',
+  'tracing.openTelemetry.insecure': 'true',
+}).withChartValues(|||
+  env:
+    - name: HOST_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.hostIP
+    - name: TRAEFIK_TRACING_OPENTELEMETRY_ADDRESS
+      value: "$(HOST_IP):4317"
+|||)

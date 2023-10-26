@@ -25,6 +25,7 @@
   import 'metallb/application.libsonnet',
   import 'metrics-server/application.libsonnet',
   import 'openspeedtest/application.libsonnet',
+  import 'opentelemetry-collector/application.libsonnet',
   import 'opentelemetry-operator/application.libsonnet',
   import 'osrs-ge-exporter/application.libsonnet',
   import 'pgadmin/application.libsonnet',
