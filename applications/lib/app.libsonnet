@@ -50,6 +50,24 @@
       },
     },
 
+    withChartValues(values=''):: self {
+      spec+: {
+        sources: [
+          source {
+            helm+: {
+              values: values,
+            },
+          }
+          for source in this.spec.sources
+          if std.objectHas(source, 'chart')
+        ] + [
+          source
+          for source in this.spec.sources
+          if !std.objectHas(source, 'chart')
+        ],
+      },
+    },
+
     withChart(name, repoURL, targetRevision, releaseName='', values='', skipCrds=false):: self {
       spec+: {
         sources+: [{

@@ -7,7 +7,7 @@ local ingressAnnotations = std.parseYaml(std.extVar('ingressAnnotations'));
 
 [
   {
-    apiVersion: 'traefik.containo.us/v1alpha1',
+    apiVersion: 'traefik.io/v1alpha1',
     kind: 'Middleware',
     metadata: {
       name: 'strip-prefix',
