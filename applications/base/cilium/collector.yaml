@@ -32,7 +32,7 @@ spec:
           # into spans;
           # other type filters can be set, the names are same as what's
           # used in 'hubble observe -t <type>'
-          traces: ["trace","l7"]
+          traces: ["l7"]
         tls:
           insecure_skip_verify: true
           ca_file: /var/run/hubble-tls/ca.crt
