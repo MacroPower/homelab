@@ -1,0 +1,18 @@
+apiVersion: provider.authentik.crossplane.io/v1alpha1
+kind: Proxy
+metadata:
+  name: domain-forward-auth-provider
+spec:
+  providerConfigRef:
+    name: authentik
+  forProvider:
+    name: domain-forward-auth-provider
+    cookieDomain: "${var.authentik_cluster_cookie_domain}"
+    externalHost: "https://${var.authentik_cluster_external_host}"
+    mode: forward_domain
+
+    # Kind of workaround for https://github.com/goauthentik/authentik/issues/6886
+    accessTokenValidity: "minutes=60"
+
+    authorizationFlowRef:
+      name: explicit-consent

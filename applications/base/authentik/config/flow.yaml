@@ -1,0 +1,12 @@
+---
+apiVersion: authentik.crossplane.io/v1alpha1
+kind: Flow
+metadata:
+  name: explicit-consent
+  annotations:
+    crossplane.io/external-name: default-provider-authorization-explicit-consent
+spec:
+  managementPolicies: ["Observe"]
+  forProvider: {}
+  providerConfigRef:
+    name: authentik

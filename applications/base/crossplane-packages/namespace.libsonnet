@@ -1,0 +1,1 @@
+import '../crossplane/namespace.libsonnet'

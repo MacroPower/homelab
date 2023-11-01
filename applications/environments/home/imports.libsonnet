@@ -6,6 +6,7 @@
   import 'cilium/application.libsonnet',
   import 'cloudnative-pg/application.libsonnet',
   import 'coredns/application.libsonnet',
+  import 'crossplane-packages/application.libsonnet',
   import 'crossplane/application.libsonnet',
   import 'csi-addons/application.libsonnet',
   import 'descheduler/application.libsonnet',

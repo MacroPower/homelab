@@ -1,0 +1,40 @@
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: crossplane-credentials
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: default
+
+  target:
+    name: crossplane-credentials
+
+    template:
+      engineVersion: v2
+      data:
+        credentials: |
+          {
+            "url": "http://authentik.authentik.svc:80",
+            "token": "{{ .AUTHENTIK_BOOTSTRAP_TOKEN }}",
+            "insecure": "true"
+          }
+
+  data:
+    - secretKey: AUTHENTIK_BOOTSTRAP_TOKEN
+      remoteRef:
+        key: AUTHENTIK_BOOTSTRAP_TOKEN
+
+---
+apiVersion: authentik.crossplane.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: authentik
+spec:
+  credentials:
+    source: Secret
+    secretRef:
+      name: crossplane-credentials
+      namespace: authentik
+      key: credentials
