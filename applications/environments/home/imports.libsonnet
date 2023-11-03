@@ -36,6 +36,7 @@
   import 'robusta/application.libsonnet',
   import 'rook-ceph-cluster/application.libsonnet',
   import 'rook-ceph-operator/application.libsonnet',
+  import 'tailscale-operator/application.libsonnet',
   import 'traefik/application.libsonnet',
   import 'twitch-channel-points-miner/application.libsonnet',
   import 'vector-agent/application.libsonnet',
