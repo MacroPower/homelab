@@ -1,6 +1,6 @@
 image:
   repository: adguard/adguardhome
-  tag: 'v0.107.38'
+  tag: "v0.107.38"
 
 controller:
   replicas: 3
@@ -14,9 +14,10 @@ service:
       http:
         port: 3000
   dns:
-    type: LoadBalancer
+    type: ClusterIP
     annotations:
-      metallb.universe.tf/loadBalancerIPs: '10.0.6.1'
+      tailscale.com/expose: "true"
+      tailscale.com/hostname: adguard-dns
     ports:
       tcp:
         enabled: true

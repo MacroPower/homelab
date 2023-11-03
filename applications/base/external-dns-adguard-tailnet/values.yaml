@@ -6,14 +6,11 @@ image:
 sources:
   - ingress
   - service
-  - crd
-policy: sync
+policy: upsert-only
 provider: webhook
 extraArgs:
-  - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
-  - --crd-source-kind=DNSEndpoint
-  - --ingress-class=traefik
-  - --webhook-provider-url=http://external-dns-provider-adguard.external-dns.svc:8888
+  - --ingress-class=tailscale
+  - --webhook-provider-url=http://external-dns-provider-adguard-tailnet.external-dns-tailnet.svc:8888
 
 logFormat: json
 logLevel: debug

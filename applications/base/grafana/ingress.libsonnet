@@ -10,7 +10,7 @@ ingress.new(
   host=ingressHost,
   serviceName='grafana-service',
   servicePort=3000,
-  tailnet=true,
+  tailnetIngress=true,
   annotations=ingressAnnotations {
     'gethomepage.dev/enabled': 'true',
     'gethomepage.dev/name': 'Grafana',

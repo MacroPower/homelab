@@ -5,28 +5,25 @@ local ingressSuffix = std.extVar('ingressSuffix');
 local ingressAnnotations = std.parseYaml(std.extVar('ingressAnnotations'));
 
 ingress.new(
-  name='adguard-home-ingress',
+  name='adguard-home-tailnet-ingress',
   namespace=ns.metadata.name,
-  host='adguard%s' % ingressSuffix,
-  serviceName='adguard-home',
+  host='adguard-tailnet%s' % ingressSuffix,
+  serviceName='adguard-home-tailnet',
   servicePort=3000,
+  tailnetIngress=true,
   annotations=ingressAnnotations {
     'traefik.ingress.kubernetes.io/router.middlewares': 'authentik-ak-outpost@kubernetescrd',
-    'gethomepage.dev/enabled': 'true',
-    'gethomepage.dev/name': 'AdGuard Home',
-    'gethomepage.dev/description': 'Ad-blocking DNS server',
-    'gethomepage.dev/group': 'Apps',
-    'gethomepage.dev/icon': 'adguard-home',
-    'gethomepage.dev/podSelector': '',
   },
 ) +
 ingress.new(
-  name='dns-ingress',
+  name='dns-tailnet-ingress',
   namespace=ns.metadata.name,
   host='dns%s' % ingressSuffix,
-  serviceName='adguard-home',
+  serviceName='adguard-home-tailnet',
   servicePort=3000,
-  tlsSecretName='dns-cert',
+  localIngress=false,
+  tailnetIngress=true,
+  tlsSecretName='dns-tailnet-cert',
   httpIngressPath='/dns-query',
   annotations=ingressAnnotations {
     'cert-manager.io/issuer': 'letsencrypt-prod',

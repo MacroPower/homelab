@@ -1,4 +1,5 @@
 [
+  import 'adguard-home-tailnet/application.libsonnet',
   import 'adguard-home/application.libsonnet',
   import 'argocd/application.libsonnet',
   import 'authentik/application.libsonnet',
@@ -10,6 +11,7 @@
   import 'crossplane/application.libsonnet',
   import 'csi-addons/application.libsonnet',
   import 'descheduler/application.libsonnet',
+  import 'external-dns-tailnet/application.libsonnet',
   import 'external-dns/application.libsonnet',
   import 'external-secrets/application.libsonnet',
   import 'external-services/application.libsonnet',
