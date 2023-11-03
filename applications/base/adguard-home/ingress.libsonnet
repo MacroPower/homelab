@@ -10,6 +10,7 @@ ingress.new(
   host='adguard%s' % ingressSuffix,
   serviceName='adguard-home',
   servicePort=3000,
+  tailnet=true,
   annotations=ingressAnnotations {
     'traefik.ingress.kubernetes.io/router.middlewares': 'authentik-ak-outpost@kubernetescrd',
     'gethomepage.dev/enabled': 'true',
@@ -26,6 +27,7 @@ ingress.new(
   host='dns%s' % ingressSuffix,
   serviceName='adguard-home',
   servicePort=3000,
+  tailnet=true,
   tlsSecretName='dns-cert',
   httpIngressPath='/dns-query',
   annotations=ingressAnnotations {

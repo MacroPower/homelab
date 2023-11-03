@@ -10,6 +10,7 @@ ingress.new(
   host=ingressHost,
   serviceName='homepage',
   servicePort=3000,
+  tailnet=true,
   annotations=ingressAnnotations {
     'gethomepage.dev/enabled': 'true',
     'gethomepage.dev/name': 'Homepage',

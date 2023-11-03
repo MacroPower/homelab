@@ -17,6 +17,8 @@ service:
     type: LoadBalancer
     annotations:
       metallb.universe.tf/loadBalancerIPs: '10.0.6.1'
+      tailscale.com/expose: "true"
+      tailscale.com/hostname: adguard-home-dns
     ports:
       tcp:
         enabled: true

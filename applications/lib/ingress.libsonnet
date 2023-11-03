@@ -12,6 +12,7 @@ local net = k.networking.v1;
     tlsSecretName='',
     httpIngressPath='/',
     httpIngressPathType='Prefix',
+    tailnet=false,
     labels={},
     annotations={},
   )::
@@ -44,5 +45,27 @@ local net = k.networking.v1;
         ),
       ]);
 
-    [ingress],
+    local tailnetIngress =
+      net.ingress.new('%s-tailnet' % name) +
+      net.ingress.mixin.metadata.withLabelsMixin(labels) +
+      net.ingress.mixin.spec.withIngressClassName('tailscale') +
+      net.ingress.mixin.spec.withTls(net.ingressTLS.withHosts(host)) +
+      net.ingress.mixin.spec.withRules([
+        net.ingressRule.mixin.withHost(host) +
+        net.ingressRule.mixin.http.withPaths(
+          net.httpIngressPath.withPath(httpIngressPath) +
+          net.httpIngressPath.withPathType(httpIngressPathType) +
+          net.httpIngressPath.backend.service.withName(serviceName) +
+          net.httpIngressPath.backend.service.port.withNumber(servicePort)
+        ),
+      ]);
+
+    [
+      x
+      for x in [
+        ingress,
+        if tailnet then tailnetIngress else null,
+      ]
+      if x != null
+    ],
 }
