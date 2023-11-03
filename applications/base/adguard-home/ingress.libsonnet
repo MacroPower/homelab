@@ -26,6 +26,7 @@ ingress.new(
   host='dns%s' % ingressSuffix,
   serviceName='adguard-home',
   servicePort=3000,
+  tailnetIngress=false,
   tlsSecretName='dns-cert',
   httpIngressPath='/dns-query',
   annotations=ingressAnnotations {

@@ -10,19 +10,17 @@ ingress.new(
   host='adguard-tailnet%s' % ingressSuffix,
   serviceName='adguard-home-tailnet',
   servicePort=3000,
-  tailnetIngress=true,
   annotations=ingressAnnotations {
     'traefik.ingress.kubernetes.io/router.middlewares': 'authentik-ak-outpost@kubernetescrd',
   },
 ) +
 ingress.new(
-  name='dns-tailnet-ingress',
+  name='dns-ingress',
   namespace=ns.metadata.name,
   host='dns%s' % ingressSuffix,
   serviceName='adguard-home-tailnet',
   servicePort=3000,
   localIngress=false,
-  tailnetIngress=true,
   tlsSecretName='dns-tailnet-cert',
   httpIngressPath='/dns-query',
   annotations=ingressAnnotations {

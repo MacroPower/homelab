@@ -13,7 +13,7 @@ local net = k.networking.v1;
     httpIngressPath='/',
     httpIngressPathType='Prefix',
     localIngress=true,
-    tailnetIngress=false,
+    tailnetIngress=true,
     labels={},
     annotations={},
   )::
