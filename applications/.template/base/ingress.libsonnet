@@ -9,7 +9,7 @@ ingress.new(
   namespace=ns.metadata.name,
   host=ingressHost,
   serviceName='< REPLACE ME >',
-  servicePort=0000,
+  servicePort=80,
   annotations=ingressAnnotations {
     'traefik.ingress.kubernetes.io/router.middlewares': 'authentik-ak-outpost@kubernetescrd',
     'gethomepage.dev/enabled': 'true',

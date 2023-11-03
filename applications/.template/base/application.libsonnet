@@ -7,8 +7,8 @@ app.new(
   namespace=ns.metadata.name,
 ).withChart(
   name='{{ .Name }}',
-  repoURL='https://< REPLACE ME >',
-  targetRevision='0.0.0',
+  repoURL='https://jacobcolvin.com/helm-charts',
+  targetRevision='0.1.0',
   releaseName='{{ .Name }}',
   values='values.yaml'
 )
