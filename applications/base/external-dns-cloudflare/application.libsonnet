@@ -1,9 +1,10 @@
 local app = import '../../lib/app.libsonnet';
+local ns = import 'namespace.libsonnet';
 
 app.new(
   name='external-dns',
   path='applications/base/external-dns-cloudflare',
-  namespace='kube-system',
+  namespace=ns.metadata.name,
 ).withChart(
   name='external-dns',
   repoURL='https://kubernetes-sigs.github.io/external-dns',
