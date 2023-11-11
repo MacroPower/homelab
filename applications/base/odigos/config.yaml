@@ -1,0 +1,12 @@
+---
+apiVersion: odigos.io/v1alpha1
+kind: Destination
+metadata:
+  name: otel
+spec:
+  data:
+    OTLP_URL: main-collector.opentelemetry.svc:4317
+  signals:
+    - TRACES
+    - METRICS
+  type: otlp

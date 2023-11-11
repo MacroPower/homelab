@@ -27,6 +27,7 @@
   import 'loki/application.libsonnet',
   import 'metallb/application.libsonnet',
   import 'metrics-server/application.libsonnet',
+  import 'odigos/application.libsonnet',
   import 'openspeedtest/application.libsonnet',
   import 'opentelemetry-collector/application.libsonnet',
   import 'opentelemetry-operator/application.libsonnet',

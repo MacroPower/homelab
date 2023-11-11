@@ -1,0 +1,32 @@
+autoscaler:
+  image:
+    repository: ghcr.io/keyval-dev/odigos/autoscaler
+    tag: v1.0.0
+
+scheduler:
+  image:
+    repository: ghcr.io/keyval-dev/odigos/scheduler
+    tag: v1.0.0
+
+ui:
+  image:
+    repository: ghcr.io/keyval-dev/odigos/ui
+    tag: v0.1.66
+
+instrumentor:
+  deleteLangDetectionPods: true
+   # Ignored namespaces won't show up in odigos-ui
+  ignoredNamespaces:
+    - odigos-system
+    - kube-system
+  image:
+    repository: ghcr.io/keyval-dev/odigos/instrumentor
+    tag: v1.0.0
+
+odiglet:
+  image:
+    repository: ghcr.io/keyval-dev/odigos/odiglet
+    tag: v1.0.0
+
+telemetry:
+  enabled: true

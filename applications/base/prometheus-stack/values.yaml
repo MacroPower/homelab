@@ -48,8 +48,10 @@ prometheus:
     ruleSelectorNilUsesHelmValues: false
     ruleSelector: {}
 
-    extraArgs:
-      enable-feature: exemplar-storage
+    enableFeatures:
+      - exemplar-storage
+
+    enableRemoteWriteReceiver: true
 
     retention: 1d
 

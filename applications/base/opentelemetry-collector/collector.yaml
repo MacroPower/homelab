@@ -20,8 +20,16 @@ spec:
         send_batch_size: 100
 
     exporters:
-      otlp:
+      otlp/jaeger:
         endpoint: jaeger-aio-collector.jaeger.svc:4317
+        tls:
+          insecure: true
+      prometheusremotewrite:
+        endpoint: http://prometheus-operated.prometheus.svc:9090/api/v1/write
+        resource_to_telemetry_conversion:
+          enabled: true
+        external_labels:
+          otel_collector: main
         tls:
           insecure: true
 
@@ -33,4 +41,8 @@ spec:
         traces:
           receivers: [otlp]
           processors: [batch]
-          exporters: [otlp]
+          exporters: [otlp/jaeger]
+        metrics:
+          receivers: [otlp]
+          processors: []
+          exporters: [prometheusremotewrite]
