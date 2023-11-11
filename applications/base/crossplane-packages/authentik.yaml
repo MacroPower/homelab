@@ -21,7 +21,7 @@ metadata:
   name: jacobcolvin-provider-authentik
 spec:
   ignoreCrossplaneConstraints: false
-  package: xpkg.upbound.io/jacobcolvin/provider-authentik:v0.1.0
+  package: xpkg.upbound.io/jacobcolvin/provider-authentik:v0.1.0-1.g74ef781
   packagePullPolicy: IfNotPresent
   revisionActivationPolicy: Automatic
   revisionHistoryLimit: 1
