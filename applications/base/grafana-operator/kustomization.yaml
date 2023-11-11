@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: grafana
 
 resources:
+  - namespace.yaml
   - https://raw.githubusercontent.com/grafana-operator/grafana-operator/v5.4.1/deploy/kustomize/base/crds.yaml
   - https://raw.githubusercontent.com/grafana-operator/grafana-operator/v5.4.1/deploy/kustomize/base/deployment.yaml
   - https://raw.githubusercontent.com/grafana-operator/grafana-operator/v5.4.1/deploy/kustomize/base/service.yaml

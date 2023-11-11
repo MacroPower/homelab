@@ -1,1 +1,1 @@
-import '../grafana/namespace.libsonnet'
+std.parseYaml(importstr 'namespace.yaml')
