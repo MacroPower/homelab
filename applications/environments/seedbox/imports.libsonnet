@@ -7,6 +7,7 @@
   import 'descheduler/application.libsonnet',
   import 'external-dns/application.libsonnet',
   import 'external-secrets/application.libsonnet',
+  import 'grafana-operator/application.libsonnet',
   import 'homepage/application.libsonnet',
   import 'jaeger-operator/application.libsonnet',
   import 'k8s-event-logger/application.libsonnet',
