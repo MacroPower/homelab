@@ -1,0 +1,64 @@
+controller:
+  type: daemonset
+
+image:
+  repository: cturra/ntp
+  tag: latest
+  pullPolicy: IfNotPresent
+
+command: [/bin/sh, /tmp/run.sh]
+
+tolerations:
+  - effect: NoSchedule
+    operator: Exists
+  - key: CriticalAddonsOnly
+    operator: Exists
+  - effect: NoExecute
+    operator: Exists
+
+resources:
+  limits:
+    memory: 20Mi
+    cpu: 20m
+  requests:
+    cpu: 10m
+    memory: 10Mi
+
+securityContext:
+  privileged: true
+  capabilities:
+    add:
+      - CAP_SYS_TIME
+
+persistence:
+  config:
+    enabled: true
+    name: chrony
+    type: configMap
+    subPath:
+      - path: run.sh
+        mountPath: /tmp/run.sh
+        readOnly: true
+  state:
+    enabled: true
+    name: state
+    type: hostPath
+    hostPath: /var/lib/cronyd
+
+service:
+  main:
+    enabled: false
+
+probes:
+  liveness:
+    type: exec
+    command:
+      - /bin/sh
+      - -c
+      - /usr/bin/chronyc dump | grep 200
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  readiness:
+    enabled: false
+  startup:
+    enabled: false
