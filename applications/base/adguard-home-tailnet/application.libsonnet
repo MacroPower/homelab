@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='adguard-home',
   repoURL='https://jacobcolvin.com/helm-charts/',
-  targetRevision='0.3.0',
+  targetRevision='0.4.0',
   releaseName='adguard-home-tailnet',
   values='values.yaml'
 )
