@@ -11,20 +11,3 @@ helmCharts:
 
 resources:
   - namespace.yaml
-
-patches:
-  - target:
-      group: apps
-      version: v1
-      kind: Deployment
-      name: argocd-repo-server
-    patch: |-
-      - op: add
-        path: /spec/template/spec/initContainers/0/resources
-        value:
-          requests:
-            cpu: 50m
-            memory: 100Mi
-          limits:
-            cpu: 50m
-            memory: 100Mi
