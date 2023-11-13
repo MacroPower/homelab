@@ -2,5 +2,6 @@
 
 local ns = import 'namespace.libsonnet';
 local config = import 'config/main.libsonnet';
+local netPolicy = std.parseYaml(importstr 'network-policy.yaml');
 
-[ns] + config
+[ns] + config + netPolicy

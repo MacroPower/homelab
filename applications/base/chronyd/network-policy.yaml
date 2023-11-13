@@ -1,11 +1,19 @@
 ---
 apiVersion: cilium.io/v2
-kind: CiliumClusterwideNetworkPolicy
+kind: CiliumNetworkPolicy
 metadata:
-  name: dns-visibility
+  name: ntp
 spec:
   endpointSelector: {}
+  ingress:
+    - {}
   egress:
+    - toFQDNs:
+        - matchPattern: "*.pool.ntp.org"
+      toPorts:
+        - ports:
+            - port: "123"
+              protocol: UDP
     - toEndpoints:
         - matchLabels:
             k8s:io.kubernetes.pod.namespace: kube-system
@@ -16,8 +24,4 @@ spec:
               protocol: ANY
           rules:
             dns:
-              - matchPattern: "*"
-    - toFQDNs:
-        - matchPattern: "*"
-    - toEndpoints:
-        - {}
+              - matchPattern: "*.pool.ntp.org"

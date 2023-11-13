@@ -19,9 +19,9 @@ tolerations:
 resources:
   limits:
     memory: 20Mi
-    cpu: 20m
-  requests:
     cpu: 10m
+  requests:
+    cpu: 1m
     memory: 10Mi
 
 securityContext:
@@ -47,17 +47,23 @@ persistence:
 
 service:
   main:
-    enabled: false
+    enabled: true
+    primary: true
+    ports:
+      http:
+        enabled: false
+        primary: false
+        port: 80
+        protocol: HTTP
+      ntp:
+        enabled: true
+        primary: true
+        port: 123
+        protocol: UDP
 
 probes:
   liveness:
-    type: exec
-    command:
-      - /bin/sh
-      - -c
-      - /usr/bin/chronyc dump | grep 200
-    initialDelaySeconds: 5
-    periodSeconds: 10
+    enabled: false
   readiness:
     enabled: false
   startup:

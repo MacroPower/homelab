@@ -4,10 +4,28 @@ kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: default-allow
 spec:
-  endpointSelector: {}
+  endpointSelector:
+    matchExpressions:
+      - key: k8s:io.kubernetes.pod.namespace
+        operator: NotIn
+        values:
+          - adguard-home
+          - chronyd
+          - tailscale-exit
   egress:
     - toEntities:
         - cluster
         - world
     - toEndpoints:
         - {}
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"
