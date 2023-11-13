@@ -13,10 +13,10 @@ ingress.new(
   annotations=ingressAnnotations {
     'traefik.ingress.kubernetes.io/router.middlewares': 'authentik-ak-outpost@kubernetescrd',
     'gethomepage.dev/enabled': 'true',
-    'gethomepage.dev/name': 'odigos',
-    'gethomepage.dev/description': '',
+    'gethomepage.dev/name': 'Odigos',
+    'gethomepage.dev/description': 'eBPF Instrumentator',
     'gethomepage.dev/group': 'Observability',
-    'gethomepage.dev/icon': '',
+    'gethomepage.dev/icon': 'mdi-bee',
     'gethomepage.dev/podSelector': '',
   },
 )
