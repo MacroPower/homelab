@@ -17,6 +17,6 @@ ingress.new(
     'gethomepage.dev/group': 'Apps',
     'gethomepage.dev/icon': 'homepage',
     'gethomepage.dev/podSelector': '',
-    'gethomepage.dev/ping': 'http://localhost:3000/',
+    'gethomepage.dev/siteMonitor': 'http://localhost:3000/',
   },
 )

@@ -17,6 +17,6 @@ ingress.new(
     'gethomepage.dev/group': 'Observability',
     'gethomepage.dev/icon': 'grafana',
     'gethomepage.dev/podSelector': '',
-    'gethomepage.dev/ping': 'http://grafana-service.grafana.svc:3000/api/health',
+    'gethomepage.dev/siteMonitor': 'http://grafana-service.grafana.svc:3000/api/health',
   },
 )

@@ -32,7 +32,7 @@ local ingressAnnotations = std.parseYaml(std.extVar('ingressAnnotations'));
         'gethomepage.dev/group': 'Apps',
         'gethomepage.dev/icon': 'si-openai',
         'gethomepage.dev/name': 'LocalAI',
-        'gethomepage.dev/ping': 'http://local-ai-frontend.local-ai.svc.cluster.local:3000',
+        'gethomepage.dev/siteMonitor': 'http://local-ai-frontend.local-ai.svc.cluster.local:3000',
         'gethomepage.dev/podSelector': '',
       },
       labels: {},

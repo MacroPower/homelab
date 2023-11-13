@@ -32,7 +32,7 @@ local net = k.networking.v1;
       net.ingress.new(name) +
       net.ingress.mixin.metadata.withLabelsMixin(labels) +
       net.ingress.mixin.metadata.withAnnotationsMixin(annotations {
-        [if !std.objectHas(annotations, 'gethomepage.dev/ping') then 'gethomepage.dev/ping']: 'http://%s' % service,
+        [if !std.objectHas(annotations, 'gethomepage.dev/siteMonitor') then 'gethomepage.dev/siteMonitor']: 'http://%s' % service,
         [if !std.objectHas(annotations, 'gethomepage.dev/external') then 'gethomepage.dev/external']: 'true',
       }) +
       tls +
