@@ -42,6 +42,7 @@
   import 'rook-ceph-operator/application.libsonnet',
   import 'tailscale-exit/application.libsonnet',
   import 'tailscale-operator/application.libsonnet',
+  import 'tetragon/application.libsonnet',
   import 'traefik/application.libsonnet',
   import 'twitch-channel-points-miner/application.libsonnet',
   import 'vector-agent/application.libsonnet',
