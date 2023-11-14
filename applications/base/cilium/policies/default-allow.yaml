@@ -10,6 +10,7 @@ spec:
         operator: NotIn
         values:
           - adguard-home
+          - adguard-home-tailnet
           - chronyd
           - tailscale-exit
   egress:

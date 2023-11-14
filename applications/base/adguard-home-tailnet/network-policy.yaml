@@ -1,0 +1,26 @@
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: dns-world
+spec:
+  endpointSelector: {}
+  egress:
+    - toCIDRSet:
+        - cidr: 10.244.0.0/16
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: ANY
+          rules:
+            http:
+              - {}
