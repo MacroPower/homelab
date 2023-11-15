@@ -12,7 +12,7 @@ spec:
     type: memory
     options:
       memory:
-        max-traces: 100000
+        max-traces: 1000000
   ingress:
     enabled: false
   agent:
