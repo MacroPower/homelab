@@ -25,6 +25,7 @@
   import 'jaeger-operator/application.libsonnet',
   import 'k8s-event-logger/application.libsonnet',
   import 'k8up/application.libsonnet',
+  import 'kubeshark/application.libsonnet',
   import 'local-ai/application.libsonnet',
   import 'loki/application.libsonnet',
   import 'metallb/application.libsonnet',
