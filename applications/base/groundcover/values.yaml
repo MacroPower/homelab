@@ -1,0 +1,6 @@
+global:
+  groundcoverPredefinedTokenSecret:
+    secretName: groundcover-credentials
+    secretKey: token
+
+clusterId: home.macro.network
