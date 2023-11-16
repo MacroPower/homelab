@@ -26,13 +26,13 @@ spec:
       hubble:
         endpoint: ${NODE_IP}:4244
         buffer_size: 100
-        # include_flow_types:
-        #   # this sets an L7 flow filter, removing this section will
-        #   # disable filtering and result all types of flows being turned
-        #   # into spans;
-        #   # other type filters can be set, the names are same as what's
-        #   # used in 'hubble observe -t <type>'
-        #   traces: ["l7"]
+        include_flow_types:
+          # this sets an L7 flow filter, removing this section will
+          # disable filtering and result all types of flows being turned
+          # into spans;
+          # other type filters can be set, the names are same as what's
+          # used in 'hubble observe -t <type>'
+          traces: ["l7"]
         tls:
           insecure_skip_verify: true
           ca_file: /var/run/hubble-tls/ca.crt
