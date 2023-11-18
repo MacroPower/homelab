@@ -22,12 +22,11 @@ dns:
     - https://1.1.1.1/dns-query
     - https://8.8.8.8/dns-query
     - "[/home.macro.network/]10.0.0.1"
+    - "[/macaroni-snake.ts.net/]tcp://magic-dns.tailscale-operator.svc.cluster.local"
   upstream_dns_file: ""
   bootstrap_dns:
-    - 9.9.9.10
-    - 149.112.112.10
-    - 2620:fe::10
-    - 2620:fe::fe:10
+    - 10.96.0.10
+    - 10.0.0.1
   fallback_dns:
     - https://1.0.0.1/dns-query
     - https://8.8.4.4/dns-query
