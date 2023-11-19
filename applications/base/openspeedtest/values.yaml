@@ -1,0 +1,8 @@
+image:
+  repository: openspeedtest/latest
+  tag: 'latest'
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3000
