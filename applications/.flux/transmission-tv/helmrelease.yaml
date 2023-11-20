@@ -1,0 +1,39 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: transmission-tv
+  namespace: transmission
+spec:
+  chart:
+    spec:
+      chart: transmission
+      version: 0.6.0
+      sourceRef:
+        kind: HelmRepository
+        name: https://jacobcolvin.com/helm-charts/
+  values:
+    configSecretName: transmission-tv-config
+    flood:
+      enabled: true
+      resources:
+        limits:
+          memory: 2Gi
+        requests:
+          cpu: 50m
+          memory: 1Gi
+    nameOverride: tv
+    persistence:
+      enabled: true
+      existingClaim: tv
+    resources:
+      limits:
+        memory: 8Gi
+      requests:
+        cpu: 250m
+        memory: 4Gi
+    service:
+      peer:
+        ports:
+          tcp: 51401
+          udp: 51401
+        type: LoadBalancer

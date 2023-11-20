@@ -1,0 +1,182 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: vector-aggregator
+  namespace: vector
+spec:
+  chart:
+    spec:
+      chart: vector
+      version: 0.28.0
+      sourceRef:
+        kind: HelmRepository
+        name: https://helm.vector.dev/
+  values:
+    customConfig:
+      api:
+        address: 0.0.0.0:8686
+        enabled: true
+      data_dir: /vector-data-dir
+      sinks:
+        loki_journal:
+          batch:
+            max_bytes: 2049000
+          encoding:
+            codec: json
+          endpoint: http://loki-gateway.loki.svc.cluster.local:80
+          inputs:
+          - journal_logs
+          labels:
+            hostname: '{{`{{ host }}`}}'
+            source: kubernetes-journal
+          out_of_order_action: accept
+          remove_label_fields: true
+          remove_timestamp: true
+          type: loki
+        loki_kubernetes:
+          batch:
+            max_bytes: 2049000
+          encoding:
+            codec: raw_message
+          endpoint: http://loki-gateway.loki.svc.cluster.local:80
+          inputs:
+          - kubernetes_logs_remap
+          labels:
+            app: '{{`{{ custom_app_name }}`}}'
+            component: '{{`{{ custom_component_name }}`}}'
+            container: '{{`{{ .container_name }}`}}'
+            instance: '{{`{{ custom_instance_name }}`}}'
+            namespace: '{{`{{ .pod_namespace }}`}}'
+            node: '{{`{{ .pod_node_name }}`}}'
+            pod: '{{`{{ .pod_name }}`}}'
+            source: kubernetes-pods
+            stream: '{{`{{ .stream }}`}}'
+          out_of_order_action: accept
+          remove_label_fields: true
+          remove_timestamp: true
+          type: loki
+        loki_pfsense:
+          batch:
+            max_bytes: 2049000
+          encoding:
+            codec: json
+          endpoint: http://loki-gateway.loki.svc.cluster.local:80
+          inputs:
+          - pfsense_logs_remap
+          labels:
+            source: pfsense
+          out_of_order_action: accept
+          type: loki
+        prom_exporter:
+          address: 0.0.0.0:9090
+          inputs:
+          - vector_metrics
+          type: prometheus_exporter
+        talos_kernel:
+          batch:
+            max_bytes: 1048576
+          encoding:
+            codec: json
+            except_fields:
+            - __host
+          endpoint: http://loki-gateway.loki.svc.cluster.local:80
+          inputs:
+          - talos_kernel_logs
+          labels:
+            hostname: '{{`{{ __host }}`}}'
+            source: talos-kernel
+          out_of_order_action: accept
+          type: loki
+        talos_service:
+          batch:
+            max_bytes: 524288
+          encoding:
+            codec: json
+            except_fields:
+            - __host
+          endpoint: http://loki-gateway.loki.svc.cluster.local:80
+          inputs:
+          - talos_service_logs
+          labels:
+            hostname: '{{`{{ __host }}`}}'
+            source: talos-service
+          out_of_order_action: accept
+          type: loki
+      sources:
+        journal_logs:
+          address: 0.0.0.0:6000
+          type: vector
+          version: "2"
+        kubernetes_logs:
+          address: 0.0.0.0:6010
+          type: vector
+          version: "2"
+        pfsense_logs:
+          address: 0.0.0.0:5140
+          mode: udp
+          type: syslog
+        talos_kernel_logs:
+          address: 0.0.0.0:6050
+          decoding:
+            codec: json
+          host_key: __host
+          max_length: 102400
+          mode: udp
+          type: socket
+        talos_service_logs:
+          address: 0.0.0.0:6051
+          decoding:
+            codec: json
+          host_key: __host
+          max_length: 102400
+          mode: udp
+          type: socket
+        vector_metrics:
+          type: internal_metrics
+      transforms:
+        kubernetes_logs_remap:
+          inputs:
+          - kubernetes_logs
+          source: |
+            # Standardize 'app' index
+            .custom_app_name = .pod_labels."app.kubernetes.io/name" || .pod_labels.app || .pod_labels."k8s-app" || "unknown"
+            # Standardize 'component' index
+            .custom_component_name = .pod_labels."app.kubernetes.io/component" || .pod_labels.component || .pod_labels."k8s-component" || "unknown"
+            # Standardize 'instance' index
+            .custom_instance_name = .pod_labels."app.kubernetes.io/instance" || .pod_labels.instance || .pod_labels."k8s-instance" || "unknown"
+          type: remap
+        pfsense_logs_remap:
+          inputs:
+          - pfsense_logs
+          source: |
+            # Taken from https://github.com/billimek/k8s-gitops/blob/master/logs/vector/aggregator.yaml
+            msg = parse_csv!(string!(.message))
+            # Only parse IPv4 / IPv6
+            if msg[8] == "4" || msg[8] == "6" {
+              .filter_interface = msg[4]
+              .filter_direction = msg[7]
+              .filter_action = msg[6]
+              .filter_ip_version = msg[8]
+              .filter_protocol = msg[16]
+              .filter_source_ip = msg[18]
+              .filter_destination_ip = msg[19]
+              if (msg[16] == "icmp" || msg[16] == "igmp" || msg[16] == "gre") {
+                .filter_data = msg[20]
+              } else {
+                .filter_source_port = msg[20]
+                .filter_destination_port = msg[21]
+                .filter_data_length = msg[22]
+                if msg[8] == "4" && msg[16] == "tcp" {
+                  .filter_tcp_flags = msg[23]
+                }
+              }
+            }
+          type: remap
+    replicas: 2
+    resources:
+      limits:
+        memory: 1Gi
+      requests:
+        cpu: 10m
+        memory: 1Gi
+    role: Stateless-Aggregator

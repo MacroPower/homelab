@@ -1,0 +1,45 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: external-dns-tailnet
+  namespace: external-dns-tailnet
+spec:
+  chart:
+    spec:
+      chart: external-dns
+      version: 1.13.1
+      sourceRef:
+        kind: HelmRepository
+        name: https://kubernetes-sigs.github.io/external-dns
+  values:
+    extraArgs:
+    - --ingress-class=tailscale
+    - --webhook-provider-url=http://external-dns-provider-adguard-tailnet.external-dns-tailnet.svc:8888
+    image:
+      pullPolicy: IfNotPresent
+      repository: gcr.io/k8s-staging-external-dns/external-dns
+      tag: v20230925-v0.13.6-100-g8251b6dd
+    logFormat: json
+    logLevel: debug
+    policy: upsert-only
+    provider: webhook
+    rbac:
+      additionalPermissions:
+      - apiGroups:
+        - externaldns.k8s.io
+        resources:
+        - dnsendpoints
+        verbs:
+        - get
+        - watch
+        - list
+      - apiGroups:
+        - externaldns.k8s.io
+        resources:
+        - dnsendpoints/status
+        verbs:
+        - '*'
+      create: true
+    sources:
+    - ingress
+    - service

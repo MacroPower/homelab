@@ -1,0 +1,46 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: metallb
+  namespace: metallb
+spec:
+  chart:
+    spec:
+      chart: metallb
+      version: 0.13.11
+      sourceRef:
+        kind: HelmRepository
+        name: https://metallb.github.io/metallb
+  values:
+    controller:
+      logLevel: debug
+      resources:
+        limits:
+          cpu: 100m
+          memory: 100Mi
+        requests:
+          cpu: 100m
+          memory: 100Mi
+    prometheus:
+      namespace: prometheus
+      serviceAccount: kube-prometheus-stack-prometheus
+      serviceMonitor:
+        enabled: false
+    speaker:
+      frr:
+        enabled: false
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+      logLevel: debug
+      resources:
+        limits:
+          cpu: 100m
+          memory: 100Mi
+        requests:
+          cpu: 100m
+          memory: 100Mi
