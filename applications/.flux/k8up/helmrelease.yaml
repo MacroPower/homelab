@@ -1,3 +1,6 @@
+## This file was automatically generated using Jsonnet located at:
+## applications/base/k8up/application.libsonnet
+##
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:

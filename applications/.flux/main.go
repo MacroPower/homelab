@@ -96,8 +96,10 @@ func main() {
 			return err
 		}
 
+		prefix := fmt.Sprintf("## This file was automatically generated using Jsonnet located at:\n## %s\n##\n", path)
+
 		outputPath := filepath.Join(outputDir, "helmrelease.yaml")
-		err = writeHelmReleaseToFile(helmRelease, outputPath)
+		err = writeHelmReleaseToFile(helmRelease, prefix, outputPath)
 		if err != nil {
 			return err
 		}
@@ -152,12 +154,15 @@ func convertJsonnetToHelmRelease(jsonnetStr, valuesStr string) (*HelmRelease, er
 	return &helmRelease, nil
 }
 
-func writeHelmReleaseToFile(helmRelease *HelmRelease, outputPath string) error {
+func writeHelmReleaseToFile(helmRelease *HelmRelease, prefix string, outputPath string) error {
 	// Convert HelmRelease object to YAML
 	yamlData, err := yaml.Marshal(helmRelease)
 	if err != nil {
 		return err
 	}
+
+	// Add prefix to YAML
+	yamlData = append([]byte(prefix), yamlData...)
 
 	// Write YAML to file
 	return os.WriteFile(outputPath, yamlData, 0644)
