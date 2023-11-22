@@ -4,7 +4,7 @@ controller:
 
 image:
   repository: tailscale/tailscale
-  tag: 'v1.52'
+  tag: 'v1.54'
 
 command: [/usr/local/bin/containerboot]
 
