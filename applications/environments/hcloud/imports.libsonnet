@@ -13,7 +13,6 @@
   import 'k8s-event-logger/application.libsonnet',
   import 'metallb/application.libsonnet',
   import 'metrics-server/application.libsonnet',
-  import 'openspeedtest/application.libsonnet',
   import 'opentelemetry-operator/application.libsonnet',
   import 'prometheus-stack/application.libsonnet',
   import 'prometheus/application.libsonnet',

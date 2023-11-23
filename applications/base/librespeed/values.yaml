@@ -1,0 +1,15 @@
+image:
+  repository: linuxserver/librespeed
+  tag: "5.2.5"
+  pullPolicy: IfNotPresent
+
+env:
+  TZ: UTC
+  PUID: "1001"
+  PGID: "1001"
+
+service:
+  main:
+    ports:
+      http:
+        port: 80
