@@ -6,6 +6,9 @@ args: [-s]
 
 service:
   main:
+    annotations:
+      tailscale.com/expose: "true"
+      tailscale.com/hostname: "iperf"
     ports:
       http:
         port: 5201
