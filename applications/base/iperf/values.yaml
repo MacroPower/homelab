@@ -1,0 +1,11 @@
+image:
+  repository: networkstatic/iperf3@sha256
+  tag: 79afcd17d056897a7a1d5948b32d9557ca03c2e52a0bbe759388a7c1aa807851
+
+args: [-s]
+
+service:
+  main:
+    ports:
+      http:
+        port: 5201

@@ -22,6 +22,7 @@
   import 'grafana/application.libsonnet',
   import 'groundcover/application.libsonnet',
   import 'homepage/application.libsonnet',
+  import 'iperf/application.libsonnet',
   import 'jaeger-aio/application.libsonnet',
   import 'jaeger-operator/application.libsonnet',
   import 'k8s-event-logger/application.libsonnet',
