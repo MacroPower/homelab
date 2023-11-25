@@ -21,14 +21,17 @@ configs:
     server.insecure: true
     server.disable.auth: true
 
+redis:
+  resources: &RedisResources
+    requests:
+      cpu: 50m
+      memory: 250Mi
+
 redis-ha:
   enabled: true
   replicas: 3
   redis:
-    resources:
-      requests:
-        cpu: 50m
-        memory: 250Mi
+    resources: *RedisResources
 
 controller:
   replicas: 3
