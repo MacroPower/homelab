@@ -1,6 +1,5 @@
 controller:
-  type: statefulset
-  replicas: 1
+  type: daemonset
 
 image:
   repository: cturra/ntp
@@ -8,6 +7,14 @@ image:
   pullPolicy: IfNotPresent
 
 command: [/bin/sh, /tmp/run.sh]
+
+tolerations:
+  - effect: NoSchedule
+    operator: Exists
+  - key: CriticalAddonsOnly
+    operator: Exists
+  - effect: NoExecute
+    operator: Exists
 
 resources:
   limits:
@@ -17,10 +24,19 @@ resources:
     cpu: 1m
     memory: 10Mi
 
+securityContext:
+  privileged: true
+  runAsUser: 0
+  runAsGroup: 0
+  fsGroup: 0
+  capabilities:
+    add:
+      - CAP_SYS_TIME
+
 persistence:
   config:
     enabled: true
-    name: chrony
+    name: chrony-agent
     type: configMap
     subPath:
       - path: run.sh
@@ -29,22 +45,15 @@ persistence:
       - path: chrony.conf
         mountPath: /etc/chrony/chrony.conf
         readOnly: true
+  state:
+    enabled: true
+    name: state
+    type: hostPath
+    hostPath: /var/lib/cronyd
 
 service:
   main:
-    enabled: true
-    primary: true
-    ports:
-      http:
-        enabled: false
-        primary: false
-        port: 80
-        protocol: HTTP
-      ntp:
-        enabled: true
-        primary: true
-        port: 123
-        protocol: UDP
+    enabled: false
 
 probes:
   liveness:
