@@ -6,9 +6,9 @@ app.new(
   path='applications/base/{{ .Name }}',
   namespace=ns.metadata.name,
 ).withChart(
-  name='{{ .Name }}',
+  name='template',
   repoURL='https://jacobcolvin.com/helm-charts',
-  targetRevision='0.1.0',
+  targetRevision='0.2.0',
   releaseName='{{ .Name }}',
   values='values.yaml'
 )
