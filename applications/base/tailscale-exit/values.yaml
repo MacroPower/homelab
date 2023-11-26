@@ -10,9 +10,14 @@ command: [/usr/local/bin/containerboot]
 
 env:
   TS_KUBE_SECRET: tailscale
-  TS_USERSPACE: 'true'
+  TS_USERSPACE: 'false'
   TS_HOSTNAME: tailscale-exit
   TS_EXTRA_ARGS: '--advertise-exit-node --accept-dns=false'
+
+securityContext:
+  capabilities:
+    add:
+      - NET_ADMIN
 
 service:
   main:
