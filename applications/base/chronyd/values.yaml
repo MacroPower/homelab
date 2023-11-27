@@ -1,6 +1,5 @@
 controller:
-  type: statefulset
-  replicas: 1
+  type: daemonset
 
 image:
   repository: cturra/ntp
@@ -9,6 +8,14 @@ image:
 
 command: [/bin/sh, /tmp/run.sh]
 
+tolerations:
+  - effect: NoSchedule
+    operator: Exists
+  - key: CriticalAddonsOnly
+    operator: Exists
+  - effect: NoExecute
+    operator: Exists
+
 resources:
   limits:
     memory: 20Mi
@@ -16,6 +23,12 @@ resources:
   requests:
     cpu: 1m
     memory: 10Mi
+
+securityContext:
+  privileged: true
+  capabilities:
+    add:
+      - CAP_SYS_TIME
 
 persistence:
   config:
@@ -26,9 +39,11 @@ persistence:
       - path: run.sh
         mountPath: /tmp/run.sh
         readOnly: true
-      - path: chrony.conf
-        mountPath: /etc/chrony/chrony.conf
-        readOnly: true
+  state:
+    enabled: true
+    name: state
+    type: hostPath
+    hostPath: /var/lib/cronyd
 
 service:
   main:

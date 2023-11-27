@@ -8,6 +8,12 @@ spec:
   ingress:
     - {}
   egress:
+    - toFQDNs:
+        - matchPattern: "*.pool.ntp.org"
+      toPorts:
+        - ports:
+            - port: "123"
+              protocol: UDP
     - toEndpoints:
         - matchLabels:
             k8s:io.kubernetes.pod.namespace: kube-system
@@ -16,16 +22,6 @@ spec:
         - ports:
             - port: "53"
               protocol: ANY
-            - port: "9153"
-              protocol: ANY
           rules:
             dns:
-              - matchPattern: "pool.ntp.org"
               - matchPattern: "*.pool.ntp.org"
-    - toFQDNs:
-        - matchPattern: "pool.ntp.org"
-        - matchPattern: "*.pool.ntp.org"
-      toPorts:
-        - ports:
-            - port: "123"
-              protocol: UDP

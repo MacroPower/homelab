@@ -11,10 +11,4 @@ app.new(
   targetRevision='0.2.0',
   releaseName='chronyd',
   values='values.yaml'
-).withChart(
-  name='template',
-  repoURL='https://jacobcolvin.com/helm-charts',
-  targetRevision='0.2.0',
-  releaseName='chronyd-agent',
-  values='values-agent.yaml'
 )
