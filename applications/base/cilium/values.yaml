@@ -5,13 +5,13 @@ cluster:
   name: home
   id: 1
 
-containerRuntime:
-  integration: containerd
-
 ipam:
   mode: kubernetes
 
 kubeProxyReplacement: strict
+
+ipv6:
+  enabled: true
 
 externalIPs:
   enabled: true
