@@ -26,6 +26,8 @@ hostPort:
 rollOutCiliumPods: true
 
 ipv4NativeRoutingCIDR: 10.244.0.0/16
+ipv6NativeRoutingCIDR: fdab:34f5:9f44:05a4::/64
+
 # -- Enable installation of PodCIDR routes between worker
 # nodes if worker nodes share a common L2 network segment.
 autoDirectNodeRoutes: true

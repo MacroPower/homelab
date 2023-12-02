@@ -13,7 +13,7 @@ clusterSvcNets:
   - 2603:6010:5303:90b7:bad:c0de:100::/112
 clusterPodNets:
   - 10.244.0.0/16
-  - 2603:6010:5303:90b7:bad:c0de:101::/112
+  - fdab:34f5:9f44:05a4::/64
 
 nodes:
   - hostname: knode01.home.macro.network
@@ -31,6 +31,7 @@ nodes:
         dhcpOptions:
           ipv4: true
           ipv6: true
+          duidv6: 000100012cfe10c6e45f016edba8
 
   - hostname: knode02.home.macro.network
     ipAddress: 10.0.5.2
@@ -47,6 +48,7 @@ nodes:
         dhcpOptions:
           ipv4: true
           ipv6: true
+          duidv6: 000100012cfe0899e45f016ece7e
 
   - hostname: knode03.home.macro.network
     ipAddress: 10.0.5.3
@@ -63,6 +65,7 @@ nodes:
         dhcpOptions:
           ipv4: true
           ipv6: true
+          duidv6: 000100012cfe1274e45f016ed058
 
   - hostname: knode13.home.macro.network
     ipAddress: 10.0.5.13
@@ -79,6 +82,7 @@ nodes:
         dhcpOptions:
           ipv4: true
           ipv6: true
+          duidv6: 000100012cfe19fa0002c956fe52
 
   - hostname: knode14.home.macro.network
     ipAddress: 10.0.5.14
@@ -95,6 +99,7 @@ nodes:
         dhcpOptions:
           ipv4: true
           ipv6: true
+          duidv6: 000100012cfe19f50002c956d1a4
 
   - hostname: knode15.home.macro.network
     ipAddress: 10.0.5.15
@@ -111,6 +116,7 @@ nodes:
         dhcpOptions:
           ipv4: true
           ipv6: true
+          duidv6: 000100012cfe19fc0002c9530a86
 
 controlPlane:
   inlinePatch:
@@ -129,6 +135,12 @@ controlPlane:
       controllerManager:
         extraArgs:
           bind-address: 0.0.0.0
+          ## Node CIDR mask size for IPv4 and IPv6.
+          ## Note that the clusterPodNets must be the same or a greater size,
+          ## which will be the same or a smaller number.
+          ##
+          node-cidr-mask-size-ipv4: "16"
+          node-cidr-mask-size-ipv6: "64"
       etcd:
         ca:
           crt: ${ETCD_CERT}
