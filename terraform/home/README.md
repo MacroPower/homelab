@@ -14,3 +14,15 @@ You then need to do a partial apply to bootstrap TLS.
 ```sh
 terraform apply -target=module.mikrotik_agg_api
 ```
+
+### TrueNAS
+
+1. Network -> Global Configuration -> Settings
+    - Set hostname
+    - Check "Inherit domain from DHCP"
+2. System Settings -> Services -> SSH
+    - Check "Log in as Root with Password"
+    - Check "Allow Password Authentication"
+    - Uncheck Start Automatically
+    - Start the SSH service
+    - Once provisioning is complete, SSH can be disabled
