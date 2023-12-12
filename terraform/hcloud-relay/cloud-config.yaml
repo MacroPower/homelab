@@ -1,0 +1,27 @@
+#cloud-config
+packages:
+  - git
+fqdn: hcloud-relay
+package_update: true
+package_upgrade: true
+write_files:
+  - path: /etc/systemd/system/derper.service
+    content: |
+      [Unit]
+      Description=Tailscale DERP server
+      After=cloud-init-local.service
+      Before=cloud-config.service
+      Before=cloud-final.service
+
+      [Service]
+      ExecStart=/root/go/bin/derper --hostname=hcloud-relay.macro.network --verify-clients --certdir=/opt/tailscale/derper-certs
+      Restart=on-failure
+
+      [Install]
+      WantedBy=cloud-init-local.service
+  - path: /tmp/init.sh
+    content: |
+      ${indent(6, init_script)}
+runcmd:
+  - chmod +x /tmp/init.sh
+  - sudo bash /tmp/init.sh 2>&1 | tee /tmp/init.log
