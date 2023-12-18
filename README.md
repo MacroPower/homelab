@@ -8,6 +8,11 @@
   <p align="center">
     IaC for my homelab and personal cloud
   </p>
+  <p align="center">
+    [ <a href="https://github.com/MacroPower/dotfiles">dotfiles</a> &#183;
+    <a href="https://github.com/MacroPower/helm-charts">charts</a> &#183;
+    <a href="https://jacobcolvin.com/posts/">blog</a> ]
+  </p>
 </p>
 
 ## 📖 Overview
@@ -43,6 +48,7 @@ Admittedly, both usages of "all" describe the end goal of this repo, not the cur
 - [MetalLB](https://metallb.universe.tf/): Load-balancer implementation supporting L2 & BGP.
 - [Traefik](https://traefik.io): Ingress controller & reverse proxy.
 - [AdGuard Home](https://github.com/AdguardTeam/AdguardHome): DNS server with ad-blocking.
+- [Tailscale](https://tailscale.com): WireGuard Mesh VPN.
 
 ### Observability
 
@@ -74,6 +80,7 @@ Overview of this repo's structure, there's more info in the README files for eac
 └─📁 lib           # Jsonnet libraries
 
 📁 terraform     # IaC defined via Terraform
+├─📁 home          # IaC for home
 ├─📁 hcloud        # IaC for Hetzner Cloud
 └─📁 hcloud-robot  # IaC for Hetzner Cloud (Robot)
 ```
@@ -103,34 +110,37 @@ Although the majority of my infrastructure and workloads are self-hosted, there 
 
 ## 🔧 Hardware
 
-| Device                      | Count | OS Disk Size    | Data Disk Size     | Ram   | Operating System | Purpose                       |
-| --------------------------- | ----- | --------------- | ------------------ | ----- | ---------------- | ----------------------------- |
-| Turing Pi 2                 | 3     | 1GB NAND        | N/A                | 128MB | TPi BMC Firmware | 4-Node Cluster Board          |
-| Raspberry Pi CM4            | 3     | 32GB eMMC       | N/A                | 8GB   | Talos Linux      | Kubernetes Control Plane      |
-| Supermicro M11SDV-8C+-LN4F  | 3     | 64GB SATADOM \* | 4TB SSD            | 128GB | Talos Linux      | Kubernetes Workers (x86)      |
-| Turing RK1 \*               | 3     | 32GB eMMC       | 1TB SSD            | 32GB  | Talos Linux      | Kubernetes Workers (arm64)    |
-| Supermicro X10SRA / E5-2690 | 1     | 16GB Flash      | 46TB HDD + 2TB SSD | 16GB  | Unraid           | Storage Server                |
-| Netgate XG-7100             | 1     | 32GB eMMC       | N/A                | 8GB   | pfSense          | Router / Security Gateway     |
-| TP-Link T1700G-28TQ         | 1     | N/A             | N/A                | N/A   | N/A              | 1G Ethernet / 10G SFP+ Switch |
-| MikroTik CRS317-1G-16S+RM   | 1     | N/A             | N/A                | N/A   | N/A              | 10G SFP+ Switch               |
-| Raspberry Pi 4B             | 1     | 32GB SD Card    | N/A                | 4GB   | PiKVM            | Network KVM                   |
-| Wattbox WB-800-IPVM         | 1     | N/A             | N/A                | N/A   | N/A              | PDU                           |
+### Computing
+
+| Count | Device                     | OS Disk Size | Data Disk Size      | Ram   | Operating System | Purpose                    |
+| ----- | -------------------------- | ------------ | ------------------- | ----- | ---------------- | -------------------------- |
+| 3     | Turing Pi 2                | 1GB NAND     | 32GB SD Card        | 128MB | TPi BMC Firmware | 4-Node Cluster Board       |
+| 3     | Raspberry Pi CM4           | 32GB eMMC    | N/A                 | 8GB   | Talos Linux      | Kubernetes Control Plane   |
+| 3     | Supermicro M11SDV-8C+-LN4F | 64GB SATADOM | 4TB SSD             | 128GB | Talos Linux      | Kubernetes Workers (x86)   |
+| 3     | Turing RK1 \*              | 32GB eMMC    | 1TB SSD             | 32GB  | Talos Linux      | Kubernetes Workers (arm64) |
+| 1     | TrueNAS Mini R             | 500GB SSD    | 200TB HDD + 2TB SSD | 64GB  | TrueNAS SCALE    | Storage Server             |
+| 1     | Raspberry Pi 4B            | 32GB SD Card | N/A                 | 4GB   | PiKVM            | Network KVM                |
 
 <sup>\* == Pending</sup>
+
+### Networking
+
+| Count | Device                       | Eth Interfaces | SFP Interfaces | Platform | Purpose                   |
+| ----- | ---------------------------- | -------------- | -------------- | -------- | ------------------------- |
+| 1     | Ubiquiti UDM-SE              | 1x 2.5G        | 2x 10G         | UniFi OS | Router & Security Gateway |
+| 1     | Ubiquiti UCI                 | 1x 2.5G        | N/A            | UniFi OS | DOCSIS 3.1 Cable Modem    |
+| 1     | Ubiquiti U6-Pro              | 1x 1G          | N/A            | UniFi OS | WiFi 6 Access Point       |
+| 1     | Ubiquiti USW-Pro-Aggregation | N/A            | 28x 10G        | UniFi OS | L3 Aggregation Switch     |
+| 1     | Ubiquiti USW-Pro-24          | 24x 1G         | 2x 10G         | UniFi OS | L3 Switch                 |
+| 1     | Ubiquiti USW-Pro-24-POE      | 24x 1G         | 2x 10G         | UniFi OS | L3 PoE Switch             |
+| 2     | WattBox WB-800-IPVM          | 1x 1G          | N/A            | OvrC     | IP Controlled Metered PDU |
+| 1     | WattBox WB-800VPS-IPVM-18    | 1x 1G          | N/A            | OvrC     | IP Controlled Metered PDU |
 
 ---
 
 ## 🤝 Thanks
 
-Over time I've taken a ton of inspiration from the K8s@Home community, notably:
-
-- https://github.com/onedr0p/flux-cluster-template
-- https://github.com/szinn/k8s-homelab
-- https://github.com/budimanjojo/home-cluster
-- https://github.com/buroa/k8s-gitops
-- https://github.com/coolguy1771/home-ops
-
-And probably more that I've forgotten about over time.
+Over time I've taken a ton of inspiration from the K8s@Home / home-ops community: [onedr0p](https://github.com/onedr0p/flux-cluster-template), [szinn](https://github.com/szinn/k8s-homelab), [budimanjojo](https://github.com/budimanjojo/home-cluster), [buroa](https://github.com/buroa/k8s-gitops), [coolguy1771](https://github.com/coolguy1771/home-ops), and many others.
 
 Technically however, I hope this repo is quite unique. I've intentionally tried to make some uncommon choices to learn more and venture outside my comfort zone a bit. So, I hope that in the very least, this repo will provide anyone looking with some interesting and unique ideas. 🙂
 
