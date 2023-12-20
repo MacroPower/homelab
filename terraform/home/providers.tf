@@ -1,25 +1,18 @@
 terraform {
   required_providers {
-    routeros = {
-      source = "terraform-routeros/routeros"
+    unifi = {
+      source  = "akerl/unifi"
+      version = "0.41.10"
     }
   }
 }
 
-provider "routeros" {
-  alias = "mikrotik_agg_api"
+provider "unifi" {
+  username       = var.unifi_sites.home.username
+  password       = var.unifi_sites.home.password
+  api_url        = var.unifi_sites.home.api_url
+  site           = var.unifi_sites.home.site
+  allow_insecure = true
 
-  hosturl  = "api://${var.mikrotik_devices.agg.ipv4}"
-  username = var.mikrotik_devices.agg.username
-  password = var.mikrotik_devices.agg.password
-  insecure = true
-}
-
-provider "routeros" {
-  alias = "mikrotik_agg_http"
-
-  hosturl  = "https://${var.mikrotik_devices.agg.ipv4}"
-  username = var.mikrotik_devices.agg.username
-  password = var.mikrotik_devices.agg.password
-  insecure = true
+  alias = "home"
 }
