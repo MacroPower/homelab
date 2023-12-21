@@ -11,7 +11,7 @@ unifi_sites = {
   home = {
     username    = "${UNIFI_USERNAME}"
     password    = "${UNIFI_PASSWORD}"
-    api_url     = "https://10.0.0.1"
+    api_url     = "https://unifi.home.macro.network"
     site        = "default"
     domain_name = "home.macro.network"
   }
