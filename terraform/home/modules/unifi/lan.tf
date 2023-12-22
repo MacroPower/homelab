@@ -36,29 +36,17 @@ locals {
       id      = 5
       purpose = "guest"
     }
-    storage_management = {
-      name = "Storage Management"
+    lab_management = {
+      name = "Lab Management"
       id   = 9
     }
-    storage = {
-      name = "Storage"
+    lab = {
+      name = "Lab"
       id   = 10
-    }
-    security = {
-      name = "Security"
-      id   = 15
     }
     iot = {
       name = "IoT"
       id   = 20
-    }
-    k8s_node_management = {
-      name = "K8s Node Management"
-      id   = 49
-    }
-    k8s_nodes = {
-      name = "K8s Nodes"
-      id   = 50
     }
   }
 }
