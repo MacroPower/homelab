@@ -15,7 +15,7 @@ resource "unifi_network" "lan_default" {
 
   ipv6_interface_type    = "pd"
   ipv6_pd_interface      = "wan"
-  ipv6_pd_prefixid       = "1"
+  ipv6_pd_prefixid       = "00"
   ipv6_pd_start          = "::2"
   ipv6_pd_stop           = "::7d1"
   ipv6_ra_enable         = true
@@ -71,7 +71,7 @@ resource "unifi_network" "lan_16" {
 
   ipv6_interface_type    = "pd"
   ipv6_pd_interface      = "wan"
-  ipv6_pd_prefixid       = each.value.id + 1
+  ipv6_pd_prefixid       = format("%02x", each.value.id)
   ipv6_pd_start          = "::2"
   ipv6_pd_stop           = "::7d1"
   ipv6_ra_enable         = true
