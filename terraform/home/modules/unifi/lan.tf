@@ -92,3 +92,15 @@ resource "unifi_network" "lan" {
     ignore_changes = [dhcp_v6_enabled]
   }
 }
+
+resource "unifi_port_profile" "lan" {
+  for_each = local.lans
+
+  name                  = each.value.name
+  native_networkconf_id = unifi_network.lan[each.key].id
+  poe_mode              = "auto"
+
+  lifecycle {
+    ignore_changes = [ forward ]
+  }
+}
