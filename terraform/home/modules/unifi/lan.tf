@@ -30,7 +30,7 @@ resource "unifi_network" "lan_default" {
 }
 
 locals {
-  lan_16 = {
+  lans = {
     guest = {
       name    = "Guest"
       id      = 5
@@ -48,11 +48,19 @@ locals {
       name = "IoT"
       id   = 20
     }
+    k8s_services = {
+      name = "K8s Services"
+      id   = 101
+    }
+    k8s_pods = {
+      name = "K8s Pods"
+      id   = 102
+    }
   }
 }
 
-resource "unifi_network" "lan_16" {
-  for_each = local.lan_16
+resource "unifi_network" "lan" {
+  for_each = local.lans
 
   name    = each.value.name
   purpose = lookup(each.value, "purpose", "corporate")
