@@ -31,6 +31,10 @@ resource "unifi_network" "lan_default" {
 
 locals {
   lans = {
+    main = {
+      name = "Main"
+      id   = 1
+    }
     guest = {
       name    = "Guest"
       id      = 5
@@ -47,14 +51,6 @@ locals {
     iot = {
       name = "IoT"
       id   = 20
-    }
-    k8s_services = {
-      name = "K8s Services"
-      id   = 101
-    }
-    k8s_pods = {
-      name = "K8s Pods"
-      id   = 102
     }
   }
 }
@@ -79,12 +75,13 @@ resource "unifi_network" "lan" {
 
   ipv6_interface_type    = "pd"
   ipv6_pd_interface      = "wan"
-  ipv6_pd_prefixid       = format("%02x", each.value.id)
   ipv6_pd_start          = "::2"
   ipv6_pd_stop           = "::7d1"
   ipv6_ra_enable         = true
   ipv6_ra_priority       = "high"
   ipv6_ra_valid_lifetime = 0
+  # Hex doesn't play nice with padding
+  ipv6_pd_prefixid = length(format("%x", each.value.id)) > 1 ? format("%x", each.value.id) : format("0%x", each.value.id)
 
   lifecycle {
     ## Changes to DHCPv6 settings are not currently reflected in the controller.
@@ -101,6 +98,44 @@ resource "unifi_port_profile" "lan" {
   poe_mode              = "auto"
 
   lifecycle {
-    ignore_changes = [ forward ]
+    ignore_changes = [forward]
   }
+}
+
+resource "unifi_network" "lan_k8s_services" {
+  name    = "K8s Services"
+  purpose = "corporate"
+
+  subnet      = "10.112.0.0/12"
+  domain_name = var.domain_name
+  vlan_id     = 1112
+
+  dhcp_enabled    = false
+  dhcp_v6_enabled = false
+
+  ipv6_interface_type = "pd"
+  ipv6_pd_interface   = "wan"
+  ipv6_pd_prefixid    = format("%x", 112)
+  ipv6_ra_enable      = false
+  ipv6_pd_start       = "::2"
+  ipv6_pd_stop        = "::7d1"
+}
+
+resource "unifi_network" "lan_k8s_pods" {
+  name    = "K8s Pods"
+  purpose = "corporate"
+
+  subnet      = "10.128.0.0/16"
+  domain_name = var.domain_name
+  vlan_id     = 1128
+
+  dhcp_enabled    = false
+  dhcp_v6_enabled = false
+
+  ipv6_interface_type = "pd"
+  ipv6_pd_interface   = "wan"
+  ipv6_pd_prefixid    = format("%x", 128)
+  ipv6_ra_enable      = false
+  ipv6_pd_start       = "::2"
+  ipv6_pd_stop        = "::7d1"
 }

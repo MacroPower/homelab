@@ -8,7 +8,7 @@ IPv4 Subnets are all /16s, which are cut from a class-a private address range. T
 
 The upside to this is, for a homelab, this means we have a "good enough" number of subnets, and we basically never have to worry about running out of addresses, since each subnet can contain up to 65,534 dual-stack hosts.
 
-The DHCPv4 range is the second half of the subnet (effectively a /17). The first half of the subnet is reserved for static IPs, but in general I tend to avoid static IPs in favor of using DNS. The DHCPv6 range is basically just arbitrary, and there is no static IPv6 assignment. Instead, addresses are returned via DNS to clients that support IPv6, since those clients are provided with an IPv6 DNS server via DHCPv6.
+The DHCPv4 range is the second half of the subnet (effectively a /17). The first half of the subnet is reserved for static IPs. The DHCPv6 range is basically just arbitrary, and there is no static IPv6 assignment. Instead, addresses are returned via DNS to clients that support IPv6, since those clients are provided with an IPv6 DNS server via DHCPv6.
 
 ## VLANs
 
@@ -18,23 +18,23 @@ In most cases, VLANs are configured such that they have Internet connectivity, a
 
 Exceptions:
 
-- The Default VLAN, which is configured to allow communication to (but not from) all other VLANs.
+- The Default VLAN, which is configured to allow communication to and from all other VLANs.
+- The Main VLAN, which is configured to allow communication to (but not from) all other VLANs.
 - The Guest VLAN, which uses Unifi's guest isolation, i.e. only allows Internet access.
 
 ```
-┌───────────┐                 ┌───────────┐
-│           │────────────────▶│           │
-│  Default  │                 │    IoT    │
-│           │ X ◁─────────────│           │
-└───────────┘                 └───────────┘
-    │  X                           │  X
-    │  △                           │  △
-    │  │                           │  │
-    │  │                           ▽  │
-    │  │                           X  │
-    │  │                      ┌───────────┐
-    │  └──────────────────────│           │
-    │                         │    Lab    │
-    └────────────────────────▶│           │
-                              └───────────┘
+┌─────────┐           ┌─────────┐           ┌─────────┐
+│         │◀──────────│         │◀──────────│         │
+│ Default │           │   IoT   │           │  Main   │
+│         │──────────▶│         │───────▷ X │         │
+└─────────┘           └─────────┘           └─────────┘
+   ▲   │                 X   │                 X   │
+   │   │                 △   │                 △   │
+   │   │                 │   ▽                 │   │
+   │   │                 │   X                 │   │
+   │   │              ┌─────────┐              │   │
+   │   └─────────────▶│         │──────────────┘   │
+   │                  │   Lab   │                  │
+   └──────────────────│         │◀─────────────────┘
+                      └─────────┘
 ```

@@ -9,15 +9,15 @@ additionalMachineCertSans:
   - kube.home.macro.network
 
 clusterSvcNets:
-  - 10.96.0.0/12
-  - 2603:6010:5303:90b7:bad:c0de:100::/112
+  - 10.112.0.0/12
+  - 2603:6010:5300:ad70::/108
 clusterPodNets:
-  - 10.244.0.0/16
-  - fdab:34f5:9f44:05a4::/64
+  - 10.128.0.0/16
+  - 2603:6010:5300:ad80::/64
 
 nodes:
   - hostname: knode01.home.macro.network
-    ipAddress: 10.0.5.1
+    ipAddress: 10.10.10.1
     installDisk: /dev/mmcblk0
     controlPlane: true
     nodeLabels:
@@ -34,7 +34,7 @@ nodes:
           duidv6: 000100012cfe10c6e45f016edba8
 
   - hostname: knode02.home.macro.network
-    ipAddress: 10.0.5.2
+    ipAddress: 10.10.10.2
     installDisk: /dev/mmcblk0
     controlPlane: true
     nodeLabels:
@@ -51,7 +51,7 @@ nodes:
           duidv6: 000100012cfe0899e45f016ece7e
 
   - hostname: knode03.home.macro.network
-    ipAddress: 10.0.5.3
+    ipAddress: 10.10.10.3
     installDisk: /dev/mmcblk0
     controlPlane: true
     nodeLabels:
@@ -68,7 +68,7 @@ nodes:
           duidv6: 000100012cfe1274e45f016ed058
 
   - hostname: knode13.home.macro.network
-    ipAddress: 10.0.5.13
+    ipAddress: 10.10.10.13
     installDisk: /dev/sda
     controlPlane: false
     nodeLabels:
@@ -85,7 +85,7 @@ nodes:
           duidv6: 000100012cfe19fa0002c956fe52
 
   - hostname: knode14.home.macro.network
-    ipAddress: 10.0.5.14
+    ipAddress: 10.10.10.14
     installDisk: /dev/sda
     controlPlane: false
     nodeLabels:
@@ -102,7 +102,7 @@ nodes:
           duidv6: 000100012cfe19f50002c956d1a4
 
   - hostname: knode15.home.macro.network
-    ipAddress: 10.0.5.15
+    ipAddress: 10.10.10.15
     installDisk: /dev/sda
     controlPlane: false
     nodeLabels:

@@ -3,7 +3,16 @@ resource "unifi_device" "usw_pro_aggregation" {
 
   forget_on_destroy = false
 
-
+  port_override {
+    number          = 13
+    name            = "SFP+ 13"
+    port_profile_id = local.clients.knode15.profile
+  }
+  port_override {
+    number          = 14
+    name            = "SFP+ 14"
+    port_profile_id = local.clients.knode14.profile
+  }
   port_override {
     number          = 15
     name            = "SFP+ 15"

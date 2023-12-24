@@ -108,16 +108,16 @@ locals {
       ipv4    = "10.10.10.13"
       profile = local.device_types.k8s_node_supermicro.profile
     }
-    # "knode14" = {
-    #   mac     = ""
-    #   ipv4    = "10.10.10.14"
-    #   profile = local.device_types.k8s_node_supermicro.profile
-    # }
-    # "knode15" = {
-    #   mac     = ""
-    #   ipv4    = "10.10.10.15"
-    #   profile = local.device_types.k8s_node_supermicro.profile
-    # }
+    "knode14" = {
+      mac     = "00:02:c9:56:d1:a4"
+      ipv4    = "10.10.10.14"
+      profile = local.device_types.k8s_node_supermicro.profile
+    }
+    "knode15" = {
+      mac     = "00:02:c9:53:0a:86"
+      ipv4    = "10.10.10.15"
+      profile = local.device_types.k8s_node_supermicro.profile
+    }
     "wattbox0101" = {
       mac     = "14:3f:c3:03:62:5d"
       profile = local.device_types.wattbox.profile
