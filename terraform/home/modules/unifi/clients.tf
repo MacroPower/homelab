@@ -85,6 +85,10 @@ locals {
       ipv4    = "10.9.10.15"
       profile = local.device_types.k8s_node_management.profile
     }
+    "kube" = {
+      mac  = "31:ed:7d:5e:74:a1"
+      ipv4 = "10.10.10.200"
+    }
     "knode01" = {
       mac     = "e4:5f:01:6e:db:a8"
       ipv4    = "10.10.10.1"

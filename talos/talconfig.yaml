@@ -1,6 +1,6 @@
 clusterName: home
-talosVersion: v1.4.7
-kubernetesVersion: v1.27.4
+talosVersion: v1.6.1
+kubernetesVersion: v1.28.4
 endpoint: https://kube.home.macro.network:6443
 cniConfig:
   name: none
@@ -24,7 +24,7 @@ nodes:
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az01
     nameservers:
-      - 10.0.0.1
+      - 10.10.0.1
     networkInterfaces:
       - interface: eth0
         dhcp: true
@@ -41,7 +41,7 @@ nodes:
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az02
     nameservers:
-      - 10.0.0.1
+      - 10.10.0.1
     networkInterfaces:
       - interface: eth0
         dhcp: true
@@ -58,7 +58,7 @@ nodes:
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az03
     nameservers:
-      - 10.0.0.1
+      - 10.10.0.1
     networkInterfaces:
       - interface: eth0
         dhcp: true
@@ -75,7 +75,7 @@ nodes:
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az01
     nameservers:
-      - 10.0.0.1
+      - 10.10.0.1
     networkInterfaces:
       - interface: eth4
         dhcp: true
@@ -92,7 +92,7 @@ nodes:
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az02
     nameservers:
-      - 10.0.0.1
+      - 10.10.0.1
     networkInterfaces:
       - interface: eth4
         dhcp: true
@@ -109,7 +109,7 @@ nodes:
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az03
     nameservers:
-      - 10.0.0.1
+      - 10.10.0.1
     networkInterfaces:
       - interface: eth4
         dhcp: true
@@ -121,17 +121,16 @@ nodes:
 controlPlane:
   inlinePatch:
     cluster:
-      aescbcEncryptionSecret: ${AESCBC_ENCRYPTION_KEY}
-      secretboxEncryptionSecret: ${SECRETBOX_ENCRYPTION_KEY}
+      secretboxEncryptionSecret: ${SECRETS_SECRETBOXENCRYPTIONKEY}
       aggregatorCA:
-        crt: ${K8S_AGGREGATOR_CERT}
-        key: ${K8S_AGGREGATOR_CERT_KEY}
+        crt: ${CERTS_K8SAGGREGATOR_CRT}
+        key: ${CERTS_K8SAGGREGATOR_KEY}
       apiServer:
         disablePodSecurityPolicy: true
         admissionControl: []
       ca:
-        crt: ${K8S_CERT}
-        key: ${K8S_CERT_KEY}
+        crt: ${CERTS_K8S_CRT}
+        key: ${CERTS_K8S_KEY}
       controllerManager:
         extraArgs:
           bind-address: 0.0.0.0
@@ -143,8 +142,8 @@ controlPlane:
           node-cidr-mask-size-ipv6: "64"
       etcd:
         ca:
-          crt: ${ETCD_CERT}
-          key: ${ETCD_CERT_KEY}
+          crt: ${CERTS_ETCD_CRT}
+          key: ${CERTS_ETCD_KEY}
         extraArgs:
           listen-metrics-urls: http://0.0.0.0:2381
       scheduler:
@@ -156,16 +155,16 @@ controlPlane:
       id: ${CLUSTER_ID}
       secret: ${CLUSTER_SECRET}
       serviceAccount:
-        key: ${K8S_SERVICEACCOUNT_KEY}
-      token: ${CLUSTER_TOKEN}
+        key: ${CERTS_K8SSERVICEACCOUNT_KEY}
+      token: ${SECRETS_BOOTSTRAPTOKEN}
     machine:
       ca:
-        crt: ${OS_CERT}
-        key: ${OS_CERT_KEY}
+        crt: ${CERTS_OS_CRT}
+        key: ${CERTS_OS_KEY}
       kubelet:
         extraArgs:
-          feature-gates: GracefulNodeShutdown=true,MixedProtocolLBService=true
-          rotate-server-certificates: true
+          feature-gates: MemoryQoS=true,SidecarContainers=true
+          #rotate-server-certificates: true
       token: ${TRUSTEDINFO_TOKEN}
       install:
         extraKernelArgs:
@@ -178,23 +177,20 @@ controlPlane:
 worker:
   inlinePatch:
     cluster:
-      aescbcEncryptionSecret: ${AESCBC_ENCRYPTION_KEY}
       ca:
-        crt: ${K8S_CERT}
-        key: ${K8S_CERT_KEY}
+        crt: ${CERTS_K8S_CRT}
+        key: ${CERTS_K8S_KEY}
       id: ${CLUSTER_ID}
       secret: ${CLUSTER_SECRET}
-      token: ${CLUSTER_TOKEN}
+      token: ${SECRETS_BOOTSTRAPTOKEN}
     machine:
       ca:
-        crt: ${OS_CERT}
-        key: ${OS_CERT_KEY}
-      certSANs:
-        - kube.home.macro.network
+        crt: ${CERTS_OS_CRT}
+        key: ${CERTS_OS_KEY}
       kubelet:
         extraArgs:
-          feature-gates: GracefulNodeShutdown=true,MixedProtocolLBService=true
-          rotate-server-certificates: true
+          feature-gates: MemoryQoS=true,SidecarContainers=true
+          #rotate-server-certificates: true
       token: ${TRUSTEDINFO_TOKEN}
       install:
         extraKernelArgs:

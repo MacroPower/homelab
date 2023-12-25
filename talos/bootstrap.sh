@@ -1,23 +1,28 @@
 #!/bin/bash
 
-doppler run -p talhelper -c main talhelper genconfig
+doppler run -p talhelper -c main -- talhelper genconfig --no-gitignore
+talosctl --talosconfig=./clusterconfig/talosconfig config endpoint \
+    knode01.home.macro.network \
+    knode02.home.macro.network \
+    knode03.home.macro.network
 
-talosctl --talosconfig=./clusterconfig/talosconfig config endpoint https://kube.home.macro.network:6443
+INITIAL_NODE=knode01.home.macro.network
+
+talosctl apply-config --talosconfig=./clusterconfig/talosconfig \
+    -i -e $INITIAL_NODE -n $INITIAL_NODE -f clusterconfig/home-$INITIAL_NODE.yaml
+
+echo "Waiting..."
+sleep 60
+
+talosctl bootstrap --talosconfig=./clusterconfig/talosconfig \
+    -e $INITIAL_NODE -n $INITIAL_NODE
+
+echo "Waiting..."
+sleep 60
+
 talosctl config merge ./clusterconfig/talosconfig
 
-INITIAL_NODE=knode02.home.macro.network
-
-talosctl apply-config -i -n $INITIAL_NODE -f clusterconfig/home-$INITIAL_NODE.yaml
-
-echo "Waiting..."
-sleep 60
-
-talosctl bootstrap -e kube.home.macro.network -n $INITIAL_NODE
-
-echo "Waiting..."
-sleep 60
-
-talosctl kubeconfig -e kube.home.macro.network -n kube.home.macro.network
+talosctl kubeconfig
 
 echo "Waiting..."
 sleep 20

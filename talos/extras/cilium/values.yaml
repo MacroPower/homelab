@@ -25,8 +25,8 @@ hostPort:
 # -- Roll out cilium agent pods automatically when configmap is updated.
 rollOutCiliumPods: true
 
-ipv4NativeRoutingCIDR: 10.244.0.0/16
-ipv6NativeRoutingCIDR: fdab:34f5:9f44:05a4::/64
+ipv4NativeRoutingCIDR: 10.128.0.0/16
+ipv6NativeRoutingCIDR: 2603:6010:5300:ad80::/64
 
 # -- Enable installation of PodCIDR routes between worker
 # nodes if worker nodes share a common L2 network segment.
