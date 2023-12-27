@@ -12,7 +12,7 @@ clusterSvcNets:
   - 10.112.0.0/12
   - 2603:6010:5300:ad70::/108
 clusterPodNets:
-  - 10.128.0.0/16
+  - 10.128.0.0/14
   - 2603:6010:5300:ad80::/64
 
 nodes:
@@ -33,7 +33,6 @@ nodes:
         dhcpOptions:
           ipv4: true
           ipv6: true
-          duidv6: 000100012cfe10c6e45f016edba8
         vip: &vip
           ip: 10.10.20.1
 
@@ -51,7 +50,6 @@ nodes:
         dhcpOptions:
           ipv4: true
           ipv6: true
-          duidv6: 000100012cfe0899e45f016ece7e
         vip: *vip
 
   - hostname: knode03.home.macro.network
@@ -68,7 +66,6 @@ nodes:
         dhcpOptions:
           ipv4: true
           ipv6: true
-          duidv6: 000100012cfe1274e45f016ed058
         vip: *vip
 
   - hostname: knode13.home.macro.network
@@ -85,7 +82,6 @@ nodes:
         dhcpOptions:
           ipv4: true
           ipv6: true
-          duidv6: 000100012cfe19fa0002c956fe52
 
   - hostname: knode14.home.macro.network
     ipAddress: 10.10.10.14
@@ -101,7 +97,6 @@ nodes:
         dhcpOptions:
           ipv4: true
           ipv6: true
-          duidv6: 000100012cfe19f50002c956d1a4
 
   - hostname: knode15.home.macro.network
     ipAddress: 10.10.10.15
@@ -117,7 +112,6 @@ nodes:
         dhcpOptions:
           ipv4: true
           ipv6: true
-          duidv6: 000100012cfe19fc0002c9530a86
 
 controlPlane:
   inlinePatch:
@@ -129,11 +123,16 @@ controlPlane:
         extraArgs:
           bind-address: 0.0.0.0
           ## Node CIDR mask size for IPv4 and IPv6.
-          ## Note that the clusterPodNets must be the same or a greater size,
-          ## which will be the same or a smaller number.
+          ## One unique subnet of this size will be cut from the clusterPodNets
+          ## for every node.
           ##
-          node-cidr-mask-size-ipv4: "16"
-          node-cidr-mask-size-ipv6: "64"
+          node-cidr-mask-size-ipv4: "20"
+          ## The IPv6 node cidr mask size MUST be within 16 bits of the
+          ## clusterPodNets IPv6cidr. By default, the clusterPodNets IPv6 mask
+          ## size is 48 and the clusterPodNets IPv6 cidr is /64 (48+16).
+          ##
+          node-cidr-mask-size-ipv6: "80"
+          allocate-node-cidrs: "true"
       etcd:
         extraArgs:
           listen-metrics-urls: http://0.0.0.0:2381

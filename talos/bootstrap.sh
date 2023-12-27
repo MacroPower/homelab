@@ -11,12 +11,13 @@ talosctl apply-config -i -n $INITIAL_NODE -f clusterconfig/home-$INITIAL_NODE.ya
 echo "Applied config to $INITIAL_NODE"
 
 echo "Waiting..."
-sleep 120
+sleep 60
 
 talosctl bootstrap -e $INITIAL_NODE -n $INITIAL_NODE
 echo "Bootstrapped $INITIAL_NODE"
 
-sleep 20
+echo "Waiting..."
+sleep 60
 
 talosctl kubeconfig -e kube.home.macro.network -n kube.home.macro.network
 

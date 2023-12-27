@@ -125,7 +125,7 @@ resource "unifi_network" "lan_k8s_pods" {
   name    = "K8s Pods"
   purpose = "corporate"
 
-  subnet      = "10.128.0.0/16"
+  subnet      = "10.128.0.0/14"
   domain_name = var.domain_name
   vlan_id     = 1128
 
