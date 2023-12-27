@@ -24,16 +24,10 @@ talosctl kubeconfig -e kube.home.macro.network -n kube.home.macro.network
 echo "Waiting..."
 sleep 20
 
-kubectl kustomize extras/cilium/ --enable-helm | kubectl apply -f -
-kubectl kustomize extras/kubelet-csr-approver/ --enable-helm | kubectl apply -f -
-
-doppler run -p talhelper -c main envsubst < extras/doppler/secrets.yaml | kubectl apply -f -
+./bootstrap-ks.sh
 
 kubectl certificate approve $(kubectl get csr --sort-by=.metadata.creationTimestamp | grep Pending | awk '{print $1}')
 
 talosctl health -n $INITIAL_NODE
 
 eval $(doppler run -p talhelper -c main -- talhelper gencommand apply --extra-flags "-i")
-
-# kubectl kustomize extras/argocd/ --enable-helm | kubectl apply -f -
-# kubectl kustomize extras/argocd-apps/ | kubectl apply -f -
