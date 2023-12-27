@@ -1,9 +1,19 @@
-talosctl reset --graceful=false --reboot -e knode13.home.macro.network -n knode13.home.macro.network
-talosctl reset --graceful=false --reboot -e knode14.home.macro.network -n knode14.home.macro.network
-talosctl reset --graceful=false --reboot -e knode15.home.macro.network -n knode15.home.macro.network
+for n in knode13 knode14 knode15; do
+  node=${n}.home.macro.network
+  talosctl reset --graceful=false --reboot \
+    -e ${node} -n ${node} \
+    --wipe-mode system-disk \
+    --system-labels-to-wipe STATE \
+    --system-labels-to-wipe EPHEMERAL
+done
 
 sleep 10
 
-talosctl reset --graceful=false --reboot -e knode01.home.macro.network -n knode01.home.macro.network
-talosctl reset --graceful=false --reboot -e knode02.home.macro.network -n knode02.home.macro.network
-talosctl reset --graceful=false --reboot -e knode03.home.macro.network -n knode03.home.macro.network
+for n in knode01 knode02 knode03; do
+  node=${n}.home.macro.network
+  talosctl reset --graceful=false --reboot \
+    -e ${node} -n ${node} \
+    --wipe-mode system-disk \
+    --system-labels-to-wipe STATE \
+    --system-labels-to-wipe EPHEMERAL
+done
