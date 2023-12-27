@@ -18,66 +18,69 @@ clusterPodNets:
 nodes:
   - hostname: knode01.home.macro.network
     ipAddress: 10.10.10.1
-    installDisk: /dev/mmcblk0
     controlPlane: true
+    installDisk: &rpiMmcDevice /dev/mmcblk0
+    nameservers: &nameservers
+      - 10.10.0.1
     nodeLabels:
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az01
-    nameservers:
-      - 10.10.0.1
     networkInterfaces:
-      - interface: eth0
+      - deviceSelector: &rpiNetDevice
+          driver: bcmgenet
+          hardwareAddr: "e4:5f:01:*"
         dhcp: true
         dhcpOptions:
           ipv4: true
           ipv6: true
           duidv6: 000100012cfe10c6e45f016edba8
+        vip: &vip
+          ip: 10.10.20.1
 
   - hostname: knode02.home.macro.network
     ipAddress: 10.10.10.2
-    installDisk: /dev/mmcblk0
     controlPlane: true
+    installDisk: *rpiMmcDevice
+    nameservers: *nameservers
     nodeLabels:
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az02
-    nameservers:
-      - 10.10.0.1
     networkInterfaces:
-      - interface: eth0
+      - deviceSelector: *rpiNetDevice
         dhcp: true
         dhcpOptions:
           ipv4: true
           ipv6: true
           duidv6: 000100012cfe0899e45f016ece7e
+        vip: *vip
 
   - hostname: knode03.home.macro.network
     ipAddress: 10.10.10.3
-    installDisk: /dev/mmcblk0
     controlPlane: true
+    installDisk: *rpiMmcDevice
+    nameservers: *nameservers
     nodeLabels:
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az03
-    nameservers:
-      - 10.10.0.1
     networkInterfaces:
-      - interface: eth0
+      - deviceSelector: *rpiNetDevice
         dhcp: true
         dhcpOptions:
           ipv4: true
           ipv6: true
           duidv6: 000100012cfe1274e45f016ed058
+        vip: *vip
 
   - hostname: knode13.home.macro.network
     ipAddress: 10.10.10.13
-    installDisk: /dev/sda
     controlPlane: false
+    installDisk: /dev/sda
+    nameservers: *nameservers
     nodeLabels:
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az01
-    nameservers:
-      - 10.10.0.1
     networkInterfaces:
-      - interface: eth4
+      - interface: enp5s0
         dhcp: true
         dhcpOptions:
           ipv4: true
@@ -86,15 +89,14 @@ nodes:
 
   - hostname: knode14.home.macro.network
     ipAddress: 10.10.10.14
-    installDisk: /dev/sda
     controlPlane: false
+    installDisk: /dev/sda
+    nameservers: *nameservers
     nodeLabels:
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az02
-    nameservers:
-      - 10.10.0.1
     networkInterfaces:
-      - interface: eth4
+      - interface: enp5s0
         dhcp: true
         dhcpOptions:
           ipv4: true
@@ -103,15 +105,14 @@ nodes:
 
   - hostname: knode15.home.macro.network
     ipAddress: 10.10.10.15
-    installDisk: /dev/sda
     controlPlane: false
+    installDisk: /dev/sda
+    nameservers: *nameservers
     nodeLabels:
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az03
-    nameservers:
-      - 10.10.0.1
     networkInterfaces:
-      - interface: eth4
+      - interface: enp5s0
         dhcp: true
         dhcpOptions:
           ipv4: true

@@ -40,9 +40,9 @@ l2announcements:
 envoy:
   enabled: true
   prometheus:
-    enabled: true
+    enabled: false
     serviceMonitor:
-      enabled: true
+      enabled: false
   resources: {}
 
 # For L7-aware traffic management, see
@@ -57,16 +57,16 @@ operator:
   replicas: 2
   rollOutPods: true
   prometheus:
-    enabled: true
+    enabled: false
     serviceMonitor:
-      enabled: true
+      enabled: false
       trustCRDsExist: true
   resources: {}
 
 prometheus:
-  enabled: true
+  enabled: false
   serviceMonitor:
-    enabled: true
+    enabled: false
     trustCRDsExist: true
 
 hubble:
@@ -86,16 +86,16 @@ hubble:
       - httpV2:exemplars=true;labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction
     enableOpenMetrics: true
     serviceMonitor:
-      enabled: true
+      enabled: false
 
   relay:
     enabled: true
     replicas: 2
     rollOutPods: true
     prometheus:
-      enabled: true
+      enabled: false
       serviceMonitor:
-        enabled: true
+        enabled: false
     resources: {}
 
   ui:

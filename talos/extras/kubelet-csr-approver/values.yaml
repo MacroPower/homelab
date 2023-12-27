@@ -2,4 +2,4 @@ providerRegex: ^knode\d\d$
 
 metrics:
   serviceMonitor:
-    enabled: true
+    enabled: false
