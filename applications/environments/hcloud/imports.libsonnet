@@ -11,7 +11,6 @@
   import 'homepage/application.libsonnet',
   import 'jaeger-operator/application.libsonnet',
   import 'k8s-event-logger/application.libsonnet',
-  import 'metallb/application.libsonnet',
   import 'metrics-server/application.libsonnet',
   import 'opentelemetry-operator/application.libsonnet',
   import 'prometheus-stack/application.libsonnet',

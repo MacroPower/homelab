@@ -30,7 +30,6 @@
   import 'librespeed/application.libsonnet',
   import 'local-ai/application.libsonnet',
   import 'loki/application.libsonnet',
-  import 'metallb/application.libsonnet',
   import 'metrics-server/application.libsonnet',
   import 'odigos/application.libsonnet',
   import 'opentelemetry-collector/application.libsonnet',

@@ -45,7 +45,6 @@ Admittedly, both usages of "all" describe the end goal of this repo, not the cur
 
 - [Cilium](https://cilium.io): eBPF-based CNI & service mesh.
 - [Authentik](https://goauthentik.io): Identity Provider.
-- [MetalLB](https://metallb.universe.tf/): Load-balancer implementation supporting L2 & BGP.
 - [Traefik](https://traefik.io): Ingress controller & reverse proxy.
 - [AdGuard Home](https://github.com/AdguardTeam/AdguardHome): DNS server with ad-blocking.
 - [Tailscale](https://tailscale.com): WireGuard Mesh VPN.
