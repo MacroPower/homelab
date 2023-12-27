@@ -31,6 +31,7 @@ locals {
     }
     hue_bridge = {
       profile = unifi_port_profile.lan["iot"].id
+      dev_id  = 2014
     }
     mixer = {
       profile = unifi_port_profile.lan["iot"].id
@@ -135,6 +136,7 @@ locals {
     "huebridge01" = {
       mac     = "00:17:88:77:3e:3c"
       profile = local.device_types.hue_bridge.profile
+      dev_id  = local.device_types.hue_bridge.dev_id
     }
     "motu828es" = {
       mac     = "00:01:f2:00:d1:63"
