@@ -23,20 +23,24 @@ Node commands:
 set NODE knode01
 
 # Open node dashboard
-talosctl dashboard -e kube.home.macro.network -n $NODE.home.macro.network
+talosctl dashboard -n $NODE.home.macro.network
 
 # Check node health
-talosctl health -e kube.home.macro.network -n $NODE.home.macro.network
+talosctl health -n $NODE.home.macro.network
 
 # Get a support bundle (logs from kubelet, etcd, etc.)
-talosctl support -e kube.home.macro.network -n $NODE.home.macro.network
+talosctl support -n $NODE.home.macro.network
 unzip support.zip && rm support.zip
 # Cleanup
 rm -rf $NODE.home.macro.network/ cluster/
 
 # Reboot a node
-talosctl reboot -e kube.home.macro.network -n $NODE.home.macro.network
+talosctl reboot -n $NODE.home.macro.network
 
 # Reset a node
-talosctl reset --graceful=true --reboot -e kube.home.macro.network -n $NODE.home.macro.network
+talosctl reset -n $NODE.home.macro.network \
+    --graceful=true --reboot \
+    --wipe-mode system-disk \
+    --system-labels-to-wipe STATE \
+    --system-labels-to-wipe EPHEMERAL
 ```
