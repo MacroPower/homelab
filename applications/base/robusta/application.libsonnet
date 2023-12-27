@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='robusta',
   repoURL='https://robusta-charts.storage.googleapis.com',
-  targetRevision='0.10.25',
+  targetRevision='0.10.27',
   releaseName='robusta',
   values='values.yaml'
 )
