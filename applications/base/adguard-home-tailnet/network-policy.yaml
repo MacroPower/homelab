@@ -6,8 +6,10 @@ metadata:
 spec:
   endpointSelector: {}
   egress:
-    - toCIDRSet:
-        - cidr: 10.244.0.0/16
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
       toPorts:
         - ports:
             - port: "53"
@@ -20,7 +22,7 @@ spec:
       toPorts:
         - ports:
             - port: "443"
-              protocol: ANY
+              protocol: TCP
           rules:
             http:
               - {}

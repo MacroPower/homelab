@@ -19,7 +19,4 @@ spec:
               - matchPattern: "*"
 
     - toEntities:
-        - kube-apiserver
-
-    - toEntities:
-        - world
+        - all
