@@ -39,6 +39,15 @@ locals {
     mac_mini = {
       profile = unifi_port_profile.lan["main"].id
     }
+    nanoleaf = {
+      dev_id = 3788
+    }
+    iphone_se = {
+      dev_id = 4272
+    }
+    echo_spot = {
+      dev_id = 2034
+    }
   }
 
   clients = {
@@ -151,6 +160,18 @@ locals {
     "macmini" = {
       mac     = "5c:e9:1e:ea:15:e7"
       profile = local.device_types.mac_mini.profile
+    }
+    "echospot" = {
+      mac    = "00:71:47:c5:03:02"
+      dev_id = local.device_types.echo_spot.dev_id
+    }
+    "iphone" = {
+      mac    = "24:d0:df:6c:05:ca"
+      dev_id = local.device_types.iphone_se.dev_id
+    }
+    "nanoleaf" = {
+      mac    = "00:55:da:52:5c:55"
+      dev_id = local.device_types.nanoleaf.dev_id
     }
   }
 }
