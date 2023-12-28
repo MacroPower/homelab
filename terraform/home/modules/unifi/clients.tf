@@ -36,6 +36,9 @@ locals {
     mixer = {
       profile = unifi_port_profile.lan["iot"].id
     }
+    mac_mini = {
+      profile = unifi_port_profile.lan["main"].id
+    }
   }
 
   clients = {
@@ -49,6 +52,9 @@ locals {
       ipv4    = "10.10.0.1"
       profile = local.device_types.truenas.profile
       dev_id  = local.device_types.truenas.dev_id
+    }
+    "store01-nic" = {
+      mac = "00:07:43:74:34:27"
     }
     "unraid" = {
       mac     = "00:02:c9:56:81:64"
@@ -141,6 +147,10 @@ locals {
     "motu828es" = {
       mac     = "00:01:f2:00:d1:63"
       profile = local.device_types.mixer.profile
+    }
+    "macmini" = {
+      mac     = "5c:e9:1e:ea:15:e7"
+      profile = local.device_types.mac_mini.profile
     }
   }
 }

@@ -94,6 +94,11 @@ resource "unifi_device" "usw_pro_24" {
   forget_on_destroy = false
 
   port_override {
+    number          = 1
+    name            = "Port 1"
+    port_profile_id = local.clients.macmini.profile
+  }
+  port_override {
     number          = 7
     name            = "Port 7"
     port_profile_id = local.clients.motu828es.profile
