@@ -34,9 +34,6 @@ rollOutCiliumPods: true
 routingMode: tunnel
 tunnelProtocol: geneve
 
-endpointRoutes:
-  enabled: true
-
 l2announcements:
   enabled: true
 
