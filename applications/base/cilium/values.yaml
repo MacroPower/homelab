@@ -53,6 +53,10 @@ loadBalancer:
   l7:
     backend: envoy
 
+endpointStatus:
+  enabled: true
+  status: "policy health controllers log state"
+
 operator:
   replicas: 2
   rollOutPods: true
