@@ -22,16 +22,18 @@ nodePort:
 hostPort:
   enabled: true
 
-# -- Roll out cilium agent pods automatically when configmap is updated.
+## Roll out cilium pods automatically when configmap is updated, a la reloader.
+##
 rollOutCiliumPods: true
 
-ipv4NativeRoutingCIDR: 10.128.0.0/14
-ipv6NativeRoutingCIDR: 2603:6010:5300:ad80::/64
+## Routing configuration. Most users use native routing, but for some reason
+## this does not work well with IPv6 on my Turing Pi nodes. I believe it has
+## something to do with the internal switch.
+## See https://docs.cilium.io/en/stable/network/concepts/routing/
+##
+routingMode: tunnel
+tunnelProtocol: geneve
 
-# -- Enable installation of PodCIDR routes between worker
-# nodes if worker nodes share a common L2 network segment.
-autoDirectNodeRoutes: true
-routingMode: native
 endpointRoutes:
   enabled: true
 
