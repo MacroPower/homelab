@@ -8,7 +8,7 @@ spec:
   nodeName: HOSTNAME
   containers:
     - name: disk-wipe
-      image: ghcr.io/onedr0p/alpine:3.17.2@sha256:5d973006bf93ba66e38758694dfed6df091a13e712b6a075f7ed7bb6fd8c2189
+      image: alpine:3.19
       securityContext:
         privileged: true
       env:
