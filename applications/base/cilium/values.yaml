@@ -26,13 +26,17 @@ hostPort:
 ##
 rollOutCiliumPods: true
 
-## Routing configuration. Most users use native routing, but for some reason
-## this does not work well with IPv6 on my Turing Pi nodes. I believe it has
-## something to do with the internal switch.
+## Routing configuration.
 ## See https://docs.cilium.io/en/stable/network/concepts/routing/
 ##
-routingMode: tunnel
-tunnelProtocol: geneve
+autoDirectNodeRoutes: true
+routingMode: native
+ipv4NativeRoutingCIDR: 10.128.0.0/14
+ipv6NativeRoutingCIDR: 2603:6010:5300:ad80::/64
+endpointRoutes:
+  ## Route per endpoint instead of using the cilium_host interface.
+  ##
+  enabled: false
 
 l2announcements:
   enabled: true
