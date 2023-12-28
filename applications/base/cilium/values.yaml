@@ -31,19 +31,15 @@ ipv6NativeRoutingCIDR: 2603:6010:5300:ad80::/64
 # -- Enable installation of PodCIDR routes between worker
 # nodes if worker nodes share a common L2 network segment.
 autoDirectNodeRoutes: true
-tunnel: disabled
+routingMode: native
+endpointRoutes:
+  enabled: true
 
 l2announcements:
   enabled: true
 
-# Enables cilium-envoy DaemonSet, by default envoy is run in the cilium pods.
-envoy:
+wellKnownIdentities:
   enabled: true
-  prometheus:
-    enabled: true
-    serviceMonitor:
-      enabled: true
-  resources: {}
 
 # For L7-aware traffic management, see
 # https://docs.cilium.io/en/stable/network/servicemesh/l7-traffic-management/#installation
