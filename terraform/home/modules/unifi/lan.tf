@@ -17,12 +17,14 @@ locals {
     iot = {
       name = "IoT"
       id   = 20
+      wifi = true
     }
   }
   lans_unrestricted = {
     main = {
       name = "Main"
       id   = 1
+      wifi = true
     }
   }
   lans_reservation = {
@@ -174,5 +176,5 @@ resource "unifi_firewall_rule" "drop_traffic" {
   protocol   = "all"
   rule_index = 22000 + each.value.id
 
-  dst_network_id = merge(unifi_network.lan, unifi_network.lan)[each.key].id
+  dst_network_id = unifi_network.lan[each.key].id
 }
