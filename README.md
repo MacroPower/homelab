@@ -147,7 +147,11 @@ Technically however, I hope this repo is quite unique. I've intentionally tried 
 
 ## 🔏 License
 
-See [LICENSE](./LICENSE)
+This project is licensed under the Apache-2.0 license, primarily because it's very compatible with a lot of the projects I enjoy stealing code from.
+
+For more details, see [LICENSE](./LICENSE).
+
+Ultimately though, I have a WTFPL mindset about any content produced by/for myself. If you like anything I've done here, feel free to use it however you want (yes, that includes the peepos), just don't sue me if my code blows up your cluster. If you're feeling expecially nice, links back to this repo are always appreciated (for the SEO, or whatever).
 
 ---
 
