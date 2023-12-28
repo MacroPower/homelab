@@ -20,8 +20,10 @@ nodes:
     ipAddress: 10.10.10.1
     controlPlane: true
     installDisk: &rpiMmcDevice /dev/mmcblk0
+    disableSearchDomain: &disableSearchDomain true
     nameservers: &nameservers
-      - 10.10.0.1
+      - "10.10.0.1"
+      - "2603:6010:5300:ad01::1"
     nodeLabels:
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az01
@@ -40,6 +42,7 @@ nodes:
     ipAddress: 10.10.10.2
     controlPlane: true
     installDisk: *rpiMmcDevice
+    disableSearchDomain: *disableSearchDomain
     nameservers: *nameservers
     nodeLabels:
       topology.kubernetes.io/region: rack01
@@ -56,6 +59,7 @@ nodes:
     ipAddress: 10.10.10.3
     controlPlane: true
     installDisk: *rpiMmcDevice
+    disableSearchDomain: *disableSearchDomain
     nameservers: *nameservers
     nodeLabels:
       topology.kubernetes.io/region: rack01
@@ -87,6 +91,7 @@ nodes:
     ipAddress: 10.10.10.14
     controlPlane: false
     installDisk: /dev/sda
+    disableSearchDomain: *disableSearchDomain
     nameservers: *nameservers
     nodeLabels:
       topology.kubernetes.io/region: rack01
@@ -102,6 +107,7 @@ nodes:
     ipAddress: 10.10.10.15
     controlPlane: false
     installDisk: /dev/sda
+    disableSearchDomain: *disableSearchDomain
     nameservers: *nameservers
     nodeLabels:
       topology.kubernetes.io/region: rack01
