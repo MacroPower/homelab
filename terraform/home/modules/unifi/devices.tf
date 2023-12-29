@@ -26,7 +26,7 @@ resource "unifi_device" "usw_pro_aggregation" {
   port_override {
     number          = 22
     name            = "SFP+ 22"
-    port_profile_id = local.clients.store01.profile
+    port_profile_id = local.clients.nas01net.profile
   }
 
   port_override {
@@ -77,6 +77,11 @@ resource "unifi_device" "usw_pro_24_poe" {
     number          = 9
     name            = "Port 9"
     port_profile_id = local.clients.wattbox0101.profile
+  }
+  port_override {
+    number          = 12
+    name            = "Port 12"
+    port_profile_id = local.clients.nas01mgmt.profile
   }
 
   port_override {

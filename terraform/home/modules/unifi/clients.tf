@@ -51,19 +51,20 @@ locals {
   }
 
   clients = {
-    "store01mgmt" = {
+    "nas01mgmt" = {
       mac     = "7c:c2:55:19:41:d2"
-      ipv4    = "10.9.0.1"
+      ipv4    = "10.9.1.1"
       profile = local.device_types.storage_management.profile
     }
-    "store01" = {
-      mac     = "00:07:43:74:34:20"
-      ipv4    = "10.10.0.1"
+    "nas01" = {
+      mac    = "00:07:43:74:34:20"
+      ipv4   = "10.10.1.1"
+      dev_id = local.device_types.truenas.dev_id
+    }
+    "nas01net" = {
+      mac     = "00:07:43:74:34:27"
       profile = local.device_types.truenas.profile
       dev_id  = local.device_types.truenas.dev_id
-    }
-    "store01-nic" = {
-      mac = "00:07:43:74:34:27"
     }
     "unraid" = {
       mac     = "00:02:c9:56:81:64"
