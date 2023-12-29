@@ -30,8 +30,8 @@ resource "unifi_device" "usw_pro_aggregation" {
   }
 
   port_override {
-    number              = 3
-    name                = "SFP+ 3"
+    number              = 25
+    name                = "SFP+ 25"
     op_mode             = "aggregate"
     aggregate_num_ports = 2
     native_network_id   = unifi_network.lan_default.id
@@ -74,8 +74,8 @@ resource "unifi_device" "usw_pro_24_poe" {
     port_profile_id = local.clients.knode15mgmt.profile
   }
   port_override {
-    number          = 13
-    name            = "Port 13"
+    number          = 9
+    name            = "Port 9"
     port_profile_id = local.clients.wattbox0101.profile
   }
 
