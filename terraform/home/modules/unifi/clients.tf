@@ -148,6 +148,11 @@ locals {
       profile = local.device_types.wattbox.profile
       dev_id  = local.device_types.wattbox.dev_id
     }
+    "wattbox0202" = {
+      mac     = "14:3f:c3:04:50:d0"
+      profile = local.device_types.wattbox.profile
+      dev_id  = local.device_types.wattbox.dev_id
+    }
     "huebridge01" = {
       mac     = "00:17:88:77:3e:3c"
       profile = local.device_types.hue_bridge.profile

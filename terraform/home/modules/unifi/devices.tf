@@ -104,8 +104,13 @@ resource "unifi_device" "usw_pro_24" {
     port_profile_id = local.clients.motu828es.profile
   }
   port_override {
-    number          = 17
-    name            = "Port 17"
+    number          = 15
+    name            = "Port 15"
+    port_profile_id = local.clients.wattbox0202.profile
+  }
+  port_override {
+    number          = 16
+    name            = "Port 16"
     port_profile_id = local.clients.wattbox0201.profile
   }
   port_override {
