@@ -1,0 +1,19 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: traefik-selfsigned-issuer
+spec:
+  selfSigned: {}
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: traefik-cert
+spec:
+  secretName: traefik-cert
+  issuerRef:
+    kind: Issuer
+    name: traefik-selfsigned-issuer
+  dnsNames:
+    - "*.home.macro.network"

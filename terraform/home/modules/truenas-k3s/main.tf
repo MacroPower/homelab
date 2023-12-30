@@ -4,13 +4,31 @@ locals {
   argocd_apps_dir = "${local.manifests_dir}/argocd-apps/"
   doppler_dir     = "${local.manifests_dir}/doppler/"
 
+  environment_name = split(".", var.fqdn)[0]
+
   argocd_apps_apps_tpl_base_filename = "apps.yaml"
   doppler_secrets_tpl_base_filename  = "secrets.yaml"
 
   k_cmd = "k3s kubectl"
 }
 
-resource "null_resource" "truenas_k3s_init" {
+resource "null_resource" "truenas_k3s_firewall" {
+  connection {
+    type     = "ssh"
+    host     = var.ipv4
+    port     = 22
+    user     = "root"
+    password = var.ssh_password
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "iptables -A INPUT -p tcp -m tcp --dport 6443 -m comment --comment \"iX Custom Rule to allow connection requests to k8s cluster from all external sources\" -j ACCEPT"
+    ]
+  }
+}
+
+resource "null_resource" "truenas_k3s_bootstrap" {
   connection {
     type     = "ssh"
     host     = var.ipv4
@@ -43,7 +61,7 @@ resource "null_resource" "truenas_k3s_init" {
 
   provisioner "file" {
     content = templatefile("${var.argocd_apps_kustomization}/${local.argocd_apps_apps_tpl_base_filename}.tpl", {
-      environment_name = split(".", var.name)[0]
+      environment_name = local.environment_name
     })
     destination = "${local.argocd_apps_dir}${local.argocd_apps_apps_tpl_base_filename}"
   }
@@ -63,4 +81,19 @@ resource "null_resource" "truenas_k3s_init" {
       "rm -rf ${local.manifests_dir}",
     ]
   }
+}
+
+data "remote_file" "kubeconfig" {
+  conn {
+    host     = var.ipv4
+    port     = 22
+    user     = "root"
+    password = var.ssh_password
+  }
+  path = "/etc/rancher/k3s/k3s.yaml"
+}
+
+output "kubeconfig" {
+  sensitive = true
+  value     = replace(replace(data.remote_file.kubeconfig.content, "127.0.0.1", var.fqdn), "/: default\\n/", ": ${local.environment_name}\n")
 }

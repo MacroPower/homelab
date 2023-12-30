@@ -1,4 +1,4 @@
-variable "name" {
+variable "fqdn" {
   type = string
 }
 

@@ -1,9 +1,9 @@
 truenas_devices = {
-  store01 = {
-    name = "store01.home.macro.network"
-    ipv4 = "10.0.3.2"
-    ssh_password = "${STORE01_SSH_PASSWORD}"
-    apikey = "${STORE01_APIKEY}"
+  nas01 = {
+    fqdn         = "nas01.home.macro.network"
+    ipv4         = "10.10.1.1"
+    ssh_password = "${NAS01_SSH_PASSWORD}"
+    apikey       = "${NAS01_APIKEY}"
   }
 }
 
@@ -17,4 +17,4 @@ unifi_sites = {
   }
 }
 
-doppler_token = "${STORE01_DOPPLER_TOKEN}"
+doppler_token = "${NAS01_DOPPLER_TOKEN}"

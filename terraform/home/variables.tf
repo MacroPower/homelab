@@ -1,6 +1,6 @@
 variable "truenas_devices" {
   type = map(object({
-    name         = string
+    fqdn         = string
     ipv4         = string
     ssh_password = string
     apikey       = string
