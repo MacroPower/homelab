@@ -7,7 +7,7 @@
 
 operatorConfig:
   image:
-    tag: &imageTag v1.54.0
+    tag: &imageTag v1.56.1
   logging: "info"
 
 # proxyConfig contains configuraton that will be applied to any ingress/egress
