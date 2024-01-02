@@ -8,15 +8,25 @@ variable "truenas_devices" {
   sensitive = true
 }
 
-variable "unifi_sites" {
-  type = map(object({
-    username    = string
-    password    = string
-    api_url     = string
-    site        = string
-    domain_name = string
-  }))
+variable "domain_name" {
+  type = string
+}
+
+variable "unifi_username" {
+  type = string
+}
+
+variable "unifi_password" {
+  type      = string
   sensitive = true
+}
+
+variable "unifi_api_url" {
+  type = string
+}
+
+variable "unifi_site" {
+  type = string
 }
 
 variable "doppler_token" {

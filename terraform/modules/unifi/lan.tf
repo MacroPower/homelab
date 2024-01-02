@@ -1,43 +1,16 @@
 locals {
-  default_lan = { default = { name = "Default", id = 0 } }
+  default_lan = { default = { name = "Default", id = var.default_network_id } }
   lans = {
-    guest = {
-      name    = "Guest"
-      id      = 5
-      purpose = "guest"
-    }
-    lab_management = {
-      name = "Lab Management"
-      id   = 9
-    }
-    lab = {
-      name = "Lab"
-      id   = 10
-    }
-    iot = {
-      name = "IoT"
-      id   = 20
-      wifi = true
-    }
+    for k, v in var.networks : k => v
+    if v.type == "restricted" || v.type == null
   }
   lans_unrestricted = {
-    main = {
-      name = "Main"
-      id   = 1
-      wifi = true
-    }
+    for k, v in var.networks : k => v
+    if v.type == "unrestricted"
   }
   lans_reservation = {
-    k8s_services = {
-      name = "K8s Services"
-      id   = 112
-      mask = 12
-    }
-    k8s_pods = {
-      name = "K8s Pods"
-      id   = 128
-      mask = 14
-    }
+    for k, v in var.networks : k => v
+    if v.type == "reservation"
   }
 }
 
@@ -45,13 +18,13 @@ resource "unifi_network" "lan_default" {
   name    = "Default"
   purpose = "corporate"
 
-  subnet        = "10.0.0.0/16"
+  subnet        = "10.${local.default_lan.default.id}.0.0/16"
   domain_name   = var.domain_name
   multicast_dns = true
 
   dhcp_enabled    = true
-  dhcp_start      = "10.0.128.2"
-  dhcp_stop       = "10.0.255.254"
+  dhcp_start      = "10.${local.default_lan.default.id}.128.2"
+  dhcp_stop       = "10.${local.default_lan.default.id}.255.254"
   dhcp_v6_enabled = true
   dhcp_v6_start   = "::2"
   dhcp_v6_stop    = "::7d1"
@@ -76,11 +49,11 @@ resource "unifi_network" "lan" {
   for_each = merge(local.lans, local.lans_unrestricted)
 
   name    = each.value.name
-  purpose = lookup(each.value, "purpose", "corporate")
+  purpose = each.value.purpose != null ? each.value.purpose : "corporate"
 
   subnet        = "10.${each.value.id}.0.0/16"
   domain_name   = var.domain_name
-  multicast_dns = true
+  multicast_dns = each.value.multicast_dns != null ? each.value.multicast_dns : false
   vlan_id       = (1000 + each.value.id)
 
   dhcp_enabled    = true

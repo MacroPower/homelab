@@ -28,13 +28,3 @@ output "kubeconfig" {
   sensitive = true
   value     = module.nas01_k3s.kubeconfig
 }
-
-module "unifi" {
-  source = "./modules/unifi"
-
-  domain_name = var.unifi_sites.home.domain_name
-
-  providers = {
-    unifi = unifi.home
-  }
-}

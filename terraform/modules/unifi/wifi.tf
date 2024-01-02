@@ -1,3 +1,12 @@
+locals {
+  wifi_prefix = "UNIFI-W${var.site_code}"
+
+  wifi_nets = {
+    for k, v in merge(local.lans, local.lans_unrestricted) : k => v
+    if v.wifi == true
+  }
+}
+
 data "unifi_ap_group" "default" {
   name = "All APs"
 }
@@ -11,12 +20,9 @@ resource "random_password" "default_password" {
 }
 
 resource "unifi_wlan" "wlan" {
-  for_each = {
-    for k, v in merge(local.lans, local.lans_unrestricted) : k => v
-    if lookup(v, "wifi", false)
-  }
+  for_each = local.wifi_nets
 
-  name       = "UNIFI-WH-${each.value.name}"
+  name       = length(local.wifi_nets) > 1 ? "${local.wifi_prefix}-${each.value.name}" : local.wifi_prefix
   passphrase = random_password.default_password.result
   security   = "wpapsk"
 
@@ -30,7 +36,7 @@ resource "unifi_wlan" "wlan" {
 }
 
 resource "unifi_wlan" "wlan_guest" {
-  name       = "UNIFI-WH-Guest"
+  name       = "${local.wifi_prefix}-Guest"
   passphrase = random_password.default_password.result
   security   = "wpapsk"
 

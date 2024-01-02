@@ -7,14 +7,11 @@ truenas_devices = {
   }
 }
 
-unifi_sites = {
-  home = {
-    username    = "${UNIFI_USERNAME}"
-    password    = "${UNIFI_PASSWORD}"
-    api_url     = "https://unifi.home.macro.network"
-    site        = "default"
-    domain_name = "home.macro.network"
-  }
-}
+unifi_username = "${UNIFI_USERNAME}"
+unifi_password = "${UNIFI_PASSWORD}"
+unifi_api_url  = "https://unifi.home.macro.network"
+unifi_site     = "default"
+
+domain_name = "home.macro.network"
 
 doppler_token = "${NAS01_DOPPLER_TOKEN}"
