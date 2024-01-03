@@ -52,6 +52,16 @@ loadBalancer:
   l7:
     backend: envoy
 
+# https://docs.cilium.io/en/stable/network/servicemesh/mutual-authentication/mutual-authentication/
+authentication:
+  mutual:
+    spire:
+      enabled: true
+      install:
+        enabled: true
+        namespace: cilium-spire
+        existingNamespace: true
+
 endpointStatus:
   enabled: true
   status: "policy health controllers log state"
