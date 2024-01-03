@@ -4,3 +4,9 @@ global:
     secretKey: token
 
 clusterId: home.macro.network
+
+agent:
+  alligator:
+    env:
+      - name: FLORA_KERNELPROBER_FORCEPMUPROBES
+        value: "true"
