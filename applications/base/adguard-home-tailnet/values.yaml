@@ -61,7 +61,7 @@ persistence:
     enabled: false
   certs:
     enabled: true
-    name: dns-cert
+    name: dns-tailnet-cert
     type: secret
     subPath:
       - path: tls.crt
