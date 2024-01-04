@@ -56,7 +56,7 @@ locals {
   unifi_clients = {
     "nas01mgmt" = {
       mac     = "7c:c2:55:19:41:d2"
-      ipv4    = "10.9.1.1"
+      ipv4    = "10.5.1.1"
       profile = local.unifi_device_types.storage_management.profile
     }
     "nas01" = {
@@ -92,17 +92,17 @@ locals {
     }
     "knode13mgmt" = {
       mac     = "3c:ec:ef:cd:f6:de"
-      ipv4    = "10.9.10.13"
+      ipv4    = "10.5.10.13"
       profile = local.unifi_device_types.k8s_node_management.profile
     }
     "knode14mgmt" = {
       mac     = "3c:ec:ef:cd:f7:a6"
-      ipv4    = "10.9.10.14"
+      ipv4    = "10.5.10.14"
       profile = local.unifi_device_types.k8s_node_management.profile
     }
     "knode15mgmt" = {
       mac     = "3c:ec:ef:cd:f7:a7"
-      ipv4    = "10.9.10.15"
+      ipv4    = "10.5.10.15"
       profile = local.unifi_device_types.k8s_node_management.profile
     }
     "kube" = {
@@ -200,7 +200,7 @@ locals {
     }
     lab_management = {
       name = "Lab Management"
-      id   = 9
+      id   = 5
     }
     lab = {
       name = "Lab"
@@ -213,15 +213,39 @@ locals {
       multicast_dns = true
     }
     k8s_services = {
-      name = "K8s Services"
+      name = "home Services"
       id   = 112
       mask = 12
       type = "reservation"
     }
     k8s_pods = {
-      name = "K8s Pods"
+      name = "home Pods"
       id   = 128
       mask = 14
+      type = "reservation"
+    }
+    nas01_services = {
+      name = "nas01 Services"
+      id   = 132
+      mask = 16
+      type = "reservation"
+    }
+    nas01_pods = {
+      name = "nas01 Pods"
+      id   = 133
+      mask = 16
+      type = "reservation"
+    }
+    nas02_services = {
+      name = "nas02 Services"
+      id   = 134
+      mask = 16
+      type = "reservation"
+    }
+    nas02_pods = {
+      name = "nas02 Pods"
+      id   = 135
+      mask = 16
       type = "reservation"
     }
   }

@@ -33,27 +33,28 @@ locals {
     }
   }
 
+  unifi_default_network_id = 100
   unifi_networks = {
     main = {
       name          = "Main"
-      id            = 1
+      id            = 101
       type          = "unrestricted"
       wifi          = true
       multicast_dns = true
     }
     guest = {
       name          = "Guest"
-      id            = 2
+      id            = 102
       purpose       = "guest"
       multicast_dns = true
     }
     lab_management = {
       name = "Lab Management"
-      id   = 9
+      id   = 105
     }
     lab = {
       name = "Lab"
-      id   = 11
+      id   = 110
     }
   }
 }
@@ -65,8 +66,9 @@ module "unifi_common" {
 module "unifi" {
   source = "../modules/unifi"
 
-  domain_name = var.domain_name
-  site_code   = "C"
+  domain_name        = var.domain_name
+  site_code          = "C"
+  default_network_id = local.unifi_default_network_id
 
   clients  = local.unifi_clients
   networks = local.unifi_networks
