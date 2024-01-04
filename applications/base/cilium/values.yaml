@@ -40,6 +40,9 @@ endpointRoutes:
 
 l2announcements:
   enabled: true
+  leaseDuration: 3s
+  leaseRenewDeadline: 1s
+  leaseRetryPeriod: 200ms
 
 wellKnownIdentities:
   enabled: true
