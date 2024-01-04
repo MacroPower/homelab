@@ -16,7 +16,10 @@ service:
   dns:
     type: LoadBalancer
     annotations:
-      metallb.universe.tf/loadBalancerIPs: '10.0.6.1'
+      io.cilium/lb-ipam-ips: 10.10.30.1,2603:6010:5300:ad01::10:1
+    labels:
+      announcement-policy: l2-10gbps-only
+    ipFamilyPolicy: RequireDualStack
     ports:
       tcp:
         enabled: true

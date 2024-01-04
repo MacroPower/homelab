@@ -2,22 +2,23 @@
 apiVersion: "cilium.io/v2alpha1"
 kind: CiliumL2AnnouncementPolicy
 metadata:
-  name: 10gbpsOnly
+  name: 10gbps-only
 spec:
+  serviceSelector:
+    matchLabels:
+      announcement-policy: l2-10gbps-only
   nodeSelector:
     matchExpressions:
       - key: node-role.kubernetes.io/control-plane
         operator: DoesNotExist
-  interfaces:
-    - enp5s0
-  externalIPs: false
+  externalIPs: true
   loadBalancerIPs: true
 
 ---
 apiVersion: "cilium.io/v2alpha1"
 kind: CiliumLoadBalancerIPPool
 metadata:
-  name:
+  name: main
 spec:
   cidrs:
     - cidr: "10.10.30.0/24"

@@ -1,6 +1,10 @@
 k8sServiceHost: kube.home.macro.network
 k8sServicePort: 6443
 
+k8sClientRateLimit:
+  qps: 50
+  burst: 100
+
 cluster:
   name: home
   id: 1
@@ -40,9 +44,9 @@ endpointRoutes:
 
 l2announcements:
   enabled: true
-  leaseDuration: 3s
-  leaseRenewDeadline: 1s
-  leaseRetryPeriod: 200ms
+  leaseDuration: 120s
+  leaseRenewDeadline: 60s
+  leaseRetryPeriod: 1s
 
 wellKnownIdentities:
   enabled: true
