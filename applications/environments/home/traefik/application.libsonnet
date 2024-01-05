@@ -27,7 +27,7 @@ app.withBasePath('applications/environments/home/traefik').withChartParams({
   service:
     labels:
       announcement-policy: l2-10gbps-only
-    ipFamilyPolicy: RequireDualStack
+    ipFamilyPolicy: SingleStack
 
   env:
     - name: HOST_IP

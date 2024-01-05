@@ -16,10 +16,10 @@ service:
   dns:
     type: LoadBalancer
     annotations:
-      io.cilium/lb-ipam-ips: 10.10.30.1,2603:6010:5300:ad01::10:1
+      io.cilium/lb-ipam-ips: 10.10.30.1
     labels:
       announcement-policy: l2-10gbps-only
-    ipFamilyPolicy: RequireDualStack
+    ipFamilyPolicy: SingleStack
     ports:
       tcp:
         enabled: true
