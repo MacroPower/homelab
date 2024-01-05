@@ -27,6 +27,10 @@ locals {
     tv01 = {
       mac = "74:40:be:db:a1:8c"
     }
+    tv02 = {
+      mac    = "78:80:38:a3:59:75"
+      dev_id = local.unifi_device_types.roku.dev_id
+    }
     echo01 = {
       mac    = "f0:81:73:f8:a3:b9"
       dev_id = local.unifi_device_types.echo_3rd_gen.dev_id
@@ -40,6 +44,7 @@ locals {
       id            = 101
       type          = "unrestricted"
       wifi          = true
+      wifi_profile  = "compatability"
       multicast_dns = true
     }
     guest = {
