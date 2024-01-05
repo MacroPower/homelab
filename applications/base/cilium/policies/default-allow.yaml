@@ -10,7 +10,6 @@ spec:
         operator: NotIn
         values:
           - adguard-home
-          - adguard-home-tailnet
           - tailscale-exit
   egress:
     - toEndpoints:
