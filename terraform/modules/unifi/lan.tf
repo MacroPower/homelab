@@ -73,6 +73,9 @@ resource "unifi_network" "lan" {
   # Hex doesn't play nice with padding
   ipv6_pd_prefixid = length(format("%x", each.value.id)) > 1 ? format("%x", each.value.id) : format("0%x", each.value.id)
 
+  dhcp_dns    = each.value.dns
+  dhcp_v6_dns = each.value.dns_v6
+
   lifecycle {
     ## Changes to DHCPv6 settings are not currently reflected in the controller.
     ##

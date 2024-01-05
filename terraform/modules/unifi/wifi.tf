@@ -30,6 +30,11 @@ resource "unifi_wlan" "wlan" {
   ap_group_ids  = [data.unifi_ap_group.default.id]
   user_group_id = data.unifi_user_group.default.id
 
+  uapsd             = each.value.wifi_profile != "compatability"
+  pmf_mode          = each.value.wifi_profile != "compatability" ? "optional" : "disabled"
+  wlan_band         = each.value.wifi_profile != "compatability" ? "5g" : "both"
+  multicast_enhance = true
+
   lifecycle {
     ignore_changes = [passphrase]
   }
@@ -45,6 +50,11 @@ resource "unifi_wlan" "wlan_guest" {
   network_id    = unifi_network.lan["guest"].id
   ap_group_ids  = [data.unifi_ap_group.default.id]
   user_group_id = data.unifi_user_group.default.id
+
+  uapsd             = true
+  pmf_mode          = "optional"
+  wlan_band         = "5g"
+  multicast_enhance = true
 
   lifecycle {
     ignore_changes = [passphrase]

@@ -27,7 +27,10 @@ variable "networks" {
     mask          = optional(number) // null (16) or 8-30
     purpose       = optional(string) // null (corperate) or "guest"
     wifi          = optional(bool)   // null (false) or true
+    wifi_profile  = optional(string) // null (performance) or "compatibility"
     multicast_dns = optional(bool)   // null (false) or true
+    dns           = optional(list(string))
+    dns_v6        = optional(list(string))
   }))
 }
 
