@@ -50,7 +50,7 @@ locals {
     }
     lab_management = {
       name = "Lab Management"
-      id   = 105
+      id   = 109
     }
     lab = {
       name = "Lab"
