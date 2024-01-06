@@ -63,7 +63,7 @@ resource "unifi_network" "lan" {
   dhcp_v6_start   = "::2"
   dhcp_v6_stop    = "::7d1"
 
-  ipv6_interface_type    = "pd"
+  ipv6_interface_type    = each.value.disable_ipv6 == true ? "none" : "pd"
   ipv6_pd_interface      = "wan"
   ipv6_pd_start          = "::2"
   ipv6_pd_stop           = "::7d1"

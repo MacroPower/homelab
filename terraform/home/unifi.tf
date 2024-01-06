@@ -212,9 +212,10 @@ locals {
       wifi = true
     }
     vpn = {
-      name = "VPN"
-      id   = 4
-      wifi = true
+      name         = "VPN"
+      id           = 4
+      wifi         = true
+      disable_ipv6 = true
     }
     lab_management = {
       name = "Lab Management"

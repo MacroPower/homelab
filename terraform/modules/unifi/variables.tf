@@ -29,6 +29,7 @@ variable "networks" {
     wifi          = optional(bool)   // null (false) or true
     wifi_profile  = optional(string) // null (performance) or "compatibility"
     multicast_dns = optional(bool)   // null (false) or true
+    disable_ipv6  = optional(bool)   // null (false) or true
     dns           = optional(list(string))
     dns_v6        = optional(list(string))
   }))
