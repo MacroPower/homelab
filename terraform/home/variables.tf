@@ -1,10 +1,18 @@
-variable "truenas_devices" {
-  type = map(object({
-    fqdn         = string
-    ipv4         = string
-    ssh_password = string
-    apikey       = string
-  }))
+variable "nas01_fqdn" {
+  type = string
+}
+
+variable "nas01_ipv4" {
+  type = string
+}
+
+variable "nas01_api_key" {
+  type = string
+  sensitive = true
+}
+
+variable "nas01_ssh_password" {
+  type = string
   sensitive = true
 }
 

@@ -12,10 +12,10 @@ terraform {
 module "nas01_k3s" {
   source = "./modules/truenas-k3s"
 
-  fqdn = var.truenas_devices.nas01.fqdn
-  ipv4 = var.truenas_devices.nas01.ipv4
+  fqdn = var.nas01_fqdn
+  ipv4 = var.nas01_ipv4
 
-  ssh_password = var.truenas_devices.nas01.ssh_password
+  ssh_password = var.nas01_ssh_password
 
   argocd_kustomization      = abspath("../../hack/extra/argocd")
   argocd_apps_kustomization = abspath("../../hack/extra/argocd-apps")

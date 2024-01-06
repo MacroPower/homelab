@@ -1,11 +1,7 @@
-truenas_devices = {
-  nas01 = {
-    fqdn         = "nas01.home.macro.network"
-    ipv4         = "10.10.1.1"
-    ssh_password = "${NAS01_SSH_PASSWORD}"
-    apikey       = "${NAS01_APIKEY}"
-  }
-}
+nas01_fqdn         = "nas01.home.macro.network"
+nas01_ipv4         = "10.10.1.1"
+nas01_ssh_password = "${NAS01_SSH_PASSWORD}"
+nas01_api_key      = "${NAS01_API_KEY}"
 
 unifi_username = "${UNIFI_USERNAME}"
 unifi_password = "${UNIFI_PASSWORD}"
