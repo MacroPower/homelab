@@ -191,6 +191,14 @@ locals {
       type          = "unrestricted"
       wifi          = true
       multicast_dns = true
+      dns = [
+        "10.10.30.1",
+        "10.1.0.1",
+      ]
+      dns_v6 = [
+        "2603:6010:5300:ad01::10:1",
+        "2603:6010:5300:ad0b::1",
+      ]
     }
     guest = {
       name          = "Guest"

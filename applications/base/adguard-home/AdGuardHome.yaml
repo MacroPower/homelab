@@ -19,17 +19,15 @@ dns:
   ratelimit_whitelist: []
   refuse_any: true
   upstream_dns:
-    - https://1.1.1.1/dns-query
-    - https://8.8.8.8/dns-query
-    - "[/home.macro.network/]10.0.0.1"
+    - https://dns.mullvad.net/dns-query
+    - "[/home.macro.network/]10.10.0.1"
     - "[/macaroni-snake.ts.net/]tcp://magic-dns.tailscale-operator.svc.cluster.local"
   upstream_dns_file: ""
   bootstrap_dns:
-    - 10.96.0.10
-    - 10.0.0.1
+    - 10.112.0.10
+    - 10.10.0.1
   fallback_dns:
-    - https://1.0.0.1/dns-query
-    - https://8.8.4.4/dns-query
+    - 10.10.0.1
   all_servers: true
   fastest_addr: false
   fastest_timeout: 1s
@@ -62,7 +60,7 @@ dns:
   private_networks: []
   use_private_ptr_resolvers: true
   local_ptr_upstreams:
-    - 10.0.0.1
+    - 10.10.0.1
   use_dns64: false
   dns64_prefixes: []
   serve_http3: false
