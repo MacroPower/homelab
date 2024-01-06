@@ -77,3 +77,68 @@ resource "truenas_dataset" "main" {
   }
 }
 */
+
+locals {
+  nas01_datasets = {
+    ix-applications = {}
+
+    backups = {
+      datasets = {
+        archive = {}
+        repos = {
+          comments = "Restic repositories"
+        }
+        youtube = {}
+      }
+    }
+
+    documents = {
+      datasets = {
+        books     = {}
+        magazines = {}
+        media = {
+          comments = "Photos and home videos"
+        }
+        memes  = {}
+        school = {}
+      }
+    }
+
+    documents_secure = {
+      encrypted = true
+      datasets = {
+        finance = {}
+      }
+    }
+
+    media = {
+      datasets = {
+        anime = {}
+        audio = {
+          comments = "Audiobooks and podcasts"
+        }
+        movies = {}
+        music  = {}
+        tv     = {}
+      }
+    }
+
+    public = {
+      datasets = {
+        images = {
+          comments = "Public disk images"
+        }
+      }
+    }
+
+    private = {
+      encrypted = true
+
+      datasets = {
+        vault = {
+          comments = "???"
+        }
+      }
+    }
+  }
+}
