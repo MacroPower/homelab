@@ -1,6 +1,6 @@
 output "port_profile" {
   value = {
-    for k, v in unifi_port_profile.lan : k => {
+    for k, v in merge(unifi_port_profile.lan, {disabled = unifi_port_profile.disabled}) : k => {
       id = v.id
     }
   }

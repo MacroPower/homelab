@@ -154,3 +154,10 @@ resource "unifi_firewall_rule" "drop_traffic" {
 
   dst_network_id = unifi_network.lan[each.key].id
 }
+
+resource "unifi_port_profile" "disabled" {
+  name                  = "Disabled"
+  poe_mode              = "off"
+  forward               = "disabled"
+  port_security_enabled = true
+}

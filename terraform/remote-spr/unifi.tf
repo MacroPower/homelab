@@ -51,6 +51,7 @@ locals {
       name          = "Guest"
       id            = 102
       purpose       = "guest"
+      wifi_profile  = "compatability"
       multicast_dns = true
     }
     lab_management = {
@@ -83,6 +84,47 @@ resource "unifi_device" "sw01" {
   name = "USW-Lite-8-PoE"
 
   forget_on_destroy = false
+
+  port_override {
+    number            = 1
+    name              = "Port 1"
+    native_network_id = module.unifi.default_network_id
+  }
+  port_override {
+    number          = 2
+    name            = "Port 2"
+    port_profile_id = module.unifi.port_profile["disabled"].id
+  }
+  port_override {
+    number          = 3
+    name            = "Port 3"
+    port_profile_id = module.unifi.port_profile["disabled"].id
+  }
+  port_override {
+    number            = 4
+    name              = "Port 4"
+    native_network_id = module.unifi.default_network_id
+  }
+  port_override {
+    number            = 5
+    name              = "Port 5"
+    native_network_id = module.unifi.default_network_id
+  }
+  port_override {
+    number          = 6
+    name            = "Port 6"
+    port_profile_id = module.unifi.port_profile["disabled"].id
+  }
+  port_override {
+    number          = 7
+    name            = "Port 7"
+    port_profile_id = module.unifi.port_profile["disabled"].id
+  }
+  port_override {
+    number          = 8
+    name            = "Port 8"
+    port_profile_id = module.unifi.port_profile["disabled"].id
+  }
 }
 
 resource "unifi_device" "ap01" {
@@ -106,7 +148,27 @@ resource "unifi_device" "ap01" {
 }
 
 resource "unifi_device" "ap02" {
-  name = "U6-Extender"
+  name = "U6-Extender-1"
+
+  forget_on_destroy = false
+
+  // 2ghz_channel_width                = 20
+  // 2ghz_channel                      = 11
+  // 2ghz_tx_power                     = 6
+  // 2ghz_min_rssi                     = -67
+  // 2ghz_interference_blocker_enabled = false
+
+  // 5ghz_channel_width                = auto
+  // 5ghz_channel                      = auto
+  // 5ghz_tx_power                     = 18
+  // 5ghz_min_rssi                     = -67
+  // 5ghz_interference_blocker_enabled = false
+
+  // band_steering = "off"
+}
+
+resource "unifi_device" "ap03" {
+  name = "U6-Extender-2"
 
   forget_on_destroy = false
 

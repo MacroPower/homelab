@@ -34,7 +34,7 @@ output "device_types" {
       dev_id = 24
     }
     roku = {
-      dev_id = 5104
+      dev_id = 27
     }
   }
 }
