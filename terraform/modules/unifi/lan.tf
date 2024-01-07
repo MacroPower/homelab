@@ -112,70 +112,9 @@ resource "unifi_port_profile" "lan" {
   }
 }
 
-resource "unifi_firewall_rule" "allow_related_established" {
-  for_each = merge(local.default_lan, local.lans_unrestricted)
-
-  name       = "Allow related and established to ${each.value.name}"
-  action     = "accept"
-  ruleset    = "LAN_IN"
-  protocol   = "all"
-  rule_index = 20000 + each.value.id
-
-  dst_network_id = merge({ default = unifi_network.lan_default }, unifi_network.lan)[each.key].id
-
-  state_established = true
-  state_related     = true
-}
-
-resource "unifi_firewall_rule" "allow_traffic" {
-  for_each = merge(local.default_lan, local.lans_unrestricted)
-
-  name       = "Allow traffic from ${each.value.name}"
-  action     = "accept"
-  ruleset    = "LAN_IN"
-  protocol   = "all"
-  rule_index = 21000 + each.value.id
-
-  src_network_id = merge({ default = unifi_network.lan_default }, unifi_network.lan)[each.key].id
-}
-
-resource "unifi_firewall_rule" "drop_traffic" {
-  for_each = merge(local.lans, local.lans_unrestricted)
-
-  name       = "Drop traffic to ${each.value.name}"
-  action     = "drop"
-  ruleset    = "LAN_IN"
-  protocol   = "all"
-  rule_index = 22000 + each.value.id
-
-  dst_network_id = unifi_network.lan[each.key].id
-}
-
 resource "unifi_port_profile" "disabled" {
   name                  = "Disabled"
   poe_mode              = "off"
   forward               = "disabled"
   port_security_enabled = true
-}
-
-resource "unifi_firewall_group" "lan_ipv4" {
-  for_each = merge(local.lans, local.lans_unrestricted)
-
-  name = "${each.value.name} (IPv4)"
-  type = "address-group"
-
-  members = [
-    "10.${each.value.id}.0.0/16",
-  ]
-}
-
-resource "unifi_firewall_group" "lan_ipv6" {
-  for_each = merge(local.lans, local.lans_unrestricted)
-
-  name = "${each.value.name} (IPv6)"
-  type = "ipv6-address-group"
-
-  members = [
-    "${var.ipv6_pd}${format("%02x", each.value.id)}::/64",
-  ]
 }
