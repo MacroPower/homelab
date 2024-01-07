@@ -29,9 +29,9 @@ resource "unifi_network" "lan_default" {
   dhcp_v6_start   = "::2"
   dhcp_v6_stop    = "::7d1"
 
-  ipv6_interface_type    = "pd"
+  ipv6_interface_type    = "static"
+  ipv6_static_subnet     = "${var.ipv6_pd}${format("%02x", local.default_lan.default.id)}::/64"
   ipv6_pd_interface      = "wan"
-  ipv6_pd_prefixid       = "00"
   ipv6_pd_start          = "::2"
   ipv6_pd_stop           = "::7d1"
   ipv6_ra_enable         = true
@@ -63,15 +63,14 @@ resource "unifi_network" "lan" {
   dhcp_v6_start   = "::2"
   dhcp_v6_stop    = "::7d1"
 
-  ipv6_interface_type    = each.value.disable_ipv6 == true ? "none" : "pd"
+  ipv6_interface_type    = each.value.disable_ipv6 == true ? "none" : "static"
+  ipv6_static_subnet     = "${var.ipv6_pd}${format("%02x", each.value.id)}::/64"
   ipv6_pd_interface      = "wan"
   ipv6_pd_start          = "::2"
   ipv6_pd_stop           = "::7d1"
   ipv6_ra_enable         = true
   ipv6_ra_priority       = "high"
   ipv6_ra_valid_lifetime = 0
-  # Hex doesn't play nice with padding
-  ipv6_pd_prefixid = length(format("%x", each.value.id)) > 1 ? format("%x", each.value.id) : format("0%x", each.value.id)
 
   dhcp_dns    = each.value.dns
   dhcp_v6_dns = each.value.dns_v6
@@ -96,12 +95,9 @@ resource "unifi_network" "lan_reservation" {
   dhcp_enabled    = false
   dhcp_v6_enabled = false
 
-  ipv6_interface_type = "pd"
-  ipv6_pd_interface   = "wan"
-  ipv6_pd_prefixid    = format("%x", each.value.id)
+  ipv6_interface_type = "static"
+  ipv6_static_subnet  = "${var.ipv6_pd}${format("%02x", each.value.id)}::/64"
   ipv6_ra_enable      = false
-  ipv6_pd_start       = "::2"
-  ipv6_pd_stop        = "::7d1"
 }
 
 resource "unifi_port_profile" "lan" {
@@ -160,4 +156,26 @@ resource "unifi_port_profile" "disabled" {
   poe_mode              = "off"
   forward               = "disabled"
   port_security_enabled = true
+}
+
+resource "unifi_firewall_group" "lan_ipv4" {
+  for_each = merge(local.lans, local.lans_unrestricted)
+
+  name = "${each.value.name} (IPv4)"
+  type = "address-group"
+
+  members = [
+    "10.${each.value.id}.0.0/16",
+  ]
+}
+
+resource "unifi_firewall_group" "lan_ipv6" {
+  for_each = merge(local.lans, local.lans_unrestricted)
+
+  name = "${each.value.name} (IPv6)"
+  type = "ipv6-address-group"
+
+  members = [
+    "${var.ipv6_pd}${format("%02x", each.value.id)}::/64",
+  ]
 }

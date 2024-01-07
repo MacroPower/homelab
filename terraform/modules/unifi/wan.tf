@@ -5,7 +5,7 @@ resource "unifi_network" "wan_primary" {
   wan_networkgroup           = "WAN"
   wan_type                   = "dhcp"
   wan_type_v6                = "dhcpv6"
-  wan_dhcp_v6_pd_size        = 56
+  wan_dhcp_v6_pd_size        = var.ipv6_pd_mask
   wan_egress_qos             = 0
   dhcp_lease                 = 0
   dhcp_v6_dns_auto           = false

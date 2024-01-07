@@ -74,6 +74,8 @@ module "unifi" {
 
   domain_name        = var.domain_name
   site_code          = "C"
+  ipv6_pd            = "2603:6011:5100:2e"
+  ipv6_pd_mask       = 56
   default_network_id = local.unifi_default_network_id
 
   clients  = local.unifi_clients

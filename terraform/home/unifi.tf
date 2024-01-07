@@ -278,8 +278,10 @@ module "unifi_common" {
 module "unifi" {
   source = "../modules/unifi"
 
-  domain_name = var.domain_name
-  site_code   = "H"
+  domain_name  = var.domain_name
+  site_code    = "H"
+  ipv6_pd      = "2603:6010:5300:ad"
+  ipv6_pd_mask = 56
 
   clients  = local.unifi_clients
   networks = local.unifi_networks
