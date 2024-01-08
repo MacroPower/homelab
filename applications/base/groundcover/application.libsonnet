@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='groundcover',
   repoURL='https://helm.groundcover.com',
-  targetRevision='1.6.43',
+  targetRevision='1.6.46',
   releaseName='groundcover',
   values='values.yaml'
 )
