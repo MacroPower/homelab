@@ -64,7 +64,7 @@ resource "unifi_network" "lan" {
   dhcp_v6_stop    = "::7d1"
 
   ipv6_interface_type    = each.value.disable_ipv6 == true ? "none" : "static"
-  ipv6_static_subnet     = "${var.ipv6_pd}${format("%02x", each.value.id)}::/64"
+  ipv6_static_subnet     = each.value.disable_ipv6 == true ? null : "${var.ipv6_pd}${format("%02x", each.value.id)}::/64"
   ipv6_pd_interface      = "wan"
   ipv6_pd_start          = "::2"
   ipv6_pd_stop           = "::7d1"
@@ -98,6 +98,9 @@ resource "unifi_network" "lan_reservation" {
   ipv6_interface_type = "static"
   ipv6_static_subnet  = "${var.ipv6_pd}${format("%02x", each.value.id)}::/64"
   ipv6_ra_enable      = false
+  ipv6_pd_interface   = "wan"
+  ipv6_pd_start       = "::2"
+  ipv6_pd_stop        = "::7d1"
 }
 
 resource "unifi_port_profile" "lan" {
