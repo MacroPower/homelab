@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='descheduler',
   repoURL='https://kubernetes-sigs.github.io/descheduler/',
-  targetRevision='0.28.1',
+  targetRevision='0.29.0',
   releaseName='descheduler',
   values='values.yaml'
 )
