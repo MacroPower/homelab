@@ -11,4 +11,10 @@ app.new(
   targetRevision='0.1.0',
   releaseName='tailscale-operator',
   values='values.yaml'
-)
+).withIgnoreDifferences([{
+  'group': '',
+  'kind': 'Service',
+  'name': 'magic-dns',
+  'namespace': ns.metadata.name,
+  'jsonPointers': ['/spec/externalName'],
+}])

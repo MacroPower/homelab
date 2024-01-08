@@ -26,6 +26,12 @@
     extVarsMixin:: {},
     sourceMixin:: [],
 
+    withIgnoreDifferences(ignoreDifferences=[]):: self {
+      spec+: {
+        ignoreDifferences: ignoreDifferences,
+      },
+    },
+
     withChartParams(params={}):: self {
       spec+: {
         sources: [
