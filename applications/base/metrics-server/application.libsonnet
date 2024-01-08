@@ -1,12 +1,14 @@
 local app = import '../../lib/app.libsonnet';
+local ns = import 'namespace.libsonnet';
 
 app.new(
   name='metrics-server',
   path='applications/base/metrics-server',
-  namespace='kube-system',
+  namespace=ns.metadata.name,
 ).withChart(
   name='metrics-server',
   repoURL='https://kubernetes-sigs.github.io/metrics-server/',
   targetRevision='3.11.0',
   releaseName='metrics-server',
+  values='values.yaml',
 )

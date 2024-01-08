@@ -1,0 +1,10 @@
+replicas: 1
+
+defaultArgs: ~
+
+args:
+  - --cert-dir=/tmp
+  - --kubelet-preferred-address-types=Hostname,InternalIP
+  - --kubelet-use-node-status-port
+  - --metric-resolution=15s
+  - --kubelet-insecure-tls
