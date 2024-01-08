@@ -82,63 +82,90 @@ locals {
   nas01_datasets = {
     ix-applications = {}
 
-    backups = {
+    archives = {
+      comments = "Static archives"
       datasets = {
-        archive = {}
         repos = {
           comments = "Restic repositories"
         }
-        youtube = {}
+        images = {
+          comments = "Disk images and full system backups"
+        }
+        websites = {}
+        projects = {}
       }
     }
 
     documents = {
       datasets = {
+        artwork     = {}
+        gameplay    = {}
+        memes       = {}
+        photos      = {}
+        pfps        = {}
+        school      = {}
+        screenshots = {}
+        work        = {}
+        finance = {
+          encrypted = true
+        }
+      }
+    }
+
+    literature = {
+      datasets = {
         books     = {}
+        comics    = {}
         magazines = {}
-        media = {
-          comments = "Photos and home videos"
-        }
-        memes  = {}
-        school = {}
+        manga     = {}
       }
     }
 
-    documents_secure = {
+    spaces = {
+      comments = "Storage spaces"
+      datasets = {
+        user1 = {}
+        user2 = {}
+      }
+    }
+
+    software = {
+      datasets = {
+        applications = {}
+        firmware     = {}
+        source = {
+          comments = "Source code"
+        }
+        games = {
+          comments = "Game ROMs, replays, saves"
+        }
+        systems = {
+          comments = "Operating system images"
+        }
+      }
+    }
+
+    audio = {
+      datasets = {
+        books    = {}
+        music    = {}
+        podcasts = {}
+      }
+    }
+
+    video = {
+      datasets = {
+        anime   = {}
+        movies  = {}
+        music   = {}
+        tv      = {}
+        youtube = {}
+      }
+    }
+
+    vault = {
       encrypted = true
-      datasets = {
-        finance = {}
-      }
-    }
-
-    media = {
-      datasets = {
-        anime = {}
-        audio = {
-          comments = "Audiobooks and podcasts"
-        }
-        movies = {}
-        music  = {}
-        tv     = {}
-      }
-    }
-
-    public = {
-      datasets = {
-        images = {
-          comments = "Public disk images"
-        }
-      }
-    }
-
-    private = {
-      encrypted = true
-
-      datasets = {
-        vault = {
-          comments = "???"
-        }
-      }
+      comments  = "???"
     }
   }
 }
