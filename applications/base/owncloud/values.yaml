@@ -1,0 +1,148 @@
+externalDomain: ocis.owncloud.test
+
+features:
+  externalUserManagement:
+    enabled: true
+    # -- UUID of the inital admin user.
+    # If the given value matches a user's value from `features.externalUserManagement.oidc.userIDClaim`, the admin role will be assigned.
+    # Consider that the UUID can be encoded in some LDAP deployment configurations like in .ldif files. These need to be decoded beforehand.
+    # Note: Enabling `roleAssignment` will disable `adminUUID`.
+    adminUUID: ""
+    # OpenID Connect Identity provider related settings.
+    oidc:
+      # -- Issuer URI of the OpenID Connect Identity Provider.
+      # If the IDP doesn't have valid / trusted SSL certificates, certificate validation can be disabled with the `insecure.oidcIdpInsecure` option.
+      issuerURI: https://idp.owncloud.test/realms/ocis
+      # -- Link to the OIDC provider's user accessible session management. This will be shown to the user on the personal account page.
+      # When using Keycloak with the a realm named "ocis" this could point to eg. https://keycloak.owncloud.test/realms/ocis/account/
+      sessionManagementLink: ""
+      # -- Link to the OIDC provider's user accessible account editing page. This will be shown to the user on the personal account page.
+      # When using Keycloak with the a realm named "ocis" this could point to eg. https://keycloak.owncloud.test/realms/ocis/account/
+      editAccountLink: ""
+      # -- Specify the client ID which the web frontend will use
+      webClientID: web
+      # -- Claim to take an unique user identifier from. It will be used to look up the user on the LDAP server.
+      userIDClaim: ocis.user.uuid
+      # -- Attribute mapping of for the userIDClaim.
+      # Set to `userid` if the claim specified in `...oidc.userIDClaim` holds the value of the ldap user attribute specified in `...ldap.user.schema.id`.
+      # Set to `mail` if the claim specified in `...oidc.userIDClaim` holds the value of the ldap user attribute specified in  `...ldap.user.schema.mail`.
+      # Set to `username` if the claim specified in `...oidc.userIDClaim` holds the value of the ldap user attribute specified in `...ldap.user.schema.userName`.
+      userIDClaimAttributeMapping: userid
+
+      # -- OIDC Acces Token Verify Method
+      # Set to "jwt" or "none"
+      accessTokenVerifyMethod: "jwt"
+
+      # -- Configure OIDC role assignment. If activated, oCIS will read the role assigment from the OIDC token, see
+      # xref:{s-path}/proxy.adoc#automatic-role-assignments[Automatic Role Assignments]
+      roleAssignment:
+        enabled: false
+        # -- The name of the OIDC claim holding the role assignment
+        claim: roles
+        # -- Configure the mapping for the role assignment
+        mapping:
+          - role_name: admin
+            claim_value: ocisAdmin
+          - role_name: spaceadmin
+            claim_value: ocisSpaceAdmin
+          - role_name: user
+            claim_value: ocisUser
+          - role_name: guest
+            claim_value: ocisGuest
+    # LDAP related settings.
+    ldap:
+      # -- Writeable configures if oCIS is allowed to write to the LDAP server, to eg. create or edit users.
+      writeable: true
+      # -- If the LDAP server is set to writable in general, some user attributes can be restricted to read only in the UI.
+      # Note: This only disables editing in the UI. The readonly permissions need to be enforced in the LDAP server itself.
+      readOnlyAttributes:
+        []
+        # - user.onPremisesSamAccountName # username
+        # - user.displayName # display name
+        # - user.mail # mail
+        # - user.passwordProfile # password
+        # - user.appRoleAssignments # role
+        # - user.accountEnabled # login allowed
+        # - drive.quota # quota
+      # -- URI to connect to the LDAP secure server.
+      uri: ldaps://ldaps.owncloud.test
+      # -- Set only to false, if the certificate of your LDAP secure service is not trusted.
+      # If set to false, you need to put the CA cert of the LDAP secure server into the secret referenced by "ldapCaRef"
+      certTrusted: true
+      # -- Disables SSL certificate checking for connections to the LDAP server.
+      # -- For self signed certificates, consider to put the CA cert of the LDAP secure server into the secret referenced by "ldapCaRef"
+      # Not recommended for production installations.
+      insecure: false
+      # -- DN of the user to use to bind to the LDAP server.
+      # The password for the user needs to be set in the secret referenced by `secretRefs.ldapSecretRef` as `reva-ldap-bind-password`.
+      # The user needs to have permission to list users and groups.
+      bindDN: uid=ocis,ou=system-users,dc=owncloud,dc=test
+      # -- Signals that the LDAP server has the refint plugin enabled, which makes some actions not needed.
+      refintEnabled: false
+      # -- Use the Password Modify Extended Operation for updating user passwords.
+      passwordModifyExOpEnabled: false
+      # -- If set to true, rely on the LDAP Server to generate a unique ID for users and groups, like when using 'entryUUID' as the user ID attribute.
+      useServerUUID: false
+      user:
+        schema:
+          # -- LDAP Attribute to use as the unique id for users. This should be a stable globally unique id like a UUID.
+          id: ownclouduuid
+          # -- Set this to true if the defined `id` attribute for users is of the `OCTETSTRING` syntax. This is e.g. required when using the `objectGUID` attribute of Active Directory for the user ID`s.
+          idIsOctetString: false
+          # -- LDAP Attribute to use for the email address of users.
+          mail: mail
+          # -- LDAP Attribute to use for the displayname of users.
+          displayName: displayname
+          # -- LDAP Attribute to use for username of users.
+          userName: uid
+          # -- LDAP Attribute to distinguish between 'Member' and 'Guest' users. Default is 'ownCloudUserType'.
+          userType: ownCloudUserType
+        # -- Search base DN for looking up LDAP users.
+        baseDN: ou=users,dc=owncloud,dc=com
+        # -- LDAP search scope to use when looking up users. Supported values are `base`, `one` and `sub`.
+        scope: sub
+        # -- Type of substring search filter to use for substring searches for users. Possible values: `initial` for doing prefix only searches, `final` for doing suffix only searches or `any` for doing full substring searches
+        substringFilterType: any
+        # -- LDAP filter to add to the default filters for user search like `(objectclass=ownCloud)`.
+        filter:
+        # -- The object class to use for users in the default user search filter like `inetOrgPerson`.
+        objectClass: inetOrgPerson
+      group:
+        schema:
+          # -- LDAP Attribute to use as the unique ID for groups. This should be a stable globally unique ID like a UUID.
+          id: ownclouduuid
+          # -- Set this to true if the defined `id` attribute for groups is of the `OCTETSTRING` syntax. This is e.g. required when using the `objectGUID` attribute of Active Directory for the group ID`s.
+          idIsOctetString: false
+          # -- LDAP Attribute to use for the email address of groups (can be empty).
+          mail: mail
+          # -- LDAP Attribute to use for the displayname of groups (often the same as groupname attribute).
+          displayName: cn
+          # -- LDAP Attribute to use for the name of groups.
+          groupName: cn
+          # -- LDAP Attribute that is used for group members.
+          member: member
+        # -- Search base DN for looking up LDAP groups.
+        baseDN: ou=groups,dc=owncloud,dc=com
+        # -- BaseDN where new groups are created and are considered as editable.
+        # All existing groups with a DN outside the `features.externalUserManagement.ldap.group.createBaseDN` will be treated as read-only groups.
+        # Defaults to the value `features.externalUserManagement.ldap.group.baseDN`.
+        # Only applicable if `features.externalUserManagement.ldap.writeable` is set to `true`
+        createBaseDN: ""
+        # -- LDAP search scope to use when looking up groups. Supported values are `base`, `one` and `sub`.
+        scope: sub
+        # -- LDAP filter to add to the default filters for group searches.
+        filter:
+        # -- The object class to use for groups in the default group search filter like `groupOfNames`.
+        objectClass: groupOfNames
+      # -- When using external user management, users can be set as disabled by either belonging to a group or using an ldap attribute.
+      disableUsers:
+        # -- Enables disabling users if configured as "attribute" or "group"
+        disableMechanism: none
+        # -- Attribute to use for disabling users.
+        userEnabledAttribute: ownCloudUserEnabled
+        # -- Group that a user can be added to and by that being marked as disabled.
+        disabledUsersGroupDN: "cn=DisabledUsersGroup,ou=groups,o=libregraph-idm"
+
+monitoring:
+  # -- Enable service monitoring.
+  enabled: true
