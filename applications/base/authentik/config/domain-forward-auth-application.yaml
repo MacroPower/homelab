@@ -1,0 +1,84 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: domainforwardauthapplications.application.authentik.crossplane.io
+spec:
+  group: application.authentik.crossplane.io
+  names:
+    kind: DomainForwardAuthApplication
+    plural: domainforwardauthapplications
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties: {}
+            status:
+              type: object
+              properties:
+                authProviderID:
+                  type: string
+
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: authentik-domain-forward-auth-application
+spec:
+  compositeTypeRef:
+    apiVersion: application.authentik.crossplane.io/v1alpha1
+    kind: DomainForwardAuthApplication
+  resources:
+    - name: DomainForwardAuthProvider
+      base:
+        apiVersion: provider.authentik.crossplane.io/v1alpha1
+        kind: Proxy
+        spec:
+          providerConfigRef:
+            name: authentik
+          forProvider:
+            name: domain-forward-auth-provider
+            cookieDomain: "home.macro.network"
+            externalHost: "https://authentik.home.macro.network"
+            mode: forward_domain
+            # Kind of workaround for https://github.com/goauthentik/authentik/issues/6886
+            accessTokenValidity: "minutes=60"
+            authorizationFlowRef:
+              name: explicit-consent
+      patches:
+        - type: ToCompositeFieldPath
+          fromFieldPath: metadata.annotations['crossplane.io/external-name']
+          toFieldPath: status.authProviderID
+
+    - name: Application
+      base:
+        apiVersion: authentik.crossplane.io/v1alpha1
+        kind: Application
+        spec:
+          providerConfigRef:
+            name: authentik
+          forProvider:
+            name: domain-forward-auth-application
+      patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: status.authProviderID
+          toFieldPath: spec.forProvider.protocolProvider
+          transforms:
+            - type: convert
+              convert:
+                toType: int
+
+---
+apiVersion: application.authentik.crossplane.io/v1alpha1
+kind: DomainForwardAuthApplication
+metadata:
+  name: authentik-domain-forward-auth-application
+spec:
+  compositionRef:
+    name: authentik-domain-forward-auth-application
