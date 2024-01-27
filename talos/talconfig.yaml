@@ -25,6 +25,7 @@ nodes:
       - "10.10.0.1"
       - "2603:6010:5300:ad01::1"
     nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az01
     networkInterfaces:
@@ -45,6 +46,7 @@ nodes:
     disableSearchDomain: *disableSearchDomain
     nameservers: *nameservers
     nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az02
     networkInterfaces:
@@ -62,6 +64,7 @@ nodes:
     disableSearchDomain: *disableSearchDomain
     nameservers: *nameservers
     nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az03
     networkInterfaces:
@@ -78,6 +81,7 @@ nodes:
     installDisk: /dev/sda
     nameservers: *nameservers
     nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 10g
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az01
     networkInterfaces:
@@ -94,6 +98,7 @@ nodes:
     disableSearchDomain: *disableSearchDomain
     nameservers: *nameservers
     nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 10g
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az02
     networkInterfaces:
@@ -110,6 +115,7 @@ nodes:
     disableSearchDomain: *disableSearchDomain
     nameservers: *nameservers
     nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 10g
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az03
     networkInterfaces:

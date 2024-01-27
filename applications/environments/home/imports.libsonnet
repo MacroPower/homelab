@@ -29,6 +29,7 @@
   import 'local-ai/application.libsonnet',
   import 'loki/application.libsonnet',
   import 'metrics-server/application.libsonnet',
+  import 'node-feature-discovery/application.libsonnet',
   import 'odigos/application.libsonnet',
   import 'opentelemetry-collector/application.libsonnet',
   import 'opentelemetry-operator/application.libsonnet',
