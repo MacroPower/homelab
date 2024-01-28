@@ -81,6 +81,7 @@ nodes:
     installDisk: /dev/sda
     nameservers: *nameservers
     nodeLabels:
+      bgp.kubernetes.macro.network/peer_group: cbgp
       feature.node.kubernetes.io/network.max-link-speed: 10g
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az01
@@ -98,6 +99,7 @@ nodes:
     disableSearchDomain: *disableSearchDomain
     nameservers: *nameservers
     nodeLabels:
+      bgp.kubernetes.macro.network/peer_group: cbgp
       feature.node.kubernetes.io/network.max-link-speed: 10g
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az02
@@ -115,6 +117,7 @@ nodes:
     disableSearchDomain: *disableSearchDomain
     nameservers: *nameservers
     nodeLabels:
+      bgp.kubernetes.macro.network/peer_group: cbgp
       feature.node.kubernetes.io/network.max-link-speed: 10g
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az03

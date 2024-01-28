@@ -42,11 +42,8 @@ endpointRoutes:
   ##
   enabled: false
 
-l2announcements:
+bgpControlPlane:
   enabled: true
-  leaseDuration: 120s
-  leaseRenewDeadline: 60s
-  leaseRetryPeriod: 1s
 
 wellKnownIdentities:
   enabled: true

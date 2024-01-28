@@ -1,0 +1,46 @@
+---
+apiVersion: "cilium.io/v2alpha1"
+kind: CiliumBGPPeeringPolicy
+metadata:
+  name: cbgp
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  nodeSelector:
+    matchLabels:
+      bgp.kubernetes.macro.network/peer_group: cbgp
+  virtualRouters:
+    - localASN: 64512
+      exportPodCIDR: false
+      neighbors:
+        ## I'm not good at networking, but I think this is correct.
+        ## `peerAddress` is set to the router address in the network being
+        ## peered. In this case, the LoadBalancer users are on the "main" VLAN
+        ## on 10.1.0.0/16, which use 10.1.0.1 as their router address. This is
+        ## somewhat unintuitive because the cluster uses 10.10.0.1 on its VLAN.
+        ##
+        - peerAddress: "10.1.0.1/32"
+          peerASN: 64512
+          # authSecretRef: "bgp-password"
+          eBGPMultihopTTL: 1
+      serviceSelector:
+        matchExpressions:
+          - key: bgp.kubernetes.macro.network/peer_group
+            operator: In
+            values: [cbgp]
+
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: bgp-password
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: default
+  target:
+    name: bgp-password
+  data:
+    - secretKey: password
+      remoteRef:
+        key: CILIUM_BGP_PASSWORD

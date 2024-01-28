@@ -26,7 +26,7 @@ app.withBasePath('applications/environments/home/traefik').withChartParams({
 
   service:
     labels:
-      announcement-policy: l2-10gbps-only
+      bgp.kubernetes.macro.network/peer_group: cbgp
     ipFamilyPolicy: SingleStack
 
   env:
