@@ -23,6 +23,10 @@ spec:
           peerASN: 64512
           # authSecretRef: "bgp-password"
           eBGPMultihopTTL: 1
+        - peerAddress: "2603:6010:5300:ad01::/128"
+          peerASN: 64512
+          # authSecretRef: "bgp-password"
+          eBGPMultihopTTL: 1
       serviceSelector:
         matchExpressions:
           - key: bgp.kubernetes.macro.network/peer_group
