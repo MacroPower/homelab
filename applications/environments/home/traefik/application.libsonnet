@@ -27,7 +27,7 @@ app.withBasePath('applications/environments/home/traefik').withChartParams({
   service:
     labels:
       bgp.kubernetes.macro.network/peer_group: cbgp
-    ipFamilyPolicy: SingleStack
+    ipFamilyPolicy: RequireDualStack
 
   env:
     - name: HOST_IP
