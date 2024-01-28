@@ -44,6 +44,15 @@ router bgp 64512
   neighbor CBGP next-hop-self
  exit-address-family
  !
+ address-family ipv6 unicast
+  redistribute connected
+  !
+  neighbor CBGP activate
+  neighbor CBGP route-map ALLOW-ALL in
+  neighbor CBGP route-map ALLOW-ALL out
+  neighbor CBGP next-hop-self
+ exit-address-family
+ !
 route-map ALLOW-ALL permit 10
 !
 line vty
