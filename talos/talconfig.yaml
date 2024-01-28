@@ -23,7 +23,7 @@ nodes:
     disableSearchDomain: &disableSearchDomain true
     nameservers: &nameservers
       - "10.10.0.1"
-      - "2603:6010:5300:ad01::1"
+      - "2603:6010:5300:ad0a::1"
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
