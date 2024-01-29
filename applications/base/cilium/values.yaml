@@ -64,7 +64,6 @@ authentication:
       install:
         enabled: true
         namespace: cilium-spire
-        existingNamespace: true
 
 endpointStatus:
   enabled: true
