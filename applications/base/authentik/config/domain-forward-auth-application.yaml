@@ -18,7 +18,15 @@ spec:
           properties:
             spec:
               type: object
-              properties: {}
+              properties:
+                name:
+                  type: string
+                slug:
+                  type: string
+                cookieDomain:
+                  type: string
+                externalHost:
+                  type: string
             status:
               type: object
               properties:
@@ -43,9 +51,6 @@ spec:
           providerConfigRef:
             name: authentik
           forProvider:
-            name: domain-forward-auth-provider
-            cookieDomain: "home.macro.network"
-            externalHost: "https://authentik.home.macro.network"
             mode: forward_domain
             # Kind of workaround for https://github.com/goauthentik/authentik/issues/6886
             accessTokenValidity: "minutes=60"
@@ -55,6 +60,20 @@ spec:
         - type: ToCompositeFieldPath
           fromFieldPath: metadata.annotations['crossplane.io/external-name']
           toFieldPath: status.authProviderID
+        - type: FromCompositeFieldPath
+          fromFieldPath: "spec.cookieDomain"
+          toFieldPath: "spec.forProvider.cookieDomain"
+        - type: FromCompositeFieldPath
+          fromFieldPath: "spec.externalHost"
+          toFieldPath: "spec.forProvider.externalHost"
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.name
+          toFieldPath: spec.forProvider.name
+          transforms:
+            - type: string
+              string:
+                type: Format
+                fmt: "%s-domain-forward-auth"
 
     - name: Application
       base:
@@ -63,8 +82,6 @@ spec:
         spec:
           providerConfigRef:
             name: authentik
-          forProvider:
-            name: domain-forward-auth-application
       patches:
         - type: FromCompositeFieldPath
           fromFieldPath: status.authProviderID
@@ -73,6 +90,12 @@ spec:
             - type: convert
               convert:
                 toType: int
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.name
+          toFieldPath: spec.forProvider.name
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.slug
+          toFieldPath: spec.forProvider.slug
 
 ---
 apiVersion: application.authentik.crossplane.io/v1alpha1
@@ -82,3 +105,7 @@ metadata:
 spec:
   compositionRef:
     name: authentik-domain-forward-auth-application
+  name: home.macro.network
+  slug: home-macro-network
+  cookieDomain: "home.macro.network"
+  externalHost: "https://authentik.home.macro.network"
