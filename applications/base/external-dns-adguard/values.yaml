@@ -1,19 +1,36 @@
-image:
-  repository: gcr.io/k8s-staging-external-dns/external-dns
-  tag: 'v20230925-v0.13.6-100-g8251b6dd'
-  pullPolicy: IfNotPresent
-
 sources:
   - ingress
   - service
   - crd
 policy: sync
-provider: webhook
+provider:
+  name: webhook
+  webhook:
+    image:
+      # https://github.com/zekker6/external-dns-provider-adguard
+      repository: ghcr.io/zekker6/external-dns-provider-adguard
+      tag: 'v0.0.8'
+    args: []
+    env:
+      - name: ADGUARD_HOME_URL
+        value: "http://adguard-home.adguard-home.svc:3000/control/"
+      - name: ADGUARD_HOME_USER
+      - name: ADGUARD_HOME_PASS
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 3000
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
+      limits:
+        memory: 100Mi
+
 extraArgs:
   - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
   - --crd-source-kind=DNSEndpoint
   - --ingress-class=traefik
-  - --webhook-provider-url=http://external-dns-provider-adguard.external-dns.svc:8888
 
 logFormat: json
 logLevel: debug
