@@ -11,11 +11,6 @@ provider:
       repository: ghcr.io/zekker6/external-dns-provider-adguard
       tag: 'v0.0.8'
     args: []
-    env:
-      - name: ADGUARD_HOME_URL
-        value: "http://adguard-home.adguard-home.svc:3000/control/"
-      - name: ADGUARD_HOME_USER
-      - name: ADGUARD_HOME_PASS
     securityContext:
       runAsNonRoot: true
       runAsUser: 1000

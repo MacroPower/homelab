@@ -3,7 +3,7 @@ image:
   tag: 'v0.107.43'
 
 controller:
-  replicas: 3
+  replicas: 2
   # Valid options are deployment, daemonset, statefulset or cronjob
   type: statefulset
 

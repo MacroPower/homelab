@@ -11,6 +11,8 @@
   import 'crossplane/application.libsonnet',
   import 'csi-addons/application.libsonnet',
   import 'descheduler/application.libsonnet',
+  import 'external-dns-adguard-0/application.libsonnet',
+  import 'external-dns-adguard-1/application.libsonnet',
   import 'external-dns/application.libsonnet',
   import 'external-secrets/application.libsonnet',
   import 'external-services/application.libsonnet',
