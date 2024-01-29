@@ -13,7 +13,6 @@ local net = k.networking.v1;
     httpIngressPath='/',
     httpIngressPathType='Prefix',
     localIngress=true,
-    tailnetIngress=true,
     labels={},
     annotations={},
   )::
@@ -31,6 +30,7 @@ local net = k.networking.v1;
     local ingress =
       net.ingress.new(name) +
       net.ingress.mixin.metadata.withLabelsMixin(labels) +
+      net.ingress.mixin.spec.withIngressClassName('traefik') +
       net.ingress.mixin.metadata.withAnnotationsMixin(annotations {
         [if !std.objectHas(annotations, 'gethomepage.dev/siteMonitor') then 'gethomepage.dev/siteMonitor']: 'http://%s' % service,
         [if !std.objectHas(annotations, 'gethomepage.dev/external') then 'gethomepage.dev/external']: 'true',
@@ -46,26 +46,10 @@ local net = k.networking.v1;
         ),
       ]);
 
-    local tailnet =
-      net.ingress.new('%s-tailnet' % name) +
-      net.ingress.mixin.metadata.withLabelsMixin(labels) +
-      net.ingress.mixin.spec.withIngressClassName('tailscale') +
-      net.ingress.mixin.spec.withTls(net.ingressTLS.withHosts(host)) +
-      net.ingress.mixin.spec.withRules([
-        net.ingressRule.mixin.withHost(host) +
-        net.ingressRule.mixin.http.withPaths(
-          net.httpIngressPath.withPath(httpIngressPath) +
-          net.httpIngressPath.withPathType(httpIngressPathType) +
-          net.httpIngressPath.backend.service.withName(serviceName) +
-          net.httpIngressPath.backend.service.port.withNumber(servicePort)
-        ),
-      ]);
-
     [
       x
       for x in [
         if localIngress then ingress else null,
-        if tailnetIngress then tailnet else null,
       ]
       if x != null
     ],
