@@ -32,6 +32,8 @@ spec:
               properties:
                 authProviderID:
                   type: string
+                serviceConnectionID:
+                  type: string
 
 ---
 apiVersion: apiextensions.crossplane.io/v1
@@ -96,6 +98,77 @@ spec:
         - type: FromCompositeFieldPath
           fromFieldPath: spec.slug
           toFieldPath: spec.forProvider.slug
+
+    - name: ServiceConnection
+      base:
+        apiVersion: authentik.crossplane.io/v1alpha1
+        kind: ServiceConnectionKubernetes
+        spec:
+          providerConfigRef:
+            name: authentik
+          forProvider:
+            name: local
+            local: true
+      patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.name
+          toFieldPath: spec.forProvider.name
+        - type: ToCompositeFieldPath
+          fromFieldPath: metadata.annotations['crossplane.io/external-name']
+          toFieldPath: status.serviceConnectionID
+
+    - name: Outpost
+      base:
+        apiVersion: authentik.crossplane.io/v1alpha1
+        kind: Outpost
+        spec:
+          providerConfigRef:
+            name: authentik
+          forProvider:
+            name: outpost
+            type: proxy
+            protocolProviders: []
+            config: |
+              {
+                "log_level": "info",
+                "docker_labels": null,
+                "authentik_host": "https://authentik.home.macro.network",
+                "docker_network": null,
+                "container_image": null,
+                "docker_map_ports": true,
+                "kubernetes_replicas": 1,
+                "kubernetes_namespace": "authentik",
+                "authentik_host_browser": "",
+                "object_naming_template": "ak-outpost-%(name)s",
+                "authentik_host_insecure": false,
+                "kubernetes_json_patches": null,
+                "kubernetes_service_type": "ClusterIP",
+                "kubernetes_image_pull_secrets": [],
+                "kubernetes_ingress_class_name": null,
+                "kubernetes_disabled_components": [
+                  "deployment",
+                  "secret"
+                ],
+                "kubernetes_ingress_annotations": {},
+                "kubernetes_ingress_secret_name": "authentik-outpost-tls"
+              }
+      patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.name
+          toFieldPath: spec.forProvider.name
+        - type: FromCompositeFieldPath
+          fromFieldPath: status.authProviderID
+          toFieldPath: spec.forProvider.protocolProviders[0]
+          policy:
+            mergeOptions:
+              appendSlice: true
+          transforms:
+            - type: convert
+              convert:
+                toType: int
+        - type: FromCompositeFieldPath
+          fromFieldPath: status.serviceConnectionID
+          toFieldPath: spec.forProvider.serviceConnection
 
 ---
 apiVersion: application.authentik.crossplane.io/v1alpha1
