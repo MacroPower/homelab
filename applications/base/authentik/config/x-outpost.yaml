@@ -2,12 +2,12 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: domainforwardauthapplications.application.authentik.crossplane.io
+  name: xoutposts.authentik.crossplane.io
 spec:
-  group: application.authentik.crossplane.io
+  group: authentik.crossplane.io
   names:
-    kind: DomainForwardAuthApplication
-    plural: domainforwardauthapplications
+    kind: XOutpost
+    plural: xoutposts
   versions:
     - name: v1alpha1
       served: true
@@ -21,17 +21,11 @@ spec:
               properties:
                 name:
                   type: string
-                slug:
-                  type: string
-                cookieDomain:
-                  type: string
-                externalHost:
+                authProviderID:
                   type: string
             status:
               type: object
               properties:
-                authProviderID:
-                  type: string
                 serviceConnectionID:
                   type: string
 
@@ -39,66 +33,12 @@ spec:
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: authentik-domain-forward-auth-application
+  name: local-outpost
 spec:
   compositeTypeRef:
-    apiVersion: application.authentik.crossplane.io/v1alpha1
-    kind: DomainForwardAuthApplication
+    apiVersion: authentik.crossplane.io/v1alpha1
+    kind: XOutpost
   resources:
-    - name: DomainForwardAuthProvider
-      base:
-        apiVersion: provider.authentik.crossplane.io/v1alpha1
-        kind: Proxy
-        spec:
-          providerConfigRef:
-            name: authentik
-          forProvider:
-            mode: forward_domain
-            # Kind of workaround for https://github.com/goauthentik/authentik/issues/6886
-            accessTokenValidity: "minutes=60"
-            authorizationFlowRef:
-              name: explicit-consent
-      patches:
-        - type: ToCompositeFieldPath
-          fromFieldPath: metadata.annotations['crossplane.io/external-name']
-          toFieldPath: status.authProviderID
-        - type: FromCompositeFieldPath
-          fromFieldPath: "spec.cookieDomain"
-          toFieldPath: "spec.forProvider.cookieDomain"
-        - type: FromCompositeFieldPath
-          fromFieldPath: "spec.externalHost"
-          toFieldPath: "spec.forProvider.externalHost"
-        - type: FromCompositeFieldPath
-          fromFieldPath: spec.name
-          toFieldPath: spec.forProvider.name
-          transforms:
-            - type: string
-              string:
-                type: Format
-                fmt: "%s-domain-forward-auth"
-
-    - name: Application
-      base:
-        apiVersion: authentik.crossplane.io/v1alpha1
-        kind: Application
-        spec:
-          providerConfigRef:
-            name: authentik
-      patches:
-        - type: FromCompositeFieldPath
-          fromFieldPath: status.authProviderID
-          toFieldPath: spec.forProvider.protocolProvider
-          transforms:
-            - type: convert
-              convert:
-                toType: int
-        - type: FromCompositeFieldPath
-          fromFieldPath: spec.name
-          toFieldPath: spec.forProvider.name
-        - type: FromCompositeFieldPath
-          fromFieldPath: spec.slug
-          toFieldPath: spec.forProvider.slug
-
     - name: ServiceConnection
       base:
         apiVersion: authentik.crossplane.io/v1alpha1
@@ -157,7 +97,7 @@ spec:
           fromFieldPath: spec.name
           toFieldPath: spec.forProvider.name
         - type: FromCompositeFieldPath
-          fromFieldPath: status.authProviderID
+          fromFieldPath: spec.authProviderID
           toFieldPath: spec.forProvider.protocolProviders[0]
           policy:
             mergeOptions:
@@ -169,16 +109,3 @@ spec:
         - type: FromCompositeFieldPath
           fromFieldPath: status.serviceConnectionID
           toFieldPath: spec.forProvider.serviceConnection
-
----
-apiVersion: application.authentik.crossplane.io/v1alpha1
-kind: DomainForwardAuthApplication
-metadata:
-  name: authentik-domain-forward-auth-application
-spec:
-  compositionRef:
-    name: authentik-domain-forward-auth-application
-  name: home.macro.network
-  slug: home-macro-network
-  cookieDomain: "home.macro.network"
-  externalHost: "https://authentik.home.macro.network"

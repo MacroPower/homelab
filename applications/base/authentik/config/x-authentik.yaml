@@ -1,0 +1,79 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xauthentiks.authentik.crossplane.io
+spec:
+  group: authentik.crossplane.io
+  names:
+    kind: XAuthentik
+    plural: xauthentiks
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec: {}
+            status:
+              type: object
+              properties:
+                domainForwardAuthProviderID:
+                  type: string
+
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: authentik
+spec:
+  compositeTypeRef:
+    apiVersion: authentik.crossplane.io/v1alpha1
+    kind: XAuthentik
+  resources:
+    - name: XDomainForwardApplication
+      base:
+        apiVersion: authentik.crossplane.io/v1alpha1
+        kind: XDomainForwardApplication
+        metadata:
+          name: authentik-domain-forward-auth-application
+        spec:
+          compositionRef:
+            name: authentik-domain-forward-auth-application
+          name: home.macro.network
+          slug: home-macro-network
+          cookieDomain: "home.macro.network"
+          externalHost: "https://authentik.home.macro.network"
+        patches:
+          - type: ToCompositeFieldPath
+            fromFieldPath: status.authProviderID
+            toFieldPath: status.domainForwardAuthProviderID
+
+    - name: XOutpost
+      base:
+        apiVersion: authentik.crossplane.io/v1alpha1
+        kind: XOutpost
+        metadata:
+          name: outpost
+        spec:
+          compositionRef:
+            name: local-outpost
+          name: outpost
+          authProviderID: "0"
+        patches:
+          - type: FromCompositeFieldPath
+            fromFieldPath: status.domainForwardAuthProviderID
+            toFieldPath: spec.authProviderID
+
+---
+apiVersion: authentik.crossplane.io/v1alpha1
+kind: XAuthentik
+metadata:
+  name: authentik
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  compositionRef:
+    name: authentik
