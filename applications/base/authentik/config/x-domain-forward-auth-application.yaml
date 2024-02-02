@@ -42,7 +42,7 @@ metadata:
   name: authentik-domain-forward-auth-application
 spec:
   compositeTypeRef:
-    apiVersion: xapplication.crossplane.io/v1alpha1
+    apiVersion: authentik.crossplane.io/v1alpha1
     kind: XDomainForwardApplication
   resources:
     - name: DomainForwardAuthProvider

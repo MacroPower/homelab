@@ -46,10 +46,10 @@ spec:
           slug: home-macro-network
           cookieDomain: "home.macro.network"
           externalHost: "https://authentik.home.macro.network"
-        patches:
-          - type: ToCompositeFieldPath
-            fromFieldPath: status.authProviderID
-            toFieldPath: status.domainForwardAuthProviderID
+      patches:
+        - type: ToCompositeFieldPath
+          fromFieldPath: status.authProviderID
+          toFieldPath: status.domainForwardAuthProviderID
 
     - name: XOutpost
       base:
@@ -61,11 +61,10 @@ spec:
           compositionRef:
             name: local-outpost
           name: outpost
-          authProviderID: "0"
-        patches:
-          - type: FromCompositeFieldPath
-            fromFieldPath: status.domainForwardAuthProviderID
-            toFieldPath: spec.authProviderID
+      patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: status.domainForwardAuthProviderID
+          toFieldPath: spec.authProviderID
 
 ---
 apiVersion: authentik.crossplane.io/v1alpha1

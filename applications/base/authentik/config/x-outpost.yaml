@@ -79,7 +79,7 @@ spec:
                 "kubernetes_replicas": 1,
                 "kubernetes_namespace": "authentik",
                 "authentik_host_browser": "",
-                "object_naming_template": "ak-outpost-%(name)s",
+                "object_naming_template": "ak-outpost",
                 "authentik_host_insecure": false,
                 "kubernetes_json_patches": null,
                 "kubernetes_service_type": "ClusterIP",
