@@ -68,7 +68,7 @@ spec:
           name: outpost
       patches:
         - type: FromCompositeFieldPath
-          fromFieldPath: status.domainForwardApplicationID
+          fromFieldPath: status.domainForwardAuthProviderID
           toFieldPath: spec.protocolProviderID
 
 ---

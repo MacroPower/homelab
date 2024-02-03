@@ -47,12 +47,9 @@ spec:
           providerConfigRef:
             name: authentik
           forProvider:
-            name: local
+            name: cluster-local
             local: true
       patches:
-        - type: FromCompositeFieldPath
-          fromFieldPath: spec.name
-          toFieldPath: spec.forProvider.name
         - type: ToCompositeFieldPath
           fromFieldPath: metadata.annotations['crossplane.io/external-name']
           toFieldPath: status.serviceConnectionID
@@ -61,11 +58,14 @@ spec:
       base:
         apiVersion: authentik.crossplane.io/v1alpha1
         kind: Outpost
+        metadata:
+          annotations:
+            crossplane.io/external-name: default_settings
         spec:
           providerConfigRef:
             name: authentik
           forProvider:
-            name: outpost
+            name: authentik Embedded Outpost
             type: proxy
             protocolProviders: []
             config: |
@@ -93,9 +93,6 @@ spec:
                 "kubernetes_ingress_secret_name": "authentik-outpost-tls"
               }
       patches:
-        - type: FromCompositeFieldPath
-          fromFieldPath: spec.name
-          toFieldPath: spec.forProvider.name
         - type: FromCompositeFieldPath
           fromFieldPath: spec.protocolProviderID
           toFieldPath: spec.forProvider.protocolProviders[0]
