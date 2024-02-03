@@ -21,7 +21,7 @@ spec:
               properties:
                 name:
                   type: string
-                authProviderID:
+                protocolProviderID:
                   type: string
             status:
               type: object
@@ -97,7 +97,7 @@ spec:
           fromFieldPath: spec.name
           toFieldPath: spec.forProvider.name
         - type: FromCompositeFieldPath
-          fromFieldPath: spec.authProviderID
+          fromFieldPath: spec.protocolProviderID
           toFieldPath: spec.forProvider.protocolProviders[0]
           policy:
             mergeOptions:

@@ -34,6 +34,8 @@ spec:
                   type: string
                 serviceConnectionID:
                   type: string
+                applicationID:
+                  type: string
 
 ---
 apiVersion: apiextensions.crossplane.io/v1
@@ -85,6 +87,9 @@ spec:
           providerConfigRef:
             name: authentik
       patches:
+        - type: ToCompositeFieldPath
+          fromFieldPath: metadata.annotations['crossplane.io/external-name']
+          toFieldPath: status.applicationID
         - type: FromCompositeFieldPath
           fromFieldPath: status.authProviderID
           toFieldPath: spec.forProvider.protocolProvider

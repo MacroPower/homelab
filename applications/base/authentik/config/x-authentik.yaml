@@ -22,6 +22,8 @@ spec:
               properties:
                 domainForwardAuthProviderID:
                   type: string
+                domainForwardApplicationID:
+                  type: string
 
 ---
 apiVersion: apiextensions.crossplane.io/v1
@@ -50,6 +52,9 @@ spec:
         - type: ToCompositeFieldPath
           fromFieldPath: status.authProviderID
           toFieldPath: status.domainForwardAuthProviderID
+        - type: ToCompositeFieldPath
+          fromFieldPath: status.applicationID
+          toFieldPath: status.domainForwardApplicationID
 
     - name: XOutpost
       base:
@@ -63,8 +68,8 @@ spec:
           name: outpost
       patches:
         - type: FromCompositeFieldPath
-          fromFieldPath: status.domainForwardAuthProviderID
-          toFieldPath: spec.authProviderID
+          fromFieldPath: status.domainForwardApplicationID
+          toFieldPath: spec.protocolProviderID
 
 ---
 apiVersion: authentik.crossplane.io/v1alpha1
