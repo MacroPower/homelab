@@ -1,13 +1,5 @@
 ---
 apiVersion: cert-manager.io/v1
-kind: Issuer
-metadata:
-  name: selfsigned-issuer
-spec:
-  selfSigned: {}
-
----
-apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: dns-cert
@@ -16,6 +8,7 @@ spec:
   duration: 2160h0m0s # 90d
   renewBefore: 720h0m0s # 30d
   issuerRef:
-    name: selfsigned-issuer
+    kind: ClusterIssuer
+    name: cloudflare-issuer
   dnsNames:
     - dns.home.macro.network

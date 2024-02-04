@@ -28,7 +28,5 @@ ingress.new(
   servicePort=3000,
   tlsSecretName='dns-cert',
   httpIngressPath='/dns-query',
-  annotations=ingressAnnotations {
-    'cert-manager.io/issuer': 'letsencrypt-prod',
-  },
+  annotations=ingressAnnotations,
 )
