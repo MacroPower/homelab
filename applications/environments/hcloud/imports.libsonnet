@@ -17,6 +17,7 @@
   import 'prometheus/application.libsonnet',
   import 'rclone-restic/application.libsonnet',
   import 'tailscale-operator/application.libsonnet',
+  import 'template-controller/application.libsonnet',
   import 'traefik/application.libsonnet',
   import 'vpa/application.libsonnet',
 ]
