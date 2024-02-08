@@ -57,12 +57,14 @@ loadBalancer:
     backend: envoy
 
 # https://docs.cilium.io/en/stable/network/servicemesh/mutual-authentication/mutual-authentication/
+# Note: In the current cluster configuration there is a circular dependency
+# between SPIRE, Cilium, and Rook-Ceph.
 authentication:
   mutual:
     spire:
-      enabled: true
+      enabled: false
       install:
-        enabled: true
+        enabled: false
         namespace: cilium-spire
 
 endpointStatus:
