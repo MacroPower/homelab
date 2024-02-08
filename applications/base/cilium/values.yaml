@@ -50,11 +50,10 @@ wellKnownIdentities:
 
 # For L7-aware traffic management, see
 # https://docs.cilium.io/en/stable/network/servicemesh/l7-traffic-management/#installation
-envoyConfig:
-  enabled: true
 loadBalancer:
-  l7:
-    backend: envoy
+  algorithm: maglev
+  mode: dsr
+  serviceTopology: true
 
 # https://docs.cilium.io/en/stable/network/servicemesh/mutual-authentication/mutual-authentication/
 # Note: In the current cluster configuration there is a circular dependency
