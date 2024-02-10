@@ -1,8 +1,21 @@
 k8sServiceHost: kube.home.macro.network
 k8sServicePort: 6443
 
+## Configure the client side rate limit for the agent and operator
+##
+## If the amount of requests to the Kubernetes API server exceeds the configured
+## rate limit, the agent and operator will start to throttle requests by
+## delaying them until there is budget or the request times out.
+##
 k8sClientRateLimit:
+  ## (int) The sustained request rate in requests per second.
+  ## @default -- 5 for k8s up to 1.26. 10 for k8s version 1.27+
+  ##
   qps: 50
+  ## (int) The burst request rate in requests per second.
+  ## The rate limiter will allow short bursts with a higher rate.
+  ## @default -- 10 for k8s up to 1.26. 20 for k8s version 1.27+
+  ##
   burst: 100
 
 cluster:
@@ -44,31 +57,25 @@ endpointRoutes:
 
 bgpControlPlane:
   enabled: true
+  secretsNamespace:
+    create: true
+    name: cilium-bgp
 
 wellKnownIdentities:
   enabled: true
 
-# For L7-aware traffic management, see
-# https://docs.cilium.io/en/stable/network/servicemesh/l7-traffic-management/#installation
 loadBalancer:
   algorithm: maglev
   mode: dsr
   serviceTopology: true
 
-# https://docs.cilium.io/en/stable/network/servicemesh/mutual-authentication/mutual-authentication/
-# Note: In the current cluster configuration there is a circular dependency
-# between SPIRE, Cilium, and Rook-Ceph.
-authentication:
-  mutual:
-    spire:
-      enabled: false
-      install:
-        enabled: false
-        namespace: cilium-spire
-
 endpointStatus:
   enabled: true
   status: "policy health controllers log state"
+
+## Enable BPF clock source probing for more efficient tick retrieval.
+##
+bpfClockProbe: false
 
 operator:
   replicas: 2
@@ -87,7 +94,11 @@ prometheus:
     trustCRDsExist: true
 
 hubble:
-  enabled: true
+  ## TODO: Broken in 1.15, needs a patch for:
+  ## spec.template.spec.containers[0].livenessProbe.grpc: Forbidden: may not specify more than 1 handler type
+  ## spec.template.spec.containers[0].readinessProbe.grpc: Forbidden: may not specify more than 1 handler type
+  ##
+  enabled: false
 
   # -- Hubble metrics configuration.
   # See https://docs.cilium.io/en/stable/observability/metrics/#hubble-metrics
@@ -106,7 +117,7 @@ hubble:
       enabled: true
 
   relay:
-    enabled: true
+    enabled: false
     replicas: 2
     rollOutPods: true
     prometheus:
@@ -116,7 +127,7 @@ hubble:
     resources: {}
 
   ui:
-    enabled: true
+    enabled: false
     replicas: 2
     rollOutPods: true
     ingress:

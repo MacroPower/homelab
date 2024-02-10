@@ -5,13 +5,13 @@ cluster:
   name: home
   id: 1
 
-ipv6:
-  enabled: true
-
 ipam:
   mode: kubernetes
 
 kubeProxyReplacement: strict
+
+ipv6:
+  enabled: true
 
 externalIPs:
   enabled: true
@@ -22,36 +22,21 @@ nodePort:
 hostPort:
   enabled: true
 
-# -- Roll out cilium agent pods automatically when configmap is updated.
+## Roll out cilium pods automatically when configmap is updated, a la reloader.
+##
 rollOutCiliumPods: true
 
+## Routing configuration.
+## See https://docs.cilium.io/en/stable/network/concepts/routing/
+##
+autoDirectNodeRoutes: true
+routingMode: native
 ipv4NativeRoutingCIDR: 10.128.0.0/14
 ipv6NativeRoutingCIDR: 2603:6010:5300:ad80::/64
-
-# -- Enable installation of PodCIDR routes between worker
-# nodes if worker nodes share a common L2 network segment.
-autoDirectNodeRoutes: true
-tunnel: disabled
-
-l2announcements:
-  enabled: true
-
-# Enables cilium-envoy DaemonSet, by default envoy is run in the cilium pods.
-envoy:
-  enabled: true
-  prometheus:
-    enabled: false
-    serviceMonitor:
-      enabled: false
-  resources: {}
-
-# For L7-aware traffic management, see
-# https://docs.cilium.io/en/stable/network/servicemesh/l7-traffic-management/#installation
-envoyConfig:
-  enabled: true
-loadBalancer:
-  l7:
-    backend: envoy
+endpointRoutes:
+  ## Route per endpoint instead of using the cilium_host interface.
+  ##
+  enabled: false
 
 operator:
   replicas: 2
@@ -70,44 +55,7 @@ prometheus:
     trustCRDsExist: true
 
 hubble:
-  enabled: true
-
-  # -- Hubble metrics configuration.
-  # See https://docs.cilium.io/en/stable/observability/metrics/#hubble-metrics
-  # for more comprehensive documentation about Hubble metrics.
-  metrics:
-    enabled:
-      - dns
-      - drop
-      - tcp
-      - flow
-      - port-distribution
-      - icmp
-      - httpV2:exemplars=true;labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction
-    enableOpenMetrics: true
-    serviceMonitor:
-      enabled: false
-
-  relay:
-    enabled: true
-    replicas: 2
-    rollOutPods: true
-    prometheus:
-      enabled: false
-      serviceMonitor:
-        enabled: false
-    resources: {}
-
-  ui:
-    enabled: true
-    replicas: 2
-    rollOutPods: true
-    ingress:
-      enabled: false
-    frontend:
-      resources: {}
-    backend:
-      resources: {}
+  enabled: false
 
 securityContext:
   capabilities:
