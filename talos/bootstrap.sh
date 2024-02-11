@@ -30,4 +30,4 @@ kubectl certificate approve $(kubectl get csr --sort-by=.metadata.creationTimest
 
 talosctl health -n $INITIAL_NODE
 
-eval $(doppler run -p talhelper -c main -- talhelper gencommand apply --extra-flags "-i")
+./apply.sh

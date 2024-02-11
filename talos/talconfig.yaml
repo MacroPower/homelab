@@ -1,12 +1,15 @@
 clusterName: home
-talosVersion: v1.6.1
-kubernetesVersion: v1.28.4
+talosVersion: v1.6.4
+kubernetesVersion: v1.29.1
 endpoint: https://kube.home.macro.network:6443
 cniConfig:
   name: none
 
 additionalMachineCertSans:
   - kube.home.macro.network
+  - 127.0.0.1
+additionalApiServerCertSans:
+  - 127.0.0.1
 
 clusterSvcNets:
   - 10.112.0.0/12
@@ -20,10 +23,6 @@ nodes:
     ipAddress: 10.10.10.1
     controlPlane: true
     installDisk: &rpiMmcDevice /dev/mmcblk0
-    disableSearchDomain: &disableSearchDomain true
-    nameservers: &nameservers
-      - "10.10.0.1"
-      - "2603:6010:5300:ad0a::1"
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
@@ -32,8 +31,8 @@ nodes:
       - deviceSelector: &rpiNetDevice
           driver: bcmgenet
           hardwareAddr: "e4:5f:01:*"
-        dhcp: true
-        dhcpOptions:
+        dhcp: &dhcp true
+        dhcpOptions: &dhcpOptions
           ipv4: true
           ipv6: true
         vip: &vip
@@ -43,43 +42,34 @@ nodes:
     ipAddress: 10.10.10.2
     controlPlane: true
     installDisk: *rpiMmcDevice
-    disableSearchDomain: *disableSearchDomain
-    nameservers: *nameservers
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az02
     networkInterfaces:
       - deviceSelector: *rpiNetDevice
-        dhcp: true
-        dhcpOptions:
-          ipv4: true
-          ipv6: true
+        dhcp: *dhcp
+        dhcpOptions: *dhcpOptions
         vip: *vip
 
   - hostname: knode03.home.macro.network
     ipAddress: 10.10.10.3
     controlPlane: true
     installDisk: *rpiMmcDevice
-    disableSearchDomain: *disableSearchDomain
-    nameservers: *nameservers
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az03
     networkInterfaces:
       - deviceSelector: *rpiNetDevice
-        dhcp: true
-        dhcpOptions:
-          ipv4: true
-          ipv6: true
+        dhcp: *dhcp
+        dhcpOptions: *dhcpOptions
         vip: *vip
 
   - hostname: knode13.home.macro.network
     ipAddress: 10.10.10.13
     controlPlane: false
     installDisk: /dev/sda
-    nameservers: *nameservers
     nodeLabels:
       bgp.kubernetes.macro.network/peer_group: cbgp
       feature.node.kubernetes.io/network.max-link-speed: 10g
@@ -87,17 +77,19 @@ nodes:
       topology.kubernetes.io/zone: az01
     networkInterfaces:
       - interface: enp5s0
-        dhcp: true
-        dhcpOptions:
-          ipv4: true
-          ipv6: true
+        dhcp: *dhcp
+        dhcpOptions: *dhcpOptions
+    schematic: &M11SDVschematic
+      customization:
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/i915-ucode
+            - siderolabs/intel-ucode
 
   - hostname: knode14.home.macro.network
     ipAddress: 10.10.10.14
     controlPlane: false
     installDisk: /dev/sda
-    disableSearchDomain: *disableSearchDomain
-    nameservers: *nameservers
     nodeLabels:
       bgp.kubernetes.macro.network/peer_group: cbgp
       feature.node.kubernetes.io/network.max-link-speed: 10g
@@ -105,17 +97,14 @@ nodes:
       topology.kubernetes.io/zone: az02
     networkInterfaces:
       - interface: enp5s0
-        dhcp: true
-        dhcpOptions:
-          ipv4: true
-          ipv6: true
+        dhcp: *dhcp
+        dhcpOptions: *dhcpOptions
+    schematic: *M11SDVschematic
 
   - hostname: knode15.home.macro.network
     ipAddress: 10.10.10.15
     controlPlane: false
     installDisk: /dev/sda
-    disableSearchDomain: *disableSearchDomain
-    nameservers: *nameservers
     nodeLabels:
       bgp.kubernetes.macro.network/peer_group: cbgp
       feature.node.kubernetes.io/network.max-link-speed: 10g
@@ -123,64 +112,82 @@ nodes:
       topology.kubernetes.io/zone: az03
     networkInterfaces:
       - interface: enp5s0
-        dhcp: true
-        dhcpOptions:
-          ipv4: true
-          ipv6: true
+        dhcp: *dhcp
+        dhcpOptions: *dhcpOptions
+    schematic: *M11SDVschematic
 
 controlPlane:
-  inlinePatch:
-    cluster:
-      apiServer:
-        disablePodSecurityPolicy: true
-        admissionControl: []
-      controllerManager:
-        extraArgs:
-          bind-address: 0.0.0.0
-          ## Node CIDR mask size for IPv4 and IPv6.
-          ## One unique subnet of this size will be cut from the clusterPodNets
-          ## for every node.
-          ##
-          node-cidr-mask-size-ipv4: "20"
-          ## The IPv6 node cidr mask size MUST be within 16 bits of the
-          ## clusterPodNets IPv6cidr. By default, the clusterPodNets IPv6 mask
-          ## size is 48 and the clusterPodNets IPv6 cidr is /64 (48+16).
-          ##
-          node-cidr-mask-size-ipv6: "80"
-          allocate-node-cidrs: "true"
-      etcd:
-        extraArgs:
-          listen-metrics-urls: http://0.0.0.0:2381
-      scheduler:
-        extraArgs:
-          bind-address: 0.0.0.0
-      proxy:
-        # Replaced by Cillium.
-        disabled: true
-    machine:
-      kubelet:
-        extraArgs:
-          feature-gates: MemoryQoS=true,SidecarContainers=true
-          #rotate-server-certificates: true
-      install:
-        extraKernelArgs:
-          - "talos.logging.kernel=udp://syslog.home.macro.network:6050/"
-      logging:
-        destinations:
-          - endpoint: "udp://syslog.home.macro.network:6051/"
-            format: json_lines
+  nameservers: &nameservers
+    - "10.10.0.1"
+    - "2603:6010:5300:ad0a::"
+  disableSearchDomain: &disableSearchDomain true
+  schematic:
+    customization:
+      extraKernelArgs: &extraKernelArgs
+        - "talos.logging.kernel=udp://syslog.home.macro.network:6050/"
+  patches:
+    - |-
+      - op: replace
+        path: /cluster/apiServer/admissionControl
+        value: []
+    - |-
+      cluster:
+        controllerManager:
+          extraArgs:
+            bind-address: 0.0.0.0
+            ## Node CIDR mask size for IPv4 and IPv6.
+            ## One unique subnet of this size will be cut from the clusterPodNets
+            ## for every node.
+            ##
+            node-cidr-mask-size-ipv4: "20"
+            ## The IPv6 node cidr mask size MUST be within 16 bits of the
+            ## clusterPodNets IPv6cidr. By default, the clusterPodNets IPv6 mask
+            ## size is 48 and the clusterPodNets IPv6 cidr is /64 (48+16).
+            ##
+            node-cidr-mask-size-ipv6: "80"
+            allocate-node-cidrs: "true"
+    - |-
+      cluster:
+        etcd:
+          extraArgs:
+            listen-metrics-urls: http://0.0.0.0:2381
+    - |-
+      cluster:
+        scheduler:
+          extraArgs:
+            bind-address: 0.0.0.0
+    - |-
+      cluster:
+        proxy:
+          # Replaced by Cillium.
+          disabled: true
+    - &machineKubelet |-
+      machine:
+        kubelet:
+          extraArgs:
+            feature-gates: MemoryQoS=true,SidecarContainers=true
+            #rotate-server-certificates: true
+    - &machineLogging |-
+      machine:
+        logging:
+          destinations:
+            - endpoint: "udp://syslog.home.macro.network:6051/"
+              format: json_lines
 
 worker:
-  inlinePatch:
-    machine:
-      kubelet:
-        extraArgs:
-          feature-gates: MemoryQoS=true,SidecarContainers=true
-          #rotate-server-certificates: true
-      install:
-        extraKernelArgs:
-          - "talos.logging.kernel=udp://syslog.home.macro.network:6050/"
-      logging:
-        destinations:
-          - endpoint: "udp://syslog.home.macro.network:6051/"
-            format: json_lines
+  nameservers: *nameservers
+  disableSearchDomain: *disableSearchDomain
+  schematic:
+    customization:
+      extraKernelArgs: *extraKernelArgs
+  patches:
+    - *machineKubelet
+    - *machineLogging
+    - |-
+      - op: replace
+        path: /machine/ca/key
+        value: "${CERTS_OS_KEY}"
+    - |-
+      - op: replace
+        path: /cluster/ca/key
+        value: "${CERTS_K8S_KEY}"
