@@ -1,0 +1,11 @@
+# https://github.com/komodorio/komoplane/blob/main/charts/komoplane/values.yaml
+
+replicaCount: 2
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 1
+    memory: 1Gi
