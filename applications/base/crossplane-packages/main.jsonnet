@@ -1,5 +1,5 @@
 // jsonnet base/crossplane-packages/main.jsonnet -J vendor
 
-[]
-+ std.parseYaml(importstr 'authentik.yaml')
-+ std.parseYaml(importstr 'sql.yaml')
+local providers = import 'providers/main.libsonnet';
+
+providers
