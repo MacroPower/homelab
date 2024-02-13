@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='odigos',
   repoURL='https://keyval-dev.github.io/odigos-charts/',
-  targetRevision='0.2.39',
+  targetRevision='0.3.0',
   releaseName='odigos',
   values='values.yaml'
 )
