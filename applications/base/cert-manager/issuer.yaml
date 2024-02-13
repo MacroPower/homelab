@@ -1,142 +1,35 @@
 ---
-apiVersion: kubernetes.crossplane.io/v1alpha1
-kind: ProviderConfig
+apiVersion: templates.kluctl.io/v1alpha1
+kind: ObjectTemplate
 metadata:
-  name: kubernetes-provider
+  name: cloudflare-issuer-template
 spec:
-  credentials:
-    source: InjectedIdentity
-
----
-apiVersion: apiextensions.crossplane.io/v1
-kind: CompositeResourceDefinition
-metadata:
-  name: cloudflareissuers.cert-manager.crossplane.io
-spec:
-  group: cert-manager.crossplane.io
-  names:
-    kind: CloudflareIssuer
-    plural: cloudflareissuers
-  versions:
-    - name: v1alpha1
-      served: true
-      referenceable: true
-      schema:
-        openAPIV3Schema:
-          type: object
-          properties:
-            spec:
-              type: object
-              properties:
-                name:
-                  type: string
-                secretKeyRef:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    namespace:
-                      type: string
-            status:
-              type: object
-              properties:
-                email:
-                  type: string
-
----
-apiVersion: apiextensions.crossplane.io/v1
-kind: Composition
-metadata:
-  name: cloudflare-issuer
-spec:
-  compositeTypeRef:
-    apiVersion: cert-manager.crossplane.io/v1alpha1
-    kind: CloudflareIssuer
-  resources:
-    - name: cloudflare-secret
-      base:
-        apiVersion: kubernetes.crossplane.io/v1alpha2
-        kind: Object
+  interval: 1m
+  serviceAccountName: cloudflare-issuer-template
+  prune: true
+  matrix:
+    - name: cloudflareCredentials
+      object:
+        ref:
+          apiVersion: v1
+          kind: Secret
+          name: cloudflare-credentials
+  templates:
+    - object:
+        apiVersion: cert-manager.io/v1
+        kind: ClusterIssuer
+        metadata:
+          name: cloudflare-issuer
         spec:
-          providerConfigRef:
-            name: kubernetes-provider
-          managementPolicies: ["Observe"]
-          forProvider:
-            manifest:
-              apiVersion: v1
-              kind: Secret
-              metadata:
-                name: ""
-                namespace: ""
-      patches:
-        - type: ToCompositeFieldPath
-          fromFieldPath: "status.atProvider.manifest.data.email"
-          toFieldPath: "status.email"
-          transforms:
-            - type: string
-              string:
-                type: Convert
-                convert: "FromBase64"
-        - type: FromCompositeFieldPath
-          fromFieldPath: "spec.secretKeyRef.name"
-          toFieldPath: "spec.forProvider.manifest.metadata.name"
-        - type: FromCompositeFieldPath
-          fromFieldPath: "spec.secretKeyRef.namespace"
-          toFieldPath: "spec.forProvider.manifest.metadata.namespace"
-    - name: cloudflare-issuer
-      base:
-        apiVersion: kubernetes.crossplane.io/v1alpha2
-        kind: Object
-        spec:
-          providerConfigRef:
-            name: kubernetes-provider
-          forProvider:
-            manifest:
-              apiVersion: cert-manager.io/v1
-              kind: ClusterIssuer
-              spec:
-                acme:
-                  email: ""
-                  server: https://acme-v02.api.letsencrypt.org/directory
-                  privateKeySecretRef:
-                    name: ""
-                  solvers:
-                    - dns01:
-                        email: ""
-                        cloudflare:
-                          apiTokenSecretRef:
-                            name: ""
-                            key: apiToken
-      patches:
-        - type: FromCompositeFieldPath
-          fromFieldPath: "spec.secretKeyRef.name"
-          toFieldPath: "spec.forProvider.manifest.spec.acme.solvers[0].dns01.cloudflare.apiTokenSecretRef.name"
-        - type: FromCompositeFieldPath
-          fromFieldPath: "spec.name"
-          toFieldPath: "spec.forProvider.manifest.spec.acme.privateKeySecretRef.name"
-          transforms:
-            - type: string
-              string:
-                type: Format
-                fmt: "%s-account-key"
-        - type: FromCompositeFieldPath
-          fromFieldPath: "status.email"
-          toFieldPath: "spec.forProvider.manifest.spec.acme.email"
-        - type: FromCompositeFieldPath
-          fromFieldPath: "status.email"
-          toFieldPath: "spec.forProvider.manifest.spec.acme.solvers[0].dns01.email"
-
----
-apiVersion: cert-manager.crossplane.io/v1alpha1
-kind: CloudflareIssuer
-metadata:
-  name: cloudflare-issuer
-  annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-spec:
-  compositionRef:
-    name: cloudflare-issuer
-  name: cloudflare-issuer
-  secretKeyRef:
-    name: cloudflare-credentials
-    namespace: cert-manager
+          acme:
+            email: "{{ matrix.cloudflareCredentials.data.email | b64decode }}"
+            server: https://acme-v02.api.letsencrypt.org/directory
+            privateKeySecretRef:
+              name: cloudflare-issuer-account-key
+            solvers:
+              - dns01:
+                  cloudflare:
+                    email: "{{ matrix.cloudflareCredentials.data.email | b64decode }}"
+                    apiTokenSecretRef:
+                      name: cloudflare-credentials
+                      key: apiToken
