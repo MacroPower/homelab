@@ -21,7 +21,7 @@ instrumentor:
     - kube-system
   image:
     repository: ghcr.io/keyval-dev/odigos/instrumentor
-    tag: v1.0.0
+    tag: v1.0.2
 
 odiglet:
   image:
