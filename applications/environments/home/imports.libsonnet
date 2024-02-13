@@ -20,7 +20,6 @@
   import 'goldilocks/application.libsonnet',
   import 'grafana-operator/application.libsonnet',
   import 'grafana/application.libsonnet',
-  import 'groundcover/application.libsonnet',
   import 'homepage/application.libsonnet',
   import 'iperf/application.libsonnet',
   import 'jaeger-aio/application.libsonnet',
