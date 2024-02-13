@@ -16,7 +16,9 @@ configs:
       - apiGroups:
           - cilium.io
         kinds:
+          - CiliumEndpoint
           - CiliumIdentity
+          - PodInfo
         clusters:
           - "*"
       - apiGroups:
