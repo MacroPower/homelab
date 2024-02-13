@@ -25,7 +25,18 @@ spec:
         openAPIV3Schema:
           type: object
           properties:
-            spec: {}
+            spec:
+              type: object
+              properties:
+                name:
+                  type: string
+                secretKeyRef:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    namespace:
+                      type: string
             status:
               type: object
               properties:
@@ -42,7 +53,7 @@ spec:
     apiVersion: cert-manager.crossplane.io/v1alpha1
     kind: CloudflareIssuer
   resources:
-    - name: secret
+    - name: cloudflare-secret
       base:
         apiVersion: kubernetes.crossplane.io/v1alpha2
         kind: Object
@@ -50,14 +61,13 @@ spec:
           providerConfigRef:
             name: kubernetes-provider
           managementPolicies: ["Observe"]
-          deletionPolicy: Orphan
           forProvider:
             manifest:
               apiVersion: v1
               kind: Secret
               metadata:
-                name: cloudflare-credentials
-                namespace: cert-manager
+                name: ""
+                namespace: ""
       patches:
         - type: ToCompositeFieldPath
           fromFieldPath: "status.atProvider.manifest.data.email"
@@ -67,6 +77,12 @@ spec:
               string:
                 type: Convert
                 convert: "FromBase64"
+        - type: FromCompositeFieldPath
+          fromFieldPath: "spec.secretKeyRef.name"
+          toFieldPath: "spec.forProvider.manifest.metadata.name"
+        - type: FromCompositeFieldPath
+          fromFieldPath: "spec.secretKeyRef.namespace"
+          toFieldPath: "spec.forProvider.manifest.metadata.namespace"
     - name: cloudflare-issuer
       base:
         apiVersion: kubernetes.crossplane.io/v1alpha2
@@ -78,23 +94,34 @@ spec:
             manifest:
               apiVersion: cert-manager.io/v1
               kind: ClusterIssuer
-              metadata:
-                name: cloudflare-issuer
               spec:
                 acme:
+                  email: ""
                   server: https://acme-v02.api.letsencrypt.org/directory
                   privateKeySecretRef:
-                    name: cloudflare-issuer-account-key
+                    name: ""
                   solvers:
                     - dns01:
+                        email: ""
                         cloudflare:
                           apiTokenSecretRef:
-                            name: cloudflare-credentials
+                            name: ""
                             key: apiToken
       patches:
         - type: FromCompositeFieldPath
+          fromFieldPath: "spec.secretKeyRef.name"
+          toFieldPath: "spec.forProvider.manifest.spec.acme.solvers[0].dns01.cloudflare.apiTokenSecretRef.name"
+        - type: FromCompositeFieldPath
+          fromFieldPath: "spec.name"
+          toFieldPath: "spec.forProvider.manifest.spec.acme.privateKeySecretRef.name"
+          transforms:
+            - type: string
+              string:
+                type: Format
+                fmt: "%s-account-key"
+        - type: FromCompositeFieldPath
           fromFieldPath: "status.email"
-          toFieldPath: "spec.forProvider.manifest.acme.email"
+          toFieldPath: "spec.forProvider.manifest.spec.acme.email"
         - type: FromCompositeFieldPath
           fromFieldPath: "status.email"
           toFieldPath: "spec.forProvider.manifest.spec.acme.solvers[0].dns01.email"
@@ -109,3 +136,7 @@ metadata:
 spec:
   compositionRef:
     name: cloudflare-issuer
+  name: cloudflare-issuer
+  secretKeyRef:
+    name: cloudflare-credentials
+    namespace: cert-manager
