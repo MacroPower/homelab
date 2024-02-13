@@ -150,6 +150,52 @@ configs:
             end
           end
 
+      "templates.kluctl.io/*":
+        health.lua: |
+          health_status = {
+            status = "Progressing",
+            message = "Provisioning ..."
+          }
+
+          local function contains (table, val)
+            for i, v in ipairs(table) do
+              if v == val then
+                return true
+              end
+            end
+            return false
+          end
+
+          if obj.status == nil or obj.status.conditions == nil then
+            return health_status
+          end
+
+          for i, condition in ipairs(obj.status.conditions) do
+            if condition.type == "LastAsyncOperation" then
+              if condition.status == "False" then
+                health_status.status = "Degraded"
+                health_status.message = condition.message
+                return health_status
+              end
+            end
+
+            if condition.type == "Synced" then
+              if condition.status == "False" then
+                health_status.status = "Degraded"
+                health_status.message = condition.message
+                return health_status
+              end
+            end
+
+            if contains({"Ready", "Healthy", "Offered", "Established"}, condition.type) then
+              if condition.status == "True" then
+                health_status.status = "Healthy"
+                health_status.message = "Resource is up-to-date."
+                return health_status
+              end
+            end
+          end
+
           return health_status
 
   ## Argo CD configuration parameters
