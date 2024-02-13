@@ -26,7 +26,7 @@ instrumentor:
 odiglet:
   image:
     repository: ghcr.io/keyval-dev/odigos/odiglet
-    tag: v1.0.0
+    tag: v1.0.2
 
 telemetry:
   enabled: true
