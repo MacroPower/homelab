@@ -1,6 +1,6 @@
 module github.com/MacroPower/homelab/applications/.flux
 
-go 1.21.4
+go 1.22.0
 
 require (
 	github.com/google/go-jsonnet v0.20.0
