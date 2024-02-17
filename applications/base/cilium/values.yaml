@@ -94,11 +94,7 @@ prometheus:
     trustCRDsExist: true
 
 hubble:
-  ## TODO: Broken in 1.15, needs a patch for:
-  ## spec.template.spec.containers[0].livenessProbe.grpc: Forbidden: may not specify more than 1 handler type
-  ## spec.template.spec.containers[0].readinessProbe.grpc: Forbidden: may not specify more than 1 handler type
-  ##
-  enabled: false
+  enabled: true
 
   # -- Hubble metrics configuration.
   # See https://docs.cilium.io/en/stable/observability/metrics/#hubble-metrics
@@ -117,7 +113,7 @@ hubble:
       enabled: true
 
   relay:
-    enabled: false
+    enabled: true
     replicas: 2
     rollOutPods: true
     prometheus:
@@ -127,7 +123,7 @@ hubble:
     resources: {}
 
   ui:
-    enabled: false
+    enabled: true
     replicas: 2
     rollOutPods: true
     ingress:
