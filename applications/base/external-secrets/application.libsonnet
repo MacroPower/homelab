@@ -7,7 +7,7 @@ app.new(
 ).withChart(
   name='external-secrets',
   repoURL='https://charts.external-secrets.io',
-  targetRevision='0.9.12',
+  targetRevision='0.9.13',
   releaseName='external-secrets',
   values='values.yaml'
 )
