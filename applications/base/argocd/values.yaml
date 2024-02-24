@@ -227,6 +227,7 @@ configs:
   params:
     server.insecure: true
     server.disable.auth: true
+    controller.diff.server.side: "true"
 
 redis:
   resources: &RedisResources
