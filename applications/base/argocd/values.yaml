@@ -171,6 +171,8 @@ configs:
             end
           end
 
+          return health_status
+
       "templates.kluctl.io/*":
         health.lua: |
           health_status = {
