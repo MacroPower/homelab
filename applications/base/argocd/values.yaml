@@ -239,10 +239,20 @@ redis-ha:
   enabled: true
   replicas: 3
   hardAntiAffinity: false
+  topologySpreadConstraints:
+    enabled: true
+    maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
   redis:
     resources: *RedisResources
   haproxy:
-    hardAntiAffinity: false
+    replicas: 2
+    hardAntiAffinity: true
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
 
 controller:
   replicas: 3
