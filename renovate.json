@@ -3,6 +3,8 @@
   "extends": [
     "config:base"
   ],
+  "prHourlyLimit": 0,
+  "separateMajorMinor": false,
   "regexManagers": [
     {
       "fileMatch": [
