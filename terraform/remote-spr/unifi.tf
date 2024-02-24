@@ -5,7 +5,7 @@ locals {
 
 module "unifi_device_types" {
   source  = "cloudposse/config/yaml//modules/deepmerge"
-  version = "0.2.0"
+  version = "0.8.1"
   maps = [
     module.unifi_common.device_types,
     local.unifi_extra_device_types,
