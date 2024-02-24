@@ -27,6 +27,7 @@
   import 'k8s-event-logger/application.libsonnet',
   import 'k8up/application.libsonnet',
   import 'komoplane/application.libsonnet',
+  import 'kyverno/application.libsonnet',
   import 'librespeed/application.libsonnet',
   import 'local-ai/application.libsonnet',
   import 'loki/application.libsonnet',

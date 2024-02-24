@@ -27,6 +27,15 @@ configs:
           - ProviderConfigUsage
         clusters:
           - "*"
+      - apiGroups:
+          - kyverno.io
+        kinds:
+          - AdmissionReport
+          - BackgroundScanReport
+          - ClusterAdmissionReport
+          - ClusterBackgroundScanReport
+        clusters:
+          - '*'
     resource.customizations: |
       "*.upbound.io/*":
         health.lua: |

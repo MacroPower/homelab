@@ -1,5 +1,5 @@
 {
-  new(name, path, namespace, project='default', renderer='jsonnet'):: {
+  new(name, path, namespace, project='default', renderer='jsonnet', syncOptions=[]):: {
     local this = self,
 
     apiVersion: 'argoproj.io/v1alpha1',
@@ -18,6 +18,9 @@
           prune: true,
           selfHeal: true,
         },
+        syncOptions: [
+          'ServerSideApply=true',
+        ] + syncOptions,
       },
     },
 
