@@ -9,3 +9,21 @@ cleanupController:
 
 reportsController:
   replicas: 2
+  extraArgs:
+    ## Defines whether to obey the ConfigMap’s resourceFilters when performing
+    ## background report scans. When set to true, anything defined in the
+    ## resourceFilters will not be excluded in background reports. Ex., when set
+    ## to true if the resourceFilters contain the [*/*,kube-system,*] entry then
+    ## background scan reports will be produced for anything in the kube-system
+    ## Namespace. Set this value to false to obey resourceFilters in background
+    ## scan reports. Ex., when set to false if the resourceFilters contain the
+    ## [*/*,kube-system,*] entry then background scan reports will NOT be
+    ## produced for anything in the kube-system Namespace.
+    ##
+    skipResourceFilters: false
+
+config:
+  resourceFilters:
+    - "[*/*,argocd,*]"
+    - "[*/*,cilium,*]"
+    - "[*/*,cilium-bgp,*]"

@@ -1,0 +1,35 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: spread-pods
+  annotations:
+    policies.kyverno.io/title: Spread Pods Across Nodes
+    policies.kyverno.io/category: Sample
+    policies.kyverno.io/subject: Deployment, StatefulSet, Pod
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/description: >-
+      Deployments to a Kubernetes cluster with multiple availability zones often
+      need to distribute those replicas to align with those zones to ensure
+      site-level failures do not impact availability. This policy matches
+      Deployments with two or more replicas and mutates them to spread Pods
+      across zones.
+spec:
+  rules:
+    - name: spread-pods-across-nodes
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+                - StatefulSet
+      mutate:
+        patchStrategicMerge:
+          spec:
+            <(replicas): ">=2"
+            template:
+              spec:
+                # Adds the topologySpreadConstraints field if non-existent in the request.
+                +(topologySpreadConstraints):
+                  - maxSkew: 1
+                    topologyKey: topology.kubernetes.io/zone
+                    whenUnsatisfiable: ScheduleAnyway

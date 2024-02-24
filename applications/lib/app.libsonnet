@@ -1,11 +1,12 @@
 {
-  new(name, path, namespace, project='default', renderer='jsonnet', syncOptions=[]):: {
+  new(name, path, namespace, project='default', renderer='jsonnet', syncOptions=[], annotations={}):: {
     local this = self,
 
     apiVersion: 'argoproj.io/v1alpha1',
     kind: 'Application',
     metadata: {
       name: name,
+      annotations: annotations,
     },
     spec: {
       project: project,
