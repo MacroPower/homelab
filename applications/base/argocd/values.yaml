@@ -238,8 +238,11 @@ redis:
 redis-ha:
   enabled: true
   replicas: 3
+  hardAntiAffinity: false
   redis:
     resources: *RedisResources
+  haproxy:
+    hardAntiAffinity: false
 
 controller:
   replicas: 3
