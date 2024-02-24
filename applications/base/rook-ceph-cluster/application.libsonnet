@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='rook-ceph-cluster',
   repoURL='https://charts.rook.io/release',
-  targetRevision='v1.13.4',
+  targetRevision='v1.13.5',
   releaseName='rook-ceph-cluster',
   values='values.yaml'
 )
