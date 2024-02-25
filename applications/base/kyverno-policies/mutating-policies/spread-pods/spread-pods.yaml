@@ -1,0 +1,76 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: spread-pods
+  annotations:
+    policies.kyverno.io/title: Spread Pods Across Nodes
+    policies.kyverno.io/category: Defaults
+    policies.kyverno.io/subject: Deployment, StatefulSet, Pod
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/description: >-
+      Deployments to a Kubernetes cluster with multiple availability zones often
+      need to distribute those replicas to align with those zones to ensure
+      site-level failures do not impact availability. This policy matches
+      Deployments with two or more replicas and mutates them to spread Pods
+      across zones.
+spec:
+  rules:
+    - name: spread-deployment-across-zones
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+      preconditions: &preconditions
+        all:
+          - key: "{{request.object.spec.replicas}}"
+            operator: GreaterThanOrEquals
+            value: 2
+        any:
+          # Check if the topologySpreadConstraints field already exists. This is
+          # done in the precondition because of the "tracking" managed-by field.
+          - key: "{{request.object.spec.template.spec.topologySpreadConstraints || ''}}"
+            operator: Equals
+            value: ""
+          - key: >-
+              {{request.object.metadata.labels."topology.jacobcolvin.com/managed-by"}}
+            operator: Equals
+            value: "kyverno"
+      mutate:
+        patchesJson6902: |-
+          - path: "/metadata/labels/topology.jacobcolvin.com~1managed-by"
+            op: add
+            value: kyverno
+          - path: "/spec/template/spec/topologySpreadConstraints"
+            op: add
+            value:
+              - maxSkew: 1
+                minDomains: 2
+                topologyKey: topology.kubernetes.io/zone
+                labelSelector: {{request.object.spec.selector}}
+                matchLabelKeys:
+                  - pod-template-hash
+                whenUnsatisfiable: DoNotSchedule
+
+    - name: spread-statefulset-across-zones
+      match:
+        any:
+          - resources:
+              kinds:
+                - StatefulSet
+      preconditions: *preconditions
+      mutate:
+        patchesJson6902: |-
+          - path: "/metadata/labels/topology.jacobcolvin.com~1managed-by"
+            op: add
+            value: kyverno
+          - path: "/spec/template/spec/topologySpreadConstraints"
+            op: add
+            value:
+              - maxSkew: 1
+                minDomains: 2
+                topologyKey: topology.kubernetes.io/zone
+                labelSelector: {{request.object.spec.selector}}
+                matchLabelKeys:
+                  - controller-revision-hash
+                whenUnsatisfiable: DoNotSchedule

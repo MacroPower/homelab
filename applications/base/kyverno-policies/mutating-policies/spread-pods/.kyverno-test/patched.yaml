@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: my-statefulset
+  labels:
+    topology.jacobcolvin.com/managed-by: "kyverno"
+spec:
+  serviceName: "my-service"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          minDomains: 2
+          topologyKey: topology.kubernetes.io/zone
+          labelSelector:
+            matchLabels:
+              app: my-app
+          matchLabelKeys:
+            - controller-revision-hash
+          whenUnsatisfiable: DoNotSchedule
+      containers:
+        - name: my-app
+          image: my-app:1.0.0
