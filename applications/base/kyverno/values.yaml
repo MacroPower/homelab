@@ -1,11 +1,32 @@
 admissionController:
   replicas: 3
+  resources:
+    requests:
+      cpu: 100m
+      memory: 500Mi
+    limits:
+      cpu: 2000m
+      memory: 2Gi
 
 backgroundController:
   replicas: 2
+  resources:
+    requests:
+      cpu: 100m
+      memory: 500Mi
+    limits:
+      cpu: 2000m
+      memory: 1Gi
 
 cleanupController:
   replicas: 2
+  resources:
+    requests:
+      cpu: 50m
+      memory: 500Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
 
 reportsController:
   replicas: 2
@@ -21,6 +42,13 @@ reportsController:
     ## produced for anything in the kube-system Namespace.
     ##
     skipResourceFilters: false
+  resources:
+    requests:
+      cpu: 50m
+      memory: 500Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
 
 config:
   resourceFilters:
