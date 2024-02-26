@@ -1,0 +1,70 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/kyverno/v1.11.4/config/crds/kyverno.io_clusterpolicies.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: create-pdb
+  annotations:
+    policies.kyverno.io/title: Create Pod Disruption Budget
+    policies.kyverno.io/category: Defaults
+    kyverno.io/kyverno-version: 1.6.2
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/subject: Deployment
+    policies.kyverno.io/description: >-
+      A PodDisruptionBudget limits the number of Pods of a replicated
+      application that are down simultaneously from voluntary disruptions. For
+      example, a quorum-based application would like to ensure that the number
+      of replicas running is never brought below the number needed for a quorum.
+      As an application owner, you can create a PodDisruptionBudget (PDB) for
+      each application. This policy will create a PDB resource whenever a new
+      Deployment is created.
+spec:
+  generateExisting: true
+  rules:
+    - name: create-default-pdb
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+                - StatefulSet
+      context:
+        - name: pdb_count
+          apiCall:
+            urlPath: "/apis/policy/v1/namespaces/{{request.namespace}}/poddisruptionbudgets"
+            jmesPath: >-
+              items[?label_match(spec.selector.matchLabels, `{{request.object.spec.template.metadata.labels}}`)]
+              | length(@)
+        # - name: managed_pdb_count
+        #   apiCall:
+        #     urlPath: "/apis/policy/v1/namespaces/{{request.namespace}}/poddisruptionbudgets"
+        #     jmesPath: >-
+        #       items[?label_match(spec.selector.matchLabels, `{{request.object.spec.template.metadata.labels}}`)]
+        #       | label_match(@, `pdb.jacobcolvin.com/managed-by=kyverno`)
+        #       | length(@)
+      preconditions:
+        all:
+          - key: "{{pdb_count}}"
+            operator: LessThan
+            value: 1
+          - key: "{{request.object.spec.replicas}}"
+            operator: GreaterThanOrEquals
+            value: 2
+      generate:
+        synchronize: true
+        apiVersion: policy/v1
+        kind: PodDisruptionBudget
+        name: "{{request.object.metadata.name}}-default-pdb"
+        namespace: "{{request.object.metadata.namespace}}"
+        data:
+          metadata:
+            annotations:
+              argocd.argoproj.io/compare-options: IgnoreExtraneous
+              argocd.argoproj.io/tracking-id: >-
+                {{
+                  regex_replace_all(':.*:.*$', '{{request.object.metadata.annotations."argocd.argoproj.io/tracking-id"}}', '')
+                }}:policy/PodDisruptionBudget:{{request.object.metadata.namespace}}/{{request.object.metadata.name}}-default-pdb
+            labels:
+              pdb.defaults.jacobcolvin.com/managed-by: kyverno
+          spec:
+            minAvailable: 1
+            selector: "{{request.object.spec.selector}}"

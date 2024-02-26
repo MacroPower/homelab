@@ -33,12 +33,16 @@ spec:
             operator: Equals
             value: ""
           - key: >-
-              {{request.object.metadata.labels."topology.jacobcolvin.com/managed-by"}}
+              {{request.object.metadata.labels."topology.jacobcolvin.com/managed-by" || ''}}
+            operator: Equals
+            value: "kyverno"
+          - key: >-
+              {{request.object.metadata.labels."topology.defaults.jacobcolvin.com/managed-by" || ''}}
             operator: Equals
             value: "kyverno"
       mutate:
         patchesJson6902: |-
-          - path: "/metadata/labels/topology.jacobcolvin.com~1managed-by"
+          - path: "/metadata/labels/topology.defaults.jacobcolvin.com~1managed-by"
             op: add
             value: kyverno
           - path: "/spec/template/spec/topologySpreadConstraints"
@@ -61,7 +65,7 @@ spec:
       preconditions: *preconditions
       mutate:
         patchesJson6902: |-
-          - path: "/metadata/labels/topology.jacobcolvin.com~1managed-by"
+          - path: "/metadata/labels/topology.defaults.jacobcolvin.com~1managed-by"
             op: add
             value: kyverno
           - path: "/spec/template/spec/topologySpreadConstraints"
