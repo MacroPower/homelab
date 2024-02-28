@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/kyverno/v1.11.4/config/crds/kyverno.io_clusterpolicies.yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -34,13 +33,6 @@ spec:
             jmesPath: >-
               items[?label_match(spec.selector.matchLabels, `{{request.object.spec.template.metadata.labels}}`)]
               | length(@)
-        # - name: managed_pdb_count
-        #   apiCall:
-        #     urlPath: "/apis/policy/v1/namespaces/{{request.namespace}}/poddisruptionbudgets"
-        #     jmesPath: >-
-        #       items[?label_match(spec.selector.matchLabels, `{{request.object.spec.template.metadata.labels}}`)]
-        #       | label_match(@, `pdb.jacobcolvin.com/managed-by=kyverno`)
-        #       | length(@)
       preconditions:
         all:
           - key: "{{pdb_count}}"
@@ -64,7 +56,7 @@ spec:
                   regex_replace_all(':.*:.*$', '{{request.object.metadata.annotations."argocd.argoproj.io/tracking-id"}}', '')
                 }}:policy/PodDisruptionBudget:{{request.object.metadata.namespace}}/{{request.object.metadata.name}}-default-pdb
             labels:
-              pdb.defaults.jacobcolvin.com/managed-by: kyverno
+              app.kubernetes.io/managed-by: kyverno
           spec:
             minAvailable: 1
             selector: "{{request.object.spec.selector}}"
