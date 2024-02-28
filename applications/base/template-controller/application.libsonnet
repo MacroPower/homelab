@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='template-controller',
   repoURL='https://kluctl.github.io/charts',
-  targetRevision='0.2.4',
+  targetRevision='0.2.5',
   releaseName='template-controller',
   values='values.yaml'
 )
