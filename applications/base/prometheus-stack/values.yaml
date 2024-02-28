@@ -1079,9 +1079,9 @@ prometheus:
     resources:
       requests:
         cpu: 250m
-        memory: 6Gi
+        memory: 10Gi
       limits:
-        memory: 6Gi
+        memory: 10Gi
 
     additionalScrapeConfigs:
       - job_name: "linkerd-controller"
