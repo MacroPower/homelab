@@ -1,10 +1,18 @@
-# Use custom serviceMonitor.
-serviceMonitor:
-  enabled: false
-metrics:
-  service:
-    enabled: true
+replicaCount: 2
+leaderElect: true
+
+webhook:
+  replicaCount: 2
 
 # Disable this when support for cert-manager is added.
 certController:
   create: true
+  replicaCount: 2
+
+# Use custom serviceMonitor.
+serviceMonitor:
+  enabled: false
+
+metrics:
+  service:
+    enabled: true
