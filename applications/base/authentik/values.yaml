@@ -1,26 +1,68 @@
 authentik:
   log_level: info
+  postgres:
+    host: "{{ .Release.Name }}-postgresql"
+  redis:
+    host: "{{ .Release.Name }}-redis-master"
 
-  # email:
-  #  # https://goauthentik.io/docs/installation/configuration#authentik_email
-
-prometheus:
-  serviceMonitor:
-    create: true
+server:
+  replicas: 2
+  serviceMonitor: &serviceMonitor
+    enabled: true
     interval: 30s
     scrapeTimeout: 3s
-  rules:
-    create: true
+  env: &env
+    - name: AUTHENTIK_SECRET_KEY
+      valueFrom:
+        secretKeyRef:
+          name: authentik-credentials
+          key: AUTHENTIK_SECRET_KEY
+    - name: AUTHENTIK_BOOTSTRAP_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: authentik-credentials
+          key: AUTHENTIK_BOOTSTRAP_PASSWORD
+    - name: AUTHENTIK_BOOTSTRAP_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: authentik-credentials
+          key: AUTHENTIK_BOOTSTRAP_TOKEN
+    - name: AUTHENTIK_BOOTSTRAP_EMAIL
+      valueFrom:
+        secretKeyRef:
+          name: authentik-credentials
+          key: AUTHENTIK_BOOTSTRAP_EMAIL
+    - name: AUTHENTIK_REDIS__PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: authentik-credentials
+          key: AUTHENTIK_REDIS_PASS
+    - name: AUTHENTIK_POSTGRESQL__PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: authentik-postgres-credentials
+          key: postgresql-password
+  resources:
+    requests:
+      cpu: 50m
+      memory: 1Gi
+    limits:
+      memory: 1Gi
 
-geoip:
-  # -- optional GeoIP, deploys a cronjob to download the maxmind database
-  enabled: false
-  # -- sign up under https://www.maxmind.com/en/geolite2/signup
-  accountId: ""
-  # -- sign up under https://www.maxmind.com/en/geolite2/signup
-  licenseKey: ""
-  # -- number of hours between update runs
-  updateInterval: 8
+worker:
+  replicas: 2
+  serviceMonitor: *serviceMonitor
+  env: *env
+  resources:
+    requests:
+      cpu: 10m
+      memory: 500Mi
+    limits:
+      memory: 500Mi
+
+prometheus:
+  rules:
+    enabled: true
 
 postgresql:
   enabled: true
@@ -37,58 +79,10 @@ redis:
     enabled: true
     existingSecret: authentik-credentials
     existingSecretPasswordKey: AUTHENTIK_REDIS_PASS
+  sentinel:
+    enabled: false
   master:
     persistence:
       enabled: true
       accessModes:
         - ReadWriteOnce
-
-# -- List of config maps to mount blueprints from. Only keys in the
-# configmap ending with ".yaml" wil be discovered and applied
-blueprints: []
-
-# -- see configuration options at https://goauthentik.io/docs/installation/configuration/
-env: {}
-# AUTHENTIK_VAR_NAME: VALUE
-
-envFrom: []
-#  - configMapRef:
-#      name: special-config
-
-envValueFrom:
-  AUTHENTIK_SECRET_KEY:
-    secretKeyRef:
-      key: AUTHENTIK_SECRET_KEY
-      name: authentik-credentials
-  AUTHENTIK_BOOTSTRAP_PASSWORD:
-    secretKeyRef:
-      key: AUTHENTIK_BOOTSTRAP_PASSWORD
-      name: authentik-credentials
-  AUTHENTIK_BOOTSTRAP_TOKEN:
-    secretKeyRef:
-      key: AUTHENTIK_BOOTSTRAP_TOKEN
-      name: authentik-credentials
-  AUTHENTIK_BOOTSTRAP_EMAIL:
-    secretKeyRef:
-      key: AUTHENTIK_BOOTSTRAP_EMAIL
-      name: authentik-credentials
-  AUTHENTIK_REDIS__PASSWORD:
-    secretKeyRef:
-      key: AUTHENTIK_REDIS_PASS
-      name: authentik-credentials
-  AUTHENTIK_POSTGRESQL__PASSWORD:
-    secretKeyRef:
-      key: postgresql-password
-      name: authentik-postgres-credentials
-
-service:
-  # -- Service that is created to access authentik
-  enabled: true
-  type: ClusterIP
-  port: 80
-  name: http
-  protocol: TCP
-  # labels:
-  #   mirror.linkerd.io/exported: 'true'
-  # annotations:
-  #   argocd.argoproj.io/compare-options: IgnoreExtraneous

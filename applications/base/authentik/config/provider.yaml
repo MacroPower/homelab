@@ -16,7 +16,7 @@ spec:
       data:
         credentials: |
           {
-            "url": "http://authentik.authentik.svc:80",
+            "url": "http://authentik-server.authentik.svc:80",
             "token": "{{ .AUTHENTIK_BOOTSTRAP_TOKEN }}",
             "insecure": "true"
           }

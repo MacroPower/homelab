@@ -8,7 +8,7 @@ ingress.new(
   name='authentik-ingress',
   namespace=ns.metadata.name,
   host=ingressHost,
-  serviceName='authentik',
+  serviceName='authentik-server',
   servicePort=80,
   annotations=ingressAnnotations {
     'gethomepage.dev/enabled': 'true',
