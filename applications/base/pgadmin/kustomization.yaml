@@ -6,7 +6,7 @@ namespace: pgadmin
 helmCharts:
   - name: pgadmin4
     repo: https://helm.runix.net
-    version: 1.13.1
+    version: 1.23.3
     releaseName: pgadmin4
     namespace: pgadmin
     valuesInline:
