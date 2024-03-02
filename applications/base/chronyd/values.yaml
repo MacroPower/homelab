@@ -8,7 +8,52 @@ image:
   pullPolicy: IfNotPresent
 
 env:
-  NTP_SERVERS: "time1.google.com,time2.google.com,time3.google.com,time4.google.com"
+  ## Define ntp server(s) to use.
+  ## NTP server list must be comma delimited and NOT contain spaces.
+  ##
+  NTP_SERVERS: "0.north-america.pool.ntp.org,1.north-america.pool.ntp.org,2.north-america.pool.ntp.org,3.north-america.pool.ntp.org"
+
+  ## Enable Network Time Security (NTS), a cryptographically secured variety of NTP.
+  ##
+  ENABLE_NTS: "false"
+
+  ## Enable control of the system clock.
+  ##
+  ENABLE_SYSCLK: "false"
+
+  ## Disable logging client requests.
+  ##
+  NOCLIENTLOG: "false"
+
+  ## Define chrony log level to use.
+  ## Options: 0 (informational), 1 (warning), 2 (non-fatal error), and 3 (fatal error)
+  ##
+  LOG_LEVEL: "0"
+
+## https://github.com/mlichvar/chrony/blob/008dc16727dda8fedbb5b67bb83672e1c24565fc/main.c#L562-L563
+##
+podSecurityContext:
+  runAsNonRoot: false
+  runAsUser: 0
+  runAsGroup: 1000
+  fsGroup: 1000
+
+securityContext:
+  readOnlyRootFilesystem: true
+
+persistence:
+  etc:
+    enabled: true
+    type: emptyDir
+    mountPath: /etc/chrony
+  run:
+    enabled: true
+    type: emptyDir
+    mountPath: /run/chrony
+  state:
+    enabled: true
+    type: emptyDir
+    mountPath: /var/lib/chrony
 
 resources:
   requests:
