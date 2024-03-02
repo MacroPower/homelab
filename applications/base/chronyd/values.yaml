@@ -44,7 +44,6 @@ podSecurityContext:
   runAsNonRoot: false
   runAsUser: 0
   runAsGroup: 0
-  fsGroup: 101
 
 securityContext:
   readOnlyRootFilesystem: true
@@ -55,6 +54,7 @@ securityContext:
       - SETGID
       - CHOWN
       - FOWNER
+      - DAC_OVERRIDE
 
 persistence:
   etc:
@@ -69,6 +69,19 @@ persistence:
     enabled: true
     type: emptyDir
     mountPath: /var/lib/chrony
+
+initContainers:
+  set-permissions:
+    image: busybox
+    imagePullPolicy: IfNotPresent
+    command:
+      - "sh"
+      - "-c"
+      - |
+        chmod 750 /run/chrony
+    volumeMounts:
+      - name: run
+        mountPath: /run/chrony
 
 resources:
   requests:
