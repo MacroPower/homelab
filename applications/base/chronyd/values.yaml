@@ -1,5 +1,5 @@
 controller:
-  type: statefulset
+  type: deployment
   replicas: 1
 
 image:
@@ -12,6 +12,13 @@ env:
   ## NTP server list must be comma delimited and NOT contain spaces.
   ##
   NTP_SERVERS: "0.north-america.pool.ntp.org,1.north-america.pool.ntp.org,2.north-america.pool.ntp.org,3.north-america.pool.ntp.org"
+
+  NTP_DIRECTIVES: |
+    ratelimit
+
+  ## Define the timezone to use.
+  ##
+  TZ: "UTC"
 
   ## Enable Network Time Security (NTS), a cryptographically secured variety of NTP.
   ##
