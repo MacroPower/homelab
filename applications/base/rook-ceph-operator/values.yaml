@@ -6,8 +6,11 @@ csi:
   enableGrpcMetrics: true
   csiAddons:
     enabled: true
+  ## TODO: ServiceMonitor.monitoring.coreos.com "csi-metrics" is invalid:
+  ## spec.endpoints: Invalid value: "null": spec.endpoints in body must be of type array
+  ##
   serviceMonitor:
-    enabled: true
+    enabled: false
   topology:
     enabled: true
     domainLabels:
