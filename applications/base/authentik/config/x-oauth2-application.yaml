@@ -58,7 +58,7 @@ spec:
     apiVersion: authentik.crossplane.io/v1alpha1
     kind: XOAuth2Application
   resources:
-    - name: OAuth2AuthProvider
+    - name: OAuth2Provider
       base:
         apiVersion: provider.authentik.crossplane.io/v1alpha1
         kind: OAuth2
@@ -81,6 +81,9 @@ spec:
         - type: FromCompositeFieldPath
           fromFieldPath: "spec.redirectUris"
           toFieldPath: "spec.forProvider.redirectUris"
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.name
+          toFieldPath: metadata.name
         - type: FromCompositeFieldPath
           fromFieldPath: spec.name
           toFieldPath: spec.forProvider.name
@@ -108,6 +111,9 @@ spec:
             - type: convert
               convert:
                 toType: int
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.name
+          toFieldPath: metadata.name
         - type: FromCompositeFieldPath
           fromFieldPath: spec.name
           toFieldPath: spec.forProvider.name

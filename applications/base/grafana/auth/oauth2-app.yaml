@@ -23,8 +23,8 @@ spec:
         spec:
           compositionRef:
             name: authentik-oauth2-application
-          name: grafana.home.macro.network
-          slug: grafana-home-macro-network
+          name: grafana
+          slug: grafana
           clientId: "{{ matrix.clientId.data['client-id'] | b64decode }}"
           clientSecretSecretRef:
             name: grafana-oauth2-client-secret
@@ -32,3 +32,8 @@ spec:
             key: client-secret
           redirectUris:
             - "https://grafana.home.macro.network/login/generic_oauth"
+          # propertyMappings:
+          #   managedList:
+          #     - "goauthentik.io/providers/oauth2/scope-email"
+          #     - "goauthentik.io/providers/oauth2/scope-openid"
+          #     - "goauthentik.io/providers/oauth2/scope-profile"
