@@ -15,6 +15,8 @@ env:
 
   NTP_DIRECTIVES: |
     ratelimit
+    logdir /var/log/chrony
+    log statistics measurements tracking
 
   ## Define the timezone to use.
   ##
@@ -69,6 +71,10 @@ persistence:
     enabled: true
     type: emptyDir
     mountPath: /var/lib/chrony
+  logs:
+    enabled: true
+    type: emptyDir
+    mountPath: /var/log/chrony
 
 initContainers:
   set-permissions:
