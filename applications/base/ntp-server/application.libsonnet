@@ -2,13 +2,13 @@ local app = import '../../lib/app.libsonnet';
 local ns = import 'namespace.libsonnet';
 
 app.new(
-  name='chronyd',
-  path='applications/base/chronyd',
+  name='ntp-server',
+  path='applications/base/ntp-server',
   namespace=ns.metadata.name,
 ).withChart(
   name='template',
   repoURL='https://jacobcolvin.com/helm-charts',
   targetRevision='0.2.0',
-  releaseName='chronyd',
+  releaseName='ntp-server',
   values='values.yaml'
 )

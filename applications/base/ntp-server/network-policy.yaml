@@ -2,7 +2,7 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: ntp
+  name: ntp-server
 spec:
   endpointSelector: {}
   ingress:
