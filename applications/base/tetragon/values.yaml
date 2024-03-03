@@ -23,6 +23,7 @@ tetragon:
   #   {"namespace":["default"],"event_set":["PROCESS_EXEC"]}
   exportAllowList: |-
     {"event_set":["PROCESS_EXEC", "PROCESS_EXIT", "PROCESS_KPROBE", "PROCESS_UPROBE", "PROCESS_TRACEPOINT"]}
+
   # Denylist for JSON export. For example, to exclude exec events that look similar to
   # Kubernetes health checks and all the events from kube-system namespace and the host:
   #
@@ -33,6 +34,7 @@ tetragon:
   exportDenyList: |-
     {"health_check":true}
     {"namespace":["", "cilium", "kube-system"]}
+
   # Filters to include or exclude fields from Tetragon events. Without any filters, all
   # fields are included by default. The presence of at least one inclusion filter implies
   # default-exclude (i.e. any fields that don't match an inclusion filter will be
