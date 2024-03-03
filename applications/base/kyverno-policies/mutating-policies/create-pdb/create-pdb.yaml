@@ -49,12 +49,6 @@ spec:
         namespace: "{{request.object.metadata.namespace}}"
         data:
           metadata:
-            annotations:
-              argocd.argoproj.io/compare-options: IgnoreExtraneous
-              argocd.argoproj.io/tracking-id: >-
-                {{
-                  regex_replace_all(':.*:.*$', '{{request.object.metadata.annotations."argocd.argoproj.io/tracking-id"}}', '')
-                }}:policy/PodDisruptionBudget:{{request.object.metadata.namespace}}/{{request.object.metadata.name}}-default-pdb
             labels:
               app.kubernetes.io/managed-by: kyverno
           spec:
