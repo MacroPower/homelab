@@ -6,11 +6,26 @@ metadata:
 spec:
   ignoreCrossplaneConstraints: false
   package: xpkg.upbound.io/crossplane-contrib/provider-sql:v0.9.0
-  packagePullPolicy: IfNotPresent
   revisionActivationPolicy: Automatic
   revisionHistoryLimit: 1
   runtimeConfigRef:
     apiVersion: pkg.crossplane.io/v1beta1
     kind: DeploymentRuntimeConfig
-    name: default
-  skipDependencyResolution: false
+    name: crossplane-provider-sql
+
+---
+apiVersion: pkg.crossplane.io/v1beta1
+kind: DeploymentRuntimeConfig
+metadata:
+  name: crossplane-provider-sql
+spec:
+  deploymentTemplate:
+    spec:
+      selector: {}
+      replicas: 2
+      template:
+        spec:
+          containers:
+            - name: package-runtime
+              args:
+                - --leader-election

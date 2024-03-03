@@ -38,6 +38,7 @@
   import 'opentelemetry-collector/application.libsonnet',
   import 'opentelemetry-operator/application.libsonnet',
   import 'osrs-ge-exporter/application.libsonnet',
+  import 'postgres-shared/application.libsonnet',
   import 'prometheus-stack/application.libsonnet',
   import 'prometheus/application.libsonnet',
   import 'rclone-restic/application.libsonnet',

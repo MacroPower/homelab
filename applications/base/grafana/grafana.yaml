@@ -15,7 +15,7 @@ spec:
       root_url: https://grafana.home.macro.network
     database:
       type: postgres
-      host: grafana-rw.grafana.svc:5432
+      host: postgres-shared-rw.postgres-shared.svc:5432
       name: grafana
       user: grafana
       ssl_mode: require
@@ -44,7 +44,7 @@ spec:
         spec:
           containers:
             - name: grafana
-              image: grafana/grafana:10.1.5
+              image: grafana/grafana:10.3.3
               resources:
                 requests:
                   cpu: 250m
@@ -65,13 +65,13 @@ spec:
                 - name: GF_AUTH_GENERIC_OAUTH_CLIENT_ID
                   valueFrom:
                     secretKeyRef:
-                      name: authentik-grafana
-                      key: grafana_client_id
+                      name: grafana-oauth2-client-id
+                      key: client-id
                 - name: GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET
                   valueFrom:
                     secretKeyRef:
-                      name: authentik-grafana
-                      key: grafana_client_secret
+                      name: grafana-oauth2-client-secret
+                      key: client-secret
                 - name: GF_DATABASE_PASSWORD
                   valueFrom:
                     secretKeyRef:

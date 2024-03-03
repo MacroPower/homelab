@@ -1,0 +1,116 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xoauth2applications.authentik.crossplane.io
+spec:
+  group: authentik.crossplane.io
+  names:
+    kind: XOAuth2Application
+    plural: xoauth2applications
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                name:
+                  type: string
+                slug:
+                  type: string
+                clientId:
+                  type: string
+                clientSecretSecretRef:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    namespace:
+                      type: string
+                    key:
+                      type: string
+                redirectUris:
+                  type: array
+                  items:
+                    type: string
+            status:
+              type: object
+              properties:
+                authProviderID:
+                  type: string
+                serviceConnectionID:
+                  type: string
+                applicationID:
+                  type: string
+
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: authentik-oauth2-application
+spec:
+  compositeTypeRef:
+    apiVersion: authentik.crossplane.io/v1alpha1
+    kind: XOAuth2Application
+  resources:
+    - name: OAuth2AuthProvider
+      base:
+        apiVersion: provider.authentik.crossplane.io/v1alpha1
+        kind: OAuth2
+        spec:
+          providerConfigRef:
+            name: authentik
+          forProvider:
+            authorizationFlowRef:
+              name: explicit-consent
+      patches:
+        - type: ToCompositeFieldPath
+          fromFieldPath: metadata.annotations['crossplane.io/external-name']
+          toFieldPath: status.authProviderID
+        - type: FromCompositeFieldPath
+          fromFieldPath: "spec.clientId"
+          toFieldPath: "spec.forProvider.clientId"
+        - type: FromCompositeFieldPath
+          fromFieldPath: "spec.clientSecretSecretRef"
+          toFieldPath: "spec.forProvider.clientSecretSecretRef"
+        - type: FromCompositeFieldPath
+          fromFieldPath: "spec.redirectUris"
+          toFieldPath: "spec.forProvider.redirectUris"
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.name
+          toFieldPath: spec.forProvider.name
+          transforms:
+            - type: string
+              string:
+                type: Format
+                fmt: "%s-oauth2"
+
+    - name: Application
+      base:
+        apiVersion: authentik.crossplane.io/v1alpha1
+        kind: Application
+        spec:
+          providerConfigRef:
+            name: authentik
+      patches:
+        - type: ToCompositeFieldPath
+          fromFieldPath: metadata.annotations['crossplane.io/external-name']
+          toFieldPath: status.applicationID
+        - type: FromCompositeFieldPath
+          fromFieldPath: status.authProviderID
+          toFieldPath: spec.forProvider.protocolProvider
+          transforms:
+            - type: convert
+              convert:
+                toType: int
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.name
+          toFieldPath: spec.forProvider.name
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.slug
+          toFieldPath: spec.forProvider.slug

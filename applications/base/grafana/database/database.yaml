@@ -9,4 +9,4 @@ spec:
     owner: grafana
     encoding: utf8
   providerConfigRef:
-    name: grafana
+    name: postgres-shared

@@ -13,4 +13,4 @@ spec:
       key: GRAFANA_DB_PASS
       namespace: grafana
   providerConfigRef:
-    name: grafana
+    name: postgres-shared

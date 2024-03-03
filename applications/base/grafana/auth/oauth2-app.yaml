@@ -1,0 +1,34 @@
+---
+apiVersion: templates.kluctl.io/v1alpha1
+kind: ObjectTemplate
+metadata:
+  name: grafana-oauth2-app-template
+spec:
+  interval: 1m
+  serviceAccountName: grafana-oauth2-app-template
+  prune: true
+  matrix:
+    - name: clientId
+      object:
+        ref:
+          apiVersion: v1
+          kind: Secret
+          name: grafana-oauth2-client-id
+  templates:
+    - object:
+        apiVersion: authentik.crossplane.io/v1alpha1
+        kind: XOAuth2Application
+        metadata:
+          name: authentik-grafana-application
+        spec:
+          compositionRef:
+            name: authentik-oauth2-application
+          name: grafana.home.macro.network
+          slug: grafana-home-macro-network
+          clientId: "{{ matrix.clientId.data['client-id'] | b64decode }}"
+          clientSecretSecretRef:
+            name: grafana-oauth2-client-secret
+            namespace: grafana
+            key: client-secret
+          redirectUris:
+            - "https://grafana.home.macro.network/login/generic_oauth"

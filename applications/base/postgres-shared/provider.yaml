@@ -2,12 +2,12 @@
 apiVersion: postgresql.sql.crossplane.io/v1alpha1
 kind: ProviderConfig
 metadata:
-  name: grafana
+  name: postgres-shared
 spec:
   defaultDatabase: postgres
   sslMode: require
   credentials:
     source: PostgreSQLConnectionSecret
     connectionSecretRef:
-      namespace: grafana
-      name: grafana-superuser
+      namespace: postgres-shared
+      name: postgres-shared-provider-credentials
