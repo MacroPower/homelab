@@ -8,6 +8,22 @@ env:
   PUID: "1001"
   PGID: "1001"
 
+podSecurityContext:
+  runAsNonRoot: false
+  runAsUser: 0
+  runAsGroup: 0
+
+securityContext:
+  readOnlyRootFilesystem: false
+  capabilities:
+    add:
+      - NET_BIND_SERVICE
+      - SETUID
+      - SETGID
+      - CHOWN
+      - FOWNER
+      - DAC_OVERRIDE
+
 service:
   main:
     ports:
