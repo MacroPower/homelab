@@ -1,0 +1,108 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xgroupsets.authentik.crossplane.io
+spec:
+  group: authentik.crossplane.io
+  names:
+    kind: XGroupSet
+    plural: xgroupsets
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                name:
+                  type: string
+                slug:
+                  type: string
+                adminUserRefs:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+            status:
+              type: object
+              properties:
+                adminGroupID:
+                  type: string
+
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: authentik-group-set
+spec:
+  compositeTypeRef:
+    apiVersion: authentik.crossplane.io/v1alpha1
+    kind: XGroupSet
+  resources:
+    - name: AdminGroup
+      base:
+        apiVersion: directory.authentik.crossplane.io/v1alpha1
+        kind: Group
+        spec:
+          providerConfigRef:
+            name: authentik
+          forProvider: {}
+      patches:
+        - type: ToCompositeFieldPath
+          fromFieldPath: metadata.annotations['crossplane.io/external-name']
+          toFieldPath: status.adminGroupID
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.adminUserRefs
+          toFieldPath: spec.forProvider.usersRefs
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.name
+          toFieldPath: spec.forProvider.name
+          transforms:
+            - type: string
+              string:
+                type: Format
+                fmt: "%s Admins"
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.slug
+          toFieldPath: spec.metadata.name
+          transforms:
+            - type: string
+              string:
+                type: Format
+                fmt: "%s-admins"
+
+    - name: EditorGroup
+      base:
+        apiVersion: directory.authentik.crossplane.io/v1alpha1
+        kind: Group
+        spec:
+          providerConfigRef:
+            name: authentik
+          forProvider: {}
+      patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: status.adminGroupID
+          toFieldPath: spec.forProvider.parent
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.name
+          toFieldPath: spec.forProvider.name
+          transforms:
+            - type: string
+              string:
+                type: Format
+                fmt: "%s Editors"
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.slug
+          toFieldPath: spec.metadata.name
+          transforms:
+            - type: string
+              string:
+                type: Format
+                fmt: "%s-editors"

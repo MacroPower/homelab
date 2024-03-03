@@ -12,26 +12,14 @@ spec:
   forProvider: {}
 
 ---
-apiVersion: directory.authentik.crossplane.io/v1alpha1
-kind: Group
+apiVersion: authentik.crossplane.io/v1alpha1
+kind: XGroupSet
 metadata:
-  name: grafana-admins
+  name: authentik-grafana-groups
 spec:
-  providerConfigRef:
-    name: authentik
-  forProvider:
-    name: Grafana Admins
-    usersRefs:
-      - name: akadmin
-
----
-apiVersion: directory.authentik.crossplane.io/v1alpha1
-kind: Group
-metadata:
-  name: grafana-editors
-spec:
-  providerConfigRef:
-    name: authentik
-  forProvider:
-    name: Grafana Editors
-    parent: grafana-admins
+  compositionRef:
+    name: authentik-group-set
+  name: Grafana
+  slug: grafana
+  adminUserRefs:
+    - name: akadmin
