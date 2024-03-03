@@ -173,6 +173,10 @@ controlPlane:
           destinations:
             - endpoint: "udp://syslog.home.macro.network:6051/"
               format: json_lines
+    - &machineTime |-
+      machine:
+        time:
+          disabled: true
 
 worker:
   nameservers: *nameservers
@@ -183,6 +187,7 @@ worker:
   patches:
     - *machineKubelet
     - *machineLogging
+    - *machineTime
     - |-
       - op: replace
         path: /machine/ca/key

@@ -1,0 +1,113 @@
+controller:
+  type: daemonset
+
+tolerations:
+  - effect: NoSchedule
+    operator: Exists
+  - key: CriticalAddonsOnly
+    operator: Exists
+  - effect: NoExecute
+    operator: Exists
+
+image:
+  repository: simonrupf/chronyd
+  tag: "0.5.0"
+  pullPolicy: IfNotPresent
+
+env:
+  ## Define ntp server(s) to use.
+  ## NTP server list must be comma delimited and NOT contain spaces.
+  ##
+  NTP_SERVERS: "ntp-server.ntp-server.svc"
+
+  NTP_DIRECTIVES: |
+    rtcsync
+    ratelimit
+
+  ## Define the timezone to use.
+  ##
+  TZ: "UTC"
+
+  ## Enable Network Time Security (NTS), a cryptographically secured variety of NTP.
+  ##
+  ENABLE_NTS: "false"
+
+  ## Enable control of the system clock.
+  ##
+  ENABLE_SYSCLK: "true"
+
+  ## Disable logging client requests.
+  ##
+  NOCLIENTLOG: "false"
+
+  ## Define chrony log level to use.
+  ## Options: 0 (informational), 1 (warning), 2 (non-fatal error), and 3 (fatal error)
+  ##
+  LOG_LEVEL: "0"
+
+## https://github.com/mlichvar/chrony/blob/008dc16727dda8fedbb5b67bb83672e1c24565fc/main.c#L562-L563
+## Eventually the process runs as chrony:chrony, or 100:101
+##
+podSecurityContext:
+  runAsNonRoot: false
+  runAsUser: 0
+  runAsGroup: 0
+
+securityContext:
+  readOnlyRootFilesystem: true
+  capabilities:
+    add:
+      - SYS_TIME
+      - NET_BIND_SERVICE
+      - SETUID
+      - SETGID
+      - CHOWN
+      - FOWNER
+      - DAC_OVERRIDE
+
+persistence:
+  etc:
+    enabled: true
+    type: emptyDir
+    mountPath: /etc/chrony
+  run:
+    enabled: true
+    type: emptyDir
+    mountPath: /run/chrony
+  state:
+    enabled: true
+    type: emptyDir
+    mountPath: /var/lib/chrony
+
+initContainers:
+  set-permissions:
+    image: busybox
+    imagePullPolicy: IfNotPresent
+    command:
+      - "sh"
+      - "-c"
+      - |
+        chmod 750 /run/chrony
+    volumeMounts:
+      - name: run
+        mountPath: /run/chrony
+
+resources:
+  requests:
+    cpu: 1m
+    memory: 20Mi
+  limits:
+    cpu: 10m
+    memory: 20Mi
+
+service:
+  main:
+    enabled: false
+
+probes:
+  liveness:
+    enabled: false
+  readiness:
+    enabled: false
+  startup:
+    enabled: false
