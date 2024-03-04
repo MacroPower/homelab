@@ -1,5 +1,6 @@
 [
   import 'adguard-home/application.libsonnet',
+  import 'argo-workflows/application.libsonnet',
   import 'argocd/application.libsonnet',
   import 'authentik/application.libsonnet',
   import 'cert-manager/application.libsonnet',

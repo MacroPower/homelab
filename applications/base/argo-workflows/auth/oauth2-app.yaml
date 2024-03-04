@@ -1,0 +1,39 @@
+---
+apiVersion: templates.kluctl.io/v1alpha1
+kind: ObjectTemplate
+metadata:
+  name: argo-workflows-oauth2-app-template
+spec:
+  interval: 1m
+  serviceAccountName: argo-workflows-oauth2-app-template
+  prune: true
+  matrix:
+    - name: clientId
+      object:
+        ref:
+          apiVersion: v1
+          kind: Secret
+          name: argo-workflows-oauth2-client-id
+  templates:
+    - object:
+        apiVersion: authentik.crossplane.io/v1alpha1
+        kind: XOAuth2Application
+        metadata:
+          name: authentik-argo-workflows-application
+        spec:
+          compositionRef:
+            name: authentik-oauth2-application
+          name: argoworkflows
+          slug: argoworkflows
+          clientId: "{{ matrix.clientId.data['client-id'] | b64decode }}"
+          clientSecretSecretRef:
+            name: argo-workflows-oauth2-client-secret
+            namespace: argo-workflows
+            key: client-secret
+          redirectUris:
+            - "https://argo-workflows.home.macro.network/oauth2/callback"
+          # propertyMappings:
+          #   managedList:
+          #     - "goauthentik.io/providers/oauth2/scope-email"
+          #     - "goauthentik.io/providers/oauth2/scope-openid"
+          #     - "goauthentik.io/providers/oauth2/scope-profile"
