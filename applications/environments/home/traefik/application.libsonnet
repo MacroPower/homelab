@@ -16,10 +16,10 @@ app.withBasePath('applications/environments/home/traefik').withChartParams({
   'ports.talossystem.protocol': 'UDP',
 }).withChartValues(|||
   image:
-    tag: v3.0.0-beta4
+    tag: v3.0.0-rc1
 
   tracing:
-    openTelemetry:
+    opentelemetry:
       address: main-collector.opentelemetry.svc:4317
       grpc: true
       insecure: true
