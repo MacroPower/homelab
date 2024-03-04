@@ -95,7 +95,7 @@ server:
     ## Configure this if your OIDC provider provides groups information only using the user-info endpoint (e.g. Okta)
     userInfoPath: "http://authentik-server.authentik.svc/application/o/userinfo"
     # -- Skip TLS verification for the HTTP client
-    insecureSkipVerify: false
+    insecureSkipVerify: true
     # -- Filter the groups returned by the OIDC provider
     ## A logical "OR" is used between each regex in the list
     filterGroupsRegex: []

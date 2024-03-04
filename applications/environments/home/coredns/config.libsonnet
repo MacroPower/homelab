@@ -6,6 +6,9 @@ k.core.v1.configMap.new('coredns', data={
         errors
         health
         ready
+        rewrite continue {
+          name exact authentik.home.macro.network authentik-server.authentik.svc.cluster.local
+        }
         kubernetes cluster.local in-addr.arpa ip6.arpa {
           pods insecure
           fallthrough in-addr.arpa ip6.arpa
