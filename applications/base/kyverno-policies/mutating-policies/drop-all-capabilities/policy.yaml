@@ -21,6 +21,12 @@ spec:
           - resources:
               kinds:
                 - Pod
+              namespaceSelector:
+                matchExpressions:
+                  - key: policy.jacobcolvin.com/drop-all-capabilities
+                    operator: NotIn
+                    values:
+                      - "false"
       preconditions:
         all:
           - key: "{{request.operation || 'BACKGROUND'}}"
