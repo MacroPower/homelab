@@ -26,6 +26,12 @@ spec:
               kinds:
                 - Deployment
                 - StatefulSet
+              namespaceSelector:
+                matchExpressions:
+                  - key: policy.jacobcolvin.com/create-pdb
+                    operator: NotIn
+                    values:
+                      - "false"
       context:
         - name: pdb_count
           apiCall:

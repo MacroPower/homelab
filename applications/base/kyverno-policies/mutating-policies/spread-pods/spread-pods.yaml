@@ -21,6 +21,12 @@ spec:
           - resources:
               kinds:
                 - Deployment
+              namespaceSelector:
+                matchExpressions:
+                  - key: policy.jacobcolvin.com/spread-pods
+                    operator: NotIn
+                    values:
+                      - "false"
       preconditions: &preconditions
         all:
           - key: "{{request.object.spec.replicas}}"
@@ -62,6 +68,12 @@ spec:
           - resources:
               kinds:
                 - StatefulSet
+              namespaceSelector:
+                matchExpressions:
+                  - key: policy.jacobcolvin.com/spread-pods
+                    operator: NotIn
+                    values:
+                      - "false"
       preconditions: *preconditions
       mutate:
         patchesJson6902: |-
