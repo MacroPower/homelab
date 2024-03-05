@@ -1,0 +1,146 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+vars:
+  TALOS_SCRIPTS_DIR: "{{.ROOT_DIR}}/.taskfiles/talos/scripts"
+  EXTRAS_DIR: "{{.ROOT_DIR}}/hack/extra"
+  CLUSTER_DOMAIN: home.macro.network
+  CLUSTER_ENDPOINT: kube.home.macro.network
+  DOPPLER_PROJECT: talhelper
+  DOPPLER_ENV: main
+  DOPPLER_CMD: doppler run -p {{.DOPPLER_PROJECT}} -c {{.DOPPLER_ENV}}
+
+tasks:
+  build:
+    desc: Build Talos config
+    dir: "{{.TALOS_DIR}}"
+    cmds:
+      - "{{.DOPPLER_CMD}} -- talhelper validate talconfig"
+      - "{{.DOPPLER_CMD}} -- talhelper genconfig --no-gitignore"
+    sources:
+      - "*.yaml"
+    generates:
+      - "clusterconfig/*"
+
+  apply:
+    desc: Apply Talos config
+    dir: "{{.TALOS_DIR}}"
+    cmds:
+      - task: build
+      - eval $({{.DOPPLER_CMD}} -- talhelper gencommand apply)
+    sources:
+      - "*.yaml"
+    generates:
+      - "clusterconfig/*"
+
+  talconfig:
+    desc: Generate Talos config
+    dir: "{{.TALOS_DIR}}"
+    cmds:
+      - task: build
+      - talosctl config merge ./clusterconfig/talosconfig
+
+  kubeconfig:
+    desc: Generate kubeconfig
+    dir: "{{.TALOS_DIR}}"
+    cmds:
+      - task: talconfig
+      - talosctl kubeconfig -e {{.CLUSTER_ENDPOINT}} -n {{.CLUSTER_ENDPOINT}}
+
+  approve-csr:
+    desc: Approve certificate signing requests
+    cmds:
+      - kubectl certificate approve $(kubectl get csr --sort-by=.metadata.creationTimestamp | grep Pending | awk '{print $1}')
+
+  apply-extras:
+    desc: Apply extra resources
+    cmds:
+      - for: { var: APPS }
+        task: apply-extra
+        vars:
+          APP: "{{.ITEM}}"
+    vars:
+      APPS: cilium doppler kubelet-csr-approver
+
+  upgrade:
+    desc: Upgrade Talos cluster
+    cmds:
+      - for: { var: NODES }
+        task: upgrade-node
+        vars:
+          NODE: "{{.ITEM}}"
+    vars:
+      NODES: knode15 knode14 knode13 knode03 knode02 knode01
+
+  reset:
+    desc: Reset Talos cluster
+    cmds:
+      - for: { var: NODES }
+        task: reset-node
+        vars:
+          NODE: "{{.ITEM}}"
+    vars:
+      NODES: knode15 knode14 knode13 knode03 knode02 knode01
+
+  bootstrap:
+    desc: Bootstrap Talos cluster
+    summary: |
+      Args:
+        INITIAL_NODE: Node to bootstrap (default: knode01.{{.CLUSTER_DOMAIN}})
+    dir: "{{.TALOS_DIR}}"
+    vars:
+      INITIAL_NODE: '{{.INITIAL_NODE | default "knode01.{{.CLUSTER_DOMAIN}}"}}'
+    cmds:
+      - task: talconfig
+      - talosctl apply-config -i -n {{.INITIAL_NODE}} -f clusterconfig/home-{{.INITIAL_NODE}}.yaml
+      - echo "Applied config to {{.INITIAL_NODE}}, waiting..."
+      - sleep 60
+      - talosctl bootstrap -e {{.INITIAL_NODE}} -n {{.INITIAL_NODE}}
+      - echo "Issued bootstrap to {{.INITIAL_NODE}}, waiting..."
+      - sleep 60
+      - task: kubeconfig
+      - task: apply-extras
+      - sleep 20
+      - task: approve-csr
+      - talosctl health -n {{.INITIAL_NODE}}
+      - task: apply
+
+  reset-node:
+    desc: Reset a Talos node
+    summary: |
+      Args:
+        NODE: Node to reset (required)
+    cmds:
+      - >-
+        talosctl reset --graceful=false --reboot
+          -e {{.NODE}}.{{.CLUSTER_DOMAIN}}
+          -n {{.NODE}}.{{.CLUSTER_DOMAIN}}
+          --wipe-mode system-disk
+          --system-labels-to-wipe STATE
+          --system-labels-to-wipe EPHEMERAL
+    requires:
+      vars: [NODE]
+
+  upgrade-node:
+    desc: Upgrade a Talos node
+    summary: |
+      Args:
+        NODE: Node to upgrade (required)
+    dir: "{{.TALOS_DIR}}"
+    cmds:
+      - eval $({{.DOPPLER_CMD}} -- talhelper gencommand upgrade -n {{.NODE}}.{{.CLUSTER_DOMAIN}})
+      - sleep 120
+    requires:
+      vars: [NODE]
+
+  apply-extra:
+    internal: true
+    dir: "{{.EXTRAS_DIR}}/{{.APP}}"
+    cmds:
+      - >-
+        {{.DOPPLER_CMD}} -- envsubst < <(kubectl kustomize --enable-helm .) |
+        kubectl apply --server-side --filename -
+      - defer: rm -rf ./charts
+    requires:
+      vars: [APP]
