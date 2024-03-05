@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+# Taskfile: https://taskfile.dev/
+# brew install go-task/tap/go-task
+# https://taskfile.dev/integrations/
+
+version: "3"
+
+includes:
+  talos: ./.taskfiles/talos/taskfile.yaml
+  external-secrets: .taskfiles/external-secrets/taskfile.yaml
+
+vars:
+  TALOS_DIR: "{{.ROOT_DIR}}/talos"
+  TERRAFORM_DIR: "{{.ROOT_DIR}}/terraform"
+  ARGO_APP_DIR: "{{.ROOT_DIR}}/applications"
+
+dotenv: ["{{.ROOT_DIR}}/.env", "{{.HOME}}/.env"]
+
+tasks:
+  default:
+    silent: true
+    cmd: task -l
