@@ -1,0 +1,124 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+x-env: &env
+  DISK: "{{.DISK}}"
+  JOB: "{{.JOB}}"
+  NODE: "{{.NODE}}"
+
+vars:
+  ROOK_SCRIPTS_DIR: "{{.ROOT_DIR}}/.taskfiles/rook-ceph/scripts"
+  ROOK_TEMPLATES_DIR: "{{.ROOT_DIR}}/.taskfiles/rook-ceph/templates"
+
+tasks:
+  reset:
+    desc: Reset rook-ceph
+    summary: |
+      Args:
+        NODES: Nodes to reset (required)
+        DISK: Disk to reset (required)
+    vars: &vars
+      DISK: "{{.DISK}}"
+      NODE: "{{.ITEM}}"
+    cmds:
+      - task: reset-app
+      - for: { var: NODES }
+        task: reset-data
+        vars: *vars
+      - for: { var: NODES }
+        task: reset-disk
+        vars: *vars
+    requires:
+      vars: [NODES, DISK]
+
+  reset-disk:
+    desc: Reset a rook-ceph disk on a node
+    prompt: Reset rook-ceph with '{{.NODE}}'/'{{.DISK}}' ... continue?
+    summary: |
+      Args:
+        DISK: Disk to wipe e.g. /dev/nvme0n1 (required)
+        NODE: Node the disk is on (required)
+    cmds:
+      - envsubst < <(cat {{.ROOK_TEMPLATES_DIR}}/wipe-disk-job.tmpl.yaml) | kubectl apply -f -
+      - bash {{.ROOK_SCRIPTS_DIR}}/wait-for-job.sh {{.JOB}} default
+      - kubectl -n default wait job/{{.JOB}} --for condition=complete --timeout=1m
+      - kubectl -n default logs job/{{.JOB}}
+      - kubectl -n default delete job {{.JOB}}
+    requires:
+      vars: [DISK, NODE]
+    vars:
+      JOB: wipe-disk-{{.NODE}}-{{.DISK | replace "/" "-"}}
+    env: *env
+    preconditions:
+      - test -f {{.ROOK_SCRIPTS_DIR}}/wait-for-job.sh
+      - test -f {{.ROOK_TEMPLATES_DIR}}/wipe-disk-job.tmpl.yaml
+
+  reset-data:
+    desc: Reset rook-ceph data on a node
+    prompt: Reset rook-ceph data on node '{{.NODE}}' ... continue?
+    summary: |
+      Args:
+        NODE: Node the data is on (required)
+    cmds:
+      - envsubst < <(cat {{.ROOK_TEMPLATES_DIR}}/wipe-data-job.tmpl.yaml) | kubectl apply -f -
+      - bash {{.ROOK_SCRIPTS_DIR}}/wait-for-job.sh {{.JOB}} default
+      - kubectl -n default wait job/{{.JOB}} --for condition=complete --timeout=1m
+      - kubectl -n default logs job/{{.JOB}}
+      - kubectl -n default delete job {{.JOB}}
+    requires:
+      vars: [NODE]
+    vars:
+      JOB: wipe-data-{{.NODE}}
+    env: *env
+    preconditions:
+      - test -f {{.ROOK_SCRIPTS_DIR}}/wait-for-job.sh
+      - test -f {{.ROOK_TEMPLATES_DIR}}/wipe-data-job.tmpl.yaml
+
+  reset-app:
+    desc: Reset rook-ceph Argo CD Application
+    prompt: Reset rook-ceph Argo CD Application ... continue?
+    summary: |
+      Args:
+        ARGOCD_NS: Argo CD namespace (default: argocd)
+        ROOK_NS: Rook namespace (default: rook-ceph)
+    cmds:
+      - cmd: >-
+          kubectl patch CephBlockPool ceph-blockpool -n {{.ROOK_NS}} --type=merge
+          -p '{"metadata":{"finalizers":null}}'
+        ignore_error: true
+      - cmd: >-
+          kubectl patch CephFileSystem ceph-filesystem -n {{.ROOK_NS}} --type=merge
+          -p '{"metadata":{"finalizers":null}}'
+        ignore_error: true
+      - cmd: >-
+          kubectl patch CephObjectStore ceph-objectstore -n {{.ROOK_NS}} --type=merge
+          -p '{"metadata":{"finalizers":null}}'
+        ignore_error: true
+      - cmd: >-
+          kubectl patch Secret rook-ceph-mon -n {{.ROOK_NS}} --type=merge
+          -p '{"metadata":{"finalizers":null}}'
+        ignore_error: true
+      - cmd: >-
+          kubectl patch ConfigMap rook-ceph-mon-endpoints -n {{.ROOK_NS}} --type=merge
+          -p '{"metadata":{"finalizers":null}}'
+        ignore_error: true
+      - cmd: >-
+          kubectl patch CephFilesystemSubVolumeGroup ceph-filesystem-csi -n {{.ROOK_NS}} --type=merge
+          -p '{"metadata":{"finalizers":null}}'
+        ignore_error: true
+      - cmd: >-
+          kubectl patch CephCluster rook-ceph -n {{.ROOK_NS}} --type=merge
+          -p '{"metadata":{"finalizers":null}}'
+        ignore_error: true
+      - >-
+        kubectl patch app rook-ceph-cluster -n {{.ARGOCD_NS}} --type merge
+        -p '{"metadata": {"finalizers": ["resources-finalizer.argocd.argoproj.io"]}}'
+      - >-
+        kubectl patch app rook-ceph-operator -n {{.ARGOCD_NS}} --type merge
+        -p '{"metadata": {"finalizers": ["resources-finalizer.argocd.argoproj.io"]}}'
+      - kubectl delete app rook-ceph-cluster -n {{.ARGOCD_NS}} --force --grace-period=0
+      - kubectl delete app rook-ceph-operator -n {{.ARGOCD_NS}} --force --grace-period=0
+    vars:
+      ROOK_NS: '{{.ROOK_NS | default "rook-ceph"}}'
+      ARGOCD_NS: '{{.ARGOCD_NS | default "argocd"}}'

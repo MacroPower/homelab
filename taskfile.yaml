@@ -10,6 +10,7 @@ version: "3"
 includes:
   talos: ./.taskfiles/talos/taskfile.yaml
   external-secrets: .taskfiles/external-secrets/taskfile.yaml
+  rook-ceph: .taskfiles/rook-ceph/taskfile.yaml
 
 vars:
   TALOS_DIR: "{{.ROOT_DIR}}/talos"

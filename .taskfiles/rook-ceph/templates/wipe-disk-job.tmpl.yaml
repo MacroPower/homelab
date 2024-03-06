@@ -1,0 +1,26 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ${JOB}
+  namespace: default
+spec:
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      automountServiceAccountToken: false
+      restartPolicy: Never
+      nodeName: ${NODE}
+      containers:
+        - name: main
+          image: alpine:3.19
+          command: ["/bin/sh", "-c"]
+          args:
+            - apk add --no-cache sgdisk util-linux util-linux-misc parted device-mapper;
+              sgdisk --zap-all ${DISK};
+              dd if=/dev/zero of=${DISK} bs=1M count=100 oflag=direct;
+              blkdiscard ${DISK};
+              partprobe ${DISK};
+          securityContext:
+            privileged: true
+          resources: {}
