@@ -1,0 +1,16 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+tasks:
+  validate:
+    desc: Validate Terraform
+    dir: "{{.TERRAFORM_DIR}}/{{.MODULE}}"
+    sources:
+      - "{{.TERRAFORM_DIR}}/{{.MODULE}}/**/*"
+    cmds:
+      - cmd: echo "Validating {{.TERRAFORM_DIR}}/{{.MODULE}}"
+        silent: true
+      - terraform validate .
+    requires:
+      vars: [MODULE]

@@ -28,6 +28,10 @@ includes:
   rook-ceph:
     taskfile: .taskfiles/rook-ceph/taskfile.yaml
     aliases: [rook]
+  terraform:
+    taskfile: ./.taskfiles/terraform/taskfile.yaml
+    dir: "{{.TERRAFORM_DIR}}"
+    aliases: [tf]
 
 tasks:
   default:
