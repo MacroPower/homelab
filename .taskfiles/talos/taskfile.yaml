@@ -10,6 +10,7 @@ vars:
   DOPPLER_PROJECT: talhelper
   DOPPLER_ENV: main
   DOPPLER_CMD: doppler run -p {{.DOPPLER_PROJECT}} -c {{.DOPPLER_ENV}}
+  TALOS_DIR: "{{.TALOS_DIR}}"
 
 tasks:
   build:

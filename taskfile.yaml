@@ -7,17 +7,27 @@
 
 version: "3"
 
-includes:
-  talos: ./.taskfiles/talos/taskfile.yaml
-  external-secrets: .taskfiles/external-secrets/taskfile.yaml
-  rook-ceph: .taskfiles/rook-ceph/taskfile.yaml
+dotenv: ["{{.ROOT_DIR}}/.env", "{{.HOME}}/.env"]
 
 vars:
   TALOS_DIR: "{{.ROOT_DIR}}/talos"
   TERRAFORM_DIR: "{{.ROOT_DIR}}/terraform"
   ARGO_APP_DIR: "{{.ROOT_DIR}}/applications"
 
-dotenv: ["{{.ROOT_DIR}}/.env", "{{.HOME}}/.env"]
+includes:
+  argo-cd:
+    taskfile: ./.taskfiles/argo-cd/taskfile.yaml
+    aliases: [argocd]
+  talos:
+    taskfile: ./.taskfiles/talos/taskfile.yaml
+    dir: "{{.TALOS_DIR}}"
+    aliases: [tal]
+  external-secrets:
+    taskfile: .taskfiles/external-secrets/taskfile.yaml
+    aliases: [es]
+  rook-ceph:
+    taskfile: .taskfiles/rook-ceph/taskfile.yaml
+    aliases: [rook]
 
 tasks:
   default:

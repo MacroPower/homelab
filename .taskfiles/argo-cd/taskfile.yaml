@@ -1,0 +1,105 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+env:
+  ARGO_PROXY_PORT: 8080
+
+vars:
+  ARGOCD_NS: argocd
+  ARGO_APP_DIR: "{{.ARGO_APP_DIR}}"
+
+tasks:
+  proxy:
+    cmds:
+      - kubectl port-forward -n {{.ARGOCD_NS}} service/argocd-server "${ARGO_PROXY_PORT}:443" &
+    status:
+      - nc -z localhost ${ARGO_PROXY_PORT}
+
+  remove-proxy:
+    vars:
+      PID:
+        sh: ps -ef | grep '[^]]kubectl port-forward' | awk '{print $2}'
+    cmds:
+      - kill -9 "{{.PID}}"
+    preconditions:
+      - nc -z localhost ${ARGO_PROXY_PORT}
+
+  login-proxy:
+    vars:
+      PASSWORD:
+        sh: kubectl -n {{.ARGOCD_NS}} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+    cmds:
+      - task: proxy
+      - cmd: argocd login --insecure "localhost:${ARGO_PROXY_PORT}" --username=admin --password="{{.PASSWORD}}"
+        silent: true
+
+  refresh:
+    desc: Refresh ArgoCD Application
+    cmds:
+      - argocd app refresh {{.APP}}
+    requires:
+      vars: [APP]
+
+  pause:
+    desc: Pause ArgoCD Application
+    cmds:
+      - >-
+        argocd app patch {{.APP}}
+        --patch='[{"op": "remove", "path": "/spec/syncPolicy/automated"}]'
+    requires:
+      vars: [APP]
+    status:
+      - >-
+        ! argocd app get homepage -o json | jq '.spec.syncPolicy.automated' --exit-status
+
+  resume:
+    desc: Resume ArgoCD Application
+    cmds:
+      - >-
+        argocd app patch {{.APP}}
+        --patch='[{"op": "add", "path": "/spec/syncPolicy/automated", "value": {"prune": true, "selfHeal": true}}]' > /dev/null
+    requires:
+      vars: [APP]
+
+  diff:
+    desc: Diff ArgoCD Application
+    cmds:
+      - argocd app diff {{.APP}} --server-side-generate --local {{.PATH}}
+    requires:
+      vars: [APP]
+
+  sync:
+    desc: Sync ArgoCD Application
+    vars:
+      PATH: '{{.PATH}}'
+    cmds:
+      - argocd app sync --server-side {{.APP}}{{ if .PATH }} --local {{.PATH}}{{ end }}
+    requires:
+      vars: [APP]
+
+  dry-run:
+    desc: Dry run ArgoCD Application
+    vars:
+      PATH: '{{.PATH}}'
+    cmds:
+      - argocd app sync {{.APP}} --server-side --dry-run{{ if .PATH }} --local {{.PATH}}{{ end }}
+    requires:
+      vars: [APP]
+
+  watch:
+    desc: Watch ArgoCD Application
+    deps:
+      - task: pause
+        vars: { APP: "{{.APP}}" }
+    watch: true
+    ignore_error: true
+    sources:
+      - '{{.PATH}}/**/*'
+    cmds:
+      - task: dry-run
+        vars: { APP: "{{.APP}}", PATH: "{{.PATH}}" }
+      - task: sync
+        vars: { APP: "{{.APP}}", PATH: "{{.PATH}}" }
+    requires:
+      vars: [APP, PATH]
