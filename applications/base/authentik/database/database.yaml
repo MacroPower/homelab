@@ -1,0 +1,12 @@
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Database
+metadata:
+  name: applications/base/authentik/database
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    owner: authentik
+    encoding: utf8
+  providerConfigRef:
+    name: postgres-shared

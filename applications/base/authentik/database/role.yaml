@@ -1,0 +1,16 @@
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Role
+metadata:
+  name: authentik
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    privileges:
+      login: true
+    passwordSecretRef:
+      name: authentik-database-credentials
+      key: AUTHENTIK_DB_PASS
+      namespace: authentik
+  providerConfigRef:
+    name: postgres-shared

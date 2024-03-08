@@ -1,7 +1,10 @@
 authentik:
   log_level: info
   postgres:
-    host: "{{ .Release.Name }}-postgresql"
+    host: "postgres-shared-rw.postgres-shared.svc"
+    name: "authentik"
+    user: "authentik"
+    port: 5432
   redis:
     host: "{{ .Release.Name }}-redis-master"
 
@@ -40,8 +43,8 @@ server:
     - name: AUTHENTIK_POSTGRESQL__PASSWORD
       valueFrom:
         secretKeyRef:
-          name: authentik-postgres-credentials
-          key: postgresql-password
+          name: authentik-database-credentials
+          key: AUTHENTIK_DB_PASS
   resources:
     requests:
       cpu: 50m
@@ -65,12 +68,7 @@ prometheus:
     enabled: true
 
 postgresql:
-  enabled: true
-  existingSecret: authentik-postgres-credentials
-  persistence:
-    enabled: true
-    accessModes:
-      - ReadWriteOnce
+  enabled: false
 
 redis:
   enabled: true
