@@ -2,7 +2,7 @@
 apiVersion: postgresql.sql.crossplane.io/v1alpha1
 kind: Database
 metadata:
-  name: applications/base/authentik/database
+  name: authentik
 spec:
   deletionPolicy: Orphan
   forProvider:
