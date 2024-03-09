@@ -1,0 +1,12 @@
+---
+apiVersion: authentik.crossplane.io/v1alpha1
+kind: XGroupSet
+metadata:
+  name: authentik-argo-cd-groups
+spec:
+  compositionRef:
+    name: authentik-group-set
+  name: Argo CD
+  slug: argo-cd
+  adminUserRefs:
+    - name: akadmin
