@@ -1,12 +1,5 @@
 authentik:
   log_level: info
-  postgres:
-    host: "postgres-shared-rw.postgres-shared.svc"
-    name: "authentik"
-    user: "authentik"
-    port: 5432
-  redis:
-    host: "{{ .Release.Name }}-redis-master"
 
 server:
   replicas: 2
@@ -40,6 +33,14 @@ server:
         secretKeyRef:
           name: authentik-credentials
           key: AUTHENTIK_REDIS_PASS
+    - name: AUTHENTIK_POSTGRESQL__HOST
+      value: "postgres-shared-rw.postgres-shared.svc"
+    - name: AUTHENTIK_POSTGRESQL__PORT
+      value: "5432"
+    - name: AUTHENTIK_POSTGRESQL__NAME
+      value: "authentik"
+    - name: AUTHENTIK_POSTGRESQL__USER
+      value: "authentik"
     - name: AUTHENTIK_POSTGRESQL__PASSWORD
       valueFrom:
         secretKeyRef:
