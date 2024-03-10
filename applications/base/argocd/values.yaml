@@ -240,7 +240,6 @@ configs:
   ##
   params:
     server.insecure: true
-    controller.diff.server.side: "true"
     application.namespaces: "*"
 
 redis:
