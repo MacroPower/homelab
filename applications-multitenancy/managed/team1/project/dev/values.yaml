@@ -1,0 +1,9 @@
+enabled: true
+
+rbac:
+  - group: "myGroup1"
+    role: "admin"
+  - group: "myGroup2"
+    role: "admin"
+  - group: "myGroup3"
+    role: "admin"

@@ -1,0 +1,33 @@
+# ---------------------------------------------------------------------------- #
+## The following should be managed by the CD pipeline. After these values are
+## updated by the CD pipeline, a sync of the managed ArgoCD Application should
+## be triggered to ensure that the new desired state is rolled out as soon as
+## possible. If needed, the pipeline can also watch the application to ensure
+## that the sync is successful.
+
+## A simple way for the pipeline to remove/disable this deployment while
+## retaining settings and other pre-provisioned resources.
+##
+enabled: true
+
+## Tag for the image being deployed (assumes a single image is being deployed).
+## Sets the value of the parameter set in imageRevisionValuePath in the Helm chart
+## defined by the downstream Application.
+##
+imageRevision: "0.1"
+
+## Revision for the application resource (git sha, branch, tag, etc.)
+##
+chartRevision: "multitenancy"
+
+# ---------------------------------------------------------------------------- #
+
+#
+## The following are environment-specific values that are not managed by the
+## CD pipeline.
+#
+
+envValuesPath: "values.dev.yaml"
+
+automatedPrune: false
+automatedSelfHeal: false

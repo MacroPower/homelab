@@ -2,19 +2,17 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
-env:
-  ARGO_PROXY_PORT: 8080
-
 vars:
   ARGOCD_NS: argocd
+  ARGO_PROXY_PORT: "8080"
   ARGO_APP_DIR: "{{.ARGO_APP_DIR}}"
 
 tasks:
   proxy:
     cmds:
-      - kubectl port-forward -n {{.ARGOCD_NS}} service/argocd-server "${ARGO_PROXY_PORT}:443" &
+      - kubectl port-forward -n {{.ARGOCD_NS}} service/argocd-server "{{.ARGO_PROXY_PORT}}:443" &
     status:
-      - nc -z localhost ${ARGO_PROXY_PORT}
+      - nc -z localhost {{.ARGO_PROXY_PORT}}
 
   remove-proxy:
     vars:
@@ -23,7 +21,7 @@ tasks:
     cmds:
       - kill -9 "{{.PID}}"
     preconditions:
-      - nc -z localhost ${ARGO_PROXY_PORT}
+      - nc -z localhost {{.ARGO_PROXY_PORT}}
 
   login-proxy:
     vars:
@@ -31,7 +29,7 @@ tasks:
         sh: kubectl -n {{.ARGOCD_NS}} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
     cmds:
       - task: proxy
-      - cmd: argocd login --insecure "localhost:${ARGO_PROXY_PORT}" --username=admin --password="{{.PASSWORD}}"
+      - cmd: argocd login --insecure "localhost:{{.ARGO_PROXY_PORT}}" --username=admin --password="{{.PASSWORD}}"
         silent: true
 
   refresh:
@@ -65,7 +63,7 @@ tasks:
   diff:
     desc: Diff ArgoCD Application
     cmds:
-      - argocd app diff {{.APP}} --server-side-generate --local {{.PATH}}
+      - argocd app diff {{.APP}} --server-side-generate --local {{.PATH}} --local-repo-root {{.ROOT_DIR}}
     requires:
       vars: [APP]
 
@@ -74,7 +72,11 @@ tasks:
     vars:
       PATH: '{{.PATH}}'
     cmds:
-      - argocd app sync --server-side {{.APP}}{{ if .PATH }} --local {{.PATH}}{{ end }}
+      - >-
+        argocd app sync --server-side {{.APP}}
+        {{ if .PATH }}
+        --local {{.PATH}} --local-repo-root {{.ROOT_DIR}}
+        {{ end }}
     requires:
       vars: [APP]
 

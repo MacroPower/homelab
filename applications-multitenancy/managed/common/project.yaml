@@ -1,0 +1,30 @@
+---
+# Note that this should all be managed via a template, otherwise there will be
+# a lot of duplication. This is just an example of how to do it manually.
+
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: guestbook
+  namespace: argocd
+spec:
+  sourceRepos:
+    - 'https://github.com/MacroPower/**'
+  sourceNamespaces:
+    - guestbook
+  destinations:
+    - namespace: 'guestbook'
+      server: '*'
+  roles:
+    - name: admin
+      description: Admin privileges to guestbook
+      policies:
+        - p, proj:guestbook:admin, applications, *, guestbook/*, allow
+      groups:
+        - my-oidc-group
+    - name: read-only
+      description: Read-only privileges to guestbook
+      policies:
+        - p, proj:guestbook:read-only, applications, get, guestbook/*, allow
+      groups:
+        - my-oidc-group

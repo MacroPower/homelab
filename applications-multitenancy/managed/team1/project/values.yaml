@@ -1,0 +1,15 @@
+# Ensure that this is propagated to all resources in some way so that ownership
+# can be easily tracked in policies.
+project: team1
+
+namespaces:
+  guestbook:
+    quota: xx-large
+
+rbac:
+  - group: "myGroup1"
+    role: "admin"
+  - group: "myGroup2"
+    role: "editor"
+  - group: "myGroup3"
+    role: "viewer"

@@ -1,0 +1,64 @@
+# name: guestbook
+namespace: argocd
+project: default
+
+## After the source values are updated by the CD pipeline, a sync of the
+## managed ArgoCD Application should be triggered to ensure that the new
+## desired state is rolled out as soon as possible. If needed, the pipeline
+## can also watch the application to ensure that the sync is successful.
+##
+source:
+  # repoURL: ""
+  # path: ""
+
+  ## targetRevision for the application resource (git sha, branch, tag, etc.)
+  ##
+  # targetRevision: multitenancy
+
+sourceParameters:
+  ## Tag for the image being deployed (assumes a single image is being
+  ## deployed). Sets the value of the parameter set in imageTagValuePath in the
+  ## Helm chart defined by the downstream Application.
+  ##
+  # imageTag: "0.1"
+
+  ## Selects the field in the Helm chart to set the image tag value.
+  ##
+  imageTagValuePath: image.tag
+
+  baseValuesPath: "values.yaml"
+  envValuesPath: ~
+
+# sources: []
+
+destination:
+  server: https://kubernetes.default.svc
+  # namespace: guestbook
+
+additionalLabels: {}
+additionalAnnotations:
+  argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
+
+finalizers:
+  - resources-finalizer.argocd.argoproj.io
+
+syncPolicy:
+  automated:
+    prune: false
+    selfHeal: false
+
+  syncOptions:
+    - ServerSideApply=true
+    - CreateNamespace=true
+
+revisionHistoryLimit: null
+
+ignoreDifferences: []
+## - group: apps
+##   kind: Deployment
+##   jsonPointers:
+##     - /spec/replicas
+
+info: []
+## - name: url
+##   value: https://argoproj.github.io/

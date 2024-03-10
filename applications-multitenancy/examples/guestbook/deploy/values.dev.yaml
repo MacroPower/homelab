@@ -1,0 +1,11 @@
+config:
+  appSyncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+
+template:
+  ingress:
+    enabled: true
+    hosts:
+      - guestbook-dev

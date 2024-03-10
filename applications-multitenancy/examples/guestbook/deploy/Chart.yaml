@@ -1,0 +1,8 @@
+apiVersion: v2
+name: helm-guestbook
+version: 0.0.0 # This value is ignored.
+dependencies:
+  - name: template
+    alias: application
+    version: 0.2.0
+    repository: https://jacobcolvin.com/helm-charts

@@ -1,0 +1,111 @@
+#policy:
+config:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+  ## Sync policy for the parent Application that is responsible for managing
+  ## your Application. i.e., would you like the Application itself as defined
+  ## in application.yaml to be kept in sync with this repo?
+  ##
+  parentSyncPolicy:
+    ## In dev evironments, we want to disable the parent sync policy to avoid
+    ## edits to the Application resource from being reverted. However, we do not
+    ## want to stay out of sync for longer than necessary, so we will enable
+    ## automatic nightly syncs.
+    ##
+    enableNightlySync: true
+    automated:
+      prune: true
+      selfHeal: true
+
+  ## If true, apply policy settings to all namespaced resources. This enables a
+  ## better local-dev experience, since policy will automatically be applied to
+  ## manually created resources in the same namespace as the Application.
+  ##
+  ## If false, policy settings will only be applied to resources tracked by the
+  ## Application.
+  ##
+  ## This can only be true for one Application in a given namespace, and works
+  ## best when Application and Namespace have a 1:1 relationship.
+  ##
+  applyToNamespace: true
+
+  policy:
+    requirePodProbes: true
+    generatePodDisruptionBudgets: true
+    spreadPodsAcrossFailoverZones: true
+    setPodSecurityDefaults: true
+    setNodeSelectorDefault: myPool
+
+  firewall:
+    allowTrafficFrom:
+      systemNamespaces: true
+      namespaceSelectors:
+        - matchLabels:
+            argocd.argoproj.io/project: guestbook
+      namespaces:
+        - prometheus
+
+  ## Selects the field in the Helm chart to set the image tag value. For
+  ## example, if the application chart defines the image like so:
+  ##
+  ## application:
+  ##   image:
+  ##     repository: busybox
+  ##     tag: 1.28
+  ##
+  ## In this example, value's path would be `image.tag`.
+  ##
+  ## Most applications tend to use `image.tag`, thus it is the default value.
+  ##
+  ## TODO: Simplify with argocd-image-updater.
+  ##
+  imageRevisionValuePath: image.tag
+
+application:
+  controller:
+    replicas: 1
+
+  image:
+    repository: ghcr.io/podtato-head/podtatoserver
+    tag: "v0.1.1"
+    pullPolicy: IfNotPresent
+
+  service:
+    main:
+      enabled: true
+      type: ClusterIP
+      ports:
+        http:
+          enabled: true
+          primary: true
+          port: 9000
+          protocol: TCP
+
+  probes:
+    liveness:
+      enabled: true
+      custom: true
+      type: TCP
+      spec:
+        httpGet:
+          path: /
+          port: http
+        initialDelaySeconds: 15
+        timeoutSeconds: 5
+        periodSeconds: 5
+    readiness:
+      enabled: true
+      custom: true
+      type: TCP
+      spec:
+        httpGet:
+          path: /
+          port: http
+        initialDelaySeconds: 15
+        timeoutSeconds: 5
+        periodSeconds: 5
+    startup:
+      enabled: false

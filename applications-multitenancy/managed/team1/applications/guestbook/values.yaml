@@ -1,0 +1,28 @@
+## Note that the namespace must be inserted into the list of namespaces defined
+## in the project settings, otherwise you will be denied access to the namespace.
+##
+## TODO: Default to the folder name?
+##
+namespace: guestbook
+
+chartRepo: https://github.com/MacroPower/homelab
+chartPath: applications-multitenancy/examples/guestbook/deploy
+
+baseValuesPath: "values.yaml"
+
+## Prune will automatically delete resources that are no longer part of the
+## desired state, i.e. those that were removed from Git.
+##
+## Self-heal will automatically re-create or correct resources that have drifted
+## from the desired state, i.e. those that were removed or changed in the
+## cluster but still exist in Git.
+##
+## It can be useful to disable pruning and self-healing in a development
+## environment, so that changes made locally are not reverted immediately.
+## However, it is important to re-enable these features in production
+## environments to ensure that the desired state is always maintained.
+## If the desired state is not well understood, it could be useful to disable
+## pruning to avoid accidental deletion of resources.
+##
+automatedPrune: true
+automatedSelfHeal: true

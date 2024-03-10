@@ -1,0 +1,111 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dev
+  namespace: argocd
+  labels:
+    kubernetes.io/environment: dev
+    argocd.argoproj.io/secret-type: cluster
+stringData:
+  name: dev
+  server: "https://kubernetes.default.svc"
+  config: |
+    {
+      "tlsClientConfig": {
+        "insecure": true
+      }
+    }
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: managed-applications
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators:
+          ## https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/
+          - matrix:
+              generators:
+                - git:
+                    repoURL: &gitRepo https://github.com/MacroPower/homelab
+                    revision: &gitRevision multitenancy
+                    files:
+                      - path: applications-multitenancy/managed/*/applications/*/values.yaml
+                    pathParamPrefix: app
+                    values:
+                      project: "{{index .app.path.segments 2}}"
+                - git:
+                    repoURL: *gitRepo
+                    revision: *gitRevision
+                    files:
+                      - path: applications-multitenancy/managed/{{.values.project}}/applications/{{.app.path.basename}}/*/values.yaml
+                    pathParamPrefix: env
+          ## https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Cluster/
+          - clusters:
+              selector:
+                matchLabels:
+                  argocd.argoproj.io/secret-type: cluster
+                  kubernetes.io/environment: "{{.env.path.basename}}"
+  template:
+    metadata:
+      name: "managed-{{.values.project}}-{{.app.path.basename}}-{{.env.path.basename}}"
+      annotations:
+        argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: default
+      sources:
+        - repoURL: "{{.chartRepo}}"
+          targetRevision: "{{.chartRevision}}"
+          path: "{{.chartPath}}"
+          directory:
+            include: >-
+              {{"{"}}{{.baseValuesPath}},{{.envValuesPath}}{{"}"}}
+          ref: chartValues
+        ## Note that other sources can be added here and could be enabled/disabled
+        ## using https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Template/#template-patch
+        - repoURL: https://github.com/MacroPower/homelab
+          path: applications-multitenancy/charts/argo-managed-app
+          targetRevision: multitenancy
+          helm:
+            releaseName: "managed-{{.values.project}}-{{.app.path.basename}}-{{.env.path.basename}}"
+            valueFiles:
+              - "$chartValues/{{.chartPath}}/{{.baseValuesPath}}"
+              - "$chartValues/{{.chartPath}}/{{.envValuesPath}}"
+            parameters:
+              - name: "enabled"
+                value: "{{.enabled}}"
+              - name: "name"
+                value: "{{.values.project}}-{{.app.path.basename}}-{{.env.path.basename}}"
+              - name: "source.repoURL"
+                value: "{{.chartRepo}}"
+              - name: "source.path"
+                value: "{{.chartPath}}"
+              - name: "source.targetRevision"
+                value: "{{.chartRevision}}"
+              - name: "sourceParameters.baseValuesPath"
+                value: "{{.baseValuesPath}}"
+              - name: "sourceParameters.envValuesPath"
+                value: "{{.envValuesPath}}"
+              - name: "sourceParameters.imageTag"
+                value: "{{.imageRevision}}"
+              - name: "destination.namespace"
+                value: "{{.namespace}}"
+      destination:
+        server: "{{.server}}"
+        namespace: argocd
+      syncPolicy:
+        automated:
+          prune: false
+          selfHeal: true
+        syncOptions:
+          - ServerSideApply=true

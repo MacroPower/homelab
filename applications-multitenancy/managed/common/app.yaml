@@ -1,0 +1,86 @@
+---
+# Note that this should all be managed via a template, otherwise there will be
+# a lot of duplication. This is just an example of how to do it manually.
+
+# If using multiple clusters managed by a single ArgoCD instance, it is probably
+# better to use ApplicationSets.
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: managed-guestbook-dev
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
+spec:
+  project: default
+  destination:
+    namespace: guestbook
+    server: https://kubernetes.default.svc
+  # Multiple sources can be used here since local dev / inner-loop cycle times
+  # are not relevant for the "managed" app. For example, a helm chart could be
+  # used to provide infrastructure resources for the app, e.g. identities,
+  # network policies, and/or secret stores. However, if possible it is likely
+  # more favorable to use Kyverno instead, e.g. backed by a user-managed
+  # ConfigMap, which could provide a self-service implementation that is both
+  # easy and safe for app teams.
+  sources:
+    - repoURL: https://github.com/MacroPower/homelab
+      targetRevision: multitenancy # <- should be updated by the CI/CD pipeline
+      path: applications-multitenancy/applications/guestbook/dev
+      kustomize:
+        commonAnnotations:
+          app.kubernetes.io/name: "guestbook"
+          app.kubernetes.io/managed-by: "argocd"
+          app.kubernetes.io/version: "multitenancy" # <- should be updated by the CI/CD pipeline
+
+        # Is this actually the best way to do this? Alternatively, we could do
+        # some Kyverno magic, but it might be difficult to ensure that it would
+        # work even with local dev, i.e. we wouldn't want to patch the source in
+        # that case.
+        patches:
+          - target:
+              group: argoproj.io
+              version: v1alpha1
+              kind: Application
+            # The only thing that should be patched here is the `spec.source`, any
+            # other required changes must be made via policy. This is to ensure that
+            # local deployments work and are consistent.
+            patch: |-
+              - op: replace
+                path: /spec/source/repoURL
+                value: "https://github.com/MacroPower/homelab"
+              - op: replace
+                path: /spec/source/targetRevision
+                value: "multitenancy" # <- should be updated by the CI/CD pipeline
+              - op: add
+                path: /spec/source/helm/parameters/-
+                value:
+                  name: image.tag
+                  value: "" # <- should be updated by the CI/CD pipeline
+    - repoURL: https://github.com/MacroPower/homelab
+      path: applications-multitenancy/applications/guestbook/config
+      targetRevision: multitenancy # <- should be updated by the CI/CD pipeline
+      kustomize:
+        forceCommonAnnotations: true
+        commonAnnotations:
+          argocd.argoproj.io/hook: PreSync
+  syncPolicy:
+    # Labels can be set here out of reach of the tenant, and can thus be used as
+    # a simple mechanism to drive policy, for example in Kyverno.
+    managedNamespaceMetadata:
+      labels:
+        policy.kyverno.io/pod-security: restricted
+        argocd.argoproj.io/project: guestbook
+      annotations:
+        app.kubernetes.io/managed-by: argocd
+    automated:
+      # It can be useful to disable pruning and self-healing in a development
+      # environment, so that changes made locally are not reverted immediately.
+      # However, it is important to re-enable these features in production
+      # environments to ensure that the desired state is always maintained.
+      prune: false
+      selfHeal: false
+    syncOptions:
+      - ServerSideApply=true
+      - CreateNamespace=true

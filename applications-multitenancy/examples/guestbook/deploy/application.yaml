@@ -1,0 +1,31 @@
+---
+## https://argo-cd.readthedocs.io/en/stable/operator-manual/app-any-namespace/#reconfigure-argo-cd-to-allow-certain-namespaces
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: guestbook
+  annotations:
+    argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true # Set via Kyverno
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default # TODO: guestbook
+  destination:
+    namespace: guestbook
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/MacroPower/homelab # Enforced during deployment
+    targetRevision: multitenancy # Overwritten during deployment
+    path: applications-multitenancy/examples/guestbook
+    helm:
+      releaseName: guestbook
+      valueFiles:
+        - values.yaml
+        # Extra files will be injected here per environment.
+        # To test a given env override locally, use the following command:
+        # TODO: add one
+      parameters: []
+  syncPolicy:
+    syncOptions:
+      - ServerSideApply=true # Set via Kyverno

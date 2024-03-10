@@ -1,0 +1,5 @@
+template:
+  ingress:
+    enabled: true
+    hosts:
+      - guestbook-prd
