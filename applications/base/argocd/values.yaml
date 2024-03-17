@@ -241,6 +241,7 @@ configs:
   params:
     server.insecure: true
     application.namespaces: "*"
+    applicationsetcontroller.enable.new.git.file.globbing: true
 
 redis:
   resources: &RedisResources
