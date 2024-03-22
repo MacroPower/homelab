@@ -2,31 +2,124 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
+vars:
+  CURRENT_NS:
+    sh: kubectl config view --minify | grep namespace | cut -d" " -f6
+
 tasks:
-  sync:
-    desc: Sync an ExternalSecret
+  show:
+    desc: Show an ExternalSecret
+    summary: &commonSummary |
+      Args:
+        NS: Namespace of the ExternalSecret (default: current)
+        SECRET: Name of the ExternalSecret (required)
+    requires:
+      vars: [SECRET]
+    vars:
+      NS: &nsVar "{{.NS | default .CURRENT_NS}}"
+    preconditions:
+      - &esExists
+        msg: ExternalSecret "{{.SECRET}}" could not be found in namespace "{{.NS}}"
+        sh: kubectl -n {{.NS}} get externalsecret {{.SECRET}}
+    cmds:
+      - silent: true
+        cmd: |
+          echo "Current Status:"
+          echo
+      - silent: true
+        cmd:
+          "kubectl -n {{.NS}} get externalsecret {{.SECRET}} -o custom-columns=\
+          NAME:.metadata.name,\
+          STORE:.spec.secretStoreRef.name,\
+          REFRESH:.spec.refreshInterval,\
+          CREATED:.metadata.creationTimestamp,\
+          UPDATED:.status.refreshTime,\
+          STATUS:.status.conditions[-1].reason,\
+          READY:.status.conditions[-1].status"
+      - silent: true
+        cmd: |
+          echo
+          echo "Recent Events:"
+          echo
+      - task: show-events
+        vars:
+          SECRET: "{{.SECRET}}"
+          NS: "{{.NS}}"
+          MAX_EVENTS: 1
+
+  show-events:
+    desc: Show recent Events for an ExternalSecret
     summary: |
       Args:
-        NS: Namespace the ExternalSecret is in (default: default)
-        SECRET: Secret to sync (required)
-    cmd: kubectl -n {{.NS}} annotate externalsecret {{.SECRET}} force-sync=$(date +%s) --overwrite
-    requires:
-      vars:
-        - SECRET
+        NS: Namespace of the ExternalSecret (default: current)
+        SECRET: Name of the ExternalSecret (required)
+        MAX_EVENTS: Maximum number of events to show (default: 5)
+    requires: { vars: [SECRET] }
     vars:
-      NS: '{{.NS | default "default"}}'
-    preconditions:
-      - msg: ExternalSecret `{{.SECRET}}` could not be found in namespace `{{.NS}}`.
-        sh: kubectl -n {{.NS}} get externalsecret {{.SECRET}}
+      NS: *nsVar
+      MAX_EVENTS: '{{.MAX_EVENTS | default "5"}}'
+    preconditions: [*esExists]
+    cmds:
+      - silent: true
+        cmd: >-
+          kubectl get events
+          --sort-by=".metadata.creationTimestamp"
+          --field-selector="involvedObject.name={{.SECRET}},involvedObject.kind=ExternalSecret"
+          -o wide
+          | awk -v count={{.MAX_EVENTS}} '
+            NR == 1 {
+              header=$0;
+              next
+            }
+            {
+              lines[NR]=$0;
+              last=NR
+            }
+            END {
+              print header;
+              for (i=last-count+1; i<=last; i++)
+                if (i > 1)
+                  print lines[i]
+            }'
 
-  sync-all:
-    desc: Sync all ExternalSecrets
+  list-ns:
+    desc: List all ExternalSecrets in a Namespace
+    summary: |
+      Args:
+        NS: Namespace to list (default: current)
+    vars: { NS: *nsVar }
+    cmd: kubectl -n {{.NS}} get externalsecret -o wide
+
+  list-all:
+    desc: List all ExternalSecrets in a cluster
+    cmd: kubectl get externalsecret --all-namespaces -o wide
+
+  sync-ns:
+    desc: Sync all ExternalSecrets in a Namespace
+    summary: |
+      Args:
+        NS: Namespace to sync (default: current)
+    vars:
+      NS: *nsVar
+      SECRETS:
+        sh: kubectl -n {{.NS}} get externalsecret --no-headers | awk '{print $1}'
     cmds:
       - for: { var: SECRETS, split: "" }
         task: sync
         vars:
-          NS: '{{$a := split "|" .ITEM}}{{$a._0}}'
-          SECRET: '{{$a := split "|" .ITEM}}{{$a._1}}'
-    vars:
-      SECRETS:
-        sh: kubectl get externalsecret --all-namespaces --no-headers -A | awk '{print $1 "|" $2}'
+          NS: "{{.NS}}"
+          SECRET: "{{.ITEM}}"
+
+  sync:
+    desc: Sync an ExternalSecret
+    summary: *commonSummary
+    requires: { vars: [SECRET] }
+    vars: { NS: *nsVar }
+    preconditions: [*esExists]
+    cmds:
+      - kubectl -n {{.NS}} annotate externalsecret {{.SECRET}} force-sync=$(date +%s) --overwrite
+      - silent: true
+        cmd: |
+          echo "Force sync requested for {{.NS}}/{{.SECRET}}. This may take a moment to complete."
+          echo "You can show the status of the sync with:"
+          echo "task external-secrets:show NS={{.NS}} SECRET={{.SECRET}}"
