@@ -1,4 +1,5 @@
 ---
+## TODO: Add this secret to the cluster bootstrap
 apiVersion: v1
 kind: Secret
 metadata:
@@ -44,7 +45,7 @@ spec:
                     repoURL: *gitRepo
                     revision: *gitRevision
                     files:
-                      - path: applications/overlays/*/{{.app.path.basename}}/config.yaml
+                      - path: applications/overlays/*/{{.app.path.basename}}/values.yaml
                     pathParamPrefix: env
           ## https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Cluster/
           - clusters:
@@ -54,26 +55,41 @@ spec:
                   kubernetes.io/environment: "{{index .env.path.segments 2}}"
   template:
     metadata:
-      name: "{{.app.path.basename}}-{{index .env.path.segments 2}}"
+      name: "{{.app.path.basename}}-app"
       annotations:
         argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
       finalizers:
         - resources-finalizer.argocd.argoproj.io
     spec:
       project: default
-      source:
-        repoURL: *gitRepo
-        targetRevision: *gitRevision
-        path: "{{.app.path.path}}"
-        helm:
-          valueFiles: "{{.valueFiles}}"
+      sources:
+        - repoURL: *gitRepo
+          targetRevision: *gitRevision
+          path: "{{.env.path.path}}"
+          ref: chartValues
+        - repoURL: *gitRepo
+          targetRevision: *gitRevision
+          path: applications/lib/argo-cd-app
+          helm:
+            valueFiles:
+              - "$chartValues/{{.env.path.path}}/values.yaml"
+            parameters:
+              - name: name
+                value: "{{.app.path.basename}}"
+              - name: destination.namespace
+                value: "{{.app.path.basename}}"
+              - name: destination.server
+                value: "{{.server}}"
+              - name: source.repoURL
+                value: *gitRepo
+              - name: source.targetRevision
+                value: *gitRevision
+              - name: source.path
+                value: "{{.app.path.path}}"
       destination:
         server: "{{.server}}"
         namespace: "{{.app.path.basename}}"
       syncPolicy:
-        automated:
-          prune: true
-          selfHeal: true
         syncOptions:
           - ServerSideApply=true
           - CreateNamespace=true
