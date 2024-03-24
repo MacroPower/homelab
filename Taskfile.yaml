@@ -28,6 +28,9 @@ includes:
   kube:
     taskfile: ./.taskfiles/kube/taskfile.yaml
     aliases: [k]
+  repo:
+    taskfile: ./.taskfiles/repo/Taskfile.yaml
+    aliases: [r]
   rookceph:
     taskfile: .taskfiles/rook-ceph/taskfile.yaml
     aliases: [rook]

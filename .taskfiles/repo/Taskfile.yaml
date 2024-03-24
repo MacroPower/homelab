@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+tasks:
+  rename-all:
+    desc: Rename all files in the repo
+    summary: |
+      Args:
+        FROM: The file to rename
+        TO: The new name of the file
+    requires:
+      vars: [FROM, TO]
+    cmds:
+      - find . -type f -name "{{.FROM}}" -exec sh -c 'git mv "$0" "$(dirname "$0")/{{.TO}}"' {} \;
