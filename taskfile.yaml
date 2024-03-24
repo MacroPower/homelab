@@ -15,17 +15,20 @@ vars:
   ARGO_APP_DIR: "{{.ROOT_DIR}}/applications"
 
 includes:
-  argo-cd:
+  argocd:
     taskfile: ./.taskfiles/argo-cd/taskfile.yaml
-    aliases: [argocd]
+    aliases: [acd]
   talos:
     taskfile: ./.taskfiles/talos/taskfile.yaml
     dir: "{{.TALOS_DIR}}"
     aliases: [tal]
-  external-secrets:
+  externalsecrets:
     taskfile: .taskfiles/external-secrets/taskfile.yaml
     aliases: [es]
-  rook-ceph:
+  kube:
+    taskfile: ./.taskfiles/kube/taskfile.yaml
+    aliases: [k]
+  rookceph:
     taskfile: .taskfiles/rook-ceph/taskfile.yaml
     aliases: [rook]
   terraform:

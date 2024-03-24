@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "${POD_NAME}"
+spec:
+  hostNetwork: true
+  hostPID: true
+  hostIPC: true
+  nodeName: "${NODE}"
+  restartPolicy: Never
+  containers:
+    - name: shell
+      image: nicolaka/netshoot
+      command:
+        - /bin/sleep
+        - "36400"
+      securityContext:
+        privileged: true
+        allowPrivilegeEscalation: true
+        capabilities:
+          add:
+            - NET_ADMIN
+      tty: true
+      volumeMounts:
+        - name: rootfs
+          mountPath: /rootfs
+        - name: run-containerd
+          mountPath: /run/containerd
+      resources: {}
+  volumes:
+    - name: rootfs
+      hostPath:
+        path: /
+    - name: run-containerd
+      hostPath:
+        path: /run/containerd

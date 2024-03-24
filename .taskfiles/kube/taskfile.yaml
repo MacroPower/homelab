@@ -1,0 +1,142 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+vars:
+  CURRENT_CTX:
+    sh: kubectl config current-context
+  CURRENT_NS:
+    sh: kubectl config view --minify --output 'jsonpath={..namespace}'
+  KUBE_TEMPLATE_DIR: "{{.ROOT_DIR}}/.taskfiles/kube/templates"
+  KUBE_SCRIPTS_DIR: "{{.ROOT_DIR}}/.taskfiles/kube/scripts"
+
+tasks:
+  set-ctx:
+    aliases: [ctx]
+    desc: Set the current context and Namespace
+    summary: |
+      Args:
+        CTX: Context to set (required)
+        NS: Namespace to set (required)
+    requires:
+      vars: [CTX]
+    vars:
+      NS: "{{.NS | default .CURRENT_NS}}"
+    cmds:
+      - kubectl config use-context "{{.CTX}}"
+      - task: set-ns
+        vars:
+          NS: "{{.NS}}"
+
+  set-ns:
+    aliases: [ns]
+    desc: Set the current Namespace
+    summary: |
+      Args:
+        NS: Namespace to set (required)
+    requires:
+      vars: [NS]
+    cmds:
+      - kubectl config set-context --current --namespace="{{.NS}}"
+
+  resources:
+    desc: Gather common resources in a namespace
+    summary: |
+      Args:
+        NS: Namespace (default: current)
+    vars:
+      NS: "{{.NS | default .CURRENT_NS}}"
+      RESOURCES: >-
+        ingresses
+        services
+        externalsecrets
+        pods
+    cmds:
+      - for: { var: RESOURCES }
+        cmd: kubectl -n "{{.NS}}" get {{.ITEM}}
+
+  conform:
+    desc: Validate Kubernetes manifests with kubeconform
+    vars:
+      KUBECONFORM_SCRIPT: "{{.KUBE_SCRIPTS_DIR}}/kubeconform.sh"
+      ROOT_FOLDERS: >-
+        {{.ROOT_DIR}}/applications/base
+        {{.ROOT_DIR}}/applications/overlays
+    preconditions:
+      - sh: command -v kubeconform
+        msg: |-
+          kubeconform not found in PATH
+
+          You can install it with:
+          brew install kubeconform
+      - sh: test -f {{.KUBECONFORM_SCRIPT}}
+        msg: Kubeconform script not found at {{.KUBECONFORM_SCRIPT}}
+    cmds:
+      - for: { var: ROOT_FOLDERS }
+        cmd: bash {{.KUBECONFORM_SCRIPT}} {{.ITEM}}
+
+  debug-pod:
+    desc: Attach a debug container to an existing Pod
+    summary: |
+      Args:
+        NS: Namespace of the Pod to debug (default: current)
+        POD: Name of the Pod to debug (required)
+    requires:
+      vars: [POD]
+    vars:
+      NS: "{{.NS | default .CURRENT_NS}}"
+    preconditions:
+      - sh: kubectl -n "{{.NS}}" get pod "{{.POD}}"
+        msg: Pod "{{.POD}}" not found in namespace "{{.NS}}".
+    interactive: true
+    cmds:
+      - kubectl -n "{{.NS}}" debug "{{.POD}}" -it --image=nicolaka/netshoot -- /bin/zsh
+
+  debug:
+    desc: Launch a priviledged debug Pod
+    summary: |
+      Note that this requires scoping to or passing a Namespace with permission
+      to run highly priviledged Pods.
+
+      Args:
+        NS: Namespace to launch the Pod in (default: current)
+    vars:
+      NS: "{{.NS | default .CURRENT_NS}}"
+      POD_NAME: '{{.POD_NAME | default "netshoot"}}'
+    env:
+      POD_NAME: "{{.POD_NAME}}"
+    interactive: true
+    cmds:
+      - >-
+        envsubst < <(cat {{.KUBE_TEMPLATE_DIR}}/netshoot.tmpl.yaml)
+        | kubectl -n "{{.NS}}" apply -f -
+      - defer: kubectl -n "{{.NS}}" delete pod "{{.POD_NAME}}"
+      - kubectl -n "{{.NS}}" exec -it "{{.POD_NAME}}" -- /bin/zsh
+
+  debug-node:
+    desc: Launch a priviledged debug Pod on a specific Node
+    summary: |
+      Note that this requires scoping to or passing a Namespace with permission
+      to run highly priviledged Pods.
+
+      Args:
+        NODE: Node to run the Pod on (required)
+        NS: Namespace to launch the Pod in (default: current)
+    requires:
+      vars: [NODE]
+    vars:
+      NS: "{{.NS | default .CURRENT_NS}}"
+      POD_NAME: '{{.POD_NAME | default (print "netshoot-" .NODE)}}'
+    env:
+      NODE: "{{.NODE}}"
+      POD_NAME: "{{.POD_NAME}}"
+    preconditions:
+      - sh: kubectl get node "{{.NODE}}"
+        msg: Node "{{.NODE}}" not found in the current cluster.
+    interactive: true
+    cmds:
+      - >-
+        envsubst < <(cat {{.KUBE_TEMPLATE_DIR}}/netshoot_node.tmpl.yaml)
+        | kubectl -n "{{.NS}}" apply -f -
+      - defer: kubectl -n "{{.NS}}" delete pod "{{.POD_NAME}}"
+      - kubectl -n "{{.NS}}" exec -it "{{.POD_NAME}}" -- /bin/zsh

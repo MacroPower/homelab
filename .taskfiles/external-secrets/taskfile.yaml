@@ -4,7 +4,7 @@ version: "3"
 
 vars:
   CURRENT_NS:
-    sh: kubectl config view --minify | grep namespace | cut -d" " -f6
+    sh: kubectl config view --minify --output 'jsonpath={..namespace}'
 
 tasks:
   show:
@@ -122,4 +122,4 @@ tasks:
         cmd: |
           echo "Force sync requested for {{.NS}}/{{.SECRET}}. This may take a moment to complete."
           echo "You can show the status of the sync with:"
-          echo "task external-secrets:show NS={{.NS}} SECRET={{.SECRET}}"
+          echo "task es:show NS={{.NS}} SECRET={{.SECRET}}"

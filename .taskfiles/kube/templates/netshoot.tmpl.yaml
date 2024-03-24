@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Pod
 metadata:
- name: netshoot
+  name: "${POD_NAME}"
 spec:
   hostNetwork: true
   containers:
-    - name: myshell
+    - name: shell
       image: nicolaka/netshoot
       command:
         - /bin/sleep
@@ -17,5 +17,3 @@ spec:
             - NET_ADMIN
       tty: true
       resources: {}
-
-# kubectl exec -it netshoot -- /bin/zsh
