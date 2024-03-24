@@ -1,0 +1,14 @@
+config:
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+
+application:
+  ingress:
+    main:
+      enabled: true
+      hosts:
+        - host: guestbook.home.macro.network
+          paths:
+            - path: /
