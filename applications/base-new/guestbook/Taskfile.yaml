@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: "3"
+
+includes:
+  argocd:
+    taskfile: "../../../.taskfiles/argo-cd/taskfile.yaml"
+    aliases: [acd]
+    dir: "../../../"
+    vars:
+      APP: "{{base .ROOT_DIR}}"
+      REPO_ROOT: '{{joinPath .ROOT_DIR "../../../"}}'
+
+tasks:
+  default:
+    silent: true
+    cmd: task -l
