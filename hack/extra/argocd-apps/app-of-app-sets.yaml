@@ -1,4 +1,24 @@
 ---
+## TODO: Add this secret to the cluster bootstrap
+apiVersion: v1
+kind: Secret
+metadata:
+  name: home-cluster
+  namespace: argocd
+  labels:
+    kubernetes.io/environment: home
+    argocd.argoproj.io/secret-type: cluster
+stringData:
+  name: home
+  server: "https://kubernetes.default.svc"
+  config: |
+    {
+      "tlsClientConfig": {
+        "insecure": true
+      }
+    }
+
+---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -16,7 +36,9 @@ spec:
   source:
     repoURL: https://github.com/MacroPower/homelab
     targetRevision: main
-    path: applications/overlays
+    path: applications
+    directory:
+      include: "{applications.yaml}"
   syncPolicy:
     automated:
       prune: true

@@ -1,24 +1,3 @@
----
-## TODO: Add this secret to the cluster bootstrap
-apiVersion: v1
-kind: Secret
-metadata:
-  name: home
-  namespace: argocd
-  labels:
-    kubernetes.io/environment: home
-    argocd.argoproj.io/secret-type: cluster
-stringData:
-  name: home
-  server: "https://kubernetes.default.svc"
-  config: |
-    {
-      "tlsClientConfig": {
-        "insecure": true
-      }
-    }
-
----
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
@@ -30,29 +9,23 @@ spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
   generators:
+    ## https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Matrix/
     - matrix:
         generators:
-          ## https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/
-          - matrix:
-              generators:
-                - git:
-                    repoURL: &gitRepo https://github.com/MacroPower/homelab
-                    revision: &gitRevision main
-                    files:
-                      - path: applications/base-new/*/values.yaml
-                    pathParamPrefix: app
-                - git:
-                    repoURL: *gitRepo
-                    revision: *gitRevision
-                    files:
-                      - path: applications/overlays/*/{{.app.path.basename}}/values.yaml
-                    pathParamPrefix: env
           ## https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Cluster/
           - clusters:
               selector:
                 matchLabels:
                   argocd.argoproj.io/secret-type: cluster
-                  kubernetes.io/environment: "{{index .env.path.segments 2}}"
+              values:
+                clusterName: "{{.name}}"
+          ## https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/
+          - git:
+              repoURL: &gitRepo https://github.com/MacroPower/homelab
+              revision: &gitRevision main
+              files:
+                - path: applications/environments/{{.values.clusterName}}/*/values.yaml
+              pathParamPrefix: app
   template:
     metadata:
       name: "{{.app.path.basename}}-app"
@@ -65,14 +38,14 @@ spec:
       sources:
         - repoURL: *gitRepo
           targetRevision: *gitRevision
-          path: "{{.env.path.path}}"
+          path: "{{.app.path.path}}"
           ref: chartValues
         - repoURL: *gitRepo
           targetRevision: *gitRevision
           path: applications/lib/argo-cd-app
           helm:
             valueFiles:
-              - "$chartValues/{{.env.path.path}}/values.yaml"
+              - "$chartValues/{{.app.path.path}}/values.yaml"
             parameters:
               - name: name
                 value: "{{.app.path.basename}}"
@@ -85,7 +58,7 @@ spec:
               - name: source.targetRevision
                 value: *gitRevision
               - name: source.path
-                value: "{{.app.path.path}}"
+                value: "applications/base/{{.app.path.basename}}"
       destination:
         server: "{{.server}}"
         namespace: "{{.app.path.basename}}"
