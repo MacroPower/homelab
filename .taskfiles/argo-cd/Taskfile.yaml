@@ -30,6 +30,15 @@ tasks:
     vars:
       PASSWORD:
         sh: kubectl -n {{.ARGOCD_NS}} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+    preconditions:
+      - &requireArgoCdCli
+        sh: command -v argocd
+        msg: |
+          ArgoCD CLI not found, you can install it with:
+
+          brew install argocd
+    status:
+      - argocd app list -l foo=bar
     cmds:
       - task: proxy
       - cmd: argocd login --insecure "localhost:{{.ARGO_PROXY_PORT}}" --username=admin --password="{{.PASSWORD}}"
@@ -39,6 +48,10 @@ tasks:
     desc: Refresh ArgoCD Application
     requires:
       vars: [APP]
+    preconditions:
+      - *requireArgoCdCli
+    deps:
+      - task: proxy-login
     cmds:
       - argocd app refresh {{.APP}}
 
@@ -46,6 +59,10 @@ tasks:
     desc: Pause ArgoCD Application
     requires:
       vars: [APP]
+    preconditions:
+      - *requireArgoCdCli
+    deps:
+      - task: proxy-login
     status:
       - >-
         ! argocd app get {{.APP}} -o json | jq '.spec.syncPolicy.automated' --exit-status
@@ -58,6 +75,10 @@ tasks:
     desc: Resume ArgoCD Application
     requires:
       vars: [APP]
+    preconditions:
+      - *requireArgoCdCli
+    deps:
+      - task: proxy-login
     cmds:
       - >-
         argocd app patch {{.APP}}
@@ -70,6 +91,10 @@ tasks:
         APP: Application to diff (required)
     requires:
       vars: [APP]
+    preconditions:
+      - *requireArgoCdCli
+    deps:
+      - task: proxy-login
     cmds:
       - >-
         argocd app diff {{.APP}}
@@ -90,6 +115,10 @@ tasks:
     vars:
       PREVIEW: '{{.PREVIEW | default "true"}}'
       DRY_RUN: '{{.DRY_RUN | default "false"}}'
+    preconditions:
+      - *requireArgoCdCli
+    deps:
+      - task: proxy-login
     cmds:
       - >-
         argocd app sync {{.APP}}
@@ -116,6 +145,7 @@ tasks:
       PREVIEW: '{{.PREVIEW | default "true"}}'
       DRY_RUN: '{{.DRY_RUN | default "false"}}'
     preconditions:
+      - *requireArgoCdCli
       - sh: argocd app get {{.APP}}
         msg: Application "{{.APP}}" not found
     deps:
@@ -145,6 +175,10 @@ tasks:
       - "{{.PATH}}/**/*"
     watch: true
     ignore_error: true
+    preconditions:
+      - *requireArgoCdCli
+    deps:
+      - task: proxy-login
     cmds:
       - task: local-diff
         vars: { APP: "{{.APP}}" }
