@@ -2,7 +2,6 @@ config:
   syncPolicy:
     automated:
       prune: false
-      selfHeal: false
 
 application:
   ingress:

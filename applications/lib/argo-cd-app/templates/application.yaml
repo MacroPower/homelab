@@ -2,48 +2,48 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  {{- with .Values.additionalAnnotations }}
+  {{- with .Values.config.additionalAnnotations }}
   annotations:
     {{- range $key, $value := . }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
   {{- end }}
-  {{- with .Values.additionalLabels }}
+  {{- with .Values.config.additionalLabels }}
   labels:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  name: {{ .Values.name }}
-  {{- with .Values.namespace }}
+  name: {{ .Values.config.name }}
+  {{- with .Values.config.namespace }}
   namespace: {{ . }}
   {{- end }}
-  {{- with .Values.finalizers }}
+  {{- with .Values.config.finalizers }}
   finalizers:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  project: {{ .Values.project }}
-  {{- with .Values.source }}
+  project: {{ .Values.config.project }}
+  {{- with .Values.config.source }}
   source:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- with .Values.sources }}
+  {{- with .Values.config.sources }}
   sources:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   destination:
-    {{- toYaml .Values.destination | nindent 4 }}
-  {{- with .Values.syncPolicy }}
+    {{- toYaml .Values.config.destination | nindent 4 }}
+  {{- with .Values.config.syncPolicy }}
   syncPolicy:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- with .Values.revisionHistoryLimit }}
+  {{- with .Values.config.revisionHistoryLimit }}
   revisionHistoryLimit: {{ . }}
   {{- end }}
-  {{- with .Values.ignoreDifferences }}
+  {{- with .Values.config.ignoreDifferences }}
   ignoreDifferences:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- with .Values.info }}
+  {{- with .Values.config.info }}
   info:
     {{- toYaml . | nindent 4 }}
   {{- end }}

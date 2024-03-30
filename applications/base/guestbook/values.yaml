@@ -4,6 +4,7 @@ config:
       prune: true
       selfHeal: true
 
+policy:
   ## If true, apply policy settings to all namespaced resources. This enables a
   ## better local-dev experience, since policy will automatically be applied to
   ## manually created resources in the same namespace as the Application.
@@ -16,14 +17,16 @@ config:
   ##
   applyToNamespace: true
 
-  policy:
+  validation:
     requirePodProbes: true
+
+  mutation:
     generatePodDisruptionBudgets: true
     spreadPodsAcrossFailoverZones: true
     setPodSecurityDefaults: true
     setNodeSelectorDefault: myPool
 
-  firewall:
+  network:
     allowTrafficFrom:
       systemNamespaces: true
       namespaceSelectors:

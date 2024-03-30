@@ -24,7 +24,7 @@ spec:
               repoURL: &gitRepo https://github.com/MacroPower/homelab
               revision: &gitRevision main
               files:
-                - path: applications/environments/{{.values.clusterName}}/*/values.yaml
+                - path: applications/environments/{{.values.clusterName}}/*/app.yaml
               pathParamPrefix: app
   template:
     metadata:
@@ -34,31 +34,8 @@ spec:
       finalizers:
         - resources-finalizer.argocd.argoproj.io
     spec:
-      project: default
-      sources:
-        - repoURL: *gitRepo
-          targetRevision: *gitRevision
-          path: "{{.app.path.path}}"
-          ref: chartValues
-        - repoURL: *gitRepo
-          targetRevision: *gitRevision
-          path: applications/lib/argo-cd-app
-          helm:
-            valueFiles:
-              - "$chartValues/{{.app.path.path}}/values.yaml"
-            parameters:
-              - name: name
-                value: "{{.app.path.basename}}"
-              - name: destination.namespace
-                value: "{{.app.path.basename}}"
-              - name: destination.server
-                value: "{{.server}}"
-              - name: source.repoURL
-                value: *gitRepo
-              - name: source.targetRevision
-                value: *gitRevision
-              - name: source.path
-                value: "applications/base/{{.app.path.basename}}"
+      project: default # set via deeper file structure?
+      sources: []
       destination:
         server: "{{.server}}"
         namespace: "{{.app.path.basename}}"
@@ -66,3 +43,44 @@ spec:
         syncOptions:
           - ServerSideApply=true
           - CreateNamespace=true
+  templatePatch: |
+    {{ $chartPath := (print "applications/base/" .app.path.basename) -}}
+    {{ $repoURL := "https://github.com/MacroPower/homelab" -}}
+    {{ $targetRevision := "main" -}}
+    spec:
+      sources:
+        - repoURL: "{{ $repoURL }}"
+          targetRevision: "{{ $targetRevision }}"
+          path: "{{ $chartPath }}"
+          directory:
+            include: "{values.yaml,values.*.yaml}"
+          ref: chartValues
+        - repoURL: "{{ $repoURL }}"
+          targetRevision: "{{ $targetRevision }}"
+          path: applications/lib/argo-cd-app
+          helm:
+            valueFiles:
+            {{- range $valueFile := .valueFiles }}
+              - $chartValues/{{ $chartPath }}/{{ $valueFile }}
+            {{- end }}
+            values: |
+              config:
+                source:
+                  helm:
+                    valueFiles:
+                      {{- range $valueFile := .valueFiles }}
+                        - {{ $valueFile }}
+                      {{- end }}
+            parameters:
+              - name: config.name
+                value: "{{.app.path.basename}}"
+              - name: config.destination.namespace
+                value: "{{.app.path.basename}}"
+              - name: config.destination.server
+                value: "{{.server}}"
+              - name: config.source.repoURL
+                value: https://github.com/MacroPower/homelab
+              - name: config.source.targetRevision
+                value: main
+              - name: config.source.path
+                value: "{{ $chartPath }}"
