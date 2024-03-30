@@ -21,10 +21,10 @@ spec:
                 clusterName: "{{.name}}"
           ## https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/
           - git:
-              repoURL: &gitRepo https://github.com/MacroPower/homelab
-              revision: &gitRevision main
+              repoURL: https://github.com/MacroPower/homelab
+              revision: main
               files:
-                - path: applications/environments/{{.values.clusterName}}/*/app.yaml
+                - path: applications/environments/{{.values.clusterName}}/*/values.yaml
               pathParamPrefix: app
   template:
     metadata:
@@ -60,17 +60,19 @@ spec:
           path: applications/lib/argo-cd-app
           helm:
             valueFiles:
-            {{- range $valueFile := .valueFiles }}
+            {{- range $valueFile := .config.source.helm.valueFiles }}
               - $chartValues/{{ $chartPath }}/{{ $valueFile }}
             {{- end }}
             values: |
-              config:
-                source:
-                  helm:
-                    valueFiles:
-                      {{- range $valueFile := .valueFiles }}
-                        - {{ $valueFile }}
-                      {{- end }}
+              {{- with .config }}
+              config: {{ . | toJson }}
+              {{- end }}
+              {{- with (index . "policy") }}
+              policy: {{ . | toJson }}
+              {{- end }}
+              {{- with (index . "application") }}
+              application: {{ . | toJson }}
+              {{- end }}
             parameters:
               - name: config.name
                 value: "{{.app.path.basename}}"

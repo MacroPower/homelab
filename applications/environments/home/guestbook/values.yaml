@@ -1,0 +1,6 @@
+config:
+  source:
+    helm:
+      valueFiles:
+        - values.yaml
+        - values.home.yaml
