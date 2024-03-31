@@ -56,7 +56,7 @@ tasks:
     deps:
       - task: proxy-login
     cmds:
-      - argocd app refresh {{.APP}}
+      - argocd app get --refresh {{.APP}}
 
   pause:
     desc: Pause ArgoCD Application
@@ -85,7 +85,7 @@ tasks:
     cmds:
       - >-
         argocd app patch {{.APP}}
-        --patch='[{"op": "add", "path": "/spec/syncPolicy/automated", "value": {"prune": true, "selfHeal": true}}]' > /dev/null
+        --patch='[{"op": "add", "path": "/spec/syncPolicy/automated", "value": {"selfHeal": true}}]' > /dev/null
 
   local-diff:
     desc: Diff ArgoCD Application
