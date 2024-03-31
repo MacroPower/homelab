@@ -57,37 +57,48 @@ spec:
           ref: chartValues
         - repoURL: "{{ $repoURL }}"
           targetRevision: "{{ $targetRevision }}"
-          path: applications/lib/argo-cd-app
+          path: applications/lib/charts/application
           helm:
             valueFiles:
             {{- range $valueFile := .config.source.helm.valueFiles }}
               - $chartValues/{{ $chartPath }}/{{ $valueFile }}
             {{- end }}
             values: |
-              source:
-                helm:
-                  values: |
-                    {{- with .config }}
-                    config: {{ . | toJson }}
+              config:
+                source:
+                  helm:
+                    valueFiles:
+                    {{- range $valueFile := .config.source.helm.valueFiles }}
+                      - {{ $valueFile }}
                     {{- end }}
-                    {{- with (index . "policy") }}
-                    policy: {{ . | toJson }}
-                    {{- end }}
-                    {{- with (index . "application") }}
-                    application: {{ . | toJson }}
-                    {{- end }}
+                    values: |
+                      {{- with .config }}
+                      config: {{ . | toJson }}
+                      {{- end }}
+                      {{- with (index . "policy") }}
+                      policy: {{ . | toJson }}
+                      {{- end }}
+                      {{- with (index . "application") }}
+                      application: {{ . | toJson }}
+                      {{- end }}
             parameters:
-              - name: create
+              - name: config.create
                 value: "true"
-              - name: name
+              - name: config.name
                 value: "{{.app.path.basename}}"
-              - name: destination.namespace
+              - name: config.destination.namespace
                 value: "{{.app.path.basename}}"
-              - name: destination.server
+              - name: config.destination.server
                 value: "{{.server}}"
-              - name: source.repoURL
+              - name: config.source.repoURL
                 value: https://github.com/MacroPower/homelab
-              - name: source.targetRevision
+              - name: config.source.targetRevision
                 value: main
-              - name: source.path
+              - name: config.source.path
                 value: "{{ $chartPath }}"
+              - name: policy.create
+                value: "true"
+              - name: policy.name
+                value: "{{.app.path.basename}}"
+              - name: policy.namespace
+                value: "{{.app.path.basename}}"

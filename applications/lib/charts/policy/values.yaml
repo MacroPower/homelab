@@ -1,0 +1,29 @@
+create: false
+
+## If true, apply policy settings to all namespaced resources. This enables a
+## better local-dev experience, since policy will automatically be applied to
+## manually created resources in the same namespace as the Application.
+##
+## If false, policy settings will only be applied to resources tracked by the
+## Application.
+##
+## This can only be true for one Application in a given namespace, and works
+## best when Application and Namespace have a 1:1 relationship.
+##
+applyToNamespace: true
+
+validation:
+  requirePodProbes: true
+
+mutation:
+  generatePodDisruptionBudgets: true
+  spreadPodsAcrossFailoverZones: true
+  setPodSecurityDefaults: true
+  setNodeSelectorDefault: ""
+
+network:
+  allowTrafficFrom:
+    systemNamespaces: true
+    namespaceSelectors: []
+    namespaces:
+      - prometheus
