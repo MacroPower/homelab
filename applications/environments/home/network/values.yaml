@@ -1,0 +1,5 @@
+valueFiles:
+  - values.yaml
+
+project:
+  rbac: []

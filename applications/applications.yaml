@@ -24,11 +24,11 @@ spec:
               repoURL: https://github.com/MacroPower/homelab
               revision: main
               files:
-                - path: applications/environments/{{.values.clusterName}}/*/values.yaml
+                - path: applications/environments/{{.values.clusterName}}/*/*/values.yaml
               pathParamPrefix: app
   template:
     metadata:
-      name: "{{.app.path.basename}}-app"
+      name: "{{index .app.path.segments 3}}-{{.app.path.basename}}-app"
       annotations:
         argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
       finalizers:
@@ -38,13 +38,15 @@ spec:
       sources: []
       destination:
         server: "{{.server}}"
-        namespace: "{{.app.path.basename}}"
+        namespace: "{{index .app.path.segments 3}}-{{.app.path.basename}}"
       syncPolicy:
         syncOptions:
           - ServerSideApply=true
           - CreateNamespace=true
   templatePatch: |
-    {{ $chartPath := (print "applications/base/" .app.path.basename) -}}
+    {{ $project := (index .app.path.segments 3) }}
+    {{ $name := (print $project "-" .app.path.basename)}}
+    {{ $chartPath := (print "applications/base/" $project "/" .app.path.basename) -}}
     {{ $repoURL := "https://github.com/MacroPower/homelab" -}}
     {{ $targetRevision := "main" -}}
     spec:
@@ -85,9 +87,9 @@ spec:
               - name: config.create
                 value: "true"
               - name: config.name
-                value: "{{.app.path.basename}}"
+                value: "{{ $name }}"
               - name: config.destination.namespace
-                value: "{{.app.path.basename}}"
+                value: "{{ $name }}"
               - name: config.destination.server
                 value: "{{.server}}"
               - name: config.source.repoURL
@@ -99,6 +101,6 @@ spec:
               - name: policy.create
                 value: "true"
               - name: policy.name
-                value: "{{.app.path.basename}}"
+                value: "{{ $name }}"
               - name: policy.namespace
-                value: "{{.app.path.basename}}"
+                value: "{{ $name }}"

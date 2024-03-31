@@ -1,0 +1,82 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: tenants
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    ## https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Matrix/
+    - matrix:
+        generators:
+          ## https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Cluster/
+          - clusters:
+              selector:
+                matchLabels:
+                  argocd.argoproj.io/secret-type: cluster
+              values:
+                clusterName: "{{.name}}"
+          ## https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/
+          - git:
+              repoURL: https://github.com/MacroPower/homelab
+              revision: main
+              files:
+                - path: applications/environments/{{.values.clusterName}}/*/values.yaml
+              pathParamPrefix: tenant
+  template:
+    metadata:
+      name: "{{.tenant.path.basename}}-tenant"
+      annotations:
+        argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: default
+      sources: []
+      destination:
+        server: "{{.server}}"
+        namespace: "argocd"
+      syncPolicy:
+        syncOptions:
+          - ServerSideApply=true
+  templatePatch: |
+    {{- $name := .tenant.path.basename }}
+    {{- $chartPath := (print "applications/base/" $name) }}
+    {{- $repoURL := "https://github.com/MacroPower/homelab" }}
+    {{- $targetRevision := "main" }}
+    {{- $projectValues := (index . "project") }}
+    {{-
+      $_ := set $projectValues "destinations" (
+        list
+        (dict "server" .server "namespace" $name)
+        (dict "server" .server "namespace" (print $name "-*"))
+      )
+    }}
+    spec:
+      sources:
+        - repoURL: "{{ $repoURL }}"
+          targetRevision: "{{ $targetRevision }}"
+          path: "{{ $chartPath }}"
+          directory:
+            include: "{values.yaml,values.*.yaml}"
+          ref: chartValues
+        - repoURL: "{{ $repoURL }}"
+          targetRevision: "{{ $targetRevision }}"
+          path: applications/lib/charts/tenant
+          helm:
+            valueFiles:
+            {{- range $valueFile := .valueFiles }}
+              - $chartValues/{{ $chartPath }}/{{ $valueFile }}
+            {{- end }}
+            values: |
+              {{- with $projectValues }}
+              project: {{ . | toJson }}
+              {{- end }}
+            parameters:
+              - name: project.create
+                value: "true"
+              - name: project.name
+                value: "{{ $name }}"
