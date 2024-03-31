@@ -8,6 +8,9 @@ vars:
   ARGO_LOG_LEVEL: warn # info and below are verbose enough to destroy your shell, be warned
   REPO_ROOT: "{{.REPO_ROOT | default .ROOT_DIR}}"
 
+includes:
+  helm: "../helm/Taskfile.yaml"
+
 tasks:
   proxy:
     status:
@@ -182,3 +185,18 @@ tasks:
     cmds:
       - task: local-diff
         vars: { APP: "{{.APP}}" }
+
+  lint:
+    desc: Lint ArgoCD Application
+    requires:
+      vars: [APP]
+    vars:
+      PATH:
+        sh: argocd app get {{.APP}} -o json | jq -r '.spec.source.path'
+    cmds:
+      - task: helm:lint-chart
+        vars:
+          PATH: "{{.PATH}}"
+          PARAMS: >-
+            --set=config.create=true
+            --set=config.name={{.APP}}

@@ -1,41 +1,42 @@
-config:
-  # name: guestbook
-  namespace: argocd
-  project: default
+create: false
 
-  source:
-    # repoURL: ""
-    # path: ""
+# name: guestbook
+namespace: argocd
+project: default
 
-  # sources: []
+source:
+  # repoURL: ""
+  # path: ""
 
-  destination:
-    server: https://kubernetes.default.svc
-    # namespace: guestbook
+# sources: []
 
-  additionalLabels: {}
-  additionalAnnotations:
-    argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
+destination:
+  server: https://kubernetes.default.svc
+  # namespace: guestbook
 
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
+additionalLabels: {}
+additionalAnnotations:
+  argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
 
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+finalizers:
+  - resources-finalizer.argocd.argoproj.io
 
-    syncOptions:
-      - ServerSideApply=true
+syncPolicy:
+  automated:
+    prune: true
+    selfHeal: true
 
-  revisionHistoryLimit: null
+  syncOptions:
+    - ServerSideApply=true
 
-  ignoreDifferences: []
-  ## - group: apps
-  ##   kind: Deployment
-  ##   jsonPointers:
-  ##     - /spec/replicas
+revisionHistoryLimit: null
 
-  info: []
-  ## - name: url
-  ##   value: https://argoproj.github.io/
+ignoreDifferences: []
+## - group: apps
+##   kind: Deployment
+##   jsonPointers:
+##     - /spec/replicas
+
+info: []
+## - name: url
+##   value: https://argoproj.github.io/

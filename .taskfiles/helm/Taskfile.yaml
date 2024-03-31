@@ -1,0 +1,33 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+tasks:
+  dep-up:
+    internal: true
+    desc: Update Helm chart dependencies
+    requires:
+      vars: [PATH]
+    preconditions:
+      - &requireHelmCli
+        sh: command -v helm
+        msg: |
+          Helm CLI not found, you can install it with:
+
+          brew install helm
+    cmds:
+      - helm dependency update {{.PATH}}
+
+  lint-chart:
+    desc: Lint Helm chart
+    requires:
+      vars: [PATH, PARAMS]
+    preconditions:
+      - *requireHelmCli
+    deps:
+      - task: dep-up
+        vars:
+          PATH: "{{.PATH}}"
+    cmds:
+      - >-
+        helm lint {{.PATH}} -f {{.PATH}}/values.yaml --with-subcharts {{.PARAMS}}

@@ -64,25 +64,30 @@ spec:
               - $chartValues/{{ $chartPath }}/{{ $valueFile }}
             {{- end }}
             values: |
-              {{- with .config }}
-              config: {{ . | toJson }}
-              {{- end }}
-              {{- with (index . "policy") }}
-              policy: {{ . | toJson }}
-              {{- end }}
-              {{- with (index . "application") }}
-              application: {{ . | toJson }}
-              {{- end }}
+              source:
+                helm:
+                  values: |
+                    {{- with .config }}
+                    config: {{ . | toJson }}
+                    {{- end }}
+                    {{- with (index . "policy") }}
+                    policy: {{ . | toJson }}
+                    {{- end }}
+                    {{- with (index . "application") }}
+                    application: {{ . | toJson }}
+                    {{- end }}
             parameters:
-              - name: config.name
+              - name: create
+                value: "true"
+              - name: name
                 value: "{{.app.path.basename}}"
-              - name: config.destination.namespace
+              - name: destination.namespace
                 value: "{{.app.path.basename}}"
-              - name: config.destination.server
+              - name: destination.server
                 value: "{{.server}}"
-              - name: config.source.repoURL
+              - name: source.repoURL
                 value: https://github.com/MacroPower/homelab
-              - name: config.source.targetRevision
+              - name: source.targetRevision
                 value: main
-              - name: config.source.path
+              - name: source.path
                 value: "{{ $chartPath }}"

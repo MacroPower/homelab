@@ -1,3 +1,6 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+
 apiVersion: v2
 name: helm-guestbook
 version: 0.0.0 # This value is ignored.
@@ -6,3 +9,7 @@ dependencies:
     alias: application
     version: 0.2.0
     repository: https://jacobcolvin.com/helm-charts
+  - name: argo-cd-app
+    alias: config
+    version: 0.1.0
+    repository: file://../../lib/argo-cd-app
