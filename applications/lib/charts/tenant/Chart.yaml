@@ -8,3 +8,6 @@ dependencies:
   - name: project
     version: 0.1.0
     repository: file://../project
+  - name: secrets
+    version: 0.1.0
+    repository: file://../secrets
