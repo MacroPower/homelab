@@ -1,4 +1,4 @@
-config:
+application:
   syncPolicy:
     automated:
       prune: true
@@ -35,7 +35,7 @@ policy:
       namespaces:
         - prometheus
 
-application:
+template:
   controller:
     replicas: 1
 

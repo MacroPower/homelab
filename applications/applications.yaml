@@ -64,23 +64,23 @@ spec:
           ref: chartValues
         - repoURL: "{{ $repoURL }}"
           targetRevision: "{{ $targetRevision }}"
-          path: applications/lib/charts/application
+          path: applications/lib/charts/namespace
           helm:
             valueFiles:
-            {{- range $valueFile := .config.source.helm.valueFiles }}
+            {{- range $valueFile := .application.source.helm.valueFiles }}
               - $chartValues/{{ $chartPath }}/{{ $valueFile }}
             {{- end }}
             values: |
-              config:
+              application:
                 source:
                   helm:
                     valueFiles:
-                    {{- range $valueFile := .config.source.helm.valueFiles }}
+                    {{- range $valueFile := .application.source.helm.valueFiles }}
                       - {{ $valueFile }}
                     {{- end }}
                     values: |
-                      {{- with .config }}
-                      config: {{ . | toJson }}
+                      {{- with .application }}
+                      application: {{ . | toJson }}
                       {{- end }}
                       {{- with (index . "policy") }}
                       policy: {{ . | toJson }}
@@ -89,19 +89,19 @@ spec:
                       application: {{ . | toJson }}
                       {{- end }}
             parameters:
-              - name: config.create
+              - name: application.create
                 value: "true"
-              - name: config.name
+              - name: application.name
                 value: "{{ $name }}"
-              - name: config.destination.namespace
+              - name: application.destination.namespace
                 value: "{{ $name }}"
-              - name: config.destination.server
+              - name: application.destination.server
                 value: "{{.server}}"
-              - name: config.source.repoURL
+              - name: application.source.repoURL
                 value: https://github.com/MacroPower/homelab
-              - name: config.source.targetRevision
+              - name: application.source.targetRevision
                 value: main
-              - name: config.source.path
+              - name: application.source.path
                 value: "{{ $chartPath }}"
               - name: policy.create
                 value: "true"

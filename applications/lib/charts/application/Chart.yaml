@@ -1,13 +1,3 @@
----
-# yaml-language-server: $schema=https://json.schemastore.org/chart.json
-
 apiVersion: v2
 name: application
 version: 0.1.0
-dependencies:
-  - name: config
-    version: 0.1.0
-    repository: file://../config
-  - name: policy
-    version: 0.1.0
-    repository: file://../policy

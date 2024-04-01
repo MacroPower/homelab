@@ -1,9 +1,9 @@
-config:
+application:
   syncPolicy:
     automated:
       prune: false
 
-application:
+template:
   ingress:
     main:
       enabled: true
