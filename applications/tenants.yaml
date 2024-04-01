@@ -4,6 +4,7 @@ metadata:
   name: tenants
   namespace: argocd
   annotations:
+    argocd.argoproj.io/sync-wave: "-100"
     argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
 spec:
   goTemplate: true
@@ -30,6 +31,7 @@ spec:
     metadata:
       name: "{{.tenant.path.basename}}-tenant"
       annotations:
+        argocd.argoproj.io/sync-wave: "-90"
         argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
       finalizers:
         - resources-finalizer.argocd.argoproj.io

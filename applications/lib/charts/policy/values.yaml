@@ -12,6 +12,9 @@ create: false
 ##
 applyToNamespace: true
 
+additionalAnnotations:
+  argocd.argoproj.io/sync-wave: "-60"
+
 validation:
   requirePodProbes: true
 
