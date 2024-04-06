@@ -8,9 +8,9 @@ dependencies:
   - name: template
     version: 0.2.0
     repository: https://jacobcolvin.com/helm-charts
-  # - name: config
-  #   version: 0.1.0
-  #   repository: file://../../lib/charts/config
-  # - name: policy
-  #   version: 0.1.0
-  #   repository: file://../../lib/charts/policy
+  - name: config
+    version: 0.1.0
+    repository: file://../../lib/charts/config
+  - name: policy
+    version: 0.1.0
+    repository: file://../../lib/charts/policy
