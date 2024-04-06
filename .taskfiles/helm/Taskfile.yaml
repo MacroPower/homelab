@@ -7,7 +7,7 @@ tasks:
     internal: true
     desc: Update Helm chart dependencies
     requires:
-      vars: [PATH]
+      vars: [CHART_PATH]
     preconditions:
       - &requireHelmCli
         sh: command -v helm
@@ -16,18 +16,18 @@ tasks:
 
           brew install helm
     cmds:
-      - helm dependency update {{.PATH}}
+      - helm dependency update {{.CHART_PATH}}
 
   lint-chart:
     desc: Lint Helm chart
     requires:
-      vars: [PATH, PARAMS]
+      vars: [CHART_PATH, PARAMS]
     preconditions:
       - *requireHelmCli
     deps:
       - task: dep-up
         vars:
-          PATH: "{{.PATH}}"
+          CHART_PATH: "{{.CHART_PATH}}"
     cmds:
       - >-
-        helm lint {{.PATH}} -f {{.PATH}}/values.yaml --with-subcharts {{.PARAMS}}
+        helm lint {{.CHART_PATH}} -f {{.CHART_PATH}}/values.yaml --with-subcharts {{.PARAMS}}

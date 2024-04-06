@@ -5,12 +5,13 @@ version: "3"
 
 includes:
   argocd:
-    taskfile: "../../../.taskfiles/argo-cd/Taskfile.yaml"
+    taskfile: "../../../../.taskfiles/argo-cd/Taskfile.yaml"
     aliases: [acd]
-    dir: "../../../"
+    dir: "../../../../"
     vars:
       APP: "{{base .ROOT_DIR}}"
-      REPO_ROOT: '{{joinPath .ROOT_DIR "../../../"}}'
+      APP_PATH: "{{.ROOT_DIR}}"
+      REPO_ROOT: '{{joinPath .ROOT_DIR "../../../../"}}'
 
 tasks:
   default:

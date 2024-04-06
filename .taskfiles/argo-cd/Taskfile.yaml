@@ -191,14 +191,15 @@ tasks:
     requires:
       vars: [APP]
     vars:
-      PATH:
-        sh: argocd app get {{.APP}} -o json | jq -r '.spec.source.path'
+      APP_PATH:
+        sh: |
+          { argocd app get {{.APP}} -o json | jq -r '.spec.source.path' --exit-status; } || echo "{{.APP_PATH}}"
     deps:
       - task: proxy-login
     cmds:
       - task: helm:lint-chart
         vars:
-          PATH: "{{.PATH}}"
+          CHART_PATH: "{{.APP_PATH}}"
           PARAMS: >-
             --set=config.create=true
             --set=config.name={{.APP}}
