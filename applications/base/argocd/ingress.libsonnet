@@ -10,7 +10,6 @@ ingress.new(
   serviceName='argocd-server',
   servicePort=80,
   annotations=ingressAnnotations {
-    'traefik.ingress.kubernetes.io/router.middlewares': 'authentik-ak-outpost@kubernetescrd',
     'gethomepage.dev/enabled': 'true',
     'gethomepage.dev/name': 'Argo CD',
     'gethomepage.dev/description': 'GitOps',
