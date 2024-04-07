@@ -3,10 +3,20 @@
 version: "3"
 
 vars:
+  REPO_ROOT_DIR: { sh: pwd }
   ARGO_NS: argocd
-  ARGO_PORT_FORWARD: true
+  ARGO_PORT_FORWARD: false
   ARGO_LOG_LEVEL: warn # info and below are verbose enough to destroy your shell, be warned
-  REPO_ROOT_DIR: "{{.REPO_ROOT_DIR | default .ROOT_DIR}}"
+  ARGO_CONFIG: "{{.HOME}}/.config/argocd/config"
+  ARGO_COMMON_ARGS: >-
+    --grpc-web
+    --loglevel="{{.ARGO_LOG_LEVEL}}"
+    --config="{{.ARGO_CONFIG}}"
+    {{- if eq .ARGO_PORT_FORWARD "true" }}
+    --port-forward
+    --port-forward-namespace="{{.ARGO_NS}}"
+    --plaintext
+    {{- end }}
 
 includes:
   helm: "../helm/Taskfile.yaml"
@@ -14,13 +24,19 @@ includes:
 tasks:
   login:
     desc: Login to ArgoCD
-    summary: |
-      Args:
-        PORT_FORWARD: kubectl proxy enabled (default: {{.ARGO_PORT_FORWARD}})
     vars:
-      PORT_FORWARD: "{{.PORT_FORWARD | default .ARGO_PORT_FORWARD}}"
+      SERVER:
+        sh: |
+          {{- if ne .ARGO_PORT_FORWARD "true" -}}
+            kubectl -n {{.ARGO_NS}} get ingress argocd-ingress \
+              -o jsonpath="{.spec.rules[0].host}"
+          {{- else -}}
+            echo "port-forward"
+          {{- end -}}
       PASSWORD:
-        sh: kubectl -n {{.ARGO_NS}} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+        sh: |
+          kubectl -n {{.ARGO_NS}} get secret argocd-initial-admin-secret \
+            -o jsonpath="{.data.password}" | base64 -d
     preconditions:
       - &requireArgoCdCli
         sh: command -v argocd
@@ -29,35 +45,43 @@ tasks:
 
           brew install argocd
     status:
-      - argocd app list -l foo=bar
+      - argocd app list {{.ARGO_COMMON_ARGS}} -l foo=bar
     cmds:
       - cmd: |
-          echo "Logging in to ArgoCD, port-forward:{{.PORT_FORWARD}}"
+          echo "Logging in to ArgoCD {{.SERVER}}, args: {{.ARGO_COMMON_ARGS}}"
         silent: true
       - cmd: >-
           argocd login
+          {{- if ne .ARGO_PORT_FORWARD "true" }}
+          {{.SERVER}}
+          {{- end }}
           --username=admin
           --password="{{.PASSWORD}}"
-          --loglevel="{{.ARGO_LOG_LEVEL}}"
-          {{ if .PORT_FORWARD -}}
-          --port-forward
-          --port-forward-namespace="{{.ARGO_NS}}"
-          --grpc-web
-          --plaintext
-          {{- end -}}
+          {{.ARGO_COMMON_ARGS}}
         silent: true
 
   logout:
     desc: Logout from ArgoCD
     summary: |
       Args:
-        PROXY: kubectl proxy enabled (default: {{.ARGO_PROXY}})
+        PORT_FORWARD: kubectl proxy enabled (default: {{.ARGO_PORT_FORWARD}})
     vars:
-      PROXY: "{{.PROXY | default .ARGO_PROXY}}"
+      PORT_FORWARD: "{{.PORT_FORWARD | default .ARGO_PORT_FORWARD}}"
     preconditions:
       - *requireArgoCdCli
     cmds:
-      - argocd logout {{- if .ARGO_PROXY }} port-forward {{- end }}
+      - argocd logout {{- if .PORT_FORWARD }} port-forward {{- end }}
+
+  get:
+    desc: Get ArgoCD Application
+    requires:
+      vars: [APP]
+    preconditions:
+      - *requireArgoCdCli
+    deps:
+      - task: login
+    cmds:
+      - argocd app get {{.APP}} {{.ARGO_COMMON_ARGS}}
 
   refresh:
     desc: Refresh ArgoCD Application
@@ -68,7 +92,7 @@ tasks:
     deps:
       - task: login
     cmds:
-      - argocd app get --refresh {{.APP}}
+      - argocd app get --refresh {{.APP}} {{.ARGO_COMMON_ARGS}}
 
   pause:
     desc: Pause ArgoCD Application
@@ -80,10 +104,10 @@ tasks:
       - task: login
     status:
       - >-
-        ! argocd app get {{.APP}} -o json | jq '.spec.syncPolicy.automated' --exit-status
+        ! argocd app get {{.APP}} {{.ARGO_COMMON_ARGS}} -o json | jq '.spec.syncPolicy.automated' --exit-status
     cmds:
       - >-
-        argocd app patch {{.APP}}
+        argocd app patch {{.APP}} {{.ARGO_COMMON_ARGS}}
         --patch='[{"op": "remove", "path": "/spec/syncPolicy/automated"}]'
 
   resume:
@@ -96,11 +120,11 @@ tasks:
       - task: login
     cmds:
       - >-
-        argocd app patch {{.APP}}
+        argocd app patch {{.APP}} {{.ARGO_COMMON_ARGS}}
         --patch='[{"op": "add", "path": "/spec/syncPolicy/automated", "value": {"selfHeal": true}}]' > /dev/null
 
-  local-diff:
-    desc: Diff ArgoCD Application
+  diff:r:
+    desc: Diff ArgoCD Application (remote only)
     summary: |
       Args:
         APP: Application to diff (required)
@@ -115,11 +139,37 @@ tasks:
         argocd app diff {{.APP}}
         --server-side-generate
         --exit-code=false
-        --loglevel={{.ARGO_LOG_LEVEL}}
-        --local="{{.REPO_ROOT_DIR}}"
+        {{.ARGO_COMMON_ARGS}}
 
-  sync:
-    desc: Sync ArgoCD Application
+  diff:
+    desc: Diff ArgoCD Application
+    summary: |
+      Args:
+        APP: Application to diff (required)
+    requires:
+      vars: [APP]
+    vars:
+      APP_PATH: &appPath
+        sh: |
+          {
+            argocd app get {{.APP}} {{.ARGO_COMMON_ARGS}} -o json | jq -r '.spec.source.path' --exit-status;
+          } || \
+            echo "{{.APP_PATH}}"
+    preconditions:
+      - *requireArgoCdCli
+    deps:
+      - task: login
+    cmds:
+      - >-
+        argocd app diff {{.APP}}
+        --server-side-generate
+        --exit-code=false
+        --local="{{.APP_PATH}}"
+        --local-repo-root="{{.REPO_ROOT_DIR}}"
+        {{.ARGO_COMMON_ARGS}}
+
+  sync:r:
+    desc: Sync ArgoCD Application (remote only)
     summary: |
       Args:
         APP: Application to sync (required)
@@ -138,15 +188,15 @@ tasks:
       - >-
         argocd app sync {{.APP}}
         --server-side
-        --loglevel={{.ARGO_LOG_LEVEL}}
         {{- if eq .DRY_RUN "true" }}
         --dry-run
         {{- else if eq .PREVIEW "true" }}
         --preview-changes
         {{- end }}
+        {{.ARGO_COMMON_ARGS}}
 
-  local-sync:
-    desc: Sync ArgoCD Application from local path
+  sync:
+    desc: Sync ArgoCD Application
     summary: |
       Args:
         APP: Application to sync (required)
@@ -155,8 +205,7 @@ tasks:
     requires:
       vars: [APP]
     vars:
-      PATH:
-        sh: argocd app get {{.APP}} -o json | jq -r '.spec.source.path'
+      APP_PATH: *appPath
       PREVIEW: '{{.PREVIEW | default "true"}}'
       DRY_RUN: '{{.DRY_RUN | default "false"}}'
     preconditions:
@@ -170,24 +219,23 @@ tasks:
       - >-
         argocd app sync {{.APP}}
         --server-side
-        --loglevel={{.ARGO_LOG_LEVEL}}
         {{- if eq .DRY_RUN "true" }}
         --dry-run
         {{- else if eq .PREVIEW "true" }}
         --preview-changes
         {{- end }}
-        --local {{.PATH}}
-        --local-repo-root {{.REPO_ROOT_DIR}}
+        --local="{{.APP_PATH}}"
+        --local-repo-root="{{.REPO_ROOT_DIR}}"
+        {{.ARGO_COMMON_ARGS}}
 
   watch:
     desc: Watch ArgoCD Application
     requires:
       vars: [APP]
     vars:
-      PATH:
-        sh: argocd app get {{.APP}} -o json | jq -r '.spec.source.path'
+      APP_PATH: *appPath
     sources:
-      - "{{.PATH}}/**/*"
+      - "{{.APP_PATH}}/**/*"
     watch: true
     ignore_error: true
     preconditions:
@@ -195,8 +243,8 @@ tasks:
     deps:
       - task: login
     cmds:
-      - task: local-diff
-        vars: { APP: "{{.APP}}" }
+      - task: diff
+        vars: { APP_PATH: "{{.APP_PATH}}" }
 
   lint:
     desc: Lint ArgoCD Application
@@ -207,10 +255,7 @@ tasks:
     requires:
       vars: [APP]
     vars:
-      APP_PATH:
-        sh: |
-          { argocd app get {{.APP}} -o json | jq -r '.spec.source.path' --exit-status; } || \
-            echo "{{.APP_PATH}}"
+      APP_PATH: *appPath
     sources:
       - "{{.APP_PATH}}/**/*"
       - exclude: "{{.APP_PATH}}/charts/**/*"
