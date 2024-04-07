@@ -3,42 +3,24 @@
 version: "3"
 
 vars:
-  ARGOCD_NS: argocd
-  ARGO_PROXY_PORT: "8080"
+  ARGO_NS: argocd
+  ARGO_PORT_FORWARD: true
   ARGO_LOG_LEVEL: warn # info and below are verbose enough to destroy your shell, be warned
-  REPO_ROOT: "{{.REPO_ROOT | default .ROOT_DIR}}"
+  REPO_ROOT_DIR: "{{.REPO_ROOT_DIR | default .ROOT_DIR}}"
 
 includes:
   helm: "../helm/Taskfile.yaml"
 
 tasks:
-  proxy:
-    status:
-      - nc -z localhost {{.ARGO_PROXY_PORT}}
-    cmds:
-      - kubectl port-forward -n {{.ARGOCD_NS}} service/argocd-server "{{.ARGO_PROXY_PORT}}:443" &
-
-  proxy-stop:
-    desc: Stop ArgoCD kubectl proxy
-    vars:
-      PID:
-        sh: ps -ef | grep '[^]]kubectl port-forward' | awk '{print $2}'
-    preconditions:
-      - nc -z localhost {{.ARGO_PROXY_PORT}}
-    cmds:
-      - kill -9 "{{.PID}}"
-
-  proxy-login:
-    desc: Login to ArgoCD via kubectl proxy
-    cmds:
-      - task: proxy
-      - task: login
-
   login:
     desc: Login to ArgoCD
+    summary: |
+      Args:
+        PORT_FORWARD: kubectl proxy enabled (default: {{.ARGO_PORT_FORWARD}})
     vars:
+      PORT_FORWARD: "{{.PORT_FORWARD | default .ARGO_PORT_FORWARD}}"
       PASSWORD:
-        sh: kubectl -n {{.ARGOCD_NS}} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+        sh: kubectl -n {{.ARGO_NS}} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
     preconditions:
       - &requireArgoCdCli
         sh: command -v argocd
@@ -49,10 +31,33 @@ tasks:
     status:
       - argocd app list -l foo=bar
     cmds:
-      - cmd: echo "Logging in to ArgoCD - localhost:{{.ARGO_PROXY_PORT}}"
+      - cmd: |
+          echo "Logging in to ArgoCD, port-forward:{{.PORT_FORWARD}}"
         silent: true
-      - cmd: argocd login --insecure "localhost:{{.ARGO_PROXY_PORT}}" --username=admin --password="{{.PASSWORD}}"
+      - cmd: >-
+          argocd login
+          --username=admin
+          --password="{{.PASSWORD}}"
+          --loglevel="{{.ARGO_LOG_LEVEL}}"
+          {{ if .PORT_FORWARD -}}
+          --port-forward
+          --port-forward-namespace="{{.ARGO_NS}}"
+          --grpc-web
+          --plaintext
+          {{- end -}}
         silent: true
+
+  logout:
+    desc: Logout from ArgoCD
+    summary: |
+      Args:
+        PROXY: kubectl proxy enabled (default: {{.ARGO_PROXY}})
+    vars:
+      PROXY: "{{.PROXY | default .ARGO_PROXY}}"
+    preconditions:
+      - *requireArgoCdCli
+    cmds:
+      - argocd logout {{- if .ARGO_PROXY }} port-forward {{- end }}
 
   refresh:
     desc: Refresh ArgoCD Application
@@ -61,7 +66,7 @@ tasks:
     preconditions:
       - *requireArgoCdCli
     deps:
-      - task: proxy-login
+      - task: login
     cmds:
       - argocd app get --refresh {{.APP}}
 
@@ -72,7 +77,7 @@ tasks:
     preconditions:
       - *requireArgoCdCli
     deps:
-      - task: proxy-login
+      - task: login
     status:
       - >-
         ! argocd app get {{.APP}} -o json | jq '.spec.syncPolicy.automated' --exit-status
@@ -88,7 +93,7 @@ tasks:
     preconditions:
       - *requireArgoCdCli
     deps:
-      - task: proxy-login
+      - task: login
     cmds:
       - >-
         argocd app patch {{.APP}}
@@ -104,14 +109,14 @@ tasks:
     preconditions:
       - *requireArgoCdCli
     deps:
-      - task: proxy-login
+      - task: login
     cmds:
       - >-
         argocd app diff {{.APP}}
         --server-side-generate
         --exit-code=false
         --loglevel={{.ARGO_LOG_LEVEL}}
-        --local="{{.REPO_ROOT}}"
+        --local="{{.REPO_ROOT_DIR}}"
 
   sync:
     desc: Sync ArgoCD Application
@@ -128,7 +133,7 @@ tasks:
     preconditions:
       - *requireArgoCdCli
     deps:
-      - task: proxy-login
+      - task: login
     cmds:
       - >-
         argocd app sync {{.APP}}
@@ -172,7 +177,7 @@ tasks:
         --preview-changes
         {{- end }}
         --local {{.PATH}}
-        --local-repo-root {{.REPO_ROOT}}
+        --local-repo-root {{.REPO_ROOT_DIR}}
 
   watch:
     desc: Watch ArgoCD Application
@@ -188,7 +193,7 @@ tasks:
     preconditions:
       - *requireArgoCdCli
     deps:
-      - task: proxy-login
+      - task: login
     cmds:
       - task: local-diff
         vars: { APP: "{{.APP}}" }
@@ -213,7 +218,7 @@ tasks:
     preconditions:
       - *requireArgoCdCli
     deps:
-      - task: proxy-login
+      - task: login
     cmds:
       - cmd: >-
           echo "Linting ArgoCD Application: {{.APP}}, Path: {{.APP_PATH}}"
