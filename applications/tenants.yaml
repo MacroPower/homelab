@@ -63,7 +63,7 @@ spec:
           targetRevision: "{{ $targetRevision }}"
           path: "{{ $chartPath }}"
           directory:
-            include: "{values.yaml,values.*.yaml}"
+            include: "{values.yaml,*-values.yaml}"
           ref: chartValues
         - repoURL: "{{ $repoURL }}"
           targetRevision: "{{ $targetRevision }}"

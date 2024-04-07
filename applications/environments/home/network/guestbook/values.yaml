@@ -3,4 +3,4 @@ application:
     helm:
       valueFiles:
         - values.yaml
-        - values.home.yaml
+        - home-values.yaml
