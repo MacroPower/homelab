@@ -4,7 +4,6 @@ version: "3"
 
 tasks:
   dep-up:
-    internal: true
     desc: Update Helm chart dependencies
     requires:
       vars: [CHART_PATH]
@@ -24,10 +23,21 @@ tasks:
       vars: [CHART_PATH, PARAMS]
     preconditions:
       - *requireHelmCli
-    deps:
-      - task: dep-up
-        vars:
-          CHART_PATH: "{{.CHART_PATH}}"
+      - sh: command -v ct
+        msg: |
+          Chart Testing (ct) CLI not found, you can install it with:
+
+          brew install chart-testing
+      - sh: command -v yamllint
+        msg: |
+          yamllint not found, you can install it with:
+
+          brew install yamllint
     cmds:
       - >-
-        helm lint {{.CHART_PATH}} -f {{.CHART_PATH}}/values.yaml --with-subcharts {{.PARAMS}}
+        ct lint
+        --chart-dirs="{{.CHART_PATH}}"
+        --charts="{{.CHART_PATH}}"
+        --helm-dependency-extra-args="--skip-refresh"
+        --helm-lint-extra-args="--quiet --with-subcharts {{.PARAMS}}"
+        --validate-maintainers=false

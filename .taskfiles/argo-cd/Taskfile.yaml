@@ -195,15 +195,29 @@ tasks:
 
   lint:
     desc: Lint ArgoCD Application
+    summary: |
+      Args:
+        APP: Application to lint (required)
+        APP_PATH: Path to application (default: pulled from ArgoCD)
     requires:
       vars: [APP]
     vars:
       APP_PATH:
         sh: |
-          { argocd app get {{.APP}} -o json | jq -r '.spec.source.path' --exit-status; } || echo "{{.APP_PATH}}"
+          { argocd app get {{.APP}} -o json | jq -r '.spec.source.path' --exit-status; } || \
+            echo "{{.APP_PATH}}"
+    sources:
+      - "{{.APP_PATH}}/**/*"
+      - exclude: "{{.APP_PATH}}/charts/**/*"
+      - exclude: "{{.APP_PATH}}/.task/**/*"
+    preconditions:
+      - *requireArgoCdCli
     deps:
       - task: proxy-login
     cmds:
+      - cmd: >-
+          echo "Linting ArgoCD Application: {{.APP}}, Path: {{.APP_PATH}}"
+        silent: true
       - task: helm:lint-chart
         vars:
           CHART_PATH: "{{.APP_PATH}}"
