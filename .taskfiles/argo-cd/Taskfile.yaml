@@ -268,7 +268,7 @@ tasks:
       - cmd: >-
           echo "Linting ArgoCD Application: {{.APP}}, Path: {{.APP_PATH}}"
         silent: true
-      - task: helm:lint-chart
+      - task: helm:lint
         vars:
           CHART_PATH: "{{.APP_PATH}}"
           PARAMS: >-

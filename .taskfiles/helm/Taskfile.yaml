@@ -17,7 +17,30 @@ tasks:
     cmds:
       - helm dependency update {{.CHART_PATH}}
 
-  lint-chart:
+  format:
+    desc: Format Helm chart and values
+    summary: |
+      Args:
+        - CHART_PATH: Path to the Helm chart
+        - MODE: write or check
+    vars:
+      CHART_PATH: "{{.CHART_PATH | default .USER_WORKING_DIR}}"
+      MODE: '{{.MODE | default "write"}}'
+    preconditions:
+      - sh: command -v prettier
+        msg: |
+          prettier not found, you can install it with:
+
+          brew install prettier
+    cmds:
+      - >-
+        prettier --{{.MODE}} --parser=yaml
+        --no-error-on-unmatched-pattern
+        {{.CHART_PATH}}/Chart.yaml
+        {{.CHART_PATH}}/values.yaml
+        {{.CHART_PATH}}/*-values.yaml
+
+  lint:
     desc: Lint Helm chart
     requires:
       vars: [CHART_PATH, PARAMS]
@@ -28,12 +51,9 @@ tasks:
           Chart Testing (ct) CLI not found, you can install it with:
 
           brew install chart-testing
-      - sh: command -v yamllint
-        msg: |
-          yamllint not found, you can install it with:
-
-          brew install yamllint
     cmds:
+      - task: format
+        vars: { CHART_PATH: "{{.CHART_PATH}}", MODE: "check"}
       - >-
         ct lint
         --chart-dirs="{{.CHART_PATH}}"
@@ -41,3 +61,4 @@ tasks:
         --helm-dependency-extra-args="--skip-refresh"
         --helm-lint-extra-args="--quiet --with-subcharts {{.PARAMS}}"
         --validate-maintainers=false
+        --validate-yaml=false
