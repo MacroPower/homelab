@@ -1,0 +1,16 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+
+apiVersion: v2
+name: argo-workflows
+version: 0.0.0 # This value is ignored.
+dependencies:
+  - name: argo-workflows
+    version: 0.40.14
+    repository: https://argoproj.github.io/argo-helm
+  - name: application
+    version: 0.1.0
+    repository: file://../../../lib/charts/application
+  - name: policy
+    version: 0.1.0
+    repository: file://../../../lib/charts/policy

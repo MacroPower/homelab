@@ -1,0 +1,10 @@
+secrets:
+  clusterStores:
+    - name: ""
+      conditions:
+        - namespaceSelectors:
+            - matchLabels: { argocd.argoproj.io/project: argo }
+      provider: {}
+
+project:
+  rbac: []
