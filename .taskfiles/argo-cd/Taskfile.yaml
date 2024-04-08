@@ -151,10 +151,11 @@ tasks:
     vars:
       APP_PATH: &appPath
         sh: |
-          {
-            argocd app get {{.APP}} {{.ARGO_COMMON_ARGS}} -o json | jq -r '.spec.source.path' --exit-status;
-          } || \
+          if [ -d "{{.APP_PATH}}" ]; then
             echo "{{.APP_PATH}}"
+          else
+            argocd app get {{.APP}} {{.ARGO_COMMON_ARGS}} -o json | jq -r '.spec.source.path' --exit-status;
+          fi
     preconditions:
       - *requireArgoCdCli
     deps:
