@@ -240,7 +240,6 @@ configs:
   ##
   params:
     server.insecure: true
-    server.disable.auth: true
     application.namespaces: "*"
     applicationsetcontroller.enable.new.git.file.globbing: true
 

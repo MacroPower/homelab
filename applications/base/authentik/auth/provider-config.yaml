@@ -12,7 +12,7 @@ spec:
         key: AUTHENTIK_BOOTSTRAP_TOKEN
   configuration: |
     provider "authentik" {
-      url      = "http://authentik.authentik.svc.cluster.local"
+      url      = "http://authentik-server.authentik.svc.cluster.local"
       token    = file("${path.module}/authentik-credentials")
       insecure = true
     }
@@ -28,7 +28,7 @@ spec:
       required_providers {
         authentik = {
           source  = "goauthentik/authentik"
-          version = "2023.4.0"
+          version = "2024.2.0"
         }
       }
     }
