@@ -2,7 +2,6 @@
 
 local database = import 'database/main.libsonnet';
 local grafana = std.parseYaml(importstr 'grafana.yaml');
-local auth = import 'auth/main.libsonnet';
 local ingress = import 'ingress.libsonnet';
 local secrets = import 'secrets.libsonnet';
 local dashboards = import 'dashboards/main.libsonnet';
@@ -11,7 +10,6 @@ local provisioning = std.parseYaml(importstr 'configmap-provisioning.yaml');
 
 database +
 grafana +
-auth +
 ingress +
 secrets +
 dashboards +

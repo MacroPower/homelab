@@ -12,6 +12,31 @@ configs:
   cm:
     application.resourceTrackingMethod: annotation
     kustomize.buildOptions: --enable-helm --load-restrictor LoadRestrictionsNone
+
+    ## Dex configuration for Authentik
+    ## Ref: https://docs.goauthentik.io/integrations/services/argocd/#argocd-configuration
+    ## Ref: https://dexidp.io/docs/connectors/oidc/
+    ##
+    url: https://argocd.home.macro.network
+    dex.config: |
+      connectors:
+        - name: authentik
+          type: oidc
+          id: authentik
+          config:
+            issuer: "http://authentik-server.authentik.svc/application/o/argocd/"
+            providerDiscoveryOverrides:
+              # authURL provides a way to user overwrite the authorization URL
+              # from the .well-known/openid-configuration 'authorization_endpoint'.
+              authURL: "https://authentik.home.macro.network/application/o/authorize/"
+            clientID: $dex.authentik.clientID
+            clientSecret: $dex.authentik.clientSecret
+            insecureEnableGroups: true
+            scopes:
+              - openid
+              - profile
+              - email
+
     resource.exclusions: |
       - apiGroups:
           - cilium.io
@@ -239,10 +264,14 @@ configs:
   ## Ref: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/argocd-cmd-params-cm.yaml
   ##
   params:
-    server.insecure: true
-    server.disable.auth: true
+    server.insecure: "true"
     application.namespaces: "*"
     applicationsetcontroller.enable.new.git.file.globbing: true
+
+  rbac:
+    policy.csv: |
+      g, ArgoCD Admins, role:admin
+      g, ArgoCD Editors, role:readonly
 
 redis:
   resources: &RedisResources
@@ -286,9 +315,9 @@ server:
 repoServer:
   replicas: 3
   resources:
-  requests:
-    cpu: 500m
-    memory: 500Mi
+    requests:
+      cpu: 500m
+      memory: 500Mi
 
 applicationSet:
   replicaCount: 3
@@ -302,6 +331,5 @@ notifications:
 
 dex:
   resources: *StdResources
-
   initImage:
     resources: *StdResources

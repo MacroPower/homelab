@@ -5,6 +5,6 @@ local database = import 'database/main.libsonnet';
 local ingress = import 'ingress.libsonnet';
 local secrets = std.parseYaml(importstr 'secrets.yaml');
 local middleware = std.parseYaml(importstr 'middleware.yaml');
-local config = import 'config/main.libsonnet';
+local auth = import 'auth/main.libsonnet';
 
-[ns] + database + ingress + secrets + [middleware] + config
+[ns] + database + ingress + secrets + [middleware] + auth
