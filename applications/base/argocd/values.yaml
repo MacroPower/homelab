@@ -15,27 +15,29 @@ configs:
 
     ## Dex configuration for Authentik
     ## Ref: https://docs.goauthentik.io/integrations/services/argocd/#argocd-configuration
-    ## Ref: https://dexidp.io/docs/connectors/oidc/
+    ## Ref: https://dexidp.io/docs/connectors/oauth/
     ##
     url: https://argocd.home.macro.network
     dex.config: |
       connectors:
         - name: authentik
-          type: oidc
           id: authentik
+          type: oauth
           config:
-            issuer: "http://authentik-server.authentik.svc/application/o/argocd/"
-            providerDiscoveryOverrides:
-              # authURL provides a way to user overwrite the authorization URL
-              # from the .well-known/openid-configuration 'authorization_endpoint'.
-              authURL: "https://authentik.home.macro.network/application/o/authorize/"
+            tokenURL: "http://authentik-server.authentik.svc/application/o/token/"
+            authorizationURL: "https://authentik.home.macro.network/application/o/authorize/"
+            userInfoURL: "http://authentik-server.authentik.svc/application/o/userinfo/"
             clientID: $dex.authentik.clientID
             clientSecret: $dex.authentik.clientSecret
+            insecureSkipVerify: true
             insecureEnableGroups: true
             scopes:
               - openid
               - profile
               - email
+            userIDKey: sub
+            claimMapping:
+              userNameKey: name
 
     resource.exclusions: |
       - apiGroups:
