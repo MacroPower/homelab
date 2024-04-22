@@ -28,11 +28,13 @@ Admittedly, both usages of "all" describe the end goal of this repo, not the cur
 ### Infrastructure management
 
 - [Terraform](https://github.com/hashicorp/terraform): Bootstraps and manages infrastructure needed for Kubernetes.
+- [Crossplane](https://crossplane.io): Kubernetes-native infrastructure management.
 
 ### Cluster management
 
 - [Talos](https://www.talos.dev): Immutable Kubernetes OS; built using [talhelper](https://github.com/budimanjojo/talhelper).
 - [Argo CD](https://github.com/argoproj/argo-cd): Reconciles kubernetes clusters with this repository.
+- [Kyverno](https://kyverno.io): Policy engine supporting validate, mutate, generate, and cleanup rules.
 - [Jsonnet](https://jsonnet.org/): Configuration language I use to describe Argo applications.
 - [Renovate](https://github.com/renovatebot/renovate): Automatic updates for applications via pull requests.
 
@@ -46,8 +48,8 @@ Admittedly, both usages of "all" describe the end goal of this repo, not the cur
 - [Cilium](https://cilium.io): eBPF-based CNI & service mesh.
 - [Authentik](https://goauthentik.io): Identity Provider.
 - [Traefik](https://traefik.io): Ingress controller & reverse proxy.
+- [Cert Manager](https://cert-manager.io): Automatic Let's Encrypt certificates.
 - [AdGuard Home](https://github.com/AdguardTeam/AdguardHome): DNS server with ad-blocking.
-- [Tailscale](https://tailscale.com): WireGuard Mesh VPN.
 
 ### Observability
 
@@ -55,6 +57,7 @@ Admittedly, both usages of "all" describe the end goal of this repo, not the cur
 - [Jaeger](https://www.jaegertracing.io): Distributed tracing system.
 - [Loki](https://grafana.com/oss/loki/): Log aggregation system.
 - [Vector](https://vector.dev): Log collector, transformer, and router.
+- [OTEL Collector](https://opentelemetry.io/docs/collector/): Trace/metric collector, transformer, and router.
 - [Grafana](https://grafana.com): Visualization platform.
 - [Robusta](https://home.robusta.dev): Alerts / notifications and runbook automation.
 
