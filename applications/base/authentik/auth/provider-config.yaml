@@ -11,6 +11,18 @@ spec:
         namespace: authentik
         name: authentik-credentials
         key: AUTHENTIK_BOOTSTRAP_TOKEN
+    - filename: authentik-cert-tls-crt
+      source: Secret
+      secretRef:
+        namespace: authentik
+        name: authentik-cert
+        key: tls.crt
+    - filename: authentik-cert-tls-key
+      source: Secret
+      secretRef:
+        namespace: authentik
+        name: authentik-cert
+        key: tls.key
   configuration: |
     provider "authentik" {
       url      = "http://authentik-server.authentik.svc.cluster.local"

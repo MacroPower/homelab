@@ -1,10 +1,7 @@
-singleNamespace: false
+singleNamespace: true
 
 controller:
   replicas: 2
-
-  workflowNamespaces:
-    - argo-workflows
 
   parallelism: 20
   namespaceParallelism: 10
@@ -69,12 +66,12 @@ server:
     # -- Create SSO configuration. If you set `true` , please also set `.Values.server.authMode` as `sso`.
     enabled: true
     # -- The root URL of the OIDC identity provider
-    issuer: https://authentik.home.macro.network/application/o/argoworkflows/
+    issuer: https://authentik.home.macro.network/application/o/argo-workflows/
     clientId:
-      name: argo-workflows-oauth2-client-id
+      name: argo-workflows-sso
       key: client-id
     clientSecret:
-      name: argo-workflows-oauth2-client-secret
+      name: argo-workflows-sso
       key: client-secret
     # - The OIDC redirect URL. Should be in the form <argo-root-url>/oauth2/callback.
     redirectUrl: "https://argo-workflows.home.macro.network/oauth2/callback"
@@ -84,23 +81,17 @@ server:
       - openid
       - profile
       - email
-    # -- Define how long your login is valid for (in hours)
-    ## If omitted, defaults to 10h.
-    sessionExpiry: ""
-    # -- Alternate root URLs that can be included for some OIDC providers
-    issuerAlias: ""
+      - groups
+    rbac:
+      enabled: false # https://github.com/argoproj/argo-workflows/issues/9989
     # -- Override claim name for OIDC groups
     customGroupClaimName: ""
-    # -- Specify the user info endpoint that contains the groups claim
-    ## Configure this if your OIDC provider provides groups information only using the user-info endpoint (e.g. Okta)
-    userInfoPath: "http://authentik-server.authentik.svc/application/o/userinfo"
     # -- Skip TLS verification for the HTTP client
     insecureSkipVerify: true
     # -- Filter the groups returned by the OIDC provider
     ## A logical "OR" is used between each regex in the list
-    filterGroupsRegex: []
-      # - ".*argo-wf.*"
-      # - ".*argo-workflow.*"
+    filterGroupsRegex:
+      - ".*Argo Workflows.*"
 
   logging:
     level: info

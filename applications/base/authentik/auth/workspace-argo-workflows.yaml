@@ -1,0 +1,101 @@
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: argo-workflows-authentik-ns-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: authentik-ns-secrets
+subjects:
+  - kind: ServiceAccount
+    name: argo-workflows-authentik-ns-secrets
+    namespace: argo-workflows
+
+---
+apiVersion: tf.upbound.io/v1beta1
+kind: Workspace
+metadata:
+  name: authentik-argo-workflows
+spec:
+  providerConfigRef:
+    name: authentik
+  writeConnectionSecretToRef:
+    namespace: authentik
+    name: authentik-argo-workflows
+  forProvider:
+    source: Inline
+    module: |
+      data "authentik_flow" "default-authorization-flow" {
+        slug = "default-provider-authorization-explicit-consent"
+      }
+
+      data "authentik_certificate_key_pair" "cert" {
+        name = "Authentik Certificate"
+      }
+
+      data "authentik_scope_mapping" "scopes" {
+        managed_list = [
+          "goauthentik.io/providers/oauth2/scope-email",
+          "goauthentik.io/providers/oauth2/scope-openid",
+          "goauthentik.io/providers/oauth2/scope-profile",
+        ]
+      }
+
+      data "authentik_user" "akadmin" {
+        username = "akadmin"
+      }
+
+      resource "random_password" "argo-workflows-client-id" {
+        length  = 40
+        lower   = true
+        numeric = true
+        upper   = false
+        special = false
+      }
+
+      resource "random_password" "argo-workflows-client-secret" {
+        length  = 128
+        lower   = true
+        numeric = true
+        upper   = true
+        special = true
+      }
+
+      resource "authentik_provider_oauth2" "argo-workflows-auth-provider" {
+        name          = "argo-workflows"
+        client_id     = random_password.argo-workflows-client-id.result
+        client_secret = random_password.argo-workflows-client-secret.result
+        redirect_uris = [
+          "https://argo-workflows.home.macro.network/oauth2/callback",
+        ]
+        property_mappings  = data.authentik_scope_mapping.scopes.ids
+        authorization_flow = data.authentik_flow.default-authorization-flow.id
+        signing_key        = data.authentik_certificate_key_pair.cert.id
+      }
+
+      resource "authentik_application" "argo-workflows-application" {
+        name              = "argo-workflows.home.macro.network"
+        slug              = "argo-workflows"
+        protocol_provider = authentik_provider_oauth2.argo-workflows-auth-provider.id
+      }
+
+      resource "authentik_group" "argo-workflows-admins" {
+        name   = "Argo Workflows Admins"
+        users  = [data.authentik_user.akadmin.id]
+      }
+
+      resource "authentik_group" "argo-workflows-editors" {
+        name   = "Argo Workflows Editors"
+        parent = authentik_group.argo-workflows-admins.id
+      }
+
+      output "client_id" {
+        value     = random_password.argo-workflows-client-id.result
+        sensitive = true
+      }
+
+      output "client_secret" {
+        value     = random_password.argo-workflows-client-secret.result
+        sensitive = true
+      }

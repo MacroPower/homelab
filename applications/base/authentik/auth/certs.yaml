@@ -1,0 +1,33 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: authentik-cert
+spec:
+  secretName: authentik-cert
+  issuerRef:
+    kind: ClusterIssuer
+    name: cloudflare-issuer
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 2048
+  dnsNames:
+    - "authentik.home.macro.network"
+
+---
+apiVersion: tf.upbound.io/v1beta1
+kind: Workspace
+metadata:
+  name: authentik-certs
+spec:
+  providerConfigRef:
+    name: authentik
+  forProvider:
+    source: Inline
+    module: |
+      resource "authentik_certificate_key_pair" "authentik_cert" {
+        name             = "Authentik Certificate"
+        certificate_data = file("${path.module}/authentik-cert-tls-crt")
+        key_data         = file("${path.module}/authentik-cert-tls-key")
+      }
