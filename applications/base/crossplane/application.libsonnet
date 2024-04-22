@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='crossplane',
   repoURL='https://charts.crossplane.io/stable',
-  targetRevision='1.15.0',
+  targetRevision='1.15.2',
   releaseName='crossplane',
   values='values.yaml'
 )
