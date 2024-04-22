@@ -1,0 +1,151 @@
+## This file was automatically generated using Jsonnet located at:
+## applications/base/rook-ceph-cluster/application.libsonnet
+##
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: rook-ceph-cluster
+  namespace: rook-ceph
+spec:
+  chart:
+    spec:
+      chart: rook-ceph-cluster
+      version: v1.13.5
+      sourceRef:
+        kind: HelmRepository
+        name: https://charts.rook.io/release
+  values:
+    cephBlockPools:
+    - name: ceph-blockpool
+      spec:
+        failureDomain: zone
+        replicated:
+          size: 2
+      storageClass:
+        allowVolumeExpansion: true
+        enabled: true
+        isDefault: true
+        name: ceph-block
+        parameters:
+          csi.storage.k8s.io/controller-expand-secret-name: rook-csi-rbd-provisioner
+          csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
+          csi.storage.k8s.io/fstype: ext4
+          csi.storage.k8s.io/node-stage-secret-name: rook-csi-rbd-node
+          csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
+          csi.storage.k8s.io/provisioner-secret-name: rook-csi-rbd-provisioner
+          csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+          imageFeatures: layering,fast-diff,object-map,deep-flatten,exclusive-lock
+          imageFormat: "2"
+        reclaimPolicy: Delete
+    cephClusterSpec:
+      crashCollector:
+        disable: false
+      dashboard:
+        enabled: true
+        ssl: false
+        urlPrefix: /
+      mgr:
+        modules:
+        - enabled: true
+          name: pg_autoscaler
+        - enabled: true
+          name: orchestrator
+        - enabled: true
+          name: rook
+      network:
+        connections:
+          compression:
+            enabled: true
+        provider: host
+      storage:
+        config:
+          osdsPerDevice: "1"
+        nodes:
+        - devices:
+          - name: /dev/nvme0n1
+          name: knode13
+        - devices:
+          - name: /dev/nvme0n1
+          name: knode14
+        - devices:
+          - name: /dev/nvme0n1
+          name: knode15
+        useAllDevices: false
+        useAllNodes: false
+    cephFileSystems:
+    - name: ceph-filesystem
+      spec:
+        dataPools:
+        - failureDomain: zone
+          name: data0
+          replicated:
+            size: 2
+        metadataPool:
+          failureDomain: zone
+          replicated:
+            size: 2
+        metadataServer:
+          activeCount: 1
+          activeStandby: true
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 4Gi
+            requests:
+              cpu: 100m
+              memory: 4Gi
+      storageClass:
+        allowVolumeExpansion: true
+        enabled: true
+        isDefault: false
+        name: ceph-filesystem
+        parameters:
+          csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
+          csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
+          csi.storage.k8s.io/fstype: ext4
+          csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
+          csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
+          csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
+          csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+        pool: data0
+        reclaimPolicy: Delete
+    cephObjectStores:
+    - name: ceph-objectstore
+      spec:
+        dataPool:
+          erasureCoded:
+            codingChunks: 1
+            dataChunks: 2
+          failureDomain: zone
+        gateway:
+          instances: 2
+          port: 80
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 4Gi
+            requests:
+              cpu: 100m
+              memory: 1Gi
+        metadataPool:
+          failureDomain: zone
+          replicated:
+            size: 2
+        preservePoolsOnDelete: true
+      storageClass:
+        enabled: true
+        name: ceph-bucket
+        parameters:
+          region: ceph-objectstore
+        reclaimPolicy: Delete
+    configOverride: |
+      [global]
+      bdev_enable_discard = true
+      bdev_async_discard = true
+      osd_class_update_on_start = false
+    monitoring:
+      createPrometheusRules: true
+      enabled: true
+    operatorNamespace: rook-ceph
+    toolbox:
+      enabled: true

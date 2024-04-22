@@ -1,0 +1,71 @@
+## This file was automatically generated using Jsonnet located at:
+## applications/base/descheduler/application.libsonnet
+##
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: descheduler
+  namespace: descheduler
+spec:
+  chart:
+    spec:
+      chart: descheduler
+      version: 0.29.0
+      sourceRef:
+        kind: HelmRepository
+        name: https://kubernetes-sigs.github.io/descheduler/
+  values:
+    deschedulerPolicy:
+      strategies:
+        LowNodeUtilization:
+          enabled: true
+          params:
+            nodeResourceUtilizationThresholds:
+              targetThresholds:
+                cpu: 80
+                memory: 80
+              thresholds:
+                cpu: 30
+                memory: 30
+        RemoveDuplicates:
+          enabled: true
+        RemovePodsHavingTooManyRestarts:
+          enabled: false
+        RemovePodsViolatingInterPodAntiAffinity:
+          enabled: true
+        RemovePodsViolatingNodeAffinity:
+          enabled: true
+          params:
+            nodeAffinityType:
+            - requiredDuringSchedulingIgnoredDuringExecution
+        RemovePodsViolatingNodeTaints:
+          enabled: true
+        RemovePodsViolatingTopologySpreadConstraint:
+          enabled: true
+          params:
+            includeSoftConstraints: true
+    resources:
+      limits:
+        memory: 250Mi
+      requests:
+        cpu: 50m
+        memory: 250Mi
+    schedule: '*/10 * * * *'
+    serviceMonitor:
+      enabled: true
+      insecureSkipVerify: true
+      interval: 1s
+      metricRelabelings:
+      - action: keep
+        regex: descheduler_(build_info|pods_evicted)
+        sourceLabels:
+        - __name__
+      relabelings:
+      - action: replace
+        regex: ^(.*)$
+        replacement: $1
+        separator: ;
+        sourceLabels:
+        - __meta_kubernetes_pod_node_name
+        targetLabel: nodename
+      serverName: null

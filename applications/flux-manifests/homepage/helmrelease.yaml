@@ -1,0 +1,77 @@
+## This file was automatically generated using Jsonnet located at:
+## applications/base/homepage/application.libsonnet
+##
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: homepage
+  namespace: homepage
+spec:
+  chart:
+    spec:
+      chart: homepage
+      version: 1.2.3
+      sourceRef:
+        kind: HelmRepository
+        name: https://jameswynn.github.io/helm-charts
+  values:
+    config:
+      bookmarks:
+      - Clusters:
+        - Home:
+          - abbr: HO
+            href: https://homepage.home.macro.network/
+            target: _self
+        - HCloud:
+          - abbr: HC
+            href: https://homepage.macro.network/
+            target: _self
+        - Seedbox:
+          - abbr: SB
+            href: https://homepage-sb.macro.network/
+            target: _self
+      kubernetes:
+        mode: cluster
+      services: []
+      settings:
+        background:
+          blur: sm
+          brightness: 75
+        layout:
+          Apps:
+            icon: mdi-apps
+          Cluster Management:
+            icon: mdi-tools
+          Media:
+            icon: mdi-multimedia
+          Observability:
+            icon: mdi-chart-bell-curve-cumulative
+        theme: dark
+      widgets:
+      - logo:
+          icon: kubernetes
+      - greeting:
+          text: Unknown
+          text_size: xl
+      - search:
+          focus: false
+          provider: google
+          target: _blank
+      - kubernetes:
+          cluster:
+            cpu: true
+            memory: true
+            show: true
+            showLabel: false
+          nodes:
+            show: false
+    enableRbac: true
+    image:
+      repository: ghcr.io/gethomepage/homepage
+      tag: v0.8.12
+    ingress:
+      main:
+        enabled: false
+    serviceAccount:
+      create: true
+      name: homepage

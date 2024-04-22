@@ -1,0 +1,30 @@
+## This file was automatically generated using Jsonnet located at:
+## applications/base/iperf/application.libsonnet
+##
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: iperf
+  namespace: iperf
+spec:
+  chart:
+    spec:
+      chart: template
+      version: 0.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: https://jacobcolvin.com/helm-charts
+  values:
+    args:
+    - -s
+    image:
+      repository: networkstatic/iperf3@sha256
+      tag: 79afcd17d056897a7a1d5948b32d9557ca03c2e52a0bbe759388a7c1aa807851
+    service:
+      main:
+        annotations:
+          tailscale.com/expose: "true"
+          tailscale.com/hostname: iperf
+        ports:
+          http:
+            port: 5201

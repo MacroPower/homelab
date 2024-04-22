@@ -1,0 +1,107 @@
+## This file was automatically generated using Jsonnet located at:
+## applications/base/ntp-server/application.libsonnet
+##
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: ntp-server
+  namespace: ntp-server
+spec:
+  chart:
+    spec:
+      chart: template
+      version: 0.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: https://jacobcolvin.com/helm-charts
+  values:
+    controller:
+      replicas: 1
+      type: deployment
+    env:
+      ENABLE_NTS: "false"
+      ENABLE_SYSCLK: "false"
+      LOG_LEVEL: "0"
+      NOCLIENTLOG: "false"
+      NTP_DIRECTIVES: |
+        ratelimit
+        logdir /var/log/chrony
+        log statistics measurements tracking
+      NTP_SERVERS: 0.north-america.pool.ntp.org,1.north-america.pool.ntp.org,2.north-america.pool.ntp.org,3.north-america.pool.ntp.org
+      TZ: UTC
+    image:
+      pullPolicy: IfNotPresent
+      repository: simonrupf/chronyd
+      tag: 0.5.0
+    initContainers:
+      set-permissions:
+        command:
+        - sh
+        - -c
+        - |
+          chmod 750 /run/chrony
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - mountPath: /run/chrony
+          name: run
+    persistence:
+      etc:
+        enabled: true
+        mountPath: /etc/chrony
+        type: emptyDir
+      logs:
+        enabled: true
+        mountPath: /var/log/chrony
+        type: emptyDir
+      run:
+        enabled: true
+        mountPath: /run/chrony
+        type: emptyDir
+      state:
+        enabled: true
+        mountPath: /var/lib/chrony
+        type: emptyDir
+    podSecurityContext:
+      runAsGroup: 0
+      runAsNonRoot: false
+      runAsUser: 0
+    probes:
+      liveness:
+        enabled: false
+      readiness:
+        enabled: false
+      startup:
+        enabled: false
+    resources:
+      limits:
+        cpu: 10m
+        memory: 20Mi
+      requests:
+        cpu: 1m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        add:
+        - NET_BIND_SERVICE
+        - SETUID
+        - SETGID
+        - CHOWN
+        - FOWNER
+        - DAC_OVERRIDE
+      readOnlyRootFilesystem: true
+    service:
+      main:
+        enabled: true
+        ports:
+          http:
+            enabled: false
+            port: 80
+            primary: false
+            protocol: HTTP
+          ntp:
+            enabled: true
+            port: 123
+            primary: true
+            protocol: UDP
+        primary: true

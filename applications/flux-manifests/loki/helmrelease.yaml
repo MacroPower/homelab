@@ -1,0 +1,168 @@
+## This file was automatically generated using Jsonnet located at:
+## applications/base/loki/application.libsonnet
+##
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: loki
+  namespace: loki
+spec:
+  chart:
+    spec:
+      chart: loki
+      version: 5.43.3
+      sourceRef:
+        kind: HelmRepository
+        name: https://grafana.github.io/helm-charts
+  values:
+    backend:
+      extraArgs:
+      - -config.expand-env=true
+      extraEnvFrom:
+      - configMapRef:
+          name: loki-bucket
+      - secretRef:
+          name: loki-bucket
+      extraVolumeMounts:
+      - mountPath: /rules/fake
+        name: rules
+      - mountPath: /tmp/scratch
+        name: scratch
+      extraVolumes:
+      - configMap:
+          name: loki-rules
+        name: rules
+      - emptyDir: {}
+        name: scratch
+      persistence:
+        size: 50Gi
+        storageClass: null
+      replicas: 2
+    gateway:
+      ingress:
+        enabled: false
+      replicas: 2
+    loki:
+      structuredConfig:
+        analytics:
+          reporting_enabled: false
+        auth_enabled: false
+        common:
+          path_prefix: /var/loki
+          replication_factor: 2
+          ring:
+            kvstore:
+              store: memberlist
+          storage:
+            s3:
+              access_key_id: ${AWS_ACCESS_KEY_ID}
+              bucketnames: ${BUCKET_NAME}
+              endpoint: ${BUCKET_HOST}
+              insecure: true
+              s3forcepathstyle: true
+              secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+        compactor:
+          compaction_interval: 10m
+          retention_delete_delay: 2h
+          retention_delete_worker_count: 150
+          retention_enabled: true
+          shared_store: s3
+          working_directory: /var/loki/boltdb-shipper-compactor
+        distributor:
+          ring:
+            kvstore:
+              store: memberlist
+        ingester:
+          lifecycler:
+            ring:
+              kvstore:
+                store: memberlist
+          max_chunk_age: 1h
+        limits_config:
+          enforce_metric_name: false
+          ingestion_burst_size_mb: 1000
+          ingestion_rate_mb: 50
+          max_cache_freshness_per_query: 10m
+          per_stream_rate_limit: 5MB
+          per_stream_rate_limit_burst: 20MB
+          reject_old_samples: true
+          reject_old_samples_max_age: 168h
+          retention_period: 14d
+          shard_streams:
+            enabled: true
+          split_queries_by_interval: 15m
+        memberlist:
+          join_members:
+          - loki-memberlist
+        ruler:
+          alertmanager_url: http://alertmanager-operated.prometheus.svc.cluster.local:9093
+          enable_alertmanager_v2: true
+          enable_api: true
+          ring:
+            kvstore:
+              store: memberlist
+          rule_path: /tmp/scratch
+          storage:
+            local:
+              directory: /rules
+            type: local
+        schema_config:
+          configs:
+          - from: "2022-01-11"
+            index:
+              period: 24h
+              prefix: loki_index_
+            object_store: s3
+            schema: v12
+            store: boltdb-shipper
+        server:
+          grpc_listen_port: 9095
+          http_listen_port: 3100
+          log_level: info
+    monitoring:
+      dashboards:
+        annotations:
+          grafana_dashboard: "1"
+          grafana_folder: Loki
+      lokiCanary:
+        enabled: true
+      selfMonitoring:
+        enabled: false
+        grafanaAgent:
+          installOperator: false
+      serviceMonitor:
+        enabled: true
+        metricsInstance:
+          enabled: false
+    read:
+      extraArgs:
+      - -config.expand-env=true
+      extraEnvFrom:
+      - configMapRef:
+          name: loki-bucket
+      - secretRef:
+          name: loki-bucket
+      extraVolumeMounts:
+      - mountPath: /rules
+        name: rules
+      extraVolumes:
+      - emptyDir: {}
+        name: rules
+      persistence:
+        size: 50Gi
+        storageClass: null
+      replicas: 2
+    test:
+      enabled: false
+    write:
+      extraArgs:
+      - -config.expand-env=true
+      extraEnvFrom:
+      - configMapRef:
+          name: loki-bucket
+      - secretRef:
+          name: loki-bucket
+      persistence:
+        size: 50Gi
+        storageClass: null
+      replicas: 2

@@ -1,0 +1,51 @@
+## This file was automatically generated using Jsonnet located at:
+## applications/base/robusta/application.libsonnet
+##
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: robusta
+  namespace: robusta
+spec:
+  chart:
+    spec:
+      chart: robusta
+      version: 0.11.0
+      sourceRef:
+        kind: HelmRepository
+        name: https://robusta-charts.storage.googleapis.com
+  values:
+    clusterName: '''{{ env.ROBUSTA_CLUSTER_NAME }}'''
+    enablePlatformPlaybooks: true
+    enableServiceMonitors: true
+    globalConfig:
+      account_id: '{{ env.ROBUSTA_ACCOUNT_ID }}'
+      prometheus_url: http://prometheus-operated.prometheus.svc.cluster.local:9090
+      signing_key: '{{ env.ROBUSTA_SIGNING_KEY }}'
+    kubewatch:
+      resources:
+        limits:
+          memory: 128Mi
+        requests:
+          cpu: 10m
+          memory: 128Mi
+    rsa: null
+    runner:
+      additional_env_froms:
+      - secretRef:
+          name: robusta-config
+          optional: false
+      resources:
+        limits:
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 1Gi
+      sendAdditionalTelemetry: true
+    sinksConfig:
+    - robusta_sink:
+        name: robusta_ui_sink
+        token: '{{ env.ROBUSTA_UI_SINK_TOKEN }}'
+    - discord_sink:
+        name: main_discord_sink
+        url: '{{ env.ROBUSTA_DISCORD_WEBHOOK_URL }}'

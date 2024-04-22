@@ -1,0 +1,29 @@
+## This file was automatically generated using Jsonnet located at:
+## applications/base/external-secrets/application.libsonnet
+##
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: external-secrets
+  namespace: external-secrets
+spec:
+  chart:
+    spec:
+      chart: external-secrets
+      version: 0.9.16
+      sourceRef:
+        kind: HelmRepository
+        name: https://charts.external-secrets.io
+  values:
+    certController:
+      create: true
+      replicaCount: 2
+    leaderElect: true
+    metrics:
+      service:
+        enabled: true
+    replicaCount: 2
+    serviceMonitor:
+      enabled: false
+    webhook:
+      replicaCount: 2

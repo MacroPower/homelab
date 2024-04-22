@@ -1,0 +1,339 @@
+## This file was automatically generated using Jsonnet located at:
+## applications/base/argocd/application.libsonnet
+##
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  chart:
+    spec:
+      chart: argo-cd
+      version: 6.7.14
+      sourceRef:
+        kind: HelmRepository
+        name: https://argoproj.github.io/argo-helm
+  values:
+    applicationSet:
+      replicaCount: 3
+      resources:
+        requests:
+          cpu: 50m
+          memory: 100Mi
+    configs:
+      cm:
+        application.resourceTrackingMethod: annotation
+        dex.config: |
+          connectors:
+            - name: authentik
+              id: authentik
+              type: oauth
+              config:
+                tokenURL: "http://authentik-server.authentik.svc/application/o/token/"
+                authorizationURL: "https://authentik.home.macro.network/application/o/authorize/"
+                userInfoURL: "http://authentik-server.authentik.svc/application/o/userinfo/"
+                clientID: $dex.authentik.clientID
+                clientSecret: $dex.authentik.clientSecret
+                insecureSkipVerify: true
+                insecureEnableGroups: true
+                scopes:
+                  - openid
+                  - profile
+                  - email
+                userIDKey: sub
+                claimMapping:
+                  userNameKey: name
+        kustomize.buildOptions: --enable-helm --load-restrictor LoadRestrictionsNone
+        resource.customizations: |
+          "*.upbound.io/*":
+            health.lua: |
+              health_status = {
+                status = "Progressing",
+                message = "Provisioning ..."
+              }
+
+              local function contains (table, val)
+                for i, v in ipairs(table) do
+                  if v == val then
+                    return true
+                  end
+                end
+                return false
+              end
+
+              local has_no_status = {
+                "ProviderConfig",
+                "ProviderConfigUsage"
+              }
+
+              if obj.status == nil and contains(has_no_status, obj.kind) then
+                health_status.status = "Healthy"
+                health_status.message = "Resource is up-to-date."
+                return health_status
+              end
+
+              if obj.status == nil or obj.status.conditions == nil then
+                if obj.kind == "ProviderConfig" and obj.status.users ~= nil then
+                  health_status.status = "Healthy"
+                  health_status.message = "Resource is in use."
+                  return health_status
+                end
+                return health_status
+              end
+
+              for i, condition in ipairs(obj.status.conditions) do
+                if condition.type == "LastAsyncOperation" then
+                  if condition.status == "False" then
+                    health_status.status = "Degraded"
+                    health_status.message = condition.message
+                    return health_status
+                  end
+                end
+
+                if condition.type == "Synced" then
+                  if condition.status == "False" then
+                    health_status.status = "Degraded"
+                    health_status.message = condition.message
+                    return health_status
+                  end
+                end
+
+                if condition.type == "Ready" then
+                  if condition.status == "True" then
+                    health_status.status = "Healthy"
+                    health_status.message = "Resource is up-to-date."
+                    return health_status
+                  end
+                end
+              end
+
+              return health_status
+
+          "*.crossplane.io/*":
+            health.lua: |
+              health_status = {
+                status = "Progressing",
+                message = "Provisioning ..."
+              }
+
+              local function contains (table, val)
+                for i, v in ipairs(table) do
+                  if v == val then
+                    return true
+                  end
+                end
+                return false
+              end
+
+              local has_no_status = {
+                "Composition",
+                "CompositionRevision",
+                "DeploymentRuntimeConfig",
+                "ControllerConfig",
+                "ProviderConfig",
+                "ProviderConfigUsage"
+              }
+
+              if obj.status == nil and contains(has_no_status, obj.kind) then
+                  health_status.status = "Healthy"
+                  health_status.message = "Resource is up-to-date."
+                return health_status
+              end
+
+              if obj.status == nil or obj.status.conditions == nil then
+                if obj.kind == "ProviderConfig" and obj.status.users ~= nil then
+                  health_status.status = "Healthy"
+                  health_status.message = "Resource is in use."
+                  return health_status
+                end
+                return health_status
+              end
+
+              if obj.status == nil or obj.status.conditions == nil then
+                return health_status
+              end
+
+              for i, condition in ipairs(obj.status.conditions) do
+                if condition.type == "LastAsyncOperation" then
+                  if condition.status == "False" then
+                    health_status.status = "Degraded"
+                    health_status.message = condition.message
+                    return health_status
+                  end
+                end
+
+                if condition.type == "Synced" then
+                  if condition.status == "False" then
+                    health_status.status = "Degraded"
+                    health_status.message = condition.message
+                    return health_status
+                  end
+                end
+
+                if contains({"Ready", "Healthy", "Offered", "Established"}, condition.type) then
+                  if condition.status == "True" then
+                    health_status.status = "Healthy"
+                    health_status.message = "Resource is up-to-date."
+                    return health_status
+                  end
+                end
+              end
+
+              return health_status
+
+          "templates.kluctl.io/*":
+            health.lua: |
+              health_status = {
+                status = "Progressing",
+                message = "Provisioning ..."
+              }
+
+              local function contains (table, val)
+                for i, v in ipairs(table) do
+                  if v == val then
+                    return true
+                  end
+                end
+                return false
+              end
+
+              if obj.status == nil or obj.status.conditions == nil then
+                return health_status
+              end
+
+              for i, condition in ipairs(obj.status.conditions) do
+                if condition.type == "LastAsyncOperation" then
+                  if condition.status == "False" then
+                    health_status.status = "Degraded"
+                    health_status.message = condition.message
+                    return health_status
+                  end
+                end
+
+                if condition.type == "Synced" then
+                  if condition.status == "False" then
+                    health_status.status = "Degraded"
+                    health_status.message = condition.message
+                    return health_status
+                  end
+                end
+
+                if contains({"Ready", "Healthy", "Offered", "Established"}, condition.type) then
+                  if condition.status == "True" then
+                    health_status.status = "Healthy"
+                    health_status.message = "Resource is up-to-date."
+                    return health_status
+                  end
+                end
+              end
+
+              return health_status
+        resource.customizations.health.argoproj.io_Application: |
+          hs = {}
+          hs.status = "Progressing"
+          hs.message = ""
+          if obj.status ~= nil then
+            if obj.status.health ~= nil then
+              hs.status = obj.status.health.status
+              if obj.status.health.message ~= nil then
+                hs.message = obj.status.health.message
+              end
+            end
+          end
+          return hs
+        resource.exclusions: |
+          - apiGroups:
+              - cilium.io
+            kinds:
+              - CiliumEndpoint
+              - CiliumIdentity
+              - PodInfo
+            clusters:
+              - "*"
+          - apiGroups:
+              - "*"
+            kinds:
+              - ProviderConfigUsage
+            clusters:
+              - "*"
+          - apiGroups:
+              - kyverno.io
+            kinds:
+              - AdmissionReport
+              - BackgroundScanReport
+              - ClusterAdmissionReport
+              - ClusterBackgroundScanReport
+            clusters:
+              - '*'
+        url: https://argocd.home.macro.network
+      params:
+        application.namespaces: '*'
+        applicationsetcontroller.enable.new.git.file.globbing: true
+        server.insecure: "true"
+      rbac:
+        policy.csv: |
+          g, ArgoCD Admins, role:admin
+          g, ArgoCD Editors, role:readonly
+    controller:
+      replicas: 3
+      resources:
+        requests:
+          cpu: 500m
+          memory: 2Gi
+    dex:
+      initImage:
+        resources:
+          requests:
+            cpu: 50m
+            memory: 100Mi
+      resources:
+        requests:
+          cpu: 50m
+          memory: 100Mi
+    global:
+      logging:
+        format: json
+    notifications:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 100Mi
+    redis:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 250Mi
+    redis-ha:
+      enabled: true
+      haproxy:
+        hardAntiAffinity: true
+        replicas: 2
+        resources:
+          requests:
+            cpu: 10m
+            memory: 100Mi
+      hardAntiAffinity: false
+      redis:
+        resources:
+          requests:
+            cpu: 50m
+            memory: 250Mi
+      replicas: 3
+      topologySpreadConstraints:
+        enabled: true
+        maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: ScheduleAnyway
+    repoServer:
+      replicas: 3
+      resources:
+        requests:
+          cpu: 500m
+          memory: 500Mi
+    server:
+      replicas: 3
+      resources:
+        requests:
+          cpu: 200m
+          memory: 250Mi

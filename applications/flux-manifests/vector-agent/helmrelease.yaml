@@ -1,0 +1,64 @@
+## This file was automatically generated using Jsonnet located at:
+## applications/base/vector-agent/application.libsonnet
+##
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: vector-agent
+  namespace: vector
+spec:
+  chart:
+    spec:
+      chart: vector
+      version: 0.32.1
+      sourceRef:
+        kind: HelmRepository
+        name: https://helm.vector.dev/
+  values:
+    customConfig:
+      api:
+        enabled: false
+      data_dir: /vector-data-dir
+      sinks:
+        kubernetes:
+          address: vector-aggregator.vector.svc.cluster.local:6010
+          compression: true
+          inputs:
+          - kubernetes_source
+          type: vector
+          version: "2"
+        prom_exporter:
+          address: 0.0.0.0:9090
+          inputs:
+          - vector_metrics
+          type: prometheus_exporter
+      sources:
+        kubernetes_source:
+          namespace_annotation_fields:
+            namespace_labels: ""
+          node_annotation_fields:
+            node_labels: ""
+          pod_annotation_fields:
+            container_image: container_image
+            container_name: container_name
+            pod_annotations: ""
+            pod_labels: pod_labels
+            pod_name: pod_name
+            pod_namespace: pod_namespace
+            pod_node_name: pod_node_name
+          type: kubernetes_logs
+          use_apiserver_cache: true
+        vector_metrics:
+          type: internal_metrics
+    resources:
+      limits:
+        memory: 1Gi
+      requests:
+        cpu: 10m
+        memory: 1Gi
+    role: Agent
+    tolerations:
+    - effect: NoSchedule
+      operator: Exists
+    - effect: NoExecute
+      operator: Exists

@@ -1,0 +1,140 @@
+## This file was automatically generated using Jsonnet located at:
+## applications/base/authentik/application.libsonnet
+##
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: authentik
+  namespace: authentik
+spec:
+  chart:
+    spec:
+      chart: authentik
+      version: 2024.2.3
+      sourceRef:
+        kind: HelmRepository
+        name: https://charts.goauthentik.io/
+  values:
+    authentik:
+      log_level: info
+    postgresql:
+      enabled: false
+    prometheus:
+      rules:
+        enabled: true
+    redis:
+      architecture: standalone
+      auth:
+        enabled: true
+        existingSecret: authentik-credentials
+        existingSecretPasswordKey: AUTHENTIK_REDIS_PASS
+      enabled: true
+      master:
+        persistence:
+          accessModes:
+          - ReadWriteOnce
+          enabled: true
+      sentinel:
+        enabled: false
+    server:
+      env:
+      - name: AUTHENTIK_SECRET_KEY
+        valueFrom:
+          secretKeyRef:
+            key: AUTHENTIK_SECRET_KEY
+            name: authentik-credentials
+      - name: AUTHENTIK_BOOTSTRAP_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: AUTHENTIK_BOOTSTRAP_PASSWORD
+            name: authentik-credentials
+      - name: AUTHENTIK_BOOTSTRAP_TOKEN
+        valueFrom:
+          secretKeyRef:
+            key: AUTHENTIK_BOOTSTRAP_TOKEN
+            name: authentik-credentials
+      - name: AUTHENTIK_BOOTSTRAP_EMAIL
+        valueFrom:
+          secretKeyRef:
+            key: AUTHENTIK_BOOTSTRAP_EMAIL
+            name: authentik-credentials
+      - name: AUTHENTIK_REDIS__PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: AUTHENTIK_REDIS_PASS
+            name: authentik-credentials
+      - name: AUTHENTIK_POSTGRESQL__HOST
+        value: postgres-shared-rw.postgres-shared.svc
+      - name: AUTHENTIK_POSTGRESQL__PORT
+        value: "5432"
+      - name: AUTHENTIK_POSTGRESQL__NAME
+        value: authentik
+      - name: AUTHENTIK_POSTGRESQL__USER
+        value: authentik
+      - name: AUTHENTIK_POSTGRESQL__PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: AUTHENTIK_DB_PASS
+            name: authentik-database-credentials
+      replicas: 2
+      resources:
+        limits:
+          memory: 1Gi
+        requests:
+          cpu: 50m
+          memory: 1Gi
+      serviceMonitor:
+        enabled: true
+        interval: 30s
+        scrapeTimeout: 3s
+    worker:
+      env:
+      - name: AUTHENTIK_SECRET_KEY
+        valueFrom:
+          secretKeyRef:
+            key: AUTHENTIK_SECRET_KEY
+            name: authentik-credentials
+      - name: AUTHENTIK_BOOTSTRAP_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: AUTHENTIK_BOOTSTRAP_PASSWORD
+            name: authentik-credentials
+      - name: AUTHENTIK_BOOTSTRAP_TOKEN
+        valueFrom:
+          secretKeyRef:
+            key: AUTHENTIK_BOOTSTRAP_TOKEN
+            name: authentik-credentials
+      - name: AUTHENTIK_BOOTSTRAP_EMAIL
+        valueFrom:
+          secretKeyRef:
+            key: AUTHENTIK_BOOTSTRAP_EMAIL
+            name: authentik-credentials
+      - name: AUTHENTIK_REDIS__PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: AUTHENTIK_REDIS_PASS
+            name: authentik-credentials
+      - name: AUTHENTIK_POSTGRESQL__HOST
+        value: postgres-shared-rw.postgres-shared.svc
+      - name: AUTHENTIK_POSTGRESQL__PORT
+        value: "5432"
+      - name: AUTHENTIK_POSTGRESQL__NAME
+        value: authentik
+      - name: AUTHENTIK_POSTGRESQL__USER
+        value: authentik
+      - name: AUTHENTIK_POSTGRESQL__PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: AUTHENTIK_DB_PASS
+            name: authentik-database-credentials
+      replicas: 2
+      resources:
+        limits:
+          memory: 500Mi
+        requests:
+          cpu: 10m
+          memory: 500Mi
+      serviceMonitor:
+        enabled: true
+        interval: 30s
+        scrapeTimeout: 3s
