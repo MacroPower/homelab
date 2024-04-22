@@ -15,7 +15,7 @@ ingress.new(
     'gethomepage.dev/name': 'Argo Workflows',
     'gethomepage.dev/description': 'Cloud-native Workflow Engine',
     'gethomepage.dev/group': 'Apps',
-    'gethomepage.dev/icon': 'argoworkflows',
+    'gethomepage.dev/icon': 'argocd',
     'gethomepage.dev/podSelector': '',
   },
 )
