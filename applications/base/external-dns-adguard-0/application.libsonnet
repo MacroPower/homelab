@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='external-dns',
   repoURL='https://kubernetes-sigs.github.io/external-dns',
-  targetRevision='1.14.3',
+  targetRevision='1.14.4',
   releaseName='external-dns-adguard-0',
   values='../external-dns-adguard/values.yaml'
 ).withChartValues(|||
