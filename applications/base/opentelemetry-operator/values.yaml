@@ -9,6 +9,5 @@ manager:
     requests:
       cpu: 100m
       memory: 128Mi
-
-serviceMonitor:
-  enabled: true
+  serviceMonitor:
+    enabled: true
