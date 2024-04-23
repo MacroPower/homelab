@@ -2,6 +2,7 @@ replicaCount: 1
 
 deployment:
   image:
+    repository: quay.io/go-skynet/local-ai
     tag: latest
   env:
     threads: 8
@@ -10,10 +11,10 @@ deployment:
 resources:
   limits:
     cpu: 8
-    memory: 64Gi
+    memory: 48Gi
   requests:
-    cpu: 8
-    memory: 64Gi
+    cpu: 4
+    memory: 48Gi
 
 # Prompt templates to include
 # Note: the keys of this map will be the names of the prompt template files
@@ -38,19 +39,21 @@ models:
     - url: "https://huggingface.co/TheBloke/WizardLM-70B-V1.0-GGML/resolve/main/wizardlm-70b-v1.0.ggmlv3.q5_K_S.bin"
     - url: "https://huggingface.co/TheBloke/WizardLM-7B-uncensored-GGML/resolve/main/WizardLM-7B-uncensored.ggmlv3.q8_0.bin"
 
-  # Persistent storage for models and prompt templates.
-  # PVC and HostPath are mutually exclusive. If both are enabled,
-  # PVC configuration takes precedence. If neither are enabled, ephemeral
-  # storage is used.
-  persistence:
-    pvc:
-      enabled: true
-      storageClass: ceph-block
-      accessModes:
-        - ReadWriteOnce
-      size: 300Gi
-    hostPath:
-      enabled: false
+# Persistent storage for models and prompt templates.
+# PVC and HostPath are mutually exclusive. If both are enabled,
+# PVC configuration takes precedence. If neither are enabled, ephemeral
+# storage is used.
+persistence:
+  models:
+    enabled: true
+    storageClass: ceph-block
+    accessModes: ReadWriteOnce
+    size: 300Gi
+  output:
+    enabled: true
+    storageClass: ceph-block
+    accessModes: ReadWriteOnce
+    size: 50Gi
 
 ingress:
   enabled: false
