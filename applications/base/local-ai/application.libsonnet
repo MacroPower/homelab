@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='local-ai',
   repoURL='https://go-skynet.github.io/helm-charts/',
-  targetRevision='3.1.0',
+  targetRevision='3.2.0',
   releaseName='local-ai',
   values='values.yaml'
 )
