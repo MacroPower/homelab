@@ -28,5 +28,7 @@
   import 'transmission-tv/application.libsonnet',
   import 'transmission-webdav/application.libsonnet',
   import 'transmission/application.libsonnet',
+  import 'wireguard/application.libsonnet',
   import 'wireguard-operator/application.libsonnet',
+  import 'wireguard-site-to-site/application.libsonnet',
 ]

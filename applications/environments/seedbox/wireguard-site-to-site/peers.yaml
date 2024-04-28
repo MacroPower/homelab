@@ -1,0 +1,9 @@
+# ref: https://doc.crds.dev/github.com/jodevsa/wireguard-operator
+
+---
+apiVersion: vpn.wireguard-operator.io/v1alpha1
+kind: WireguardPeer
+metadata:
+  name: home
+spec:
+  wireguardRef: site-to-site
