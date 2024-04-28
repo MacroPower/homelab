@@ -1,0 +1,29 @@
+manager:
+  image:
+    repository: ghcr.io/jodevsa/wireguard-operator/manager
+    tag: "v2.0.28"
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 128Mi
+    requests:
+      cpu: 10m
+      memory: 128Mi
+
+  kubeRbacProxy:
+    image:
+      repository: gcr.io/kubebuilder/kube-rbac-proxy
+      tag: "v0.8.0"
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 5m
+        memory: 128Mi
+
+agent:
+  image:
+    repository: ghcr.io/jodevsa/wireguard-operator/agent
+    tag: "v2.0.28"

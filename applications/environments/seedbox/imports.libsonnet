@@ -30,4 +30,5 @@
   import 'transmission-tv/application.libsonnet',
   import 'transmission-webdav/application.libsonnet',
   import 'transmission/application.libsonnet',
+  import 'wireguard-operator/application.libsonnet',
 ]
