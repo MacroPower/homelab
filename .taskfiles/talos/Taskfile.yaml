@@ -26,14 +26,37 @@ tasks:
 
   apply:
     desc: Apply Talos config
+    summary: |
+      Args:
+        MODE: Apply mode [auto, interactive, no-reboot, reboot, staged, try] (default: no-reboot)
+        NODE: Target node (default: all nodes)
+    dir: "{{.TALOS_DIR}}"
+    vars:
+      MODE: '{{.MODE | default "no-reboot"}}'
+      NODE: '{{.NODE | default ""}}'
+    cmds:
+      - task: build
+      - |-
+        eval $({{.DOPPLER_CMD}} -- \
+          talhelper gencommand apply \
+          {{- if ne .NODE "" }}
+          --node {{.NODE}}.{{.CLUSTER_DOMAIN}} \
+          {{- end }}
+          --extra-flags "--mode={{.MODE}}")
+
+  apply-insecure:
+    desc: Apply Talos config insecurely
+    summary: |
+      Args:
+        NODE: Target node (required)
+    requires:
+      vars: [NODE]
     dir: "{{.TALOS_DIR}}"
     cmds:
       - task: build
-      - eval $({{.DOPPLER_CMD}} -- talhelper gencommand apply)
-    sources:
-      - "*.yaml"
-    generates:
-      - "clusterconfig/*"
+      - |-
+        talosctl apply-config --insecure \
+          -n {{.NODE}} -f clusterconfig/home-{{.NODE}}.{{.CLUSTER_DOMAIN}}.yaml
 
   talconfig:
     desc: Generate Talos config
@@ -52,7 +75,9 @@ tasks:
   approve-csr:
     desc: Approve certificate signing requests
     cmds:
-      - kubectl certificate approve $(kubectl get csr --sort-by=.metadata.creationTimestamp | grep Pending | awk '{print $1}')
+      - |-
+        kubectl certificate approve \
+          $(kubectl get csr --sort-by=.metadata.creationTimestamp | grep Pending | awk '{print $1}')
 
   apply-extras:
     desc: Apply extra resources
@@ -73,6 +98,16 @@ tasks:
           NODE: "{{.ITEM}}"
     vars:
       NODES: knode15 knode14 knode13 knode03 knode02 knode01
+
+  upgrade-k8s:
+    desc: Upgrade K8s on Talos cluster
+    cmds:
+      - for: { var: NODES }
+        task: upgrade-k8s-node
+        vars:
+          NODE: "{{.ITEM}}"
+    vars:
+      NODES: knode03 knode02 knode01 knode15 knode14 knode13
 
   reset:
     desc: Reset Talos cluster
@@ -113,12 +148,12 @@ tasks:
       Args:
         NODE: Node to reset (required)
     cmds:
-      - >-
-        talosctl reset --graceful=false --reboot
-          -e {{.NODE}}.{{.CLUSTER_DOMAIN}}
-          -n {{.NODE}}.{{.CLUSTER_DOMAIN}}
-          --wipe-mode system-disk
-          --system-labels-to-wipe STATE
+      - |-
+        talosctl reset --graceful=false --reboot \
+          -e {{.NODE}}.{{.CLUSTER_DOMAIN}} \
+          -n {{.NODE}}.{{.CLUSTER_DOMAIN}} \
+          --wipe-mode system-disk \
+          --system-labels-to-wipe STATE \
           --system-labels-to-wipe EPHEMERAL
     requires:
       vars: [NODE]
@@ -130,7 +165,23 @@ tasks:
         NODE: Node to upgrade (required)
     dir: "{{.TALOS_DIR}}"
     cmds:
-      - eval $({{.DOPPLER_CMD}} -- talhelper gencommand upgrade -n {{.NODE}}.{{.CLUSTER_DOMAIN}})
+      - |
+        eval $({{.DOPPLER_CMD}} -- \
+          talhelper gencommand upgrade -n {{.NODE}}.{{.CLUSTER_DOMAIN}})
+      - sleep 120
+    requires:
+      vars: [NODE]
+
+  upgrade-k8s-node:
+    desc: Upgrade K8s on a Talos node
+    summary: |
+      Args:
+        NODE: Node to upgrade (required)
+    dir: "{{.TALOS_DIR}}"
+    cmds:
+      - |
+        eval $({{.DOPPLER_CMD}} -- \
+          talhelper gencommand upgrade-k8s -n {{.NODE}}.{{.CLUSTER_DOMAIN}})
       - sleep 120
     requires:
       vars: [NODE]
@@ -139,9 +190,10 @@ tasks:
     internal: true
     dir: "{{.EXTRAS_DIR}}/{{.APP}}"
     cmds:
-      - >-
-        {{.DOPPLER_CMD}} -- envsubst < <(kubectl kustomize --enable-helm .) |
-        kubectl apply --server-side --filename -
+      - |-
+        {{.DOPPLER_CMD}} -- \
+          envsubst < <(kubectl kustomize --enable-helm .) | \
+          kubectl apply --server-side --filename -
       - defer: rm -rf ./charts
     requires:
       vars: [APP]
