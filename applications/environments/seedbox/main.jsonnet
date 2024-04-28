@@ -14,7 +14,7 @@ local apps = import 'imports.libsonnet';
   })
   .withBase(
     repoURL='https://github.com/MacroPower/homelab',
-    targetRevision='17f4cfc307794b25eda4959ccd200dd2a367f0bd',
+    targetRevision='main',
   )
   for app in apps
 ]
