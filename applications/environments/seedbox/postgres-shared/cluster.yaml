@@ -1,0 +1,22 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres-shared
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.2
+  primaryUpdateStrategy: unsupervised
+  enableSuperuserAccess: true
+  storage:
+    pvcTemplate:
+      storageClassName: local-ssd-1
+      volumeName: local-pv-51e7194b
+      volumeMode: Filesystem
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 50Gi
+  monitoring:
+    enablePodMonitor: false # https://github.com/cloudnative-pg/cloudnative-pg/issues/4286

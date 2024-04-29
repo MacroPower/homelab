@@ -12,4 +12,4 @@ spec:
     storageClass: ceph-block
     size: 50Gi
   monitoring:
-    enablePodMonitor: true
+    enablePodMonitor: false # https://github.com/cloudnative-pg/cloudnative-pg/issues/4286
