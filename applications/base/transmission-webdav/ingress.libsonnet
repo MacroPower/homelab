@@ -10,12 +10,8 @@ ingress.new(
   host=ingressHost,
   serviceName='transmission-webdav',
   servicePort=50000,
-  tlsSecretName='transmission-webdav-cert',
   annotations=ingressAnnotations {
-    'cert-manager.io/issuer': 'letsencrypt-prod',
-    'external-dns.alpha.kubernetes.io/cloudflare-proxied': 'false',
     'traefik.ingress.kubernetes.io/router.middlewares': 'transmission-webdav-auth@kubernetescrd',
-    'traefik.ingress.kubernetes.io/router.tls.options': 'traefik-no-client-auth@kubernetescrd',
     'gethomepage.dev/enabled': 'true',
     'gethomepage.dev/name': 'Transmission WebDAV',
     'gethomepage.dev/description': 'WebDAV Server for Transmission Data',
