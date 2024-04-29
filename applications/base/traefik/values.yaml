@@ -28,10 +28,32 @@ providers:
       enabled: true
       pathOverride: traefik/traefik
 
+service:
+  additionalServices:
+    internal:
+      type: ClusterIP
+
 ports:
+  traefik:
+    expose:
+      default: false
+      internal: true
+  web:
+    expose:
+      default: true
+      internal: true
   websecure:
+    expose:
+      default: true
+      internal: true
+    http3:
+      enabled: true
     tls:
       enabled: true
+  metrics:
+    expose:
+      default: false
+      internal: true
 
 tlsStore:
   default:
