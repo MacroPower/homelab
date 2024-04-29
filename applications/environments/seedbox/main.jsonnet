@@ -5,11 +5,10 @@ local apps = import 'imports.libsonnet';
   .withAppNamespace('argocd')
   .withDestinationServer('https://kubernetes.default.svc')
   .withExtVars({
-    ingressHost: '%s-sb.macro.network' % app.metadata.name,
-    ingressSuffix: '-sb.macro.network',
+    ingressHost: '%s.seedbox.macro.network' % app.metadata.name,
+    ingressSuffix: '.seedbox.macro.network',
     ingressAnnotations: |||
       'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure'
-      'external-dns.alpha.kubernetes.io/cloudflare-proxied': 'true'
     |||,
   })
   .withBase(

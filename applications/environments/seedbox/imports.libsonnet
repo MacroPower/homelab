@@ -5,7 +5,6 @@
   import 'crossplane-packages/application.libsonnet',
   import 'crossplane/application.libsonnet',
   import 'descheduler/application.libsonnet',
-  import 'external-dns/application.libsonnet',
   import 'external-secrets/application.libsonnet',
   import 'homepage/application.libsonnet',
   import 'iperf/application.libsonnet',
