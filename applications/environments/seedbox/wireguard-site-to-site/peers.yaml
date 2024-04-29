@@ -7,5 +7,8 @@ metadata:
   name: home
 spec:
   wireguardRef: site-to-site
+  dns: "10.10.30.1"
 
-# kubectl -n wireguard get wireguardpeer home --template={{.status.config}} | bash > seedbox-tun.conf
+# kubectl -n wireguard get wireguardpeer home --template={{.status.config}} | \
+#   sed 's|0.0.0.0/0|10.43.0.0/16|g' | \
+#   bash > seedbox-tun.conf

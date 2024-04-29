@@ -21,7 +21,6 @@ dns:
   upstream_dns:
     - https://dns.mullvad.net/dns-query
     - "[/home.macro.network/]10.10.0.1"
-    - "[/macaroni-snake.ts.net/]tcp://magic-dns.tailscale-operator.svc.cluster.local"
   upstream_dns_file: ""
   bootstrap_dns:
     - 10.112.0.10
@@ -133,7 +132,9 @@ filtering:
   blocking_mode: default
   parental_block_host: family-block.dns.adguard.com
   safebrowsing_block_host: standard-block.dns.adguard.com
-  rewrites: []
+  rewrites:
+    - domain: "*.seedbox.macro.network"
+      answer: "10.43.0.20"
   safebrowsing_cache_size: 1048576
   safesearch_cache_size: 1048576
   parental_cache_size: 1048576
