@@ -11,7 +11,30 @@ spec:
     name: authentik-grafana
   forProvider:
     source: Inline
+    varFiles:
+      - source: SecretKey
+        format: HCL
+        secretKeyRef:
+          namespace: authentik
+          name: authentik-cluster-credentials
+          key: authentik.tfvars
     module: |
+      variable "authentik_cluster_cookie_domain" {
+        type = string
+      }
+
+      variable "authentik_cluster_external_host" {
+        type = string
+      }
+
+      variable "authentik_cluster_external_domain" {
+        type = string
+      }
+
+      locals {
+        domain_name = "grafana.${var.authentik_cluster_external_domain}"
+      }
+
       data "authentik_flow" "default-authorization-flow" {
         slug = "default-provider-authorization-explicit-consent"
       }
@@ -49,14 +72,14 @@ spec:
         client_id     = random_password.grafana-client-id.result
         client_secret = random_password.grafana-client-secret.result
         redirect_uris = [
-          "https://grafana.home.macro.network/login/generic_oauth",
+          "https://${local.domain_name}/login/generic_oauth",
         ]
         property_mappings  = data.authentik_scope_mapping.scopes.ids
         authorization_flow = data.authentik_flow.default-authorization-flow.id
       }
 
       resource "authentik_application" "grafana-application" {
-        name              = "grafana.home.macro.network"
+        name              = local.domain_name
         slug              = "grafana"
         protocol_provider = authentik_provider_oauth2.grafana-auth-provider.id
       }

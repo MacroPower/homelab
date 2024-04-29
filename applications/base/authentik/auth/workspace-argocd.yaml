@@ -25,7 +25,30 @@ spec:
     name: authentik-argocd
   forProvider:
     source: Inline
+    varFiles:
+      - source: SecretKey
+        format: HCL
+        secretKeyRef:
+          namespace: authentik
+          name: authentik-cluster-credentials
+          key: authentik.tfvars
     module: |
+      variable "authentik_cluster_cookie_domain" {
+        type = string
+      }
+
+      variable "authentik_cluster_external_host" {
+        type = string
+      }
+
+      variable "authentik_cluster_external_domain" {
+        type = string
+      }
+
+      locals {
+        domain_name = "argocd.${var.authentik_cluster_external_domain}"
+      }
+
       data "authentik_flow" "default-authorization-flow" {
         slug = "default-provider-authorization-explicit-consent"
       }
@@ -63,7 +86,7 @@ spec:
         client_id     = random_password.argocd-client-id.result
         client_secret = random_password.argocd-client-secret.result
         redirect_uris = [
-          "https://argocd.home.macro.network/api/dex/callback",
+          "https://${local.domain_name}/api/dex/callback",
           "http://localhost:8085/auth/callback",
         ]
         property_mappings  = data.authentik_scope_mapping.scopes.ids
@@ -71,7 +94,7 @@ spec:
       }
 
       resource "authentik_application" "argocd-application" {
-        name              = "argocd.home.macro.network"
+        name              = local.domain_name
         slug              = "argocd"
         protocol_provider = authentik_provider_oauth2.argocd-auth-provider.id
       }
@@ -87,7 +110,7 @@ spec:
       }
 
       output "dexAuthentikIssuer" {
-        value     = "https://authentik.home.macro.network/application/o/argocd/"
+        value     = "https://${var.authentik_cluster_external_host}/application/o/argocd/"
         sensitive = true
       }
 

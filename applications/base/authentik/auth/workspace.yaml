@@ -31,6 +31,10 @@ spec:
         type = string
       }
 
+      variable "authentik_cluster_external_domain" {
+        type = string
+      }
+
       resource "authentik_provider_proxy" "domain-forward-auth-provider" {
         name               = "domain-forward-auth-provider"
         cookie_domain      = var.authentik_cluster_cookie_domain

@@ -4,7 +4,7 @@ kind: Database
 metadata:
   name: authentik
 spec:
-  deletionPolicy: Orphan
+  deletionPolicy: Delete
   forProvider:
     owner: authentik
     encoding: utf8

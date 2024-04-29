@@ -25,7 +25,30 @@ spec:
     name: authentik-argo-workflows
   forProvider:
     source: Inline
+    varFiles:
+      - source: SecretKey
+        format: HCL
+        secretKeyRef:
+          namespace: authentik
+          name: authentik-cluster-credentials
+          key: authentik.tfvars
     module: |
+      variable "authentik_cluster_cookie_domain" {
+        type = string
+      }
+
+      variable "authentik_cluster_external_host" {
+        type = string
+      }
+
+      variable "authentik_cluster_external_domain" {
+        type = string
+      }
+
+      locals {
+        domain_name = "argo-workflows.${var.authentik_cluster_external_domain}"
+      }
+
       data "authentik_flow" "default-authorization-flow" {
         slug = "default-provider-authorization-explicit-consent"
       }
@@ -67,7 +90,7 @@ spec:
         client_id     = random_password.argo-workflows-client-id.result
         client_secret = random_password.argo-workflows-client-secret.result
         redirect_uris = [
-          "https://argo-workflows.home.macro.network/oauth2/callback",
+          "https://${local.domain_name}/oauth2/callback",
         ]
         property_mappings  = data.authentik_scope_mapping.scopes.ids
         authorization_flow = data.authentik_flow.default-authorization-flow.id
@@ -75,7 +98,7 @@ spec:
       }
 
       resource "authentik_application" "argo-workflows-application" {
-        name              = "argo-workflows.home.macro.network"
+        name              = local.domain_name
         slug              = "argo-workflows"
         protocol_provider = authentik_provider_oauth2.argo-workflows-auth-provider.id
       }
