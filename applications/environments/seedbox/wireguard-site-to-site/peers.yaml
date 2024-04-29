@@ -7,3 +7,5 @@ metadata:
   name: home
 spec:
   wireguardRef: site-to-site
+
+# kubectl -n wireguard get wireguardpeer home --template={{.status.config}} | bash > seedbox-tun.conf

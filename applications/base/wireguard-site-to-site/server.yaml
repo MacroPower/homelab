@@ -17,7 +17,7 @@ spec:
 
   # ## A field that specifies the port value to use for a nodePort ServiceType.
   # ##
-  # port: 0
+  # port: 51820
 
   ## A boolean field that specifies whether IP forwarding should be enabled on
   ## the Wireguard VPN pod at startup. This can be useful to enable if the peers
@@ -25,9 +25,9 @@ spec:
   ##
   enableIpForwardOnPodInit: false
 
-  # ## A string field that specifies the DNS server(s) to be used by the peers.
-  # ##
-  # dns: ""
+  ## A string field that specifies the DNS server(s) to be used by the peers.
+  ##
+  dns: "10.43.0.10"
 
   ## A boolean field that specifies whether to use the userspace implementation
   ## of Wireguard instead of the kernel one.
