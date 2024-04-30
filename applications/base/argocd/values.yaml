@@ -29,7 +29,7 @@ configs:
             userInfoURL: "http://authentik-server.authentik.svc/application/o/userinfo/"
             clientID: $dex.authentik.clientID
             clientSecret: $dex.authentik.clientSecret
-            insecureSkipVerify: true
+            insecureSkipVerify: false
             insecureEnableGroups: true
             scopes:
               - openid

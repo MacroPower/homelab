@@ -87,7 +87,7 @@ server:
     # -- Override claim name for OIDC groups
     customGroupClaimName: ""
     # -- Skip TLS verification for the HTTP client
-    insecureSkipVerify: true
+    insecureSkipVerify: false
     # -- Filter the groups returned by the OIDC provider
     ## A logical "OR" is used between each regex in the list
     filterGroupsRegex:
