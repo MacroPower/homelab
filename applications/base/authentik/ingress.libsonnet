@@ -17,5 +17,6 @@ ingress.new(
     'gethomepage.dev/group': 'Cluster Management',
     'gethomepage.dev/icon': 'authentik',
     'gethomepage.dev/podSelector': '',
+    'gethomepage.dev/siteMonitor': 'http://authentik-server.authentik.svc:80/-/health/live/',
   },
 )
