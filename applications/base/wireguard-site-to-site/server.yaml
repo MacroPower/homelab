@@ -6,7 +6,7 @@ kind: Wireguard
 metadata:
   name: site-to-site
 spec:
-  mtu: "1380"
+  mtu: "1420"
 
   ## A field that specifies the type of Kubernetes service that should be used
   ## for the Wireguard VPN. This could be NodePort or LoadBalancer, depending on

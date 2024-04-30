@@ -16,27 +16,22 @@ spec:
             matchLabels:
               app.kubernetes.io/name: traefik
       ports:
-        - port: 80
+        - port: web
           protocol: TCP
-        - port: 80
+        - port: web
           protocol: UDP
-        - port: 443
+        - port: websecure
           protocol: TCP
-        - port: 443
-          protocol: UDP
-        - port: 8000
-          protocol: TCP
-        - port: 8000
-          protocol: UDP
-        - port: 8443
-          protocol: TCP
-        - port: 8443
+        - port: websecure
           protocol: UDP
 
     - to:
-        - ipBlock:
-            cidr: 0.0.0.0/0
-            except:
-              - 10.0.0.0/8
-              - 172.16.0.0/12
-              - 192.168.0.0/16
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: iperf
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: iperf
+      ports:
+        - port: http
+          protocol: TCP
