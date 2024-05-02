@@ -1,0 +1,50 @@
+local app = import '../../lib/app.libsonnet';
+local ns = import 'namespace.libsonnet';
+
+app.new(
+  name='securecodebox-addons',
+  path='applications/base/securecodebox-addons',
+  namespace=ns.metadata.name,
+).withChart(
+  name='auto-discovery-kubernetes',
+  repoURL='https://charts.securecodebox.io/',
+  targetRevision='4.5.0',
+  releaseName='securecodebox-auto-discovery-kubernetes',
+  values='values-auto-discovery-kubernetes.yaml'
+).withChart(
+  name='cascading-scans',
+  repoURL='https://charts.securecodebox.io/',
+  targetRevision='4.5.0',
+  releaseName='securecodebox-cascading-scans',
+  values='values-cascading-scans.yaml'
+).withChart(
+  name='nmap',
+  repoURL='https://charts.securecodebox.io/',
+  targetRevision='4.5.0',
+  releaseName='securecodebox-nmap',
+  values='values-nmap.yaml'
+).withChart(
+  name='notification',
+  repoURL='https://charts.securecodebox.io/',
+  targetRevision='4.5.0',
+  releaseName='securecodebox-notification',
+  values='values-notification.yaml'
+).withChart(
+  name='nuclei',
+  repoURL='https://charts.securecodebox.io/',
+  targetRevision='4.5.0',
+  releaseName='securecodebox-nuclei',
+  values='values-nuclei.yaml'
+).withChart(
+  name='ssh-audit',
+  repoURL='https://charts.securecodebox.io/',
+  targetRevision='4.5.0',
+  releaseName='securecodebox-ssh-audit',
+  values='values-ssh-audit.yaml'
+).withChart(
+  name='zap',
+  repoURL='https://charts.securecodebox.io/',
+  targetRevision='4.5.0',
+  releaseName='securecodebox-zap',
+  values='values-zap.yaml'
+)
