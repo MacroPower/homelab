@@ -1,0 +1,31 @@
+---
+apiVersion: kyverno.io/v1
+kind: Policy
+metadata:
+  name: patch-securecodebox-deployment
+spec:
+  rules:
+    - name: add-env-vars
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+              selector:
+                matchLabels:
+                  control-plane: securecodebox-controller-manager
+      preconditions:
+        all:
+          - key: "{{request.operation || 'BACKGROUND'}}"
+            operator: AnyIn
+            value: [CREATE, UPDATE]
+      mutate:
+        patchStrategicMerge:
+          spec:
+            template:
+              spec:
+                containers:
+                  - (name): manager
+                    env:
+                      - (name): S3_USE_SSL
+                        value: "false"
