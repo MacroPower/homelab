@@ -1,0 +1,12 @@
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Database
+metadata:
+  name: defectdojo
+spec:
+  deletionPolicy: Delete
+  forProvider:
+    owner: defectdojo
+    encoding: utf8
+  providerConfigRef:
+    name: postgres-shared

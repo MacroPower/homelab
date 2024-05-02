@@ -1,0 +1,12 @@
+architecture: standalone
+auth:
+  enabled: true
+  existingSecret: defectdojo
+  existingSecretPasswordKey: REDIS_PASSWORD
+sentinel:
+  enabled: false
+master:
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce

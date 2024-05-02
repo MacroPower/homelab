@@ -1,0 +1,16 @@
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Role
+metadata:
+  name: defectdojo
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    privileges:
+      login: true
+    passwordSecretRef:
+      name: defectdojo-database-credentials
+      key: DEFECTDOJO_DB_PASS
+      namespace: defectdojo
+  providerConfigRef:
+    name: postgres-shared

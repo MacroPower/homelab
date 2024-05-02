@@ -1,0 +1,47 @@
+# https://github.com/DefectDojo/django-DefectDojo/blob/dev/readme-docs/KUBERNETES.md
+# https://github.com/DefectDojo/django-DefectDojo/blob/master/helm/defectdojo/values.yaml
+
+host: defectdojo.home.macro.network
+
+database: postgresql
+postgresql:
+  enabled: false # Disables subchart.
+  postgresServer: "postgres-shared-rw.postgres-shared.svc"
+  primary:
+    service:
+      ports:
+        postgresql: "5432"
+  auth:
+    username: defectdojo
+    database: defectdojo
+    existingSecret: defectdojo-database-credentials
+    secretKeys:
+      userPasswordKey: DEFECTDOJO_DB_PASS
+
+django:
+  replicas: 2
+  ingress:
+    enabled: false
+
+celery:
+  broker: redis
+  beat:
+    replicas: 2
+  worker:
+    replicas: 2
+
+rabbitmq:
+  enabled: false
+
+redis:
+  enabled: false
+  redisServer: "defectdojo-redis-master.defectdojo.svc"
+  auth:
+    existingSecret: defectdojo
+    existingSecretPasswordKey: REDIS_PASSWORD
+  transportEncryption:
+    enabled: false
+  master:
+    service:
+      ports:
+        redis: 6379
