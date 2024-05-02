@@ -1,0 +1,21 @@
+minio:
+  enabled: false
+
+s3:
+  enabled: true
+  endpoint: "rook-ceph-rgw-ceph-objectstore.rook-ceph.svc"
+  bucket: securecodebox
+  port: '"80"'
+  authType: access-secret-key
+  keySecret: scb-bucket
+  secretAttributeNames:
+    accesskey: AWS_ACCESS_KEY_ID
+    secretkey: AWS_SECRET_ACCESS_KEY
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 100Mi
+  limits:
+    cpu: 100m
+    memory: 100Mi
