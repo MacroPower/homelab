@@ -4,7 +4,9 @@
 parser:
   ttlSecondsAfterFinished: 86400
   # parser.env -- Optional environment variables mapped into each parseJob (see: https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
-  env: []
+  env:
+    - name: NODE_TLS_REJECT_UNAUTHORIZED
+      value: '0'
 
   # parser.scopeLimiterAliases -- Optional finding aliases to be used in the scopeLimiter.
   scopeLimiterAliases: {}
