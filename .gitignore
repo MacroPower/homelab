@@ -46,3 +46,7 @@ spec.json
 # Taskfile
 .task
 .env
+
+# Python
+env/
+venv/

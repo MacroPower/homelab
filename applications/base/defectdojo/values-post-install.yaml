@@ -1,0 +1,33 @@
+controllers:
+  main:
+    annotations:
+      helm.sh/hook: "post-install,post-upgrade"
+      helm.sh/hook-weight: "10"
+    containers:
+      main:
+        env:
+          DEFECTDOJO_URL: "http://defectdojo-django.defectdojo.svc:80"
+          DEFECTDOJO_USERNAME: "admin"
+          DEFECTDOJO_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: defectdojo
+                key: DD_ADMIN_PASSWORD
+
+serviceAccount:
+  roleRules:
+    - apiGroups: [""]
+      resources: ["secrets"]
+      verbs: ["create", "patch", "delete", "get", "update"]
+
+persistence:
+  script:
+    type: configMap
+    name: get-api-token
+    items:
+      - key: main.py
+        path: main.py
+    globalMounts:
+      - path: /usr/src/scripts/main.py
+        subPath: main.py
+        readOnly: true
