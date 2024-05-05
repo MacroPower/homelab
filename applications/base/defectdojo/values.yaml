@@ -2,6 +2,9 @@
 # https://github.com/DefectDojo/django-DefectDojo/blob/master/helm/defectdojo/values.yaml
 
 host: defectdojo.home.macro.network
+alternativeHosts:
+  - defectdojo-django.defectdojo.svc
+  - defectdojo-django.defectdojo.svc.cluster.local
 
 database: postgresql
 postgresql:
