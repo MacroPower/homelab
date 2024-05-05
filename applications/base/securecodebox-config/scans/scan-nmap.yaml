@@ -1,0 +1,34 @@
+---
+apiVersion: templates.kluctl.io/v1alpha1
+kind: ObjectTemplate
+metadata:
+  name: seedbox-public-nmap-template
+spec:
+  interval: 1m
+  serviceAccountName: securecodebox-config-template
+  prune: true
+  matrix:
+    - name: config
+      object:
+        ref:
+          apiVersion: v1
+          kind: Secret
+          name: securecodebox-config
+  templates:
+    - object:
+        apiVersion: execution.securecodebox.io/v1
+        kind: ScheduledScan
+        metadata:
+          name: "seedbox-public-nmap"
+        spec:
+          interval: 6h
+          scanSpec:
+            scanType: "nmap"
+            parameters:
+              - "-p"
+              - "1-65535"
+              - "-T4"
+              - "-A"
+              - "{{ matrix.config.data.SECURECODEBOX_SEEDBOX_IP | b64decode }}"
+          successfulJobsHistoryLimit: 3
+          failedJobsHistoryLimit: 5

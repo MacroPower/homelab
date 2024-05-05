@@ -49,6 +49,7 @@
   import 'rook-ceph-cluster/application.libsonnet',
   import 'rook-ceph-operator/application.libsonnet',
   import 'securecodebox-addons/application.libsonnet',
+  import 'securecodebox-config/application.libsonnet',
   import 'securecodebox/application.libsonnet',
   import 'template-controller/application.libsonnet',
   import 'tetragon/application.libsonnet',
