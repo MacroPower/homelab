@@ -14,7 +14,7 @@ app.new(
 ).withChart(
   name='redis',
   repoURL='https://charts.bitnami.com/bitnami',
-  targetRevision='18.6.1',
+  targetRevision='19.1.5',
   releaseName='defectdojo-redis',
   values='values-redis.yaml'
 )
