@@ -36,6 +36,12 @@ app.new(
   releaseName='securecodebox-nuclei',
   values='values-nuclei.yaml'
 ).withChart(
+  name='persistence-defectdojo',
+  repoURL='https://charts.securecodebox.io/',
+  targetRevision='4.5.0',
+  releaseName='securecodebox-persistence-defectdojo',
+  values='values-persistence-defectdojo.yaml'
+).withChart(
   name='ssh-audit',
   repoURL='https://charts.securecodebox.io/',
   targetRevision='4.5.0',
