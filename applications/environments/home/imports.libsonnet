@@ -54,6 +54,7 @@
   import 'template-controller/application.libsonnet',
   import 'tetragon/application.libsonnet',
   import 'traefik/application.libsonnet',
+  import 'trivy/application.libsonnet',
   import 'twitch-channel-points-miner/application.libsonnet',
   import 'vector-agent/application.libsonnet',
   import 'vector-aggregator/application.libsonnet',

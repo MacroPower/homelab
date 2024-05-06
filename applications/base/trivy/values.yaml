@@ -1,0 +1,419 @@
+# -- excludeNamespaces is a comma separated list of namespaces (or glob patterns)
+# to be excluded from scanning. Only applicable in the all namespaces install
+# mode, i.e. when the targetNamespaces values is a blank string.
+excludeNamespaces: ""
+
+# -- targetWorkloads is a comma seperated list of Kubernetes workload resources
+# to be included in the vulnerability and config-audit scans
+# if left blank, all workload resources will be scanned
+targetWorkloads: "pod,replicaset,replicationcontroller,statefulset,daemonset,cronjob,job"
+
+operator:
+  scanJobTTL: 60s
+  scanSecretTTL: 60s
+
+  # -- scanJobTimeout the length of time to wait before giving up on a scan job
+  scanJobTimeout: 5m
+
+  # -- scanJobsConcurrentLimit the maximum number of scan jobs create by the operator
+  scanJobsConcurrentLimit: 10
+
+  # -- the flag to enable vulnerability scanner
+  vulnerabilityScannerEnabled: true
+  # -- the flag to enable sbom generation, required for enabling ClusterVulnerabilityReports
+  sbomGenerationEnabled: true
+  # -- the flag to enable cluster sbom cache generation
+  clusterSbomCacheEnabled: false
+  # -- scannerReportTTL the flag to set how long a report should exist. "" means that the ScannerReportTTL feature is disabled
+  scannerReportTTL: "24h"
+  # -- cacheReportTTL the flag to set how long a cluster sbom report should exist. "" means that the cacheReportTTL feature is disabled
+  cacheReportTTL: "120h"
+  # -- configAuditScannerEnabled the flag to enable configuration audit scanner
+  configAuditScannerEnabled: true
+  # -- rbacAssessmentScannerEnabled the flag to enable rbac assessment scanner
+  rbacAssessmentScannerEnabled: true
+  # -- infraAssessmentScannerEnabled the flag to enable infra assessment scanner
+  infraAssessmentScannerEnabled: true
+  # -- clusterComplianceEnabled the flag to enable cluster compliance scanner
+  clusterComplianceEnabled: true
+  # -- batchDeleteLimit the maximum number of config audit reports deleted by the operator when the plugin's config has changed.
+  batchDeleteLimit: 10
+  # -- vulnerabilityScannerScanOnlyCurrentRevisions the flag to only create vulnerability scans on the current revision of a deployment.
+  vulnerabilityScannerScanOnlyCurrentRevisions: true
+  # -- configAuditScannerScanOnlyCurrentRevisions the flag to only create config audit scans on the current revision of a deployment.
+  configAuditScannerScanOnlyCurrentRevisions: true
+  # -- batchDeleteDelay the duration to wait before deleting another batch of config audit reports.
+  batchDeleteDelay: 10s
+  # -- accessGlobalSecretsAndServiceAccount The flag to enable access to global secrets/service accounts to allow `vulnerability scan job` to pull images from private registries
+  accessGlobalSecretsAndServiceAccount: true
+  # -- builtInTrivyServer The flag enables the usage of built-in trivy server in cluster. It also overrides the following trivy params with built-in values
+  # trivy.mode = ClientServer and serverURL = http://<serverServiceName>.<trivy operator namespace>:4975
+  builtInTrivyServer: true
+  # -- builtInServerRegistryInsecure is the flag to enable insecure connection from the built-in Trivy server to the registry.
+  builtInServerRegistryInsecure: false
+  # -- controllerCacheSyncTimeout the duration to wait for controller resources cache sync (default: 5m).
+  controllerCacheSyncTimeout: "5m"
+
+  # -- trivyServerHealthCheckCacheExpiration The flag to set the interval for trivy server health cache before it invalidate
+  trivyServerHealthCheckCacheExpiration: 10h
+
+  # -- metricsFindingsEnabled the flag to enable metrics for findings
+  metricsFindingsEnabled: true
+
+  # -- metricsVulnIdEnabled the flag to enable metrics about cve vulns id
+  # be aware of metrics cardinality is significantly increased with this feature enabled.
+  metricsVulnIdEnabled: false
+
+  # -- exposedSecretScannerEnabled the flag to enable exposed secret scanner
+  exposedSecretScannerEnabled: true
+
+  # -- MetricsExposedSecretInfo the flag to enable metrics about exposed secrets
+  # be aware of metrics cardinality is significantly increased with this feature enabled.
+  metricsExposedSecretInfo: false
+
+  # -- MetricsConfigAuditInfo the flag to enable metrics about configuration audits
+  # be aware of metrics cardinality is significantly increased with this feature enabled.
+  metricsConfigAuditInfo: false
+
+  # -- MetricsRbacAssessmentInfo the flag to enable metrics about Rbac Assessment
+  # be aware of metrics cardinality is significantly increased with this feature enabled.
+  metricsRbacAssessmentInfo: false
+
+  # -- MetricsInfraAssessmentInfo the flag to enable metrics about Infra Assessment
+  # be aware of metrics cardinality is significantly increased with this feature enabled.
+  metricsInfraAssessmentInfo: false
+
+  # -- MetricsImageInfo the flag to enable metrics about Image Information of scanned images
+  # This information has image os information including os family, name/version, and if end of service life has been reached
+  # be aware of metrics cardinality is significantly increased with this feature enabled.
+  metricsImageInfo: false
+
+  # -- MetricsClusterComplianceInfo the flag to enable metrics about Cluster Compliance
+  # be aware of metrics cardinality is significantly increased with this feature enabled.
+  metricsClusterComplianceInfo: false
+
+  # -- serverAdditionalAnnotations the flag to set additional annotations for the trivy server pod
+  serverAdditionalAnnotations: {}
+
+  # -- webhookBroadcastURL the flag to set reports should be sent to a webhook endpoint. "" means that the webhookBroadcastURL feature is disabled
+  webhookBroadcastURL: ""
+
+  # -- webhookBroadcastTimeout the flag to set timeout for webhook requests if webhookBroadcastURL is enabled
+  webhookBroadcastTimeout: 30s
+
+  # -- webhookSendDeletedReports the flag to enable sending deleted reports if webhookBroadcastURL is enabled
+  webhookSendDeletedReports: false
+
+  # -- privateRegistryScanSecretsNames is map of namespace:secrets, secrets are comma seperated which can be used to authenticate in private registries in case if there no imagePullSecrets provided example : {"mynamespace":"mySecrets,anotherSecret"}
+  privateRegistryScanSecretsNames: {}
+
+  # -- mergeRbacFindingWithConfigAudit the flag to enable merging rbac finding with config-audit report
+  mergeRbacFindingWithConfigAudit: false
+
+  # -- vaulesFromConfigMap name of a ConfigMap to apply OPERATOR_* environment variables. Will override Helm values.
+  valuesFromConfigMap: ""
+
+  # -- valuesFromSecret name of a Secret to apply OPERATOR_* environment variables. Will override Helm AND ConfigMap values.
+  valuesFromSecret: ""
+
+serviceMonitor:
+  enabled: true
+
+trivyOperator:
+  # -- vulnerabilityReportsPlugin the name of the plugin that generates vulnerability reports `Trivy`
+  vulnerabilityReportsPlugin: "Trivy"
+  # -- configAuditReportsPlugin the name of the plugin that generates config audit reports.
+  configAuditReportsPlugin: "Trivy"
+  # -- scanJobCompressLogs control whether scanjob output should be compressed or plain
+  scanJobCompressLogs: true
+  # -- scanJobAffinity affinity to be applied to the scanner pods and node-collector
+  scanJobAffinity: []
+  # -- scanJobTolerations tolerations to be applied to the scanner pods so that they can run on nodes with matching taints
+  scanJobTolerations: []
+  # -- If you do want to specify tolerations, uncomment the following lines, adjust them as necessary, and remove the
+  # square brackets after 'scanJobTolerations:'.
+  # - key: "key1"
+  #   operator: "Equal"
+  #   value: "value1"
+  #   effect: "NoSchedule"
+  # -- scanJobNodeSelector nodeSelector to be applied to the scanner pods so that they can run on nodes with matching labels
+  scanJobNodeSelector: {}
+  # -- If you do want to specify nodeSelector, uncomment the following lines, adjust them as necessary, and remove the
+  # square brackets after 'scanJobNodeSelector:'.
+  #   nodeType: worker
+  #   cpu: sandylake
+  #   teamOwner: operators
+
+  # -- scanJobCustomVolumesMount add custom volumes mount to the scan job
+  scanJobCustomVolumesMount: []
+  #  - name: var-lib-etcd
+  #    mountPath: /var/lib/etcd
+  #    readOnly: true
+
+  # -- scanJobCustomVolumes add custom volumes to the scan job
+  scanJobCustomVolumes: []
+  #  - name: var-lib-etcd
+  #    hostPath:
+  #    path: /var/lib/etcd
+
+
+  # -- scanJobAutomountServiceAccountToken the flag to enable automount for service account token on scan job
+  scanJobAutomountServiceAccountToken: false
+
+  # -- scanJobAnnotations comma-separated representation of the annotations which the user wants the scanner pods to be
+  # annotated with. Example: `foo=bar,env=stage` will annotate the scanner pods with the annotations `foo: bar` and `env: stage`
+  scanJobAnnotations: ""
+
+  # -- scanJobPodTemplateLabels comma-separated representation of the labels which the user wants the scanner pods to be
+  # labeled with. Example: `foo=bar,env=stage` will labeled the scanner pods with the labels `foo: bar` and `env: stage`
+  scanJobPodTemplateLabels: ""
+
+  # -- skipInitContainers when this flag is set to true, the initContainers will be skipped for the scanner and node collector pods
+  skipInitContainers: false
+
+  # -- reportResourceLabels comma-separated scanned resource labels which the user wants to include in the Prometheus
+  # metrics report. Example: `owner,app`
+  reportResourceLabels: ""
+
+  # -- reportRecordFailedChecksOnly flag is to record only failed checks on misconfiguration reports (config-audit and rbac assessment)
+  reportRecordFailedChecksOnly: true
+
+  # -- skipResourceByLabels comma-separated labels keys which trivy-operator will skip scanning on resources with matching labels
+  skipResourceByLabels: ""
+
+  # -- metricsResourceLabelsPrefix Prefix that will be prepended to the labels names indicated in `reportResourceLabels`
+  # when including them in the Prometheus metrics
+  metricsResourceLabelsPrefix: "k8s_label_"
+
+  # -- additionalReportLabels comma-separated representation of the labels which the user wants the scanner pods to be
+  # labeled with. Example: `foo=bar,env=stage` will labeled the reports with the labels `foo: bar` and `env: stage`
+  additionalReportLabels: ""
+
+  # -- policiesConfig Custom Rego Policies to be used by the config audit scanner
+  # See https://github.com/aquasecurity/trivy-operator/blob/main/docs/tutorials/writing-custom-configuration-audit-policies.md for more details.
+  policiesConfig: ""
+
+trivy:
+  # -- createConfig indicates whether to create config objects
+  createConfig: true
+
+  # -- sbomSources trivy will try to retrieve SBOM from the specified sources (oci,rekor)
+  sbomSources: ""
+
+  # -- includeDevDeps include development dependencies in the report (supported: npm, yarn) (default: false)
+  # note: this flag is only applicable when trivy.command is set to filesystem
+  includeDevDeps: false
+
+  # -- whether to use a storage class for trivy server or emptydir (one mey want to use ephemeral storage)
+  storageClassEnabled: true
+
+  # -- storageClassName is the name of the storage class to be used for trivy server PVC. If empty, tries to find default storage class
+  storageClassName: "ceph-block"
+
+  # -- storageSize is the size of the trivy server PVC
+  storageSize: "5Gi"
+
+  # -- additionalVulnerabilityReportFields is a comma separated list of additional fields which
+  # can be added to the VulnerabilityReport. Supported parameters: Description, Links, CVSS, Target, Class, PackagePath and PackageType
+  additionalVulnerabilityReportFields: ""
+
+  # -- Registries without SSL. There can be multiple registries with different keys.
+  nonSslRegistries: {}
+  #  pocRegistry: poc.myregistry.harbor.com.pl
+  #  qaRegistry: qa.registry.aquasec.com
+  #  internalRegistry: registry.registry.svc:5000
+
+  # -- The registry to which insecure connections are allowed. There can be multiple registries with different keys.
+  insecureRegistries: {}
+  #  pocRegistry: poc.myregistry.harbor.com.pl
+  #  qaRegistry: qa.registry.aquasec.com
+  #  internalRegistry: registry.registry.svc:5000
+
+  # -- Mirrored registries. There can be multiple registries with different keys.
+  # Make sure to quote registries containing dots
+  registry:
+    mirror: {}
+    # "docker.io": docker-mirror.example.com
+
+  # -- severity is a comma separated list of severity levels reported by Trivy.
+  severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+
+  # -- slow this flag is to use less CPU/memory for scanning though it takes more time than normal scanning. It fits small-footprint
+  slow: true
+  # -- ignoreUnfixed is the flag to show only fixed vulnerabilities in
+  # vulnerabilities reported by Trivy. Set to true to enable it.
+  #
+  ignoreUnfixed: false
+  # -- a comma separated list of file paths for Trivy to skip
+  skipFiles:
+  # -- a comma separated list of directories for Trivy to skip
+  skipDirs:
+
+  # -- offlineScan is the flag to enable the offline scan functionality in Trivy
+  # This will prevent outgoing HTTP requests, e.g. to search.maven.org
+  offlineScan: false
+
+  # -- timeout is the duration to wait for scan completion.
+  timeout: "5m0s"
+
+  # -- ignoreFile can be used to tell Trivy to ignore vulnerabilities by ID (one per line)
+  ignoreFile: ~
+  # ignoreFile:
+  #   - CVE-1970-0001
+  #   - CVE-1970-0002
+
+  # -- ignorePolicy can be used to tell Trivy to ignore vulnerabilities by a policy
+  # If multiple policies would match, then the most specific one has precedence over the others.
+  # See https://aquasecurity.github.io/trivy/latest/docs/configuration/filtering/#by-open-policy-agent for more details.
+  # See https://github.com/aquasecurity/trivy/blob/v0.19.2/contrib/example_policy/basic.rego for more details on ignorePolicy filtering.
+  #
+  # ignorePolicy.application.my-app-.: |
+  #  package trivy
+
+  #  import data.lib.trivy
+
+  #  default ignore = true
+  # applies to all workloads in namespace "application" with the name pattern "my-app-*"
+  # ignorePolicy.kube-system: |
+  #  package trivy
+
+  #  import data.lib.trivy
+
+  #  default ignore = true
+  # applies to all workloads in namespace "kube-system"
+  # ignorePolicy: |
+  #  package trivy
+
+  #  import data.lib.trivy
+
+  #  default ignore = true
+  # applies to all other workloads
+
+  # -- vulnType can be used to tell Trivy to filter vulnerabilities by a pkg-type (library, os)
+  vulnType: ~
+
+  # -- resources resource requests and limits for scan job containers
+  resources:
+    requests:
+      cpu: 100m
+      memory: 500M
+      # ephemeralStorage: "2Gi"
+    limits:
+      cpu: 500m
+      memory: 500M
+      # ephemeralStorage: "2Gi"
+
+  # -- serverToken is the token to authenticate Trivy client with Trivy server. Only
+  # applicable in ClientServer mode.
+  serverToken: ~
+
+  # -- existingSecret if a secret containing gitHubToken, serverToken or serverCustomHeaders has been created outside the chart (e.g external-secrets, sops, etc...).
+  # Keys must be at least one of the following: trivy.githubToken, trivy.serverToken, trivy.serverCustomHeaders
+  # Overrides trivy.gitHubToken, trivy.serverToken, trivy.serverCustomHeaders values.
+  # Note: The secret has to be named "trivy-operator-trivy-config".
+  # existingSecret: true
+
+  # -- The Flag to enable the usage of builtin rego policies by default
+  #
+  useBuiltinRegoPolicies: "true"
+
+  # -- The Flag is the list of supported kinds separated by comma delimiter to be scanned by the config audit scanner
+  #
+  supportedConfigAuditKinds: "Workload,Service,Role,ClusterRole,NetworkPolicy,Ingress,LimitRange,ResourceQuota"
+
+  # -- command. One of `image`, `filesystem` or `rootfs` scanning, depending on the target type required for the scan.
+  # For 'filesystem' and `rootfs` scanning, ensure that the `trivyOperator.scanJobPodTemplateContainerSecurityContext` is configured
+  # to run as the root user (runAsUser = 0).
+  command: image
+
+  # -- debug One of `true` or `false`. Enables debug mode.
+  debug: false
+
+  server:
+    replicas: 2
+    resources:
+      requests:
+        cpu: 200m
+        memory: 1Gi
+        # ephemeral-storage: "2Gi"
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+        # ephemeral-storage: "2Gi"
+
+compliance:
+  # -- failEntriesLimit the flag to limit the number of fail entries per control check in the cluster compliance detail report
+  failEntriesLimit: 10
+  # -- reportType this flag control the type of report generated (summary or all)
+  reportType: summary
+  # -- cron this flag control the cron interval for compliance report generation
+  cron: 0 */6 * * *
+
+volumeMounts:
+  # do not remove , required for policies bundle
+  - mountPath: /tmp
+    name: cache-policies
+    readOnly: false
+
+volumes:
+  # do not remove , required for policies bundle
+  - name: cache-policies
+    emptyDir: {}
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeCollector:
+  # -- excludeNodes comma-separated node labels that the node-collector job should exclude from scanning (example kubernetes.io/arch=arm64,team=dev)
+  excludeNodes: ""
+  tolerations:
+    - key: node-role.kubernetes.io/master
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/control-plane
+      effect: NoSchedule
+
+  volumeMounts:
+    - name: var-lib-etcd
+      mountPath: /var/lib/etcd
+      readOnly: true
+    - name: var-lib-kubelet
+      mountPath: /var/lib/kubelet
+      readOnly: true
+    - name: var-lib-kube-scheduler
+      mountPath: /var/lib/kube-scheduler
+      readOnly: true
+    - name: var-lib-kube-controller-manager
+      mountPath: /var/lib/kube-controller-manager
+      readOnly: true
+    - name: etc-kubernetes
+      mountPath: /etc/kubernetes
+      readOnly: true
+    - name: etc-cni-netd
+      mountPath: /etc/cni/net.d/
+      readOnly: true
+
+  # -- node-collector pod volumes definition for collecting config files information
+  volumes:
+    - name: var-lib-etcd
+      hostPath:
+        path: /var/lib/etcd
+    - name: var-lib-kubelet
+      hostPath:
+        path: /var/lib/kubelet
+    - name: var-lib-kube-scheduler
+      hostPath:
+        path: /var/lib/kube-scheduler
+    - name: var-lib-kube-controller-manager
+      hostPath:
+        path: /var/lib/kube-controller-manager
+    - name: etc-kubernetes
+      hostPath:
+        path: /etc/kubernetes
+    - name: etc-cni-netd
+      hostPath:
+        path: /etc/cni/net.d/
