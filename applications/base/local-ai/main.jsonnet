@@ -2,6 +2,5 @@
 
 local ingress = import 'ingress.libsonnet';
 local ns = import 'namespace.libsonnet';
-local ui = import 'ui.libsonnet';
 
-[ns] + ui + ingress
+[ns] + ingress
