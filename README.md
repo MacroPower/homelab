@@ -11,6 +11,7 @@
   <p align="center">
     [ <a href="https://github.com/MacroPower/dotfiles">dotfiles</a> &#183;
     <a href="https://github.com/MacroPower/helm-charts">charts</a> &#183;
+    <a href="https://github.com/MacroPower/containers">containers</a> &#183;
     <a href="https://jacobcolvin.com/posts/">blog</a> ]
   </p>
 </p>
