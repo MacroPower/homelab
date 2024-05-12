@@ -3,7 +3,7 @@ image:
   tag: v0.8.12
 
 controller:
-  replicas: 2
+  replicas: 1
 
 config:
   bookmarks:
