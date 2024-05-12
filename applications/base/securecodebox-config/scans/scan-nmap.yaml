@@ -25,10 +25,18 @@ spec:
           scanSpec:
             scanType: "nmap"
             parameters:
-              - "-p"
-              - "1-65535"
-              - "-T4"
-              - "-A"
+              - "-p1-65535" # --- Scan all ports
+              - "-T4" # --------- Timing, 0-5, higher is faster.
+              - "-sC" # --------- Run default nmap scripts
+              - "-sV" # --------- Probe open ports to determine service/version info
+              - "-Pn" # --------- No ping
+              - "-6" # ---------- Enable IPv6
+              - "-sS" # --------- TCP SYN scan
+              - "-sT" # --------- TCP Connect() scan
+              - "-sA" # --------- TCP ACK scan
+              - "-sW" # --------- TCP Window scan
+              - "-sM" # --------- TCP Maimon scan
+              - "-sU" # --------- UDP scan
               - "{{ matrix.config.data.SECURECODEBOX_SEEDBOX_IP | b64decode }}"
           successfulJobsHistoryLimit: 3
           failedJobsHistoryLimit: 5
