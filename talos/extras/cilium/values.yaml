@@ -5,6 +5,10 @@ cluster:
   name: home
   id: 1
 
+k8sClientRateLimit:
+  qps: 10
+  burst: 20
+
 ipam:
   mode: kubernetes
 
@@ -36,7 +40,7 @@ ipv6NativeRoutingCIDR: 2603:6010:5300:ad80::/64
 endpointRoutes:
   ## Route per endpoint instead of using the cilium_host interface.
   ##
-  enabled: false
+  enabled: true
 
 operator:
   replicas: 2

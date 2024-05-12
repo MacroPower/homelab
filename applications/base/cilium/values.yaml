@@ -11,12 +11,12 @@ k8sClientRateLimit:
   ## (int) The sustained request rate in requests per second.
   ## @default -- 5 for k8s up to 1.26. 10 for k8s version 1.27+
   ##
-  qps: 50
+  qps: 10
   ## (int) The burst request rate in requests per second.
   ## The rate limiter will allow short bursts with a higher rate.
   ## @default -- 10 for k8s up to 1.26. 20 for k8s version 1.27+
   ##
-  burst: 100
+  burst: 20
 
 cluster:
   name: home
@@ -53,7 +53,7 @@ ipv6NativeRoutingCIDR: 2603:6010:5300:ad80::/64
 endpointRoutes:
   ## Route per endpoint instead of using the cilium_host interface.
   ##
-  enabled: false
+  enabled: true
 
 bgpControlPlane:
   enabled: true
