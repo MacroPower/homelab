@@ -2,8 +2,8 @@ replicaCount: 1
 
 deployment:
   image:
-    repository: quay.io/go-skynet/local-ai
-    tag: latest
+    repository: localai/localai
+    tag: master-aio-cpu
   env:
     threads: 8
     context_size: 512
