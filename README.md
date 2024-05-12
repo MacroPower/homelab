@@ -35,6 +35,7 @@ Admittedly, both usages of "all" describe the end goal of this repo, not the cur
 - [Talos](https://www.talos.dev): Immutable Kubernetes OS; built using [talhelper](https://github.com/budimanjojo/talhelper).
 - [Argo CD](https://github.com/argoproj/argo-cd): Reconciles kubernetes clusters with this repository.
 - [Kyverno](https://kyverno.io): Policy engine supporting validate, mutate, generate, and cleanup rules.
+- [Harbor](https://goharbor.io): Artifact registry with pull-through cache and vulnerability scanning.
 - [Jsonnet](https://jsonnet.org/): Configuration language I use to describe Argo applications.
 - [Renovate](https://github.com/renovatebot/renovate): Automatic updates for applications via pull requests.
 
@@ -46,10 +47,17 @@ Admittedly, both usages of "all" describe the end goal of this repo, not the cur
 ### Networking
 
 - [Cilium](https://cilium.io): eBPF-based CNI & service mesh.
-- [Authentik](https://goauthentik.io): Identity Provider.
 - [Traefik](https://traefik.io): Ingress controller & reverse proxy.
 - [Cert Manager](https://cert-manager.io): Automatic Let's Encrypt certificates.
 - [AdGuard Home](https://github.com/AdguardTeam/AdguardHome): DNS server with ad-blocking.
+- [Wireguard](https://www.wireguard.com): Modern VPN tunnels; implemented using [wireguard-operator](https://github.com/jodevsa/wireguard-operator).
+
+### Security
+
+- [Authentik](https://goauthentik.io): Identity Provider.
+- [Tetragon](https://tetragon.io/): eBPF-based security observability and runtime enforcement.
+- [SecureCodeBox](https://www.securecodebox.io/): Continuous and automated security testing with familiar tools like Nmap, ZAP.
+- [Trivy](https://aquasecurity.github.io/trivy): Kubernetes and container vulnerability scanner.
 
 ### Observability
 
@@ -60,6 +68,7 @@ Admittedly, both usages of "all" describe the end goal of this repo, not the cur
 - [OTEL Collector](https://opentelemetry.io/docs/collector/): Trace/metric collector, transformer, and router.
 - [Grafana](https://grafana.com): Visualization platform.
 - [Robusta](https://home.robusta.dev): Alerts / notifications and runbook automation.
+- [Inspektor Gadget](https://www.inspektor-gadget.io/): eBPF-based gadgets to debug and inspect Kubernetes apps and resources.
 
 ### Storage
 
