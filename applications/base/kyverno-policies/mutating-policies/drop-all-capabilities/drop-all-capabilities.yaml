@@ -34,14 +34,20 @@ spec:
             value:
               - CREATE
               - UPDATE
+          - key: "{{request.object.kind != 'Pod' || request.operation == 'CREATE'}}"
+            operator: Equals
+            value: true
       mutate:
         foreach:
-          - list: "request.object.spec.[ephemeralContainers, initContainers, containers][]"
+          - list: "request.object.spec.containers[]"
             patchStrategicMerge:
               spec:
-                containers:
+                containers: &patch
                   - (name): "{{element.name}}"
                     securityContext:
                       capabilities:
-                        drop:
-                          - ALL
+                        drop: [ALL]
+          - list: "request.object.spec.initContainers[]"
+            patchStrategicMerge:
+              spec:
+                initContainers: *patch

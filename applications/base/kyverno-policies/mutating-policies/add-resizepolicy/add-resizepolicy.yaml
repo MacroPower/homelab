@@ -23,17 +23,19 @@ spec:
               namespaceSelector:
                 matchExpressions:
                   - key: policy.jacobcolvin.com/add-resizepolicy
-                    operator: NotIn
+                    operator: AnyIn
                     values:
-                      - "false"
+                      - "true"
       preconditions:
         all:
           - key: "{{request.operation || 'BACKGROUND'}}"
             operator: AnyIn
-            value: [CREATE, UPDATE]
-          - key: "{{request.object.kind}}"
-            operator: NotEquals
-            value: Pod
+            value:
+              - CREATE
+              - UPDATE
+          - key: "{{request.object.kind != 'Pod' || request.operation == 'CREATE'}}"
+            operator: Equals
+            value: true
       mutate:
         foreach:
           - list: "request.object.spec.containers[]"
