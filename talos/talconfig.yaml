@@ -1,5 +1,5 @@
 clusterName: home
-talosVersion: v1.7.0
+talosVersion: v1.7.1
 kubernetesVersion: v1.30.0
 endpoint: https://kube.home.macro.network:6443
 cniConfig:
