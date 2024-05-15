@@ -124,16 +124,23 @@ tasks:
     summary: |
       Args:
         INITIAL_NODE: Node to bootstrap (default: knode01.{{.CLUSTER_DOMAIN}})
+        RECOVERY_SNAPSHOT: Snapshot to recover from (default: "")
     dir: "{{.TALOS_DIR}}"
     vars:
-      INITIAL_NODE: '{{.INITIAL_NODE | default "knode01.{{.CLUSTER_DOMAIN}}"}}'
+      INITIAL_NODE: '{{.INITIAL_NODE | default (print "knode01." .CLUSTER_DOMAIN)}}'
     cmds:
       - task: talconfig
-      - talosctl apply-config -i -n {{.INITIAL_NODE}} -f clusterconfig/home-{{.INITIAL_NODE}}.yaml
-      - echo "Applied config to {{.INITIAL_NODE}}, waiting..."
+      - task: apply-insecure
+        vars: { NODE: "{{.INITIAL_NODE}}" }
+      - cmd: echo "Applied config to {{.INITIAL_NODE}}, waiting..."
+        silent: true
       - sleep 60
-      - talosctl bootstrap -e {{.INITIAL_NODE}} -n {{.INITIAL_NODE}}
-      - echo "Issued bootstrap to {{.INITIAL_NODE}}, waiting..."
+      - |
+        talosctl bootstrap \
+          {{if ne .RECOVERY_SNAPSHOT ""}}--recover-from {{.RECOVERY_SNAPSHOT}} \{{end}}
+          -e {{.INITIAL_NODE}} -n {{.INITIAL_NODE}}
+      - cmd: echo "Issued bootstrap to {{.INITIAL_NODE}}, waiting..."
+        silent: true
       - sleep 60
       - task: kubeconfig
       - task: apply-extras
@@ -197,3 +204,30 @@ tasks:
       - defer: rm -rf ./charts
     requires:
       vars: [APP]
+
+  support:
+    desc: Download support bundle
+    summary: |
+      Args:
+        NODE: Node to download support bundle from (required)
+    requires:
+      vars: [NODE]
+    dir: "{{.TALOS_DIR}}"
+    cmds:
+      - rm -rf {{.NODE}}.{{.CLUSTER_DOMAIN}}/ cluster/
+      - defer: unzip support.zip && rm support.zip
+      - talosctl support -n {{.NODE}}.{{.CLUSTER_DOMAIN}} -e {{.NODE}}.{{.CLUSTER_DOMAIN}}
+
+  etcd-snapshot:
+    desc: Take an etcd snapshot
+    summary: |
+      Args:
+        NODE: Node to take snapshot from (required)
+        FILENAME: Filename to save snapshot as (default: db.snapshot)
+    requires:
+      vars: [NODE]
+    vars:
+      FILENAME: '{{.FILENAME | default "db.snapshot"}}'
+    dir: "{{.TALOS_DIR}}"
+    cmds:
+      - talosctl etcd snapshot -n {{.NODE}}.{{.CLUSTER_DOMAIN}} -e {{.NODE}}.{{.CLUSTER_DOMAIN}} {{.FILENAME}}
