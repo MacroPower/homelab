@@ -20,10 +20,11 @@ variable "site_code" {
 
 variable "clients" {
   type = map(object({
-    mac     = string
-    ipv4    = optional(string)
-    profile = optional(string)
-    dev_id  = optional(number)
+    mac        = string
+    ipv4       = optional(string)
+    profile    = optional(string)
+    dev_id     = optional(number)
+    dns_record = optional(string)
   }))
 }
 
