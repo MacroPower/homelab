@@ -72,8 +72,9 @@ resource "unifi_network" "lan" {
   ipv6_ra_priority       = "high"
   ipv6_ra_valid_lifetime = 0
 
-  dhcp_dns    = each.value.dns
-  dhcp_v6_dns = each.value.dns_v6
+  dhcp_dns         = each.value.dns
+  dhcp_v6_dns      = each.value.dns_v6
+  dhcp_v6_dns_auto = each.value.dns_v6 == null
 
   lifecycle {
     ## Changes to DHCPv6 settings are not currently reflected in the controller.
