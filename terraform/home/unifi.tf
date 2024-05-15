@@ -231,6 +231,12 @@ locals {
       wifi_profile  = "compatability"
       multicast_dns = true
     }
+    # k8s_seedbox_vpn = {
+    #   name = "seedbox VPN"
+    #   id   = 43
+    #   mask = 16
+    #   type = "reservation"
+    # }
     k8s_services = {
       name = "home Services"
       id   = 112
