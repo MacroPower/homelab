@@ -1,0 +1,50 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+vars:
+  KYVERNO_POLICY_DIR: "{{.KYVERNO_POLICY_DIR}}"
+  KYVERNO_TEST_DIR: ".kyverno-test"
+  KYVERNO_POLICY_FILE: "policy.yaml"
+  KYVERNO_VALUES_FILE: "variables.yaml"
+
+tasks:
+  test-apply:
+    desc: Apply a policy against a test resource
+    summary: |
+      Args:
+        POLICY: The policy to apply
+        RESOURCE: The resource to apply the policy against (default: resource)
+    requires:
+      vars: [POLICY]
+    vars:
+      POLICY_FILE: "{{joinPath .POLICY .KYVERNO_POLICY_FILE}}"
+      RESOURCE: '{{.RESOURCE | default "resource"}}'
+      RESOURCE_FILE: "{{joinPath .POLICY .KYVERNO_TEST_DIR .RESOURCE}}.yaml"
+      VALUES_FILE: "{{joinPath .POLICY .KYVERNO_TEST_DIR .KYVERNO_VALUES_FILE}}"
+      USE_VALUES: { sh: 'if [ -f {{.VALUES_FILE}} ]; then echo "true"; fi;' }
+    dir: "{{.KYVERNO_POLICY_DIR}}"
+    cmds:
+      - |-
+        kyverno apply {{.POLICY_FILE}} --detailed-results --v=6 \
+          {{ if .USE_VALUES -}}
+            --values-file {{.VALUES_FILE}}{{" "}}
+          {{- end -}}
+          --resource {{.RESOURCE_FILE}}
+
+  test:
+    desc: Run tests
+    summary: |
+      Args:
+        POLICY: The policy to test
+    requires:
+      vars: [POLICY]
+    dir: "{{.KYVERNO_POLICY_DIR}}"
+    cmds:
+      - kyverno test {{.POLICY}} --detailed-results --v=6
+
+  test-all:
+    desc: Run tests for all policies
+    dir: "{{.KYVERNO_POLICY_DIR}}"
+    cmds:
+      - kyverno test . --detailed-results

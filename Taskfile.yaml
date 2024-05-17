@@ -13,6 +13,7 @@ vars:
   TALOS_DIR: "{{.ROOT_DIR}}/talos"
   TERRAFORM_DIR: "{{.ROOT_DIR}}/terraform"
   ARGO_APP_DIR: "{{.ROOT_DIR}}/applications"
+  KYVERNO_POLICY_DIR: "{{.ROOT_DIR}}/applications/base/kyverno-policies/policies"
 
 includes:
   argocd:
@@ -28,6 +29,10 @@ includes:
   kube:
     taskfile: ./.taskfiles/kube/taskfile.yaml
     aliases: [k]
+  kyverno:
+    taskfile: ./.taskfiles/kyverno/taskfile.yaml
+    dir: "{{.KYVERNO_POLICY_DIR}}"
+    aliases: [ky]
   repo:
     taskfile: ./.taskfiles/repo/Taskfile.yaml
     aliases: [r]

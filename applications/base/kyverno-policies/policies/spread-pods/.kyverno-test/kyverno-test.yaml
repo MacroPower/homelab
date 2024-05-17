@@ -3,7 +3,7 @@ kind: Test
 metadata:
   name: spread-pods-test
 policies:
-  - ../spread-pods.yaml
+  - ../policy.yaml
 resources:
   - resource.yaml
 results:
