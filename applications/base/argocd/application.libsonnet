@@ -7,7 +7,7 @@ app.new(
 ).withChart(
   name='argo-cd',
   repoURL='https://argoproj.github.io/argo-helm',
-  targetRevision='6.7.17',
+  targetRevision='6.9.2',
   releaseName='argocd',
   values='values.yaml'
 )
