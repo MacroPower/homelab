@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='vector',
   repoURL='https://helm.vector.dev/',
-  targetRevision='0.32.1',
+  targetRevision='0.33.0',
   releaseName='vector-agent',
   values='values.yaml'
 )
