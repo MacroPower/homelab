@@ -1,10 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:recommended",
+    ":disableRateLimiting",
+    ":automergePatch",
+    ":separateMultipleMajorReleases"
   ],
-  "prHourlyLimit": 0,
-  "separateMajorMinor": false,
   "regexManagers": [
     {
       "fileMatch": [
