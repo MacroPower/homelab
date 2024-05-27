@@ -1,10 +1,5 @@
 ---
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
-
-# Taskfile: https://taskfile.dev/
-# brew install go-task/tap/go-task
-# https://taskfile.dev/integrations/
-
 version: "3"
 
 dotenv: ["{{.ROOT_DIR}}/.env", "{{.HOME}}/.env"]
