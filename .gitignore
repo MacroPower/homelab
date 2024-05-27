@@ -1,3 +1,14 @@
+.DS_Store
+
+# Binaries for programs and plugins
+dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.bin
+
 # Local .terraform directories
 **/.terraform/*
 

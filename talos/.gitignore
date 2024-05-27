@@ -1,4 +1,5 @@
 cluster/
 clusterconfig/
 knode*.home.macro.network/
+kubernetesResources/
 support.zip
