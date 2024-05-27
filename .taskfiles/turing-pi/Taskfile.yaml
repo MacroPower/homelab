@@ -1,0 +1,58 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+vars:
+  TPI_BIN_DIR: "{{.ROOT_DIR}}/.task/bin"
+  TPI_VERSION: "v1.0.5"
+  TPI_RELEASE: "x86_64-apple-darwin"
+  TPI_DOMAIN: home.macro.network
+  DOPPLER_PROJECT: nodes
+  HOST_PREFIX: turingpi
+  DOPPLER_CMD: doppler run -p {{.DOPPLER_PROJECT}}
+
+tasks:
+  install:
+    desc: Install the tpi CLI
+    cmds:
+      - mkdir -p {{.TPI_BIN_DIR}}
+      - |
+        cd {{.TPI_BIN_DIR}}
+        curl -LO https://github.com/turing-machines/tpi/releases/download/{{.TPI_VERSION}}/{{.TPI_RELEASE}}.zip
+        unzip {{.TPI_RELEASE}}.zip
+      - defer: rm {{.TPI_BIN_DIR}}/{{.TPI_RELEASE}}.zip
+      - mv {{.TPI_BIN_DIR}}/target/{{.TPI_RELEASE}}/release/tpi {{.TPI_BIN_DIR}}/tpi
+      - defer: rm -rf {{.TPI_BIN_DIR}}/target
+      - chmod +x {{.TPI_BIN_DIR}}/tpi
+
+  info:
+    desc: Show Turing Pi info
+    requires:
+      vars: [HOST_ID]
+    cmds:
+      - |-
+        {{.DOPPLER_CMD}} -c {{.HOST_PREFIX}}_{{.HOST_ID}} -- \
+          bash -c '{{.TPI_BIN_DIR}}/tpi info \
+            --host {{.HOST_PREFIX}}{{.HOST_ID}}.{{.TPI_DOMAIN}} --user=$TPI_USERNAME --password=$TPI_PASSWORD'
+
+  flash:
+    desc: Flash a Turing Pi node
+    requires:
+      vars: [HOST_ID, NODE, IMAGE_PATH]
+    cmds:
+      - |-
+        {{.DOPPLER_CMD}} -c {{.HOST_PREFIX}}_{{.HOST_ID}} -- \
+          bash -c '{{.TPI_BIN_DIR}}/tpi flash --node {{.NODE}} --image-path {{.IMAGE_PATH}} \
+            --host {{.HOST_PREFIX}}{{.HOST_ID}}.{{.TPI_DOMAIN}} --user=$TPI_USERNAME --password=$TPI_PASSWORD'
+
+  power:
+    desc: Power on/off a Turing Pi node
+    requires:
+      vars: [HOST_ID, NODE]
+    vars:
+      STATE: '{{.STATE | default "on"}}'
+    cmds:
+      - |-
+        {{.DOPPLER_CMD}} -c {{.HOST_PREFIX}}_{{.HOST_ID}} -- \
+          bash -c '{{.TPI_BIN_DIR}}/tpi power {{.STATE}} --node {{.NODE}} \
+            --host {{.HOST_PREFIX}}{{.HOST_ID}}.{{.TPI_DOMAIN}} --user=$TPI_USERNAME --password=$TPI_PASSWORD'
