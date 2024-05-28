@@ -20,6 +20,9 @@ locals {
       profile = "lab"
       dev_id  = module.unifi_common.device_types.rpi.dev_id
     }
+    k8s_node_rk1 = {
+      profile = "lab"
+    }
     k8s_node_supermicro = {
       profile = "lab"
     }
@@ -109,11 +112,16 @@ locals {
       mac  = "00:00:10:10:20:01"
       ipv4 = "10.10.20.1"
     }
-    "knode01" = {
+    "rpi01" = {
       mac     = "e4:5f:01:6e:db:a8"
-      ipv4    = "10.10.10.1"
+      ipv4    = "10.10.8.1"
       profile = local.unifi_device_types.k8s_node_rpi.profile
       dev_id  = local.unifi_device_types.k8s_node_rpi.dev_id
+    }
+    "knode01" = {
+      mac     = "7a:c0:a9:f4:7d:47"
+      ipv4    = "10.10.10.1"
+      profile = local.unifi_device_types.k8s_node_rk1.profile
     }
     "knode02" = {
       mac     = "e4:5f:01:6e:ce:7e"
