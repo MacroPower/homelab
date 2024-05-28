@@ -2,7 +2,7 @@ nameOverride: prowlarr
 
 image:
   repository: linuxserver/prowlarr
-  tag: 0.4.7-develop
+  tag: 0.4.11-develop
 
 configSecretName: prowlarr-config
 
