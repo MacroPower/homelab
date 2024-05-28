@@ -167,6 +167,12 @@ controlPlane:
         proxy:
           # Replaced by Cillium.
           disabled: true
+    - |-
+      cluster:
+        apiServer:
+          extraArgs:
+            max-mutating-requests-inflight: 50
+            max-requests-inflight: 100
     - &machineKubelet |-
       machine:
         kubelet:
