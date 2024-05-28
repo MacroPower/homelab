@@ -21,26 +21,12 @@ spec:
         ##
         - peerAddress: "10.1.0.1/32"
           peerASN: 64512
-          # authSecretRef: "bgp-password"
+          eBGPMultihopTTL: 1
+        - peerAddress: "10.10.0.1/32"
+          peerASN: 64512
           eBGPMultihopTTL: 1
       serviceSelector:
         matchExpressions:
           - key: bgp.kubernetes.macro.network/peer_group
             operator: In
             values: [cbgp]
-
----
-apiVersion: external-secrets.io/v1beta1
-kind: ExternalSecret
-metadata:
-  name: bgp-password
-spec:
-  secretStoreRef:
-    kind: ClusterSecretStore
-    name: default
-  target:
-    name: bgp-password
-  data:
-    - secretKey: password
-      remoteRef:
-        key: CILIUM_BGP_PASSWORD
