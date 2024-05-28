@@ -10,7 +10,8 @@ app.new(
   repoURL='https://kubernetes-sigs.github.io/external-dns',
   targetRevision='1.14.4',
   releaseName='external-dns-adguard-1',
-  values='../external-dns-adguard/values.yaml'
+  values='../external-dns-adguard/values.yaml',
+  skipCrds=true,
 ).withChartValues(|||
   provider:
     name: webhook
