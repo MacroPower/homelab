@@ -5,8 +5,12 @@ app.new(
   name='kyverno-policies',
   path='applications/base/kyverno-policies',
   namespace=ns.metadata.name,
-  annotations={
-    'argocd.argoproj.io/hook': 'PreSync',
-  },
   renderer='kustomize',
-)
+).withIgnoreDifferences([{
+  'group': 'kyverno.io',
+  'kind': 'ClusterPolicy',
+  'jsonPointers': [
+    '/status/autogen',
+    '/metadata/resourceVersion',
+  ],
+}])
