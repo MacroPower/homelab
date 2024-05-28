@@ -7,8 +7,9 @@ vars:
   TPI_VERSION: "v1.0.5"
   TPI_RELEASE: "x86_64-apple-darwin"
   TPI_DOMAIN: home.macro.network
+  TPI_HOST_PREFIX: turingpi
+  TPI_AUTH_ARGS: "--user=$TPI_USERNAME --password=$TPI_PASSWORD"
   DOPPLER_PROJECT: nodes
-  HOST_PREFIX: turingpi
   DOPPLER_CMD: doppler run -p {{.DOPPLER_PROJECT}}
 
 tasks:
@@ -28,31 +29,123 @@ tasks:
   info:
     desc: Show Turing Pi info
     requires:
-      vars: [HOST_ID]
+      vars: [TPI_HOST]
+    vars:
+      TPI_HOST: &tpiHost '{{printf "%02d" (int .TPI_HOST)}}'
     cmds:
       - |-
-        {{.DOPPLER_CMD}} -c {{.HOST_PREFIX}}_{{.HOST_ID}} -- \
+        {{.DOPPLER_CMD}} -c {{.TPI_HOST_PREFIX}}_{{.TPI_HOST}} -- \
           bash -c '{{.TPI_BIN_DIR}}/tpi info \
-            --host {{.HOST_PREFIX}}{{.HOST_ID}}.{{.TPI_DOMAIN}} --user=$TPI_USERNAME --password=$TPI_PASSWORD'
+            --host {{.TPI_HOST_PREFIX}}{{.TPI_HOST}}.{{.TPI_DOMAIN}} {{.TPI_AUTH_ARGS}}'
 
   flash:
     desc: Flash a Turing Pi node
+    summary: |
+      Args:
+        TPI_HOST: Turing Pi host (required: 1-3)
+        TPI_NODE: Turing Pi node (required: 1-4)
+        IMAGE_PATH: Path to the image file (required)
     requires:
-      vars: [HOST_ID, NODE, IMAGE_PATH]
+      vars: [TPI_HOST, TPI_NODE, IMAGE_PATH]
+    vars:
+      TPI_HOST: *tpiHost
     cmds:
       - |-
-        {{.DOPPLER_CMD}} -c {{.HOST_PREFIX}}_{{.HOST_ID}} -- \
-          bash -c '{{.TPI_BIN_DIR}}/tpi flash --node {{.NODE}} --image-path {{.IMAGE_PATH}} \
-            --host {{.HOST_PREFIX}}{{.HOST_ID}}.{{.TPI_DOMAIN}} --user=$TPI_USERNAME --password=$TPI_PASSWORD'
+        {{.DOPPLER_CMD}} -c {{.TPI_HOST_PREFIX}}_{{.TPI_HOST}} -- \
+          bash -c '{{.TPI_BIN_DIR}}/tpi flash --node {{.TPI_NODE}} --image-path {{.IMAGE_PATH}} \
+            --host {{.TPI_HOST_PREFIX}}{{.TPI_HOST}}.{{.TPI_DOMAIN}} {{.TPI_AUTH_ARGS}}'
 
   power:
     desc: Power on/off a Turing Pi node
+    summary: |
+      Args:
+        TPI_HOST: Turing Pi host (required: 1-3)
+        TPI_NODE: Turing Pi node (required: 1-4)
+        STATE: Power state (default: on)
     requires:
-      vars: [HOST_ID, NODE]
+      vars: [TPI_HOST, TPI_NODE]
     vars:
+      TPI_HOST: *tpiHost
       STATE: '{{.STATE | default "on"}}'
     cmds:
       - |-
-        {{.DOPPLER_CMD}} -c {{.HOST_PREFIX}}_{{.HOST_ID}} -- \
-          bash -c '{{.TPI_BIN_DIR}}/tpi power {{.STATE}} --node {{.NODE}} \
-            --host {{.HOST_PREFIX}}{{.HOST_ID}}.{{.TPI_DOMAIN}} --user=$TPI_USERNAME --password=$TPI_PASSWORD'
+        {{.DOPPLER_CMD}} -c {{.TPI_HOST_PREFIX}}_{{.TPI_HOST}} -- \
+          bash -c '{{.TPI_BIN_DIR}}/tpi power {{.STATE}} --node {{.TPI_NODE}} \
+            --host {{.TPI_HOST_PREFIX}}{{.TPI_HOST}}.{{.TPI_DOMAIN}} {{.TPI_AUTH_ARGS}}'
+
+  uart:get:
+    desc: Read over UART
+    summary: |
+      Args:
+        TPI_HOST: Turing Pi host (required: 1-3)
+        TPI_NODE: Turing Pi node (required: 1-4)
+    requires:
+      vars: [TPI_HOST, TPI_NODE]
+    vars:
+      TPI_HOST: *tpiHost
+      ACTION: '{{.ACTION | default "get"}}'
+    cmds:
+      - |-
+        {{.DOPPLER_CMD}} -c {{.TPI_HOST_PREFIX}}_{{.TPI_HOST}} -- \
+          bash -c '{{.TPI_BIN_DIR}}/tpi uart get --node {{.TPI_NODE}} \
+            --host {{.TPI_HOST_PREFIX}}{{.TPI_HOST}}.{{.TPI_DOMAIN}} {{.TPI_AUTH_ARGS}}'
+
+  uart:set:
+    desc: Write over UART
+    summary: |
+      Args:
+        TPI_HOST: Turing Pi host (required: 1-3)
+        TPI_NODE: Turing Pi node (required: 1-4)
+        CMD: Command to write (required)
+    requires:
+      vars: [TPI_HOST, TPI_NODE, CMD]
+    vars:
+      TPI_HOST: *tpiHost
+    cmds:
+      - |-
+        {{.DOPPLER_CMD}} -c {{.TPI_HOST_PREFIX}}_{{.TPI_HOST}} -- \
+          bash -c '{{.TPI_BIN_DIR}}/tpi uart set --cmd='"'"'{{.CMD}}'"'"' --node {{.TPI_NODE}} \
+            --host {{.TPI_HOST_PREFIX}}{{.TPI_HOST}}.{{.TPI_DOMAIN}} {{.TPI_AUTH_ARGS}}'
+
+  boot-target:
+    desc: Boot using a specific target device
+    summary: |
+      Boot using a specific target, e.g. an NVMe, eMMC, USB, or SATA device.
+
+      Args:
+        TPI_HOST: Turing Pi host (required: 1-3)
+        TPI_NODE: Turing Pi node (required: 1-4)
+        TARGET: Boot target (default: mmc0)
+    requires:
+      vars: [TPI_HOST, TPI_NODE]
+    vars:
+      TPI_HOST: *tpiHost
+      TARGET: '{{.TARGET | default "mmc0"}}'
+    prompt: "Boot {{.TPI_HOST_PREFIX}}{{.TPI_HOST}} node {{.TPI_NODE}} to {{.TARGET}}?"
+    cmds:
+      - task: power
+        vars: { TPI_HOST: "{{.TPI_HOST}}", TPI_NODE: "{{.TPI_NODE}}", STATE: "off" }
+      - task: power
+        vars: { TPI_HOST: "{{.TPI_HOST}}", TPI_NODE: "{{.TPI_NODE}}", STATE: "on" }
+      - cmd: sleep 3
+      - task: uart:set
+        vars: { TPI_HOST: "{{.TPI_HOST}}", TPI_NODE: "{{.TPI_NODE}}", CMD: 'a' }
+      - task: uart:get
+        vars: { TPI_HOST: "{{.TPI_HOST}}", TPI_NODE: "{{.TPI_NODE}}" }
+      - task: uart:set
+        vars: { TPI_HOST: "{{.TPI_HOST}}", TPI_NODE: "{{.TPI_NODE}}", CMD: 'setenv boot_targets "{{.TARGET}}"' }
+      - task: uart:get
+        vars: { TPI_HOST: "{{.TPI_HOST}}", TPI_NODE: "{{.TPI_NODE}}" }
+      - task: uart:boot
+        vars: { TPI_HOST: "{{.TPI_HOST}}", TPI_NODE: "{{.TPI_NODE}}" }
+
+  uart:boot:
+    internal: true
+    requires:
+      vars: [TPI_HOST, TPI_NODE]
+    vars:
+      TPI_HOST: *tpiHost
+    prompt: "Would you like to issue a boot command?"
+    cmds:
+      - task: uart:set
+        vars: { TPI_HOST: "{{.TPI_HOST}}", TPI_NODE: "{{.TPI_NODE}}", CMD: 'boot' }

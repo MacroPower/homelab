@@ -8,6 +8,8 @@ dist/
 *.so
 *.dylib
 *.bin
+*.img
+*.xz
 
 # Local .terraform directories
 **/.terraform/*
