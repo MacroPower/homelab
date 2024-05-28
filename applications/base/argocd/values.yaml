@@ -13,6 +13,11 @@ configs:
     application.resourceTrackingMethod: annotation
     kustomize.buildOptions: --enable-helm --load-restrictor LoadRestrictionsNone
 
+    ## Use existing system-level ignoreDifferences customizations to ignore
+    ## resource updates.
+    resource.compareoptions: |
+      ignoreDifferencesOnResourceUpdates: true
+
     ## Dex configuration for Authentik
     ## Ref: https://docs.goauthentik.io/integrations/services/argocd/#argocd-configuration
     ## Ref: https://dexidp.io/docs/connectors/oauth/
