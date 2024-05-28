@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='jaeger-operator',
   repoURL='https://jaegertracing.github.io/helm-charts',
-  targetRevision='2.53.0',
+  targetRevision='2.54.0',
   releaseName='jaeger-operator',
   values='values.yaml'
 )
