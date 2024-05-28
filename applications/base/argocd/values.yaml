@@ -68,6 +68,12 @@ configs:
           - ClusterBackgroundScanReport
         clusters:
           - '*'
+      - apiGroups:
+          - aquasecurity.github.io
+        kinds:
+          - "*"
+        clusters:
+          - "*"
     resource.customizations: |
       "*.upbound.io/*":
         health.lua: |
