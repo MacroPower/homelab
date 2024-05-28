@@ -17,10 +17,7 @@
         namespace: namespace,
       },
       syncPolicy: {
-        automated: {
-          prune: true,
-          selfHeal: true,
-        },
+        automated: {},
         syncOptions: [
           'ServerSideApply=true',
         ] + syncOptions,
