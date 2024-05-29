@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='timescaledb-single',
   repoURL='https://charts.timescale.com',
-  targetRevision='0.17.0',
+  targetRevision='0.33.1',
   releaseName='timescaledb-single',
   values='values.yaml'
 )
