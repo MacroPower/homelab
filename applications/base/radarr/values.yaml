@@ -2,7 +2,7 @@ nameOverride: radarr
 
 image:
   repository: linuxserver/radarr
-  tag: 4.2.4
+  tag: 4.7.5
 
 configSecretName: radarr-config
 
