@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='kyverno',
   repoURL='https://kyverno.github.io/kyverno/',
-  targetRevision='3.2.3',
+  targetRevision='3.2.4',
   releaseName='kyverno',
   values='values.yaml'
 )
