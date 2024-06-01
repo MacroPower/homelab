@@ -2,18 +2,27 @@ master:
   replicaCount: 2
   resources:
     requests:
-      cpu: 50m
+      cpu: 10m
+      memory: 150Mi
+    limits:
+      cpu: 100m
       memory: 150Mi
 
 worker:
   resources:
     requests:
-      cpu: 50m
+      cpu: 10m
+      memory: 150Mi
+    limits:
+      cpu: 100m
       memory: 150Mi
 
 gc:
   replicaCount: 2
   resources:
     requests:
-      cpu: 50m
+      cpu: 10m
+      memory: 150Mi
+    limits:
+      cpu: 100m
       memory: 150Mi
