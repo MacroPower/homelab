@@ -2,8 +2,8 @@ locals {
   wifi_prefix = "UNIFI-W${var.site_code}"
 
   wifi_nets = {
-    for k, v in merge(local.lans, local.lans_unrestricted) : k => v
-    if v.wifi == true
+    for k, v in local.lans_all : k => v
+    if lookup(v, "wifi", false) == true
   }
 }
 

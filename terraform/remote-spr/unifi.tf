@@ -42,7 +42,7 @@ locals {
     main = {
       name          = "Main"
       id            = 101
-      type          = "unrestricted"
+      type          = "trusted"
       wifi          = true
       wifi_profile  = "compatability"
       multicast_dns = true
@@ -51,6 +51,7 @@ locals {
       name          = "Guest"
       id            = 102
       purpose       = "guest"
+      type          = "isolated"
       wifi_profile  = "compatability"
       multicast_dns = true
     }

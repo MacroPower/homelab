@@ -196,7 +196,7 @@ locals {
     main = {
       name          = "Main"
       id            = 1
-      type          = "unrestricted"
+      type          = "trusted"
       wifi          = true
       multicast_dns = true
       dns = [
@@ -211,16 +211,19 @@ locals {
       name          = "Guest"
       id            = 2
       purpose       = "guest"
+      type          = "isolated"
       multicast_dns = true
     }
     wfh = {
       name = "WFH"
       id   = 3
+      type = "isolated"
       wifi = true
     }
     vpn = {
       name         = "VPN"
       id           = 4
+      type         = "isolated"
       wifi         = true
       disable_ipv6 = true
     }
@@ -229,8 +232,11 @@ locals {
       id   = 9
     }
     lab = {
-      name = "Lab"
-      id   = 10
+      name          = "Lab"
+      id            = 10
+      allow_ingress = [
+        "lab_management",
+      ]
     }
     iot = {
       name          = "IoT"
@@ -238,6 +244,9 @@ locals {
       wifi          = true
       wifi_profile  = "compatability"
       multicast_dns = true
+      allow_ingress = [
+        "lab",
+      ]
     }
     # k8s_seedbox_vpn = {
     #   name = "seedbox VPN"
@@ -298,6 +307,14 @@ module "unifi" {
 
   clients  = local.unifi_clients
   networks = local.unifi_networks
+
+  firewall_exceptions = {
+    adguard_home = {
+      name = "Adguard Home"
+      id   = 1
+      ipv4 = "10.10.30.1"
+    }
+  }
 }
 
 resource "unifi_device" "agg0101" {

@@ -1,17 +1,23 @@
 locals {
   default_lan = { default = { name = "Default", id = var.default_network_id } }
-  lans = {
+  lans_untrusted = {
     for k, v in var.networks : k => v
-    if v.type == "restricted" || v.type == null
+    if v.type == "untrusted" || v.type == null
   }
-  lans_unrestricted = {
+  lans_isolated = {
     for k, v in var.networks : k => v
-    if v.type == "unrestricted"
+    if v.type == "isolated"
+  }
+  lans_trusted = {
+    for k, v in var.networks : k => v
+    if v.type == "trusted"
   }
   lans_reservation = {
     for k, v in var.networks : k => v
     if v.type == "reservation"
   }
+  lans_physical = merge(local.lans_untrusted, local.lans_isolated, local.lans_trusted)
+  lans_all      = merge(local.lans_untrusted, local.lans_isolated, local.lans_trusted, local.lans_reservation, local.default_lan)
 }
 
 resource "unifi_network" "lan_default" {
@@ -46,7 +52,7 @@ resource "unifi_network" "lan_default" {
 }
 
 resource "unifi_network" "lan" {
-  for_each = merge(local.lans, local.lans_unrestricted)
+  for_each = local.lans_physical
 
   name    = each.value.name
   purpose = each.value.purpose != null ? each.value.purpose : "corporate"
@@ -105,7 +111,7 @@ resource "unifi_network" "lan_reservation" {
 }
 
 resource "unifi_port_profile" "lan" {
-  for_each = merge(local.lans, local.lans_unrestricted)
+  for_each = local.lans_physical
 
   name                  = each.value.name
   native_networkconf_id = unifi_network.lan[each.key].id

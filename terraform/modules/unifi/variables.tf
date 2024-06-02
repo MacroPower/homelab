@@ -32,7 +32,7 @@ variable "networks" {
   type = map(object({
     name          = string
     id            = number
-    type          = optional(string) // null (restricted) or "unrestricted" or "reservation"
+    type          = optional(string) // null (untrusted) or "isolated" or "trusted" or "reservation"
     mask          = optional(number) // null (16) or 8-30
     purpose       = optional(string) // null (corperate) or "guest"
     wifi          = optional(bool)   // null (false) or true
@@ -41,10 +41,21 @@ variable "networks" {
     disable_ipv6  = optional(bool)   // null (false) or true
     dns           = optional(list(string))
     dns_v6        = optional(list(string))
+    allow_ingress = optional(list(string))
   }))
 }
 
 variable "default_network_id" {
   type    = number
   default = 0
+}
+
+variable "firewall_exceptions" {
+  type    = map(object({
+    name = string
+    id   = number
+    ipv4 = optional(string)
+    ipv6 = optional(string)
+  }))
+  default = {}
 }
