@@ -74,6 +74,12 @@ configs:
           - "*"
         clusters:
           - "*"
+      - apiGroups:
+          - wgpolicyk8s.io
+        kinds:
+          - PolicyReport
+        clusters:
+          - "*"
     resource.customizations: |
       "*.upbound.io/*":
         health.lua: |
