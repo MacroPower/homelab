@@ -7,7 +7,7 @@ spec:
     matchLabels:
       dashboards: grafana
   datasource:
-    name: grafanacloud-tempo
+    name: zz-grafanacloud-tempo
     type: tempo
     access: proxy
     url: https://tempo-us-central1.grafana.net/tempo

@@ -7,7 +7,7 @@ spec:
     matchLabels:
       dashboards: grafana
   datasource:
-    name: grafanacloud-usage
+    name: zz-grafanacloud-usage
     type: prometheus
     access: proxy
     url: https://billing.grafana.net/api/prom

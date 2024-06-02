@@ -7,7 +7,7 @@ spec:
     matchLabels:
       dashboards: grafana
   datasource:
-    name: grafanacloud-loki
+    name: zz-grafanacloud-loki
     type: loki
     access: proxy
     url: https://logs-prod-us-central1.grafana.net
