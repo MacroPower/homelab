@@ -1,34 +1,47 @@
 schedule: "*/10 * * * *"
 
 deschedulerPolicy:
-  strategies:
-    RemoveDuplicates:
-      enabled: true
-    RemovePodsHavingTooManyRestarts:
-      enabled: false
-    RemovePodsViolatingNodeTaints:
-      enabled: true
-    RemovePodsViolatingNodeAffinity:
-      enabled: true
-      params:
-        nodeAffinityType:
-          - requiredDuringSchedulingIgnoredDuringExecution
-    RemovePodsViolatingInterPodAntiAffinity:
-      enabled: true
-    RemovePodsViolatingTopologySpreadConstraint:
-      enabled: true
-      params:
-        includeSoftConstraints: true
-    LowNodeUtilization:
-      enabled: true
-      params:
-        nodeResourceUtilizationThresholds:
-          thresholds:
-            cpu: 30
-            memory: 30
-          targetThresholds:
-            cpu: 80
-            memory: 80
+  profiles:
+    - name: default
+      pluginConfig:
+        - name: DefaultEvictor
+          args:
+            ignorePvcPods: false
+            evictLocalStoragePods: true
+        - name: RemoveDuplicates
+        - name: RemovePodsHavingTooManyRestarts
+          args:
+            podRestartThreshold: 100
+            includingInitContainers: true
+        - name: RemovePodsViolatingNodeAffinity
+          args:
+            nodeAffinityType:
+              - requiredDuringSchedulingIgnoredDuringExecution
+        - name: RemovePodsViolatingNodeTaints
+        - name: RemovePodsViolatingInterPodAntiAffinity
+        - name: RemovePodsViolatingTopologySpreadConstraint
+        - name: LowNodeUtilization
+          args:
+            thresholds:
+              cpu: 20
+              memory: 20
+              pods: 20
+            targetThresholds:
+              cpu: 50
+              memory: 50
+              pods: 50
+      plugins:
+        balance:
+          enabled:
+            - RemoveDuplicates
+            - RemovePodsViolatingTopologySpreadConstraint
+            - LowNodeUtilization
+        deschedule:
+          enabled:
+            - RemovePodsHavingTooManyRestarts
+            - RemovePodsViolatingNodeTaints
+            - RemovePodsViolatingNodeAffinity
+            - RemovePodsViolatingInterPodAntiAffinity
 
 resources:
   requests:
