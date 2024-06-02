@@ -1,13 +1,16 @@
 {
-  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.10.7/.schema/devbox.schema.json",
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.11.0/.schema/devbox.schema.json",
   "packages": [
     "github:budimanjojo/talhelper",
-    "argocd@2.11.0",
-    "doppler@3.68.0",
-    "go-task@3.37.2",
-    "kyverno@1.12.1",
+    "argocd@latest",
+    "cilium-cli@latest",
+    "doppler@latest",
+    "go-task@latest",
+    "kubeconform@latest",
+    "kyverno@latest",
+    "nodePackages.prettier@latest",
     "talosctl@1.7.2",
-    "terraform@1.8.4"
+    "terraform@latest"
   ],
   "shell": {
     "init_hook": [

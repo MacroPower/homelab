@@ -63,3 +63,6 @@ spec.json
 # Python
 env/
 venv/
+
+# Brew
+Brewfile.lock.json
