@@ -34,6 +34,8 @@ cephClusterSpec:
         enabled: true
       - name: rook
         enabled: true
+      - name: prometheus
+        enabled: true
   storage:
     useAllNodes: false
     useAllDevices: false
