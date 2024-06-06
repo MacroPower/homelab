@@ -25,6 +25,7 @@ cephClusterSpec:
     enabled: true
     urlPrefix: /
     ssl: false
+    prometheusEndpoint: http://prometheus-operated.prometheus.svc:9090
   mgr:
     modules:
       - name: pg_autoscaler
