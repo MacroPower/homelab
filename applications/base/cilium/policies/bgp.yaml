@@ -22,9 +22,6 @@ spec:
         - peerAddress: "10.1.0.1/32"
           peerASN: 64512
           eBGPMultihopTTL: 1
-        - peerAddress: "10.10.0.1/32"
-          peerASN: 64512
-          eBGPMultihopTTL: 1
       serviceSelector:
         matchExpressions:
           - key: bgp.kubernetes.macro.network/peer_group
