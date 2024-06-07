@@ -2,7 +2,7 @@
 apiVersion: objectbucket.io/v1alpha1
 kind: ObjectBucketClaim
 metadata:
-  name: scb-bucket
+  name: securecodebox-bucket
 spec:
   bucketName: securecodebox
   storageClassName: ceph-bucket

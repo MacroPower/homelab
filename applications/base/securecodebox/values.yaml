@@ -9,7 +9,7 @@ s3:
   bucket: securecodebox
   port: '"80"'
   authType: access-secret-key
-  keySecret: scb-bucket
+  keySecret: securecodebox-bucket
   secretAttributeNames:
     accesskey: AWS_ACCESS_KEY_ID
     secretkey: AWS_SECRET_ACCESS_KEY
