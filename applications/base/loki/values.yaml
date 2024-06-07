@@ -43,12 +43,12 @@ loki:
     max_outstanding_requests_per_tenant: 4096
   storage:
     bucketNames:
-      chunks: ${BUCKET_NAME}
+      chunks: "${BUCKET_NAME:-REPLACED_BY_ENV}"
     type: s3
     s3:
-      endpoint: ${BUCKET_HOST}
-      accessKeyId: ${AWS_ACCESS_KEY_ID}
-      secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
+      endpoint: "${BUCKET_HOST:-REPLACED_BY_ENV}"
+      accessKeyId: "${AWS_ACCESS_KEY_ID:-REPLACED_BY_ENV}"
+      secretAccessKey: "${AWS_SECRET_ACCESS_KEY:-REPLACED_BY_ENV}"
       insecure: true
       s3ForcePathStyle: true
   schemaConfig:
