@@ -158,6 +158,7 @@ cephObjectStores:
           codingChunks: 1
       preservePoolsOnDelete: true
       gateway:
+        hostNetwork: false
         port: 80
         resources:
           requests:
