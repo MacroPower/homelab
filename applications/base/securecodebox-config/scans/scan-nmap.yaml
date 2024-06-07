@@ -23,19 +23,21 @@ spec:
         spec:
           interval: 6h
           scanSpec:
-            scanType: "nmap"
+            scanType: "nmap-privileged"
             parameters:
+              - "--privileged"
+              - "--reason"
+              - "--script=safe"
               - "-p1-65535" # --- Scan all ports
-              - "-T4" # --------- Timing, 0-5, higher is faster.
-              - "-sC" # --------- Run default nmap scripts
+              - "-T3" # --------- Timing, 0-5, higher is faster.
               - "-sV" # --------- Probe open ports to determine service/version info
               - "-Pn" # --------- No ping
-              - "-6" # ---------- Enable IPv6
+              # - "-6" # ---------- Enable IPv6
               - "-sS" # --------- TCP SYN scan
-              - "-sT" # --------- TCP Connect() scan
-              - "-sA" # --------- TCP ACK scan
-              - "-sW" # --------- TCP Window scan
-              - "-sM" # --------- TCP Maimon scan
+              # - "-sT" # --------- TCP Connect() scan
+              # - "-sA" # --------- TCP ACK scan
+              # - "-sW" # --------- TCP Window scan
+              # - "-sM" # --------- TCP Maimon scan
               - "-sU" # --------- UDP scan
               - "{{ matrix.config.data.SECURECODEBOX_SEEDBOX_IP | b64decode }}"
           successfulJobsHistoryLimit: 3
