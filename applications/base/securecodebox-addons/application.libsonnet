@@ -24,6 +24,12 @@ app.new(
   releaseName='securecodebox-nmap',
   values='values-nmap.yaml'
 ).withChart(
+  name='nmap',
+  repoURL='https://charts.securecodebox.io/',
+  targetRevision='4.5.0',
+  releaseName='securecodebox-nmap-privileged',
+  values='values-nmap-privileged.yaml'
+).withChart(
   name='nuclei',
   repoURL='https://charts.securecodebox.io/',
   targetRevision='4.5.0',
