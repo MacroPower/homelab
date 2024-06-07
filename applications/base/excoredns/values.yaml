@@ -1,0 +1,112 @@
+# Delegated domain
+domain: "home.macro.network"
+
+# Resources (CPU, memory etc)
+resources:
+  limits:
+    memory: 170Mi
+  requests:
+    cpu: 100m
+    memory: 170Mi
+
+# env:
+#   - name: GOMEMLIMIT
+#     value: 161MiB
+
+# Limit what kind of resources to watch, e.g. watchedResources: ["Ingress"]
+watchedResources: ["Ingress"]
+
+# Enabled fallthrough for k8s_gateway
+fallthrough:
+  enabled: false
+  zones: []
+
+# Optional plugins that will be enabled in the zone, e.g. "forward . /etc/resolve.conf"
+extraZonePlugins:
+  - name: log
+  - name: errors
+  # Serves a /health endpoint on :8080, required for livenessProbe
+  - name: health
+    configBlock: |-
+      lameduck 5s
+  # Serves a /ready endpoint on :8181, required for readinessProbe
+  - name: ready
+  # Serves a /metrics endpoint on :9153, required for serviceMonitor
+  - name: prometheus
+    parameters: 0.0.0.0:9153
+  # - name: forward
+  #   parameters: . /etc/resolv.conf
+  - name: loop
+  - name: reload
+  - name: loadbalance
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+service:
+  type: ClusterIP
+  clusterIP: 10.112.0.11
+  port: 53
+  # ipFamilyPolicy: RequireDualStack
+  useTcp: true
+
+nodeSelector: {}
+
+tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/control-plane
+    operator: Exists
+  - effect: NoSchedule
+    key: node.cloudprovider.kubernetes.io/uninitialized
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+
+topologySpreadConstraints:
+  - labelSelector:
+      matchLabels:
+        app.kubernetes.io/instance: excoredns
+        app.kubernetes.io/name: k8s-gateway
+    matchLabelKeys:
+      - pod-template-hash
+    maxSkew: 1
+    minDomains: 2
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: DoNotSchedule
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/instance: excoredns
+              app.kubernetes.io/name: k8s-gateway
+          topologyKey: kubernetes.io/hostname
+        weight: 100
+
+replicaCount: 2
+
+priorityClassName: "system-cluster-critical"
+
+debug:
+  enabled: false
+
+zoneFiles: []
+#    - filename: example.db
+#      # Optional
+#      domains: example.com
+#      contents: |
+#        example.com.   IN SOA sns.dns.icann.com. noc.dns.icann.com. 2015082541 7200 3600 1209600 3600
+#        example.com.   IN NS  b.iana-servers.net.
+#        example.com.   IN NS  a.iana-servers.net.
+#        example.com.   IN A   192.168.99.102
+#        *.example.com. IN A   192.168.99.102
