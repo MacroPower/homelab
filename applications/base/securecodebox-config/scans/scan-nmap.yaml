@@ -21,13 +21,14 @@ spec:
         metadata:
           name: "seedbox-public-nmap"
         spec:
-          interval: 6h
+          interval: 24h
           scanSpec:
             scanType: "nmap-privileged"
             parameters:
               - "--privileged"
               - "--reason"
               - "--script=safe"
+              - "-v"
               - "-p1-65535" # --- Scan all ports
               - "-T3" # --------- Timing, 0-5, higher is faster.
               - "-sV" # --------- Probe open ports to determine service/version info
