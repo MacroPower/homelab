@@ -2,8 +2,9 @@ deployment:
   kind: Deployment
   replicas: 3
 
-image:
-  tag: v3.0.0-rc5
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1
 
 additionalArguments:
   - --serverstransport.insecureskipverify=true
@@ -65,16 +66,52 @@ tlsOptions:
     clientAuth: {}
     minVersion: VersionTLS12
 
-tracing:
-  opentelemetry:
-    address: main-collector.opentelemetry.svc:4317
-    grpc: true
-    insecure: true
+logs:
+  general:
+    # -- Set [logs format](https://doc.traefik.io/traefik/observability/logs/#format)
+    # @default common
+    format: json
+    # By default, the level is set to ERROR.
+    # -- Alternative logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
+    level: INFO
+  access:
+    # -- To enable access logs
+    enabled: true
+    # -- Set [access log format](https://doc.traefik.io/traefik/observability/access-logs/#format)
+    format: json
+    # filePath: "/var/log/traefik/access.log
+    # -- Set [bufferingSize](https://doc.traefik.io/traefik/observability/access-logs/#bufferingsize)
+    bufferingSize:
+    # -- Set [filtering](https://docs.traefik.io/observability/access-logs/#filtering)
+    filters:
+      statuscodes: "500-599"
+      retryattempts: true
+      minduration: 10s
+    # -- Enables accessLogs for internal resources. Default: false.
+    addInternals: false
+    fields:
+      general:
+        # -- Available modes: keep, drop, redact.
+        defaultmode: keep
+        # -- Names of the fields to limit.
+        names: {}
+        ## Examples:
+        # ClientUsername: drop
+      # -- [Limit logged fields or headers](https://doc.traefik.io/traefik/observability/access-logs/#limiting-the-fieldsincluding-headers)
+      headers:
+        # -- Available modes: keep, drop, redact.
+        defaultmode: drop
+        names: {}
 
-env:
-  - name: HOST_IP
-    valueFrom:
-      fieldRef:
-        fieldPath: status.hostIP
-  - name: TRAEFIK_TRACING_OPENTELEMETRY_ADDRESS
-    value: "$(HOST_IP):4317"
+## Tracing
+# -- https://doc.traefik.io/traefik/observability/tracing/overview/
+tracing:
+  # -- Enables tracing for internal resources. Default: false.
+  addInternals: true
+  otlp:
+    # -- See https://doc.traefik.io/traefik/v3.0/observability/tracing/opentelemetry/
+    enabled: true
+    grpc:
+      enabled: true
+      endpoint: main-collector.opentelemetry.svc:4317
+      insecure: true
