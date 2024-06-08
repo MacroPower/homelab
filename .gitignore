@@ -1,4 +1,6 @@
+# Temp/system files
 .DS_Store
+*.bkp
 
 # Binaries for programs and plugins
 dist/
