@@ -16,7 +16,6 @@
   import 'external-secrets/application.libsonnet',
   import 'external-services/application.libsonnet',
   import 'gadget/application.libsonnet',
-  import 'goldilocks/application.libsonnet',
   import 'grafana-operator/application.libsonnet',
   import 'grafana/application.libsonnet',
   import 'harbor/application.libsonnet',
