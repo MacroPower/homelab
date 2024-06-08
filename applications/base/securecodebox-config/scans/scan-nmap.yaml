@@ -39,7 +39,7 @@ spec:
               # - "-sA" # --------- TCP ACK scan
               # - "-sW" # --------- TCP Window scan
               # - "-sM" # --------- TCP Maimon scan
-              - "-sU" # --------- UDP scan
+              # - "-sU" # --------- UDP scan
               - "{{ matrix.config.data.SECURECODEBOX_SEEDBOX_IP | b64decode }}"
           successfulJobsHistoryLimit: 3
           failedJobsHistoryLimit: 5
