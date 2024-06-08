@@ -248,17 +248,22 @@ locals {
         "lab",
       ]
     }
-    # k8s_seedbox_vpn = {
-    #   name = "seedbox VPN"
-    #   id   = 43
-    #   mask = 16
-    #   type = "reservation"
-    # }
+    k8s_seedbox_services = {
+      name = "seedbox Services"
+      id   = 43
+      mask = 16
+      type = "remote"
+      allow_ingress = [
+        "lab",
+      ]
+    }
     k8s_services = {
-      name = "home Services"
-      id   = 112
-      mask = 12
-      type = "reservation"
+      name            = "home Services"
+      id              = 112
+      mask            = 12
+      type            = "isolated"
+      disable_ipv6_ra = true
+      disable_dhcp    = true
     }
     k8s_pods = {
       name = "home Pods"

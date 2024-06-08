@@ -16,8 +16,12 @@ locals {
     for k, v in var.networks : k => v
     if v.type == "reservation"
   }
+  lans_remote = {
+    for k, v in var.networks : k => v
+    if v.type == "remote"
+  }
   lans_physical = merge(local.lans_untrusted, local.lans_isolated, local.lans_trusted)
-  lans_all      = merge(local.lans_untrusted, local.lans_isolated, local.lans_trusted, local.lans_reservation, local.default_lan)
+  lans_all      = merge(local.lans_untrusted, local.lans_isolated, local.lans_trusted, local.lans_reservation, local.lans_remote, local.default_lan)
 }
 
 resource "unifi_network" "lan_default" {
@@ -62,10 +66,10 @@ resource "unifi_network" "lan" {
   multicast_dns = each.value.multicast_dns != null ? each.value.multicast_dns : false
   vlan_id       = (1000 + each.value.id)
 
-  dhcp_enabled    = true
+  dhcp_enabled    = each.value.disable_dhcp != null ? !each.value.disable_dhcp : true
   dhcp_start      = "10.${each.value.id}.128.2"
   dhcp_stop       = "10.${each.value.id}.255.254"
-  dhcp_v6_enabled = true
+  dhcp_v6_enabled = each.value.disable_dhcp != null ? !each.value.disable_dhcp : true
   dhcp_v6_start   = "::2"
   dhcp_v6_stop    = "::7d1"
 
@@ -74,7 +78,7 @@ resource "unifi_network" "lan" {
   ipv6_pd_interface      = "wan"
   ipv6_pd_start          = "::2"
   ipv6_pd_stop           = "::7d1"
-  ipv6_ra_enable         = true
+  ipv6_ra_enable         = each.value.disable_ipv6_ra != null ? !each.value.disable_ipv6_ra : true
   ipv6_ra_priority       = "high"
   ipv6_ra_valid_lifetime = 0
 

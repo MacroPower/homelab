@@ -30,18 +30,20 @@ variable "clients" {
 
 variable "networks" {
   type = map(object({
-    name          = string
-    id            = number
-    type          = optional(string) // null (untrusted) or "isolated" or "trusted" or "reservation"
-    mask          = optional(number) // null (16) or 8-30
-    purpose       = optional(string) // null (corperate) or "guest"
-    wifi          = optional(bool)   // null (false) or true
-    wifi_profile  = optional(string) // null (performance) or "compatibility"
-    multicast_dns = optional(bool)   // null (false) or true
-    disable_ipv6  = optional(bool)   // null (false) or true
-    dns           = optional(list(string))
-    dns_v6        = optional(list(string))
-    allow_ingress = optional(list(string))
+    name            = string
+    id              = number
+    type            = optional(string) // null (untrusted) or "isolated" or "trusted" or "reservation"
+    mask            = optional(number) // null (16) or 8-30
+    purpose         = optional(string) // null (corperate) or "guest"
+    wifi            = optional(bool)   // null (false) or true
+    wifi_profile    = optional(string) // null (performance) or "compatibility"
+    multicast_dns   = optional(bool)   // null (false) or true
+    disable_ipv6    = optional(bool)   // null (false) or true
+    disable_dhcp    = optional(bool)   // null (false) or true
+    disable_ipv6_ra = optional(bool) // null (false) or true
+    dns             = optional(list(string))
+    dns_v6          = optional(list(string))
+    allow_ingress   = optional(list(string))
   }))
 }
 
