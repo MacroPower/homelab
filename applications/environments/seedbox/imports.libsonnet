@@ -6,6 +6,7 @@
   import 'crossplane-packages/application.libsonnet',
   import 'crossplane/application.libsonnet',
   import 'descheduler/application.libsonnet',
+  import 'excoredns/application.libsonnet',
   import 'external-secrets/application.libsonnet',
   import 'grafana-operator/application.libsonnet',
   import 'homepage/application.libsonnet',
