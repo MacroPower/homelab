@@ -5,7 +5,7 @@ version: "3"
 vars:
   REPO_ROOT_DIR: { sh: pwd }
   ARGO_NS: argocd
-  ARGO_PORT_FORWARD: false
+  ARGO_PORT_FORWARD: "false"
   ARGO_LOG_LEVEL: warn # info and below are verbose enough to destroy your shell, be warned
   ARGO_CONFIG: "{{.HOME}}/.config/argocd/config"
   ARGO_COMMON_ARGS: >-
