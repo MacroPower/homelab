@@ -7,6 +7,7 @@
   import 'crossplane/application.libsonnet',
   import 'descheduler/application.libsonnet',
   import 'external-secrets/application.libsonnet',
+  import 'grafana-operator/application.libsonnet',
   import 'homepage/application.libsonnet',
   import 'iperf/application.libsonnet',
   import 'jaeger-operator/application.libsonnet',
