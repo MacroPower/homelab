@@ -6,6 +6,7 @@
   import 'crossplane-packages/application.libsonnet',
   import 'crossplane/application.libsonnet',
   import 'descheduler/application.libsonnet',
+  import 'dragonfly-operator/application.libsonnet',
   import 'excoredns/application.libsonnet',
   import 'external-secrets/application.libsonnet',
   import 'grafana-operator/application.libsonnet',
@@ -31,7 +32,7 @@
   import 'transmission-tv/application.libsonnet',
   import 'transmission-webdav/application.libsonnet',
   import 'transmission/application.libsonnet',
-  import 'wireguard/application.libsonnet',
   import 'wireguard-operator/application.libsonnet',
   import 'wireguard-site-to-site/application.libsonnet',
+  import 'wireguard/application.libsonnet',
 ]
