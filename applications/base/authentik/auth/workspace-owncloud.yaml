@@ -1,18 +1,4 @@
 ---
-kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: owncloud-authentik-ns-secrets
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: authentik-ns-secrets
-subjects:
-  - kind: ServiceAccount
-    name: owncloud-authentik-ns-secrets
-    namespace: owncloud
-
----
 apiVersion: tf.upbound.io/v1beta1
 kind: Workspace
 metadata:
@@ -70,38 +56,45 @@ spec:
         username = "akadmin"
       }
 
-      resource "random_password" "owncloud_client_id" {
-        length  = 40
-        lower   = true
-        numeric = true
-        upper   = false
-        special = false
-      }
-
-      resource "random_password" "owncloud_client_secret" {
-        length  = 128
-        lower   = true
-        numeric = true
-        upper   = true
-        special = true
-      }
-
+      # https://helgeklein.com/blog/owncloud-infinite-scale-with-openid-connect-authentication-for-home-networks/#sso-via-authentik-owncloud-openid-connect-authentication
       resource "authentik_provider_oauth2" "owncloud_web_auth_provider" {
         name          = "owncloud-web"
-        client_id     = random_password.owncloud_client_id.result
-        client_secret = random_password.owncloud_client_secret.result
+        client_type   = "public"
+        client_id     = "web"
         redirect_uris = [
-          "https://${local.domain_name}/oauth2/callback",
+          "https://${local.domain_name}",
+          "https://${local.domain_name}/oidc-callback.html",
+          "https://${local.domain_name}/oidc-silent-redirect.html",
         ]
         property_mappings  = data.authentik_scope_mapping.scopes.ids
         authorization_flow = data.authentik_flow.default.id
         signing_key        = data.authentik_certificate_key_pair.cert.id
       }
 
-      resource "authentik_application" "owncloud_application" {
+      resource "authentik_provider_oauth2" "owncloud_desktop_auth_provider" {
+        name          = "owncloud-desktop"
+        client_id     = "xdXOt13JKxym1B1QcEncf2XDkLAexMBFwiT9j6EfhhHFJhs2KM9jbjTmf8JBXE69"
+        client_secret = "UBntmLjC2yYCeHwsyj73Uwo9TAaecAetRwMw0xYcvNL9yRdLSUi0hUAHfvCHFeFh"
+        redirect_uris = [
+          "http://127.0.0.1(:.*)?",
+          "http://localhost(:.*)?",
+        ]
+        property_mappings  = data.authentik_scope_mapping.scopes.ids
+        authorization_flow = data.authentik_flow.default.id
+        signing_key        = data.authentik_certificate_key_pair.cert.id
+      }
+
+      resource "authentik_application" "owncloud_web_application" {
         name              = local.domain_name
         slug              = "owncloud-web"
         protocol_provider = authentik_provider_oauth2.owncloud_web_auth_provider.id
+      }
+
+      resource "authentik_application" "owncloud_desktop_application" {
+        name              = "ownCloud Desktop"
+        slug              = "owncloud-desktop"
+        meta_launch_url   = "blank://blank"
+        protocol_provider = authentik_provider_oauth2.owncloud_desktop_auth_provider.id
       }
 
       resource "authentik_group" "owncloud_admin" {
@@ -122,14 +115,4 @@ spec:
       resource "authentik_group" "owncloud_guest" {
         name   = "ocisGuest"
         parent = authentik_group.owncloud_user.id
-      }
-
-      output "client_id" {
-        value     = random_password.owncloud_client_id.result
-        sensitive = true
-      }
-
-      output "client_secret" {
-        value     = random_password.owncloud_client_secret.result
-        sensitive = true
       }
