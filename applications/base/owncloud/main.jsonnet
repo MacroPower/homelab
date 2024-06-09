@@ -1,6 +1,6 @@
 // jsonnet base/owncloud/main.jsonnet -J vendor
 
 local ns = import 'namespace.libsonnet';
-local ingress = import 'ingress.libsonnet';
+local auth = std.parseYaml(importstr 'auth.yaml');
 
-[ns] + ingress
+[ns] + auth

@@ -9,42 +9,12 @@ logging:
 
 # Tracing settings for oCIS services
 tracing:
-  # -- Tracing enables sending traces
-  enabled: false
-  # -- Type of trace provider to use
-  type: "jaeger"
-  # -- Endpoint of the tracing system, jaeger-agent.observability.svc.cluster.local:6831 or similar.
-  endpoint: ""
-  # -- The HTTP endpoint for sending spans directly to a collector, i.e. http://jaeger-collector.observability.svc.cluster.local:14268/api/traces. Only used if the tracing endpoint is unset.
-  collector: ""
-
-# HTTP settings for oCIS services.
-http:
-  # CORS settings for oCIS services.
-  cors:
-    #-- allow_origins is a list of origins a cross-domain request can be executed from.
-    # If the special "*" value is present in the list, all origins will be allowed.
-    allow_origins: []
-
-# Debug settings for the oCIS service
-debug:
-  # -- Profiling enables the http://<pod>:<debug-metrics>/debug/pprof endpoint to inspect various Go runtime internals.
-  # You can use the endpoint on your machine by forwarding the port, eg: `kubectl port-forward -n ocis pod/authbasic-8587dc9d64-fs24l 9147:9147`
-  # and then accessing the port on https://localhost:9147/debug/pprof or using the pprof command line tool: `go tool pprof -web http://localhost:9147/debug/pprof/symbol\?seconds\=10`
-  profiling: false
+  enabled: true
+  type: "otlp"
+  endpoint: "main-collector.opentelemetry.svc:4317"
 
 # -- Domain where oCIS is reachable for the outside world
-externalDomain: ocis.owncloud.test
-
-# Insecure options.
-# These are useful for some limited environments like CI or on a test cluster.
-insecure:
-  # -- Disables SSL certificate checking for connections to the openID connect identity provider.
-  # Not recommended for production installations.
-  oidcIdpInsecure: false
-  # -- Disables SSL certificate checking for connections to the oCIS http apis.
-  # Not recommended for production installations.
-  ocisHttpApiInsecure: false
+externalDomain: owncloud.home.macro.network
 
 cache:
   # -- Type of the cache to use.
@@ -105,16 +75,6 @@ hostAliases: []
 # Feature options.
 # Enable or disable features of oCIS.
 features:
-  # -- Enable basic authentication.
-  # Not recommended for production installations.
-  basicAuthentication: false
-  # -- Create demo users on the first startup.
-  # Not recommended for production installations.
-  demoUsers: false
-  # Language related settings
-  language:
-    # -- The default language. If not defined, English will be used as default. See the documentation for more details.
-    default: "en"
   # Email related settings
   emailNotifications:
     # -- Enables email notifications.
@@ -148,24 +108,8 @@ features:
       # This ConfigMap is optional and can be omitted when images are not used.
       htmlMailImagesConfigRef: "html-mail-images"
 
-  # SSE (server-sent events) settings.
-  sse:
-    # -- Disables SSE. When disabled, clients will no longer receive sse notifications.
-    disabled: false
-
   # Sharing related settings
   sharing:
-    # Sharing with users related settings
-    users:
-      # -- Allow a share receiver to share the share with a 3rd person.
-      resharing: true
-      # Search settings for finding users to share with.
-      search:
-        # -- Minimum number of characters to enter before a client should start a search for Share receivers.
-        # This setting can be used to customize the user experience if e.g too many results are displayed.
-        minLengthLimit: 3
-        # -- Show user email when searching for other users to share with.
-        showUserEmail: true
     # Sharing per public link related setings
     publiclink:
       # -- Enforce a password on all public link shares.
@@ -174,101 +118,37 @@ features:
       # Is already enforced if `features.sharing.publiclink.shareMustHavePassword` option is set to `true``.
       writeableShareMustHavePassword: false
 
-    # -- automatically accept incoming shares
-    autoAcceptShares: true
     # password policies for share passwords
     passwordPolicies:
-      # -- the minimum amount of characters the password needs to have
-      minCharacters: 0
-      # -- the minimum amount of lower case characters the password needs to have
-      minLowerCharacters: 0
-      # -- the minimum amount of upper case characters the password needs to have
-      minUpperCharacters: 0
-      # -- the minimum amount of special characters the password needs to have
-      minSpecialCharacters: 0
-      # -- the minimum amount of digits the password needs to have
-      minDigits: 0
-      # -- list of banned passwords
-      bannedPasswords:
-        []
-        # - foo
-        # - bar
+      minCharacters: 8
+      minLowerCharacters: 1
+      minUpperCharacters: 1
+      minSpecialCharacters: 1
+      minDigits: 1
+
   # Apps integration
   appsIntegration:
     # -- Enables the apps integration.
     enabled: false
-    # WOPI (office suite integration) needs an https://github.com/cs3org/wopiserver[cs3org/wopiserver] and at least one office suite.
-    wopiIntegration:
-      # -- URL of the https://github.com/cs3org/wopiserver[cs3org/wopiserver]. Can be deployed https://artifacthub.io/packages/helm/cs3org/wopiserver[with this Chart].
-      wopiServerURI: https://wopiserver.owncloud.test
-      # -- Base url to navigate back from the app to the containing folder in the file list.
-      wopiFolderURI: https://{{ .Values.externalDomain }}
-      # -- Path template for the url to navigate back from the app to the containing folder in the file list.
-      # null uses the default value of oCIS, so that one also can set it to "" to not have a path template.
-      wopiFolderURIPathTemplate: null
-      # List of WOPI compliant office suites.
-      officeSuites:
-        - # -- Name of the office suite. Will be displayed to the users.
-          name: Collabora
-          # -- Enables the office suite.
-          enabled: false
-          # -- URI of the office suite.
-          uri: https://collabora.owncloud.test
-          # -- URI for the icon of the office suite. Will be displayed to the users.
-          iconURI: https://collabora.owncloud.test/favicon.ico
-          # -- Disables SSL certificate checking for connections to the office suites http api.
-          # Not recommended for production installations.
-          insecure: false
-        - # -- Name of the office suite. Will be displayed to the users.
-          name: OnlyOffice
-          # -- Enables the office suite.
-          enabled: false
-          # -- URI of the office suite.
-          uri: https://onlyoffice.owncloud.test
-          # -- URI for the icon of the office suite. Will be displayed to the users.
-          iconURI: https://onlyoffice.owncloud.test/web-apps/apps/documenteditor/main/resources/img/favicon.ico
-          # -- Disables SSL certificate checking for connections to the office suites http api.
-          # Not recommended for production installations.
-          insecure: false
-          # -- Disables Chat functionality of OnlyOffice
-          disableChat: false
-    # -- Mimetype configuration.
-    # Let's you configure a mimetypes' default application, if it is allowed to create a new file and more.
-    # @default -- default configuration of oCIS, see https://doc.owncloud.com/ocis/next/deployment/services/s-list/app-registry.html#yaml-example[doc.owncloud.com]
-    mimetypes:
-      []
-      # - mime_type: application/vnd.oasis.opendocument.text
-      # extension: odt
-      # name: OpenDocument
-      # description: OpenDocument text document
-      # icon: ""
-      # default_app: ""
-      # allow_creation: true
+    ## WOPI (office suite integration) needs an https://github.com/cs3org/wopiserver[cs3org/wopiserver] and at least one office suite.
+    # wopiIntegration: {}
+
   # External user management
   externalUserManagement:
     # -- Enables external user management (and disables internal user management).
     # Needs an external OpenID Connect Identity Provider and an external LDAP server.
-    enabled: false
-    # -- UUID of the inital admin user.
-    # If the given value matches a user's value from `features.externalUserManagement.oidc.userIDClaim`, the admin role will be assigned.
-    # Consider that the UUID can be encoded in some LDAP deployment configurations like in .ldif files. These need to be decoded beforehand.
-    # Note: Enabling `roleAssignment` will disable `adminUUID`.
-    adminUUID: ""
-    # -- Enables account auto provisioning.
-    # It will create missing users on the LDAP server from OIDC information.
-    # Needs `features.externalUserManagement.ldap.writeable` to be be set to `true`.
-    autoprovisionAccounts: false
-    # OpenID Connect Identity provider related settings.
+    enabled: true
+
     oidc:
       # -- Issuer URI of the OpenID Connect Identity Provider.
       # If the IDP doesn't have valid / trusted SSL certificates, certificate validation can be disabled with the `insecure.oidcIdpInsecure` option.
-      issuerURI: https://idp.owncloud.test/realms/ocis
+      issuerURI: https://authentik.home.macro.network/application/o/owncloud-web/
       # -- Link to the OIDC provider's user accessible session management. This will be shown to the user on the personal account page.
       # When using Keycloak with the a realm named "ocis" this could point to eg. https://keycloak.owncloud.test/realms/ocis/account/
-      sessionManagementLink: ""
+      sessionManagementLink: "https://authentik.home.macro.network/if/user/"
       # -- Link to the OIDC provider's user accessible account editing page. This will be shown to the user on the personal account page.
       # When using Keycloak with the a realm named "ocis" this could point to eg. https://keycloak.owncloud.test/realms/ocis/account/
-      editAccountLink: ""
+      editAccountLink: "https://authentik.home.macro.network/if/user/"
       # -- Specify the client ID which the web frontend will use
       webClientID: web
       # -- Claim to take an unique user identifier from. It will be used to look up the user on the LDAP server.
@@ -277,19 +157,19 @@ features:
       # Set to `userid` if the claim specified in `...oidc.userIDClaim` holds the value of the ldap user attribute specified in `...ldap.user.schema.id`.
       # Set to `mail` if the claim specified in `...oidc.userIDClaim` holds the value of the ldap user attribute specified in  `...ldap.user.schema.mail`.
       # Set to `username` if the claim specified in `...oidc.userIDClaim` holds the value of the ldap user attribute specified in `...ldap.user.schema.userName`.
-      userIDClaimAttributeMapping: userid
+      userIDClaimAttributeMapping: sub
 
       # -- OIDC Acces Token Verify Method
       # Set to "jwt" or "none"
-      accessTokenVerifyMethod: "jwt"
+      accessTokenVerifyMethod: "none"
 
       # Configure OIDC role assignment. If activated, oCIS will read the role assigment from the OIDC token, see
       # xref:{s-path}/proxy.adoc#automatic-role-assignments[Automatic Role Assignments]
       roleAssignment:
         # -- enable OIDC role assignment.
-        enabled: false
+        enabled: true
         # -- The name of the OIDC claim holding the role assignment
-        claim: roles
+        claim: groups
         # -- Configure the mapping for the role assignment
         mapping:
           - role_name: admin
@@ -324,72 +204,40 @@ features:
     #   71881883-1768-46bd-a24d-a356a2afdf7f: 100000000000
     #   # Space Administrator Role set to 100GB
     #   2aadd357-682c-406b-8874-293091995fdd: 100000000000
+
   # Define virus scanning
   virusscan:
-    # -- Enables virus scanning
     enabled: false
-    # -- Define what should happen with infected files. Supported options are: 'delete', 'continue' and 'abort '.
-    # Delete will delete the file.
-    # Continue will mark the file as infected but continues further processing.
-    # Abort will keep the file in the uploads folder for further admin inspection and will not move it to its final destination.
-    infectedFileHandling: delete
-    # -- Sets a maximum file size for scans. Only this many bytes of a file will be scanned. 0 means unlimited and is the default.
-    # Usable common abbreviations: [KB, KiB, GB, GiB, TB, TiB, PB, PiB, EB, EiB], example: 2GB.
-    maxScanSize:
-    # Define icap parameters
-    icap:
-      # -- Sets the timeout for icap scans
-      timeout: 300
-      # -- Sets the icap url
-      url: icap://127.0.0.1:1344
-      # -- Sets the service to be used in icap
-      service: avscan
+
   # Define policies
   policies:
-    # -- Enables policies
     enabled: false
-    # -- Sets the timeout the rego expression evaluation can take. The timeout can be set as number followed by a unit identifier
-    # like ms, s, etc. Rules default to deny if the timeout was reached.
-    engineTimeout: 10s
-    # -- Sets the policies. Each policy file is defined by a `fileName` and a `content`. The content takes the rego script as text.
-    # For further information, please have a look at https://doc.owncloud.com/ocis/next/deployment/services/s-list/policies.html
-    # Attention: All scripts provided here will end up in a ConfigMap. The data stored in a ConfigMap cannot exceed 1 MiB. see
-    # https://kubernetes.io/docs/concepts/configuration/configmap/#:~:text=The%20data%20stored%20in%20a,separate%20database%20or%20file%20service.
-    policies: []
-    # - fileName: proxy.rego
-    #   content: |-
-    #     package proxy
-    #     default granted := true
-    #
-    # - fileName: postprocessing.rego
-    #   content: |-
-    #     package postprocessing
-    #     default granted := true
-    #
+
   # -- Edition of ownCloud Infinite Scale.
   edition: "Community"
+
   # Archiver settings
   archiver:
     # -- Max size in bytes of the zip archive the archiver can create.
     maxSize: 1073741824
     # -- Max number of files that can be packed into an archive.
     maxNumFiles: 10000
+
 # Ingress for oCIS.
 ingress:
-  # -- Enables the Ingress.
-  enabled: false
-  # -- Ingress class to use.
-  # Uses the default ingress class if not set.
-  ingressClassName:
-  # -- Ingress annotations.
-  annotations: {}
-  # -- Labels for the ingress.
-  labels: {}
-  # -- Ingress TLS configuration.
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - ocis.owncloud.test
+  enabled: true
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: ownCloud
+    gethomepage.dev/group: Apps
+    gethomepage.dev/icon: owncloud
+    gethomepage.dev/description: File Storage and Collaboration
+    gethomepage.dev/external: "true"
+    gethomepage.dev/podSelector: ""
+  tls:
+    - hosts:
+        - owncloud.home.macro.network
 
 # References to ConfigMaps.
 # The ConfigMaps need to be manually created.
@@ -463,67 +311,11 @@ secretRefs:
   # -- The secret to secure the global notifications endpoint. Only system admins and users knowing that secret can call the global notifications POST/DELETE endpoints.
   globalNotificationsSecretRef: ""
 
-# Security context options.
-securityContext:
-  # -- File system group for all volumes.
-  fsGroup: 1000
-  # -- File system group change policy for all volumes.
-  # Possible values "Always" and "OnRootMismatch".
-  # This will also apply to all services' chownInitContainer.
-  fsGroupChangePolicy: "OnRootMismatch"
-  # -- User ID that all processes within any containers will run with.
-  runAsUser: 1000
-  # -- Group ID that all processes within any containers will run with.
-  runAsGroup: 1000
-
-# -- TopologySpreadConstraints controls how Pods of a service are spread across the cluster among failure-domains.
-# Defaults to allow skew no more then 1 node per node.
-# Passed through tpl and therefore needs to be configured as string.
-topologySpreadConstraints: "" # |
-#  - maxSkew: 1
-#    topologyKey: kubernetes.io/hostname
-#    whenUnsatisfiable: DoNotSchedule
-#    labelSelector:
-#      matchLabels:
-#        app: {{ .appName }}
-
-# -- Custom labels for all manifests
-extraLabels: {}
-
-# -- Override the deployment namespace of all resources in this Helm chart.
-namespaceOverride:
-
 # -- Number of replicas for each scalable service. Has no effect when `autoscaling.enabled` is set to `true`.
-replicas: 1
+replicas: 2
 
-# -- Default PodDisruptionBudget to apply to all services, except per-service PodDisruptionBudget configuration in `services.<service-name>.podDisruptionBudget` is set.
 podDisruptionBudget:
-  {}
-  # -- Sets the maxUnavailable or the global PodDisruptionBudget.
-  #maxUnavailable: 1
-
-# Autoscaling settings.
-autoscaling:
-  # -- Enables autoscaling. When set to `true`, `replicas` is no longer applied.
-  enabled: false
-  # -- Sets minimum replicas for autoscaling.
-  minReplicas: 3
-  # -- Sets maximum replicas for autoscaling.
-  maxReplicas: 10
-  # -- Metrics to use for autoscaling
-  metrics: []
-#   - type: Resource
-#     resource:
-#       name: cpu
-#       target:
-#         type: Utilization
-#         averageUtilization: 60
-#   - type: Resource
-#     resource:
-#       name: memory
-#       target:
-#         type: Utilization
-#         averageUtilization: 60
+  maxUnavailable: 1
 
 # -- Default resources to apply to all services, except per-service resources configuration in `services.<service-name>.resources` is set.
 # Best practice is to:
@@ -538,12 +330,6 @@ resources:
   #   cpu: 100m
   #   memory: 128Mi
 
-# -- Default nodeSelector to apply to all services, except per-service nodeSelector configuration in `services.<service-name>.nodeSelector` is set.
-nodeSelector:
-  {}
-  # kubernetes.io/hostname: node-01
-  # kubernetes.io/arch: "amd64"
-
 # -- Default resources to apply to all jobs in services, except per-service resources configuration in `services.<service-name>.jobResources` is set.
 # Best practice is to:
 # - set memory request == memory limit (compare to https://home.robusta.dev/blog/kubernetes-memory-limit)
@@ -557,300 +343,41 @@ jobResources:
   #   cpu: 100m
   #   memory: 128Mi
 
-# -- Default nodeSelector to apply to all jobs, except per-service job nodeSelector configuration in `services.<service-name>.jobNodeSelector` is set.
-jobNodeSelector:
-  {}
-  # kubernetes.io/hostname: node-01
-  # kubernetes.io/arch: "amd64"
-
-# -- Default priorityClassName to apply to all services, except per-service jobPriorityClassName configuration in `services.<service-name>.jobPriorityClassName` is set.
-jobPriorityClassName:
-  ""
-  # ocis-low-priority
-  # ocis-medium-priority
-  # ocis-high-priority
-
-# -- Default priorityClassName to apply to all services, except per-service priorityClassName configuration in `services.<service-name>.priorityClassName` is set.
-priorityClassName:
-  ""
-  # ocis-low-priority
-  # ocis-medium-priority
-  # ocis-high-priority
-
-# Include arbitrary resources, eg. config maps or a cert-manager issuer (see example below)
-# -- Extra resources to be included.
-extraResources: []
-#  - |
-#    apiVersion: cert-manager.io/v1alpha2
-#    kind: Issuer
-#    metadata:
-#      name: ocis-certificate-issuer
-#      namespace: ocis
-#    spec:
-#      acme:
-#        server: https://acme-v02.api.letsencrypt.org/directory
-#        email: test@example.com
-#        privateKeySecretRef:
-#          name: ocis-certificate-issuer
-#        solvers:
-#        - http01:
-#            ingress:
-#              class: nginx
-
 # per-service configuration.
 services:
-  # -- APP PROVIDER service. Not used if `features.appsIntegration.enabled` equals `false`.
-  # @default -- see detailed service configuration options below
-  appprovider:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
-    resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Affinity settings for the approvider service.
-    affinity: {}
-    # -- Configuration for the appprovider service, every other service will have the same configuration.
-    # The value of this key will be passed to the affinity setting of the pod as documented here:
-    # https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
-    # This example will ensure that the pods will only be scheduled on nodes with the label `topology.kubernetes.io/zone`
-    # set to `eu-west-1` or `eu-east-1`.
-    # nodeAffinity:
-    #   requiredDuringSchedulingIgnoredDuringExecution:
-    #     nodeSelectorTerms:
-    #     - matchExpressions:
-    #       - key: topology.kubernetes.io/zone
-    #         operator: In
-    #         values:
-    #         - eu-east-1
-    #         - eu-west-1
-    #
-    # The following example will make sure that these pods will never be scheduled on the same node.
-    # podAntiAffinity:
-    #   requiredDuringSchedulingIgnoredDuringExecution:
-    #     - labelSelector:
-    #         matchExpressions:
-    #           - key: app
-    #             operator: In
-    #             values:
-    #               - appprovider
-    #       topologyKey: "kubernetes.io/hostname"
-    #
-    # Do note that the value will be different for each service.
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
+  ## -- APP PROVIDER service. Not used if `features.appsIntegration.enabled` equals `false`.
+  # appprovider: {}
 
-  # -- APP REGISTRY service. Not used if `features.appsIntegration.enabled` equals `false`.
-  # @default -- see detailed service configuration options below
   appregistry:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Affinity settings for the appregistry service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- AUDIT service.
   # @default -- see detailed service configuration options below
   audit:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the audit service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
-
-  # -- AUTH BASIC service. Not used if `features.externalUserManagement.enabled` equals `true`.
-  # @default -- see detailed service configuration options below
-  authbasic:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
-    resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the authbasic service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- AUTH MACHINE service.
   # @default -- see detailed service configuration options below
   authmachine:
     # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the authmachine service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- AUTH SERVICE service.
   # @default -- see detailed service configuration options below
   authservice:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the authservice service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
-  # -- ANTIVIRUS service. Not used if `features.virusscan.enabled` equals `false`.
-  # @default -- see detailed service configuration options below
-  antivirus:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
-    resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the antivirus service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
+  ## -- ANTIVIRUS service. Not used if `features.virusscan.enabled` equals `false`.
+  # antivirus:
+  #   resources: {}
 
   # -- CLIENTLOG service.
-  # @default -- see detailed service configuration options below
   clientlog:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the clientlog service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- EVENT HISTORY service.
-  # @default -- see detailed service configuration options below
   eventhistory:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
     # -- Per-service store configuration for the eventhistory service. Overrides the default setting from `store` if set.
     store:
       {}
@@ -860,219 +387,33 @@ services:
       # if the proper store is selected
       # addresses: []
       # - "{{ .appNameNats }}:9233"
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the eventhistory service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- FRONTEND service.
-  # @default -- see detailed service configuration options below
   frontend:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the frontend service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- GATEWAY service.
-  # @default -- see detailed service configuration options below
   gateway:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the gateway service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- GRAPH service.
-  # @default -- see detailed service configuration options below
   graph:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the graph service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- GROUPS service.
-  # @default -- see detailed service configuration options below
   groups:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the groups service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
-  # -- IDM service. Not used if `features.externalUserManagement.enabled` equals `true`.
-  # @default -- see detailed service configuration options below
-  idm:
-    # -- Persistence settings.
-    # @default -- see detailed persistence configuration options below
-    persistence:
-      # -- Enables persistence.
-      # Needs to be enabled on production installations, except `features.externalUserManagement.enabled` equals `true`.
-      # If not enabled, pod restarts will lead to data loss.
-      enabled: false
-      # -- Enables an initContainer to chown the volume.
-      # The initContainer is run as root.
-      # This is not needed if the driver applies the fsGroup from the securityContext.
-      # The image specified in `initContainerImage` will be used for this container.
-      chownInitContainer: false
-      # -- Storage class to use.
-      # Uses the default storage class if not set.
-      storageClassName:
-      # -- Persistent volume access modes.
-      accessModes:
-        - ReadWriteOnce
-      # -- Size of the persistent volume.
-      size: 10Gi
-      # -- Persistent volume annotations.
-      annotations: {}
-      # -- Persistent volume finalizers.
-      finalizers:
-        - kubernetes.io/pvc-protection
-      # -- Persistent volume selector labels.
-      selectorLabels: {}
-      # -- Use a custom name for the PVC instead of the default one.
-      claimName: ""
-      # -- Use an existing PersistentVolumeClaim for persistence.
-      existingClaim:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
-    resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Affinity settings for the idm service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
+  ## -- IDM service. Not used if `features.externalUserManagement.enabled` equals `true`.
+  # idm: {}
 
-  # -- IDP service. Not used if `features.externalUserManagement.enabled` equals `true`.
-  # @default -- see detailed service configuration options below
-  idp:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
-    resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Affinity settings for the idp service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
+  ## -- IDP service. Not used if `features.externalUserManagement.enabled` equals `true`.
+  # idp: {}
 
   # -- NATS service. Not used if `messagingSystem.external.enabled` equals `true`.
   # @default -- see detailed service configuration options below
   nats:
+    resources: {}
     # -- Persistence settings.
     # @default -- see detailed persistence configuration options below
     persistence:
@@ -1093,210 +434,36 @@ services:
         - ReadWriteOnce
       # -- Size of the persistent volume.
       size: 10Gi
-      # -- Persistent volume annotations.
-      annotations: {}
-      # -- Persistent volume finalizers.
-      finalizers:
-        - kubernetes.io/pvc-protection
-      # -- Persistent volume selector labels.
-      selectorLabels: {}
-      # -- Use a custom name for the PVC instead of the default one.
-      claimName: ""
-      # -- Use an existing PersistentVolumeClaim for persistence.
-      existingClaim:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
-    resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Affinity settings for the nats service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- NOTIFICATIONS service. Not used if `features.emailNotifications.enabled` equals `true`.
-  # @default -- see detailed service configuration options below
   notifications:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the notifications service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- OCDAV service.
-  # @default -- see detailed service configuration options below
   ocdav:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the ocdav service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- OCS service.
-  # @default -- see detailed service configuration options below
   ocs:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the ocs service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- POLICIES service.
-  # @default -- see detailed service configuration options below
   policies:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the policies service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- POSTPROCESSING service.
   # @default -- see detailed service configuration options below
   postprocessing:
     # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
     # -- Per-service store configuration for the eventhistory service. Overrides the default setting from `store` if set.
     store: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the postprocessing service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- PROXY service.
-  # @default -- see detailed service configuration options below
   proxy:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the proxy service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- SEARCH service.
-  # @default -- see detailed service configuration options below
   search:
     # -- Search Extractor settings.
     # @default -- see detailed search extractor configuration options below
@@ -1346,168 +513,26 @@ services:
       existingClaim:
     # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Affinity settings for the search service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- SETTINGS service.
-  # @default -- see detailed service configuration options below
   settings:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the settings service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- SHARING service.
-  # @default -- see detailed service configuration options below
   sharing:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the sharing service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- SSE service
-  # @default -- see detailed service configuration options below
   sse:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service store configuration for the eventhistory service. Overrides the default setting from `store` if set.
-    store: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the postprocessing service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- STORAGE-PUBLICLINK service.
-  # @default -- see detailed service configuration options below
   storagepubliclink:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the storagepubliclink service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- STORAGE-SHARES service.
-  # @default -- see detailed service configuration options below
   storageshares:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the storageshares service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- STORAGE-SYSTEM service.
   # @default -- see detailed service configuration options below
@@ -1546,28 +571,6 @@ services:
       existingClaim:
     # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the storagesystem service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- STORAGE-USERS service.
   # @default -- see detailed service configuration options below
@@ -1718,36 +721,8 @@ services:
       claimName: ""
       # -- Use an existing PersistentVolumeClaim for persistence.
       existingClaim:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service jobPriorityClassName configuration. Overrides the default setting from `jobPriorityClassName` if set.
-    jobPriorityClassName: ""
-    # -- Per-service jobResources configuration. Overrides the default setting from `jobResources` if set.
     jobResources: {}
-    # -- Per-service jobNodeSelector configuration. Overrides the default setting from `jobNodeSelector` if set.
-    jobNodeSelector: {}
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the storageusers service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- THUMBNAILS service.
   # @default -- see detailed service configuration options below
@@ -1785,18 +760,8 @@ services:
       existingClaim:
     # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
     # -- Per-service jobResources configuration. Overrides the default setting from `jobResources` if set.
     jobResources: {}
-    # -- Per-service jobNodeSelector configuration. Overrides the default setting from `jobNodeSelector` if set.
-    jobNodeSelector: {}
-    # -- Per-service jobPriorityClassName configuration. Overrides the default setting from `jobPriorityClassName` if set.
-    jobPriorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
     # Maintenance configuration for cleanup jobs.
     maintenance:
       cleanUpOldThumbnails:
@@ -1810,32 +775,6 @@ services:
         deleteBefore: 30
         # -- Method to use with BusyBox "find" for finding old thumbnails. Can be mtime, atime or ctime.
         method: atime
-      # Image for thumbnails service maintenance jobs
-      image:
-        # -- Image repository
-        repository: busybox
-        # -- Image tag.
-        tag: "stable"
-        # -- Image sha / digest (optional).
-        sha: ""
-        # -- Image pull policy
-        pullPolicy: IfNotPresent
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the thumbnails service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- USERLOG service.
   # @default -- see detailed service configuration options below
@@ -1875,35 +814,10 @@ services:
       pullPolicy:
 
   # -- USERS service.
-  # @default -- see detailed service configuration options below
   users:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the users service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- ownCloud WEB service.
-  # @default -- see detailed service configuration options below
   web:
     # Configuration for web, that ends up in the config.json file.
     config:
@@ -2067,60 +981,12 @@ services:
       pullPolicy:
 
   # -- WEBDAV service.
-  # @default -- see detailed service configuration options below
   webdav:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the webdav service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- WEBFINGER service.
-  # @default -- see detailed service configuration options below
   webfinger:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the webfinger service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
 # Service monitoring configuration. Requires the monitoring.coreos.com/v1 CRDs to be installed.
 monitoring:

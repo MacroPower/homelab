@@ -1,0 +1,135 @@
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: owncloud-authentik-ns-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: authentik-ns-secrets
+subjects:
+  - kind: ServiceAccount
+    name: owncloud-authentik-ns-secrets
+    namespace: owncloud
+
+---
+apiVersion: tf.upbound.io/v1beta1
+kind: Workspace
+metadata:
+  name: authentik-owncloud
+spec:
+  providerConfigRef:
+    name: authentik
+  writeConnectionSecretToRef:
+    namespace: authentik
+    name: authentik-owncloud
+  forProvider:
+    source: Inline
+    varFiles:
+      - source: SecretKey
+        format: HCL
+        secretKeyRef:
+          namespace: authentik
+          name: authentik-cluster-credentials
+          key: authentik.tfvars
+    module: |
+      variable "authentik_cluster_cookie_domain" {
+        type = string
+      }
+
+      variable "authentik_cluster_external_host" {
+        type = string
+      }
+
+      variable "authentik_cluster_external_domain" {
+        type = string
+      }
+
+      locals {
+        domain_name = "owncloud.${var.authentik_cluster_external_domain}"
+      }
+
+      data "authentik_flow" "default" {
+        slug = "default-provider-authorization-explicit-consent"
+      }
+
+      data "authentik_certificate_key_pair" "cert" {
+        name = "Authentik Certificate"
+      }
+
+      data "authentik_scope_mapping" "scopes" {
+        managed_list = [
+          "goauthentik.io/providers/oauth2/scope-email",
+          "goauthentik.io/providers/oauth2/scope-openid",
+          "goauthentik.io/providers/oauth2/scope-profile",
+          "goauthentik.io/providers/oauth2/scope-offline_access",
+        ]
+      }
+
+      data "authentik_user" "akadmin" {
+        username = "akadmin"
+      }
+
+      resource "random_password" "owncloud_client_id" {
+        length  = 40
+        lower   = true
+        numeric = true
+        upper   = false
+        special = false
+      }
+
+      resource "random_password" "owncloud_client_secret" {
+        length  = 128
+        lower   = true
+        numeric = true
+        upper   = true
+        special = true
+      }
+
+      resource "authentik_provider_oauth2" "owncloud_web_auth_provider" {
+        name          = "owncloud-web"
+        client_id     = random_password.owncloud_client_id.result
+        client_secret = random_password.owncloud_client_secret.result
+        redirect_uris = [
+          "https://${local.domain_name}/oauth2/callback",
+        ]
+        property_mappings  = data.authentik_scope_mapping.scopes.ids
+        authorization_flow = data.authentik_flow.default.id
+        signing_key        = data.authentik_certificate_key_pair.cert.id
+      }
+
+      resource "authentik_application" "owncloud_application" {
+        name              = local.domain_name
+        slug              = "owncloud-web"
+        protocol_provider = authentik_provider_oauth2.owncloud_web_auth_provider.id
+      }
+
+      resource "authentik_group" "owncloud_admin" {
+        name   = "ocisAdmin"
+        users  = [data.authentik_user.akadmin.id]
+      }
+
+      resource "authentik_group" "owncloud_space_admin" {
+        name   = "ocisSpaceAdmin"
+        parent = authentik_group.owncloud_admin.id
+      }
+
+      resource "authentik_group" "owncloud_user" {
+        name   = "ocisUser"
+        parent = authentik_group.owncloud_space_admin.id
+      }
+
+      resource "authentik_group" "owncloud_guest" {
+        name   = "ocisGuest"
+        parent = authentik_group.owncloud_user.id
+      }
+
+      output "client_id" {
+        value     = random_password.owncloud_client_id.result
+        sensitive = true
+      }
+
+      output "client_secret" {
+        value     = random_password.owncloud_client_secret.result
+        sensitive = true
+      }
