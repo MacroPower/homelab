@@ -28,6 +28,8 @@ server:
         secretKeyRef:
           name: authentik-credentials
           key: AUTHENTIK_BOOTSTRAP_EMAIL
+    - name: AUTHENTIK_REDIS__HOST
+      value: "authentik-redis-dragonfly.authentik.svc"
     - name: AUTHENTIK_REDIS__PASSWORD
       valueFrom:
         secretKeyRef:
@@ -60,9 +62,9 @@ worker:
   resources:
     requests:
       cpu: 10m
-      memory: 500Mi
+      memory: 1Gi
     limits:
-      memory: 500Mi
+      memory: 1Gi
 
 prometheus:
   rules:
@@ -72,16 +74,4 @@ postgresql:
   enabled: false
 
 redis:
-  enabled: true
-  architecture: standalone
-  auth:
-    enabled: true
-    existingSecret: authentik-credentials
-    existingSecretPasswordKey: AUTHENTIK_REDIS_PASS
-  sentinel:
-    enabled: false
-  master:
-    persistence:
-      enabled: true
-      accessModes:
-        - ReadWriteOnce
+  enabled: false

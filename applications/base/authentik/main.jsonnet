@@ -6,5 +6,6 @@ local ingress = import 'ingress.libsonnet';
 local secrets = std.parseYaml(importstr 'secrets.yaml');
 local middleware = std.parseYaml(importstr 'middleware.yaml');
 local auth = import 'auth/main.libsonnet';
+local redisDragonfly = std.parseYaml(importstr 'redis-dragonfly.yaml');
 
-[ns] + database + ingress + secrets + [middleware] + auth
+[ns] + database + ingress + secrets + [middleware] + auth + redisDragonfly

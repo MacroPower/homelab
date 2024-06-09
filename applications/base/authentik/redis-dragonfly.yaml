@@ -1,0 +1,27 @@
+---
+# https://www.dragonflydb.io/docs/managing-dragonfly/operator/dragonfly-configuration
+apiVersion: dragonflydb.io/v1alpha1
+kind: Dragonfly
+metadata:
+  name: authentik-redis-dragonfly
+spec:
+  replicas: 2
+  authentication:
+    passwordFromSecret:
+      name: authentik-credentials
+      key: AUTHENTIK_REDIS_PASS
+  resources:
+    requests:
+      cpu: 50m
+      memory: 500Mi
+    limits:
+      cpu: 500m
+      memory: 500Mi
+  snapshot:
+    cron: "*/5 * * * *"
+    persistentVolumeClaimSpec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 5Gi
