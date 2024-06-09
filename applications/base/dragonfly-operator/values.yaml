@@ -1,0 +1,29 @@
+crds:
+  install: true
+  keep: true
+
+replicaCount: 2
+
+rbacProxy:
+  image:
+    repository: gcr.io/kubebuilder/kube-rbac-proxy
+    tag: v0.13.1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 150Mi
+    limits:
+      cpu: 500m
+      memory: 150Mi
+
+manager:
+  image:
+    repository: docker.dragonflydb.io/dragonflydb/operator
+    tag: v1.1.2
+  resources:
+    requests:
+      cpu: 10m
+      memory: 150Mi
+    limits:
+      cpu: 500m
+      memory: 150Mi
