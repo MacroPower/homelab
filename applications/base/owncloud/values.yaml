@@ -139,6 +139,11 @@ features:
     # Needs an external OpenID Connect Identity Provider and an external LDAP server.
     enabled: true
 
+    # -- Enables account auto provisioning.
+    # It will create missing users on the LDAP server from OIDC information.
+    # Needs `features.externalUserManagement.ldap.writeable` to be be set to `true`.
+    autoprovisionAccounts: true
+
     oidc:
       # -- Issuer URI of the OpenID Connect Identity Provider.
       # If the IDP doesn't have valid / trusted SSL certificates, certificate validation can be disabled with the `insecure.oidcIdpInsecure` option.
