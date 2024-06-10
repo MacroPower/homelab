@@ -286,6 +286,7 @@ configs:
     server.insecure: "true"
     application.namespaces: "*"
     applicationsetcontroller.enable.new.git.file.globbing: true
+    controller.diff.server.side: "true"
 
   rbac:
     policy.csv: |
