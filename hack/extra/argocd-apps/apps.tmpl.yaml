@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: apps
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/compare-options: ServerSideDiff=false
 spec:
   project: default
   source:
@@ -22,3 +24,5 @@ spec:
     automated:
       prune: false
       selfHeal: false
+    syncOptions:
+      - ServerSideApply=true

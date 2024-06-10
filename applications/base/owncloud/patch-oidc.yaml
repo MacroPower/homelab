@@ -17,7 +17,7 @@ spec:
         all:
           - key: "{{request.operation || 'BACKGROUND'}}"
             operator: AnyIn
-            value: [CREATE, UPDATE]
+            value: [CREATE]
       mutate:
         patchesJson6902: |-
           - op: add
