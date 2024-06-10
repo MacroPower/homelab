@@ -152,7 +152,7 @@ features:
       # -- Specify the client ID which the web frontend will use
       webClientID: web
       # -- Claim to take an unique user identifier from. It will be used to look up the user on the LDAP server.
-      userIDClaim: sub
+      userIDClaim: preferred_username
       # -- Attribute mapping of for the userIDClaim.
       # Set to `userid` if the claim specified in `...oidc.userIDClaim` holds the value of the ldap user attribute specified in `...ldap.user.schema.id`.
       # Set to `mail` if the claim specified in `...oidc.userIDClaim` holds the value of the ldap user attribute specified in  `...ldap.user.schema.mail`.
