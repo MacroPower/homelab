@@ -1,0 +1,27 @@
+---
+apiVersion: kyverno.io/v1
+kind: Policy
+metadata:
+  name: patch-ocis-oidc
+spec:
+  rules:
+    - name: add-web-env-vars
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+              names:
+                - web
+      preconditions:
+        all:
+          - key: "{{request.operation || 'BACKGROUND'}}"
+            operator: AnyIn
+            value: [CREATE, UPDATE]
+      mutate:
+        patchesJson6902: |-
+          - op: add
+            path: /spec/template/spec/containers/0/env/-
+            value:
+              name: WEB_OIDC_SCOPE
+              value: "openid profile email groups"
