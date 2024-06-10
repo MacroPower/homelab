@@ -30,16 +30,8 @@ config:
       services:
         - k8s_pod_labels:
             o11y.jacobcolvin.com/instrument: "beyla"
-    filter:
-      application:
-        db_operation:
-          not_match: SELECT
     routes:
       unmatched: heuristic
-      ignored_patterns:
-        - /health*
-        - /healthz*
-        - /*/health*
     log_level: info
     ebpf:
       wakeup_len: 100
