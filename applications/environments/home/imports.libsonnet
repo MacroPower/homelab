@@ -3,6 +3,7 @@
   import 'argo-workflows/application.libsonnet',
   import 'argocd/application.libsonnet',
   import 'authentik/application.libsonnet',
+  import 'beyla/application.libsonnet',
   import 'cert-manager/application.libsonnet',
   import 'cilium/application.libsonnet',
   import 'cloudnative-pg/application.libsonnet',

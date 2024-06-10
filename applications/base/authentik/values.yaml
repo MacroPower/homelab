@@ -48,6 +48,8 @@ server:
         secretKeyRef:
           name: authentik-database-credentials
           key: AUTHENTIK_DB_PASS
+  podLabels: &podLabels
+    o11y.jacobcolvin.com/instrument: "beyla"
   resources:
     requests:
       cpu: 50m
@@ -59,6 +61,7 @@ worker:
   replicas: 2
   serviceMonitor: *serviceMonitor
   env: *env
+  podLabels: *podLabels
   resources:
     requests:
       cpu: 10m

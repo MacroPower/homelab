@@ -1,0 +1,78 @@
+service:
+  # -- whether to create a service for internal metrics
+  enabled: true
+
+priorityClassName: system-node-critical
+
+tolerations:
+  - effect: NoSchedule
+    operator: Exists
+  - effect: NoExecute
+    operator: Exists
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 500Mi
+  requests:
+    cpu: 100m
+    memory: 500Mi
+
+## More configuration options available at https://grafana.com/docs/beyla/latest/configure/options/
+## The below default configuration
+## 1. looks for ALL the services in the host
+## 2. export metrics as prometheus metrics by default at 9090 port
+## 3. enables kubernetes attribute
+## Note: The default configuration is used if config.create=true and config.name=""
+config:
+  data:
+    discovery:
+      services:
+        - k8s_pod_labels:
+            o11y.jacobcolvin.com/instrument: "beyla"
+    filter:
+      application:
+        db_operation:
+          not_match: SELECT
+    routes:
+      unmatched: heuristic
+      ignored_patterns:
+        - /health*
+        - /healthz*
+        - /*/health*
+    log_level: info
+    ebpf:
+      wakeup_len: 100
+    otel_traces_export:
+      endpoint: http://main-collector.opentelemetry.svc:4317
+    attributes:
+      kubernetes:
+        enable: true
+    ## internal metrics reporting. Refer: https://grafana.com/docs/beyla/latest/configure/options/#internal-metrics-reporter
+    ## If set, user can expose the metrics endpoint via k8s service by configuring .Values.service section
+    prometheus_export:
+      port: 9090
+      path: /metrics
+
+## Env variables that will override configmap values
+## For example:
+##   BEYLA_INTERNAL_METRICS_PROMETHEUS_PORT: 9090
+# -- extra environment variables
+env: {}
+  # BEYLA_INTERNAL_METRICS_PROMETHEUS_PORT: 9090
+  # BEYLA_PRINT_TRACES: "true"
+
+# -- extra environment variables to be set from resources such as k8s configMaps/secrets
+envValueFrom: {}
+  #  ENV_NAME:
+  #    secretKeyRef:
+  #      name: secret-name
+  #      key: value_key
+
+# -- Preconfigures some default properties for network or application observability.
+# Accepted values are "network" or "application".
+preset: application
+
+# -- Enable creation of ServiceMonitor for scraping of prometheus HTTP endpoint
+serviceMonitor:
+  enabled: true
