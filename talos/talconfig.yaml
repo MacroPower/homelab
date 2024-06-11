@@ -30,10 +30,17 @@ nodes:
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "7a:c0:a9:*"
-        dhcp: &dhcp true
-        dhcpOptions: &dhcpOptions
-          ipv4: true
-          ipv6: true
+        dhcp: false
+        addresses:
+          - "10.10.10.1/16"
+          - "2603:6010:5300:ad0a::a001/64"
+        mtu: &mtu 1500
+        routes: &routes
+          - network: 0.0.0.0/0
+            gateway: "10.10.0.1"
+          - network: ::/0
+            gateway: "2603:6010:5300:ad0a::"
+            metric: 4096
         vip: &vip
           ip: 10.10.20.1
     kernelModules: &rk1kernel
@@ -61,8 +68,12 @@ nodes:
       - deviceSelector: &rpiNetDevice
           driver: bcmgenet
           hardwareAddr: "e4:5f:01:*"
-        dhcp: *dhcp
-        dhcpOptions: *dhcpOptions
+        dhcp: false
+        addresses:
+          - "10.10.10.2/16"
+          - "2603:6010:5300:ad0a::a002/64"
+        mtu: *mtu
+        routes: *routes
         vip: *vip
     schematic: &rpiSchematic
       overlay:
@@ -79,8 +90,12 @@ nodes:
       topology.kubernetes.io/zone: az03
     networkInterfaces:
       - deviceSelector: *rpiNetDevice
-        dhcp: *dhcp
-        dhcpOptions: *dhcpOptions
+        dhcp: false
+        addresses:
+          - "10.10.10.3/16"
+          - "2603:6010:5300:ad0a::a003/64"
+        mtu: *mtu
+        routes: *routes
         vip: *vip
     schematic: *rpiSchematic
 
@@ -95,8 +110,12 @@ nodes:
       topology.kubernetes.io/zone: az01
     networkInterfaces:
       - interface: enp5s0
-        dhcp: *dhcp
-        dhcpOptions: *dhcpOptions
+        dhcp: false
+        addresses:
+          - "10.10.10.13/16"
+          - "2603:6010:5300:ad0a::a013/64"
+        mtu: *mtu
+        routes: *routes
     schematic: &M11SDVschematic
       customization:
         systemExtensions:
@@ -115,8 +134,12 @@ nodes:
       topology.kubernetes.io/zone: az02
     networkInterfaces:
       - interface: enp5s0
-        dhcp: *dhcp
-        dhcpOptions: *dhcpOptions
+        dhcp: false
+        addresses:
+          - "10.10.10.14/16"
+          - "2603:6010:5300:ad0a::a014/64"
+        mtu: *mtu
+        routes: *routes
     schematic: *M11SDVschematic
 
   - hostname: knode15.home.macro.network
@@ -130,8 +153,12 @@ nodes:
       topology.kubernetes.io/zone: az03
     networkInterfaces:
       - interface: enp5s0
-        dhcp: *dhcp
-        dhcpOptions: *dhcpOptions
+        dhcp: false
+        addresses:
+          - "10.10.10.15/16"
+          - "2603:6010:5300:ad0a::a015/64"
+        mtu: *mtu
+        routes: *routes
     schematic: *M11SDVschematic
 
 controlPlane:
@@ -188,6 +215,10 @@ controlPlane:
     - &machineKubelet |-
       machine:
         kubelet:
+          nodeIP:
+            validSubnets:
+              - 10.10.0.0/16
+              - 2603:6010:5300:ad0a::/64
           extraArgs:
             feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true
             #rotate-server-certificates: true
