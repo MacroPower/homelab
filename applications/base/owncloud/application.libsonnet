@@ -13,25 +13,13 @@ app.new(
   values='values.yaml'
 ).withIgnoreDifferences([
   {
-    group: '',
     kind: 'Secret',
-    name: 'ldap-ca',
     jsonPointers: [
       '/data',
     ],
   },
   {
-    group: '',
-    kind: 'Secret',
-    name: 'ldap-cert',
-    jsonPointers: [
-      '/data',
-    ],
-  },
-  {
-    group: '',
-    kind: 'Secret',
-    name: 'idp-secrets',
+    kind: 'ConfigMap',
     jsonPointers: [
       '/data',
     ],
