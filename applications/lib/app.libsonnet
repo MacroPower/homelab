@@ -6,9 +6,7 @@
     kind: 'Application',
     metadata: {
       name: name,
-      annotations: {
-        'argocd.argoproj.io/compare-options': 'ServerSideDiff=true,IncludeMutationWebhook=true',
-      } + annotations,
+      annotations: annotations,
     },
     spec: {
       project: project,
