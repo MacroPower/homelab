@@ -7,7 +7,9 @@
     metadata: {
       name: name,
       annotations: {
-        'argocd.argoproj.io/compare-options': 'ServerSideDiff=true',
+        // IncludeMutationWebhook=true must be set on 1.30:
+        // https://github.com/argoproj/argo-cd/issues/18548
+        'argocd.argoproj.io/compare-options': 'ServerSideDiff=true,IncludeMutationWebhook=true',
       } + annotations,
     },
     spec: {
