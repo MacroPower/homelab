@@ -11,4 +11,29 @@ app.new(
   targetRevision='1.0.0',
   releaseName='ocis',
   values='values.yaml'
-)
+).withIgnoreDifferences([
+  {
+    group: '',
+    kind: 'Secret',
+    name: 'ldap-ca',
+    jsonPointers: [
+      '/data',
+    ],
+  },
+  {
+    group: '',
+    kind: 'Secret',
+    name: 'ldap-cert',
+    jsonPointers: [
+      '/data',
+    ],
+  },
+  {
+    group: '',
+    kind: 'Secret',
+    name: 'idp-secrets',
+    jsonPointers: [
+      '/data',
+    ],
+  },
+])

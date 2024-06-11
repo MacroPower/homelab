@@ -30,3 +30,12 @@ metadata:
 spec:
   data:
     user_id: b9843f01-688b-4fd7-a135-d940463c2004
+
+---
+apiVersion: generators.external-secrets.io/v1alpha1
+kind: Fake
+metadata:
+  name: admin-user-user-id
+spec:
+  data:
+    user_id: a7fbbb52-3718-452c-a867-469a5800f266

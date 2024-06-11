@@ -280,7 +280,7 @@ configRefs:
 # TODO: Update https://doc.owncloud.com/ocis/next/deployment/container/orchestration/orchestration.html#customize-the-generic-setup[doc.owncloud.com] for how to generate them.
 secretRefs:
   # -- Reference to an existing admin user secret (see ref:Secrets#secrets). Not used if `features.externalUserManagement.enabled` equals `true`.
-  adminUserSecretRef: ""
+  adminUserSecretRef: "admin-user"
   # -- Reference to an existing IDP secret (see ref:Secrets#secrets). Not used if `features.externalUserManagement.enabled` equals `true`.
   idpSecretRef: ""
   # -- Reference to an existing JWT secret (see ref:Secrets#secrets).
