@@ -141,7 +141,6 @@ features:
 
     # -- Enables account auto provisioning.
     # It will create missing users on the LDAP server from OIDC information.
-    # Needs `features.externalUserManagement.ldap.writeable` to be be set to `true`.
     autoprovisionAccounts: true
 
     oidc:
@@ -167,6 +166,8 @@ features:
       # -- OIDC Acces Token Verify Method
       # Set to "jwt" or "none"
       accessTokenVerifyMethod: "none"
+
+      scope: "openid profile email groups"
 
       # Configure OIDC role assignment. If activated, oCIS will read the role assigment from the OIDC token, see
       # xref:{s-path}/proxy.adoc#automatic-role-assignments[Automatic Role Assignments]
@@ -831,13 +832,7 @@ services:
         enabled: true
       feedbackLink:
         # -- Enables the feedback link in the Web UI.
-        enabled: true
-        # -- URI where the feedback link points. Uses the ownCloud default href if empty.
-        href: ""
-        # -- Screen reader accessible label for the feedback link. Uses the ownCloud default label if empty.
-        ariaLabel: ""
-        # -- Description to be shown for the feedback link. Uses the ownCloud default description if empty.
-        description: ""
+        enabled: false
       # -- Specifies which mimeTypes will be previewed in the UI.
       previewFileMimeTypes:
         []
