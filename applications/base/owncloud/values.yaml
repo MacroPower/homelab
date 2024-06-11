@@ -137,7 +137,7 @@ features:
   externalUserManagement:
     # -- Enables external user management (and disables internal user management).
     # Needs an external OpenID Connect Identity Provider and an external LDAP server.
-    enabled: true
+    enabled: false
 
     # -- Enables account auto provisioning.
     # It will create missing users on the LDAP server from OIDC information.
@@ -155,7 +155,7 @@ features:
       # When using Keycloak with the a realm named "ocis" this could point to eg. https://keycloak.owncloud.test/realms/ocis/account/
       editAccountLink: "https://authentik.home.macro.network/if/user/"
       # -- Specify the client ID which the web frontend will use
-      webClientID: web
+      webClientID: ocis
       # -- Claim to take an unique user identifier from. It will be used to look up the user on the LDAP server.
       userIDClaim: preferred_username
       # -- Attribute mapping of for the userIDClaim.

@@ -35,7 +35,11 @@ spec:
         domain_name = "owncloud.${var.authentik_cluster_external_domain}"
       }
 
-      data "authentik_flow" "default" {
+      data "authentik_flow" "default_authentication" {
+        slug = "default-authentication-flow"
+      }
+
+      data "authentik_flow" "default_authorization" {
         slug = "default-provider-authorization-explicit-consent"
       }
 
@@ -43,11 +47,16 @@ spec:
         name = "Authentik Certificate"
       }
 
-      data "authentik_scope_mapping" "scopes" {
+      data "authentik_scope_mapping" "oauth2" {
         managed_list = [
           "goauthentik.io/providers/oauth2/scope-email",
           "goauthentik.io/providers/oauth2/scope-openid",
           "goauthentik.io/providers/oauth2/scope-profile",
+        ]
+      }
+
+      data "authentik_scope_mapping" "oauth2_offline" {
+        managed_list = [
           "goauthentik.io/providers/oauth2/scope-offline_access",
         ]
       }
@@ -60,15 +69,16 @@ spec:
       resource "authentik_provider_oauth2" "owncloud_web_auth_provider" {
         name          = "owncloud-web"
         client_type   = "public"
-        client_id     = "web"
+        client_id     = "ocis"
         redirect_uris = [
           "https://${local.domain_name}",
           "https://${local.domain_name}/oidc-callback.html",
           "https://${local.domain_name}/oidc-silent-redirect.html",
         ]
-        property_mappings  = data.authentik_scope_mapping.scopes.ids
-        authorization_flow = data.authentik_flow.default.id
-        signing_key        = data.authentik_certificate_key_pair.cert.id
+        property_mappings   = data.authentik_scope_mapping.oauth2.ids
+        authentication_flow = data.authentik_flow.default_authentication.id
+        authorization_flow  = data.authentik_flow.default_authorization.id
+        # signing_key         = data.authentik_certificate_key_pair.cert.id
       }
 
       resource "authentik_provider_oauth2" "owncloud_desktop_auth_provider" {
@@ -79,9 +89,10 @@ spec:
           "http://127.0.0.1(:.*)?",
           "http://localhost(:.*)?",
         ]
-        property_mappings  = data.authentik_scope_mapping.scopes.ids
-        authorization_flow = data.authentik_flow.default.id
-        signing_key        = data.authentik_certificate_key_pair.cert.id
+        property_mappings   = concat(data.authentik_scope_mapping.oauth2_offline.ids, data.authentik_scope_mapping.oauth2.ids)
+        authorization_flow  = data.authentik_flow.default_authorization.id
+        authentication_flow = data.authentik_flow.default_authentication.id
+        # signing_key         = data.authentik_certificate_key_pair.cert.id
       }
 
       resource "authentik_application" "owncloud_web_application" {
