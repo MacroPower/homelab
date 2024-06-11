@@ -78,7 +78,7 @@ spec:
         property_mappings   = data.authentik_scope_mapping.oauth2.ids
         authentication_flow = data.authentik_flow.default_authentication.id
         authorization_flow  = data.authentik_flow.default_authorization.id
-        # signing_key         = data.authentik_certificate_key_pair.cert.id
+        signing_key         = data.authentik_certificate_key_pair.cert.id
       }
 
       resource "authentik_provider_oauth2" "owncloud_desktop_auth_provider" {
@@ -92,7 +92,7 @@ spec:
         property_mappings   = concat(data.authentik_scope_mapping.oauth2_offline.ids, data.authentik_scope_mapping.oauth2.ids)
         authorization_flow  = data.authentik_flow.default_authorization.id
         authentication_flow = data.authentik_flow.default_authentication.id
-        # signing_key         = data.authentik_certificate_key_pair.cert.id
+        signing_key         = data.authentik_certificate_key_pair.cert.id
       }
 
       resource "authentik_application" "owncloud_web_application" {
