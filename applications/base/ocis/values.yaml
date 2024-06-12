@@ -16,6 +16,11 @@ tracing:
 # -- Domain where oCIS is reachable for the outside world
 externalDomain: owncloud.home.macro.network
 
+# TODO: Fix this.
+insecure:
+  oidcIdpInsecure: true
+  ocisHttpApiInsecure: true
+
 cache:
   # -- Type of the cache to use.
   # Can be set to "nats-js-kv" or "redis-sentinel". There are also the non-recommended options "memory" and "noop".
