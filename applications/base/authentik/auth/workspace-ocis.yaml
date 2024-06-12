@@ -2,13 +2,13 @@
 apiVersion: tf.upbound.io/v1beta1
 kind: Workspace
 metadata:
-  name: authentik-owncloud
+  name: authentik-ocis
 spec:
   providerConfigRef:
     name: authentik
   writeConnectionSecretToRef:
     namespace: authentik
-    name: authentik-owncloud
+    name: authentik-ocis
   forProvider:
     source: Inline
     varFiles:

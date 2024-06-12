@@ -2,8 +2,8 @@ local app = import '../../lib/app.libsonnet';
 local ns = import 'namespace.libsonnet';
 
 app.new(
-  name='owncloud',
-  path='applications/base/owncloud',
+  name='ocis',
+  path='applications/base/ocis',
   namespace=ns.metadata.name,
 ).withChart(
   name='ocis',

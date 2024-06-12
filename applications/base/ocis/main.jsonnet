@@ -1,4 +1,4 @@
-// jsonnet base/owncloud/main.jsonnet -J vendor
+// jsonnet base//main.jsonnet -J vendor
 
 local ns = import 'namespace.libsonnet';
 
