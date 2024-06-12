@@ -410,36 +410,30 @@ services:
   groups:
     resources: {}
 
-  ## -- IDM service. Not used if `features.externalUserManagement.enabled` equals `true`.
-  # idm: {}
-
-  ## -- IDP service. Not used if `features.externalUserManagement.enabled` equals `true`.
-  # idp: {}
-
-  # -- NATS service. Not used if `messagingSystem.external.enabled` equals `true`.
-  # @default -- see detailed service configuration options below
-  nats:
-    resources: {}
+  # -- IDM service. Not used if `features.externalUserManagement.enabled` equals `true`.
+  idm:
     # -- Persistence settings.
-    # @default -- see detailed persistence configuration options below
     persistence:
-      # -- Enables persistence.
-      # Needs to be enabled on production installations, except `messagingSystem.external.enabled` equals `true`.
-      # If not enabled, pod restarts will lead to data loss.
-      enabled: false
-      # -- Enables an initContainer to chown the volume.
+      enabled: true
       # The initContainer is run as root.
       # This is not needed if the driver applies the fsGroup from the securityContext.
       # The image specified in `initContainerImage` will be used for this container.
       chownInitContainer: false
-      # -- Storage class to use.
-      # Uses the default storage class if not set.
-      storageClassName:
-      # -- Persistent volume access modes.
+      storageClassName: ceph-block
+      size: 10Gi
       accessModes:
         - ReadWriteOnce
-      # -- Size of the persistent volume.
-      size: 10Gi
+    # -- Per-service resources configuration.
+    resources: {}
+
+  # -- IDP service. Not used if `features.externalUserManagement.enabled` equals `true`.
+  idp:
+    # -- Per-service resources configuration.
+    resources: {}
+
+  # -- NATS service. Not used if `messagingSystem.external.enabled` equals `true`.
+  nats:
+    resources: {}
 
   # -- NOTIFICATIONS service. Not used if `features.emailNotifications.enabled` equals `true`.
   notifications:
@@ -472,7 +466,6 @@ services:
   # -- SEARCH service.
   search:
     # -- Search Extractor settings.
-    # @default -- see detailed search extractor configuration options below
     extractor:
       # -- Configures the search extractor type to be used. Possible extractors:
       # - `basic`: the default search extractor.
@@ -487,37 +480,17 @@ services:
         # -- Defines if stop words should be cleaned or not.
         cleanStopWords: true
     # -- Persistence settings.
-    # @default -- see detailed persistence configuration options below
     persistence:
-      # -- Enables persistence.
-      # Needs to be enabled on production installations.
-      # If not enabled, pod restarts will lead to data loss.
-      enabled: false
-      # -- Enables an initContainer to chown the volume.
+      enabled: true
       # The initContainer is run as root.
       # This is not needed if the driver applies the fsGroup from the securityContext.
       # The image specified in `initContainerImage` will be used for this container.
       chownInitContainer: false
-      # -- Storage class to use.
-      # Uses the default storage class if not set.
-      storageClassName:
-      # -- Persistent volume access modes.
+      storageClassName: ceph-block
+      size: 10Gi
       accessModes:
         - ReadWriteOnce
-      # -- Size of the persistent volume.
-      size: 10Gi
-      # -- Persistent volume annotations.
-      annotations: {}
-      # -- Persistent volume finalizers.
-      finalizers:
-        - kubernetes.io/pvc-protection
-      # -- Persistent volume selector labels.
-      selectorLabels: {}
-      # -- Use a custom name for the PVC instead of the default one.
-      claimName: ""
-      # -- Use an existing PersistentVolumeClaim for persistence.
-      existingClaim:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
+    # -- Per-service resources configuration.
     resources: {}
 
   # -- SETTINGS service.
@@ -597,59 +570,6 @@ services:
           maxConcurrency: 100
           # -- Metadata backend to use for the oCIS storage driver. Valid values are: "messagepack", "xattrs".
           metadataBackend: messagepack
-        s3ng:
-          # -- Maximum number of concurrent go-routines. Higher values can potentially get work done faster but will also cause more load on the system.
-          maxConcurrency: 100
-          # -- Metadata backend to use for the S3NG storage driver. Valid values are: "messagepack", "xattrs".
-          metadataBackend: messagepack
-
-          # The S3NG driver needs an existing S3 bucket with following permissions:
-          # {
-          #     "Version": "2012-10-17",
-          #     "Statement": [
-          #         {
-          #             "Sid": "ListBucket",
-          #             "Effect": "Allow",
-          #             "Action": [
-          #                 "s3:ListBucket"
-          #             ],
-          #             "Resource": [
-          #                 "arn:aws:s3:::bucket-name"
-          #             ]
-          #         },
-          #         {
-          #             "Sid": "ActionsInBucketContext",
-          #             "Effect": "Allow",
-          #             "Action": [
-          #                 "s3:*Object",
-          #                 "s3:*MultipartUpload",
-          #                 "s3:ListMultipartUploadParts"
-          #             ],
-          #             "Resource": [
-          #                 "arn:aws:s3:::bucket-name/*"
-          #             ]
-          #         }
-          #     ]
-          # }
-          # -- S3 endpoint to use for the S3NG driver. Only used if driver is set to "s3ng".
-          endpoint: https://localhost:1234
-          # -- S3 region to use for the S3NG driver. Only used if driver is set to "s3ng".
-          region: default
-          # -- S3 bucket to use for the S3NG driver. Only used if driver is set to "s3ng".
-          bucket: example-bucket
-          # -- Disable sending content sha256 when copying objects to S3.
-          disableContentSHA256: false
-          putObject:
-            # -- Disable multipart uploads when copying objects to S3
-            disableMultipart: false
-            # -- Send a Content-MD5 header when copying objects to S3.
-            sendContentMD5: true
-            # -- Always precreate parts when copying objects to S3.
-            concurrentStreamParts: true
-            # -- Number of concurrent uploads to use when copying objects to S3.
-            numThreads: 4
-            # -- Part size for concurrent uploads to S3.
-            partSize: 0
 
     maintenance:
       # Expired uploads can be cleaned up automatically by enabling the clean up job.
