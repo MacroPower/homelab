@@ -22,26 +22,24 @@ cache:
   # The address of NATS / Redis Sentinel node(s) needs to be set to `cache.nodes`.
   type: "nats-js-kv"
   # -- Nodes of the cache to use.
-  nodes:
-    - "{{ .appNameNats }}:9233"
+  nodes: &natsNodes
+    - nats-0.nats-headless.ocis-nats.svc.cluster.local:4222
+    - nats-1.nats-headless.ocis-nats.svc.cluster.local:4222
+    - nats-2.nats-headless.ocis-nats.svc.cluster.local:4222
 
 store:
   # -- Configure the store type.
   # Can be set to "nats-js-kv" or "redis-sentinel". There is also the non-recommended option "memory".
   # The address of NATS / Redis Sentinel node(s) needs to be set to `cache.nodes`.
   type: nats-js-kv
-  # -- Nodes of the store to use.
-  nodes:
-    - "{{ .appNameNats }}:9233"
+  nodes: *natsNodes
 
 registry:
   # -- Configure the service registry type.
   # Can be set to "nats-js-kv".
   # The address of NATS node(s) needs to be set to `cache.nodes`.
   type: nats-js-kv
-  # -- Nodes of the service registry to use.
-  nodes:
-    - "{{ .appNameNats }}:9233"
+  nodes: *natsNodes
 
 messagingSystem:
   external:
@@ -49,22 +47,13 @@ messagingSystem:
     # Recommended for all production instances.
     # Needs to be used if HighAvailability is needed.
     # Needs to be used if oCIS shall be used by more than a 2-digit user count.
-    enabled: false
+    enabled: true
     # -- Endpoint of the messaging system.
     endpoint: "nats.ocis-nats.svc.cluster.local:4222"
     # -- Cluster name to use with the messaging system.
     cluster: "ocis-cluster"
     tls:
-      # -- Enables TLS encrypted communication with the messaging system.
-      # Recommended for production installations.
-      enabled: true
-      # -- Set only to false, if the certificate of your messaging system service is not trusted.
-      # If set to false, you need to put the CA cert of the messaging system server into the secret referenced by "messagingSystemCaRef"
-      certTrusted: true
-      # -- Disables SSL certificate checking for connections to the messaging system server.
-      # -- For self signed certificates, consider to put the CA cert of the messaging system secure server into the secret referenced by "messagingSystemCaRef"
-      # Not recommended for production installations.
-      insecure: false
+      enabled: false
 
 # -- provide custom hostnames to every oCIS pods
 hostAliases: []
@@ -384,15 +373,6 @@ services:
   # -- EVENT HISTORY service.
   eventhistory:
     resources: {}
-    # -- Per-service store configuration for the eventhistory service. Overrides the default setting from `store` if set.
-    store:
-      {}
-      # -- Configure the store type for the eventhistory service. Might be `memory` (only for testing), `redis-sentinel`, `nats-js-kv`
-      #type:
-      # -- Provide a list of comma-separated addresses of `redis-sentinel` or `nats-js` servers here
-      # if the proper store is selected
-      # addresses: []
-      # - "{{ .appNameNats }}:9233"
 
   # -- FRONTEND service.
   frontend:
@@ -703,41 +683,8 @@ services:
         method: atime
 
   # -- USERLOG service.
-  # @default -- see detailed service configuration options below
   userlog:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service store configuration for the userlog service. Overrides the default setting from `store` if set.
-    store:
-      {}
-      # -- Configure the store type for the userlog service. Might be `memory` (only for testing), `redis-sentinel`, `nats-js-kv`
-      # type:
-      # -- Provide a list of comma-separated addresses of `redis-sentinel` or `nats-js` servers here
-      # if the proper store is selected
-      # addresses:
-      # - "{{ .appNameNats }}:9233"
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the userlog service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- USERS service.
   users:

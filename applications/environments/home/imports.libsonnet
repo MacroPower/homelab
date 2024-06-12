@@ -36,6 +36,7 @@
   import 'metrics-server/application.libsonnet',
   import 'node-feature-discovery/application.libsonnet',
   import 'ntp-server/application.libsonnet',
+  import 'ocis-nats/application.libsonnet',
   import 'ocis/application.libsonnet',
   import 'opentelemetry-collector/application.libsonnet',
   import 'opentelemetry-operator/application.libsonnet',

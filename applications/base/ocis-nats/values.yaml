@@ -1,0 +1,36 @@
+global:
+  image:
+    pullPolicy: IfNotPresent
+
+config:
+  cluster:
+    enabled: true
+    port: 6222
+    replicas: 3
+
+  jetstream:
+    enabled: true
+    fileStore:
+      enabled: true
+      pvc:
+        enabled: true
+        size: 10Gi
+        storageClassName: ceph-block
+    memoryStore:
+      enabled: true
+      # ensure that container has a sufficient memory limit greater than maxSize
+      maxSize: 1Gi
+
+container:
+  env:
+    # different from k8s units, suffix must be B, KiB, MiB, GiB, or TiB
+    # should be ~90% of memory limit
+    GOMEMLIMIT: 3GiB
+  merge:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 4Gi
+      limits:
+        cpu: 1000m
+        memory: 4Gi
