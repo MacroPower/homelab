@@ -1,4 +1,18 @@
 ---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: ocis-authentik-ns-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: authentik-ns-secrets
+subjects:
+  - kind: ServiceAccount
+    name: ocis-authentik-ns-secrets
+    namespace: ocis
+
+---
 apiVersion: tf.upbound.io/v1beta1
 kind: Workspace
 metadata:
@@ -126,4 +140,81 @@ spec:
       resource "authentik_group" "owncloud_guest" {
         name   = "ocisGuest"
         parent = authentik_group.owncloud_user.id
+      }
+
+      locals {
+        base_dn = join(",", [for part in split(".", local.domain_name) : "DC=${part}"])
+      }
+
+      resource "random_password" "ocis_service_account" {
+        length  = 30
+        lower   = true
+        numeric = true
+        upper   = true
+        special = false
+      }
+
+      resource "authentik_user" "ocis_service_account" {
+        username = "ocis"
+        type     = "service_account"
+        password = random_password.ocis_service_account.result
+      }
+
+      resource "authentik_group" "owncloud_ldap_search" {
+        name   = "ocisLdapSearch"
+        users  = [data.authentik_user.akadmin.id, authentik_user.ocis_service_account.id]
+      }
+
+      resource "authentik_provider_ldap" "owncloud" {
+        name            = "owncloud-ldap"
+        base_dn         = local.base_dn
+        bind_flow       = data.authentik_flow.default_authentication.id
+        tls_server_name = var.authentik_cluster_external_host
+        search_group    = authentik_group.owncloud_ldap_search.id
+        certificate     = data.authentik_certificate_key_pair.cert.id
+      }
+
+      resource "authentik_application" "owncloud_ldap" {
+        name              = local.base_dn
+        slug              = "owncloud-ldap"
+        protocol_provider = authentik_provider_ldap.owncloud.id
+      }
+
+      resource "authentik_service_connection_kubernetes" "local_owncloud_ldap" {
+        name  = "local-owncloud-ldap"
+        local = true
+      }
+
+      resource "authentik_outpost" "owncloud_ldap" {
+        name = "ownCloud LDAP Outpost"
+        type = "ldap"
+        protocol_providers = [
+          authentik_provider_ldap.owncloud.id
+        ]
+        service_connection = authentik_service_connection_kubernetes.local_owncloud_ldap.id
+        config = jsonencode({
+          log_level                      = "info"
+          docker_labels                  = null
+          authentik_host                 = "https://authentik.home.macro.network"
+          docker_network                 = null
+          container_image                = null
+          docker_map_ports               = true
+          kubernetes_replicas            = 1
+          kubernetes_namespace           = "authentik"
+          authentik_host_browser         = ""
+          object_naming_template         = "ak-outpost-%(name)s"
+          authentik_host_insecure        = false
+          kubernetes_json_patches        = null
+          kubernetes_service_type        = "ClusterIP"
+          kubernetes_image_pull_secrets  = []
+          kubernetes_ingress_class_name  = null
+          kubernetes_disabled_components = []
+          kubernetes_ingress_annotations = {}
+          kubernetes_ingress_secret_name = "authentik-outpost-tls"
+        })
+      }
+
+      output "ocis_service_account_password" {
+        value     = random_password.ocis_service_account.result
+        sensitive = true
       }

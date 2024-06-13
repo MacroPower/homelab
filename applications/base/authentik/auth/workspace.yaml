@@ -35,9 +35,23 @@ spec:
         type = string
       }
 
+      data "authentik_flow" "default_authentication" {
+        slug = "default-authentication-flow"
+      }
+
+      data "authentik_flow" "default_authorization" {
+        slug = "default-provider-authorization-explicit-consent"
+      }
+
+      resource "authentik_certificate_key_pair" "authentik_cert" {
+        name             = "Authentik Certificate"
+        certificate_data = file("${path.module}/authentik-cert-tls-crt")
+        key_data         = file("${path.module}/authentik-cert-tls-key")
+      }
+
       resource "authentik_provider_proxy" "domain-forward-auth-provider" {
         name               = "domain-forward-auth-provider"
-        cookie_domain      = var.authentik_cluster_cookie_domain
+        cookie_domain      = var.authentik_cluster_external_domain
         external_host      = "https://${var.authentik_cluster_external_host}"
         mode               = "forward_domain"
         authorization_flow = data.authentik_flow.default-authorization-flow.id
@@ -47,7 +61,7 @@ spec:
       }
 
       resource "authentik_application" "domain-forward-auth-application" {
-        name              = var.authentik_cluster_cookie_domain
+        name              = var.authentik_cluster_external_domain
         slug              = "domain-forward-auth-application"
         protocol_provider = authentik_provider_proxy.domain-forward-auth-provider.id
       }
