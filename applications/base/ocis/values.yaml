@@ -180,6 +180,15 @@ features:
             claim_value: ocisGuest
 
     # LDAP related settings.
+    #
+    # Debug LDAP issues:
+    #   kubectl run tmp-shell --rm -i --tty --image ghcr.io/macropower/ldap-debug:rolling
+    #   ldapsearch -x -H ldap://ak-outpost-owncloud-ldap-outpost.authentik.svc \
+    #     -D 'uid=ocis,ou=users,dc=owncloud,dc=home,dc=macro,dc=network' \
+    #     -b 'dc=owncloud,dc=home,dc=macro,dc=network' \
+    #     -w '<ldapuserpassword>'
+    #
+    #
     ldap:
       uri: ldap://ak-outpost-owncloud-ldap-outpost.authentik.svc
       insecure: true
@@ -199,7 +208,7 @@ features:
       # -- DN of the user to use to bind to the LDAP server.
       # The password for the user needs to be set in the secret referenced by `secretRefs.ldapSecretRef` as `reva-ldap-bind-password`.
       # The user needs to have permission to list users and groups.
-      bindDN: uid=ocis,ou=users,dc=owncloud,dc=home,dc=macro,dc=network
+      bindDN: cn=ocis,ou=users,dc=owncloud,dc=home,dc=macro,dc=network
       # -- Signals that the LDAP server has the refint plugin enabled, which makes some actions not needed.
       refintEnabled: false
       # -- Use the Password Modify Extended Operation for updating user passwords.
@@ -223,7 +232,7 @@ features:
         # -- Search base DN for looking up LDAP users.
         baseDN: ou=users,dc=owncloud,dc=home,dc=macro,dc=network
         # -- LDAP search scope to use when looking up users. Supported values are `base`, `one` and `sub`.
-        scope: sub
+        scope: base
         # -- Type of substring search filter to use for substring searches for users. Possible values: `initial` for doing prefix only searches, `final` for doing suffix only searches or `any` for doing full substring searches
         substringFilterType: any
         # -- LDAP filter to add to the default filters for user search like `(objectclass=ownCloud)`.
@@ -247,7 +256,7 @@ features:
         # -- Search base DN for looking up LDAP groups.
         baseDN: ou=groups,dc=owncloud,dc=home,dc=macro,dc=network
         # -- LDAP search scope to use when looking up groups. Supported values are `base`, `one` and `sub`.
-        scope: sub
+        scope: base
         # -- LDAP filter to add to the default filters for group searches.
         filter: ""
         # -- The object class to use for groups in the default group search filter like `groupOfNames`.
