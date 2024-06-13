@@ -1,0 +1,45 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ocis-authentik-ns-secrets
+
+---
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: authentik-ns
+spec:
+  provider:
+    kubernetes:
+      remoteNamespace: authentik
+      server:
+        caProvider:
+          type: ConfigMap
+          name: kube-root-ca.crt
+          key: ca.crt
+      auth:
+        serviceAccount:
+          name: ocis-authentik-ns-secrets
+
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: &name ldap-bind-secrets
+spec:
+  refreshInterval: 120s
+  secretStoreRef:
+    kind: SecretStore
+    name: authentik-ns
+  data:
+    - secretKey: password
+      remoteRef:
+        key: authentik-ocis
+        property: ocis_service_account_password
+  target:
+    name: *name
+    template:
+      engineVersion: v2
+      data:
+        reva-ldap-bind-password: "{{ .password }}"
