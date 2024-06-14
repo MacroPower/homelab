@@ -146,10 +146,10 @@ features:
       issuerURI: https://authentik.home.macro.network/application/o/owncloud-web/
       # -- Link to the OIDC provider's user accessible session management. This will be shown to the user on the personal account page.
       # When using Keycloak with the a realm named "ocis" this could point to eg. https://keycloak.owncloud.test/realms/ocis/account/
-      sessionManagementLink: "https://authentik.home.macro.network/if/user/"
+      sessionManagementLink: 'https://authentik.home.macro.network/if/user/#/settings;{"page"%3A"page-sessions"}'
       # -- Link to the OIDC provider's user accessible account editing page. This will be shown to the user on the personal account page.
       # When using Keycloak with the a realm named "ocis" this could point to eg. https://keycloak.owncloud.test/realms/ocis/account/
-      editAccountLink: "https://authentik.home.macro.network/if/user/"
+      editAccountLink: 'https://authentik.home.macro.network/if/user/#/settings;{"page"%3A"page-details"}'
       # -- Specify the client ID which the web frontend will use
       webClientID: ocis
       # -- Claim to take an unique user identifier from. It will be used to look up the user on the LDAP server.
