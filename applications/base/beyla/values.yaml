@@ -34,7 +34,7 @@ config:
       unmatched: heuristic
     log_level: info
     ebpf:
-      wakeup_len: 100
+      wakeup_len: 10
     otel_traces_export:
       endpoint: http://main-collector.opentelemetry.svc:4317
     attributes:
