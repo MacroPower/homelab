@@ -1,6 +1,10 @@
+# https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml
+
 deployment:
   kind: Deployment
   replicas: 3
+  podAnnotations:
+    instrumentation.opentelemetry.io/inject-sdk: opentelemetry/default
 
 podDisruptionBudget:
   enabled: true

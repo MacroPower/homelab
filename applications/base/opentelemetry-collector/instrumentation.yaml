@@ -1,0 +1,13 @@
+---
+apiVersion: opentelemetry.io/v1alpha1
+kind: Instrumentation
+metadata:
+  name: default
+spec:
+  exporter:
+    endpoint: http://main-collector.opentelemetry.svc:4317
+  propagators:
+    - tracecontext
+    - baggage
+  sampler:
+    type: always_on
