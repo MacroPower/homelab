@@ -1,7 +1,7 @@
 image:
   # https://hub.docker.com/r/rdavidoff/twitch-channel-points-miner-v2
   repository: rdavidoff/twitch-channel-points-miner-v2
-  tag: "1.9.5"
+  tag: "1.9.6"
 
 configMaps:
   config:
