@@ -18,15 +18,21 @@ cephClusterSpec:
   network:
     provider: host
     connections:
+      requireMsgr2: false
       compression:
-        enabled: true
+        enabled: false
+      encryption:
+        enabled: false
+
   crashCollector:
     disable: false
+
   dashboard:
     enabled: true
     urlPrefix: /
     ssl: false
     prometheusEndpoint: http://prometheus-operated.prometheus.svc:9090
+
   mgr:
     modules:
       - name: pg_autoscaler

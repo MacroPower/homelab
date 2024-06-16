@@ -551,31 +551,17 @@ services:
       # Needs to be enabled on production installations.
       # If not enabled, pod restarts will lead to data loss.
       # Also scaling this service to more than one replica is not possible if the pods don't share the same volume.
-      enabled: false
+      enabled: true
       # -- Enables an initContainer to chown the volume.
       # The initContainer is run as root.
       # This is not needed if the driver applies the fsGroup from the securityContext.
       # The image specified in `initContainerImage` will be used for this container.
       chownInitContainer: false
-      # -- Storage class to use.
-      # Uses the default storage class if not set.
-      storageClassName:
+      storageClassName: ceph-filesystem
       # -- Persistent volume access modes. Needs to be `["ReadWriteMany"]` when having more than one replica for this service.
       accessModes:
         - ReadWriteMany
-      # -- Size of the persistent volume.
       size: 5Gi
-      # -- Persistent volume annotations.
-      annotations: {}
-      # -- Persistent volume finalizers.
-      finalizers:
-        - kubernetes.io/pvc-protection
-      # -- Persistent volume selector labels.
-      selectorLabels: {}
-      # -- Use a custom name for the PVC instead of the default one.
-      claimName: ""
-      # -- Use an existing PersistentVolumeClaim for persistence.
-      existingClaim:
     # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
 
@@ -585,7 +571,6 @@ services:
       consumer:
         # -- Number of event consumers to be started that concurrently consume events (eg. postprocessing related events)
         concurrency: 10
-
     storageBackend:
       # -- Configures the storage driver. Possible values are "ocis" and "s3ng".
       # The oCIS driver stores all data in the persistent volume if persistence is enabled.
@@ -597,7 +582,6 @@ services:
           maxConcurrency: 100
           # -- Metadata backend to use for the oCIS storage driver. Valid values are: "messagepack", "xattrs".
           metadataBackend: messagepack
-
     maintenance:
       # Expired uploads can be cleaned up automatically by enabling the clean up job.
       cleanUpExpiredUploads:
@@ -630,25 +614,10 @@ services:
         schedule: "0 * * * *"
         # -- Defines the a deadline (in whole seconds) for starting the Job, if that Job misses its scheduled time for any reason.
         startingDeadlineSeconds: 600
-      # Image for the storageusers service maintenance jobs
-      # Defaults to the same values as `image`
-      image:
-        # -- Image repository
-        repository: ""
-        # -- Image tag.
-        tag: ""
-        # -- Image sha / digest (optional).
-        sha: ""
-        # -- Image pull policy
-        pullPolicy:
-
     # -- Persistence settings.
     persistence:
       # -- Enables persistence.
-      # Needs to be enabled on production installations.
-      # If not enabled, pod restarts will lead to data loss.
-      # Also scaling this service to more than one replica is not possible if the pods don't share the same volume.
-      enabled: false
+      enabled: true
       # -- Enables an initContainer to chown the volume.
       # The initContainer is run as root.
       # This is not needed if the driver applies the fsGroup from the securityContext.
@@ -656,21 +625,15 @@ services:
       chownInitContainer: false
       # -- Storage class to use.
       # Uses the default storage class if not set.
-      storageClassName:
+      storageClassName: ceph-filesystem
       # -- Persistent volume access modes. Needs to be `["ReadWriteMany"]` when having more than one replica for this service.
       accessModes:
         - ReadWriteMany
       # -- Size of the persistent volume.
       size: 50Gi
-      # -- Persistent volume annotations.
-      annotations: {}
       # -- Persistent volume finalizers.
       finalizers:
         - kubernetes.io/pvc-protection
-      # -- Persistent volume selector labels.
-      selectorLabels: {}
-      # -- Use a custom name for the PVC instead of the default one.
-      claimName: ""
       # -- Use an existing PersistentVolumeClaim for persistence.
       existingClaim:
     resources: {}
@@ -684,30 +647,17 @@ services:
       # Is recommended to be enabled on production installations.
       # If enabled, generated thumbnails are cached on this volume and available across pod restarts and service instances.
       # If not enabled, thumbnail generation might lead to higher CPU usage.
-      enabled: false
+      enabled: true
       # -- Enables an initContainer to chown the volume.
       # The initContainer is run as root.
       # This is not needed if the driver applies the fsGroup from the securityContext.
       # The image specified in `initContainerImage` will be used for this container.
       chownInitContainer: false
-      # -- Storage class to use.
-      # Uses the default storage class if not set.
-      storageClassName:
-      # -- Persistent volume access modes. Needs to be `["ReadWriteMany"]` when having more than one replica for this service or persistence needs to be disabled.
+      storageClassName: ceph-filesystem
+      # -- Persistent volume access modes. Needs to be `["ReadWriteMany"]` when having more than one replica for this service.
       accessModes:
         - ReadWriteMany
-      # -- Size of the persistent volume.
       size: 10Gi
-      # -- Persistent volume annotations.
-      annotations: {}
-      # -- Persistent volume finalizers.
-      finalizers: []
-      # -- Persistent volume selector labels.
-      selectorLabels: {}
-      # -- Use a custom name for the PVC instead of the default one.
-      claimName: ""
-      # -- Use an existing PersistentVolumeClaim for persistence.
-      existingClaim:
     # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
     # -- Per-service jobResources configuration. Overrides the default setting from `jobResources` if set.
@@ -716,7 +666,7 @@ services:
     maintenance:
       cleanUpOldThumbnails:
         # -- Enables a job, that cleans up old thumbnails. Requires persistence to be enabled.
-        enabled: false
+        enabled: true
         # -- Cron pattern for the job to be run.
         schedule: "0 * * * *"
         # -- Defines the a deadline (in whole seconds) for starting the Job, if that Job misses its scheduled time for any reason.
@@ -836,36 +786,12 @@ services:
         shareCreateRequests:
         # Defines the maximum number of concurrent requests when loading individual share information inside listings. If uset, the default of ownCloud Web will be used.
         shareListRequests:
-
     # -- Persistence settings.
     # @default -- see detailed persistence configuration options below
     persistence:
       # -- Enables persistence.
       # Only needed if you want to change the oCIS instance logo via the Web UI.
       enabled: false
-      # -- Enables an initContainer to chown the volume.
-      # The initContainer is run as root.
-      # This is not needed if the driver applies the fsGroup from the securityContext.
-      # The image specified in `initContainerImage` will be used for this container.
-      chownInitContainer: false
-      # -- Storage class to use.
-      # Uses the default storage class if not set.
-      storageClassName:
-      # -- Persistent volume access modes. Needs to be `["ReadWriteMany"]` when having more than one replica for this service or persistence needs to be disabled.
-      accessModes:
-        - ReadWriteMany
-      # -- Size of the persistent volume.
-      size: 1Gi
-      # -- Persistent volume annotations.
-      annotations: {}
-      # -- Persistent volume finalizers.
-      finalizers: []
-      # -- Persistent volume selector labels.
-      selectorLabels: {}
-      # -- Use a custom name for the PVC instead of the default one.
-      claimName: ""
-      # -- Use an existing PersistentVolumeClaim for persistence.
-      existingClaim:
     # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
 

@@ -2,15 +2,14 @@ crds:
   enabled: true
 
 csi:
-  kubeletDirPath: /var/lib/kubelet
   enableGrpcMetrics: true
+  enableLiveness: true
   csiAddons:
-    enabled: true
-  ## TODO: ServiceMonitor.monitoring.coreos.com "csi-metrics" is invalid:
-  ## spec.endpoints: Invalid value: "null": spec.endpoints in body must be of type array
-  ##
-  serviceMonitor:
     enabled: false
+  nfs:
+    enabled: true
+  serviceMonitor:
+    enabled: true
   topology:
     enabled: true
     domainLabels:

@@ -10,7 +10,6 @@
   import 'coredns/application.libsonnet',
   import 'crossplane-packages/application.libsonnet',
   import 'crossplane/application.libsonnet',
-  import 'csi-addons/application.libsonnet',
   import 'defectdojo/application.libsonnet',
   import 'descheduler/application.libsonnet',
   import 'dragonfly-operator/application.libsonnet',
