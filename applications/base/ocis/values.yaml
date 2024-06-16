@@ -13,9 +13,6 @@ tracing:
   type: "otlp"
   endpoint: "main-collector.opentelemetry.svc:4317"
 
-extraLabels:
-  o11y.jacobcolvin.com/instrument: "beyla"
-
 # -- Domain where oCIS is reachable for the outside world
 externalDomain: owncloud.home.macro.network
 
