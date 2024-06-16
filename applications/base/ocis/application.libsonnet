@@ -11,17 +11,4 @@ app.new(
   targetRevision='0.7.1',
   releaseName='ocis',
   values='values.yaml'
-).withIgnoreDifferences([
-  {
-    kind: 'Secret',
-    jsonPointers: [
-      '/data',
-    ],
-  },
-  {
-    kind: 'ConfigMap',
-    jsonPointers: [
-      '/data',
-    ],
-  },
-])
+)
