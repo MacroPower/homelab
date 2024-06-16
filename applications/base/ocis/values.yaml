@@ -14,12 +14,7 @@ tracing:
   endpoint: "main-collector.opentelemetry.svc:4317"
 
 # -- Domain where oCIS is reachable for the outside world
-externalDomain: owncloud.home.macro.network
-
-# TODO: Fix this.
-insecure:
-  oidcIdpInsecure: true
-  ocisHttpApiInsecure: true
+externalDomain: &domainName owncloud.home.macro.network
 
 cache:
   # -- Type of the cache to use.
@@ -27,22 +22,22 @@ cache:
   # The address of NATS / Redis Sentinel node(s) needs to be set to `cache.nodes`.
   type: "nats-js-kv"
   # -- Nodes of the cache to use.
-  nodes: &natsNodes
-    - nats.ocis-nats.svc.cluster.local:4222
+  nodes:
+    - &natsCluster nats.ocis-nats.svc.cluster.local:4222
 
 store:
   # -- Configure the store type.
   # Can be set to "nats-js-kv" or "redis-sentinel". There is also the non-recommended option "memory".
   # The address of NATS / Redis Sentinel node(s) needs to be set to `cache.nodes`.
   type: nats-js-kv
-  nodes: *natsNodes
+  nodes: [*natsCluster]
 
 registry:
   # -- Configure the service registry type.
   # Can be set to "nats-js-kv".
   # The address of NATS node(s) needs to be set to `cache.nodes`.
   type: nats-js-kv
-  nodes: *natsNodes
+  nodes: [*natsCluster]
 
 messagingSystem:
   external:
@@ -53,17 +48,11 @@ messagingSystem:
     # Needs to be used if oCIS shall be used by more than a 2-digit user count.
     enabled: true
     # -- Endpoint of the messaging system.
-    endpoint: "nats.ocis-nats.svc.cluster.local:4222"
+    endpoint: *natsCluster
     # -- Cluster name to use with the messaging system.
     cluster: "ocis-cluster"
     tls:
       enabled: false
-
-# -- provide custom hostnames to every oCIS pods
-hostAliases: []
-# - ip: "192.168.49.2"
-#   hostnames:
-#   - "ocis.kube.owncloud.test"
 
 # Feature options.
 # Enable or disable features of oCIS.
@@ -261,14 +250,6 @@ features:
         # -- The object class to use for groups in the default group search filter like `groupOfNames`.
         objectClass: group
 
-  # Define custom roles here. Note that the definition will be either or. So you cannot provide a ConfigMap name and text at once.
-  roles:
-    # -- Define the roles by specifying a name of a ConfigMap which already contains the the role description (might also be defined in the `extraResources` section).
-    # The ConfigMap needs to contain a file named `custom-roles.json` which holds the role description in JSON format
-    # Please note that you have to restart the settings service manually if you change the content of you ConfigMap.
-    customRolesConfigRef:
-    # -- Define the roles by providing the JSON text here.
-    customRoles: ""
   # Define quota settings.
   quotas:
     # -- Sets the maximum quota for spaces in bytes. So 1000 sets the max quota to 1KB.
@@ -317,8 +298,7 @@ ingress:
     gethomepage.dev/siteMonitor: "http://proxy.ocis.svc:9205/healthz"
     gethomepage.dev/podSelector: ""
   tls:
-    - hosts:
-        - owncloud.home.macro.network
+    - hosts: [*domainName]
 
 # References to ConfigMaps.
 # The ConfigMaps need to be manually created.
@@ -403,54 +383,48 @@ podDisruptionBudget:
 # - set memory request == memory limit (compare to https://home.robusta.dev/blog/kubernetes-memory-limit)
 # - set cpu request and omit cpu limit (compare to https://home.robusta.dev/blog/stop-using-cpu-limits)
 resources:
-  {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  limits:
+    cpu: 2000m
+    memory: 250Mi
+  requests:
+    cpu: 20m
+    memory: 250Mi
 
 # -- Default resources to apply to all jobs in services, except per-service resources configuration in `services.<service-name>.jobResources` is set.
 # Best practice is to:
 # - set memory request == memory limit (compare to https://home.robusta.dev/blog/kubernetes-memory-limit)
 # - set cpu request and omit cpu limit (compare to https://home.robusta.dev/blog/stop-using-cpu-limits)
 jobResources:
-  {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  limits:
+    cpu: 2000m
+    memory: 250Mi
+  requests:
+    cpu: 20m
+    memory: 250Mi
 
 # per-service configuration.
 services:
-  ## -- APP PROVIDER service. Not used if `features.appsIntegration.enabled` equals `false`.
-  # appprovider: {}
+  # -- APP PROVIDER service. Not used if `features.appsIntegration.enabled` equals `false`.
+  appprovider: {}
 
   appregistry:
     resources: {}
 
   # -- AUDIT service.
-  # @default -- see detailed service configuration options below
   audit:
     resources: {}
 
   # -- AUTH MACHINE service.
-  # @default -- see detailed service configuration options below
   authmachine:
-    # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
 
   # -- AUTH SERVICE service.
-  # @default -- see detailed service configuration options below
   authservice:
     resources: {}
 
-  ## -- ANTIVIRUS service. Not used if `features.virusscan.enabled` equals `false`.
-  # antivirus:
-  #   resources: {}
+  # -- ANTIVIRUS service. Not used if `features.virusscan.enabled` equals `false`.
+  antivirus:
+    resources: {}
 
   # -- CLIENTLOG service.
   clientlog:
@@ -479,16 +453,7 @@ services:
   # -- IDM service. Not used if `features.externalUserManagement.enabled` equals `true`.
   idm:
     # -- Persistence settings.
-    persistence:
-      enabled: true
-      # The initContainer is run as root.
-      # This is not needed if the driver applies the fsGroup from the securityContext.
-      # The image specified in `initContainerImage` will be used for this container.
-      chownInitContainer: false
-      storageClassName: ceph-block
-      size: 10Gi
-      accessModes:
-        - ReadWriteOnce
+    persistence: {}
     # -- Per-service resources configuration.
     resources: {}
 
@@ -518,7 +483,6 @@ services:
     resources: {}
 
   # -- POSTPROCESSING service.
-  # @default -- see detailed service configuration options below
   postprocessing:
     # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
@@ -580,10 +544,8 @@ services:
     resources: {}
 
   # -- STORAGE-SYSTEM service.
-  # @default -- see detailed service configuration options below
   storagesystem:
     # -- Persistence settings.
-    # @default -- see detailed persistence configuration options below
     persistence:
       # -- Enables persistence.
       # Needs to be enabled on production installations.
@@ -618,7 +580,6 @@ services:
     resources: {}
 
   # -- STORAGE-USERS service.
-  # @default -- see detailed service configuration options below
   storageusers:
     events:
       consumer:
@@ -682,7 +643,6 @@ services:
         pullPolicy:
 
     # -- Persistence settings.
-    # @default -- see detailed persistence configuration options below
     persistence:
       # -- Enables persistence.
       # Needs to be enabled on production installations.
@@ -717,10 +677,8 @@ services:
     jobResources: {}
 
   # -- THUMBNAILS service.
-  # @default -- see detailed service configuration options below
   thumbnails:
     # -- Persistence settings.
-    # @default -- see detailed persistence configuration options below
     persistence:
       # -- Enables persistence.
       # Is recommended to be enabled on production installations.
@@ -910,28 +868,6 @@ services:
       existingClaim:
     # -- Per-service resources configuration. Overrides the default setting from `resources` if set.
     resources: {}
-    # -- Per-service nodeSelector configuration. Overrides the default setting from `nodeSelector` if set.
-    nodeSelector: {}
-    # -- Per-service priorityClassName configuration. Overrides the default setting from `priorityClassName` if set.
-    priorityClassName: ""
-    # -- Per-service PodDisruptionBudget. Overrides the default setting from `podDisruptionBudget` if set.
-    podDisruptionBudget: {}
-    # -- Per-service autoscaling. Overrides the default setting from `autoscaling` if set.
-    autoscaling: {}
-    # -- Affinity settings for the web service. See the documentation of this setting in approvider for examples.
-    affinity: {}
-    # -- Per-service custom labels
-    extraLabels: {}
-    # Per-service image configuration. Overrides the default setting from `image` if set.
-    image:
-      # -- Image repository
-      repository: ""
-      # -- Image tag.
-      tag: ""
-      # -- Image sha / digest (optional).
-      sha: ""
-      # -- Image pull policy
-      pullPolicy:
 
   # -- WEBDAV service.
   webdav:
