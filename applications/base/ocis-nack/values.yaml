@@ -1,0 +1,8 @@
+jetstream:
+  enabled: true
+
+  nats:
+    url: nats://nats.ocis-nats.svc:4222
+
+namespaced: true
+readOnly: false

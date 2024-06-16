@@ -10,7 +10,8 @@
     "kyverno@latest",
     "nodePackages.prettier@latest",
     "talosctl@1.7.2",
-    "terraform@latest"
+    "terraform@latest",
+    "natscli@latest"
   ],
   "shell": {
     "init_hook": [

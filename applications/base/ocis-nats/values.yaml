@@ -5,7 +5,7 @@ global:
 config:
   cluster:
     enabled: true
-    port: 6222
+    name: ocis-cluster
     replicas: 3
 
   jetstream:
@@ -19,7 +19,10 @@ config:
     memoryStore:
       enabled: true
       # ensure that container has a sufficient memory limit greater than maxSize
-      maxSize: 1Gi
+      maxSize: 2Gi
+
+  merge:
+    00$include: auth.conf
 
 container:
   env:
@@ -34,3 +37,29 @@ container:
       limits:
         cpu: 1000m
         memory: 4Gi
+
+configMap:
+  merge:
+    data:
+      # bcrypted passwords generated with `nats server passwd`
+      auth.conf: |
+        accounts {
+          $SYS {
+            users = [
+              { user: "nats-sys",
+                pass: "$2a$11$02O0nTwtuoE1sbj2Rt5WfOWHLlne87VH9LP7kXgi/nKyfyfiJ3Kjq"
+              }
+            ]
+          }
+          $OCIS {
+            jetstream: enabled
+            users = [
+              { user: "ocis"
+              },
+              { user: "ocis-admin",
+                pass: "$2a$11$9JB8VueeeryZIh0GPZZwoOa9KiPnGAJKGtTgQrGrqSkV7Im7vBbGy"
+              }
+            ]
+          }
+        }
+        no_auth_user: ocis

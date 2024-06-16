@@ -28,9 +28,7 @@ cache:
   type: "nats-js-kv"
   # -- Nodes of the cache to use.
   nodes: &natsNodes
-    - nats-0.nats-headless.ocis-nats.svc.cluster.local:4222
-    - nats-1.nats-headless.ocis-nats.svc.cluster.local:4222
-    - nats-2.nats-headless.ocis-nats.svc.cluster.local:4222
+    - nats.ocis-nats.svc.cluster.local:4222
 
 store:
   # -- Configure the store type.
@@ -49,6 +47,7 @@ registry:
 messagingSystem:
   external:
     # -- Use an external NATS messaging system instead of the internal one.
+    # Example: https://github.com/owncloud/ocis-charts/tree/main/deployments/ocis-nats
     # Recommended for all production instances.
     # Needs to be used if HighAvailability is needed.
     # Needs to be used if oCIS shall be used by more than a 2-digit user count.
