@@ -1202,15 +1202,15 @@ alertmanager:
       repeat_interval: 12h
       receiver: "null"
       routes:
-        - receiver: "null"
-          matchers:
-            - alertname =~ "InfoInhibitor|Watchdog"
         - receiver: "robusta"
           group_by: ["..."]
           matchers:
             - alertname =~ ".+"
           repeat_interval: 4h
           continue: true
+        - receiver: "null"
+          matchers:
+            - alertname =~ "InfoInhibitor|Watchdog"
     receivers:
       - name: "null"
       - name: "robusta"
