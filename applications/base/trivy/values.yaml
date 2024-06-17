@@ -156,7 +156,6 @@ trivyOperator:
   #    hostPath:
   #    path: /var/lib/etcd
 
-
   # -- scanJobAutomountServiceAccountToken the flag to enable automount for service account token on scan job
   scanJobAutomountServiceAccountToken: false
 
@@ -296,11 +295,11 @@ trivy:
   resources:
     requests:
       cpu: 500m
-      memory: 2Gi
+      memory: 4Gi
       # ephemeralStorage: "2Gi"
     limits:
       cpu: 500m
-      memory: 2Gi
+      memory: 4Gi
       # ephemeralStorage: "2Gi"
 
   # -- serverToken is the token to authenticate Trivy client with Trivy server. Only
@@ -333,12 +332,12 @@ trivy:
     replicas: 2
     resources:
       requests:
-        cpu: 200m
-        memory: 1Gi
+        cpu: 100m
+        memory: 2Gi
         # ephemeral-storage: "2Gi"
       limits:
         cpu: 1000m
-        memory: 1Gi
+        memory: 2Gi
         # ephemeral-storage: "2Gi"
 
 compliance:
@@ -360,13 +359,13 @@ volumes:
   - name: cache-policies
     emptyDir: {}
 
-resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+resources:
+  requests:
+    cpu: 100m
+    memory: 1Gi
+  limits:
+    cpu: 1000m
+    memory: 1Gi
 
 nodeCollector:
   # -- excludeNodes comma-separated node labels that the node-collector job should exclude from scanning (example kubernetes.io/arch=arm64,team=dev)
