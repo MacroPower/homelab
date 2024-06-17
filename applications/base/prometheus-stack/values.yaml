@@ -1210,7 +1210,7 @@ alertmanager:
       - name: "null"
       - name: "robusta"
         webhook_configs:
-          - url: "http://robusta-runner.observability.svc.cluster.local/api/alerts"
+          - url: "http://robusta-runner.robusta.svc.cluster.local/api/alerts"
             send_resolved: true
     templates:
       - "/etc/alertmanager/config/*.tmpl"

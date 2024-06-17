@@ -25,16 +25,16 @@ runner:
   resources:
     requests:
       cpu: 100m
-      memory: 1Gi
+      memory: 2Gi
     limits:
-      memory: 1Gi
+      memory: 2Gi
 
 kubewatch:
   resources:
     requests:
       cpu: 10m
-      memory: 128Mi
+      memory: 150Mi
     limits:
-      memory: 128Mi
+      memory: 150Mi
 
 rsa: ~
