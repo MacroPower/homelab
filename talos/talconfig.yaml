@@ -248,3 +248,8 @@ worker:
     - *machineKubelet
     - *machineLogging
     - *machineTime
+    - |-
+      machine:
+        kubelet:
+          extraConfig:
+            maxPods: 250
