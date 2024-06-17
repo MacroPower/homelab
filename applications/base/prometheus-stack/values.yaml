@@ -29,9 +29,9 @@ prometheusOperator:
         memory: 50Mi
 
 defaultRules:
-  disabled:
+  rules:
     # Fails on Cilium kube-proxy replacement.
-    KubeProxyDown: true
+    kubeProxy: false
 
 prometheus:
   # service:
