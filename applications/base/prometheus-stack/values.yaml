@@ -28,6 +28,11 @@ prometheusOperator:
       limits:
         memory: 50Mi
 
+defaultRules:
+  disabled:
+    # Fails on Cilium kube-proxy replacement.
+    KubeProxyDown: true
+
 prometheus:
   # service:
   #   labels:
