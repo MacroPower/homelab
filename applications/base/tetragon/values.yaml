@@ -51,3 +51,9 @@ tetragon:
   #
   fieldFilters: |-
     {}
+
+  healthGrpc:
+    # -- Whether to enable health gRPC server.
+    enabled: true
+    # Note: The default port '6789' conflicts with rook-ceph.
+    port: 6889
