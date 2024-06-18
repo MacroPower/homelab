@@ -10,8 +10,15 @@ grafana:
   forceDeployDatasources: true
   forceDeployDashboards: true
 
-kubeStateMetrics:
+kube-state-metrics:
   enabled: true
+  replicas: 1
+  prometheusScrape: false
+  selfMonitor:
+    enabled: true
+  prometheus:
+    monitor:
+      enabled: true
 
 nodeExporter:
   enabled: true
