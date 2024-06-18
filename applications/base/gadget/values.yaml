@@ -1,3 +1,5 @@
+# https://artifacthub.io/packages/helm/gadget/gadget
+
 config:
   # -- How to get containers start/stop notifications (auto, crio, podinformer, nri, fanotify, fanotify+ebpf")
   hookMode: auto
@@ -19,8 +21,5 @@ config:
 capabilities: {}
 
 # -- Tolerations used by `gadget` container
-tolerations:
-  - effect: NoSchedule
-    operator: Exists
-  - effect: NoExecute
-    operator: Exists
+# NOTE: NoSchedule/NoExecute are set by default.
+tolerations: []
