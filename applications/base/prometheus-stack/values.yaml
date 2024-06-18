@@ -20,6 +20,28 @@ kube-state-metrics:
     monitor:
       enabled: true
 
+kubeControllerManager:
+  enabled: true
+  service:
+    enabled: true
+    selector:
+      k8s-app: kube-controller-manager
+  serviceMonitor:
+    scheme: https
+
+kubeScheduler:
+  enabled: true
+  service:
+    enabled: true
+    selector:
+      k8s-app: kube-scheduler
+  serviceMonitor:
+    scheme: https
+
+kubeProxy:
+  # Fails on Cilium kube-proxy replacement.
+  enabled: false
+
 nodeExporter:
   enabled: true
 
