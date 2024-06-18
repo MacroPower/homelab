@@ -49,8 +49,16 @@ spec:
         domain_name = "argocd.${var.authentik_cluster_external_domain}"
       }
 
-      data "authentik_flow" "default-authorization-flow" {
+      data "authentik_flow" "default_authentication" {
+        slug = "default-authentication-flow"
+      }
+
+      data "authentik_flow" "default_authorization" {
         slug = "default-provider-authorization-explicit-consent"
+      }
+
+      data "authentik_certificate_key_pair" "cert" {
+        name = "Authentik Certificate"
       }
 
       data "authentik_scope_mapping" "scopes" {
@@ -78,7 +86,7 @@ spec:
         lower   = true
         numeric = true
         upper   = true
-        special = true
+        special = false
       }
 
       resource "authentik_provider_oauth2" "argocd-auth-provider" {
@@ -89,8 +97,10 @@ spec:
           "https://${local.domain_name}/api/dex/callback",
           "http://localhost:8085/auth/callback",
         ]
-        property_mappings  = data.authentik_scope_mapping.scopes.ids
-        authorization_flow = data.authentik_flow.default-authorization-flow.id
+        property_mappings   = data.authentik_scope_mapping.scopes.ids
+        authentication_flow = data.authentik_flow.default_authentication.id
+        authorization_flow  = data.authentik_flow.default_authorization.id
+        signing_key         = data.authentik_certificate_key_pair.cert.id
       }
 
       resource "authentik_application" "argocd-application" {

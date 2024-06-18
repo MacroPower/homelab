@@ -27,22 +27,16 @@ configs:
       connectors:
         - name: authentik
           id: authentik
-          type: oauth
+          type: oidc
           config:
-            tokenURL: "http://authentik-server.authentik.svc/application/o/token/"
-            authorizationURL: "https://authentik.home.macro.network/application/o/authorize/"
-            userInfoURL: "http://authentik-server.authentik.svc/application/o/userinfo/"
+            issuer: https://authentik.home.macro.network/application/o/argocd/
             clientID: $dex.authentik.clientID
             clientSecret: $dex.authentik.clientSecret
-            insecureSkipVerify: false
             insecureEnableGroups: true
             scopes:
               - openid
               - profile
               - email
-            userIDKey: sub
-            claimMapping:
-              userNameKey: name
 
     resource.exclusions: |
       - apiGroups:
