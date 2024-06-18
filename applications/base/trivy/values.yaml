@@ -16,7 +16,7 @@ operator:
   scanJobTimeout: 5m
 
   # -- scanJobsConcurrentLimit the maximum number of scan jobs create by the operator
-  scanJobsConcurrentLimit: 6
+  scanJobsConcurrentLimit: 4
 
   # -- the flag to enable vulnerability scanner
   vulnerabilityScannerEnabled: true
@@ -253,7 +253,7 @@ trivy:
   offlineScan: false
 
   # -- timeout is the duration to wait for scan completion.
-  timeout: "5m0s"
+  timeout: "10m0s"
 
   # -- ignoreFile can be used to tell Trivy to ignore vulnerabilities by ID (one per line)
   ignoreFile: ~
@@ -294,11 +294,11 @@ trivy:
   # -- resources resource requests and limits for scan job containers
   resources:
     requests:
-      cpu: 500m
+      cpu: 1000m
       memory: 4Gi
       # ephemeralStorage: "2Gi"
     limits:
-      cpu: 500m
+      cpu: 1000m
       memory: 4Gi
       # ephemeralStorage: "2Gi"
 
@@ -362,10 +362,10 @@ volumes:
 resources:
   requests:
     cpu: 100m
-    memory: 1Gi
+    memory: 2Gi
   limits:
     cpu: 1000m
-    memory: 1Gi
+    memory: 2Gi
 
 nodeCollector:
   # -- excludeNodes comma-separated node labels that the node-collector job should exclude from scanning (example kubernetes.io/arch=arm64,team=dev)
