@@ -73,6 +73,9 @@ gateway:
   replicas: 2
   ingress:
     enabled: false
+  service:
+    annotations:
+      prometheus.io/service-monitor: "false"
 
 read:
   replicas: 2
@@ -108,6 +111,12 @@ monitoring:
     annotations:
       grafana_dashboard: "1"
       grafana_folder: Loki
+  rules:
+    enabled: true
+    alerting: true
+    disabled: {}
+    #  LokiRequestErrors: true
+    #  LokiRequestPanics: true
   serviceMonitor:
     enabled: true
     metricsInstance:
