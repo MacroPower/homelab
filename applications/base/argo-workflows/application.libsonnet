@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='argo-workflows',
   repoURL='https://argoproj.github.io/argo-helm',
-  targetRevision='0.41.10',
+  targetRevision='0.41.11',
   releaseName='argo-workflows',
   values='values.yaml'
 )
