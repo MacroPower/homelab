@@ -89,6 +89,14 @@ encryption:
 ##
 bpfClockProbe: false
 
+# -- Grafana dashboards for cilium-agent
+dashboards: &dashboards
+  enabled: true
+  label: grafana_dashboard
+  labelValue: "1"
+  annotations:
+    grafana_folder: Cilium
+
 operator:
   replicas: 2
   rollOutPods: true
@@ -97,6 +105,7 @@ operator:
     serviceMonitor:
       enabled: true
       trustCRDsExist: true
+  dashboards: *dashboards
   resources: {}
 
 prometheus:
@@ -113,13 +122,14 @@ hubble:
   # for more comprehensive documentation about Hubble metrics.
   metrics:
     enabled:
-      - dns
-      - drop
-      - tcp
-      - flow
-      - port-distribution
-      - icmp
-      - httpV2:exemplars=true;labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction
+      - dns:labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity
+      - drop:labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity
+      - tcp:labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity
+      - port-distribution:labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity
+      - icmp:labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity
+      - flow:labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity
+      - flows-to-world:any-drop;port;labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity
+      - httpV2:exemplars=true;labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity
     enableOpenMetrics: true
     serviceMonitor:
       enabled: true
@@ -136,7 +146,7 @@ hubble:
 
   ui:
     enabled: true
-    replicas: 2
+    replicas: 1 # https://github.com/cilium/hubble-ui/issues/833
     rollOutPods: true
     ingress:
       enabled: false

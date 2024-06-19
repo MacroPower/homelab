@@ -2,6 +2,8 @@
 
 local policies = import 'policies/main.libsonnet';
 local ingress = import 'ingress.libsonnet';
+local dashboards = std.parseYaml(importstr 'dashboards.yaml');
 
 policies
 + ingress
++ dashboards

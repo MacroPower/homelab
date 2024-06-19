@@ -11,4 +11,14 @@ app.new(
   targetRevision='1.15.6',
   releaseName='cilium',
   values='values.yaml'
-)
+).withIgnoreDifferences([
+  {
+    group: '',
+    kind: 'Secret',
+    name: 'cilium-ca',
+    namespace: 'cilium',
+    jsonPointers: [
+      '/data',
+    ],
+  },
+])
