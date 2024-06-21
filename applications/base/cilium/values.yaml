@@ -90,6 +90,8 @@ encryption:
 ##
 bpfClockProbe: false
 
+dnsPolicy: ClusterFirstWithHostNet
+
 extraContainers:
   - name: vector
     image: timberio/vector:0.39.0-debian
