@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/cilium/cilium/main/install/kubernetes/cilium/values.schema.json
 # https://artifacthub.io/packages/helm/cilium/cilium
 
 k8sServiceHost: kube.home.macro.network
@@ -89,6 +90,26 @@ encryption:
 ##
 bpfClockProbe: false
 
+extraContainers:
+  - name: vector
+    image: timberio/vector:0.39.0-distroless-libc
+    args:
+      - --config-dir
+      - &vectorConfigDir /etc/vector/
+    ports:
+      - name: vector
+        containerPort: 8686
+      - name: metrics
+        containerPort: 9090
+    volumeMounts:
+      - name: log-data
+        mountPath: /var/log
+      - name: vector-data
+        mountPath: /vector-data-dir
+      - name: vector-config
+        mountPath: *vectorConfigDir
+        readOnly: true
+
 extraVolumeMounts:
   - name: log-data
     mountPath: /var/log
@@ -96,6 +117,13 @@ extraVolumeMounts:
 extraVolumes:
   - name: log-data
     emptyDir: {}
+  - name: vector-data
+    emptyDir: {}
+  - name: vector-config
+    projected:
+      sources:
+        - configMap:
+            name: vector-sidecar-config
 
 # -- Grafana dashboards for cilium-agent
 dashboards: &dashboards

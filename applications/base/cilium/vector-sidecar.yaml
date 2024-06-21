@@ -1,0 +1,29 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vector-sidecar-config
+data:
+  vector.yaml: |
+    data_dir: /vector-data-dir
+    api:
+      enabled: true
+      address: 0.0.0.0:8686
+    sources:
+      log_files:
+        type: file
+        include:
+          - /var/log/**/*.log
+      vector_metrics:
+        type: internal_metrics
+    sinks:
+      vector_aggregator:
+        type: vector
+        inputs:
+          - log_files
+        address: vector-aggregator.vector.svc.cluster.local:6010
+      prom_exporter:
+        type: prometheus_exporter
+        inputs:
+          - vector_metrics
+        address: 0.0.0.0:9090
