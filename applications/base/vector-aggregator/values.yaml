@@ -32,6 +32,10 @@ customConfig:
       type: vector
       address: 0.0.0.0:6010
       version: "2"
+    cilium_hubble_logs:
+      type: vector
+      address: 0.0.0.0:6020
+      version: "2"
     vector_metrics:
       type: internal_metrics
   transforms:
@@ -77,6 +81,18 @@ customConfig:
         source: kubernetes-pods
         stream: >-
           {{`{{ .stream }}`}}
+    loki_cilium_hubble:
+      type: loki
+      inputs:
+        - cilium_hubble_logs
+      endpoint: *lokiGateway
+      encoding:
+        codec: raw_message
+      batch:
+        max_bytes: 2049000
+      out_of_order_action: accept
+      labels:
+        source: cilium-hubble
     loki_journal:
       type: loki
       inputs:
