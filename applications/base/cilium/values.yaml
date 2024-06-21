@@ -173,15 +173,19 @@ hubble:
       enabled: true
 
   export:
-    dynamic:
+    static:
       enabled: true
-      config:
-        content:
-          - name: all
-            fieldMask: []
-            includeFilters: []
-            excludeFilters: []
-            filePath: "/var/log/hubble/events.log"
+      filePath: /var/log/hubble/events.log
+      fieldMask: []
+      # - time
+      # - source
+      # - destination
+      # - verdict
+      allowList:
+        - '{"verdict":["DROPPED","ERROR"]}'
+      denyList: []
+      # - '{"source_pod":["kube-system/"]}'
+      # - '{"destination_pod":["kube-system/"]}
 
   relay:
     enabled: true
