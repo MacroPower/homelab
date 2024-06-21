@@ -89,6 +89,14 @@ encryption:
 ##
 bpfClockProbe: false
 
+extraVolumeMounts:
+  - name: log-data
+    mountPath: /var/log
+
+extraVolumes:
+  - name: log-data
+    emptyDir: {}
+
 # -- Grafana dashboards for cilium-agent
 dashboards: &dashboards
   enabled: true
@@ -133,6 +141,17 @@ hubble:
     enableOpenMetrics: true
     serviceMonitor:
       enabled: true
+
+  export:
+    dynamic:
+      enabled: true
+      config:
+        content:
+          - name: all
+            fieldMask: []
+            includeFilters: []
+            excludeFilters: []
+            filePath: "/var/log/hubble/events.log"
 
   relay:
     enabled: true
