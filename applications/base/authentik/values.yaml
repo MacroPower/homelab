@@ -1,5 +1,15 @@
+# https://artifacthub.io/packages/helm/goauthentik/authentik
+
+global:
+  image:
+    repository: ghcr.io/goauthentik/dev-server
+    tag: gh-next-1718814172-c7c7e28
+
 authentik:
   log_level: info
+  outposts:
+    # https://docs.goauthentik.io/docs/installation/beta
+    container_image_base: ghcr.io/goauthentik/dev-%(type)s:gh-%(build_hash)s
 
 server:
   replicas: 2
