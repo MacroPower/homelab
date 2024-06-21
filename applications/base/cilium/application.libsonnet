@@ -13,7 +13,6 @@ app.new(
   values='values.yaml'
 ).withIgnoreDifferences([
   {
-    group: '',
     kind: 'Secret',
     name: 'cilium-ca',
     namespace: 'cilium',
