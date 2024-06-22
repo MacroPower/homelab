@@ -13,7 +13,7 @@ from TwitchChannelPointsMiner.classes.entities.Streamer import Streamer, Streame
 
 twitch_miner = TwitchChannelPointsMiner(
     username="Cookie",
-    claim_drops_startup=True,                   # If you want to auto claim all drops from Twitch inventory on the startup
+    claim_drops_startup=False,                  # If you want to auto claim all drops from Twitch inventory on the startup
     priority=[                                  # Custom priority in this case for example:
         Priority.STREAK,                        # - We want first of all to catch all watch streak from all streamers
         Priority.DROPS,                         # - When we don't have anymore watch streak to catch, wait until all drops are collected over the streamers
@@ -36,7 +36,8 @@ twitch_miner = TwitchChannelPointsMiner(
     streamer_settings=StreamerSettings(
         make_predictions=False,                 # If you want to Bet / Make prediction
         follow_raid=True,                       # Follow raid to obtain more points
-        claim_drops=True,                       # We can't filter rewards base on stream. Set to False for skip viewing counter increase and you will never obtain a drop reward from this script. Issue #21
+        claim_drops=False,                      # We can't filter rewards base on stream. Set to False for skip viewing counter increase and you will never obtain a drop reward from this script. Issue #21
+        claim_moments=True,                     # If set to True, https://help.twitch.tv/s/article/moments will be claimed when available
         watch_streak=True,                      # If a streamer go online change the priority of streamers array and catch the watch screak. Issue #11
         chat=ChatPresence.ONLINE,               # Join irc chat to increase watch-time [ALWAYS, NEVER, ONLINE, OFFLINE]
         bet=BetSettings(
@@ -69,7 +70,29 @@ twitch_miner.analytics(host="0.0.0.0", port=5000, refresh=5, days_ago=7)
 
 twitch_miner.mine(
     [
-        Streamer("moonmoon"),
+        Streamer(
+            "moonmoon",
+            settings=StreamerSettings(
+                make_predictions=True,
+                follow_raid=True,
+                claim_drops=False,
+                claim_moments=True,
+                watch_streak=True,
+                chat=ChatPresence.ONLINE,
+                bet=BetSettings(
+                    strategy=Strategy.NUMBER_2,
+                    max_points=250000,
+                    stealth_mode=False,
+                    delay_mode=DelayMode.FROM_START,
+                    delay=30,
+                    filter_condition=FilterCondition(
+                        by=OutcomeKeys.PERCENTAGE_USERS,
+                        where=Condition.GTE,
+                        value=40,
+                    ),
+                ),
+            ),
+        ),
         Streamer("clintstevens"),
         Streamer("evample2"),
         Streamer("vei"),
