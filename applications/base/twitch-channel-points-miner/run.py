@@ -86,9 +86,9 @@ twitch_miner.mine(
                     delay_mode=DelayMode.FROM_START,
                     delay=30,
                     filter_condition=FilterCondition(
-                        by=OutcomeKeys.PERCENTAGE_USERS,
+                        by=OutcomeKeys.ODDS_PERCENTAGE,
                         where=Condition.GTE,
-                        value=40,
+                        value=.5
                     ),
                 ),
             ),
