@@ -7,7 +7,7 @@ replicaCount: 2
 rbacProxy:
   image:
     repository: gcr.io/kubebuilder/kube-rbac-proxy
-    tag: v0.13.1
+    tag: v0.16.0
   resources:
     requests:
       cpu: 10m
