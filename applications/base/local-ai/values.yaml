@@ -7,6 +7,7 @@ deployment:
   env:
     threads: 8
     context_size: 512
+  modelsPath: "/models"
 
 resources:
   limits:

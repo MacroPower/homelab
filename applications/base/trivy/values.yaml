@@ -192,6 +192,10 @@ trivyOperator:
   # See https://github.com/aquasecurity/trivy-operator/blob/main/docs/tutorials/writing-custom-configuration-audit-policies.md for more details.
   policiesConfig: ""
 
+  # -- excludeImages is comma separated glob patterns for excluding images from scanning.
+  # Example: pattern: `k8s.gcr.io/*/*` will exclude image: `k8s.gcr.io/coredns/coredns:v1.8.0`.
+  excludeImages: "quay.io/go-skynet/local-ai*"
+
 trivy:
   # -- createConfig indicates whether to create config objects
   createConfig: true
@@ -246,7 +250,7 @@ trivy:
   # -- a comma separated list of file paths for Trivy to skip
   skipFiles:
   # -- a comma separated list of directories for Trivy to skip
-  skipDirs:
+  skipDirs: /models
 
   # -- offlineScan is the flag to enable the offline scan functionality in Trivy
   # This will prevent outgoing HTTP requests, e.g. to search.maven.org
