@@ -4,8 +4,12 @@
   import 'dragonfly-operator/application.libsonnet',
   import 'excoredns/application.libsonnet',
   import 'external-secrets/application.libsonnet',
+  import 'homepage/application.libsonnet',
+  import 'iperf/application.libsonnet',
+  import 'kyverno/application.libsonnet',
+  import 'kyverno-policies/application.libsonnet',
+  import 'librespeed/application.libsonnet',
   import 'prometheus/application.libsonnet',
-  import 'tailscale-operator/application.libsonnet',
   import 'template-controller/application.libsonnet',
   import 'traefik/application.libsonnet',
 ]
