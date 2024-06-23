@@ -25,9 +25,6 @@ app.withChartValues(|||
               claimMapping:
                 userNameKey: name
 
-  redis-ha:
-    enabled: false
-
   controller:
     replicas: 2
 

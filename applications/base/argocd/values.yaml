@@ -291,29 +291,13 @@ configs:
       g, ArgoCD Editors, role:readonly
 
 redis:
-  resources: &RedisResources
-    requests:
-      cpu: 50m
-      memory: 250Mi
+  enabled: false
 
-redis-ha:
-  enabled: true
-  replicas: 3
-  hardAntiAffinity: false
-  topologySpreadConstraints:
-    enabled: true
-    maxSkew: 1
-    topologyKey: topology.kubernetes.io/zone
-    whenUnsatisfiable: ScheduleAnyway
-  redis:
-    resources: *RedisResources
-  haproxy:
-    replicas: 2
-    hardAntiAffinity: true
-    resources:
-      requests:
-        cpu: 10m
-        memory: 100Mi
+externalRedis:
+  host: "argocd-redis-dragonfly.argocd.svc"
+  port: 6379
+  username: default
+  existingSecret: argocd-credentials
 
 controller:
   replicas: 3
