@@ -65,7 +65,11 @@ configs:
       - apiGroups:
           - aquasecurity.github.io
         kinds:
-          - "*"
+          - ConfigAuditReport
+          - ExposedSecretReport
+          - RbacAssessmentReport
+          - SbomReport
+          - VulnerabilityReport
         clusters:
           - "*"
       - apiGroups:
