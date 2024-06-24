@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='loki',
   repoURL='https://grafana.github.io/helm-charts',
-  targetRevision='6.6.3',
+  targetRevision='6.6.4',
   releaseName='loki',
   values='values.yaml'
 )
