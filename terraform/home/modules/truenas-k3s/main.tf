@@ -12,22 +12,6 @@ locals {
   k_cmd = "k3s kubectl"
 }
 
-resource "null_resource" "truenas_k3s_firewall" {
-  connection {
-    type     = "ssh"
-    host     = var.ipv4
-    port     = 22
-    user     = "root"
-    password = var.ssh_password
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "iptables -A INPUT -p tcp -m tcp --dport 6443 -m comment --comment \"iX Custom Rule to allow connection requests to k8s cluster from all external sources\" -j ACCEPT"
-    ]
-  }
-}
-
 resource "null_resource" "truenas_k3s_bootstrap" {
   connection {
     type     = "ssh"

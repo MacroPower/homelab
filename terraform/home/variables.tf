@@ -11,11 +11,6 @@ variable "nas01_api_key" {
   sensitive = true
 }
 
-variable "nas01_ssh_password" {
-  type = string
-  sensitive = true
-}
-
 variable "domain_name" {
   type = string
 }

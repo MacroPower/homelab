@@ -8,6 +8,10 @@ terraform {
       source  = "dariusbakunas/truenas"
       version = "0.11.1"
     }
+    doppler = {
+      source  = "dopplerhq/doppler"
+      version = "1.8.0"
+    }
   }
 }
 
@@ -24,4 +28,8 @@ provider "truenas" {
   api_key  = var.nas01_api_key
 
   alias = "nas01"
+}
+
+provider "doppler" {
+  doppler_token = var.doppler_token
 }

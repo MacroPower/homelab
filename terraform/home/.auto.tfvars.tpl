@@ -10,4 +10,4 @@ unifi_site     = "default"
 
 domain_name = "home.macro.network"
 
-doppler_token = "${NAS01_DOPPLER_TOKEN}"
+doppler_token = "${TERRAFORM_DOPPLER_TOKEN}"
