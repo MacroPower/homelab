@@ -30,6 +30,7 @@
   import 'kyverno-policies/application.libsonnet',
   import 'kyverno/application.libsonnet',
   import 'librespeed/application.libsonnet',
+  import 'liqo/application.libsonnet',
   import 'local-ai/application.libsonnet',
   import 'loki/application.libsonnet',
   import 'metrics-server/application.libsonnet',
