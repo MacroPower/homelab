@@ -22,7 +22,7 @@ twitch_miner = TwitchChannelPointsMiner(
     enable_analytics=True,                      # Disables Analytics if False. Disabling it significantly reduces memory consumption
     logger_settings=LoggerSettings(
         save=False,                             # If you want to save logs in a file (suggested)
-        console_level=logging.INFO,             # Level of logs - use logging.DEBUG for more info
+        console_level=logging.DEBUG,            # Level of logs - use logging.DEBUG for more info
         file_level=logging.DEBUG,               # Level of logs - If you think the log file it's too big, use logging.INFO
         emoji=True,                             # On Windows, we have a problem printing emoji. Set to false if you have a problem
         less=False,                             # If you think that the logs are too verbose, set this to True
@@ -34,7 +34,7 @@ twitch_miner = TwitchChannelPointsMiner(
         )
     ),
     streamer_settings=StreamerSettings(
-        make_predictions=False,                 # If you want to Bet / Make prediction
+        make_predictions=True,                  # If you want to Bet / Make prediction
         follow_raid=True,                       # Follow raid to obtain more points
         claim_drops=False,                      # We can't filter rewards base on stream. Set to False for skip viewing counter increase and you will never obtain a drop reward from this script. Issue #21
         claim_moments=True,                     # If set to True, https://help.twitch.tv/s/article/moments will be claimed when available
@@ -81,6 +81,7 @@ twitch_miner.mine(
                 chat=ChatPresence.ONLINE,
                 bet=BetSettings(
                     strategy=Strategy.NUMBER_2,
+                    percentage=5,
                     max_points=250000,
                     stealth_mode=False,
                     delay_mode=DelayMode.FROM_START,
