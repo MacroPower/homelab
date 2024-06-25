@@ -71,7 +71,6 @@ loadBalancer:
   algorithm: maglev
   mode: dsr
   serviceTopology: true
-  acceleration: best-effort
   l7:
     backend: envoy
 
