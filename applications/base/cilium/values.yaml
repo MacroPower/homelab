@@ -56,7 +56,7 @@ ipv6NativeRoutingCIDR: 2603:6010:5300:ad80::/64
 endpointRoutes:
   ## Route per endpoint instead of using the cilium_host interface.
   ##
-  enabled: true
+  enabled: false
 
 bgpControlPlane:
   enabled: true
