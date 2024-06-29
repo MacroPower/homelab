@@ -1,0 +1,89 @@
+# https://artifacthub.io/packages/helm/spegel/spegel
+
+service:
+  registry:
+    # -- Port to expose the registry via the service.
+    port: 5000
+    # -- Node port to expose the registry via the service.
+    nodePort: 30021
+    # -- Local host port to expose the registry.
+    hostPort: 30020
+    # -- If true adds topology aware hints annotation to node port service.
+    topologyAwareHintsEnabled: true
+  router:
+    # -- Port to expose the router via the service.
+    port: 5001
+  metrics:
+    # -- Port to expose the metrics via the service.
+    port: 9090
+
+resources:
+  limits:
+    cpu: 4000m
+    memory: 2Gi
+  requests:
+    cpu: 10m
+    memory: 2Gi
+
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 25%
+
+tolerations:
+  - key: CriticalAddonsOnly
+    operator: Exists
+  - effect: NoExecute
+    operator: Exists
+  - effect: NoSchedule
+    operator: Exists
+
+serviceMonitor:
+  enabled: true
+
+grafanaDashboard:
+  enabled: true
+  sidecarLabel: "grafana_dashboard"
+  sidecarLabelValue: "1"
+  annotations:
+    grafana_folder: Spegel
+
+priorityClassName: system-node-critical
+
+spegel:
+  # Talos compatibility
+  # https://github.com/spegel-org/spegel/blob/main/docs/COMPATIBILITY.md#talos
+  containerdRegistryConfigPath: /etc/cri/conf.d/hosts
+  containerdSock: /run/containerd/containerd.sock
+
+  # -- Value should be DEBUG, INFO, WARN, or ERROR.
+  logLevel: "INFO"
+
+  # -- Registries for which mirror configuration will be created.
+  registries:
+    - https://cgr.dev
+    - https://docker.io
+    - https://ghcr.io
+    - https://quay.io
+    - https://mcr.microsoft.com
+    - https://public.ecr.aws
+    - https://gcr.io
+    - https://registry.k8s.io
+    - https://k8s.gcr.io
+    - https://lscr.io
+
+  # -- Additional target mirror registries other than Spegel.
+  additionalMirrorRegistries: []
+
+  # -- Max ammount of mirrors to attempt.
+  mirrorResolveRetries: 3
+  # -- Max duration spent finding a mirror.
+  mirrorResolveTimeout: "100ms"
+
+  # -- When true Spegel will resolve tags to digests.
+  resolveTags: true
+  # -- When true latest tags will be resolved to digests.
+  resolveLatestTag: true
+
+  # -- Maximum write speed per request when serving blob layers. Should be an integer followed by unit Bps, KBps, MBps, GBps, or TBps.
+  blobSpeed: "500MBps"

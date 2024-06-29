@@ -1,3 +1,5 @@
+# https://artifacthub.io/packages/helm/argo/argo-cd
+
 global:
   logging:
     format: json
@@ -289,6 +291,13 @@ configs:
     policy.csv: |
       g, ArgoCD Admins, role:admin
       g, ArgoCD Editors, role:readonly
+
+  repositories:
+    spegel:
+      url: ghcr.io/spegel-org/helm-charts
+      name: ghcr-registry
+      enableOCI: "true"
+      type: "helm"
 
 redis:
   enabled: false
