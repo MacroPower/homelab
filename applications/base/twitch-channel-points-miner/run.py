@@ -34,7 +34,7 @@ twitch_miner = TwitchChannelPointsMiner(
         )
     ),
     streamer_settings=StreamerSettings(
-        make_predictions=True,                  # If you want to Bet / Make prediction
+        make_predictions=False,                 # If you want to Bet / Make prediction
         follow_raid=True,                       # Follow raid to obtain more points
         claim_drops=False,                      # We can't filter rewards base on stream. Set to False for skip viewing counter increase and you will never obtain a drop reward from this script. Issue #21
         claim_moments=True,                     # If set to True, https://help.twitch.tv/s/article/moments will be claimed when available
@@ -89,7 +89,7 @@ twitch_miner.mine(
                     filter_condition=FilterCondition(
                         by=OutcomeKeys.ODDS_PERCENTAGE,
                         where=Condition.GTE,
-                        value=.5
+                        value=55
                     ),
                 ),
             ),
