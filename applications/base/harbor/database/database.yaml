@@ -1,0 +1,12 @@
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Database
+metadata:
+  name: harbor
+spec:
+  deletionPolicy: Delete
+  forProvider:
+    owner: harbor
+    encoding: utf8
+  providerConfigRef:
+    name: postgres-shared

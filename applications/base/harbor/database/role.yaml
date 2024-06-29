@@ -1,0 +1,16 @@
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Role
+metadata:
+  name: harbor
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    privileges:
+      login: true
+    passwordSecretRef:
+      name: harbor-database-credentials
+      key: password
+      namespace: harbor
+  providerConfigRef:
+    name: postgres-shared

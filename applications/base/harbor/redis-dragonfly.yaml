@@ -1,0 +1,19 @@
+---
+# https://www.dragonflydb.io/docs/managing-dragonfly/operator/dragonfly-configuration
+apiVersion: dragonflydb.io/v1alpha1
+kind: Dragonfly
+metadata:
+  name: harbor-redis-dragonfly
+spec:
+  replicas: 3
+  # authentication:
+  #   passwordFromSecret:
+  #     name: harbor-redis-credentials
+  #     key: REDIS_PASSWORD
+  resources:
+    requests:
+      cpu: 50m
+      memory: 1Gi
+    limits:
+      cpu: 500m
+      memory: 1Gi
