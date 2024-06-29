@@ -5,6 +5,12 @@ metadata:
   name: authentik
 spec:
   credentials:
+    - filename: .terraformrc
+      source: Secret
+      secretRef:
+        namespace: authentik
+        name: provider-credentials
+        key: credentials.tfrc.json
     - filename: authentik-credentials
       source: Secret
       secretRef:
@@ -32,11 +38,16 @@ spec:
 
     // Modules _must_ use remote state. The provider does not persist state.
     terraform {
-      backend "kubernetes" {
-        secret_suffix     = "providerconfig-authentik"
-        namespace         = "authentik"
-        in_cluster_config = true
+      cloud {
+        organization = "MacroPower"
+        hostname     = "app.terraform.io"
+
+        workspaces {
+          name = "home-authentik"
+        }
       }
+
+      required_version = "1.5.5"
 
       required_providers {
         authentik = {

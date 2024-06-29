@@ -1,3 +1,5 @@
+# https://marketplace.upbound.io/providers/upbound/provider-terraform/
+
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
@@ -5,7 +7,7 @@ metadata:
   name: provider-terraform
 spec:
   ignoreCrossplaneConstraints: false
-  package: xpkg.upbound.io/upbound/provider-terraform:v0.15.0
+  package: xpkg.upbound.io/upbound/provider-terraform:v0.16.0
   revisionActivationPolicy: Automatic
   revisionHistoryLimit: 1
   runtimeConfigRef:
@@ -29,3 +31,4 @@ spec:
             - name: package-runtime
               args:
                 - --leader-election
+                - --debug
