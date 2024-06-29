@@ -38,7 +38,7 @@ rabbitmq:
 
 redis:
   enabled: false
-  redisServer: "defectdojo-redis-master.defectdojo.svc"
+  redisServer: "defectdojo-redis-dragonfly.defectdojo.svc"
   auth:
     existingSecret: defectdojo
     existingSecretPasswordKey: REDIS_PASSWORD

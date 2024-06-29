@@ -12,12 +12,6 @@ app.new(
   releaseName='defectdojo',
   values='values.yaml'
 ).withChart(
-  name='redis',
-  repoURL='https://charts.bitnami.com/bitnami',
-  targetRevision='18.6.1',
-  releaseName='defectdojo-redis',
-  values='values-redis.yaml'
-).withChart(
   name='kubernetes-python',
   repoURL='https://jacobcolvin.com/helm-charts/',
   targetRevision='0.1.1',
