@@ -33,10 +33,6 @@ spec:
           name: authentik-cluster-credentials
           key: authentik.tfvars
     module: |
-      variable "authentik_cluster_cookie_domain" {
-        type = string
-      }
-
       variable "authentik_cluster_external_host" {
         type = string
       }

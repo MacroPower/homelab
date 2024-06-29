@@ -19,14 +19,6 @@ spec:
           name: authentik-cluster-credentials
           key: authentik.tfvars
     module: |
-      data "authentik_flow" "default-authorization-flow" {
-        slug = "default-provider-authorization-explicit-consent"
-      }
-
-      variable "authentik_cluster_cookie_domain" {
-        type = string
-      }
-
       variable "authentik_cluster_external_host" {
         type = string
       }
@@ -43,25 +35,23 @@ spec:
         slug = "default-provider-authorization-explicit-consent"
       }
 
-      resource "authentik_certificate_key_pair" "authentik_cert" {
+      resource "authentik_certificate_key_pair" "cert" {
         name             = "Authentik Certificate"
         certificate_data = file("${path.module}/authentik-cert-tls-crt")
         key_data         = file("${path.module}/authentik-cert-tls-key")
       }
 
-      resource "authentik_provider_proxy" "domain-forward-auth-provider" {
+      resource "authentik_provider_proxy" "domain_forward_auth_provider" {
         name               = "domain-forward-auth-provider"
         cookie_domain      = var.authentik_cluster_external_domain
         external_host      = "https://${var.authentik_cluster_external_host}"
         mode               = "forward_domain"
-        authorization_flow = data.authentik_flow.default-authorization-flow.id
-
-        # Kind of workaround for https://github.com/goauthentik/authentik/issues/6886
-        access_token_validity = "minutes=60"
+        authentication_flow = data.authentik_flow.default_authentication.id
+        authorization_flow  = data.authentik_flow.default_authorization.id
       }
 
       resource "authentik_application" "domain-forward-auth-application" {
         name              = var.authentik_cluster_external_domain
         slug              = "domain-forward-auth-application"
-        protocol_provider = authentik_provider_proxy.domain-forward-auth-provider.id
+        protocol_provider = authentik_provider_proxy.domain_forward_auth_provider.id
       }

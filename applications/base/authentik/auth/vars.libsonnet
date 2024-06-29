@@ -11,7 +11,6 @@ local ns = import '../namespace.libsonnet';
     ]
   ).withTemplate({
     'authentik.tfvars': |||
-      authentik_cluster_cookie_domain   = "{{ .AUTHENTIK_CLUSTER_COOKIE_DOMAIN }}"
       authentik_cluster_external_host   = "{{ .AUTHENTIK_CLUSTER_EXTERNAL_HOST }}"
       authentik_cluster_external_domain = "{{ .AUTHENTIK_CLUSTER_COOKIE_DOMAIN }}"
     |||,
