@@ -73,7 +73,7 @@ spec:
         username = "akadmin"
       }
 
-      resource "random_password" "argocd-client-id" {
+      resource "random_password" "argocd_client_id" {
         length  = 40
         lower   = true
         numeric = true
@@ -81,7 +81,7 @@ spec:
         special = false
       }
 
-      resource "random_password" "argocd-client-secret" {
+      resource "random_password" "argocd_client_secret" {
         length  = 128
         lower   = true
         numeric = true
@@ -89,10 +89,10 @@ spec:
         special = false
       }
 
-      resource "authentik_provider_oauth2" "argocd-auth-provider" {
+      resource "authentik_provider_oauth2" "argocd_auth_provider" {
         name          = "argocd"
-        client_id     = random_password.argocd-client-id.result
-        client_secret = random_password.argocd-client-secret.result
+        client_id     = random_password.argocd_client_id.result
+        client_secret = random_password.argocd_client_secret.result
         redirect_uris = [
           "https://${local.domain_name}/api/dex/callback",
           "http://localhost:8085/auth/callback",
@@ -103,20 +103,20 @@ spec:
         signing_key         = data.authentik_certificate_key_pair.cert.id
       }
 
-      resource "authentik_application" "argocd-application" {
+      resource "authentik_application" "argocd" {
         name              = local.domain_name
         slug              = "argocd"
-        protocol_provider = authentik_provider_oauth2.argocd-auth-provider.id
+        protocol_provider = authentik_provider_oauth2.argocd_auth_provider.id
       }
 
-      resource "authentik_group" "argocd-admins" {
+      resource "authentik_group" "argocd_admins" {
         name   = "ArgoCD Admins"
         users  = [data.authentik_user.akadmin.id]
       }
 
       resource "authentik_group" "argocd-editors" {
         name   = "ArgoCD Editors"
-        parent = authentik_group.argocd-admins.id
+        parent = authentik_group.argocd_admins.id
       }
 
       output "dexAuthentikIssuer" {
@@ -125,11 +125,11 @@ spec:
       }
 
       output "dexAuthentikClientID" {
-        value     = random_password.argocd-client-id.result
+        value     = random_password.argocd_client_id.result
         sensitive = true
       }
 
       output "dexAuthentikClientSecret" {
-        value     = random_password.argocd-client-secret.result
+        value     = random_password.argocd_client_secret.result
         sensitive = true
       }

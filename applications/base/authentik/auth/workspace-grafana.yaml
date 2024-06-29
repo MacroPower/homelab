@@ -1,4 +1,18 @@
 ---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: grafana-authentik-ns-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: authentik-ns-secrets
+subjects:
+  - kind: ServiceAccount
+    name: grafana-authentik-ns-secrets
+    namespace: grafana
+
+---
 apiVersion: tf.upbound.io/v1beta1
 kind: Workspace
 metadata:
@@ -7,7 +21,7 @@ spec:
   providerConfigRef:
     name: authentik
   writeConnectionSecretToRef:
-    namespace: grafana
+    namespace: authentik
     name: authentik-grafana
   forProvider:
     source: Inline
@@ -35,8 +49,16 @@ spec:
         domain_name = "grafana.${var.authentik_cluster_external_domain}"
       }
 
-      data "authentik_flow" "default-authorization-flow" {
+      data "authentik_flow" "default_authentication" {
+        slug = "default-authentication-flow"
+      }
+
+      data "authentik_flow" "default_authorization" {
         slug = "default-provider-authorization-explicit-consent"
+      }
+
+      data "authentik_certificate_key_pair" "cert" {
+        name = "Authentik Certificate"
       }
 
       data "authentik_scope_mapping" "scopes" {
@@ -51,7 +73,7 @@ spec:
         username = "akadmin"
       }
 
-      resource "random_password" "grafana-client-id" {
+      resource "random_password" "grafana_client_id" {
         length  = 40
         lower   = true
         numeric = true
@@ -59,7 +81,7 @@ spec:
         special = false
       }
 
-      resource "random_password" "grafana-client-secret" {
+      resource "random_password" "grafana_client_secret" {
         length  = 128
         lower   = true
         numeric = true
@@ -67,39 +89,41 @@ spec:
         special = true
       }
 
-      resource "authentik_provider_oauth2" "grafana-auth-provider" {
+      resource "authentik_provider_oauth2" "grafana_auth_provider" {
         name          = "grafana"
-        client_id     = random_password.grafana-client-id.result
-        client_secret = random_password.grafana-client-secret.result
+        client_id     = random_password.grafana_client_id.result
+        client_secret = random_password.grafana_client_secret.result
         redirect_uris = [
           "https://${local.domain_name}/login/generic_oauth",
         ]
-        property_mappings  = data.authentik_scope_mapping.scopes.ids
-        authorization_flow = data.authentik_flow.default-authorization-flow.id
+        property_mappings   = data.authentik_scope_mapping.scopes.ids
+        authentication_flow = data.authentik_flow.default_authentication.id
+        authorization_flow  = data.authentik_flow.default_authorization.id
+        signing_key         = data.authentik_certificate_key_pair.cert.id
       }
 
-      resource "authentik_application" "grafana-application" {
+      resource "authentik_application" "grafana" {
         name              = local.domain_name
         slug              = "grafana"
-        protocol_provider = authentik_provider_oauth2.grafana-auth-provider.id
+        protocol_provider = authentik_provider_oauth2.grafana_auth_provider.id
       }
 
-      resource "authentik_group" "grafana-admins" {
+      resource "authentik_group" "grafana_admins" {
         name   = "Grafana Admins"
         users  = [data.authentik_user.akadmin.id]
       }
 
-      resource "authentik_group" "grafana-editors" {
+      resource "authentik_group" "grafana_editors" {
         name   = "Grafana Editors"
-        parent = authentik_group.grafana-admins.id
+        parent = authentik_group.grafana_admins.id
       }
 
       output "grafana_client_id" {
-        value     = random_password.grafana-client-id.result
+        value     = random_password.grafana_client_id.result
         sensitive = true
       }
 
       output "grafana_client_secret" {
-        value     = random_password.grafana-client-secret.result
+        value     = random_password.grafana_client_secret.result
         sensitive = true
       }
