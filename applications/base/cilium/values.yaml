@@ -97,7 +97,7 @@ affinity:
 ##
 bpfClockProbe: false
 
-dnsPolicy: ClusterFirstWithHostNet
+dnsPolicy: ClusterFirst
 
 extraContainers:
   - name: vector

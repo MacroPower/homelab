@@ -21,7 +21,7 @@ data:
         type: vector
         inputs:
           - log_files
-        address: vector-aggregator.vector.svc.cluster.local:6020
+        address: syslog.home.macro.network:6020
       prom_exporter:
         type: prometheus_exporter
         inputs:
