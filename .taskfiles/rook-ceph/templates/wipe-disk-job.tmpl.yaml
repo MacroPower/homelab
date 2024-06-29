@@ -17,9 +17,13 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - apk add --no-cache sgdisk util-linux util-linux-misc parted device-mapper;
+              echo "Zapping disk ${DISK} ...";
               sgdisk --zap-all ${DISK};
-              dd if=/dev/zero of=${DISK} bs=1M count=100 oflag=direct;
+              echo "Wiping disk ${DISK} ...";
+              dd if=/dev/zero of=${DISK} bs=1M count=100000 oflag=direct;
+              echo "Removing all partitions from disk ${DISK} ...";
               blkdiscard ${DISK};
+              echo "Re-reading partition table on disk ${DISK} ...";
               partprobe ${DISK};
           securityContext:
             privileged: true

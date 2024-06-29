@@ -22,7 +22,6 @@ tasks:
       DISK: "{{.DISK}}"
       NODE: "{{.ITEM}}"
     cmds:
-      - task: reset-app
       - for: { var: NODES }
         task: reset-data
         vars: *vars
@@ -42,7 +41,7 @@ tasks:
     cmds:
       - envsubst < <(cat {{.ROOK_TEMPLATES_DIR}}/wipe-disk-job.tmpl.yaml) | kubectl apply -f -
       - bash {{.ROOK_SCRIPTS_DIR}}/wait-for-job.sh {{.JOB}} default
-      - kubectl -n default wait job/{{.JOB}} --for condition=complete --timeout=1m
+      - kubectl -n default wait job/{{.JOB}} --for condition=complete --timeout=5m
       - kubectl -n default logs job/{{.JOB}}
       - kubectl -n default delete job {{.JOB}}
     requires:

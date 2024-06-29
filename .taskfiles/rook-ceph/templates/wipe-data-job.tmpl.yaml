@@ -15,7 +15,16 @@ spec:
         - name: main
           image: alpine:3.19
           command: ["/bin/sh", "-c"]
-          args: ["rm -rf /mnt/host_var/lib/rook"]
+          args:
+            - echo "/var:";
+              ls -l /mnt/host_var;
+              echo "/var/lib:";
+              ls -l /mnt/host_var/lib;
+              echo "Wiping data from /var/lib/rook ...";
+              rm -rf /mnt/host_var/lib/rook;
+              echo "/var/lib:";
+              ls -l /mnt/host_var/lib;
+              sleep 2;
           volumeMounts:
             - mountPath: /mnt/host_var
               name: host-var
