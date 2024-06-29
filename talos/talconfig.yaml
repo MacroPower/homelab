@@ -1,5 +1,5 @@
 clusterName: home
-talosVersion: v1.7.2
+talosVersion: v1.7.5
 kubernetesVersion: v1.30.0
 endpoint: https://kube.home.macro.network:6443
 cniConfig:
@@ -41,6 +41,7 @@ nodes:
           - network: ::/0
             gateway: "2603:6010:5300:ad0a::"
             metric: 4096
+          # Link-local IPv6 route set via RA with `metric: 1024`.
         vip: &vip
           ip: 10.10.20.1
     kernelModules: &rk1kernel
@@ -54,7 +55,7 @@ nodes:
       - &rk1machine |-
         machine:
           install:
-            image: "ghcr.io/nberlee/installer:v1.7.2-rk3588"
+            image: "ghcr.io/nberlee/installer:v1.7.5-rk3588"
 
   - hostname: knode02.home.macro.network
     ipAddress: 10.10.10.2
@@ -210,8 +211,8 @@ controlPlane:
       cluster:
         apiServer:
           extraArgs:
-            max-mutating-requests-inflight: 50
-            max-requests-inflight: 100
+            max-mutating-requests-inflight: 20
+            max-requests-inflight: 80
     - &machineKubelet |-
       machine:
         kubelet:
