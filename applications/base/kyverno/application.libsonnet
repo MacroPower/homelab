@@ -5,6 +5,9 @@ app.new(
   name='kyverno',
   path='applications/base/kyverno',
   namespace=ns.metadata.name,
+  annotations={
+    'argocd.argoproj.io/sync-options': 'SkipDryRunOnMissingResource=true'
+  }
 ).withChart(
   name='kyverno',
   repoURL='https://kyverno.github.io/kyverno/',
