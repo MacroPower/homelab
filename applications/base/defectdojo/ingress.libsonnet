@@ -13,8 +13,8 @@ ingress.new(
   annotations=ingressAnnotations {
     'gethomepage.dev/enabled': 'true',
     'gethomepage.dev/name': 'DefectDojo',
-    'gethomepage.dev/description': 'DevSecOps, ASPM, and Vulnerability Management',
-    'gethomepage.dev/group': 'Apps',
+    'gethomepage.dev/description': 'DevSecOps, ASPM & Vulnerability Management',
+    'gethomepage.dev/group': 'Cluster Management',
     'gethomepage.dev/icon': 'si-owasp',
     'gethomepage.dev/podSelector': '',
   },

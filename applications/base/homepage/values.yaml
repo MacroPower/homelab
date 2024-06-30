@@ -1,3 +1,5 @@
+# https://github.com/jameswynn/helm-charts/blob/main/charts/homepage/values.yaml
+
 image:
   repository: ghcr.io/gethomepage/homepage
   tag: v0.9.2
@@ -5,7 +7,25 @@ image:
 controller:
   replicas: 1
 
+# Icons:
+# - https://github.com/walkxcode/dashboard-icons
+# - https://pictogrammers.com/library/mdi/ (mdi-xyz)
+# - https://simpleicons.org/ (si-xyz)
 config:
+  services:
+    - Apps:
+        - UniFi:
+            href: &unifi https://unifi.home.macro.network/
+            icon: unifi
+            description: Ubiquiti UniFi Console
+            siteMonitor: *unifi
+    - Observability:
+        - Robusta:
+            href: &robusta https://platform.robusta.dev/
+            icon: https://raw.githubusercontent.com/robusta-dev/robusta/72edd297ac8c219cbfa901bbdfe6cf3f53c7f145/logos/logo-only.png
+            description: Unified Alerting, Notifications & Remediation
+            siteMonitor: *robusta
+
   bookmarks:
     - Clusters:
         - Home:
@@ -25,8 +45,10 @@ config:
             - icon: github-light
               href: https://github.com/MacroPower/helm-charts
               target: _blank
-
-  services: []
+        - Containers:
+            - icon: github-light
+              href: https://github.com/MacroPower/containers
+              target: _blank
 
   widgets:
     - logo:
