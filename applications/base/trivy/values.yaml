@@ -6,7 +6,7 @@ excludeNamespaces: ""
 # -- targetWorkloads is a comma seperated list of Kubernetes workload resources
 # to be included in the vulnerability and config-audit scans
 # if left blank, all workload resources will be scanned
-targetWorkloads: "pod,replicaset,replicationcontroller,statefulset,daemonset,cronjob,job"
+targetWorkloads: "replicaset,replicationcontroller,statefulset,daemonset"
 
 operator:
   scanJobTTL: 60s
