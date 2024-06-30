@@ -255,19 +255,10 @@ config:
 
 grafana:
   enabled: true
-  # -- Grafana dashboard configmap annotations.
-  annotations: {}
-  # -- Grafana dashboard configmap labels
   labels:
     grafana_dashboard: "1"
-  # -- create GrafanaDashboard custom resource referencing to the configMap.
-  # according to https://grafana-operator.github.io/grafana-operator/docs/examples/dashboard_from_configmap/readme/
-  grafanaDashboard:
-    create: true
-    folder: kyverno
-    allowCrossNamespaceImport: true
-    matchLabels:
-      dashboards: "grafana"
+  annotations:
+    grafana_folder: Kyverno
 
 features:
   logging:
