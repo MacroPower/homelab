@@ -5,8 +5,8 @@ local apps = import 'imports.libsonnet';
   .withAppNamespace('argocd')
   .withDestinationServer('https://kubernetes.default.svc')
   .withExtVars({
-    ingressHost: '%s-nas01.home.macro.network' % app.metadata.name,
-    ingressSuffix: '-nas01.home.macro.network',
+    ingressHost: '%s.nas01.home.macro.network' % app.metadata.name,
+    ingressSuffix: '.nas01.home.macro.network',
     ingressAnnotations: |||
       'traefik.ingress.kubernetes.io/router.entrypoints': 'websecure'
     |||,

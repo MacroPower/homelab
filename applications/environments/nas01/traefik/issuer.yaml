@@ -9,4 +9,4 @@ spec:
     kind: ClusterIssuer
     name: cloudflare-issuer
   dnsNames:
-    - "*.home.macro.network"
+    - "*.nas01.home.macro.network"

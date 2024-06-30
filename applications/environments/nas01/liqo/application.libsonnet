@@ -3,7 +3,7 @@ local app = import '../../../base/liqo/application.libsonnet';
 app.withChartValues(|||
   auth:
     config:
-      addressOverride: liqo-auth-nas01.home.macro.network
+      addressOverride: liqo-auth.nas01.home.macro.network
 
   networkManager:
     config:
