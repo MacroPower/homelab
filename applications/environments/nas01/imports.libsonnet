@@ -2,6 +2,7 @@
   import 'argocd/application.libsonnet',
   import 'beyla/application.libsonnet',
   import 'cert-manager/application.libsonnet',
+  import 'coredns/application.libsonnet',
   import 'dragonfly-operator/application.libsonnet',
   import 'excoredns/application.libsonnet',
   import 'external-secrets/application.libsonnet',
