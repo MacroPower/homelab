@@ -1,6 +1,9 @@
 local app = import '../../../base/liqo/application.libsonnet';
 
 app.withChartValues(|||
+  apiServer:
+    address: https://nas01.home.macro.network:6443
+
   auth:
     config:
       addressOverride: liqo-auth.nas01.home.macro.network
@@ -17,18 +20,23 @@ app.withChartValues(|||
         - 10.0.0.0/10
         - 10.64.0.0/10
         - 10.128.0.0/14
+        - 10.134.0.0/16
+        - 10.135.0.0/16
         - 10.136.0.0/14
         - 10.140.0.0/14
         - 10.144.0.0/12
         - 10.160.0.0/12
         - 10.176.0.0/12
         - 10.192.0.0/12
+        - 10.208.0.0/14
 
   gateway:
     # No more than one replica can be scheduled on a given node.
     replicas: 1
     service:
       type: "NodePort"
+    nodePort:
+      port: 5871
     config:
       addressOverride: nas01.home.macro.network
       listeningPort: 5871
