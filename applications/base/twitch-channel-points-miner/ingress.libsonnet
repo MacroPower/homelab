@@ -14,7 +14,7 @@ ingress.new(
     'traefik.ingress.kubernetes.io/router.middlewares': 'authentik-ak-outpost@kubernetescrd',
     'gethomepage.dev/enabled': 'true',
     'gethomepage.dev/name': 'Twitch Channel Points Miner',
-    'gethomepage.dev/description': 'Watches streams to earn channel points',
+    'gethomepage.dev/description': 'Automated Boints Collector & Gamba Participant',
     'gethomepage.dev/group': 'Apps',
     'gethomepage.dev/icon': 'twitch',
     'gethomepage.dev/podSelector': '',

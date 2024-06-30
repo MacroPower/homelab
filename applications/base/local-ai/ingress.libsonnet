@@ -13,7 +13,7 @@ ingress.new(
   annotations=ingressAnnotations {
     'gethomepage.dev/enabled': 'true',
     'gethomepage.dev/name': 'LocalAI',
-    'gethomepage.dev/description': 'Self-hosted LLMs and more',
+    'gethomepage.dev/description': 'Self-hosted AI Models with OpenAI APIs',
     'gethomepage.dev/external': 'true',
     'gethomepage.dev/group': 'Apps',
     'gethomepage.dev/icon': 'si-openai',

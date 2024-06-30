@@ -18,7 +18,7 @@ expose:
       gethomepage.dev/enabled: "true"
       gethomepage.dev/external: "true"
       gethomepage.dev/name: "Harbor"
-      gethomepage.dev/description: "Artifact registry with pull-through cache"
+      gethomepage.dev/description: "Private Artifact Registry"
       gethomepage.dev/group: "Cluster Management"
       gethomepage.dev/icon: "harbor"
       gethomepage.dev/href: "https://harbor.home.macro.network"

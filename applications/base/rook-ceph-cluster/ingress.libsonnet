@@ -13,7 +13,7 @@ ingress.new(
   annotations=ingressAnnotations {
     'gethomepage.dev/enabled': 'true',
     'gethomepage.dev/name': 'Rook Ceph',
-    'gethomepage.dev/description': 'File, Block and Object Storage',
+    'gethomepage.dev/description': 'Distributed File, Block & Object Storage',
     'gethomepage.dev/group': 'Cluster Management',
     'gethomepage.dev/icon': 'ceph',
     'gethomepage.dev/podSelector': '',

@@ -14,7 +14,7 @@ ingress.new(
     'traefik.ingress.kubernetes.io/router.middlewares': 'authentik-ak-outpost@kubernetescrd',
     'gethomepage.dev/enabled': 'true',
     'gethomepage.dev/name': 'Policy Reporter',
-    'gethomepage.dev/description': 'Interface and notifications for wgpolicy CRDs',
+    'gethomepage.dev/description': 'Interface and Notifications for Policy Reports',
     'gethomepage.dev/group': 'Cluster Management',
     'gethomepage.dev/icon': 'mdi-police-badge-outline',
     'gethomepage.dev/podSelector': '',
