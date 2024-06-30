@@ -89,7 +89,7 @@ twitch_miner.mine(
                     filter_condition=FilterCondition(
                         by=OutcomeKeys.ODDS_PERCENTAGE,
                         where=Condition.GTE,
-                        value=55
+                        value=65
                     ),
                 ),
             ),
