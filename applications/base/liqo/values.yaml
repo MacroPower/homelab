@@ -19,7 +19,7 @@ networking:
   # The value is used by the gateway and route operators.
   mtu: 1420
   # -- Select the mode to enforce security on connectivity among clusters. Possible values are "FullPodToPod" and "IntraClusterTrafficSegregation"
-  securityMode: "FullPodToPod"
+  securityMode: "IntraClusterTrafficSegregation"
 
 reflection:
   skip:
