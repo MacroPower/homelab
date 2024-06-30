@@ -1,2 +1,4 @@
+# https://artifacthub.io/packages/helm/jaegertracing/jaeger-operator
+
 rbac:
   clusterRole: true
