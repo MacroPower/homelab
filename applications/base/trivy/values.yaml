@@ -13,10 +13,10 @@ operator:
   scanSecretTTL: 60s
 
   # -- scanJobTimeout the length of time to wait before giving up on a scan job
-  scanJobTimeout: 5m
+  scanJobTimeout: 15m
 
   # -- scanJobsConcurrentLimit the maximum number of scan jobs create by the operator
-  scanJobsConcurrentLimit: 4
+  scanJobsConcurrentLimit: 3
 
   # -- the flag to enable vulnerability scanner
   vulnerabilityScannerEnabled: true
