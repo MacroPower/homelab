@@ -235,7 +235,7 @@ auth:
 
   # -- Enable TLS for the Authentication Service Pod (using a self-signed certificate).
   # If you are exposing this service with an Ingress, consider to disable it or add the appropriate annotations to the Ingress resource.
-  tls: false
+  tls: true
   ingress:
     enable: false
   config:

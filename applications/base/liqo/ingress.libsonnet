@@ -9,6 +9,6 @@ ingress.new(
   namespace=ns.metadata.name,
   host='liqo-auth%s' % ingressSuffix,
   serviceName='liqo-auth',
-  servicePort=5000,
+  servicePort=443,
   annotations=ingressAnnotations,
 )
