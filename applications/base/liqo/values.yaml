@@ -248,12 +248,8 @@ metricAgent:
       requests: {}
 
 telemetry:
-  # -- Enable/Disable the telemetry collector.
-  enable: true
-  pod:
-    resources:
-      limits: {}
-      requests: {}
+  # Telemetry is on hooks which is pretty annoying.
+  enable: false
 
 virtualKubelet:
   extra:
