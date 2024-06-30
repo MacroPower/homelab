@@ -134,14 +134,15 @@ gateway:
       limits: {}
       requests: {}
   service:
-    # -- Kubernetes service to be used to expose the network gateway pod.
-    # If you plan to use liqo over the Internet, consider to change this field to "LoadBalancer".
-    # Instead, if your nodes are directly reachable from the cluster you are peering to, you may change it to "NodePort".
-    type: "NodePort"
-    # -- Annotations for the network gateway service.
-    annotations: {}
-    # -- Labels for the network gateway service.
-    labels: {}
+    type: "LoadBalancer"
+    annotations:
+      io.cilium/lb-ipam-ips: "10.10.30.3"
+    labels:
+      bgp.kubernetes.macro.network/peer_group: cbgp
+  config:
+    # Note: This is added to the *external* DNS server.
+    addressOverride: liqo-gateway.home.macro.network
+    listeningPort: 5871
   metrics:
     enabled: true
     serviceMonitor:
