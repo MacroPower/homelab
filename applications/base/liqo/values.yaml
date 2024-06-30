@@ -220,6 +220,8 @@ discovery:
 
 auth:
   pod:
+    labels:
+      o11y.jacobcolvin.com/instrument: "beyla"
     resources:
       limits: {}
       requests: {}
