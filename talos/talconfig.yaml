@@ -222,7 +222,7 @@ controlPlane:
               - 2603:6010:5300:ad0a::/64
           extraArgs:
             feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true
-            #rotate-server-certificates: true
+            rotate-server-certificates: true
     - &machineLogging |-
       machine:
         logging:
