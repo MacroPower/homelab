@@ -230,6 +230,7 @@ auth:
     enable: false
   config:
     addressOverride: liqo-auth.home.macro.network
+    portOverride: "443"
 
 metricAgent:
   # -- Enable/Disable the virtual kubelet metric agent. This component aggregates all the kubelet-related metrics
