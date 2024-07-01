@@ -28,6 +28,7 @@
   import 'k8s-event-logger/application.libsonnet',
   import 'k8up/application.libsonnet',
   import 'komoplane/application.libsonnet',
+  import 'kubelet-csr-approver/application.libsonnet',
   import 'kyverno-policies/application.libsonnet',
   import 'kyverno/application.libsonnet',
   import 'librespeed/application.libsonnet',

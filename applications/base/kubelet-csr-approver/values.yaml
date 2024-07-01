@@ -7,7 +7,7 @@ ignoreNonSystemNode: true
 
 metrics:
   serviceMonitor:
-    enabled: false
+    enabled: true
 
 resources:
   requests:
