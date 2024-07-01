@@ -15,28 +15,26 @@ controllers:
           repository: ghcr.io/onedr0p/radarr
           tag: "5.7.0"
         env:
-          RADARR__INSTANCE_NAME: Radarr
-          RADARR__THEME: dark
-          RADARR__AUTHENTICATION_METHOD: External
-          RADARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
-          RADARR__LOG_LEVEL: info
-          RADARR__APPLICATION_URL: &url https://radarr.home.macro.network
-          RADARR__PORT: &port 7878
-          RADARR__API_KEY:
+          RADARR__SERVER__PORT: &port 7878
+          RADARR__APP__INSTANCENAME: Radarr
+          RADARR__AUTH__METHOD: External
+          RADARR__AUTH__REQUIRED: DisabledForLocalAddresses
+          RADARR__AUTH__APIKEY:
             valueFrom:
               secretKeyRef:
                 name: radarr-credentials
                 key: apikey
-          RADARR__POSTGRES_HOST: postgres-shared-rw.postgres-shared.svc
-          RADARR__POSTGRES_PORT: "5432"
-          RADARR__POSTGRES_USER: radarr
-          RADARR__POSTGRES_PASSWORD:
+          RADARR__POSTGRES__HOST: postgres-shared-rw.postgres-shared.svc
+          RADARR__POSTGRES__PORT: "5432"
+          RADARR__POSTGRES__USER: radarr
+          RADARR__POSTGRES__PASSWORD:
             valueFrom:
               secretKeyRef:
                 name: radarr-database-credentials
                 key: password
-          RADARR__POSTGRES_MAIN_DB: radarr-main
-          RADARR__POSTGRES_LOG_DB: radarr-log
+          RADARR__POSTGRES__MAINDB: radarr-main
+          RADARR__POSTGRES__LOGDB: radarr-log
+          RADARR__LOG__LEVEL: info
           TZ: America/New_York
           COMPlus_EnableDiagnostics: "0" # For readonlyfs
         probes:
@@ -84,8 +82,8 @@ ingress:
       gethomepage.dev/description: "PVR, Manager & Organizer for Movies"
       gethomepage.dev/group: "Media"
       gethomepage.dev/icon: "radarr"
-      gethomepage.dev/href: *url
-      gethomepage.dev/siteMonitor: "http://radarr.radarr.svc:7878"
+      gethomepage.dev/href: https://radarr.home.macro.network
+      gethomepage.dev/siteMonitor: http://radarr.radarr.svc:7878
       gethomepage.dev/podSelector: ""
     hosts:
       - host: &host "radarr.home.macro.network"
