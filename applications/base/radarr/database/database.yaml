@@ -1,0 +1,25 @@
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Database
+metadata:
+  name: radarr_main
+spec:
+  deletionPolicy: Delete
+  forProvider:
+    owner: radarr
+    encoding: utf8
+  providerConfigRef:
+    name: postgres-shared
+
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Database
+metadata:
+  name: radarr_log
+spec:
+  deletionPolicy: Delete
+  forProvider:
+    owner: radarr
+    encoding: utf8
+  providerConfigRef:
+    name: postgres-shared

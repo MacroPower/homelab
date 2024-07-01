@@ -1,0 +1,16 @@
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Role
+metadata:
+  name: radarr
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    privileges:
+      login: true
+    passwordSecretRef:
+      name: radarr-database-credentials
+      key: password
+      namespace: radarr
+  providerConfigRef:
+    name: postgres-shared
