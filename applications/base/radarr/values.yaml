@@ -2,15 +2,6 @@ controllers:
   main:
     annotations:
       reloader.stakater.com/auto: "true"
-    type: statefulset
-    statefulset:
-      volumeClaimTemplates:
-        - name: config
-          globalMounts:
-            - path: /config
-          storageClass: ceph-block
-          accessMode: ReadWriteOnce
-          size: 5Gi
     containers:
       app:
         image:
@@ -95,6 +86,14 @@ ingress:
       - hosts: [*host]
 
 persistence:
+  config:
+    enabled: true
+    type: persistentVolumeClaim
+    storageClass: ceph-block
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    globalMounts:
+      - path: /config
   media:
     enabled: true
     type: emptyDir
