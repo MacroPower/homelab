@@ -2,7 +2,7 @@
 apiVersion: postgresql.sql.crossplane.io/v1alpha1
 kind: Database
 metadata:
-  name: radarr_main
+  name: radarr-main
 spec:
   deletionPolicy: Delete
   forProvider:
@@ -15,7 +15,7 @@ spec:
 apiVersion: postgresql.sql.crossplane.io/v1alpha1
 kind: Database
 metadata:
-  name: radarr_log
+  name: radarr-log
 spec:
   deletionPolicy: Delete
   forProvider:

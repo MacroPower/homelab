@@ -37,8 +37,8 @@ controllers:
               secretKeyRef:
                 name: radarr-database-credentials
                 key: password
-          RADARR__POSTGRES_MAIN_DB: radarr_main
-          RADARR__POSTGRES_LOG_DB: radarr_log
+          RADARR__POSTGRES_MAIN_DB: radarr-main
+          RADARR__POSTGRES_LOG_DB: radarr-log
           TZ: America/New_York
           COMPlus_EnableDiagnostics: "0" # For readonlyfs
         probes:
