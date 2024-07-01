@@ -1,42 +1,102 @@
-nameOverride: radarr
-
-image:
-  repository: linuxserver/radarr
-  tag: 4.7.5
-
-configSecretName: radarr-config
+controllers:
+  main:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    type: statefulset
+    statefulset:
+      volumeClaimTemplates:
+        - name: config
+          globalMounts:
+            - path: /config
+          storageClass: ceph-block
+          accessMode: ReadWriteOnce
+          size: 5Gi
+    containers:
+      app:
+        image:
+          repository: ghcr.io/onedr0p/radarr
+          tag: "5.7.0"
+        env:
+          RADARR__INSTANCE_NAME: Radarr
+          RADARR__THEME: dark
+          RADARR__AUTHENTICATION_METHOD: External
+          RADARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
+          RADARR__LOG_LEVEL: info
+          RADARR__APPLICATION_URL: &url https://radarr.home.macro.network
+          RADARR__PORT: &port 7878
+          RADARR__API_KEY:
+            valueFrom:
+              secretKeyRef:
+                name: radarr-credentials
+                key: apikey
+          RADARR__POSTGRES_HOST: postgres-shared-rw.postgres-shared.svc
+          RADARR__POSTGRES_PORT: "5432"
+          RADARR__POSTGRES_USER: radarr
+          RADARR__POSTGRES_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: radarr-database-credentials
+                key: password
+          RADARR__POSTGRES_MAIN_DB: radarr_main
+          RADARR__POSTGRES_LOG_DB: radarr_log
+          TZ: America/New_York
+          COMPlus_EnableDiagnostics: "0" # For readonlyfs
+        probes:
+          liveness: &probes
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /ping
+                port: *port
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          readiness: *probes
+        resources:
+          requests:
+            cpu: 100m
+            memory: 2Gi
+          limits:
+            cpu: 8000m
+            memory: 2Gi
 
 service:
-  type: ClusterIP
-  port: 7878
+  main:
+    controller: main
+    ports:
+      http:
+        port: *port
 
-metrics:
-  enabled: true
+ingress:
+  main:
+    enabled: true
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+      traefik.ingress.kubernetes.io/router.middlewares: authentik-ak-outpost@kubernetescrd
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/external: "true"
+      gethomepage.dev/name: "Radarr"
+      gethomepage.dev/description: "PVR, Manager & Organizer for Movies"
+      gethomepage.dev/group: "Media"
+      gethomepage.dev/icon: "radarr"
+      gethomepage.dev/href: *url
+      gethomepage.dev/siteMonitor: "http://radarr.radarr.svc:7878"
+      gethomepage.dev/podSelector: ""
+    hosts:
+      - host: &host "radarr.home.macro.network"
+        paths:
+          - path: /
+            service:
+              identifier: main
+              port: http
+    tls:
+      - hosts: [*host]
 
-  secretName: radarr-credentials
-  secretKey: RADARR_API_KEY
-
-serviceMonitor:
-  enabled: true
-
-extraInitContainers:
-  - name: init-db
-    image: postgres:14
-    command: [bash, /scripts/radarr_db_init.sh]
-    volumeMounts:
-      - name: radarr-init-scripts
-    mountPath: /scripts
-
-extraSecretMounts:
-  - name: radarr-init-scripts
-    optional: false
-
-podSecurityContext:
-  fsGroup: 1000
-
-resources:
-  requests:
-    cpu: 100m
-    memory: 2048Mi
-  limits:
-    memory: 2048Mi
+persistence:
+  media:
+    enabled: true
+    type: emptyDir
+    globalMounts:
+      - path: /media

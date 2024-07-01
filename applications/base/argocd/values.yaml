@@ -298,6 +298,11 @@ configs:
       name: ghcr-registry
       enableOCI: "true"
       type: "helm"
+    bjw-s:
+      url: ghcr.io/bjw-s/helm
+      name: bjw-s-registry
+      enableOCI: "true"
+      type: "helm"
 
 redis:
   enabled: false
