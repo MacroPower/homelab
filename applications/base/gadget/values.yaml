@@ -17,9 +17,4 @@ config:
   # -- Enable experimental features
   experimental: false
 
-# -- Capabilities used by `gadget` container
-capabilities: {}
-
-# -- Tolerations used by `gadget` container
-# NOTE: NoSchedule/NoExecute are set by default.
-tolerations: []
+affinity: ~
