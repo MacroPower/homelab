@@ -11,6 +11,8 @@ spec:
     name: authentik-ocis
   forProvider:
     source: Inline
+    initArgs:
+      - -upgrade=true
     varFiles:
       - source: SecretKey
         format: HCL

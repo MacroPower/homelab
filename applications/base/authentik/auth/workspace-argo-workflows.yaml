@@ -11,6 +11,8 @@ spec:
     name: authentik-argo-workflows
   forProvider:
     source: Inline
+    initArgs:
+      - -upgrade=true
     varFiles:
       - source: SecretKey
         format: HCL

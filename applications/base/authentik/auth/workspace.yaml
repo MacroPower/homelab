@@ -11,6 +11,8 @@ spec:
     name: terraform-workspace-authentik
   forProvider:
     source: Inline
+    initArgs:
+      - -upgrade=true
     varFiles:
       - source: SecretKey
         format: HCL
@@ -50,7 +52,7 @@ spec:
         authorization_flow  = data.authentik_flow.default_authorization.id
       }
 
-      resource "authentik_application" "domain-forward-auth-application" {
+      resource "authentik_application" "domain_forward_auth_application" {
         name              = var.authentik_cluster_external_domain
         slug              = "domain-forward-auth-application"
         protocol_provider = authentik_provider_proxy.domain_forward_auth_provider.id
