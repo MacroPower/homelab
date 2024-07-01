@@ -9,6 +9,6 @@ app.new(
   name='app-template',
   repoURL='ghcr.io/bjw-s/helm',
   targetRevision='3.2.1',
-  releaseName='app-template',
+  releaseName='radarr',
   values='values.yaml'
 )

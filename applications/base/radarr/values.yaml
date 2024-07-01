@@ -2,6 +2,13 @@ controllers:
   main:
     annotations:
       reloader.stakater.com/auto: "true"
+    pod:
+      securityContext:
+        runAsUser: 65534
+        runAsGroup: 65534
+        runAsNonRoot: true
+        fsGroup: 65534
+        fsGroupChangePolicy: OnRootMismatch
     containers:
       app:
         image:
@@ -52,6 +59,11 @@ controllers:
           limits:
             cpu: 8000m
             memory: 2Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: [ALL]
 
 service:
   main:
