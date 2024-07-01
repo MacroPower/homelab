@@ -4,4 +4,5 @@ resources:
   - policies/add-resizepolicy/policy.yaml
   - policies/create-pdb/policy.yaml
   - policies/drop-all-capabilities/policy.yaml
+  - policies/set-daemonset-affinity/policy.yaml
   - policies/spread-pods/policy.yaml
