@@ -18,6 +18,7 @@
   import 'opentelemetry-collector/application.libsonnet',
   import 'opentelemetry-operator/application.libsonnet',
   import 'prometheus/application.libsonnet',
+  import 'reloader/application.libsonnet',
   import 'template-controller/application.libsonnet',
   import 'traefik/application.libsonnet',
 ]

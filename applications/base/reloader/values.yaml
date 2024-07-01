@@ -1,0 +1,33 @@
+# https://artifacthub.io/packages/helm/stakater/reloader
+
+reloader:
+  autoReloadAll: false
+  isArgoRollouts: false
+  reloadOnCreate: false
+  syncAfterRestart: false
+  reloadStrategy: annotations
+  logFormat: json
+  watchGlobally: true
+  enableHA: true
+  readOnlyRootFileSystem: true
+
+  deployment:
+    replicas: 2
+
+    resources:
+      requests:
+        cpu: 10m
+        memory: 200Mi
+      limits:
+        cpu: 1000m
+        memory: 200Mi
+
+  podMonitor:
+    enabled: true
+
+  # Set to true to expose a prometheus counter of reloads by namespace (this metric may have high cardinality in clusters with many namespaces)
+  enableMetricsByNamespace: false
+
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1

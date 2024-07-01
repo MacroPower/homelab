@@ -50,6 +50,7 @@
   import 'prometheus-stack/application.libsonnet',
   import 'prometheus/application.libsonnet',
   import 'rclone-restic/application.libsonnet',
+  import 'reloader/application.libsonnet',
   import 'robusta/application.libsonnet',
   import 'rook-ceph-cluster/application.libsonnet',
   import 'rook-ceph-operator/application.libsonnet',

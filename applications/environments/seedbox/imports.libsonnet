@@ -24,6 +24,7 @@
   import 'prometheus-stack/application.libsonnet',
   import 'prometheus/application.libsonnet',
   import 'rclone-restic/application.libsonnet',
+  import 'reloader/application.libsonnet',
   import 'template-controller/application.libsonnet',
   import 'traefik/application.libsonnet',
   import 'transmission-anime/application.libsonnet',
