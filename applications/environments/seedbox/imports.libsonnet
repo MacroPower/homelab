@@ -1,5 +1,6 @@
 [
   import 'argocd/application.libsonnet',
+  import 'authentik-secrets/application.libsonnet',
   import 'authentik/application.libsonnet',
   import 'cert-manager/application.libsonnet',
   import 'cloudnative-pg/application.libsonnet',

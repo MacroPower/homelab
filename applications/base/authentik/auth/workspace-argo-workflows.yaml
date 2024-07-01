@@ -1,18 +1,4 @@
 ---
-kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: argo-workflows-authentik-ns-secrets
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: authentik-ns-secrets
-subjects:
-  - kind: ServiceAccount
-    name: argo-workflows-authentik-ns-secrets
-    namespace: argo-workflows
-
----
 apiVersion: tf.upbound.io/v1beta1
 kind: Workspace
 metadata:

@@ -1,0 +1,71 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: authentik-ns-secrets
+rules:
+  - apiGroups: [""]
+    resources:
+      - secrets
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - authorization.k8s.io
+    resources:
+      - selfsubjectrulesreviews
+    verbs:
+      - create
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: argo-workflows-authentik-ns-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: authentik-ns-secrets
+subjects:
+  - kind: ServiceAccount
+    name: argo-workflows-authentik-ns-secrets
+    namespace: argo-workflows
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: argocd-authentik-ns-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: authentik-ns-secrets
+subjects:
+  - kind: ServiceAccount
+    name: argocd-authentik-ns-secrets
+    namespace: argocd
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: grafana-authentik-ns-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: authentik-ns-secrets
+subjects:
+  - kind: ServiceAccount
+    name: grafana-authentik-ns-secrets
+    namespace: grafana
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: ocis-authentik-ns-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: authentik-ns-secrets
+subjects:
+  - kind: ServiceAccount
+    name: ocis-authentik-ns-secrets
+    namespace: ocis

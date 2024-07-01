@@ -2,6 +2,7 @@
   import 'adguard-home/application.libsonnet',
   import 'argo-workflows/application.libsonnet',
   import 'argocd/application.libsonnet',
+  import 'authentik-secrets/application.libsonnet',
   import 'authentik/application.libsonnet',
   import 'beyla/application.libsonnet',
   import 'cert-manager/application.libsonnet',
