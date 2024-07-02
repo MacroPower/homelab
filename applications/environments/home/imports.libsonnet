@@ -49,6 +49,7 @@
   import 'postgres-shared/application.libsonnet',
   import 'prometheus-stack/application.libsonnet',
   import 'prometheus/application.libsonnet',
+  import 'prowlarr/application.libsonnet',
   import 'radarr/application.libsonnet',
   import 'rclone-restic/application.libsonnet',
   import 'reloader/application.libsonnet',

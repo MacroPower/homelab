@@ -6,9 +6,9 @@ app.new(
   path='applications/base/prowlarr',
   namespace=ns.metadata.name,
 ).withChart(
-  name='servarr',
-  repoURL='https://jacobcolvin.com/helm-charts/',
-  targetRevision='0.1.2',
+  name='app-template',
+  repoURL='ghcr.io/bjw-s/helm',
+  targetRevision='3.2.1',
   releaseName='prowlarr',
   values='values.yaml'
 )

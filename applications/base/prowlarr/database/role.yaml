@@ -1,0 +1,16 @@
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: Role
+metadata:
+  name: prowlarr
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    privileges:
+      login: true
+    passwordSecretRef:
+      name: prowlarr-database-credentials
+      key: password
+      namespace: servarr
+  providerConfigRef:
+    name: postgres-shared

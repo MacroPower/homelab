@@ -1,8 +1,5 @@
-[
-  import 'namespace.libsonnet',
-  std.parseYaml(importstr 'init-scripts.yaml'),
-  std.parseYaml(importstr 'secrets.yaml'),
-  std.parseYaml(importstr 'config.yaml'),
-  std.parseYaml(importstr 'init-scripts-secrets.yaml'),
-  std.parseYaml(importstr 'config-secrets.yaml'),
-]
+local database = import 'database/main.libsonnet';
+local secrets = std.parseYaml(importstr 'secrets.yaml');
+local terraform = import 'terraform/main.libsonnet';
+
+database + secrets + terraform

@@ -1,42 +1,106 @@
-nameOverride: prowlarr
-
-image:
-  repository: linuxserver/prowlarr
-  tag: 0.4.11-develop
-
-configSecretName: prowlarr-config
+controllers:
+  main:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    pod:
+      securityContext:
+        runAsUser: 65534
+        runAsGroup: 65534
+        runAsNonRoot: true
+        fsGroup: 65534
+        fsGroupChangePolicy: OnRootMismatch
+    containers:
+      app:
+        image:
+          repository: ghcr.io/onedr0p/prowlarr
+          tag: "1.19.0"
+        env:
+          PROWLARR__SERVER__PORT: &port 9696
+          PROWLARR__APP__INSTANCENAME: Prowlarr
+          PROWLARR__AUTH__METHOD: External
+          PROWLARR__AUTH__REQUIRED: DisabledForLocalAddresses
+          PROWLARR__AUTH__APIKEY:
+            valueFrom:
+              secretKeyRef:
+                name: prowlarr-credentials
+                key: apikey
+          PROWLARR__POSTGRES__HOST: postgres-shared-rw.postgres-shared.svc
+          PROWLARR__POSTGRES__PORT: "5432"
+          PROWLARR__POSTGRES__USER: prowlarr
+          PROWLARR__POSTGRES__PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: prowlarr-database-credentials
+                key: password
+          PROWLARR__POSTGRES__MAINDB: prowlarr-main
+          PROWLARR__POSTGRES__LOGDB: prowlarr-log
+          PROWLARR__LOG__LEVEL: info
+          TZ: America/New_York
+          COMPlus_EnableDiagnostics: "0" # For readonlyfs
+        probes:
+          liveness: &probes
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /ping
+                port: *port
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          readiness: *probes
+        resources:
+          requests:
+            cpu: 100m
+            memory: 2Gi
+          limits:
+            cpu: 8000m
+            memory: 2Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: [ALL]
 
 service:
-  type: ClusterIP
-  port: 9696
+  main:
+    controller: main
+    ports:
+      http:
+        port: *port
 
-metrics:
-  enabled: false
+ingress:
+  main:
+    enabled: true
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+      traefik.ingress.kubernetes.io/router.middlewares: authentik-ak-outpost@kubernetescrd
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/external: "true"
+      gethomepage.dev/name: "Prowlarr"
+      gethomepage.dev/description: "PVR Indexer Manager"
+      gethomepage.dev/group: "Media"
+      gethomepage.dev/icon: "prowlarr"
+      gethomepage.dev/href: https://prowlarr.home.macro.network
+      gethomepage.dev/siteMonitor: http://prowlarr.servarr.svc:9696
+      gethomepage.dev/podSelector: ""
+    hosts:
+      - host: &host "prowlarr.home.macro.network"
+        paths:
+          - path: /
+            service:
+              identifier: main
+              port: http
+    tls:
+      - hosts: [*host]
 
-  secretName: prowlarr-credentials
-  secretKey: PROWLARR_API_KEY
-
-serviceMonitor:
-  enabled: false
-
-extraInitContainers:
-  - name: init-db
-    image: postgres:14
-    command: [bash, /scripts/prowlarr_db_init.sh]
-    volumeMounts:
-      - name: prowlarr-init-scripts
-    mountPath: /scripts
-
-extraSecretMounts:
-  - name: prowlarr-init-scripts
-    optional: false
-
-podSecurityContext:
-  fsGroup: 1000
-
-resources:
-  requests:
-    cpu: 100m
-    memory: 2048Mi
-  limits:
-    memory: 2048Mi
+persistence:
+  config:
+    enabled: true
+    type: persistentVolumeClaim
+    storageClass: ceph-block
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    globalMounts:
+      - path: /config
