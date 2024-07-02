@@ -1,0 +1,35 @@
+---
+apiVersion: tf.upbound.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: radarr
+spec:
+  credentials:
+    - filename: radarr-apikey
+      source: Secret
+      secretRef:
+        namespace: radarr
+        name: radarr-credentials
+        key: apikey
+  # https://registry.terraform.io/providers/devopsarr/radarr/latest/docs
+  configuration: |
+    provider "radarr" {
+      url     = "http://radarr.radarr.svc.cluster.local:7878"
+      api_key = file("${path.module}/radarr-apikey")
+    }
+
+    // Modules _must_ use remote state. The provider does not persist state.
+    terraform {
+      backend "kubernetes" {
+        secret_suffix     = "providerconfig-radarr"
+        namespace         = "radarr"
+        in_cluster_config = true
+      }
+
+      required_providers {
+        radarr = {
+          source = "devopsarr/radarr"
+          version = "2.2.0"
+        }
+      }
+    }

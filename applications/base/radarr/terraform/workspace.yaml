@@ -1,0 +1,57 @@
+---
+apiVersion: tf.upbound.io/v1beta1
+kind: Workspace
+metadata:
+  name: radarr
+spec:
+  providerConfigRef:
+    name: radarr
+  writeConnectionSecretToRef:
+    namespace: radarr
+    name: terraform-workspace-radarr
+  forProvider:
+    source: Inline
+    initArgs:
+      - -upgrade=true
+    module: |
+      data "radarr_quality" "remux_1080p" {
+        name = "Remux-1080p"
+      }
+
+      data "radarr_quality" "webdl_4k" {
+        name = "WEBDL-2160p"
+      }
+
+      data "radarr_quality" "webdl_1080p" {
+        name = "WEBDL-1080p"
+      }
+
+      data "radarr_quality" "webrip_4k" {
+        name = "WEBRip-2160p"
+      }
+
+      resource "radarr_quality_profile" "reasonably_hd" {
+        name            = "Reasonably-HD"
+        upgrade_allowed = false
+        cutoff          = data.radarr_quality.webdl_1080p.id
+
+        language = {
+          id   = 1
+          name = "English"
+        }
+
+        quality_groups = [
+          {
+            qualities = [data.radarr_quality.remux_1080p]
+          },
+          {
+            qualities = [data.radarr_quality.webdl_4k]
+          },
+          {
+            qualities = [data.radarr_quality.webdl_1080p]
+          },
+          {
+            qualities = [data.radarr_quality.webrip_4k]
+          },
+        ]
+      }
