@@ -58,6 +58,7 @@
   import 'securecodebox-addons/application.libsonnet',
   import 'securecodebox-config/application.libsonnet',
   import 'securecodebox/application.libsonnet',
+  import 'servarr/application.libsonnet',
   import 'spegel/application.libsonnet',
   import 'template-controller/application.libsonnet',
   import 'tetragon/application.libsonnet',

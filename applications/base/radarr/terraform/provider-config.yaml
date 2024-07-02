@@ -8,13 +8,13 @@ spec:
     - filename: radarr-apikey
       source: Secret
       secretRef:
-        namespace: radarr
+        namespace: servarr
         name: radarr-credentials
         key: apikey
   # https://registry.terraform.io/providers/devopsarr/radarr/latest/docs
   configuration: |
     provider "radarr" {
-      url     = "http://radarr.radarr.svc.cluster.local:7878"
+      url     = "http://radarr.servarr.svc.cluster.local:7878"
       api_key = file("${path.module}/radarr-apikey")
     }
 

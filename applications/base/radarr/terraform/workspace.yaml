@@ -7,7 +7,7 @@ spec:
   providerConfigRef:
     name: radarr
   writeConnectionSecretToRef:
-    namespace: radarr
+    namespace: servarr
     name: terraform-workspace-radarr
   forProvider:
     source: Inline

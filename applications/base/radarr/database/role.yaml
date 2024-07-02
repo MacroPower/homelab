@@ -11,6 +11,6 @@ spec:
     passwordSecretRef:
       name: radarr-database-credentials
       key: password
-      namespace: radarr
+      namespace: servarr
   providerConfigRef:
     name: postgres-shared

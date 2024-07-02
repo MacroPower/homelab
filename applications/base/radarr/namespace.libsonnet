@@ -1,3 +1,1 @@
-local k = import '../../lib/k.libsonnet';
-
-k.core.v1.namespace.new('radarr')
+import '../servarr/namespace.libsonnet'

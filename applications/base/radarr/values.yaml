@@ -83,7 +83,7 @@ ingress:
       gethomepage.dev/group: "Media"
       gethomepage.dev/icon: "radarr"
       gethomepage.dev/href: https://radarr.home.macro.network
-      gethomepage.dev/siteMonitor: http://radarr.radarr.svc:7878
+      gethomepage.dev/siteMonitor: http://radarr.servarr.svc:7878
       gethomepage.dev/podSelector: ""
     hosts:
       - host: &host "radarr.home.macro.network"
