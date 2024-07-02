@@ -29,7 +29,7 @@ operator:
   # -- cacheReportTTL the flag to set how long a cluster sbom report should exist. "" means that the cacheReportTTL feature is disabled
   cacheReportTTL: "120h"
   # -- configAuditScannerEnabled the flag to enable configuration audit scanner
-  configAuditScannerEnabled: true
+  configAuditScannerEnabled: false
   # -- rbacAssessmentScannerEnabled the flag to enable rbac assessment scanner
   rbacAssessmentScannerEnabled: true
   # -- infraAssessmentScannerEnabled the flag to enable infra assessment scanner
@@ -40,8 +40,6 @@ operator:
   batchDeleteLimit: 10
   # -- vulnerabilityScannerScanOnlyCurrentRevisions the flag to only create vulnerability scans on the current revision of a deployment.
   vulnerabilityScannerScanOnlyCurrentRevisions: true
-  # -- configAuditScannerScanOnlyCurrentRevisions the flag to only create config audit scans on the current revision of a deployment.
-  configAuditScannerScanOnlyCurrentRevisions: true
   # -- batchDeleteDelay the duration to wait before deleting another batch of config audit reports.
   batchDeleteDelay: 10s
   # -- accessGlobalSecretsAndServiceAccount The flag to enable access to global secrets/service accounts to allow `vulnerability scan job` to pull images from private registries
@@ -70,10 +68,6 @@ operator:
   # -- MetricsExposedSecretInfo the flag to enable metrics about exposed secrets
   # be aware of metrics cardinality is significantly increased with this feature enabled.
   metricsExposedSecretInfo: false
-
-  # -- MetricsConfigAuditInfo the flag to enable metrics about configuration audits
-  # be aware of metrics cardinality is significantly increased with this feature enabled.
-  metricsConfigAuditInfo: false
 
   # -- MetricsRbacAssessmentInfo the flag to enable metrics about Rbac Assessment
   # be aware of metrics cardinality is significantly increased with this feature enabled.
@@ -107,9 +101,6 @@ operator:
   # -- privateRegistryScanSecretsNames is map of namespace:secrets, secrets are comma seperated which can be used to authenticate in private registries in case if there no imagePullSecrets provided example : {"mynamespace":"mySecrets,anotherSecret"}
   privateRegistryScanSecretsNames: {}
 
-  # -- mergeRbacFindingWithConfigAudit the flag to enable merging rbac finding with config-audit report
-  mergeRbacFindingWithConfigAudit: false
-
   # -- vaulesFromConfigMap name of a ConfigMap to apply OPERATOR_* environment variables. Will override Helm values.
   valuesFromConfigMap: ""
 
@@ -122,8 +113,6 @@ serviceMonitor:
 trivyOperator:
   # -- vulnerabilityReportsPlugin the name of the plugin that generates vulnerability reports `Trivy`
   vulnerabilityReportsPlugin: "Trivy"
-  # -- configAuditReportsPlugin the name of the plugin that generates config audit reports.
-  configAuditReportsPlugin: "Trivy"
   # -- scanJobCompressLogs control whether scanjob output should be compressed or plain
   scanJobCompressLogs: true
   # -- scanJobAffinity affinity to be applied to the scanner pods and node-collector
@@ -319,10 +308,6 @@ trivy:
   # -- The Flag to enable the usage of builtin rego policies by default
   #
   useBuiltinRegoPolicies: "true"
-
-  # -- The Flag is the list of supported kinds separated by comma delimiter to be scanned by the config audit scanner
-  #
-  supportedConfigAuditKinds: "Workload,Service,Role,ClusterRole,NetworkPolicy,Ingress,LimitRange,ResourceQuota"
 
   # -- command. One of `image`, `filesystem` or `rootfs` scanning, depending on the target type required for the scan.
   # For 'filesystem' and `rootfs` scanning, ensure that the `trivyOperator.scanJobPodTemplateContainerSecurityContext` is configured
