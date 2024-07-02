@@ -3,6 +3,9 @@ image:
   repository: rdavidoff/twitch-channel-points-miner-v2
   tag: "1.9.7"
 
+podAnnotations:
+  reloader.stakater.com/auto: "true"
+
 configMaps:
   config:
     enabled: false
