@@ -28,8 +28,9 @@ nodes:
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az01
     networkInterfaces:
-      - deviceSelector:
-          hardwareAddr: "7a:c0:a9:*"
+      - deviceSelector: &rk1NetDevice
+          driver: rk_gmac-dwmac
+          busPath: "fe1c0000.ethernet"
         dhcp: false
         addresses:
           - "10.10.10.1/16"
@@ -84,13 +85,13 @@ nodes:
   - hostname: knode03.home.macro.network
     ipAddress: 10.10.10.3
     controlPlane: true
-    installDisk: *rpiMmcDevice
+    installDisk: *rk1device
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az03
     networkInterfaces:
-      - deviceSelector: *rpiNetDevice
+      - deviceSelector: *rk1NetDevice
         dhcp: false
         addresses:
           - "10.10.10.3/16"
@@ -98,7 +99,32 @@ nodes:
         mtu: *mtu
         routes: *routes
         vip: *vip
-    schematic: *rpiSchematic
+    kernelModules: *rk1kernel
+    schematic: *rk1schematic
+    patches:
+      - *rk1machine
+
+  - hostname: knode06.home.macro.network
+    ipAddress: 10.10.10.6
+    controlPlane: false
+    installDisk: /dev/mmcblk0
+    nodeLabels:
+      bgp.kubernetes.macro.network/peer_group: cbgp
+      feature.node.kubernetes.io/network.max-link-speed: 1g
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az03
+    networkInterfaces:
+      - deviceSelector: *rk1NetDevice
+        dhcp: false
+        addresses:
+          - "10.10.10.6/16"
+          - "2603:6010:5300:ad0a::a006/64"
+        mtu: *mtu
+        routes: *routes
+    kernelModules: *rk1kernel
+    schematic: *rk1schematic
+    patches:
+      - *rk1machine
 
   - hostname: knode13.home.macro.network
     ipAddress: 10.10.10.13

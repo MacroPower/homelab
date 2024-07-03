@@ -108,13 +108,15 @@ locals {
       ipv4    = "10.9.10.15"
       profile = local.unifi_device_types.k8s_node_management.profile
     }
-    "kube" = {
-      mac  = "00:00:10:10:20:01"
-      ipv4 = "10.10.20.1"
-    }
     "rpi01" = {
       mac     = "e4:5f:01:6e:db:a8"
       ipv4    = "10.10.8.1"
+      profile = local.unifi_device_types.k8s_node_rpi.profile
+      dev_id  = local.unifi_device_types.k8s_node_rpi.dev_id
+    }
+    "rpi03" = {
+      mac     = "e4:5f:01:6e:d0:58"
+      ipv4    = "10.10.8.3"
       profile = local.unifi_device_types.k8s_node_rpi.profile
       dev_id  = local.unifi_device_types.k8s_node_rpi.dev_id
     }
@@ -130,10 +132,14 @@ locals {
       dev_id  = local.unifi_device_types.k8s_node_rpi.dev_id
     }
     "knode03" = {
-      mac     = "e4:5f:01:6e:d0:58"
+      mac     = "fa:fa:0b:10:5e:18"
       ipv4    = "10.10.10.3"
-      profile = local.unifi_device_types.k8s_node_rpi.profile
-      dev_id  = local.unifi_device_types.k8s_node_rpi.dev_id
+      profile = local.unifi_device_types.k8s_node_rk1.profile
+    }
+    "knode06" = {
+      mac     = "5a:04:d1:f7:7f:32"
+      ipv4    = "10.10.10.6"
+      profile = local.unifi_device_types.k8s_node_rk1.profile
     }
     "knode13" = {
       mac     = "00:02:c9:56:fe:52"
