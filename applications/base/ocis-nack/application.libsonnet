@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='nack',
   repoURL='https://nats-io.github.io/k8s/helm/charts/',
-  targetRevision='0.25.4',
+  targetRevision='0.26.0',
   releaseName='nack',
   values='values.yaml'
 )
