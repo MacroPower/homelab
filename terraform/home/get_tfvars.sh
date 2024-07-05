@@ -1,1 +1,1 @@
-doppler run -p terraform -c main envsubst < .auto.tfvars.tpl > .auto.tfvars
+doppler run -p terraform -c main_home envsubst < .auto.tfvars.tpl > .auto.tfvars
