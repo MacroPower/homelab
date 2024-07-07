@@ -52,6 +52,7 @@
   import 'prowlarr/application.libsonnet',
   import 'radarr/application.libsonnet',
   import 'rclone-restic/application.libsonnet',
+  import 'recyclarr/application.libsonnet',
   import 'reloader/application.libsonnet',
   import 'robusta/application.libsonnet',
   import 'rook-ceph-cluster/application.libsonnet',

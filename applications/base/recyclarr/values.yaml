@@ -1,0 +1,67 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/library/common/values.schema.json
+controllers:
+  main:
+    type: cronjob
+    cronjob:
+      schedule: "*/15 * * * *"
+      successfulJobsHistory: 1
+      failedJobsHistory: 3
+      backoffLimit: 3
+      ttlSecondsAfterFinished: 300
+      concurrencyPolicy: Forbid
+    # annotations:
+    #   reloader.stakater.com/auto: "true"
+    pod:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    containers:
+      app:
+        image:
+          repository: ghcr.io/recyclarr/recyclarr
+          tag: "7.0.0"
+        args:
+          - sync
+          - --config=/config/recyclarr.yaml
+        env:
+          RADARR_API_KEY:
+            valueFrom:
+              secretKeyRef:
+                name: radarr-credentials
+                key: apikey
+          NO_COLOR: "1"
+          COMPlus_EnableDiagnostics: "0"
+        probes:
+          liveness: &probes
+            enabled: false
+          readiness: *probes
+        resources:
+          requests:
+            cpu: 10m
+            memory: 200Mi
+          limits:
+            cpu: 1000m
+            memory: 200Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: [ALL]
+
+persistence:
+  tmp:
+    enabled: true
+    type: emptyDir
+    globalMounts:
+      - path: /tmp
+  config:
+    enabled: true
+    type: configMap
+    name: recyclarr-config
+    globalMounts:
+      - path: /config/recyclarr.yaml
+        subPath: recyclarr.yaml
+        readOnly: true

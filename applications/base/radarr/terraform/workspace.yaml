@@ -29,29 +29,3 @@ spec:
       data "radarr_quality" "webrip_4k" {
         name = "WEBRip-2160p"
       }
-
-      resource "radarr_quality_profile" "reasonably_hd" {
-        name            = "Reasonably-HD"
-        upgrade_allowed = false
-        cutoff          = data.radarr_quality.webdl_1080p.id
-
-        language = {
-          id   = 1
-          name = "English"
-        }
-
-        quality_groups = [
-          {
-            qualities = [data.radarr_quality.remux_1080p]
-          },
-          {
-            qualities = [data.radarr_quality.webdl_4k]
-          },
-          {
-            qualities = [data.radarr_quality.webdl_1080p]
-          },
-          {
-            qualities = [data.radarr_quality.webrip_4k]
-          },
-        ]
-      }
