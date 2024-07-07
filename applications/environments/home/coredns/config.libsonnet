@@ -16,7 +16,7 @@ k.core.v1.configMap.new('coredns', data={
           fallthrough
         }
         forward home.macro.network 10.112.0.11
-        forward . 10.10.0.1:53 [2603:6010:5300:ad0a::1]:53
+        forward . 10.10.0.1:53
         prometheus :9153
         cache 30
         loop
