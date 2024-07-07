@@ -49,4 +49,5 @@ app.withChartValues(|||
       clusterName: "nas01"
       clusterLabels:
         liqo.io/provider: k3s
+        liqo.io/remote-cluster-name: nas01
 |||)

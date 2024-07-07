@@ -200,9 +200,9 @@ discovery:
     clusterName: "home"
     # -- A set of labels that characterizes the local cluster when exposed remotely as a virtual node.
     # It is suggested to specify the distinguishing characteristics that may be used to decide whether to offload pods on this cluster.
-    clusterLabels: {}
-     # topology.kubernetes.io/zone: us-east-1
-     # liqo.io/provider: your-provider
+    clusterLabels:
+      liqo.io/provider: talos
+      liqo.io/remote-cluster-name: home
 
     # -- Enable the mDNS discovery on LANs, set to false to not look for other clusters available in the same LAN.
     # Usually this feature should be active when you have multiple (tiny) clusters on the same LAN (e.g., multiple K3s running on individual devices);
