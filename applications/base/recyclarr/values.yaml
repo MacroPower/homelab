@@ -3,7 +3,7 @@ controllers:
   main:
     type: cronjob
     cronjob:
-      schedule: "*/15 * * * *"
+      schedule: "*/5 * * * *"
       successfulJobsHistory: 1
       failedJobsHistory: 3
       backoffLimit: 3
@@ -58,6 +58,13 @@ persistence:
     globalMounts:
       - path: /tmp
   config:
+    enabled: true
+    storageClass: ceph-block
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    globalMounts:
+      - path: /config
+  config-file:
     enabled: true
     type: configMap
     name: recyclarr-config
