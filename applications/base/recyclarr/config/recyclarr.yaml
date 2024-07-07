@@ -6,7 +6,7 @@
 
 # Instance Definition: https://recyclarr.dev/wiki/yaml/config-reference/basic/
 radarr:
-  remux-web-1080p:
+  main:
     base_url: http://radarr.servarr.svc:7878
     api_key: !env_var RADARR_API_KEY
 
@@ -35,15 +35,29 @@ radarr:
         quality_sort: top
         qualities:
           - name: Remux-1080p
-          - name: WEB 2160p
-            qualities:
-              - WEBDL-2160p
-              - WEBRip-2160p
+          - name: WEBDL-2160p
           - name: WEBDL-1080p
+          - name: WEBRip-2160p
 
     # Custom Formats: https://recyclarr.dev/wiki/yaml/config-reference/custom-formats/
     # kubectl run -it --rm --image ghcr.io/recyclarr/recyclarr -- recyclarr list custom-formats radarr
     custom_formats:
+      # Preferences
+      - trash_ids:
+          # Audio Channels
+          - 89dac1be53d5268a7e10a19d3c896826 # 2.0 Stereo
+          # Codecs
+          - 9170d55c319f4fe40da8711ba9d8050d # x265
+          - dc98083864ea246d05a42df0d05f81cc # x265 (HD)
+          - 839bea857ed2c0a8e084f3cbdbd65ecb # x265 (no HDR/DV)
+          # HDR Formats
+          - e61e28db95d22bedcadf030b8f156d96 # HDR
+          - 2a4d9069cc1fe3242ff9bdaebed239bb # HDR (undefined)
+        quality_profiles:
+          - name: Reasonably HD
+            score: 100
+
+      # Standard
       - trash_ids:
           # Audio Advanced #1
           - 417804f7f2c4308c1f4c5d380d4c4475 # ATMOS (undefined)
@@ -67,7 +81,6 @@ radarr:
 
           # Audio Channels
           - b124be9b146540f8e62f98fe32e49a2a # 1.0 Mono
-          - 89dac1be53d5268a7e10a19d3c896826 # 2.0 Stereo
           - 205125755c411c3b8622ca3175d27b37 # 3.0 Sound
           - 373b58bd188fc00c817bd8c7470ea285 # 4.0 Sound
           - 77ff61788dfe1097194fd8743d7b4524 # 5.1 Surround
@@ -105,6 +118,10 @@ radarr:
           - 403816d65392c79236dcb6dd591aeda4 # WEB Tier 02
           - af94e0fe497124d1f9ce732069ec8c3b # WEB Tier 03
 
+          # HDR Formats
+          - 9364dd386c9b4a1100dde8264690add7 # HLG
+          - 08d6d8834ad9ec87b1dc7ec8148e7a1f # PQ
+
           # Misc
           - 0d91270a7255a1e388fa85e959f359d8 # FreeLeech
           - ff86c4326018682f817830ced463332b # MPEG2
@@ -113,7 +130,6 @@ radarr:
           - ae43b294509409a6a13919dedd4764c4 # Repack2
           - 5caaaa1c08c1742aa4342d8c4cc463f2 # Repack3
           - 2899d84dc9372de3408e6d8cc18e9666 # x264
-          - 9170d55c319f4fe40da8711ba9d8050d # x265
           - 390455c22a9cac81a738f6cbad705c3c # x266
 
           # Misc Streaming Services
@@ -134,12 +150,7 @@ radarr:
           - e9001909a4c88013a359d0b9920d7bea # Theatrical Cut
           - db9b4c4b53d312a3ca5f1378f6440fc9 # Vinegar Syndrome
 
-          # # Optional
-          # - 73613461ac2cea99d52c4cd6e177ab82 # HFR
-          # - 182fa1c42a2468f8488e6dcf75a81b81 # INTERNAL
-          # - c465ccc73923871b3eb1802042331306 # Line/Mic Dubbed
-          # - ae9b7c9ebde1f3bd336a8cbd1ec4c5e5 # No-RlsGroup
-          # - 7357cf5161efbf8c4d5d0c30b4815ee2 # Obfuscated
+          # Optional
           # - 5c44f52a8714fdd79bb4d98e2673be1f # Retags
           # - 9c38ebb7384dada637be8899efa68e6f # SDR
           # - 25c12f78430a3a23413652cbd1d48d77 # SDR (no WEBDL)
@@ -152,28 +163,11 @@ radarr:
           - 3dce1fce9ac06d1349dfbd9186289385 # NOW
 
           # Unwanted
-          - b8cd450cbfa689c0259a01d9e29ba3d6 # 3D
           - cae4ca30163749b891686f95532519bd # AV1
-          - ed38b889b31be83fda192888e2286d83 # BR-DISK
-          - 0a3f082873eb454bde444150b70253cc # Extras
-          - 90a6f9a284dff5103f6346090e6280c8 # LQ
-          - e204b80c87be9497a8a6eaff48f72905 # LQ (Release Title)
-          - bfd8eb01832d646a0a89c4deb46f8564 # Upscaled
         quality_profiles:
           - name: Reasonably HD
 
-      - trash_ids:
-          - dc98083864ea246d05a42df0d05f81cc # x265 (HD)
-          - 839bea857ed2c0a8e084f3cbdbd65ecb # x265 (no HDR/DV)
-          # HDR Formats
-          - e61e28db95d22bedcadf030b8f156d96 # HDR
-          - 2a4d9069cc1fe3242ff9bdaebed239bb # HDR (undefined)
-          - 9364dd386c9b4a1100dde8264690add7 # HLG
-          - 08d6d8834ad9ec87b1dc7ec8148e7a1f # PQ
-        quality_profiles:
-          - name: Reasonably HD
-            score: 1
-
+      # Unwanted
       - trash_ids:
           - 58d6a88f13e2db7f5059c41047876f00 # DV
           - e23edd2482476e595fb990b12e7c609c # DV HDR10
@@ -188,6 +182,18 @@ radarr:
           - 55a5b50cb416dea5a50c4955896217ab # DV HDR10+ Boost
           - 90cedc1fea7ea5d11298bebd3d1d3223 # EVO (no WEBDL)
           - b17886cb4158d9fea189859409975758 # HDR10+ Boost
+          - b8cd450cbfa689c0259a01d9e29ba3d6 # 3D
+          - ed38b889b31be83fda192888e2286d83 # BR-DISK
+          - 0a3f082873eb454bde444150b70253cc # Extras
+          - 90a6f9a284dff5103f6346090e6280c8 # LQ
+          - e204b80c87be9497a8a6eaff48f72905 # LQ (Release Title)
+          - bfd8eb01832d646a0a89c4deb46f8564 # Upscaled
+          # Optional
+          - 73613461ac2cea99d52c4cd6e177ab82 # HFR
+          - 182fa1c42a2468f8488e6dcf75a81b81 # INTERNAL
+          - c465ccc73923871b3eb1802042331306 # Line/Mic Dubbed
+          - ae9b7c9ebde1f3bd336a8cbd1ec4c5e5 # No-RlsGroup
+          - 7357cf5161efbf8c4d5d0c30b4815ee2 # Obfuscated
         quality_profiles:
           - name: Reasonably HD
             score: -10000
