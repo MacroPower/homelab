@@ -1,5 +1,9 @@
 nameOverride: anime
 
+image:
+  repository: linuxserver/transmission
+  tag: '3.00-r6-ls146'
+
 configSecretName: transmission-anime-config
 
 persistence:
@@ -15,6 +19,10 @@ service:
 
 flood:
   enabled: true
+
+  image:
+    repository: jesec/flood
+    tag: '4.7.0'
 
   resources:
     requests:
