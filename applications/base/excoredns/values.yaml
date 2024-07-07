@@ -18,7 +18,8 @@ watchedResources: ["Ingress"]
 
 # Enabled fallthrough for k8s_gateway
 fallthrough:
-  enabled: false
+  enabled: true
+  zones: []
 
 # Optional plugins that will be enabled in the zone, e.g. "forward . /etc/resolve.conf"
 extraZonePlugins:
