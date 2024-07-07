@@ -18,8 +18,7 @@ watchedResources: ["Ingress"]
 
 # Enabled fallthrough for k8s_gateway
 fallthrough:
-  enabled: true
-  zones: []
+  enabled: false
 
 # Optional plugins that will be enabled in the zone, e.g. "forward . /etc/resolve.conf"
 extraZonePlugins:
@@ -31,11 +30,13 @@ extraZonePlugins:
       lameduck 5s
   # Serves a /ready endpoint on :8181, required for readinessProbe
   - name: ready
+  - name: forward
+    parameters: . 10.10.0.1:53
   # Serves a /metrics endpoint on :9153, required for serviceMonitor
   - name: prometheus
     parameters: 0.0.0.0:9153
-  - name: forward
-    parameters: . 10.10.0.1:53
+  - name: cache
+    parameters: 30
   - name: loop
   - name: reload
   - name: loadbalance
