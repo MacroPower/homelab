@@ -152,8 +152,8 @@ radarr:
 
           # Optional
           # - 5c44f52a8714fdd79bb4d98e2673be1f # Retags
-          # - 9c38ebb7384dada637be8899efa68e6f # SDR
-          # - 25c12f78430a3a23413652cbd1d48d77 # SDR (no WEBDL)
+          - 9c38ebb7384dada637be8899efa68e6f # SDR
+          - 25c12f78430a3a23413652cbd1d48d77 # SDR (no WEBDL)
           # - f537cf427b64c38c8e36298f657e4828 # Scene
           # - ae4cfaa9283a4f2150ac3da08e388723 # VP9
 
@@ -161,9 +161,6 @@ radarr:
           - 6185878161f1e2eef9cd0641a0d09eae # IP
           - c3492a26af412e385404eade438ec51c # ITVX
           - 3dce1fce9ac06d1349dfbd9186289385 # NOW
-
-          # Unwanted
-          - cae4ca30163749b891686f95532519bd # AV1
         quality_profiles:
           - name: Reasonably HD
 
@@ -182,6 +179,7 @@ radarr:
           - 55a5b50cb416dea5a50c4955896217ab # DV HDR10+ Boost
           - 90cedc1fea7ea5d11298bebd3d1d3223 # EVO (no WEBDL)
           - b17886cb4158d9fea189859409975758 # HDR10+ Boost
+          - cae4ca30163749b891686f95532519bd # AV1
           - b8cd450cbfa689c0259a01d9e29ba3d6 # 3D
           - ed38b889b31be83fda192888e2286d83 # BR-DISK
           - 0a3f082873eb454bde444150b70253cc # Extras
