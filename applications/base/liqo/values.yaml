@@ -2,7 +2,7 @@
 
 apiServer:
   # -- The address that must be used to contact your API server, it needs to be reachable from the clusters that you will peer with (defaults to your master IP).
-  address: https://kube.home.macro.network:6443
+  address: ""
   # -- Indicates that the API Server is exposing a certificate issued by a trusted Certification Authority.
   trustedCA: false
 
@@ -135,13 +135,9 @@ gateway:
       requests: {}
   service:
     type: "LoadBalancer"
-    annotations:
-      io.cilium/lb-ipam-ips: "10.10.30.3"
-    labels:
-      bgp.kubernetes.macro.network/peer_group: cbgp
   config:
     # Note: This is added to the *external* DNS server.
-    addressOverride: liqo-gateway.home.macro.network
+    addressOverride: ""
     listeningPort: 5871
   metrics:
     enabled: true
@@ -155,9 +151,9 @@ networkManager:
       requests: {}
   config:
     # -- The subnet used by the pods in your cluster, in CIDR notation (e.g., 10.0.0.0/16).
-    podCIDR: "10.128.0.0/14"
+    podCIDR: ""
     # -- The subnet used by the services in you cluster, in CIDR notation (e.g., 172.16.0.0/16).
-    serviceCIDR: "10.112.0.0/12"
+    serviceCIDR: ""
     # -- List of IP subnets that do not have to be used by Liqo.
     # Liqo can perform automatic IP address remapping when a remote cluster is peering with you, e.g., in case IP address spaces (e.g., PodCIDR) overlaps.
     # In order to prevent IP conflicting between locally used private subnets in your infrastructure and private subnets belonging to remote clusters
@@ -195,14 +191,12 @@ discovery:
     # -- Specify an unique ID (must be a valid uuidv4) for your cluster, instead of letting helm generate it automatically at install time.
     # You can generate it using the command: `uuidgen`
     # This field is needed when using tools such as ArgoCD, since the helm lookup function is not supported and a new value would be generated at each deployment.
-    clusterIDOverride: "57fcb13c-e14d-4564-9cdf-1afc26da8035"
+    clusterIDOverride: ""
     # -- Set a mnemonic name for your cluster.
-    clusterName: "home"
+    clusterName: ""
     # -- A set of labels that characterizes the local cluster when exposed remotely as a virtual node.
     # It is suggested to specify the distinguishing characteristics that may be used to decide whether to offload pods on this cluster.
-    clusterLabels:
-      liqo.io/provider: talos
-      liqo.io/remote-cluster-name: home
+    clusterLabels: {}
 
     # -- Enable the mDNS discovery on LANs, set to false to not look for other clusters available in the same LAN.
     # Usually this feature should be active when you have multiple (tiny) clusters on the same LAN (e.g., multiple K3s running on individual devices);
@@ -239,7 +233,7 @@ auth:
   ingress:
     enable: false
   config:
-    addressOverride: liqo-auth.home.macro.network
+    addressOverride: ""
     portOverride: "443"
 
 metricAgent:
