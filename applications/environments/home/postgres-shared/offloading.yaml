@@ -1,0 +1,14 @@
+---
+apiVersion: offloading.liqo.io/v1alpha1
+kind: NamespaceOffloading
+metadata:
+  name: offloading
+spec:
+  clusterSelector:
+    nodeSelectorTerms:
+      - matchExpressions:
+          - key: liqo.io/remote-cluster-name
+            operator: In
+            values: [nas01]
+  namespaceMappingStrategy: EnforceSameName
+  podOffloadingStrategy: Local

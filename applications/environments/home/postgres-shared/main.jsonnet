@@ -1,14 +1,7 @@
 // jsonnet base/postgres-shared/main.jsonnet -J vendor
 
-local ns = import '../../../base/postgres-shared/namespace.libsonnet';
-local providerSecretSa = std.parseYaml(importstr '../../../base/postgres-shared/provider-secret-sa.yaml');
-local providerSecret = std.parseYaml(importstr '../../../base/postgres-shared/provider-secret.yaml');
-local provider = std.parseYaml(importstr '../../../base/postgres-shared/provider.yaml');
-
+local base = import '../../../base/postgres-shared/main.jsonnet';
 local cluster = std.parseYaml(importstr 'cluster.yaml');
+local offloading = std.parseYaml(importstr 'offloading.yaml');
 
-[ns] +
-providerSecretSa +
-providerSecret +
-provider +
-cluster
+base + cluster + offloading
