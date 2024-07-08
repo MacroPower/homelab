@@ -1,0 +1,8 @@
+---
+apiVersion: offloading.liqo.io/v1alpha1
+kind: NamespaceOffloading
+metadata:
+  name: offloading
+spec:
+  namespaceMappingStrategy: EnforceSameName
+  podOffloadingStrategy: LocalAndRemote
