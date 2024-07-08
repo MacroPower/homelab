@@ -24,7 +24,7 @@ radarr:
       type: movie
 
     quality_profiles:
-      - name: Reasonably HD
+      - name: Reasonably-HD
         reset_unmatched_scores:
           enabled: true
         upgrade:
@@ -54,10 +54,10 @@ radarr:
           - e61e28db95d22bedcadf030b8f156d96 # HDR
           - 2a4d9069cc1fe3242ff9bdaebed239bb # HDR (undefined)
         quality_profiles:
-          - name: Reasonably HD
-            score: 100
+          - name: Reasonably-HD
+            score: 10
 
-      # Standard
+      # No Preference
       - trash_ids:
           # Audio Advanced #1
           - 417804f7f2c4308c1f4c5d380d4c4475 # ATMOS (undefined)
@@ -79,13 +79,9 @@ radarr:
           - a061e2e700f81932daf888599f8a8273 # Opus
           - e7c2fcae07cbada050a0af3357491d7b # PCM
 
-          # Audio Channels
-          - b124be9b146540f8e62f98fe32e49a2a # 1.0 Mono
-          - 205125755c411c3b8622ca3175d27b37 # 3.0 Sound
-          - 373b58bd188fc00c817bd8c7470ea285 # 4.0 Sound
-          - 77ff61788dfe1097194fd8743d7b4524 # 5.1 Surround
-          - 6fd7b090c3f7317502ab3b63cc7f51e3 # 6.1 Surround
-          - e77382bcfeba57cb83744c9c5449b401 # 7.1 Surround
+          # HDR Formats
+          - 9364dd386c9b4a1100dde8264690add7 # HLG
+          - 08d6d8834ad9ec87b1dc7ec8148e7a1f # PQ
 
           # General Streaming Services
           - b3b3a6ac74ecbd56bcdbefa4799fb9df # AMZN
@@ -104,6 +100,29 @@ radarr:
           - c2863d2a50c9acad1fb50e53ece60817 # STAN
           - e0ec9672be6cac914ffad34a6b077209 # iT
 
+          # Misc Streaming Services
+          - f6ff65b3f4b464a79dcc75950fe20382 # CRAV
+          - fbca986396c5e695ef7b2def3c755d01 # OViD
+          - ab56ccdc473a1f2897c76187ea365be2 # STRP
+
+          # UK Streaming Services
+          - 6185878161f1e2eef9cd0641a0d09eae # IP
+          - c3492a26af412e385404eade438ec51c # ITVX
+          - 3dce1fce9ac06d1349dfbd9186289385 # NOW
+        quality_profiles:
+          - name: Reasonably-HD
+            score: 0
+
+      # Standard
+      - trash_ids:
+          # Audio Channels
+          - b124be9b146540f8e62f98fe32e49a2a # 1.0 Mono
+          - 205125755c411c3b8622ca3175d27b37 # 3.0 Sound
+          - 373b58bd188fc00c817bd8c7470ea285 # 4.0 Sound
+          - 77ff61788dfe1097194fd8743d7b4524 # 5.1 Surround
+          - 6fd7b090c3f7317502ab3b63cc7f51e3 # 6.1 Surround
+          - e77382bcfeba57cb83744c9c5449b401 # 7.1 Surround
+
           # HQ Release Groups
           - ed27ebfef2f323e964fb1f61391bcb35 # HD Bluray Tier 01
           - c20c8647f2746a1f4c4262b0fbbeeeae # HD Bluray Tier 02
@@ -118,10 +137,6 @@ radarr:
           - 403816d65392c79236dcb6dd591aeda4 # WEB Tier 02
           - af94e0fe497124d1f9ce732069ec8c3b # WEB Tier 03
 
-          # HDR Formats
-          - 9364dd386c9b4a1100dde8264690add7 # HLG
-          - 08d6d8834ad9ec87b1dc7ec8148e7a1f # PQ
-
           # Misc
           - 0d91270a7255a1e388fa85e959f359d8 # FreeLeech
           - ff86c4326018682f817830ced463332b # MPEG2
@@ -131,11 +146,6 @@ radarr:
           - 5caaaa1c08c1742aa4342d8c4cc463f2 # Repack3
           - 2899d84dc9372de3408e6d8cc18e9666 # x264
           - 390455c22a9cac81a738f6cbad705c3c # x266
-
-          # Misc Streaming Services
-          - f6ff65b3f4b464a79dcc75950fe20382 # CRAV
-          - fbca986396c5e695ef7b2def3c755d01 # OViD
-          - ab56ccdc473a1f2897c76187ea365be2 # STRP
 
           # Movie Versions
           - eca37840c13c6ef2dd0262b141a5482f # 4K Remaster
@@ -156,13 +166,8 @@ radarr:
           - 25c12f78430a3a23413652cbd1d48d77 # SDR (no WEBDL)
           # - f537cf427b64c38c8e36298f657e4828 # Scene
           # - ae4cfaa9283a4f2150ac3da08e388723 # VP9
-
-          # UK Streaming Services
-          - 6185878161f1e2eef9cd0641a0d09eae # IP
-          - c3492a26af412e385404eade438ec51c # ITVX
-          - 3dce1fce9ac06d1349dfbd9186289385 # NOW
         quality_profiles:
-          - name: Reasonably HD
+          - name: Reasonably-HD
 
       # Unwanted
       - trash_ids:
@@ -193,5 +198,5 @@ radarr:
           - ae9b7c9ebde1f3bd336a8cbd1ec4c5e5 # No-RlsGroup
           - 7357cf5161efbf8c4d5d0c30b4815ee2 # Obfuscated
         quality_profiles:
-          - name: Reasonably HD
+          - name: Reasonably-HD
             score: -10000
