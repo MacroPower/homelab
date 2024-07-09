@@ -14,6 +14,20 @@ app.withChartValues(|||
       podCIDR: "10.128.0.0/14"
       # -- The subnet used by the services in you cluster, in CIDR notation (e.g., 172.16.0.0/16).
       serviceCIDR: "10.112.0.0/12"
+      reservedSubnets:
+        - 192.168.0.0/16
+        - 172.16.0.0/12
+        - 10.0.0.0/10
+        - 10.64.0.0/11
+        - 10.96.0.0/12
+        - 10.132.0.0/14
+        - 10.136.0.0/14
+        - 10.140.0.0/14
+        - 10.144.0.0/12
+        - 10.160.0.0/12
+        - 10.176.0.0/12
+        - 10.192.0.0/12
+        - 10.208.0.0/14
 
   gateway:
     service:

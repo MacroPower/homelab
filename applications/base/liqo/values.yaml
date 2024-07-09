@@ -159,19 +159,7 @@ networkManager:
     # In order to prevent IP conflicting between locally used private subnets in your infrastructure and private subnets belonging to remote clusters
     # you need tell liqo the subnets used in your cluster. E.g if your cluster nodes belong to the 192.168.2.0/24 subnet, then
     # you should add that subnet to the reservedSubnets. PodCIDR and serviceCIDR used in the local cluster are automatically added to the reserved list.
-    reservedSubnets:
-      - 192.168.0.0/16
-      - 172.16.0.0/12
-      - 10.0.0.0/10
-      - 10.64.0.0/11
-      - 10.96.0.0/12
-      - 10.132.0.0/14
-      - 10.136.0.0/14
-      - 10.140.0.0/14
-      - 10.144.0.0/12
-      - 10.160.0.0/12
-      - 10.176.0.0/12
-      - 10.192.0.0/12
+    reservedSubnets: []
 
 crdReplicator:
   pod:
