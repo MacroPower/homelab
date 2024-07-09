@@ -43,7 +43,7 @@ spec:
         spec:
           containers:
             - name: grafana
-              image: grafana/grafana:10.3.3
+              image: grafana/grafana:11.1.0
               resources:
                 requests:
                   cpu: 250m
@@ -81,7 +81,7 @@ spec:
                   name: provisioning-config
                 - mountPath: /var/lib/grafana/dashboards
                   name: dashboards
-            - image: 'ghcr.io/kiwigrid/k8s-sidecar:1.24.5'
+            - image: ghcr.io/kiwigrid/k8s-sidecar:1.27.4
               name: k8s-sidecar
               env:
                 - name: LABEL
