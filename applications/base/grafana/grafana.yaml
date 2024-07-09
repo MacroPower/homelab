@@ -31,10 +31,9 @@ spec:
       enabled: "true"
       name: "authentik"
       scopes: "openid email profile"
-      tls_skip_verify_insecure: "false"
       auth_url: "https://authentik.home.macro.network/application/o/authorize/"
-      token_url: "http://authentik-server.authentik.svc/application/o/token/"
-      api_url: "http://authentik-server.authentik.svc/application/o/userinfo"
+      token_url: "https://authentik.home.macro.network/application/o/token/"
+      api_url: "https://authentik.home.macro.network/application/o/userinfo/"
       role_attribute_path: >-
         contains(groups[*], 'Grafana Admins') && 'Admin' || contains(groups[*], 'Grafana Editors') && 'Editor' || 'Viewer'
   deployment:
@@ -65,13 +64,13 @@ spec:
                 - name: GF_AUTH_GENERIC_OAUTH_CLIENT_ID
                   valueFrom:
                     secretKeyRef:
-                      name: authentik-grafana
-                      key: grafana_client_id
+                      name: grafana-oauth
+                      key: CLIENT_ID
                 - name: GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET
                   valueFrom:
                     secretKeyRef:
-                      name: authentik-grafana
-                      key: grafana_client_secret
+                      name: grafana-oauth
+                      key: CLIENT_SECRET
                 - name: GF_DATABASE_PASSWORD
                   valueFrom:
                     secretKeyRef:

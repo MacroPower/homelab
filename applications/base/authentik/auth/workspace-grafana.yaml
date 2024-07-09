@@ -37,8 +37,8 @@ spec:
         slug = "default-authentication-flow"
       }
 
-      data "authentik_flow" "default_authorization" {
-        slug = "default-provider-authorization-explicit-consent"
+      data "authentik_flow" "default_authorization_implicit" {
+        slug = "default-provider-authorization-implicit-consent"
       }
 
       data "authentik_certificate_key_pair" "cert" {
@@ -82,7 +82,7 @@ spec:
         ]
         property_mappings   = data.authentik_scope_mapping.scopes.ids
         authentication_flow = data.authentik_flow.default_authentication.id
-        authorization_flow  = data.authentik_flow.default_authorization.id
+        authorization_flow  = data.authentik_flow.default_authorization_implicit.id
         signing_key         = data.authentik_certificate_key_pair.cert.id
       }
 
@@ -102,12 +102,12 @@ spec:
         parent = authentik_group.grafana_admins.id
       }
 
-      output "grafana_client_id" {
+      output "client_id" {
         value     = random_password.grafana_client_id.result
         sensitive = true
       }
 
-      output "grafana_client_secret" {
+      output "client_secret" {
         value     = random_password.grafana_client_secret.result
         sensitive = true
       }
