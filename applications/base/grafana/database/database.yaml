@@ -4,7 +4,7 @@ kind: Database
 metadata:
   name: grafana
 spec:
-  deletionPolicy: Orphan
+  deletionPolicy: Delete
   forProvider:
     owner: grafana
     encoding: utf8
