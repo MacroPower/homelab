@@ -1,0 +1,27 @@
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: liqo-network
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: "Liqo"
+  url: "https://raw.githubusercontent.com/liqotech/liqo/v0.10.3/docs/_downloads/grafana/liqonetwork.json"
+  allowCrossNamespaceImport: true
+  resyncPeriod: 1h
+
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: liqo-virtual-kubelet
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: "Liqo"
+  url: "https://raw.githubusercontent.com/liqotech/liqo/v0.10.3/docs/_downloads/grafana/liqovirtualkubelet.json"
+  allowCrossNamespaceImport: true
+  resyncPeriod: 1h
