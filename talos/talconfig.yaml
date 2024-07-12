@@ -39,12 +39,10 @@ nodes:
         routes: &routes
           - network: 0.0.0.0/0
             gateway: "10.10.0.1"
+          # Link-local IPv6 route set via RA with `metric: 1024`.
           - network: ::/0
             gateway: "2603:6010:5300:ad0a::"
             metric: 4096
-          # Link-local IPv6 route set via RA with `metric: 1024`.
-        vip: &vip
-          ip: 10.10.20.1
     kernelModules: &rk1kernel
       - name: rockchip-cpufreq
     schematic: &rk1schematic
@@ -76,7 +74,6 @@ nodes:
           - "2603:6010:5300:ad0a::a002/64"
         mtu: *mtu
         routes: *routes
-        vip: *vip
     schematic: &rpiSchematic
       overlay:
         name: rpi_generic
@@ -98,7 +95,6 @@ nodes:
           - "2603:6010:5300:ad0a::a003/64"
         mtu: *mtu
         routes: *routes
-        vip: *vip
     kernelModules: *rk1kernel
     schematic: *rk1schematic
     patches:
