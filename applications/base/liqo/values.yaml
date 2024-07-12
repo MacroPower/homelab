@@ -8,9 +8,9 @@ apiServer:
 
 networking:
   # -- Use the default Liqo network manager.
-  internal: true
+  internal: false
   # -- Reflect pod IPs and EnpointSlices to the remote clusters.
-  reflectIPs: true
+  reflectIPs: false
   # -- Iptables configuration tuning.
   iptables:
     # -- Select the iptables mode to use. Possible values are "legacy" and "nf_tables".
