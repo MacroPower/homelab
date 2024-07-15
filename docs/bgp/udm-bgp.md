@@ -31,6 +31,7 @@ router bgp 64512
  neighbor CBGP timers connect 15
  !
  ! Neighbors for Cilium BGP
+ neighbor 10.10.10.6 peer-group CBGP
  neighbor 10.10.10.13 peer-group CBGP
  neighbor 10.10.10.14 peer-group CBGP
  neighbor 10.10.10.15 peer-group CBGP
@@ -57,4 +58,13 @@ route-map ALLOW-ALL permit 10
 !
 line vty
 !
+```
+
+### Helpful Commands
+
+```
+service frr status
+service frr restart
+ls -l /etc/frr
+cat /etc/frr/bgpd.conf
 ```
