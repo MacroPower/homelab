@@ -1,7 +1,7 @@
 manager:
   image:
     repository: ghcr.io/jodevsa/wireguard-operator/manager
-    tag: "v2.3.0"
+    tag: "v2.3.2"
   replicaCount: 1
   resources:
     limits:
