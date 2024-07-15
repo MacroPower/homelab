@@ -11,7 +11,8 @@
     "nodePackages.prettier@latest",
     "talosctl@1.7.4",
     "terraform@latest",
-    "natscli@latest"
+    "natscli@latest",
+    "kubernetes-helm@latest"
   ],
   "shell": {
     "init_hook": [
