@@ -65,6 +65,12 @@ module "nas01_datasets_primary" {
       quota_bytes = 50 * local.TiB
     },
     {
+      path        = "/jailmaker"
+      description = "Jails"
+      encryption  = "AES-128-GCM"
+      quota_bytes = 1 * local.TiB
+    },
+    {
       path        = "/system"
       description = "TrueNAS system resources"
       record_size = "128K"

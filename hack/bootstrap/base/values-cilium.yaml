@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/cilium/cilium/main/install/kubernetes/cilium/values.schema.json
+# https://artifacthub.io/packages/helm/cilium/cilium
+
+extraContainers: []
+
+extraVolumeMounts: []
+
+extraVolumes: []
+
+dashboards:
+  enabled: false
+
+operator:
+  replicas: 1
+  rollOutPods: true
+  prometheus:
+    enabled: false
+    serviceMonitor:
+      enabled: false
+      trustCRDsExist: true
+  dashboards:
+    enabled: false
+  resources: {}
+
+prometheus:
+  enabled: false
+  serviceMonitor:
+    enabled: false
+    trustCRDsExist: true
+
+hubble:
+  enabled: false
+  relay:
+    enabled: false
+  ui:
+    enabled: false

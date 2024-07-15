@@ -62,13 +62,25 @@ locals {
       ipv4    = "10.9.1.1"
       profile = local.unifi_device_types.storage_management.profile
     }
-    "nas01" = {
-      mac    = "00:07:43:74:34:20"
-      ipv4   = "10.10.1.1"
-      dev_id = local.unifi_device_types.truenas.dev_id
+    "nas01i" = {
+      mac     = "7c:c2:55:26:0e:56"
+      ipv4    = "10.9.2.1"
+      profile = local.unifi_device_types.storage_management.profile
+      dev_id  = local.unifi_device_types.truenas.dev_id
     }
-    "nas01net" = {
+    "nas01" = {
+      mac     = "00:07:43:74:34:20"
+      ipv4    = "10.10.1.1"
+      profile = local.unifi_device_types.truenas.profile
+      dev_id  = local.unifi_device_types.truenas.dev_id
+    }
+    "nas01net01" = {
       mac     = "00:07:43:74:34:27"
+      profile = local.unifi_device_types.truenas.profile
+      dev_id  = local.unifi_device_types.truenas.dev_id
+    }
+    "nas01net02" = {
+      mac     = "00:07:43:74:34:2f"
       profile = local.unifi_device_types.truenas.profile
       dev_id  = local.unifi_device_types.truenas.dev_id
     }
@@ -240,6 +252,7 @@ locals {
     lab = {
       name          = "Lab"
       id            = 10
+      type          = "trusted"
       allow_ingress = [
         "lab_management",
       ]
@@ -325,6 +338,11 @@ module "unifi" {
       id   = 1
       ipv4 = "10.10.30.1"
     }
+    work_things = {
+      name = "Work Things"
+      id   = 2
+      ipv4 = "10.54.32.58"
+    }
   }
 }
 
@@ -349,14 +367,16 @@ resource "unifi_device" "agg0101" {
     port_profile_id = module.unifi.port_profile[local.unifi_clients.knode15.profile].id
   }
   port_override {
-    number          = 21
-    name            = "SFP+ 21"
-    port_profile_id = module.unifi.port_profile[local.unifi_clients.unraid.profile].id
+    number              = 21
+    name                = "SFP+ 21"
+    op_mode             = "aggregate"
+    aggregate_num_ports = 2
+    port_profile_id     = module.unifi.port_profile[local.unifi_clients.nas01.profile].id
   }
   port_override {
-    number          = 22
-    name            = "SFP+ 22"
-    port_profile_id = module.unifi.port_profile[local.unifi_clients.nas01net.profile].id
+    number          = 23
+    name            = "SFP+ 23"
+    port_profile_id = module.unifi.port_profile[local.unifi_clients.unraid.profile].id
   }
 
   port_override {
@@ -412,6 +432,11 @@ resource "unifi_device" "sw0101" {
     number          = 12
     name            = "Port 12"
     port_profile_id = module.unifi.port_profile[local.unifi_clients.nas01mgmt.profile].id
+  }
+  port_override {
+    number          = 14
+    name            = "Port 14"
+    port_profile_id = module.unifi.port_profile[local.unifi_clients.nas01i.profile].id
   }
 
   port_override {

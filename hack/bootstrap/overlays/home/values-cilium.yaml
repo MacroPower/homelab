@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/cilium/cilium/main/install/kubernetes/cilium/values.schema.json
+# https://artifacthub.io/packages/helm/cilium/cilium
+
+k8sServiceHost: kube.home.macro.network
+k8sServicePort: 6443
+
+cluster:
+  name: home
+  id: 1
+
+ipv4NativeRoutingCIDR: 10.128.0.0/14
+ipv6NativeRoutingCIDR: 2603:6010:5300:ad80::/64
