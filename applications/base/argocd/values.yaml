@@ -40,6 +40,15 @@ configs:
               - profile
               - email
 
+  cmp:
+    create: true
+    plugins:
+      kcl:
+        version: v1.0
+        generate:
+          command: [sh]
+          args: [-c, kcl]
+
     resource.exclusions: |
       - apiGroups:
           - cilium.io
@@ -328,11 +337,37 @@ server:
       memory: 250Mi
 
 repoServer:
-  replicas: 3
+  replicas: 2
+  nodeSelector:
+    kubernetes.io/arch: amd64
   resources:
     requests:
       cpu: 500m
       memory: 500Mi
+  extraContainers:
+    - name: kcl-plugin
+      command: [/var/run/argocd/argocd-cmp-server]
+      image: kcllang/kcl:v0.9.1
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+      volumeMounts:
+        - mountPath: /var/run/argocd
+          name: var-files
+        - mountPath: /home/argocd/cmp-server/plugins
+          name: plugins
+        # Remove this volumeMount if you've chosen to bake the config file into the sidecar image.
+        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+          subPath: kcl.yaml
+          name: kcl-plugin-config
+        - mountPath: /tmp
+          name: cmp-tmp
+  volumes:
+    - name: kcl-plugin-config
+      configMap:
+        name: argocd-cmp-cm
+    - name: cmp-tmp
+      emptyDir: {}
 
 applicationSet:
   replicaCount: 3
