@@ -19,7 +19,7 @@ rbacProxy:
 manager:
   image:
     repository: docker.dragonflydb.io/dragonflydb/operator
-    tag: v1.1.5
+    tag: v1.1.6
   resources:
     requests:
       cpu: 10m
