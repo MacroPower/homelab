@@ -47,7 +47,10 @@ configs:
         version: v1.0
         generate:
           command: [sh]
-          args: [-c, kcl]
+          args:
+            - -c
+            - >-
+              kcl run
 
     resource.exclusions: |
       - apiGroups:
