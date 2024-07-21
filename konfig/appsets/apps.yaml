@@ -1,0 +1,52 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: konfig-apps
+  annotations:
+    argocd.argoproj.io/sync-wave: "-80"
+    argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    ## https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/
+    - git:
+        repoURL: https://github.com/MacroPower/homelab
+        revision: konfig
+        files:
+          - path: konfig/apps/*/*/*/.argocd.yaml
+        pathParamPrefix: app
+  template:
+    metadata:
+      name: "{{index .app.path.segments 2}}-{{index .app.path.segments 3}}"
+      annotations:
+        argocd.argoproj.io/sync-wave: "-70"
+        argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: "{{index .app.path.segments 2}}"
+      source:
+        repoURL: https://github.com/MacroPower/homelab
+        targetRevision: konfig
+        path: "{{.app.path.path}}"
+        plugin:
+          name: kcl-v1.0
+      destination:
+        name: "{{.app.path.basename}}"
+        namespace: "{{index .app.path.segments 2}}-{{index .app.path.segments 3}}"
+      syncPolicy:
+        managedNamespaceMetadata:
+          labels:
+            argocd.argoproj.io/tenant: "{{index .app.path.segments 2}}"
+            argocd.argoproj.io/app: "{{index .app.path.segments 3}}"
+        syncOptions:
+          - ServerSideApply=true
+          - CreateNamespace=true
+  templatePatch: |
+    spec:
+      {{- with .syncPolicy.automated }}
+      syncPolicy:
+        automated:
+          {{ toYaml . | nindent 6 }}
+      {{- end }}
