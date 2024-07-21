@@ -1,0 +1,18 @@
+## Files used to infer the jsonschema of the values.yaml file, which is used to
+## generate the KCL schema for the chart values. Multiple inputs can be defined
+## to provide additional data for schema inference.
+##
+input:
+  - https://raw.githubusercontent.com/kubernetes-sigs/descheduler/master/charts/descheduler/values.yaml
+
+schemaRoot:
+  ## Defines the name of the root KCL schema.
+  ##
+  title: Values
+
+schema:
+  ## Setting `additionalProperties: true` will add `[...str]: any` to all
+  ## objects in the KCL schema, which is necessary for defining any values not
+  ## included in the default values.yaml file.
+  ##
+  additionalProperties: true
