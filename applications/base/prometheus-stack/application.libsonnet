@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='kube-prometheus-stack',
   repoURL='https://prometheus-community.github.io/helm-charts',
-  targetRevision='61.3.2',
+  targetRevision='61.4.0',
   releaseName='kube-prometheus-stack',
   values='values.yaml',
   skipCrds=true,
