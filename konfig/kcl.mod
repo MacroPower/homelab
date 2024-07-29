@@ -8,8 +8,9 @@ argo-cd = "0.1.1"
 cert-manager = "0.1.2"
 cilium = { path = "vendor/cilium" }
 crossplane = "1.15.2"
+crossplane-provider-sql = { path = "vendor/crossplane-provider-sql" }
 crossplane-provider-terraform = "0.10.0"
-external-secrets = "0.1.0"
+external-secrets = { path = "vendor/external-secrets" }
 grafana-operator = "0.1.0"
 k8s = "1.28"
 opentelemetry-operator = "0.0.2"

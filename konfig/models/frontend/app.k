@@ -3,8 +3,11 @@ import models.frontend.secret
 import models.frontend.service
 import models.frontend.serviceaccount as sa
 import models.frontend.ingress
+import models.frontend.rbac
 import models.frontend.chart
 import models.frontend.networkpolicy
+import models.frontend.storage
+import models.frontend.grafana
 import models.frontend.common
 
 schema App(common.Metadata):
@@ -55,6 +58,8 @@ schema App(common.Metadata):
     tenantName?: str = "default"
     namespace?: str = "{}-{}".format(tenantName, name)
     environment?: str
+    domainName?: str
+    secretStore?: str
 
     charts?: {str:chart.Chart}
     configMaps?: {str:configmap.ConfigMap}
@@ -62,6 +67,14 @@ schema App(common.Metadata):
     services?: {str:service.Service}
     ingresses?: {str:ingress.Ingress}
     serviceAccounts?: {str:sa.ServiceAccount}
+    roles?: {str:rbac.Role}
+    clusterRoles?: {str:rbac.ClusterRole}
+    roleBindings?: {str:rbac.RoleBinding}
+    clusterRoleBindings?: {str:rbac.ClusterRoleBinding}
     networkPolicies?: {str:networkpolicy.NetworkPolicy}
+    namespaceSecretStores?: {str:secret.NamespaceSecretStore}
+    externalSecrets?: {str:secret.ExternalSecret}
+    postgresDatabases?: {str:storage.PostgresDatabase}
+    grafanaDashboards?: {str:grafana.GrafanaDashboard}
 
     extraResources?: {str:} = {}

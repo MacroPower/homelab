@@ -30,7 +30,7 @@ schema Metadata:
         or think about namespaces at all. Start using namespaces when you need the features they provide.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
     """
-    name: str
+    name?: str
     labels?: {str:str}
     annotations?: {str:str}
     namespace?: str
