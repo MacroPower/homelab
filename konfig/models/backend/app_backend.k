@@ -16,6 +16,14 @@ schema AppBackend[inputConfig: app.App]:
         mixins.ServiceAccountMixin,
         mixins.ChartMixin,
         mixins.NetworkPolicyMixin,
+        mixins.RoleMixin,
+        mixins.ClusterRoleMixin,
+        mixins.RoleBindingMixin,
+        mixins.ClusterRoleBindingMixin,
+        mixins.ExternalSecretMixin,
+        mixins.PostgresDatabaseMixin,
+        mixins.NamespaceSecretStoreMixin,
+        mixins.GrafanaDashboardMixin,
     ]
 
     # Store the input config parameter, ensure it can be seen in protocol and mixin.

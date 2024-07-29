@@ -1,10 +1,11 @@
 AppMetadataBuilder = lambda config -> {str:} {
-    {
+    ArgoCDOptionMetadataBuilder(ArgoCDOptions {
+        compare.ServerSideDiff = True
+        compare.IncludeMutationWebhook = True
+    }) | {
         name: config?.name
         labels: config?.labels
-        annotations: {
-            "argocd.argoproj.io/compare-options" = "ServerSideDiff=true,IncludeMutationWebhook=true"
-        } | config?.annotations
+        annotations: config?.annotations
         finalizers = ["resources-finalizer.argocd.argoproj.io"] if config?.prune else []
     }
 }

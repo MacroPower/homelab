@@ -18,8 +18,6 @@
   import 'external-secrets/application.libsonnet',
   import 'external-services/application.libsonnet',
   import 'gadget/application.libsonnet',
-  import 'grafana-operator/application.libsonnet',
-  import 'grafana/application.libsonnet',
   import 'harbor/application.libsonnet',
   import 'homepage/application.libsonnet',
   import 'iperf/application.libsonnet',

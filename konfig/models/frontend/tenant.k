@@ -1,4 +1,5 @@
 import models.frontend.common
+import models.frontend.secret
 
 schema Tenant(common.Metadata):
     """
@@ -7,3 +8,4 @@ schema Tenant(common.Metadata):
     AppProject. It also propagates useful metadata, which can in turn be used to
     more easily manage some resources, e.g. NetworkPolicy.
     """
+    secretStores?: {str:secret.ClusterSecretStore}

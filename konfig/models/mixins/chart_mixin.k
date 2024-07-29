@@ -7,9 +7,7 @@ mixin ChartMixin for protocol.AppProtocol:
     if config.charts:
         kubernetes: resource.ResourceMapping {
             Chart = [argov1alpha1.Application {
-                metadata: utils.AppMetadataBuilder(_c) | {
-                    name = _i
-                }
+                metadata: utils.AppMetadataBuilder(_c)
                 spec: {
                     project = config.tenantName
                     source: {
@@ -26,6 +24,15 @@ mixin ChartMixin for protocol.AppProtocol:
                     destination: {
                         name = config.environment
                         namespace = config.namespace
+                    }
+                    syncPolicy: {
+                        automated: {
+                            prune = _c.prune
+                            selfHeal = _c.selfHeal
+                        }
+                        syncOptions: [
+                            "ServerSideApply=true",
+                        ]
                     }
                 }
             } for _i, _c in config.charts]

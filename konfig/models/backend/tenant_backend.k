@@ -1,6 +1,6 @@
 import argo_cd.v1alpha1 as argov1alpha1
 import models.frontend
-#import models.mixins
+import models.mixins
 import models.utils
 import models.resource
 
@@ -10,10 +10,10 @@ schema TenantBackend[inputConfig: frontend.Tenant]:
     collection of k8s resources and places the resource collection into
     the `k8s` attribute.
     """
-    # mixin [
-    #     # Resource builder mixin
-    #     mixins.NetworkPolicyMixin,
-    # ]
+    mixin [
+        # Resource builder mixin
+        mixins.ClusterSecretStoreMixin,
+    ]
 
     # Store the input config parameter, ensure it can be seen in protocol and mixin.
     config: frontend.Tenant = inputConfig
