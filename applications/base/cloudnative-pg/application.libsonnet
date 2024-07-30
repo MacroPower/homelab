@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='cloudnative-pg',
   repoURL='https://cloudnative-pg.io/charts/',
-  targetRevision='0.21.5',
+  targetRevision='0.21.6',
   releaseName='cloudnative-pg',
   values='values.yaml'
 )
