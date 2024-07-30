@@ -50,8 +50,12 @@ spec:
           - ServerSideApply=true
   templatePatch: |
     spec:
-      {{- with .syncPolicy.automated }}
+      {{- with (index . "syncPolicy") }}
       syncPolicy:
         automated:
-          {{ toYaml . | nindent 6 }}
+          {{ toYaml .automated | nindent 6 }}
+      {{- end }}
+      {{- with (index . "ignoreDifferences") }}
+      ignoreDifferences:
+        {{ toYaml . | nindent 4 }}
       {{- end }}

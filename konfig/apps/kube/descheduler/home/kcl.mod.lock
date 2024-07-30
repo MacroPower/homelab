@@ -19,14 +19,18 @@
     name = "crossplane"
     full_name = "crossplane_1.15.2"
     version = "1.15.2"
+  [dependencies.crossplane-provider-sql]
+    name = "crossplane-provider-sql"
+    full_name = "crossplane-provider-sql_0.0.1"
+    version = "0.0.1"
   [dependencies.crossplane-provider-terraform]
     name = "crossplane-provider-terraform"
     full_name = "crossplane-provider-terraform_0.10.0"
     version = "0.10.0"
   [dependencies.external-secrets]
     name = "external-secrets"
-    full_name = "external-secrets_0.1.0"
-    version = "0.1.0"
+    full_name = "external-secrets_0.1.1"
+    version = "0.1.1"
   [dependencies.grafana-operator]
     name = "grafana-operator"
     full_name = "grafana-operator_0.1.0"
