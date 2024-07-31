@@ -1,0 +1,8 @@
+# This file is read by the ArgoCD ApplicationSet.
+
+syncPolicy:
+  automated:
+    selfHeal: true
+
+destinations:
+  namespace: argocd
