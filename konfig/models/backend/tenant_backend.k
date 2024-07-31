@@ -12,37 +12,37 @@ schema TenantBackend[inputConfig: frontend.Tenant]:
     """
     mixin [
         # Resource builder mixin
-        mixins.ClusterSecretStoreMixin,
+        mixins.ClusterSecretStoreMixin
     ]
 
     # Store the input config parameter, ensure it can be seen in protocol and mixin.
     config: frontend.Tenant = inputConfig
 
-    _argoAppProject = argov1alpha1.AppProject {
-        metadata: utils.MetadataBuilder(config)
+    _argoAppProject: argov1alpha1.AppProject {
+        metadata = utils.MetadataBuilder(config)
         spec: {
             sourceNamespaces: ["{}-*".format(config.name)]
             sourceRepos: ["*"]
-            destinations: [
-                {
-                    namespace: "{}-*".format(config.name)
-                    server: "*"
-                }
-            ]
-            clusterResourceWhitelist: [
-                {
-                    group: "*"
-                    kind: "*"
-                }
-            ]
-            namespaceResourceWhitelist: [
-                {
-                    group: "*"
-                    kind: "*"
-                }
-            ]
+            destinations: [{
+                namespace = "{}-*".format(config.name)
+                server = "*"
+            }]
+            clusterResourceWhitelist: [{
+                group = "*"
+                kind = "*"
+            }]
+            namespaceResourceWhitelist: [{
+                group = "*"
+                kind = "*"
+            }]
         }
     }
+
+    if config.destinations:
+        _argoAppProject.spec.destinations += [{
+            namespace = _c.namespace
+            server = _c?.server or "*"
+        } for _k, _c in config.destinations]
 
     kubernetes: resource.ResourceMapping = {
         if _argoAppProject:

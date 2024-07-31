@@ -1,5 +1,6 @@
 import models.frontend.common
 import models.frontend.secret
+import argo_cd.v1alpha1 as argov1alpha1
 
 schema Tenant(common.Metadata):
     """
@@ -9,3 +10,4 @@ schema Tenant(common.Metadata):
     more easily manage some resources, e.g. NetworkPolicy.
     """
     secretStores?: {str:secret.ClusterSecretStore}
+    destinations?: {str:argov1alpha1.ArgoprojIoV1alpha1AppProjectSpecDestinationsItems0}

@@ -54,3 +54,7 @@ spec:
       ignoreDifferences:
         {{ toYaml . | nindent 4 }}
       {{- end }}
+      {{- with (index . "destination") }}
+      destination:
+        {{ toYaml . | nindent 4 }}
+      {{- end }}
