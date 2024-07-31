@@ -11,7 +11,7 @@ spec:
     ## https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/
     - git:
         repoURL: https://github.com/MacroPower/homelab
-        revision: konfig
+        revision: main
         files:
           - path: konfig/apps/*/*/*/.argocd.yaml
         pathParamPrefix: app
@@ -26,7 +26,7 @@ spec:
       project: "{{index .app.path.segments 2}}"
       source:
         repoURL: https://github.com/MacroPower/homelab
-        targetRevision: konfig
+        targetRevision: main
         path: "{{.app.path.path}}"
         plugin:
           name: kcl-v1.0
