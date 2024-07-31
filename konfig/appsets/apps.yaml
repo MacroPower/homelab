@@ -43,6 +43,12 @@ spec:
         syncOptions:
           - ServerSideApply=true
           - CreateNamespace=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 15s
+            factor: 2
+            maxDuration: 5m
   templatePatch: |
     spec:
       {{- with (index . "syncPolicy") }}
