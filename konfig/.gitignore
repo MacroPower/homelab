@@ -2,3 +2,7 @@
 __pycache__
 __kclcache__
 .kclvm
+
+# Exclude lock files for now
+kcl.mod.lock
+!/kcl.mod.lock
