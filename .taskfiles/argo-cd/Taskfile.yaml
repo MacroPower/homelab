@@ -17,11 +17,22 @@ vars:
     --port-forward-namespace="{{.ARGO_NS}}"
     --plaintext
     {{- end }}
+  DOPPLER_PROJECT: argo-cd
+  DOPPLER_CONFIG: home
+  DOPPLER_CMD: doppler run -p {{.DOPPLER_PROJECT}} -c {{.DOPPLER_CONFIG}}
 
 includes:
   helm: "../helm/Taskfile.yaml"
 
 tasks:
+  bootstrap:
+    desc: Bootstrap ArgoCD
+    prompt: "Apply ArgoCD bootstrap using the current context?"
+    cmds:
+      - |-
+        {{.DOPPLER_CMD}} -- \
+          bash -c 'cd konfig/bootstrap && kcl run' | kubectl apply -f -
+
   login:
     desc: Login to ArgoCD
     vars:
