@@ -22,6 +22,7 @@ appConfiguration: frontend.App {
         name = "nas01-credentials"
         secretStoreRef = secretStores.clusters.getRef()
         data = {
+            NAS01_API_SERVER = {}
             NAS01_CA_DATA = {}
             NAS01_CERT_DATA = {}
             NAS01_KEY_DATA = {}
@@ -32,12 +33,11 @@ appConfiguration: frontend.App {
         }
         target.template.data = {
             name = "nas01"
-            server = "https://kube.nas01.home.macro.network"
+            server = "{{ .NAS01_API_SERVER }}"
             config = json.encode({
                 tlsClientConfig = {
-                    caData = "{{ .NAS01_CA_DATA }}"
-                    certData = "{{ .NAS01_CERT_DATA }}"
                     insecure = True
+                    certData = "{{ .NAS01_CERT_DATA }}"
                     keyData = "{{ .NAS01_KEY_DATA }}"
                 }
             })
