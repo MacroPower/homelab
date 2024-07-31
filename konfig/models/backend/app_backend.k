@@ -20,6 +20,7 @@ schema AppBackend[inputConfig: app.App]:
         mixins.ClusterRoleMixin,
         mixins.RoleBindingMixin,
         mixins.ClusterRoleBindingMixin,
+        mixins.SecretStoreMixin,
         mixins.ExternalSecretMixin,
         mixins.PostgresDatabaseMixin,
         mixins.NamespaceSecretStoreMixin,

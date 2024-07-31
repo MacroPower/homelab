@@ -73,6 +73,7 @@ schema App(common.Metadata):
     clusterRoleBindings?: {str:rbac.ClusterRoleBinding}
     networkPolicies?: {str:networkpolicy.NetworkPolicy}
     namespaceSecretStores?: {str:secret.NamespaceSecretStore}
+    secretStores?: {str:secret.SecretStore}
     externalSecrets?: {str:secret.ExternalSecret}
     postgresDatabases?: {str:storage.PostgresDatabase}
     grafanaDashboards?: {str:grafana.GrafanaDashboard}
