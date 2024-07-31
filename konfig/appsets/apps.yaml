@@ -3,7 +3,6 @@ kind: ApplicationSet
 metadata:
   name: konfig-apps
   annotations:
-    argocd.argoproj.io/sync-wave: "-80"
     argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
 spec:
   goTemplate: true
@@ -20,7 +19,6 @@ spec:
     metadata:
       name: "{{index .app.path.segments 2}}-{{index .app.path.segments 3}}-{{.app.path.basename}}"
       annotations:
-        argocd.argoproj.io/sync-wave: "-70"
         argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
       finalizers:
         - resources-finalizer.argocd.argoproj.io
