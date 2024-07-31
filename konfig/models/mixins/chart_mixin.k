@@ -7,7 +7,9 @@ mixin ChartMixin for protocol.AppProtocol:
     if config.charts:
         kubernetes: resource.ResourceMapping {
             Chart = [argov1alpha1.Application {
-                metadata: utils.AppMetadataBuilder(_c)
+                metadata: utils.AppMetadataBuilder(config | _c | {
+                    name = "{}-{}".format(_c.name, config.environment)
+                })
                 spec: {
                     project = config.tenantName
                     source: {
