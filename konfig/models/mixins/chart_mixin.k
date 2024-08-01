@@ -9,7 +9,7 @@ mixin ChartMixin for protocol.AppProtocol:
             Chart = [argov1alpha1.Application {
                 metadata: utils.AppMetadataBuilder(config | _c | {
                     name = "{}-{}".format(_c.name, config.environment)
-                })
+                }, utils.ArgoCDOptions{})
                 spec: {
                     project = config.tenantName
                     source: {

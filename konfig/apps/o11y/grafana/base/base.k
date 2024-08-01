@@ -58,15 +58,15 @@ appConfiguration: frontend.App {
     externalSecrets.grafana = grafanaCredentials
 
     extraResources.grafana = grafanav1beta1.Grafana {
-        metadata = utils.ArgoCDOptionMetadataBuilder(utils.ArgoCDOptions {
-            sync.SkipDryRunOnMissingResource = True
-        }) | {
+        metadata = utils.AppMetadataBuilder({
             name = "grafana"
             labels = {
                 "app.kubernetes.io/name" = "grafana"
-                dashboards = "grafana"
+                "dashboards" = "grafana"
             }
-        }
+        }, utils.ArgoCDOptions {
+            sync.SkipDryRunOnMissingResource = True
+        })
         spec.config = GrafanaConfigBuilder(domainName)
         spec.deployment.metadata = {}
         spec.deployment.spec = {

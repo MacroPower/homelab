@@ -39,7 +39,7 @@ appConfiguration: frontend.App {
         metadata = utils.AppMetadataBuilder({
             name = "konfig-appsets"
             namespace = _argoCDNamespace
-        })
+        }, utils.ArgoCDOptions {})
         spec = {
             project = "default"
             source = {

@@ -1,28 +1,3 @@
-ArgoCDOptionMetadataBuilder = lambda aco: ArgoCDOptions -> {str:str} {
-    _metadata = {}
-    if aco.sync:
-        _metadata = _metadata | {
-            annotations = {
-                "argocd.argoproj.io/sync-options" = ",".join([
-                    "{}={}".format(k, str(v).lower())
-                    for k, v in aco.sync
-                    if v is not Undefined
-                ])
-            }
-        }
-    if aco.compare:
-        _metadata = _metadata | {
-            annotations = {
-                "argocd.argoproj.io/compare-options" = ",".join([
-                    "{}={}".format(k, str(v).lower())
-                    for k, v in aco.compare
-                    if v is not Undefined
-                ])
-            }
-        }
-    _metadata
-}
-
 schema ArgoCDOptions:
     """
     ArgoCD options to customize some aspects of the GitOps engine, per resource.
