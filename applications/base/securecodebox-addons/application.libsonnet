@@ -50,7 +50,7 @@ app.new(
 ).withChart(
   name='zap',
   repoURL='https://charts.securecodebox.io/',
-  targetRevision='4.6.0',
+  targetRevision='4.7.0',
   releaseName='securecodebox-zap',
   values='values-zap.yaml'
 )
