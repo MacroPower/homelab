@@ -33,7 +33,7 @@ updater:
   replicaCount: 2
   image:
     repository: registry.k8s.io/autoscaling/vpa-updater
-    tag: "1.1.2"
+    tag: "1.2.0"
     pullPolicy: IfNotPresent
 
   podDisruptionBudget:
