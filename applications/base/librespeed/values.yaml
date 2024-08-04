@@ -1,6 +1,6 @@
 image:
   repository: linuxserver/librespeed
-  tag: "5.3.3"
+  tag: "5.4.20240804"
   pullPolicy: IfNotPresent
 
 env:
