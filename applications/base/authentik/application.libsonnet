@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='authentik',
   repoURL='https://charts.goauthentik.io/',
-  targetRevision='2024.6.2',
+  targetRevision='2024.6.3',
   releaseName='authentik',
   values='values.yaml'
 )
