@@ -1,8 +1,8 @@
 # Konfig
 
-Konfig is the repository of the infra configuration in KCL.
+Kubernetes configuration in [KCL](https://www.kcl-lang.io/).
 
-Konfig provides users with an out-of-the-box, highly abstract configuration interface. The original starting point of the model library is to improve the efficiency and experience of YAML users. We hope to simplify the writing of user-side configuration code by abstracting and encapsulating the model with more complex code into a unified model.
+This is my personal implementation of [kcl-lang/konfig](https://github.com/kcl-lang/konfig). Konfig provides an out-of-the-box, highly abstract configuration interface. It simplifies writing user-side configuration code by abstracting and encapsulating models with more complex code into unified front-end models.
 
 For more details, please refer to: [Model Overview](https://kcl-lang.io/docs/user_docs/guides/working-with-konfig/overview)
 
@@ -12,11 +12,6 @@ The overall structure of the configuration library is as follows:
 
 ```bash
 .
-├── LICENSE
-├── Makefile
-├── README-zh.md
-├── README.md
-├── examples            # konfig examples
 ├── kcl.mod             # konfig package metadata file
 ├── kcl.mod.lock        # konfig package metadata lock file
 └── models
@@ -34,7 +29,8 @@ The overall structure of the configuration library is as follows:
     │   │   ├── sidecar         # Sidecar
     │   │   ├── strategy        # strategy
     │   │   ├── volume          # Volume
-    │   │   └── server.k        # The `Server` model
+    │   │   ├── app.k           # The `App` model
+    │   │   └── tenant.k        # The `Tenant` model
     │   ├── metadata        # Kubernetes metadata
     │   ├── mixins          # Mixin
     │   ├── render          # Front-to-back-end renderers.
@@ -46,10 +42,6 @@ The overall structure of the configuration library is as follows:
 ## Prerequisites
 
 Install [KCL](https://kcl-lang.io/docs/user_docs/getting-started/install)
-
-## Quick Start
-
-See [here](https://kcl-lang.io/docs/user_docs/guides/working-with-konfig/guide)
 
 ## License
 
