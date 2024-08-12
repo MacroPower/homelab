@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='node-feature-discovery',
   repoURL='https://kubernetes-sigs.github.io/node-feature-discovery/charts',
-  targetRevision='0.16.3',
+  targetRevision='0.16.4',
   releaseName='node-feature-discovery',
   values='values.yaml'
 )
