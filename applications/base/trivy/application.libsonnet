@@ -14,7 +14,7 @@ app.new(
 ).withChart(
   name='trivy-operator-polr-adapter',
   repoURL='https://fjogeleit.github.io/trivy-operator-polr-adapter',
-  targetRevision='0.8.0',
+  targetRevision='0.8.1',
   releaseName='trivy',
   values='values-polr-adapter.yaml'
 )
