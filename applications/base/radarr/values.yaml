@@ -17,7 +17,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/onedr0p/radarr
-          tag: "5.8.3"
+          tag: "5.9.1"
         env:
           RADARR__SERVER__PORT: &port 7878
           RADARR__APP__INSTANCENAME: Radarr
