@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='ocis',
   repoURL='https://jacobcolvin.com/helm-charts',
-  targetRevision='0.7.1',
+  targetRevision='1.0.0',
   releaseName='ocis',
   values='values.yaml'
 )
