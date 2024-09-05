@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='tetragon',
   repoURL='https://helm.cilium.io/',
-  targetRevision='1.1.2',
+  targetRevision='1.2.0',
   releaseName='tetragon',
   values='values.yaml'
 )
