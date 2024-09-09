@@ -101,7 +101,7 @@ dnsPolicy: ClusterFirst
 
 extraContainers:
   - name: vector
-    image: timberio/vector:0.40.1-debian
+    image: timberio/vector:0.41.0-debian
     args:
       - --config-dir
       - &vectorConfigDir /etc/vector/
