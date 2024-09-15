@@ -22,7 +22,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/recyclarr/recyclarr
-          tag: "7.2.3"
+          tag: "7.2.4"
         args:
           - sync
           - --config=/config/recyclarr.yaml
