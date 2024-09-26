@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='cilium',
   repoURL='https://helm.cilium.io',
-  targetRevision='1.16.1',
+  targetRevision='1.16.2',
   releaseName='cilium',
   values='values.yaml'
 ).withIgnoreDifferences([
