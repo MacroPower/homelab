@@ -21,7 +21,7 @@ serviceMonitor:
 
 extraInitContainers:
   - name: init-db
-    image: postgres:14
+    image: postgres:17
     command:
       - bash
       - /scripts/sonarr_db_init.sh
