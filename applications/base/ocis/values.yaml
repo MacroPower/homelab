@@ -1,6 +1,6 @@
 image:
   repository: owncloud/ocis
-  tag: "5.0.7"
+  tag: "5.0.8"
 
 # Logging settings for oCIS services
 logging:
