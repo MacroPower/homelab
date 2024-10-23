@@ -350,7 +350,7 @@ repoServer:
   extraContainers:
     - name: kcl-plugin
       command: [/var/run/argocd/argocd-cmp-server]
-      image: kcllang/kcl:v0.10.4
+      image: kcllang/kcl:v0.10.5
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
