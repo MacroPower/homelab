@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='beyla',
   repoURL='https://grafana.github.io/helm-charts',
-  targetRevision='1.4.4',
+  targetRevision='1.4.5',
   releaseName='beyla',
   values='values.yaml'
 )
