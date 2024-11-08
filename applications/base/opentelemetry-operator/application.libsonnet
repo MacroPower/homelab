@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='opentelemetry-operator',
   repoURL='https://open-telemetry.github.io/opentelemetry-helm-charts',
-  targetRevision='0.72.0',
+  targetRevision='0.73.0',
   releaseName='opentelemetry-operator',
   values='values.yaml'
 )
