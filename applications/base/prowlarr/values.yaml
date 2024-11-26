@@ -13,7 +13,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/onedr0p/prowlarr
-          tag: "1.26.1"
+          tag: "1.27.0"
         env:
           PROWLARR__SERVER__PORT: &port 9696
           PROWLARR__APP__INSTANCENAME: Prowlarr
