@@ -4,7 +4,7 @@ controller:
 
 image:
   repository: simonrupf/chronyd
-  tag: "0.6.0"
+  tag: "0.6.1"
   pullPolicy: IfNotPresent
 
 env:
