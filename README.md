@@ -99,24 +99,37 @@ Overview of this repo's structure, there's more info in the README files for eac
 
 ---
 
-## ☁️ Cloud Dependencies
+## ☁️ Dependencies
 
-Although the majority of my infrastructure and workloads are self-hosted, there are certain key components of my setup that rely on cloud services.
+### Cloud Services
 
-| Service                                              | Use                                                            | Cost           |
-| ---------------------------------------------------- | -------------------------------------------------------------- | -------------- |
-| [Hetzner Cloud](https://www.hetzner.com/)            | Cloud compute and storage                                      | ~$40/mo        |
-| [AWS](https://aws.amazon.com/)                       | Cloud cold storage (S3 Deep Glacier)                           | ~$10/mo        |
-| [Google Cloud](https://cloud.google.com/)            | Cloud storage                                                  | ~$20/mo        |
-| [Cloudflare](https://www.cloudflare.com/)            | DNS, Certs, Proxy, WAF                                         | Free           |
-| [Doppler](https://doppler.com/)                      | Secrets with [External Secrets](https://external-secrets.io/)  | Free           |
-| [GitHub](https://github.com/)                        | Hosting this repository and continuous integration/deployments | Free           |
-| [Renovate](https://github.com/renovatebot/renovate)  | Automatic updates for applications via pull requests           | Free           |
-| [Docker Hub](https://hub.docker.com/)                | Docker image registry                                          | Free           |
-| [Robusta](https://home.robusta.dev/)                 | Alerts / notifications and runbook automation                  | Free           |
-| [Terraform Cloud](https://www.terraform.io/)         | Storing Terraform state                                        | Free           |
-| [Grafana Cloud](https://grafana.com/products/cloud/) | Hosted Grafana & Prometheus, used for misc public projects     | Free           |
-|                                                      |                                                                | Total: ~$70/mo |
+| Service                                              | Use                                                            | Cost          |
+| ---------------------------------------------------- | -------------------------------------------------------------- | ------------- |
+| [Hetzner Cloud](https://www.hetzner.com/)            | Cloud compute and storage                                      | $40/mo        |
+| [Google Cloud](https://cloud.google.com/)            | Cloud storage                                                  | $20/mo        |
+| [Cloudflare](https://www.cloudflare.com/)            | DNS, Certs, Proxy, WAF                                         | Free          |
+| [Doppler](https://doppler.com/)                      | Secrets with [External Secrets](https://external-secrets.io/)  | Free          |
+| [GitHub](https://github.com/)                        | Hosting this repository and continuous integration/deployments | Free          |
+| [Renovate](https://github.com/renovatebot/renovate)  | Automatic updates for applications via pull requests           | Free          |
+| [Robusta](https://home.robusta.dev/)                 | Alerts / notifications and runbook automation                  | Free          |
+| [Terraform Cloud](https://www.terraform.io/)         | Storing Terraform state                                        | Free          |
+| [Grafana Cloud](https://grafana.com/products/cloud/) | Hosted Grafana & Prometheus, used for misc public projects     | Free          |
+|                                                      |                                                                | Total: $60/mo |
+
+### Internet
+
+| Provider | Plan             | Modem        | Speed (Down) | Speed (Up) | Latency        | Purpose         | Cost          |
+| -------- | ---------------- | ------------ | ------------ | ---------- | -------------- | --------------- | ------------- |
+| T-Mobile | Home Internet 5G | InvisaGig    | 600 Mbps     | 150 Mbps   | ~ 50ms (100mi) | Primary         | $40/mo        |
+| Spectrum | Basic Cable      | Ubiquiti UCI | 300 Mbps     | 10 Mbps    | ~ 15ms (100mi) | Backup & Gaming | $50/mo        |
+|          |                  |              |              |            |                |                 | Total: $90/mo |
+
+### Electricity
+
+| Item    | Consumption  | Rate      | Cost          |
+| ------- | ------------ | --------- | ------------- |
+| Homelab | ~ 400W (Avg) | $0.14/kWh | $45/mo        |
+|         |              |           | Total: $45/mo |
 
 ---
 
@@ -124,28 +137,28 @@ Although the majority of my infrastructure and workloads are self-hosted, there 
 
 ### Computing
 
-| Count | Device                     | OS Disk Size | Data Disk Size      | Ram   | Operating System | Purpose                    |
-| ----- | -------------------------- | ------------ | ------------------- | ----- | ---------------- | -------------------------- |
-| 3     | Turing Pi 2                | 1GB NAND     | 32GB SD Card        | 128MB | TPi BMC Firmware | 4-Node Cluster Board       |
-| 3     | Raspberry Pi CM4           | 32GB eMMC    | N/A                 | 8GB   | Talos Linux      | Kubernetes Control Plane   |
-| 3     | Supermicro M11SDV-8C+-LN4F | 64GB SATADOM | 4TB SSD             | 128GB | Talos Linux      | Kubernetes Workers (x86)   |
-| 3     | Turing RK1 \*              | 32GB eMMC    | 1TB SSD             | 32GB  | Talos Linux      | Kubernetes Workers (arm64) |
-| 1     | TrueNAS Mini R             | 500GB SSD    | 200TB HDD + 2TB SSD | 64GB  | TrueNAS SCALE    | Storage Server             |
-| 1     | Raspberry Pi 4B            | 32GB SD Card | N/A                 | 4GB   | PiKVM            | Network KVM                |
-
-<sup>\* == Pending</sup>
+| Count | Device                     | OS Disk Size | Data Disk Size      | Ram   | Operating System | Purpose                        |
+| ----- | -------------------------- | ------------ | ------------------- | ----- | ---------------- | ------------------------------ |
+| 3     | Turing Pi 2                | 1GB NAND     | 32GB SD Card        | 128MB | TPi BMC Firmware | 4-Node Cluster Board           |
+| 3     | Raspberry Pi CM4           | 32GB eMMC    | N/A                 | 8GB   | Talos Linux      | K8s Management Control Plane   |
+| 3     | Turing RK1                 | 32GB eMMC    | 1TB SSD             | 32GB  | Talos Linux      | K8s Management Workers (arm64) |
+| 3     | Turing RK1                 | 1TB SSD      | N/A                 | 32GB  | Talos Linux      | K8s Control Plane              |
+| 3     | Supermicro M11SDV-8C+-LN4F | 64GB SATADOM | 4TB SSD             | 128GB | Talos Linux      | K8s Workers (x86)              |
+| 3     | Turing RK1                 | 32GB eMMC    | 1TB SSD             | 32GB  | Talos Linux      | K8s Workers (arm64)            |
+| 1     | TrueNAS Mini R             | 500GB SSD    | 200TB HDD + 2TB SSD | 64GB  | TrueNAS SCALE    | Storage Server                 |
+| 1     | Raspberry Pi 4B            | 32GB SD Card | N/A                 | 4GB   | PiKVM            | Network KVM                    |
 
 ### Networking
 
 | Count | Device                       | Eth Interfaces | SFP Interfaces | Platform | Purpose                   |
 | ----- | ---------------------------- | -------------- | -------------- | -------- | ------------------------- |
 | 1     | Ubiquiti UDM-SE              | 1x 2.5G        | 2x 10G         | UniFi OS | Router & Security Gateway |
-| 1     | Ubiquiti UCI                 | 1x 2.5G        | N/A            | UniFi OS | DOCSIS 3.1 Cable Modem    |
 | 1     | Ubiquiti U6-Pro              | 1x 1G          | N/A            | UniFi OS | WiFi 6 Access Point       |
 | 1     | Ubiquiti USW-Pro-Aggregation | N/A            | 28x 10G        | UniFi OS | L3 Aggregation Switch     |
 | 1     | Ubiquiti USW-Pro-24          | 24x 1G         | 2x 10G         | UniFi OS | L3 Switch                 |
 | 1     | Ubiquiti USW-Pro-24-POE      | 24x 1G         | 2x 10G         | UniFi OS | L3 PoE Switch             |
-| 2     | WattBox WB-800-IPVM          | 1x 1G          | N/A            | OvrC     | IP Controlled Metered PDU |
+| 2     | WattBox WB-800-IPVM-12       | 1x 1G          | N/A            | OvrC     | IP Controlled Metered PDU |
+| 2     | WattBox WB-800-IPVM-6        | 1x 1G          | N/A            | OvrC     | IP Controlled Metered PDU |
 | 1     | WattBox WB-800VPS-IPVM-18    | 1x 1G          | N/A            | OvrC     | IP Controlled Metered PDU |
 
 ---
