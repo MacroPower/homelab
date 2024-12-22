@@ -24,7 +24,7 @@ provider "unifi" {
 }
 
 provider "truenas" {
-  base_url = "http://${var.nas01_fqdn}:8080/api/v2.0"
+  base_url = "http://${var.nas01_fqdn}/api/v2.0"
   api_key  = var.nas01_api_key
 
   alias = "nas01"

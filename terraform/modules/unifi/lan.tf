@@ -40,7 +40,7 @@ resource "unifi_network" "lan_default" {
   dhcp_v6_stop    = "::7d1"
 
   ipv6_interface_type    = "static"
-  ipv6_static_subnet     = "${var.ipv6_pd}${format("%02x", local.default_lan.default.id)}::/64"
+  ipv6_static_subnet     = cidrsubnet(var.ipv6_pd, 8, local.default_lan.default.id)
   ipv6_pd_interface      = "wan"
   ipv6_pd_start          = "::2"
   ipv6_pd_stop           = "::7d1"
@@ -74,8 +74,7 @@ resource "unifi_network" "lan" {
   dhcp_v6_stop    = "::7d1"
 
   ipv6_interface_type    = each.value.disable_ipv6 == true ? "none" : "static"
-  ipv6_static_subnet     = each.value.disable_ipv6 == true ? null : "${var.ipv6_pd}${format("%02x", each.value.id)}::/64"
-  ipv6_pd_interface      = "wan"
+  ipv6_static_subnet     = each.value.disable_ipv6 == true ? null : cidrsubnet(var.ipv6_pd, 8, each.value.id)
   ipv6_pd_start          = "::2"
   ipv6_pd_stop           = "::7d1"
   ipv6_ra_enable         = each.value.disable_ipv6_ra != null ? !each.value.disable_ipv6_ra : true
@@ -105,11 +104,13 @@ resource "unifi_network" "lan_reservation" {
 
   dhcp_enabled    = false
   dhcp_v6_enabled = false
+  dhcp_v6_start   = "::2"
+  dhcp_v6_stop    = "::7d1"
 
   ipv6_interface_type = "static"
-  ipv6_static_subnet  = "${var.ipv6_pd}${format("%02x", each.value.id)}::/64"
+  ipv6_static_subnet  = cidrsubnet(var.ipv6_pd, 8, each.value.id)
   ipv6_ra_enable      = false
-  ipv6_pd_interface   = "wan"
+  ipv6_ra_priority    = "high"
   ipv6_pd_start       = "::2"
   ipv6_pd_stop        = "::7d1"
 }

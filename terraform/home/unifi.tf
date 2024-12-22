@@ -38,6 +38,9 @@ locals {
     mac_mini = {
       profile = "main"
     }
+    desktop = {
+      profile = "main"
+    }
     nanoleaf = {
       profile = "iot"
     }
@@ -75,12 +78,12 @@ locals {
       dev_id  = local.unifi_device_types.truenas.dev_id
     }
     "nas01net01" = {
-      mac     = "00:07:43:74:34:27"
+      mac     = "00:07:43:74:34:2f"
       profile = local.unifi_device_types.truenas.profile
       dev_id  = local.unifi_device_types.truenas.dev_id
     }
     "nas01net02" = {
-      mac     = "00:07:43:74:34:2f"
+      mac     = "00:07:43:74:34:27"
       profile = local.unifi_device_types.truenas.profile
       dev_id  = local.unifi_device_types.truenas.dev_id
     }
@@ -105,67 +108,111 @@ locals {
       ipv4    = "10.10.100.3"
       profile = local.unifi_device_types.turing_pi.profile
     }
-    "knode13mgmt" = {
+    "kmain07mgmt" = {
       mac     = "3c:ec:ef:cd:f6:de"
       ipv4    = "10.9.10.13"
       profile = local.unifi_device_types.k8s_node_management.profile
     }
-    "knode14mgmt" = {
+    "kmain08mgmt" = {
       mac     = "3c:ec:ef:cd:f7:a6"
       ipv4    = "10.9.10.14"
       profile = local.unifi_device_types.k8s_node_management.profile
     }
-    "knode15mgmt" = {
+    "kmain09mgmt" = {
       mac     = "3c:ec:ef:cd:f7:a7"
       ipv4    = "10.9.10.15"
       profile = local.unifi_device_types.k8s_node_management.profile
     }
-    "rpi01" = {
+    "kmgmt01" = {
+      desc    = "Node 1-4 (Control Plane)"
       mac     = "e4:5f:01:6e:db:a8"
       ipv4    = "10.10.8.1"
       profile = local.unifi_device_types.k8s_node_rpi.profile
       dev_id  = local.unifi_device_types.k8s_node_rpi.dev_id
     }
-    "rpi03" = {
+    "kmgmt02" = {
+      desc    = "Node 2-4 (Control Plane)"
+      mac     = "e4:5f:01:6e:ce:7e"
+      ipv4    = "10.10.8.2"
+      profile = local.unifi_device_types.k8s_node_rpi.profile
+      dev_id  = local.unifi_device_types.k8s_node_rpi.dev_id
+    }
+    "kmgmt03" = {
+      desc    = "Node 3-4 (Control Plane)"
       mac     = "e4:5f:01:6e:d0:58"
       ipv4    = "10.10.8.3"
       profile = local.unifi_device_types.k8s_node_rpi.profile
       dev_id  = local.unifi_device_types.k8s_node_rpi.dev_id
     }
-    "knode01" = {
+    "kmgmt04" = {
+      desc    = "Node 1-3"
       mac     = "7a:c0:a9:f4:7d:47"
+      ipv4    = "10.10.8.4"
+      profile = local.unifi_device_types.k8s_node_rk1.profile
+    }
+    # "kmgmt05" = {
+    #   desc    = "Node 2-3"
+    #   ipv4    = "10.10.8.5"
+    #   profile = local.unifi_device_types.k8s_node_rk1.profile
+    # }
+    "kmgmt06" = {
+      desc    = "Node 3-3"
+      mac     = "5a:04:d1:f7:7f:32"
+      ipv4    = "10.10.8.6"
+      profile = local.unifi_device_types.k8s_node_rk1.profile
+    }
+    "kmain01" = {
+      desc    = "Node 1-1 (Control Plane)"
+      mac     = "6e:e2:c7:35:3e:65"
       ipv4    = "10.10.10.1"
       profile = local.unifi_device_types.k8s_node_rk1.profile
     }
-    "knode02" = {
-      mac     = "e4:5f:01:6e:ce:7e"
-      ipv4    = "10.10.10.2"
-      profile = local.unifi_device_types.k8s_node_rpi.profile
-      dev_id  = local.unifi_device_types.k8s_node_rpi.dev_id
-    }
-    "knode03" = {
-      mac     = "fa:fa:0b:10:5e:18"
-      ipv4    = "10.10.10.3"
+    # "kmain02" = {
+    #   desc    = "Node 2-1 (Control Plane)"
+    #   mac     = ""
+    #   ipv4    = "10.10.10.2"
+    #   profile = local.unifi_device_types.k8s_node_rk1.profile
+    # }
+    # "kmain03" = {
+    #   desc    = "Node 3-1 (Control Plane)"
+    #   mac     = "fa:fa:0b:10:5e:18"
+    #   ipv4    = "10.10.10.3"
+    #   profile = local.unifi_device_types.k8s_node_rk1.profile
+    # }
+    "kmain04" = {
+      desc    = "Node 1-2"
+      mac     = "fe:c2:a6:93:6e:8a"
+      ipv4    = "10.10.10.4"
       profile = local.unifi_device_types.k8s_node_rk1.profile
     }
-    "knode06" = {
-      mac     = "5a:04:d1:f7:7f:32"
-      ipv4    = "10.10.10.6"
-      profile = local.unifi_device_types.k8s_node_rk1.profile
-    }
-    "knode13" = {
+    # "kmain05" = {
+    #   desc    = "Node 2-2"
+    #   mac     = ""
+    #   ipv4    = "10.10.10.5"
+    #   profile = local.unifi_device_types.k8s_node_rk1.profile
+    # }
+    # "kmain06" = {
+    #   desc    = "Node 3-2"
+    #   mac     = "5a:04:d1:f7:7f:32"
+    #   ipv4    = "10.10.10.6"
+    #   profile = local.unifi_device_types.k8s_node_rk1.profile
+    # }
+    "kmain07" = {
+      desc    = "Node 5-1"
       mac     = "00:02:c9:56:fe:52"
-      ipv4    = "10.10.10.13"
+      ipv4    = "10.10.10.7"
       profile = local.unifi_device_types.k8s_node_supermicro.profile
     }
-    "knode14" = {
+    "kmain08" = {
+      desc    = "Node 5-2"
       mac     = "00:02:c9:56:d1:a4"
-      ipv4    = "10.10.10.14"
+      ipv4    = "10.10.10.8"
       profile = local.unifi_device_types.k8s_node_supermicro.profile
     }
-    "knode15" = {
+    "kmain09" = {
+      desc    = "Node 5-3"
       mac     = "00:02:c9:53:0a:86"
-      ipv4    = "10.10.10.15"
+      ipv4    = "10.10.10.9"
       profile = local.unifi_device_types.k8s_node_supermicro.profile
     }
     "wattbox0101" = {
@@ -195,6 +242,10 @@ locals {
     "macmini" = {
       mac     = "5c:e9:1e:ea:15:e7"
       profile = local.unifi_device_types.mac_mini.profile
+    }
+    "desktop" = {
+      mac     = "a8:a1:59:f6:ca:d2"
+      profile = local.unifi_device_types.desktop.profile
     }
     "echospot" = {
       mac    = "00:71:47:c5:03:02"
@@ -326,8 +377,7 @@ module "unifi" {
 
   domain_name  = var.domain_name
   site_code    = "H"
-  ipv6_pd      = "2603:6010:5300:ad"
-  ipv6_pd_mask = 56
+  ipv6_pd      = "fc42::/56"
 
   clients  = local.unifi_clients
   networks = local.unifi_networks
@@ -354,17 +404,17 @@ resource "unifi_device" "agg0101" {
   port_override {
     number          = 13
     name            = "SFP+ 13"
-    port_profile_id = module.unifi.port_profile[local.unifi_clients.knode13.profile].id
+    port_profile_id = module.unifi.port_profile[local.unifi_clients.kmain07.profile].id
   }
   port_override {
     number          = 14
     name            = "SFP+ 14"
-    port_profile_id = module.unifi.port_profile[local.unifi_clients.knode14.profile].id
+    port_profile_id = module.unifi.port_profile[local.unifi_clients.kmain08.profile].id
   }
   port_override {
     number          = 15
     name            = "SFP+ 15"
-    port_profile_id = module.unifi.port_profile[local.unifi_clients.knode15.profile].id
+    port_profile_id = module.unifi.port_profile[local.unifi_clients.kmain09.profile].id
   }
   port_override {
     number              = 21
@@ -374,8 +424,8 @@ resource "unifi_device" "agg0101" {
     port_profile_id     = module.unifi.port_profile[local.unifi_clients.nas01.profile].id
   }
   port_override {
-    number          = 23
-    name            = "SFP+ 23"
+    number          = 27
+    name            = "SFP+ 27"
     port_profile_id = module.unifi.port_profile[local.unifi_clients.unraid.profile].id
   }
 
@@ -396,32 +446,32 @@ resource "unifi_device" "sw0101" {
   port_override {
     number          = 1
     name            = "Port 1"
-    port_profile_id = module.unifi.port_profile[local.unifi_clients.knode01.profile].id
+    port_profile_id = module.unifi.port_profile[local.unifi_clients.kmgmt01.profile].id
   }
   port_override {
     number          = 2
     name            = "Port 2"
-    port_profile_id = module.unifi.port_profile[local.unifi_clients.knode02.profile].id
+    port_profile_id = module.unifi.port_profile[local.unifi_clients.kmgmt02.profile].id
   }
   port_override {
     number          = 3
     name            = "Port 3"
-    port_profile_id = module.unifi.port_profile[local.unifi_clients.knode03.profile].id
+    port_profile_id = module.unifi.port_profile[local.unifi_clients.kmgmt03.profile].id
   }
   port_override {
     number          = 4
     name            = "Port 4"
-    port_profile_id = module.unifi.port_profile[local.unifi_clients.knode13mgmt.profile].id
+    port_profile_id = module.unifi.port_profile[local.unifi_clients.kmain07mgmt.profile].id
   }
   port_override {
     number          = 5
     name            = "Port 5"
-    port_profile_id = module.unifi.port_profile[local.unifi_clients.knode14mgmt.profile].id
+    port_profile_id = module.unifi.port_profile[local.unifi_clients.kmain08mgmt.profile].id
   }
   port_override {
     number          = 6
     name            = "Port 6"
-    port_profile_id = module.unifi.port_profile[local.unifi_clients.knode15mgmt.profile].id
+    port_profile_id = module.unifi.port_profile[local.unifi_clients.kmain09mgmt.profile].id
   }
   port_override {
     number          = 9
@@ -476,6 +526,11 @@ resource "unifi_device" "sw0201" {
   port_override {
     number          = 18
     name            = "Port 18"
+    port_profile_id = module.unifi.port_profile[local.unifi_clients.huebridge01.profile].id
+  }
+  port_override {
+    number          = 23
+    name            = "Port 23"
     port_profile_id = module.unifi.port_profile[local.unifi_clients.huebridge01.profile].id
   }
 }

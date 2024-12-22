@@ -34,7 +34,7 @@ resource "unifi_firewall_group" "lan_ipv6" {
   type = "ipv6-address-group"
 
   members = [
-    "${var.ipv6_pd}${format("%02x", each.value.id)}::/64",
+    cidrsubnet(var.ipv6_pd, 8, each.value.id),
   ]
 }
 
@@ -42,7 +42,7 @@ resource "unifi_firewall_group" "lan_ipv6_all" {
   name = "LAN (IPv6)"
   type = "ipv6-address-group"
 
-  members = ["fe80::/10", "${var.ipv6_pd}00::/${var.ipv6_pd_mask}"]
+  members = ["fe80::/10", "${var.ipv6_pd}"]
 }
 
 resource "unifi_firewall_group" "lan_ipv6_exceptions" {

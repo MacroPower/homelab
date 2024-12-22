@@ -6,10 +6,6 @@ variable "ipv6_pd" {
   type = string
 }
 
-variable "ipv6_pd_mask" {
-  type = number
-}
-
 variable "site_code" {
   type = string
   validation {
