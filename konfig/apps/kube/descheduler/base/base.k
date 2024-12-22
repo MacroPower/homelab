@@ -1,5 +1,5 @@
+import helm
 import konfig.models.frontend
-import konfig.models.frontend.chart
 import konfig.models.templates.networkpolicy
 import tenant
 
@@ -14,8 +14,8 @@ appConfiguration: frontend.App {
         kubeAPIServerEgress = networkpolicy.kubeAPIServerEgress
     }
 
-    charts.descheduler = chart.Chart {
-        name = "descheduler"
+    charts.descheduler = helm.template(helm.Chart {
+        chart = "descheduler"
         repoURL = "https://kubernetes-sigs.github.io/descheduler/"
         targetRevision = "0.30.1"
         values = Values {
@@ -128,5 +128,5 @@ appConfiguration: frontend.App {
                 ]
             }
         }
-    }
+    })
 }

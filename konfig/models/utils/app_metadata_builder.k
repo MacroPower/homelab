@@ -16,7 +16,7 @@ AppMetadataBuilder = lambda config: any, options: ArgoCDOptions -> {str:} {
     }
 }
 
-_argoCDOptionMetadataBuilder = lambda aco: ArgoCDOptions -> {str:str} {
+_argoCDOptionMetadataBuilder = lambda aco: ArgoCDOptions -> {str:{str:str}} {
     _metadata = {}
     if aco.sync:
         _metadata = _metadata | {

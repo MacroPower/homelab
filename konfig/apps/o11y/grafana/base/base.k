@@ -1,6 +1,6 @@
 import yaml
+import helm
 import konfig.models.frontend
-import konfig.models.frontend.chart
 import konfig.models.frontend.container
 import konfig.models.frontend.secret
 import konfig.models.frontend.configmap
@@ -39,10 +39,10 @@ appConfiguration: frontend.App {
         }
     }
 
-    charts.grafanaOperator = chart.Chart {
-        name = "grafana-operator"
-        repoURL = "ghcr.io/grafana/helm-charts"
+    charts.grafanaOperator = helm.template(helm.Chart {
+        chart = "grafana-operator"
         targetRevision = "v5.10.0"
+        repoURL = "ghcr.io/grafana/helm-charts"
         values = Values {
             resources.requests = {
                 cpu = 10m
@@ -53,7 +53,7 @@ appConfiguration: frontend.App {
                 memory = 100Mi
             }
         }
-    }
+    })
 
     externalSecrets.grafana = grafanaCredentials
 

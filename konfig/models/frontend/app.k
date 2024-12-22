@@ -61,7 +61,7 @@ schema App(common.Metadata):
     domainName?: str
     secretStore?: str
 
-    charts?: {str:chart.Chart}
+    charts?: {str:}
     configMaps?: {str:configmap.ConfigMap}
     secrets?: {str:secret.Secret}
     services?: {str:service.Service}
