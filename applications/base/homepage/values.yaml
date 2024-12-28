@@ -2,7 +2,7 @@
 
 image:
   repository: ghcr.io/gethomepage/homepage
-  tag: v0.10.5
+  tag: v0.10.6
 
 controller:
   replicas: 1
