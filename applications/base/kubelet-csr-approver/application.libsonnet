@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='kubelet-csr-approver',
   repoURL='https://postfinance.github.io/kubelet-csr-approver',
-  targetRevision='1.2.4',
+  targetRevision='1.2.5',
   releaseName='kubelet-csr-approver',
   values='values.yaml'
 )
