@@ -1,6 +1,6 @@
 image:
   repository: rclone/rclone
-  tag: 1.68.2
+  tag: 1.69.0
 
 init: |
   rclone rcd \
