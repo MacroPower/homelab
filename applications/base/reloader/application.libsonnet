@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='reloader',
   repoURL='https://stakater.github.io/stakater-charts',
-  targetRevision='1.2.0',
+  targetRevision='1.2.1',
   releaseName='reloader',
   values='values.yaml'
 )
