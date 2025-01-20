@@ -22,7 +22,7 @@ flood:
 
   image:
     repository: jesec/flood
-    tag: '4.8.5'
+    tag: '4.9.0'
 
   resources:
     requests:
