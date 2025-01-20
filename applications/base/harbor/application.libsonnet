@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='harbor',
   repoURL='https://helm.goharbor.io',
-  targetRevision='1.16.1',
+  targetRevision='1.16.2',
   releaseName='harbor',
   values='values.yaml'
 ).withIgnoreDifferences([
