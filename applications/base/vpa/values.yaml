@@ -55,7 +55,7 @@ admissionController:
   replicaCount: 2
   image:
     repository: registry.k8s.io/autoscaling/vpa-admission-controller
-    tag: "1.2.2"
+    tag: "1.3.0"
     pullPolicy: IfNotPresent
 
   registerWebhook: true
