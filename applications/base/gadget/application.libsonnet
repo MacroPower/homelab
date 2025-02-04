@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='gadget',
   repoURL='https://inspektor-gadget.github.io/charts',
-  targetRevision='0.36.1',
+  targetRevision='0.37.0',
   releaseName='gadget',
   values='values.yaml'
 )
