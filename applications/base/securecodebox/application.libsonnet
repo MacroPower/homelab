@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='operator',
   repoURL='https://charts.securecodebox.io/',
-  targetRevision='4.12.0',
+  targetRevision='4.13.0',
   releaseName='securecodebox',
   values='values.yaml'
 )
