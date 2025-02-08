@@ -11,7 +11,7 @@ app.new(
 ).withChart(
   name='kyverno',
   repoURL='https://kyverno.github.io/kyverno/',
-  targetRevision='3.3.5',
+  targetRevision='3.3.6',
   releaseName='kyverno',
   values='values.yaml'
 )
