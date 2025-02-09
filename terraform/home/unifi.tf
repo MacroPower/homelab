@@ -7,6 +7,10 @@ locals {
     k8s_node_management = {
       profile = "lab_management"
     }
+    home_assistant = {
+      profile = "lab"
+      dev_id  = module.unifi_common.device_types.rpi.dev_id
+    }
     truenas = {
       profile = "lab"
     }
@@ -215,6 +219,13 @@ locals {
       ipv4    = "10.10.10.9"
       profile = local.unifi_device_types.k8s_node_supermicro.profile
     }
+    "hass" = {
+      desc    = "Home Assistant"
+      mac     = "d8:3a:dd:ba:e3:3b"
+      ipv4    = "10.10.0.20"
+      profile = local.unifi_device_types.home_assistant.profile
+      dev_id  = local.unifi_device_types.home_assistant.dev_id
+    }
     "wattbox0101" = {
       mac     = "14:3f:c3:03:62:5d"
       profile = local.unifi_device_types.wattbox.profile
@@ -230,8 +241,9 @@ locals {
       profile = local.unifi_device_types.wattbox.profile
       dev_id  = local.unifi_device_types.wattbox.dev_id
     }
-    "huebridge01" = {
+    "huebridge0101" = {
       mac     = "00:17:88:77:3e:3c"
+      ipv4   = "10.20.0.100"
       profile = local.unifi_device_types.hue_bridge.profile
       dev_id  = local.unifi_device_types.hue_bridge.dev_id
     }
@@ -255,8 +267,9 @@ locals {
       mac    = "24:d0:df:6c:05:ca"
       dev_id = local.unifi_device_types.iphone_se.dev_id
     }
-    "nanoleaf" = {
+    "nanoleaf0101" = {
       mac    = "00:55:da:52:5c:55"
+      ipv4   = "10.20.0.110"
       dev_id = local.unifi_device_types.nanoleaf.dev_id
     }
   }
@@ -488,6 +501,11 @@ resource "unifi_device" "sw0101" {
     name            = "Port 14"
     port_profile_id = module.unifi.port_profile[local.unifi_clients.nas01i.profile].id
   }
+  port_override {
+    number          = 23
+    name            = "Port 23"
+    port_profile_id = module.unifi.port_profile[local.unifi_clients.hass.profile].id
+  }
 
   port_override {
     number              = 25
@@ -514,11 +532,6 @@ resource "unifi_device" "sw0201" {
     port_profile_id = module.unifi.port_profile[local.unifi_clients.motu828es.profile].id
   }
   port_override {
-    number          = 15
-    name            = "Port 15"
-    port_profile_id = module.unifi.port_profile[local.unifi_clients.wattbox0202.profile].id
-  }
-  port_override {
     number          = 16
     name            = "Port 16"
     port_profile_id = module.unifi.port_profile[local.unifi_clients.wattbox0201.profile].id
@@ -526,11 +539,16 @@ resource "unifi_device" "sw0201" {
   port_override {
     number          = 18
     name            = "Port 18"
-    port_profile_id = module.unifi.port_profile[local.unifi_clients.huebridge01.profile].id
+    port_profile_id = module.unifi.port_profile[local.unifi_clients.huebridge0101.profile].id
+  }
+  port_override {
+    number          = 21
+    name            = "Port 21"
+    port_profile_id = module.unifi.port_profile[local.unifi_clients.wattbox0202.profile].id
   }
   port_override {
     number          = 23
     name            = "Port 23"
-    port_profile_id = module.unifi.port_profile[local.unifi_clients.huebridge01.profile].id
+    port_profile_id = module.unifi.port_profile[local.unifi_clients.desktop.profile].id
   }
 }
