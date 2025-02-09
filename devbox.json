@@ -5,7 +5,7 @@
     "argocd@latest",
     "cilium-cli@latest",
     "doppler@latest",
-    "go-task@latest",
+    "go-task@3.41.0",
     "kubeconform@latest",
     "kyverno@latest",
     "nodePackages.prettier@latest",
