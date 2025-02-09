@@ -1,0 +1,142 @@
+clusterName: home
+talosVersion: v1.7.1
+kubernetesVersion: v1.30.0
+endpoint: https://mgmt.cin.macro.network:6443
+cniConfig:
+  name: none
+
+additionalMachineCertSans:
+  - mgmt.cin.macro.network
+  - 127.0.0.1
+additionalApiServerCertSans:
+  - 127.0.0.1
+
+clusterSvcNets:
+  - 10.110.0.0/16
+  - 2603:6010:5300:ad70::/108
+clusterPodNets:
+  - 10.111.0.0/16
+  - 2603:6010:5300:ad80::/64
+
+nodes:
+  - hostname: kman01.home.macro.network
+    ipAddress: 10.10.9.1
+    controlPlane: true
+    installDisk: &rpiMmcDevice /dev/mmcblk0
+    nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 1g
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az01
+    networkInterfaces:
+      - deviceSelector: &rpiNetDevice
+          driver: bcmgenet
+          hardwareAddr: "e4:5f:01:*"
+        dhcp: &dhcp true
+        dhcpOptions: &dhcpOptions
+          ipv4: true
+          ipv6: true
+    schematic: &rpiSchematic
+      overlay:
+        name: rpi_generic
+        image: siderolabs/sbc-raspberrypi
+
+  - hostname: knode02.home.macro.network
+    ipAddress: 10.10.9.2
+    controlPlane: true
+    installDisk: *rpiMmcDevice
+    nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 1g
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az02
+    networkInterfaces:
+      - deviceSelector: *rpiNetDevice
+        dhcp: *dhcp
+        dhcpOptions: *dhcpOptions
+    schematic: *rpiSchematic
+
+  - hostname: knode03.home.macro.network
+    ipAddress: 10.10.9.3
+    controlPlane: true
+    installDisk: *rpiMmcDevice
+    nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 1g
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az03
+    networkInterfaces:
+      - deviceSelector: *rpiNetDevice
+        dhcp: *dhcp
+        dhcpOptions: *dhcpOptions
+    schematic: *rpiSchematic
+
+controlPlane:
+  nameservers: &nameservers
+    - "10.10.0.1"
+    - "2603:6010:5300:ad0a::"
+  disableSearchDomain: &disableSearchDomain true
+  schematic:
+    customization:
+      extraKernelArgs: &extraKernelArgs
+        - "talos.logging.kernel=udp://syslog.home.macro.network:6050/"
+  patches:
+    - |-
+      - op: replace
+        path: /cluster/apiServer/admissionControl
+        value: []
+    - |-
+      cluster:
+        controllerManager:
+          extraArgs:
+            bind-address: 0.0.0.0
+            ## Node CIDR mask size for IPv4 and IPv6.
+            ## One unique subnet of this size will be cut from the clusterPodNets
+            ## for every node.
+            ##
+            node-cidr-mask-size-ipv4: "20"
+            ## The IPv6 node cidr mask size MUST be within 16 bits of the
+            ## clusterPodNets IPv6cidr. By default, the clusterPodNets IPv6 mask
+            ## size is 48 and the clusterPodNets IPv6 cidr is /64 (48+16).
+            ##
+            node-cidr-mask-size-ipv6: "80"
+            allocate-node-cidrs: "true"
+    - |-
+      cluster:
+        etcd:
+          extraArgs:
+            listen-metrics-urls: http://0.0.0.0:2381
+    - |-
+      cluster:
+        scheduler:
+          extraArgs:
+            bind-address: 0.0.0.0
+    - |-
+      cluster:
+        proxy:
+          # Replaced by Cillium.
+          disabled: true
+    - &machineKubelet |-
+      machine:
+        kubelet:
+          extraArgs:
+            feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true
+            #rotate-server-certificates: true
+    - &machineLogging |-
+      machine:
+        logging:
+          destinations:
+            - endpoint: "udp://syslog.home.macro.network:6051/"
+              format: json_lines
+    - &machineTime |-
+      machine:
+        time:
+          disabled: true
+
+worker:
+  nameservers: *nameservers
+  disableSearchDomain: *disableSearchDomain
+  schematic:
+    customization:
+      extraKernelArgs: *extraKernelArgs
+  patches:
+    - *machineKubelet
+    - *machineLogging
+    - *machineTime
