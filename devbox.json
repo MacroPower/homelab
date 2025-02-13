@@ -6,7 +6,7 @@
     "cilium-cli@latest",
     "doppler@latest",
     "go-task@latest",
-    "kubeconform@latest",
+    "kubeconform@0.6.7",
     "kyverno@latest",
     "nodePackages.prettier@latest",
     "talosctl@1.7.4",
