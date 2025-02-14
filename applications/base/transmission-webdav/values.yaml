@@ -1,6 +1,6 @@
 image:
   repository: rclone/rclone
-  tag: 1.69.0
+  tag: 1.69.1
 
 init: |
   rclone serve webdav /userdata \
