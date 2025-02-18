@@ -8,7 +8,7 @@ app.new(
 ).withChart(
   name='policy-reporter',
   repoURL='https://kyverno.github.io/policy-reporter',
-  targetRevision='2.24.2',
+  targetRevision='3.0.4',
   releaseName='policy-reporter',
   values='values.yaml'
 )
