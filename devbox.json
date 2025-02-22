@@ -9,7 +9,7 @@
     "kubeconform@latest",
     "kyverno@latest",
     "nodePackages.prettier@latest",
-    "talosctl@1.7.4",
+    "talosctl@1.9.4",
     "terraform@latest",
     "natscli@latest",
     "kubernetes-helm@latest"
