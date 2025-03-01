@@ -3,7 +3,7 @@
   "packages": [
     "github:budimanjojo/talhelper/v3.0.1",
     "argocd@latest",
-    "cilium-cli@latest",
+    "cilium-cli@0.16.24",
     "doppler@latest",
     "go-task@latest",
     "kubeconform@latest",
