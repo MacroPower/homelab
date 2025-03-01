@@ -11,7 +11,7 @@
     "nodePackages.prettier@latest",
     "talosctl@1.7.4",
     "terraform@latest",
-    "natscli@latest",
+    "natscli@0.1.6",
     "kubernetes-helm@latest"
   ],
   "shell": {
