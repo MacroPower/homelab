@@ -7,7 +7,7 @@
     "doppler@latest",
     "go-task@latest",
     "kubeconform@latest",
-    "kyverno@latest",
+    "kyverno@1.13.4",
     "nodePackages.prettier@latest",
     "talosctl@1.7.4",
     "terraform@latest",
