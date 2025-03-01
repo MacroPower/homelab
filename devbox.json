@@ -12,7 +12,7 @@
     "talosctl@1.7.4",
     "terraform@latest",
     "natscli@latest",
-    "kubernetes-helm@latest"
+    "kubernetes-helm@3.17.1"
   ],
   "shell": {
     "init_hook": [
