@@ -10,7 +10,7 @@
     "kyverno@latest",
     "nodePackages.prettier@latest",
     "talosctl@1.7.4",
-    "terraform@latest",
+    "terraform@0.12.31",
     "natscli@latest",
     "kubernetes-helm@latest"
   ],
