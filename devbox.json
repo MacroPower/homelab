@@ -4,7 +4,7 @@
     "github:budimanjojo/talhelper/v3.0.1",
     "argocd@latest",
     "cilium-cli@latest",
-    "doppler@latest",
+    "doppler@3.72.0",
     "go-task@latest",
     "kubeconform@latest",
     "kyverno@latest",
