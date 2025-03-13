@@ -1,27 +1,33 @@
 {
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.11.0/.schema/devbox.schema.json",
-  "packages": [
-    "github:budimanjojo/talhelper/v3.0.1",
-    "argocd@latest",
-    "cilium-cli@latest",
-    "doppler@latest",
-    "go-task@latest",
-    "kubeconform@latest",
-    "kyverno@latest",
-    "nodePackages.prettier@latest",
-    "talosctl@1.7.4",
-    "terraform@latest",
-    "natscli@latest",
-    "kubernetes-helm@latest"
-  ],
+  "packages": {
+    "github:budimanjojo/talhelper/v3.0.19": "",
+    "argocd": "2.14.2",
+    "cilium-cli": "0.16.24",
+    "doppler": "3.72.0",
+    "go-task": "3.41.0",
+    "git": "2.48.1",
+    "kubeconform": "0.6.7",
+    "kyverno": "1.13.4",
+    "nodePackages.prettier": "3.5.2",
+    "talosctl": "1.9.4",
+    "terraform": "1.11.0",
+    "natscli": "0.1.6",
+    "kubernetes-helm": "3.17.1"
+  },
+  "env": {
+    "KCL_LIB_HOME": "${DEVBOX_PROJECT_ROOT}/.devbox/kcl/lib",
+    "KCL_PKG_PATH": "${DEVBOX_PROJECT_ROOT}/.devbox/kcl/kpm",
+    "KCL_CACHE_PATH": "${DEVBOX_PROJECT_ROOT}/.devbox/kcl/cache",
+    "KCL_FAST_EVAL": "1",
+    "KPM_FEATURE_GATES": "SupportMVS=true"
+  },
   "shell": {
     "init_hook": [
+      "mkdir -p $KCL_LIB_HOME",
+      "mkdir -p $KCL_PKG_PATH",
+      "mkdir -p $KCL_CACHE_PATH",
       "echo 'Welcome to devbox!' > /dev/null"
-    ],
-    "scripts": {
-      "test": [
-        "echo \"Error: no test specified\" && exit 1"
-      ]
-    }
+    ]
   }
 }

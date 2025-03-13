@@ -41,6 +41,8 @@ includes:
   turingpi:
     taskfile: ./.taskfiles/turing-pi/taskfile.yaml
     aliases: [tpi]
+  kcl:
+    taskfile: ./.taskfiles/kcl/Taskfile.yaml
 
 tasks:
   default:

@@ -1,0 +1,69 @@
+# yaml-language-server: $schema=../../../../konfig/charts/argo_cd/values.schema.json
+
+# https://artifacthub.io/packages/helm/argo/argo-cd
+
+nameOverride: argo-cd
+
+global:
+  logging:
+    format: json
+
+configs:
+  # General Argo CD configuration
+  ## Ref: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/argocd-cm.yaml
+  cm:
+    application.resourceTrackingMethod: annotation
+
+    resource.exclusions: |
+      - apiGroups:
+          - cilium.io
+        kinds:
+          - CiliumIdentity
+        clusters:
+          - "*"
+
+  # Argo CD configuration parameters
+  ## Ref: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/argocd-cmd-params-cm.yaml
+  params:
+    server.insecure: true
+    server.disable.auth: true
+
+  cmp:
+    create: true
+    plugins:
+      kcl:
+        version: v0.10
+        generate:
+          command: [sh]
+          args:
+            - -c
+            - >-
+              kcl run
+        discover:
+          fileName: "*.k"
+
+repoServer:
+  extraContainers:
+    - name: kcl-plugin
+      command: [/var/run/argocd/argocd-cmp-server]
+      image: ghcr.io/macropower/kclipper:v0.10
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+      volumeMounts:
+        - mountPath: /var/run/argocd
+          name: var-files
+        - mountPath: /home/argocd/cmp-server/plugins
+          name: plugins
+        # Remove this volumeMount if you've chosen to bake the config file into the sidecar image.
+        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+          subPath: kcl.yaml
+          name: kcl-plugin-config
+        - mountPath: /tmp
+          name: cmp-tmp
+  volumes:
+    - name: kcl-plugin-config
+      configMap:
+        name: argocd-cmp-cm
+    - name: cmp-tmp
+      emptyDir: {}

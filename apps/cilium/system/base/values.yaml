@@ -1,0 +1,78 @@
+# yaml-language-server: $schema=../../../../konfig/charts/cilium/values.schema.json
+
+ipam:
+  mode: kubernetes
+
+kubeProxyReplacement: true
+
+ipv6:
+  enabled: true
+
+externalIPs:
+  enabled: true
+
+nodePort:
+  enabled: true
+
+hostPort:
+  enabled: true
+
+## Roll out cilium pods automatically when configmap is updated, a la reloader.
+##
+rollOutCiliumPods: true
+
+## Routing configuration.
+## See https://docs.cilium.io/en/stable/network/concepts/routing/
+##
+autoDirectNodeRoutes: true
+routingMode: native
+
+endpointRoutes:
+  ## Route per endpoint instead of using the cilium_host interface.
+  ##
+  enabled: false
+
+dnsPolicy: ClusterFirst
+
+operator:
+  replicas: 2
+  rollOutPods: true
+  prometheus:
+    enabled: false
+    serviceMonitor:
+      enabled: false
+      trustCRDsExist: true
+  resources: {}
+
+prometheus:
+  enabled: false
+  serviceMonitor:
+    enabled: false
+    trustCRDsExist: true
+
+hubble:
+  enabled: false
+
+securityContext:
+  capabilities:
+    ciliumAgent:
+      - CHOWN
+      - KILL
+      - NET_ADMIN
+      - NET_RAW
+      - IPC_LOCK
+      - SYS_ADMIN
+      - SYS_RESOURCE
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    cleanCiliumState:
+      - NET_ADMIN
+      - SYS_ADMIN
+      - SYS_RESOURCE
+
+cgroup:
+  autoMount:
+    enabled: false
+  hostRoot: /sys/fs/cgroup

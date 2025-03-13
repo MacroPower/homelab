@@ -1,0 +1,65 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: apps
+  annotations:
+    argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    # ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/
+    - git:
+        repoURL: https://github.com/MacroPower/homelab
+        revision: main
+        files:
+          - path: apps/*/*/*/.argocd.yaml
+        pathParamPrefix: app
+  template:
+    metadata:
+      name: "{{index .app.path.segments 1}}-{{index .app.path.segments 2}}-{{.app.path.basename}}"
+      annotations:
+        argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: "{{index .app.path.segments 1}}"
+      source:
+        repoURL: https://github.com/MacroPower/homelab
+        targetRevision: main
+        path: "{{.app.path.path}}"
+      destination:
+        name: "{{.app.path.basename}}"
+        namespace: "{{index .app.path.segments 1}}-{{index .app.path.segments 2}}"
+      syncPolicy:
+        managedNamespaceMetadata:
+          labels:
+            argocd.argoproj.io/tenant: "{{index .app.path.segments 1}}"
+            argocd.argoproj.io/app: "{{index .app.path.segments 2}}"
+          annotations:
+            argocd.argoproj.io/sync-options: Prune=confirm
+        syncOptions:
+          - ServerSideApply=true
+          - CreateNamespace=true
+          - FailOnSharedResource=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 15s
+            factor: 2
+            maxDuration: 5m
+  templatePatch: |
+    spec:
+      {{- with (index . "syncPolicy") }}
+      syncPolicy:
+        automated:
+          {{ toYaml .automated | nindent 6 }}
+      {{- end }}
+      {{- with (index . "ignoreDifferences") }}
+      ignoreDifferences:
+        {{ toYaml . | nindent 4 }}
+      {{- end }}
+      {{- with (index . "destination") }}
+      destination:
+        {{ toYaml . | nindent 4 }}
+      {{- end }}

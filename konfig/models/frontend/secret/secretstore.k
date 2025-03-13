@@ -1,5 +1,5 @@
 import models.frontend.common
-import external_secrets.v1beta1 as externalsecretsv1beta1
+import charts.external_secrets.crds as externalsecretsv1beta1
 
 schema ClusterSecretStore(common.Metadata):
     provider?: externalsecretsv1beta1.ExternalSecretsIoV1beta1ClusterSecretStoreSpecProvider

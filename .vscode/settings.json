@@ -1,0 +1,12 @@
+{
+    "terminal.integrated.profiles.osx": {
+        "devboxCompatibleShell": {
+            "path": "/opt/homebrew/bin/fish",
+            "args": [
+                "--no-config"
+            ]
+        }
+    },
+    "terminal.integrated.defaultProfile.osx": "devboxCompatibleShell",
+    "editor.inlayHints.enabled": "offUnlessPressed"
+}

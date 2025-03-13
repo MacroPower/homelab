@@ -4,11 +4,12 @@ import models.frontend.service
 import models.frontend.serviceaccount as sa
 import models.frontend.ingress
 import models.frontend.rbac
-import models.frontend.chart
 import models.frontend.networkpolicy
 import models.frontend.storage
 import models.frontend.grafana
 import models.frontend.common
+
+import helm
 
 schema App(common.Metadata):
     """Abstraction of Namespace scoped Application configuration.
@@ -51,7 +52,7 @@ schema App(common.Metadata):
     --------
     import models.frontend
 
-    appConfiguration: frontend.App {
+    app: frontend.App {
         name = "foobar"
     }
     """
@@ -61,7 +62,7 @@ schema App(common.Metadata):
     domainName?: str
     secretStore?: str
 
-    charts?: {str:}
+    charts?: {str:helm.Chart}
     configMaps?: {str:configmap.ConfigMap}
     secrets?: {str:secret.Secret}
     services?: {str:service.Service}

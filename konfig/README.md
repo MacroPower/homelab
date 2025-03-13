@@ -14,29 +14,22 @@ The overall structure of the configuration library is as follows:
 .
 ├── kcl.mod             # konfig package metadata file
 ├── kcl.mod.lock        # konfig package metadata lock file
-└── models
-    ├── commons         # Common models
-    ├── kube            # Cloud-native resource core models
-    │   ├── backend         # Back-end models
-    │   ├── frontend        # Front-end models
-    │   │   ├── common          # Common front-end models
-    │   │   ├── configmap       # ConfigMap
-    │   │   ├── container       # Container
-    │   │   ├── ingress         # Ingress
-    │   │   ├── resource        # Resource
-    │   │   ├── secret          # Secret
-    │   │   ├── service         # Service
-    │   │   ├── sidecar         # Sidecar
-    │   │   ├── strategy        # strategy
-    │   │   ├── volume          # Volume
-    │   │   ├── app.k           # The `App` model
-    │   │   └── tenant.k        # The `Tenant` model
-    │   ├── metadata        # Kubernetes metadata
-    │   ├── mixins          # Mixin
-    │   ├── render          # Front-to-back-end renderers.
-    │   ├── templates       # Data template
-    │   └── utils
-    └── metadata           # Common metadata
+├── charts              # Helm Charts
+│   └── charts.k        # Helm Charts configuration
+├── models
+│   ├── backend         # Back-end models
+│   ├── frontend        # Front-end models
+│   │   ├── common          # Common front-end models
+│   │   ├── ...             # Additional front-end models
+│   │   ├── app.k           # The `App` model
+│   │   └── tenant.k        # The `Tenant` model
+│   ├── metadata        # Kubernetes metadata
+│   ├── mixins          # Mixin
+│   ├── protocol        # Constraints for mixins
+│   ├── render          # Front-to-back-end renderers
+│   ├── templates       # Data template
+│   └── utils
+└─── vendored           # Vendored dependencies
 ```
 
 ## Prerequisites

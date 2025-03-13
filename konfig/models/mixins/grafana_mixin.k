@@ -1,13 +1,13 @@
 import models.utils
 import models.resource
 import models.protocol
-import grafana_operator.v1beta1 as grafanav1beta1
+import charts.grafana_operator.crds as grafana
 
 
 mixin GrafanaDashboardMixin for protocol.AppProtocol:
     if config.grafanaDashboards:
         kubernetes: resource.ResourceMapping {
-            GrafanaDashboard = [grafanav1beta1.GrafanaDashboard {
+            GrafanaDashboard = [grafana.GrafanaDashboard {
                 metadata: utils.MetadataBuilder(_c) | {
                     name: _i
                 }

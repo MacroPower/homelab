@@ -1,5 +1,5 @@
 import models.frontend.common
-import crossplane_provider_sql.postgres.v1alpha1 as postgresv1alpha1
+import vendored.crossplane_provider_sql.postgres.v1alpha1 as postgresv1alpha1
 
 schema PostgresDatabase(common.Metadata):
     """

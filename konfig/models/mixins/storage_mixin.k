@@ -1,7 +1,7 @@
 import models.utils
 import models.resource
 import models.protocol
-import crossplane_provider_sql.postgres.v1alpha1 as postgresv1alpha1
+import vendored.crossplane_provider_sql.postgres.v1alpha1 as postgresv1alpha1
 
 mixin PostgresDatabaseMixin for protocol.AppProtocol:
     if config.postgresDatabases:

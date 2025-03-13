@@ -1,0 +1,479 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "affinity": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "affinity",
+      "type": "object"
+    },
+    "allowedDnsNames": {
+      "default": 1,
+      "description": "number of DNS SAN names allowed in a certificate request. defaults to 1",
+      "required": [],
+      "title": "allowedDnsNames",
+      "type": "integer"
+    },
+    "bypassDnsResolution": {
+      "default": false,
+      "description": "optional, permits to bypass dns resolution checks. default: false",
+      "required": [],
+      "title": "bypassDnsResolution",
+      "type": "boolean"
+    },
+    "bypassHostnameCheck": {
+      "default": false,
+      "description": "set this parameter to true to ignore mismatching DNS name and hostname",
+      "required": [],
+      "title": "bypassHostnameCheck",
+      "type": "boolean"
+    },
+    "dnsConfig": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "dnsConfig",
+      "type": "object"
+    },
+    "dnsPolicy": {
+      "default": "",
+      "required": [],
+      "title": "dnsPolicy",
+      "type": "string"
+    },
+    "env": {
+      "description": "Additional environment variables",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "env",
+      "type": "array"
+    },
+    "extraObjects": {
+      "description": "Include additional objects within the chart",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraObjects",
+      "type": "array"
+    },
+    "fullnameOverride": {
+      "default": "",
+      "required": [],
+      "title": "fullnameOverride",
+      "type": "string"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "ignoreNonSystemNode": {
+      "default": false,
+      "description": "optional, permits ignoring CSRs with another Username than `system:node:...`",
+      "required": [],
+      "title": "ignoreNonSystemNode",
+      "type": "boolean"
+    },
+    "image": {
+      "additionalProperties": true,
+      "properties": {
+        "pullPolicy": {
+          "default": "IfNotPresent",
+          "required": [],
+          "title": "pullPolicy",
+          "type": "string"
+        },
+        "repository": {
+          "default": "ghcr.io/postfinance/kubelet-csr-approver",
+          "required": [],
+          "title": "repository",
+          "type": "string"
+        },
+        "tag": {
+          "default": "",
+          "description": "Overrides the image tag whose default is the chart appVersion.",
+          "required": [],
+          "title": "tag",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "image",
+      "type": "object"
+    },
+    "imagePullSecrets": {
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "imagePullSecrets",
+      "type": "array"
+    },
+    "leaderElection": {
+      "default": true,
+      "required": [],
+      "title": "leaderElection",
+      "type": "boolean"
+    },
+    "loggingLevel": {
+      "default": 0,
+      "description": "logging level ranges from -5 (Fatal) to 10 (Verbose). default level is 0",
+      "required": [],
+      "title": "loggingLevel",
+      "type": "integer"
+    },
+    "maxExpirationSeconds": {
+      "default": "",
+      "description": "optional, specified as a string (enclosed with \"\"). if left empty, defaults to 367 days",
+      "required": [],
+      "title": "maxExpirationSeconds",
+      "type": "string"
+    },
+    "metrics": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "enable": {
+          "default": true,
+          "required": [],
+          "title": "enable",
+          "type": "boolean"
+        },
+        "port": {
+          "default": 8080,
+          "required": [],
+          "title": "port",
+          "type": "integer"
+        },
+        "serviceMonitor": {
+          "properties": {
+            "additionalLabels": {
+              "required": [],
+              "title": "additionalLabels",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "interval": {
+              "default": "1m",
+              "required": [],
+              "title": "interval",
+              "type": "string"
+            },
+            "metricRelabelings": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "metricRelabelings",
+              "type": "array"
+            },
+            "relabelings": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "relabelings",
+              "type": "array"
+            },
+            "scrapeTimeout": {
+              "default": "10s",
+              "required": [],
+              "title": "scrapeTimeout",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "serviceMonitor",
+          "type": "object"
+        },
+        "serviceType": {
+          "default": "ClusterIP",
+          "required": [],
+          "title": "serviceType",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "metrics",
+      "type": "object"
+    },
+    "nameOverride": {
+      "default": "",
+      "required": [],
+      "title": "nameOverride",
+      "type": "string"
+    },
+    "namespace": {
+      "default": "",
+      "required": [],
+      "title": "namespace",
+      "type": "string"
+    },
+    "nodeSelector": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "nodeSelector",
+      "type": "object"
+    },
+    "podAnnotations": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podAnnotations",
+      "type": "object"
+    },
+    "podLabels": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podLabels",
+      "type": "object"
+    },
+    "podSecurityContext": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podSecurityContext",
+      "type": "object"
+    },
+    "priorityClassName": {
+      "default": "",
+      "description": "PriorityClass indicates the importance of a Pod relative to other Pods.",
+      "required": [],
+      "title": "priorityClassName",
+      "type": "string"
+    },
+    "providerIpPrefixes": {
+      "description": "optional, list of IP (IPv4, IPv6) subnets that are allowed to submit CSRs",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "providerIpPrefixes",
+      "type": "array"
+    },
+    "providerRegex": {
+      "default": "",
+      "description": "Required configuration item",
+      "required": [],
+      "title": "providerRegex",
+      "type": "string"
+    },
+    "rbac": {
+      "additionalProperties": true,
+      "properties": {
+        "manage": {
+          "default": true,
+          "required": [],
+          "title": "manage",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "rbac",
+      "type": "object"
+    },
+    "replicas": {
+      "default": 2,
+      "required": [],
+      "title": "replicas",
+      "type": "integer"
+    },
+    "resources": {
+      "additionalProperties": true,
+      "properties": {
+        "limits": {
+          "properties": {
+            "cpu": {
+              "default": "500m",
+              "required": [],
+              "title": "cpu",
+              "type": "string"
+            },
+            "memory": {
+              "default": "128Mi",
+              "required": [],
+              "title": "memory",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "limits",
+          "type": "object"
+        },
+        "requests": {
+          "properties": {
+            "cpu": {
+              "default": "100m",
+              "required": [],
+              "title": "cpu",
+              "type": "string"
+            },
+            "memory": {
+              "default": "64Mi",
+              "required": [],
+              "title": "memory",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "requests",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "resources",
+      "type": "object"
+    },
+    "securityContext": {
+      "additionalProperties": true,
+      "properties": {
+        "allowPrivilegeEscalation": {
+          "default": false,
+          "required": [],
+          "title": "allowPrivilegeEscalation",
+          "type": "boolean"
+        },
+        "capabilities": {
+          "properties": {
+            "drop": {
+              "items": {
+                "required": [],
+                "type": "string"
+              },
+              "required": [],
+              "title": "drop",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "capabilities",
+          "type": "object"
+        },
+        "privileged": {
+          "default": false,
+          "required": [],
+          "title": "privileged",
+          "type": "boolean"
+        },
+        "readOnlyRootFilesystem": {
+          "default": true,
+          "required": [],
+          "title": "readOnlyRootFilesystem",
+          "type": "boolean"
+        },
+        "runAsGroup": {
+          "default": 65532,
+          "required": [],
+          "title": "runAsGroup",
+          "type": "integer"
+        },
+        "runAsNonRoot": {
+          "default": true,
+          "required": [],
+          "title": "runAsNonRoot",
+          "type": "boolean"
+        },
+        "runAsUser": {
+          "default": 65532,
+          "required": [],
+          "title": "runAsUser",
+          "type": "integer"
+        },
+        "seccompProfile": {
+          "properties": {
+            "type": {
+              "default": "RuntimeDefault",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "seccompProfile",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "securityContext",
+      "type": "object"
+    },
+    "serviceAccount": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "description": "Annotations to add to the service account",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "create": {
+          "default": true,
+          "description": "Specifies whether a service account should be created",
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "name": {
+          "default": "",
+          "description": "The name of the service account to use.\nIf not set and create is true, a name is generated using the fullname template",
+          "required": [],
+          "title": "name",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "serviceAccount",
+      "type": "object"
+    },
+    "skipDenyStep": {
+      "default": false,
+      "description": "optional, prevents csr denial, i.e. only lets kubelet-csr-approver approve valid CSRs but ignore other CSRs",
+      "required": [],
+      "title": "skipDenyStep",
+      "type": "boolean"
+    },
+    "tolerations": {
+      "items": {
+        "properties": {
+          "effect": {
+            "default": "NoSchedule",
+            "required": [],
+            "title": "effect",
+            "type": "string"
+          },
+          "key": {
+            "default": "node-role.kubernetes.io/control-plane",
+            "required": [],
+            "title": "key",
+            "type": "string"
+          },
+          "operator": {
+            "default": "Equal",
+            "required": [],
+            "title": "operator",
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "required": [],
+      "title": "tolerations",
+      "type": "array"
+    }
+  },
+  "required": [],
+  "type": "object"
+}
