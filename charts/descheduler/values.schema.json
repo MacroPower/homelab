@@ -1,0 +1,640 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "affinity": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "affinity",
+      "type": "object"
+    },
+    "cmdOptions": {
+      "additionalProperties": true,
+      "properties": {
+        "v": {
+          "default": 3,
+          "required": [],
+          "title": "v",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "cmdOptions",
+      "type": "object"
+    },
+    "command": {
+      "items": {
+        "required": [],
+        "type": "string"
+      },
+      "required": [],
+      "title": "command",
+      "type": "array"
+    },
+    "commonLabels": {
+      "additionalProperties": true,
+      "description": "labels that'll be applied to all resources",
+      "required": [],
+      "title": "commonLabels",
+      "type": "object"
+    },
+    "cronJobApiVersion": {
+      "default": "batch/v1",
+      "required": [],
+      "title": "cronJobApiVersion",
+      "type": "string"
+    },
+    "deschedulerPolicy": {
+      "additionalProperties": true,
+      "description": "deschedulerPolicy contains the policies the descheduler will execute.\nTo use policies stored in an existing configMap use:\nNOTE: The name of the cm should comply to {{ template \"descheduler.fullname\" . }}\ndeschedulerPolicy: {}",
+      "properties": {
+        "profiles": {
+          "description": "nodeSelector: \"key1=value1,key2=value2\"\nmaxNoOfPodsToEvictPerNode: 10\nmaxNoOfPodsToEvictPerNamespace: 10\nignorePvcPods: true\nevictLocalStoragePods: true\nevictDaemonSetPods: true\ntracing:\n  collectorEndpoint: otel-collector.observability.svc.cluster.local:4317\n  transportCert: \"\"\n  serviceName: \"\"\n  serviceNamespace: \"\"\n  sampleRate: 1.0\n  fallbackToNoOpProviderOnError: true",
+          "items": {
+            "properties": {
+              "name": {
+                "default": "default",
+                "required": [],
+                "title": "name",
+                "type": "string"
+              },
+              "pluginConfig": {
+                "items": {
+                  "properties": {
+                    "args": {
+                      "properties": {
+                        "evictLocalStoragePods": {
+                          "default": true,
+                          "required": [],
+                          "title": "evictLocalStoragePods",
+                          "type": "boolean"
+                        },
+                        "ignorePvcPods": {
+                          "default": true,
+                          "required": [],
+                          "title": "ignorePvcPods",
+                          "type": "boolean"
+                        },
+                        "includingInitContainers": {
+                          "default": true,
+                          "required": [],
+                          "title": "includingInitContainers",
+                          "type": "boolean"
+                        },
+                        "nodeAffinityType": {
+                          "items": {
+                            "required": [],
+                            "type": "string"
+                          },
+                          "required": [],
+                          "title": "nodeAffinityType",
+                          "type": "array"
+                        },
+                        "podRestartThreshold": {
+                          "default": 100,
+                          "required": [],
+                          "title": "podRestartThreshold",
+                          "type": "integer"
+                        },
+                        "targetThresholds": {
+                          "properties": {
+                            "cpu": {
+                              "default": 50,
+                              "required": [],
+                              "title": "cpu",
+                              "type": "integer"
+                            },
+                            "memory": {
+                              "default": 50,
+                              "required": [],
+                              "title": "memory",
+                              "type": "integer"
+                            },
+                            "pods": {
+                              "default": 50,
+                              "required": [],
+                              "title": "pods",
+                              "type": "integer"
+                            }
+                          },
+                          "required": [],
+                          "title": "targetThresholds",
+                          "type": "object"
+                        },
+                        "thresholds": {
+                          "properties": {
+                            "cpu": {
+                              "default": 20,
+                              "required": [],
+                              "title": "cpu",
+                              "type": "integer"
+                            },
+                            "memory": {
+                              "default": 20,
+                              "required": [],
+                              "title": "memory",
+                              "type": "integer"
+                            },
+                            "pods": {
+                              "default": 20,
+                              "required": [],
+                              "title": "pods",
+                              "type": "integer"
+                            }
+                          },
+                          "required": [],
+                          "title": "thresholds",
+                          "type": "object"
+                        }
+                      },
+                      "required": [],
+                      "title": "args",
+                      "type": "object"
+                    },
+                    "name": {
+                      "default": "LowNodeUtilization",
+                      "required": [],
+                      "title": "name",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
+                "required": [],
+                "title": "pluginConfig",
+                "type": "array"
+              },
+              "plugins": {
+                "properties": {
+                  "balance": {
+                    "properties": {
+                      "enabled": {
+                        "items": {
+                          "required": [],
+                          "type": "string"
+                        },
+                        "required": [],
+                        "title": "enabled",
+                        "type": "array"
+                      }
+                    },
+                    "required": [],
+                    "title": "balance",
+                    "type": "object"
+                  },
+                  "deschedule": {
+                    "properties": {
+                      "enabled": {
+                        "items": {
+                          "required": [],
+                          "type": "string"
+                        },
+                        "required": [],
+                        "title": "enabled",
+                        "type": "array"
+                      }
+                    },
+                    "required": [],
+                    "title": "deschedule",
+                    "type": "object"
+                  }
+                },
+                "required": [],
+                "title": "plugins",
+                "type": "object"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "required": [],
+          "title": "profiles",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "deschedulerPolicy",
+      "type": "object"
+    },
+    "deschedulerPolicyAPIVersion": {
+      "default": "descheduler/v1alpha2",
+      "description": "Recommended to use the latest Policy API version supported by the Descheduler app version",
+      "required": [],
+      "title": "deschedulerPolicyAPIVersion",
+      "type": "string"
+    },
+    "deschedulingInterval": {
+      "default": "5m",
+      "description": "Required when running as a Deployment",
+      "required": [],
+      "title": "deschedulingInterval",
+      "type": "string"
+    },
+    "dnsConfig": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "dnsConfig",
+      "type": "object"
+    },
+    "fullnameOverride": {
+      "default": "",
+      "required": [],
+      "title": "fullnameOverride",
+      "type": "string"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "image": {
+      "additionalProperties": true,
+      "properties": {
+        "pullPolicy": {
+          "default": "IfNotPresent",
+          "required": [],
+          "title": "pullPolicy",
+          "type": "string"
+        },
+        "repository": {
+          "default": "registry.k8s.io/descheduler/descheduler",
+          "required": [],
+          "title": "repository",
+          "type": "string"
+        },
+        "tag": {
+          "default": "",
+          "description": "Overrides the image tag whose default is the chart version",
+          "required": [],
+          "title": "tag",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "image",
+      "type": "object"
+    },
+    "imagePullSecrets": {
+      "default": "",
+      "required": [],
+      "title": "imagePullSecrets",
+      "type": "null"
+    },
+    "kind": {
+      "default": "CronJob",
+      "description": "CronJob or Deployment",
+      "required": [],
+      "title": "kind",
+      "type": "string"
+    },
+    "leaderElection": {
+      "additionalProperties": true,
+      "description": "Specifies whether Leader Election resources should be created\nRequired when running as a Deployment\nNOTE: Leader election can't be activated if DryRun enabled",
+      "required": [],
+      "title": "leaderElection",
+      "type": "object"
+    },
+    "livenessProbe": {
+      "additionalProperties": true,
+      "properties": {
+        "failureThreshold": {
+          "default": 3,
+          "required": [],
+          "title": "failureThreshold",
+          "type": "integer"
+        },
+        "httpGet": {
+          "properties": {
+            "path": {
+              "default": "/healthz",
+              "required": [],
+              "title": "path",
+              "type": "string"
+            },
+            "port": {
+              "default": 10258,
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            },
+            "scheme": {
+              "default": "HTTPS",
+              "required": [],
+              "title": "scheme",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "httpGet",
+          "type": "object"
+        },
+        "initialDelaySeconds": {
+          "default": 3,
+          "required": [],
+          "title": "initialDelaySeconds",
+          "type": "integer"
+        },
+        "periodSeconds": {
+          "default": 10,
+          "required": [],
+          "title": "periodSeconds",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "livenessProbe",
+      "type": "object"
+    },
+    "nameOverride": {
+      "default": "",
+      "required": [],
+      "title": "nameOverride",
+      "type": "string"
+    },
+    "nodeSelector": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "nodeSelector",
+      "type": "object"
+    },
+    "podAnnotations": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podAnnotations",
+      "type": "object"
+    },
+    "podLabels": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podLabels",
+      "type": "object"
+    },
+    "podSecurityContext": {
+      "additionalProperties": true,
+      "description": "podSecurityContext -- [Security context for pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)",
+      "required": [],
+      "title": "podSecurityContext",
+      "type": "object"
+    },
+    "priorityClassName": {
+      "default": "system-cluster-critical",
+      "required": [],
+      "title": "priorityClassName",
+      "type": "string"
+    },
+    "rbac": {
+      "additionalProperties": true,
+      "properties": {
+        "create": {
+          "default": true,
+          "description": "Specifies whether RBAC resources should be created",
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "rbac",
+      "type": "object"
+    },
+    "replicas": {
+      "default": 1,
+      "description": "Specifies the replica count for Deployment\nSet leaderElection if you want to use more than 1 replica\nSet affinity.podAntiAffinity rule if you want to schedule onto a node\nonly if that node is in the same zone as at least one already-running descheduler",
+      "required": [],
+      "title": "replicas",
+      "type": "integer"
+    },
+    "resources": {
+      "additionalProperties": true,
+      "description": "  - name: container-registry-secret",
+      "properties": {
+        "requests": {
+          "properties": {
+            "cpu": {
+              "default": "500m",
+              "required": [],
+              "title": "cpu",
+              "type": "string"
+            },
+            "memory": {
+              "default": "256Mi",
+              "required": [],
+              "title": "memory",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "requests",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "resources",
+      "type": "object"
+    },
+    "schedule": {
+      "default": "*/2 * * * *",
+      "required": [],
+      "title": "schedule",
+      "type": "string"
+    },
+    "securityContext": {
+      "additionalProperties": true,
+      "properties": {
+        "allowPrivilegeEscalation": {
+          "default": false,
+          "required": [],
+          "title": "allowPrivilegeEscalation",
+          "type": "boolean"
+        },
+        "capabilities": {
+          "properties": {
+            "drop": {
+              "items": {
+                "required": [],
+                "type": "string"
+              },
+              "required": [],
+              "title": "drop",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "capabilities",
+          "type": "object"
+        },
+        "privileged": {
+          "default": false,
+          "required": [],
+          "title": "privileged",
+          "type": "boolean"
+        },
+        "readOnlyRootFilesystem": {
+          "default": true,
+          "required": [],
+          "title": "readOnlyRootFilesystem",
+          "type": "boolean"
+        },
+        "runAsNonRoot": {
+          "default": true,
+          "required": [],
+          "title": "runAsNonRoot",
+          "type": "boolean"
+        },
+        "runAsUser": {
+          "default": 1000,
+          "required": [],
+          "title": "runAsUser",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "securityContext",
+      "type": "object"
+    },
+    "service": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "ipFamilies": {
+          "description": "\nRef: https://kubernetes.io/docs/concepts/services-networking/dual-stack/\nE.g.\nipFamilies:\n  - IPv6\n  - IPv4",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "ipFamilies",
+          "type": "array"
+        },
+        "ipFamilyPolicy": {
+          "default": "",
+          "description": "\n",
+          "required": [],
+          "title": "ipFamilyPolicy",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "service",
+      "type": "object"
+    },
+    "serviceAccount": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "description": "Specifies custom annotations for the serviceAccount",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "create": {
+          "default": true,
+          "description": "Specifies whether a ServiceAccount should be created",
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "name": {
+          "default": "",
+          "description": "The name of the ServiceAccount to use.\nIf not set and create is true, a name is generated using the fullname template",
+          "required": [],
+          "title": "name",
+          "type": "null"
+        }
+      },
+      "required": [],
+      "title": "serviceAccount",
+      "type": "object"
+    },
+    "serviceMonitor": {
+      "additionalProperties": true,
+      "properties": {
+        "additionalLabels": {
+          "description": "The namespace where Prometheus expects to find service monitors.\nnamespace: \"\"\nAdd custom labels to the ServiceMonitor resource",
+          "required": [],
+          "title": "additionalLabels",
+          "type": "object"
+        },
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "insecureSkipVerify": {
+          "default": true,
+          "description": "honorLabels: true",
+          "required": [],
+          "title": "insecureSkipVerify",
+          "type": "boolean"
+        },
+        "interval": {
+          "default": "",
+          "description": "prometheus: kube-prometheus-stack",
+          "required": [],
+          "title": "interval",
+          "type": "string"
+        },
+        "metricRelabelings": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "metricRelabelings",
+          "type": "array"
+        },
+        "relabelings": {
+          "description": "- action: keep\n  regex: 'descheduler_(build_info|pods_evicted)'\n  sourceLabels: [__name__]",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "relabelings",
+          "type": "array"
+        },
+        "serverName": {
+          "default": "null",
+          "required": [],
+          "title": "serverName",
+          "type": "null"
+        }
+      },
+      "required": [],
+      "title": "serviceMonitor",
+      "type": "object"
+    },
+    "suspend": {
+      "default": false,
+      "required": [],
+      "title": "suspend",
+      "type": "boolean"
+    },
+    "tolerations": {
+      "description": "- maxSkew: 1\n  topologyKey: kubernetes.io/hostname\n  whenUnsatisfiable: DoNotSchedule\n  labelSelector:\n    matchLabels:\n      app.kubernetes.io/name: descheduler",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "tolerations",
+      "type": "array"
+    },
+    "topologySpreadConstraints": {
+      "description": "nodeAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    nodeSelectorTerms:\n    - matchExpressions:\n      - key: kubernetes.io/e2e-az-name\n        operator: In\n        values:\n        - e2e-az1\n        - e2e-az2\n podAntiAffinity:\n   requiredDuringSchedulingIgnoredDuringExecution:\n     - labelSelector:\n         matchExpressions:\n           - key: app.kubernetes.io/name\n             operator: In\n             values:\n               - descheduler\n       topologyKey: \"kubernetes.io/hostname\"",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "topologySpreadConstraints",
+      "type": "array"
+    }
+  },
+  "required": [],
+  "type": "object"
+}

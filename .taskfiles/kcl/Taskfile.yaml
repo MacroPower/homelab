@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+tasks:
+  default:
+    desc: Run KCL for app
+    requires:
+      vars: [APP]
+    vars:
+      F: '{{.F | default "base"}}'
+    dir: "{{.ROOT_DIR}}/apps/{{.APP}}/{{.F}}"
+    cmds:
+      - kcl run
+
+  gen:
+    desc: Generate KCL code
+    cmds:
+      - kcl chart update

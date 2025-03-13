@@ -1,8 +1,8 @@
-import argo_cd.v1alpha1 as argov1alpha1
+import charts.argo_cd.crds as argov1alpha1
 import models.frontend
 import models.mixins
-import models.utils
 import models.resource
+import models.utils
 
 schema TenantBackend[inputConfig: frontend.Tenant]:
     """

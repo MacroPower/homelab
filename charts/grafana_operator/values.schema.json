@@ -1,0 +1,401 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "additionalLabels": {
+      "additionalProperties": true,
+      "description": "additional labels to add to all resources",
+      "required": [],
+      "title": "additionalLabels",
+      "type": "object"
+    },
+    "affinity": {
+      "additionalProperties": true,
+      "description": "pod affinity",
+      "required": [],
+      "title": "affinity",
+      "type": "object"
+    },
+    "env": {
+      "description": "Additional environment variables",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "env",
+      "type": "array"
+    },
+    "extraObjects": {
+      "description": "Array of extra K8s objects to deploy",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraObjects",
+      "type": "array"
+    },
+    "fullnameOverride": {
+      "default": "",
+      "description": "Overrides the fully qualified app name.",
+      "required": [],
+      "title": "fullnameOverride",
+      "type": "string"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "image": {
+      "additionalProperties": true,
+      "properties": {
+        "pullPolicy": {
+          "default": "IfNotPresent",
+          "description": "The image pull policy to use in grafana operator container",
+          "required": [],
+          "title": "pullPolicy",
+          "type": "string"
+        },
+        "repository": {
+          "default": "ghcr.io/grafana/grafana-operator",
+          "description": "grafana operator image repository",
+          "required": [],
+          "title": "repository",
+          "type": "string"
+        },
+        "tag": {
+          "default": "",
+          "description": "Overrides the image tag whose default is the chart appVersion.",
+          "required": [],
+          "title": "tag",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "image",
+      "type": "object"
+    },
+    "imagePullSecrets": {
+      "description": "image pull secrets",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "imagePullSecrets",
+      "type": "array"
+    },
+    "isOpenShift": {
+      "default": false,
+      "description": "Determines if the target cluster is OpenShift. Additional rbac permissions for routes will be added on OpenShift",
+      "required": [],
+      "title": "isOpenShift",
+      "type": "boolean"
+    },
+    "leaderElect": {
+      "default": false,
+      "description": "If you want to run multiple replicas of the grafana-operator, this is not recommended.",
+      "required": [],
+      "title": "leaderElect",
+      "type": "boolean"
+    },
+    "logging": {
+      "additionalProperties": true,
+      "properties": {
+        "encoder": {
+          "default": "console",
+          "description": "Log encoding (\"console\", \"json\")",
+          "required": [],
+          "title": "encoder",
+          "type": "string"
+        },
+        "level": {
+          "default": "info",
+          "description": "Configure the verbosity of logging (\"debug\", \"error\", \"info\")",
+          "required": [],
+          "title": "level",
+          "type": "string"
+        },
+        "time": {
+          "default": "rfc3339",
+          "description": "Time encoding (\"epoch\", \"iso8601\", \"millis\", \"nano\", \"rfc3339\", \"rfc3339nano\")",
+          "required": [],
+          "title": "time",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "logging",
+      "type": "object"
+    },
+    "metricsService": {
+      "additionalProperties": true,
+      "properties": {
+        "metricsPort": {
+          "default": 9090,
+          "description": "metrics service port",
+          "required": [],
+          "title": "metricsPort",
+          "type": "integer"
+        },
+        "pprofPort": {
+          "default": 8888,
+          "description": "port for the pprof profiling endpoint",
+          "required": [],
+          "title": "pprofPort",
+          "type": "integer"
+        },
+        "type": {
+          "default": "ClusterIP",
+          "description": "metrics service type",
+          "required": [],
+          "title": "type",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "metricsService",
+      "type": "object"
+    },
+    "nameOverride": {
+      "default": "",
+      "description": "Overrides the name of the chart.",
+      "required": [],
+      "title": "nameOverride",
+      "type": "string"
+    },
+    "namespaceOverride": {
+      "default": "",
+      "description": "Overrides the namespace name.",
+      "required": [],
+      "title": "namespaceOverride",
+      "type": "string"
+    },
+    "namespaceScope": {
+      "default": false,
+      "description": "If the operator should run in namespace-scope or not,\nif true the operator will only be able to manage instances in the same namespace",
+      "required": [],
+      "title": "namespaceScope",
+      "type": "boolean"
+    },
+    "nodeSelector": {
+      "additionalProperties": true,
+      "description": "pod node selector",
+      "required": [],
+      "title": "nodeSelector",
+      "type": "object"
+    },
+    "podAnnotations": {
+      "additionalProperties": true,
+      "description": "pod annotations",
+      "required": [],
+      "title": "podAnnotations",
+      "type": "object"
+    },
+    "podSecurityContext": {
+      "additionalProperties": true,
+      "description": "pod security context",
+      "required": [],
+      "title": "podSecurityContext",
+      "type": "object"
+    },
+    "priorityClassName": {
+      "default": "",
+      "description": "pod priority class name",
+      "required": [],
+      "title": "priorityClassName",
+      "type": "string"
+    },
+    "rbac": {
+      "additionalProperties": true,
+      "properties": {
+        "create": {
+          "default": true,
+          "description": "Specifies whether to create the ClusterRole and ClusterRoleBinding.\nIf \"namespaceScope\" is true or \"watchNamespaces\" is set, this will create Role and RoleBinding instead.",
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "rbac",
+      "type": "object"
+    },
+    "resources": {
+      "additionalProperties": true,
+      "description": "grafana operator container resources",
+      "required": [],
+      "title": "resources",
+      "type": "object"
+    },
+    "securityContext": {
+      "additionalProperties": true,
+      "properties": {
+        "allowPrivilegeEscalation": {
+          "default": false,
+          "description": "Whether to allow privilege escalation",
+          "required": [],
+          "title": "allowPrivilegeEscalation",
+          "type": "boolean"
+        },
+        "capabilities": {
+          "description": "A list of capabilities to drop",
+          "properties": {
+            "drop": {
+              "items": {
+                "required": [],
+                "type": "string"
+              },
+              "required": [],
+              "title": "drop",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "capabilities",
+          "type": "object"
+        },
+        "readOnlyRootFilesystem": {
+          "default": true,
+          "description": "Whether to allow writing to the root filesystem",
+          "required": [],
+          "title": "readOnlyRootFilesystem",
+          "type": "boolean"
+        },
+        "runAsNonRoot": {
+          "default": true,
+          "description": "Whether to require a container to run as a non-root user",
+          "required": [],
+          "title": "runAsNonRoot",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "securityContext",
+      "type": "object"
+    },
+    "serviceAccount": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "description": "Annotations to add to the service account",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "create": {
+          "default": true,
+          "description": "Specifies whether a service account should be created",
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "name": {
+          "default": "",
+          "description": "The name of the service account to use.\nIf not set and create is true, a name is generated using the fullname template",
+          "required": [],
+          "title": "name",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "serviceAccount",
+      "type": "object"
+    },
+    "serviceMonitor": {
+      "additionalProperties": true,
+      "properties": {
+        "additionalLabels": {
+          "description": "Set of labels to transfer from the Kubernetes Service onto the target",
+          "required": [],
+          "title": "additionalLabels",
+          "type": "object"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Whether to create a ServiceMonitor",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "interval": {
+          "default": "1m",
+          "description": "Set how frequently Prometheus should scrape",
+          "required": [],
+          "title": "interval",
+          "type": "string"
+        },
+        "metricRelabelings": {
+          "description": "MetricRelabelConfigs to apply to samples before ingestion",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "metricRelabelings",
+          "type": "array"
+        },
+        "relabelings": {
+          "description": "Set relabel_configs as per https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "relabelings",
+          "type": "array"
+        },
+        "scrapeTimeout": {
+          "default": "10s",
+          "description": "Set timeout for scrape",
+          "required": [],
+          "title": "scrapeTimeout",
+          "type": "string"
+        },
+        "targetLabels": {
+          "description": "Set of labels to transfer from the Kubernetes Service onto the target",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "targetLabels",
+          "type": "array"
+        },
+        "telemetryPath": {
+          "default": "/metrics",
+          "description": "Set path to metrics path",
+          "required": [],
+          "title": "telemetryPath",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "serviceMonitor",
+      "type": "object"
+    },
+    "tolerations": {
+      "description": "pod tolerations",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "tolerations",
+      "type": "array"
+    },
+    "watchNamespaceSelector": {
+      "default": "",
+      "description": "Sets the `WATCH_NAMESPACE_SELECTOR` environment variable,\nit defines which namespaces the operator should be listening for based on a namespace label (e.g. `\"environment: dev\"`).\nBy default, the operator watches all namespaces. To make it watch only its own namespace, check out `namespaceScope` option instead.",
+      "required": [],
+      "title": "watchNamespaceSelector",
+      "type": "string"
+    },
+    "watchNamespaces": {
+      "default": "",
+      "description": "Sets the `WATCH_NAMESPACE` environment variable,\nit defines which namespaces the operator should be listening for (e.g. `\"grafana, foo\"`).\nBy default, the operator watches all namespaces. To make it watch only its own namespace, check out `namespaceScope` option instead.",
+      "required": [],
+      "title": "watchNamespaces",
+      "type": "string"
+    }
+  },
+  "required": [],
+  "type": "object"
+}

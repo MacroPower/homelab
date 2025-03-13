@@ -1,60 +1,45 @@
 [dependencies]
-  [dependencies.argo-cd]
-    name = "argo-cd"
-    full_name = "argo-cd_0.2.1"
-    version = "0.2.1"
-  [dependencies.cert-manager]
-    name = "cert-manager"
-    full_name = "cert-manager_0.3.0"
-    version = "0.3.0"
+  [dependencies.charts]
+    name = "charts"
+    full_name = "charts_0.1.0"
+    version = "0.1.0"
   [dependencies.cilium]
     name = "cilium"
     full_name = "cilium_0.4.1"
     version = "0.4.1"
-  [dependencies.crossplane]
-    name = "crossplane"
-    full_name = "crossplane_1.17.3"
-    version = "1.17.3"
-  [dependencies.crossplane-provider-sql]
-    name = "crossplane-provider-sql"
-    full_name = "crossplane-provider-sql_0.0.1"
-    version = "0.0.1"
-  [dependencies.crossplane-provider-terraform]
-    name = "crossplane-provider-terraform"
-    full_name = "crossplane-provider-terraform_0.10.2"
-    version = "0.10.2"
-  [dependencies.external-secrets]
-    name = "external-secrets"
-    full_name = "external-secrets_0.1.4"
-    version = "0.1.4"
-  [dependencies.grafana-operator]
-    name = "grafana-operator"
-    full_name = "grafana-operator_0.1.1"
-    version = "0.1.1"
+    sum = "YmVvSokDKgHSwDc7XRfVyNdniLwF+lA57/Vgi60MDGo="
+    reg = "ghcr.io"
+    repo = "kcl-lang/cilium"
+    oci_tag = "0.4.1"
+  [dependencies.filepath]
+    name = "filepath"
+    full_name = "filepath_0.11.0"
+    version = "0.11.0"
+    sum = "cMqronmlitsA3LmU8lpwKyEA6w4aB3OuwnRrU6cBEHA="
+    reg = "ghcr.io"
+    repo = "macropower/kclipper/filepath"
+    oci_tag = "0.11.0"
   [dependencies.helm]
     name = "helm"
-    full_name = "helm_0.1.0"
-    version = "0.1.0"
+    full_name = "helm_0.11.0"
+    version = "0.11.0"
+    sum = "fDoGuQYTIPj8jKmZHatWcTcFPNLTe3cwTK94XXwoLiw="
     reg = "ghcr.io"
-    repo = "macropower/kclx/helm"
-    oci_tag = "0.1.0"
+    repo = "macropower/kclipper/helm"
+    oci_tag = "0.11.0"
+  [dependencies.json_merge_patch]
+    name = "json_merge_patch"
+    full_name = "json_merge_patch_0.1.1"
+    version = "0.1.1"
+    sum = "o1aamShk1L2MGjnN9u3IErRZ3xBNDxgmFxXsGVMt8Wk="
+    reg = "ghcr.io"
+    repo = "kcl-lang/json_merge_patch"
+    oci_tag = "0.1.1"
   [dependencies.k8s]
     name = "k8s"
     full_name = "k8s_1.31.2"
     version = "1.31.2"
-  [dependencies.opentelemetry-operator]
-    name = "opentelemetry-operator"
-    full_name = "opentelemetry-operator_0.1.1"
-    version = "0.1.1"
-  [dependencies.prometheus-operator]
-    name = "prometheus-operator"
-    full_name = "prometheus-operator_0.1.1"
-    version = "0.1.1"
-  [dependencies.secure-code-box]
-    name = "secure-code-box"
-    full_name = "secure-code-box_0.2.1"
-    version = "0.2.1"
-  [dependencies.traefik]
-    name = "traefik"
-    full_name = "traefik_0.2.1"
-    version = "0.2.1"
+    sum = "xBZgPsnpVVyWBpahuPQHReeRx28eUHGFoaPeqbct+vs="
+    reg = "ghcr.io"
+    repo = "kcl-lang/k8s"
+    oci_tag = "1.31.2"

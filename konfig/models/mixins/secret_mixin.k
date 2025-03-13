@@ -2,17 +2,17 @@ import k8s.api.core.v1
 import models.utils
 import models.resource
 import models.protocol
-import external_secrets.v1beta1 as externalsecretsv1beta1
+import charts.external_secrets.crds as externalsecretsv1beta1
 
 mixin SecretMixin for protocol.AppProtocol:
     if config.secrets:
         kubernetes: resource.ResourceMapping {
             Secret = [v1.Secret {
                 metadata: utils.MetadataBuilder(config | _c)
-                data = _s?.data
-                stringData = _s?.stringData
-                type = _s?.type
-            } for _i, _s in config.secrets]
+                data = _c?.data
+                stringData = _c?.stringData
+                type = _c?.type
+            } for _i, _c in config.secrets]
         }
 
 mixin SecretStoreMixin for protocol.AppProtocol:

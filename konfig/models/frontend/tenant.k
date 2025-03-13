@@ -1,6 +1,6 @@
+import charts.argo_cd.crds as argov1alpha1
 import models.frontend.common
 import models.frontend.secret
-import argo_cd.v1alpha1 as argov1alpha1
 
 schema Tenant(common.Metadata):
     """
