@@ -240,6 +240,7 @@
           "type": "boolean"
         },
         "capabilities": {
+          "additionalProperties": true,
           "description": "A list of capabilities to drop",
           "properties": {
             "drop": {
@@ -279,6 +280,7 @@
       "additionalProperties": true,
       "properties": {
         "annotations": {
+          "additionalProperties": true,
           "description": "Annotations to add to the service account",
           "required": [],
           "title": "annotations",
@@ -307,6 +309,7 @@
       "additionalProperties": true,
       "properties": {
         "additionalLabels": {
+          "additionalProperties": true,
           "description": "Set of labels to transfer from the Kubernetes Service onto the target",
           "required": [],
           "title": "additionalLabels",

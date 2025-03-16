@@ -138,6 +138,7 @@
       "additionalProperties": true,
       "properties": {
         "annotations": {
+          "additionalProperties": true,
           "required": [],
           "title": "annotations",
           "type": "object"
@@ -155,8 +156,10 @@
           "type": "integer"
         },
         "serviceMonitor": {
+          "additionalProperties": true,
           "properties": {
             "additionalLabels": {
+              "additionalProperties": true,
               "required": [],
               "title": "additionalLabels",
               "type": "object"
@@ -294,6 +297,7 @@
       "additionalProperties": true,
       "properties": {
         "limits": {
+          "additionalProperties": true,
           "properties": {
             "cpu": {
               "default": "500m",
@@ -313,6 +317,7 @@
           "type": "object"
         },
         "requests": {
+          "additionalProperties": true,
           "properties": {
             "cpu": {
               "default": "100m",
@@ -346,6 +351,7 @@
           "type": "boolean"
         },
         "capabilities": {
+          "additionalProperties": true,
           "properties": {
             "drop": {
               "items": {
@@ -392,6 +398,7 @@
           "type": "integer"
         },
         "seccompProfile": {
+          "additionalProperties": true,
           "properties": {
             "type": {
               "default": "RuntimeDefault",
@@ -413,6 +420,7 @@
       "additionalProperties": true,
       "properties": {
         "annotations": {
+          "additionalProperties": true,
           "description": "Annotations to add to the service account",
           "required": [],
           "title": "annotations",

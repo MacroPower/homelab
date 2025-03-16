@@ -244,6 +244,7 @@ schema ValuesSecurityContextCapabilities:
     """
 
     drop?: [str]
+    [...str]: any
 
 schema ValuesServiceAccount:
     r"""

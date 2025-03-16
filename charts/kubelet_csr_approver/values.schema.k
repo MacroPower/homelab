@@ -177,6 +177,7 @@ schema ValuesMetricsServiceMonitor:
     metricRelabelings?: [any]
     relabelings?: [any]
     scrapeTimeout?: str
+    [...str]: any
 
 schema ValuesMetricsServiceMonitorAdditionalLabels:
     r"""
@@ -251,6 +252,7 @@ schema ValuesResourcesLimits:
 
     cpu?: str
     memory?: str
+    [...str]: any
 
 schema ValuesResourcesRequests:
     r"""
@@ -264,6 +266,7 @@ schema ValuesResourcesRequests:
 
     cpu?: str
     memory?: str
+    [...str]: any
 
 schema ValuesSecurityContext:
     r"""
@@ -301,6 +304,7 @@ schema ValuesSecurityContextCapabilities:
     """
 
     drop?: [str]
+    [...str]: any
 
 schema ValuesSecurityContextSeccompProfile:
     r"""
@@ -312,6 +316,7 @@ schema ValuesSecurityContextSeccompProfile:
     """
 
     $type?: str
+    [...str]: any
 
 schema ValuesServiceAccount:
     r"""

@@ -443,6 +443,7 @@ schema ValuesApplicationSetCertificate:
     issuer?: ValuesApplicationSetCertificateIssuer
     privateKey?: ValuesApplicationSetCertificatePrivateKey
     renewBefore?: str
+    [...str]: any
 
 schema ValuesApplicationSetCertificateAnnotations:
     r"""
@@ -469,6 +470,7 @@ schema ValuesApplicationSetCertificateIssuer:
     group?: str
     kind?: str
     name?: str
+    [...str]: any
 
 schema ValuesApplicationSetCertificatePrivateKey:
     r"""
@@ -490,6 +492,7 @@ schema ValuesApplicationSetCertificatePrivateKey:
     encoding?: str
     rotationPolicy?: str
     size?: int
+    [...str]: any
 
 schema ValuesApplicationSetContainerPorts:
     r"""
@@ -508,6 +511,7 @@ schema ValuesApplicationSetContainerPorts:
     metrics?: int
     probe?: int
     webhook?: int
+    [...str]: any
 
 schema ValuesApplicationSetContainerSecurityContext:
     r"""
@@ -527,6 +531,7 @@ schema ValuesApplicationSetContainerSecurityContext:
     readOnlyRootFilesystem?: bool
     runAsNonRoot?: bool
     seccompProfile?: ValuesApplicationSetContainerSecurityContextSeccompProfile
+    [...str]: any
 
 schema ValuesApplicationSetContainerSecurityContextCapabilities:
     r"""
@@ -538,6 +543,7 @@ schema ValuesApplicationSetContainerSecurityContextCapabilities:
     """
 
     drop?: [str]
+    [...str]: any
 
 schema ValuesApplicationSetContainerSecurityContextSeccompProfile:
     r"""
@@ -549,6 +555,7 @@ schema ValuesApplicationSetContainerSecurityContextSeccompProfile:
     """
 
     $type?: str
+    [...str]: any
 
 schema ValuesApplicationSetDeploymentAnnotations:
     r"""
@@ -582,6 +589,7 @@ schema ValuesApplicationSetEmptyDir:
     """
 
     sizeLimit?: str
+    [...str]: any
 
 schema ValuesApplicationSetImage:
     r"""
@@ -600,6 +608,7 @@ schema ValuesApplicationSetImage:
     imagePullPolicy?: str
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesApplicationSetIngress:
     r"""
@@ -648,6 +657,7 @@ schema ValuesApplicationSetIngress:
     path?: str
     pathType?: str
     tls?: bool
+    [...str]: any
 
 schema ValuesApplicationSetIngressAnnotations:
     r"""
@@ -689,6 +699,7 @@ schema ValuesApplicationSetLivenessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesApplicationSetMetrics:
     r"""
@@ -705,6 +716,7 @@ schema ValuesApplicationSetMetrics:
     enabled?: bool
     service?: ValuesApplicationSetMetricsService
     serviceMonitor?: ValuesApplicationSetMetricsServiceMonitor
+    [...str]: any
 
 schema ValuesApplicationSetMetricsService:
     r"""
@@ -732,6 +744,7 @@ schema ValuesApplicationSetMetricsService:
     portName?: str
     servicePort?: int
     $type?: str
+    [...str]: any
 
 schema ValuesApplicationSetMetricsServiceAnnotations:
     r"""
@@ -791,6 +804,7 @@ schema ValuesApplicationSetMetricsServiceMonitor:
     scrapeTimeout?: str
     selector?: ValuesApplicationSetMetricsServiceMonitorSelector
     tlsConfig?: ValuesApplicationSetMetricsServiceMonitorTlsConfig
+    [...str]: any
 
 schema ValuesApplicationSetMetricsServiceMonitorAdditionalLabels:
     r"""
@@ -852,6 +866,7 @@ schema ValuesApplicationSetPdb:
     labels?: ValuesApplicationSetPdbLabels
     maxUnavailable?: str
     minAvailable?: str
+    [...str]: any
 
 schema ValuesApplicationSetPdbAnnotations:
     r"""
@@ -908,6 +923,7 @@ schema ValuesApplicationSetReadinessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesApplicationSetResources:
     r"""
@@ -939,6 +955,7 @@ schema ValuesApplicationSetService:
     port?: int
     portName?: str
     $type?: str
+    [...str]: any
 
 schema ValuesApplicationSetServiceAccount:
     r"""
@@ -963,6 +980,7 @@ schema ValuesApplicationSetServiceAccount:
     create?: bool
     labels?: ValuesApplicationSetServiceAccountLabels
     name?: str
+    [...str]: any
 
 schema ValuesApplicationSetServiceAccountAnnotations:
     r"""
@@ -1114,6 +1132,7 @@ schema ValuesCommitServerContainerSecurityContext:
     readOnlyRootFilesystem?: bool
     runAsNonRoot?: bool
     seccompProfile?: ValuesCommitServerContainerSecurityContextSeccompProfile
+    [...str]: any
 
 schema ValuesCommitServerContainerSecurityContextCapabilities:
     r"""
@@ -1125,6 +1144,7 @@ schema ValuesCommitServerContainerSecurityContextCapabilities:
     """
 
     drop?: [str]
+    [...str]: any
 
 schema ValuesCommitServerContainerSecurityContextSeccompProfile:
     r"""
@@ -1136,6 +1156,7 @@ schema ValuesCommitServerContainerSecurityContextSeccompProfile:
     """
 
     $type?: str
+    [...str]: any
 
 schema ValuesCommitServerDeploymentAnnotations:
     r"""
@@ -1175,6 +1196,7 @@ schema ValuesCommitServerImage:
     imagePullPolicy?: str
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesCommitServerLivenessProbe:
     r"""
@@ -1199,6 +1221,7 @@ schema ValuesCommitServerLivenessProbe:
     initialDelaySeconds?: int
     periodSeconds?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesCommitServerMetrics:
     r"""
@@ -1213,6 +1236,7 @@ schema ValuesCommitServerMetrics:
 
     enabled?: bool
     service?: ValuesCommitServerMetricsService
+    [...str]: any
 
 schema ValuesCommitServerMetricsService:
     r"""
@@ -1240,6 +1264,7 @@ schema ValuesCommitServerMetricsService:
     portName?: str
     servicePort?: int
     $type?: str
+    [...str]: any
 
 schema ValuesCommitServerMetricsServiceAnnotations:
     r"""
@@ -1300,6 +1325,7 @@ schema ValuesCommitServerReadinessProbe:
     initialDelaySeconds?: int
     periodSeconds?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesCommitServerResources:
     r"""
@@ -1322,6 +1348,7 @@ schema ValuesCommitServerService:
 
     annotations?: ValuesCommitServerServiceAnnotations
     labels?: ValuesCommitServerServiceLabels
+    [...str]: any
 
 schema ValuesCommitServerServiceAccount:
     r"""
@@ -1346,6 +1373,7 @@ schema ValuesCommitServerServiceAccount:
     create?: bool
     labels?: ValuesCommitServerServiceAccountLabels
     name?: str
+    [...str]: any
 
 schema ValuesCommitServerServiceAccountAnnotations:
     r"""
@@ -1425,6 +1453,7 @@ schema ValuesConfigmapTestImage:
 
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesConfigmapTestResources:
     r"""
@@ -1557,6 +1586,7 @@ schema ValuesConfigsCm:
     "statusbadge.enabled"?: bool
     "timeout.hard.reconciliation"?: str
     "timeout.reconciliation"?: str
+    [...str]: any
 
 schema ValuesConfigsCmAnnotations:
     r"""
@@ -1583,6 +1613,7 @@ schema ValuesConfigsCmp:
     annotations?: ValuesConfigsCmpAnnotations
     create?: bool
     plugins?: ValuesConfigsCmpPlugins
+    [...str]: any
 
 schema ValuesConfigsCmpAnnotations:
     r"""
@@ -1629,6 +1660,7 @@ schema ValuesConfigsGpg:
 
     annotations?: ValuesConfigsGpgAnnotations
     keys?: ValuesConfigsGpgKeys
+    [...str]: any
 
 schema ValuesConfigsGpgAnnotations:
     r"""
@@ -1734,6 +1766,7 @@ schema ValuesConfigsParams:
     "server.rootpath"?: str
     "server.staticassets"?: str
     "server.x.frame.options"?: str
+    [...str]: any
 
 schema ValuesConfigsParamsAnnotations:
     r"""
@@ -1773,6 +1806,7 @@ schema ValuesConfigsRbac:
     "policy.default"?: str
     "policy.matchMode"?: str
     scopes?: str
+    [...str]: any
 
 schema ValuesConfigsRbacAnnotations:
     r"""
@@ -1847,6 +1881,7 @@ schema ValuesConfigsSecret:
     gitlabSecret?: str
     gogsSecret?: str
     labels?: ValuesConfigsSecretLabels
+    [...str]: any
 
 schema ValuesConfigsSecretAnnotations:
     r"""
@@ -1869,6 +1904,7 @@ schema ValuesConfigsSecretAzureDevops:
 
     password?: str
     username?: str
+    [...str]: any
 
 schema ValuesConfigsSecretExtra:
     r"""
@@ -1908,6 +1944,7 @@ schema ValuesConfigsSsh:
     create?: bool
     extraHosts?: str
     knownHosts?: str
+    [...str]: any
 
 schema ValuesConfigsSshAnnotations:
     r"""
@@ -1934,6 +1971,7 @@ schema ValuesConfigsTls:
     annotations?: ValuesConfigsTlsAnnotations
     certificates?: ValuesConfigsTlsCertificates
     create?: bool
+    [...str]: any
 
 schema ValuesConfigsTlsAnnotations:
     r"""
@@ -1979,6 +2017,7 @@ schema ValuesContainerSecurityContextCapabilities:
     """
 
     drop?: [str]
+    [...str]: any
 
 schema ValuesContainerSecurityContextSeccompProfile:
     r"""
@@ -1990,6 +2029,7 @@ schema ValuesContainerSecurityContextSeccompProfile:
     """
 
     $type?: str
+    [...str]: any
 
 schema ValuesController:
     r"""
@@ -2155,6 +2195,7 @@ schema ValuesControllerClusterRoleRules:
 
     enabled?: bool
     rules?: [any]
+    [...str]: any
 
 schema ValuesControllerContainerPorts:
     r"""
@@ -2167,6 +2208,7 @@ schema ValuesControllerContainerPorts:
     """
 
     metrics?: int
+    [...str]: any
 
 schema ValuesControllerContainerSecurityContext:
     r"""
@@ -2186,6 +2228,7 @@ schema ValuesControllerContainerSecurityContext:
     readOnlyRootFilesystem?: bool
     runAsNonRoot?: bool
     seccompProfile?: ValuesControllerContainerSecurityContextSeccompProfile
+    [...str]: any
 
 schema ValuesControllerContainerSecurityContextCapabilities:
     r"""
@@ -2197,6 +2240,7 @@ schema ValuesControllerContainerSecurityContextCapabilities:
     """
 
     drop?: [str]
+    [...str]: any
 
 schema ValuesControllerContainerSecurityContextSeccompProfile:
     r"""
@@ -2208,6 +2252,7 @@ schema ValuesControllerContainerSecurityContextSeccompProfile:
     """
 
     $type?: str
+    [...str]: any
 
 schema ValuesControllerDeploymentAnnotations:
     r"""
@@ -2234,6 +2279,7 @@ schema ValuesControllerEmptyDir:
     """
 
     sizeLimit?: str
+    [...str]: any
 
 schema ValuesControllerImage:
     r"""
@@ -2252,6 +2298,7 @@ schema ValuesControllerImage:
     imagePullPolicy?: str
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesControllerMetrics:
     r"""
@@ -2275,6 +2322,7 @@ schema ValuesControllerMetrics:
     scrapeTimeout?: str
     service?: ValuesControllerMetricsService
     serviceMonitor?: ValuesControllerMetricsServiceMonitor
+    [...str]: any
 
 schema ValuesControllerMetricsApplicationLabels:
     r"""
@@ -2290,6 +2338,7 @@ schema ValuesControllerMetricsApplicationLabels:
 
     enabled?: bool
     labels?: [any]
+    [...str]: any
 
 schema ValuesControllerMetricsRules:
     r"""
@@ -2317,6 +2366,7 @@ schema ValuesControllerMetricsRules:
     namespace?: str
     selector?: ValuesControllerMetricsRulesSelector
     spec?: [any]
+    [...str]: any
 
 schema ValuesControllerMetricsRulesAdditionalLabels:
     r"""
@@ -2365,6 +2415,7 @@ schema ValuesControllerMetricsService:
     portName?: str
     servicePort?: int
     $type?: str
+    [...str]: any
 
 schema ValuesControllerMetricsServiceAnnotations:
     r"""
@@ -2421,6 +2472,7 @@ schema ValuesControllerMetricsServiceMonitor:
     scheme?: str
     selector?: ValuesControllerMetricsServiceMonitorSelector
     tlsConfig?: ValuesControllerMetricsServiceMonitorTlsConfig
+    [...str]: any
 
 schema ValuesControllerMetricsServiceMonitorAdditionalLabels:
     r"""
@@ -2482,6 +2534,7 @@ schema ValuesControllerPdb:
     labels?: ValuesControllerPdbLabels
     maxUnavailable?: str
     minAvailable?: str
+    [...str]: any
 
 schema ValuesControllerPdbAnnotations:
     r"""
@@ -2535,6 +2588,7 @@ schema ValuesControllerReadinessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesControllerResources:
     r"""
@@ -2566,6 +2620,7 @@ schema ValuesControllerServiceAccount:
     create?: bool
     labels?: ValuesControllerServiceAccountLabels
     name?: str
+    [...str]: any
 
 schema ValuesControllerServiceAccountAnnotations:
     r"""
@@ -2804,6 +2859,7 @@ schema ValuesDexCertificateSecret:
     enabled?: bool
     key?: str
     labels?: ValuesDexCertificateSecretLabels
+    [...str]: any
 
 schema ValuesDexCertificateSecretAnnotations:
     r"""
@@ -2837,6 +2893,7 @@ schema ValuesDexContainerPorts:
     grpc?: int
     http?: int
     metrics?: int
+    [...str]: any
 
 schema ValuesDexContainerSecurityContext:
     r"""
@@ -2856,6 +2913,7 @@ schema ValuesDexContainerSecurityContext:
     readOnlyRootFilesystem?: bool
     runAsNonRoot?: bool
     seccompProfile?: ValuesDexContainerSecurityContextSeccompProfile
+    [...str]: any
 
 schema ValuesDexContainerSecurityContextCapabilities:
     r"""
@@ -2867,6 +2925,7 @@ schema ValuesDexContainerSecurityContextCapabilities:
     """
 
     drop?: [str]
+    [...str]: any
 
 schema ValuesDexContainerSecurityContextSeccompProfile:
     r"""
@@ -2878,6 +2937,7 @@ schema ValuesDexContainerSecurityContextSeccompProfile:
     """
 
     $type?: str
+    [...str]: any
 
 schema ValuesDexDeploymentAnnotations:
     r"""
@@ -2911,6 +2971,7 @@ schema ValuesDexEmptyDir:
     """
 
     sizeLimit?: str
+    [...str]: any
 
 schema ValuesDexImage:
     r"""
@@ -2929,6 +2990,7 @@ schema ValuesDexImage:
     imagePullPolicy?: str
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesDexInitImage:
     r"""
@@ -2950,6 +3012,7 @@ schema ValuesDexInitImage:
     repository?: str
     resources?: ValuesDexInitImageResources
     tag?: str
+    [...str]: any
 
 schema ValuesDexInitImageResources:
     r"""
@@ -2994,6 +3057,7 @@ schema ValuesDexLivenessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesDexMetrics:
     r"""
@@ -3010,6 +3074,7 @@ schema ValuesDexMetrics:
     enabled?: bool
     service?: ValuesDexMetricsService
     serviceMonitor?: ValuesDexMetricsServiceMonitor
+    [...str]: any
 
 schema ValuesDexMetricsService:
     r"""
@@ -3028,6 +3093,7 @@ schema ValuesDexMetricsService:
     annotations?: ValuesDexMetricsServiceAnnotations
     labels?: ValuesDexMetricsServiceLabels
     portName?: str
+    [...str]: any
 
 schema ValuesDexMetricsServiceAnnotations:
     r"""
@@ -3084,6 +3150,7 @@ schema ValuesDexMetricsServiceMonitor:
     scheme?: str
     selector?: ValuesDexMetricsServiceMonitorSelector
     tlsConfig?: ValuesDexMetricsServiceMonitorTlsConfig
+    [...str]: any
 
 schema ValuesDexMetricsServiceMonitorAdditionalLabels:
     r"""
@@ -3145,6 +3212,7 @@ schema ValuesDexPdb:
     labels?: ValuesDexPdbLabels
     maxUnavailable?: str
     minAvailable?: str
+    [...str]: any
 
 schema ValuesDexPdbAnnotations:
     r"""
@@ -3209,6 +3277,7 @@ schema ValuesDexReadinessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesDexResources:
     r"""
@@ -3237,6 +3306,7 @@ schema ValuesDexServiceAccount:
     automountServiceAccountToken?: bool
     create?: bool
     name?: str
+    [...str]: any
 
 schema ValuesDexServiceAccountAnnotations:
     r"""
@@ -3332,6 +3402,7 @@ schema ValuesExporterLivenessProbe:
     initialDelaySeconds?: int
     periodSeconds?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesExporterLivenessProbeHttpGet:
     r"""
@@ -3347,6 +3418,7 @@ schema ValuesExporterLivenessProbeHttpGet:
 
     path?: str
     port?: int
+    [...str]: any
 
 schema ValuesExporterReadinessProbe:
     r"""
@@ -3370,6 +3442,7 @@ schema ValuesExporterReadinessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesExporterReadinessProbeHttpGet:
     r"""
@@ -3385,6 +3458,7 @@ schema ValuesExporterReadinessProbeHttpGet:
 
     path?: str
     port?: int
+    [...str]: any
 
 schema ValuesExporterResources:
     r"""
@@ -3425,6 +3499,7 @@ schema ValuesExporterServiceMonitor:
     namespace?: str
     telemetryPath?: str
     timeout?: str
+    [...str]: any
 
 schema ValuesExporterServiceMonitorEndpointAdditionalProperties:
     r"""
@@ -3592,6 +3667,7 @@ schema ValuesGlobalAffinity:
 
     nodeAffinity?: ValuesGlobalAffinityNodeAffinity
     podAntiAffinity?: str
+    [...str]: any
 
 schema ValuesGlobalAffinityNodeAffinity:
     r"""
@@ -3607,6 +3683,7 @@ schema ValuesGlobalAffinityNodeAffinity:
 
     matchExpressions?: [any]
     $type?: str
+    [...str]: any
 
 schema ValuesGlobalCertificateAnnotations:
     r"""
@@ -3625,6 +3702,7 @@ schema ValuesGlobalCompatibility:
     """
 
     openshift?: ValuesGlobalCompatibilityOpenshift
+    [...str]: any
 
 schema ValuesGlobalCompatibilityOpenshift:
     r"""
@@ -3636,6 +3714,7 @@ schema ValuesGlobalCompatibilityOpenshift:
     """
 
     adaptSecurityContext?: str
+    [...str]: any
 
 schema ValuesGlobalDeploymentAnnotations:
     r"""
@@ -3665,6 +3744,7 @@ schema ValuesGlobalDualStack:
 
     ipFamilies?: [any]
     ipFamilyPolicy?: str
+    [...str]: any
 
 schema ValuesGlobalImage:
     r"""
@@ -3683,6 +3763,7 @@ schema ValuesGlobalImage:
     imagePullPolicy?: str
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesGlobalLogging:
     r"""
@@ -3698,6 +3779,7 @@ schema ValuesGlobalLogging:
 
     format?: str
     level?: str
+    [...str]: any
 
 schema ValuesGlobalNetworkPolicy:
     r"""
@@ -3713,6 +3795,7 @@ schema ValuesGlobalNetworkPolicy:
 
     create?: bool
     defaultDenyIngress?: bool
+    [...str]: any
 
 schema ValuesGlobalNodeSelector:
     r"""
@@ -3724,6 +3807,7 @@ schema ValuesGlobalNodeSelector:
     """
 
     "kubernetes.io/os"?: str
+    [...str]: any
 
 schema ValuesGlobalPodAnnotations:
     r"""
@@ -3905,6 +3989,7 @@ schema ValuesHaproxyContainerSecurityContext:
     capabilities?: ValuesHaproxyContainerSecurityContextCapabilities
     runAsNonRoot?: bool
     seccompProfile?: ValuesHaproxyContainerSecurityContextSeccompProfile
+    [...str]: any
 
 schema ValuesHaproxyContainerSecurityContextCapabilities:
     r"""
@@ -3916,6 +4001,7 @@ schema ValuesHaproxyContainerSecurityContextCapabilities:
     """
 
     drop?: [str]
+    [...str]: any
 
 schema ValuesHaproxyContainerSecurityContextSeccompProfile:
     r"""
@@ -3927,6 +4013,7 @@ schema ValuesHaproxyContainerSecurityContextSeccompProfile:
     """
 
     $type?: str
+    [...str]: any
 
 schema ValuesHaproxyDeploymentStrategy:
     r"""
@@ -3938,6 +4025,7 @@ schema ValuesHaproxyDeploymentStrategy:
     """
 
     $type?: str
+    [...str]: any
 
 schema ValuesHaproxyEmptyDir:
     r"""
@@ -3963,6 +4051,7 @@ schema ValuesHaproxyImage:
     pullPolicy?: str
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesHaproxyInit:
     r"""
@@ -3975,6 +4064,7 @@ schema ValuesHaproxyInit:
     """
 
     resources?: ValuesHaproxyInitResources
+    [...str]: any
 
 schema ValuesHaproxyInitResources:
     r"""
@@ -3994,6 +4084,7 @@ schema ValuesHaproxyIpv6:
     """
 
     enabled?: bool
+    [...str]: any
 
 schema ValuesHaproxyLabels:
     r"""
@@ -4034,6 +4125,7 @@ schema ValuesHaproxyMetrics:
     portName?: str
     scrapePath?: str
     serviceMonitor?: ValuesHaproxyMetricsServiceMonitor
+    [...str]: any
 
 schema ValuesHaproxyMetricsServiceMonitor:
     r"""
@@ -4067,6 +4159,7 @@ schema ValuesHaproxyMetricsServiceMonitor:
     namespace?: str
     telemetryPath?: str
     timeout?: str
+    [...str]: any
 
 schema ValuesHaproxyMetricsServiceMonitorEndpointAdditionalProperties:
     r"""
@@ -4106,6 +4199,7 @@ schema ValuesHaproxyNetworkPolicy:
     enabled?: bool
     ingressRules?: [any]
     labels?: ValuesHaproxyNetworkPolicyLabels
+    [...str]: any
 
 schema ValuesHaproxyNetworkPolicyAnnotations:
     r"""
@@ -4143,6 +4237,7 @@ schema ValuesHaproxyReadOnly:
 
     enabled?: bool
     port?: int
+    [...str]: any
 
 schema ValuesHaproxyResources:
     r"""
@@ -4165,6 +4260,7 @@ schema ValuesHaproxySecurityContext:
     fsGroup?: int
     runAsNonRoot?: bool
     runAsUser?: int
+    [...str]: any
 
 schema ValuesHaproxyService:
     r"""
@@ -4198,6 +4294,7 @@ schema ValuesHaproxyService:
     loadBalancerSourceRanges?: [any]
     nodePort?: any
     $type?: str
+    [...str]: any
 
 schema ValuesHaproxyServiceAccount:
     r"""
@@ -4212,6 +4309,7 @@ schema ValuesHaproxyServiceAccount:
 
     automountToken?: bool
     create?: bool
+    [...str]: any
 
 schema ValuesHaproxyServiceExternalIps:
     r"""
@@ -4238,6 +4336,7 @@ schema ValuesHaproxyTests:
     """
 
     resources?: ValuesHaproxyTestsResources
+    [...str]: any
 
 schema ValuesHaproxyTestsResources:
     r"""
@@ -4266,6 +4365,7 @@ schema ValuesHaproxyTimeout:
     client?: str
     connect?: str
     server?: str
+    [...str]: any
 
 schema ValuesHaproxyTls:
     r"""
@@ -4287,6 +4387,7 @@ schema ValuesHaproxyTls:
     enabled?: bool
     keyName?: any
     secretName?: str
+    [...str]: any
 
 schema ValuesHostPath:
     r"""
@@ -4637,6 +4738,7 @@ schema ValuesNotificationsClusterRoleRules:
     """
 
     rules?: [any]
+    [...str]: any
 
 schema ValuesNotificationsCm:
     r"""
@@ -4649,6 +4751,7 @@ schema ValuesNotificationsCm:
     """
 
     create?: bool
+    [...str]: any
 
 schema ValuesNotificationsContainerPorts:
     r"""
@@ -4661,6 +4764,7 @@ schema ValuesNotificationsContainerPorts:
     """
 
     metrics?: int
+    [...str]: any
 
 schema ValuesNotificationsContainerSecurityContext:
     r"""
@@ -4680,6 +4784,7 @@ schema ValuesNotificationsContainerSecurityContext:
     readOnlyRootFilesystem?: bool
     runAsNonRoot?: bool
     seccompProfile?: ValuesNotificationsContainerSecurityContextSeccompProfile
+    [...str]: any
 
 schema ValuesNotificationsContainerSecurityContextCapabilities:
     r"""
@@ -4691,6 +4796,7 @@ schema ValuesNotificationsContainerSecurityContextCapabilities:
     """
 
     drop?: [str]
+    [...str]: any
 
 schema ValuesNotificationsContainerSecurityContextSeccompProfile:
     r"""
@@ -4702,6 +4808,7 @@ schema ValuesNotificationsContainerSecurityContextSeccompProfile:
     """
 
     $type?: str
+    [...str]: any
 
 schema ValuesNotificationsContext:
     r"""
@@ -4728,6 +4835,7 @@ schema ValuesNotificationsDeploymentStrategy:
     """
 
     $type?: str
+    [...str]: any
 
 schema ValuesNotificationsDnsConfig:
     r"""
@@ -4753,6 +4861,7 @@ schema ValuesNotificationsImage:
     imagePullPolicy?: str
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesNotificationsLivenessProbe:
     r"""
@@ -4780,6 +4889,7 @@ schema ValuesNotificationsLivenessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesNotificationsMetrics:
     r"""
@@ -4799,6 +4909,7 @@ schema ValuesNotificationsMetrics:
     port?: int
     service?: ValuesNotificationsMetricsService
     serviceMonitor?: ValuesNotificationsMetricsServiceMonitor
+    [...str]: any
 
 schema ValuesNotificationsMetricsService:
     r"""
@@ -4823,6 +4934,7 @@ schema ValuesNotificationsMetricsService:
     labels?: ValuesNotificationsMetricsServiceLabels
     portName?: str
     $type?: str
+    [...str]: any
 
 schema ValuesNotificationsMetricsServiceAnnotations:
     r"""
@@ -4877,6 +4989,7 @@ schema ValuesNotificationsMetricsServiceMonitor:
     scheme?: str
     selector?: ValuesNotificationsMetricsServiceMonitorSelector
     tlsConfig?: ValuesNotificationsMetricsServiceMonitorTlsConfig
+    [...str]: any
 
 schema ValuesNotificationsMetricsServiceMonitorAdditionalLabels:
     r"""
@@ -4947,6 +5060,7 @@ schema ValuesNotificationsPdb:
     labels?: ValuesNotificationsPdbLabels
     maxUnavailable?: str
     minAvailable?: str
+    [...str]: any
 
 schema ValuesNotificationsPdbAnnotations:
     r"""
@@ -5003,6 +5117,7 @@ schema ValuesNotificationsReadinessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesNotificationsResources:
     r"""
@@ -5037,6 +5152,7 @@ schema ValuesNotificationsSecret:
     items?: ValuesNotificationsSecretItems
     labels?: ValuesNotificationsSecretLabels
     name?: str
+    [...str]: any
 
 schema ValuesNotificationsSecretAnnotations:
     r"""
@@ -5084,6 +5200,7 @@ schema ValuesNotificationsServiceAccount:
     create?: bool
     labels?: ValuesNotificationsServiceAccountLabels
     name?: str
+    [...str]: any
 
 schema ValuesNotificationsServiceAccountAnnotations:
     r"""
@@ -5449,6 +5566,7 @@ schema ValuesRedisConfig:
     rdbcompression?: str
     "repl-diskless-sync"?: str
     save?: str
+    [...str]: any
 
 schema ValuesRedisContainerPorts:
     r"""
@@ -5464,6 +5582,7 @@ schema ValuesRedisContainerPorts:
 
     metrics?: int
     redis?: int
+    [...str]: any
 
 schema ValuesRedisContainerSecurityContext:
     r"""
@@ -5479,6 +5598,7 @@ schema ValuesRedisContainerSecurityContext:
     allowPrivilegeEscalation?: bool
     capabilities?: ValuesRedisContainerSecurityContextCapabilities
     readOnlyRootFilesystem?: bool
+    [...str]: any
 
 schema ValuesRedisContainerSecurityContextCapabilities:
     r"""
@@ -5490,6 +5610,7 @@ schema ValuesRedisContainerSecurityContextCapabilities:
     """
 
     drop?: [str]
+    [...str]: any
 
 schema ValuesRedisDeploymentAnnotations:
     r"""
@@ -5534,6 +5655,7 @@ schema ValuesRedisExporter:
     livenessProbe?: ValuesRedisExporterLivenessProbe
     readinessProbe?: ValuesRedisExporterReadinessProbe
     resources?: ValuesRedisExporterResources
+    [...str]: any
 
 schema ValuesRedisExporterContainerSecurityContext:
     r"""
@@ -5553,6 +5675,7 @@ schema ValuesRedisExporterContainerSecurityContext:
     readOnlyRootFilesystem?: bool
     runAsNonRoot?: bool
     seccompProfile?: ValuesRedisExporterContainerSecurityContextSeccompProfile
+    [...str]: any
 
 schema ValuesRedisExporterContainerSecurityContextCapabilities:
     r"""
@@ -5564,6 +5687,7 @@ schema ValuesRedisExporterContainerSecurityContextCapabilities:
     """
 
     drop?: [str]
+    [...str]: any
 
 schema ValuesRedisExporterContainerSecurityContextSeccompProfile:
     r"""
@@ -5575,6 +5699,7 @@ schema ValuesRedisExporterContainerSecurityContextSeccompProfile:
     """
 
     $type?: str
+    [...str]: any
 
 schema ValuesRedisExporterImage:
     r"""
@@ -5593,6 +5718,7 @@ schema ValuesRedisExporterImage:
     imagePullPolicy?: str
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesRedisExporterLivenessProbe:
     r"""
@@ -5620,6 +5746,7 @@ schema ValuesRedisExporterLivenessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesRedisExporterReadinessProbe:
     r"""
@@ -5648,6 +5775,7 @@ schema ValuesRedisExporterReadinessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesRedisExporterResources:
     r"""
@@ -5727,6 +5855,7 @@ schema ValuesRedisHaContainerSecurityContext:
     """
 
     readOnlyRootFilesystem?: bool
+    [...str]: any
 
 schema ValuesRedisHaExporter:
     r"""
@@ -5745,6 +5874,7 @@ schema ValuesRedisHaExporter:
     enabled?: bool
     image?: str
     tag?: str
+    [...str]: any
 
 schema ValuesRedisHaHaproxy:
     r"""
@@ -5777,6 +5907,7 @@ schema ValuesRedisHaHaproxy:
     labels?: ValuesRedisHaHaproxyLabels
     metrics?: ValuesRedisHaHaproxyMetrics
     tolerations?: [any]
+    [...str]: any
 
 schema ValuesRedisHaHaproxyAdditionalAffinities:
     r"""
@@ -5795,6 +5926,7 @@ schema ValuesRedisHaHaproxyContainerSecurityContext:
     """
 
     readOnlyRootFilesystem?: bool
+    [...str]: any
 
 schema ValuesRedisHaHaproxyLabels:
     r"""
@@ -5806,6 +5938,7 @@ schema ValuesRedisHaHaproxyLabels:
     """
 
     "app.kubernetes.io/name"?: str
+    [...str]: any
 
 schema ValuesRedisHaHaproxyMetrics:
     r"""
@@ -5818,6 +5951,7 @@ schema ValuesRedisHaHaproxyMetrics:
     """
 
     enabled?: bool
+    [...str]: any
 
 schema ValuesRedisHaImage:
     r"""
@@ -5833,6 +5967,7 @@ schema ValuesRedisHaImage:
 
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesRedisHaPersistentVolume:
     r"""
@@ -5845,6 +5980,7 @@ schema ValuesRedisHaPersistentVolume:
     """
 
     enabled?: bool
+    [...str]: any
 
 schema ValuesRedisHaRedis:
     r"""
@@ -5860,6 +5996,7 @@ schema ValuesRedisHaRedis:
 
     config?: ValuesRedisHaRedisConfig
     masterGroupName?: str
+    [...str]: any
 
 schema ValuesRedisHaRedisConfig:
     r"""
@@ -5872,6 +6009,7 @@ schema ValuesRedisHaRedisConfig:
     """
 
     save?: str
+    [...str]: any
 
 schema ValuesRedisHaTopologySpreadConstraints:
     r"""
@@ -5894,6 +6032,7 @@ schema ValuesRedisHaTopologySpreadConstraints:
     maxSkew?: str
     topologyKey?: str
     whenUnsatisfiable?: str
+    [...str]: any
 
 schema ValuesRedisImage:
     r"""
@@ -5912,6 +6051,7 @@ schema ValuesRedisImage:
     imagePullPolicy?: str
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesRedisLifecycle:
     r"""
@@ -5924,6 +6064,7 @@ schema ValuesRedisLifecycle:
     """
 
     preStop?: ValuesRedisLifecyclePreStop
+    [...str]: any
 
 schema ValuesRedisLifecyclePreStop:
     r"""
@@ -5935,6 +6076,7 @@ schema ValuesRedisLifecyclePreStop:
     """
 
     exec?: ValuesRedisLifecyclePreStopExec
+    [...str]: any
 
 schema ValuesRedisLifecyclePreStopExec:
     r"""
@@ -5946,6 +6088,7 @@ schema ValuesRedisLifecyclePreStopExec:
     """
 
     command?: [str]
+    [...str]: any
 
 schema ValuesRedisLivenessProbe:
     r"""
@@ -5973,6 +6116,7 @@ schema ValuesRedisLivenessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesRedisMetrics:
     r"""
@@ -5990,6 +6134,7 @@ schema ValuesRedisMetrics:
     enabled?: bool
     service?: ValuesRedisMetricsService
     serviceMonitor?: ValuesRedisMetricsServiceMonitor
+    [...str]: any
 
 schema ValuesRedisMetricsService:
     r"""
@@ -6017,6 +6162,7 @@ schema ValuesRedisMetricsService:
     portName?: str
     servicePort?: int
     $type?: str
+    [...str]: any
 
 schema ValuesRedisMetricsServiceAnnotations:
     r"""
@@ -6073,6 +6219,7 @@ schema ValuesRedisMetricsServiceMonitor:
     scheme?: str
     selector?: ValuesRedisMetricsServiceMonitorSelector
     tlsConfig?: ValuesRedisMetricsServiceMonitorTlsConfig
+    [...str]: any
 
 schema ValuesRedisMetricsServiceMonitorAdditionalLabels:
     r"""
@@ -6134,6 +6281,7 @@ schema ValuesRedisPdb:
     labels?: ValuesRedisPdbLabels
     maxUnavailable?: str
     minAvailable?: str
+    [...str]: any
 
 schema ValuesRedisPdbAnnotations:
     r"""
@@ -6190,6 +6338,7 @@ schema ValuesRedisReadinessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesRedisResources:
     r"""
@@ -6276,6 +6425,7 @@ schema ValuesRedisSecretInitContainerSecurityContext:
     readOnlyRootFilesystem?: bool
     runAsNonRoot?: bool
     seccompProfile?: ValuesRedisSecretInitContainerSecurityContextSeccompProfile
+    [...str]: any
 
 schema ValuesRedisSecretInitContainerSecurityContextCapabilities:
     r"""
@@ -6287,6 +6437,7 @@ schema ValuesRedisSecretInitContainerSecurityContextCapabilities:
     """
 
     drop?: [str]
+    [...str]: any
 
 schema ValuesRedisSecretInitContainerSecurityContextSeccompProfile:
     r"""
@@ -6298,6 +6449,7 @@ schema ValuesRedisSecretInitContainerSecurityContextSeccompProfile:
     """
 
     $type?: str
+    [...str]: any
 
 schema ValuesRedisSecretInitImage:
     r"""
@@ -6316,6 +6468,7 @@ schema ValuesRedisSecretInitImage:
     imagePullPolicy?: str
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesRedisSecretInitJobAnnotations:
     r"""
@@ -6379,6 +6532,7 @@ schema ValuesRedisSecretInitServiceAccount:
     automountServiceAccountToken?: bool
     create?: bool
     name?: str
+    [...str]: any
 
 schema ValuesRedisSecretInitServiceAccountAnnotations:
     r"""
@@ -6401,6 +6555,7 @@ schema ValuesRedisSecurityContext:
     runAsNonRoot?: bool
     runAsUser?: int
     seccompProfile?: ValuesRedisSecurityContextSeccompProfile
+    [...str]: any
 
 schema ValuesRedisSecurityContextSeccompProfile:
     r"""
@@ -6412,6 +6567,7 @@ schema ValuesRedisSecurityContextSeccompProfile:
     """
 
     $type?: str
+    [...str]: any
 
 schema ValuesRedisService:
     r"""
@@ -6427,6 +6583,7 @@ schema ValuesRedisService:
 
     annotations?: ValuesRedisServiceAnnotations
     labels?: ValuesRedisServiceLabels
+    [...str]: any
 
 schema ValuesRedisServiceAccount:
     r"""
@@ -6448,6 +6605,7 @@ schema ValuesRedisServiceAccount:
     automountServiceAccountToken?: bool
     create?: bool
     name?: str
+    [...str]: any
 
 schema ValuesRedisServiceAccountAnnotations:
     r"""
@@ -6496,6 +6654,7 @@ schema ValuesRedisStartupProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesRedisUpdateStrategy:
     r"""
@@ -6508,6 +6667,7 @@ schema ValuesRedisUpdateStrategy:
     """
 
     $type?: str
+    [...str]: any
 
 schema ValuesRepoServer:
     r"""
@@ -6707,6 +6867,7 @@ schema ValuesRepoServerAutoscaling:
     minReplicas?: int
     targetCPUUtilizationPercentage?: int
     targetMemoryUtilizationPercentage?: int
+    [...str]: any
 
 schema ValuesRepoServerAutoscalingBehavior:
     r"""
@@ -6743,6 +6904,7 @@ schema ValuesRepoServerCertificateSecret:
     enabled?: bool
     key?: str
     labels?: ValuesRepoServerCertificateSecretLabels
+    [...str]: any
 
 schema ValuesRepoServerCertificateSecretAnnotations:
     r"""
@@ -6774,6 +6936,7 @@ schema ValuesRepoServerClusterRoleRules:
 
     enabled?: bool
     rules?: [any]
+    [...str]: any
 
 schema ValuesRepoServerContainerPorts:
     r"""
@@ -6789,6 +6952,7 @@ schema ValuesRepoServerContainerPorts:
 
     metrics?: int
     server?: int
+    [...str]: any
 
 schema ValuesRepoServerContainerSecurityContext:
     r"""
@@ -6808,6 +6972,7 @@ schema ValuesRepoServerContainerSecurityContext:
     readOnlyRootFilesystem?: bool
     runAsNonRoot?: bool
     seccompProfile?: ValuesRepoServerContainerSecurityContextSeccompProfile
+    [...str]: any
 
 schema ValuesRepoServerContainerSecurityContextCapabilities:
     r"""
@@ -6819,6 +6984,7 @@ schema ValuesRepoServerContainerSecurityContextCapabilities:
     """
 
     drop?: [str]
+    [...str]: any
 
 schema ValuesRepoServerContainerSecurityContextSeccompProfile:
     r"""
@@ -6830,6 +6996,7 @@ schema ValuesRepoServerContainerSecurityContextSeccompProfile:
     """
 
     $type?: str
+    [...str]: any
 
 schema ValuesRepoServerDeploymentAnnotations:
     r"""
@@ -6863,6 +7030,7 @@ schema ValuesRepoServerEmptyDir:
     """
 
     sizeLimit?: str
+    [...str]: any
 
 schema ValuesRepoServerExistingVolumes:
     r"""
@@ -6888,6 +7056,7 @@ schema ValuesRepoServerImage:
     imagePullPolicy?: str
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesRepoServerLifecycle:
     r"""
@@ -6919,6 +7088,7 @@ schema ValuesRepoServerLivenessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesRepoServerMetrics:
     r"""
@@ -6935,6 +7105,7 @@ schema ValuesRepoServerMetrics:
     enabled?: bool
     service?: ValuesRepoServerMetricsService
     serviceMonitor?: ValuesRepoServerMetricsServiceMonitor
+    [...str]: any
 
 schema ValuesRepoServerMetricsService:
     r"""
@@ -6962,6 +7133,7 @@ schema ValuesRepoServerMetricsService:
     portName?: str
     servicePort?: int
     $type?: str
+    [...str]: any
 
 schema ValuesRepoServerMetricsServiceAnnotations:
     r"""
@@ -7021,6 +7193,7 @@ schema ValuesRepoServerMetricsServiceMonitor:
     scrapeTimeout?: str
     selector?: ValuesRepoServerMetricsServiceMonitorSelector
     tlsConfig?: ValuesRepoServerMetricsServiceMonitorTlsConfig
+    [...str]: any
 
 schema ValuesRepoServerMetricsServiceMonitorAdditionalLabels:
     r"""
@@ -7082,6 +7255,7 @@ schema ValuesRepoServerPdb:
     labels?: ValuesRepoServerPdbLabels
     maxUnavailable?: str
     minAvailable?: str
+    [...str]: any
 
 schema ValuesRepoServerPdbAnnotations:
     r"""
@@ -7135,6 +7309,7 @@ schema ValuesRepoServerReadinessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesRepoServerResources:
     r"""
@@ -7163,6 +7338,7 @@ schema ValuesRepoServerService:
     labels?: ValuesRepoServerServiceLabels
     port?: int
     portName?: str
+    [...str]: any
 
 schema ValuesRepoServerServiceAccount:
     r"""
@@ -7188,6 +7364,7 @@ schema ValuesRepoServerServiceAccount:
     create?: bool
     labels?: ValuesRepoServerServiceAccountLabels
     name?: str
+    [...str]: any
 
 schema ValuesRepoServerServiceAccountAnnotations:
     r"""
@@ -7268,6 +7445,7 @@ schema ValuesRestoreS3:
     region?: str
     secret_key?: str
     source?: str
+    [...str]: any
 
 schema ValuesRestoreSsh:
     r"""
@@ -7285,6 +7463,7 @@ schema ValuesRestoreSsh:
 
     key?: str
     source?: str
+    [...str]: any
 
 schema ValuesSecurityContext:
     r"""
@@ -7395,6 +7574,7 @@ schema ValuesSentinelConfig:
     "failover-timeout"?: int
     maxclients?: int
     "parallel-syncs"?: int
+    [...str]: any
 
 schema ValuesSentinelLifecycle:
     r"""
@@ -7429,6 +7609,7 @@ schema ValuesSentinelLivenessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesSentinelReadinessProbe:
     r"""
@@ -7455,6 +7636,7 @@ schema ValuesSentinelReadinessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesSentinelResources:
     r"""
@@ -7489,6 +7671,7 @@ schema ValuesSentinelStartupProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesServer:
     r"""
@@ -7701,6 +7884,7 @@ schema ValuesServerAutoscaling:
     minReplicas?: int
     targetCPUUtilizationPercentage?: int
     targetMemoryUtilizationPercentage?: int
+    [...str]: any
 
 schema ValuesServerAutoscalingBehavior:
     r"""
@@ -7752,6 +7936,7 @@ schema ValuesServerCertificate:
     renewBefore?: str
     secretTemplateAnnotations?: ValuesServerCertificateSecretTemplateAnnotations
     usages?: [any]
+    [...str]: any
 
 schema ValuesServerCertificateAnnotations:
     r"""
@@ -7778,6 +7963,7 @@ schema ValuesServerCertificateIssuer:
     group?: str
     kind?: str
     name?: str
+    [...str]: any
 
 schema ValuesServerCertificatePrivateKey:
     r"""
@@ -7799,6 +7985,7 @@ schema ValuesServerCertificatePrivateKey:
     encoding?: str
     rotationPolicy?: str
     size?: int
+    [...str]: any
 
 schema ValuesServerCertificateSecret:
     r"""
@@ -7824,6 +8011,7 @@ schema ValuesServerCertificateSecret:
     enabled?: bool
     key?: str
     labels?: ValuesServerCertificateSecretLabels
+    [...str]: any
 
 schema ValuesServerCertificateSecretAnnotations:
     r"""
@@ -7861,6 +8049,7 @@ schema ValuesServerClusterRoleRules:
 
     enabled?: bool
     rules?: [any]
+    [...str]: any
 
 schema ValuesServerContainerPorts:
     r"""
@@ -7876,6 +8065,7 @@ schema ValuesServerContainerPorts:
 
     metrics?: int
     server?: int
+    [...str]: any
 
 schema ValuesServerContainerSecurityContext:
     r"""
@@ -7895,6 +8085,7 @@ schema ValuesServerContainerSecurityContext:
     readOnlyRootFilesystem?: bool
     runAsNonRoot?: bool
     seccompProfile?: ValuesServerContainerSecurityContextSeccompProfile
+    [...str]: any
 
 schema ValuesServerContainerSecurityContextCapabilities:
     r"""
@@ -7906,6 +8097,7 @@ schema ValuesServerContainerSecurityContextCapabilities:
     """
 
     drop?: [str]
+    [...str]: any
 
 schema ValuesServerContainerSecurityContextSeccompProfile:
     r"""
@@ -7917,6 +8109,7 @@ schema ValuesServerContainerSecurityContextSeccompProfile:
     """
 
     $type?: str
+    [...str]: any
 
 schema ValuesServerDeploymentAnnotations:
     r"""
@@ -7950,6 +8143,7 @@ schema ValuesServerEmptyDir:
     """
 
     sizeLimit?: str
+    [...str]: any
 
 schema ValuesServerExtensions:
     r"""
@@ -7979,6 +8173,7 @@ schema ValuesServerExtensions:
     extensionList?: [any]
     image?: ValuesServerExtensionsImage
     resources?: ValuesServerExtensionsResources
+    [...str]: any
 
 schema ValuesServerExtensionsContainerSecurityContext:
     r"""
@@ -8000,6 +8195,7 @@ schema ValuesServerExtensionsContainerSecurityContext:
     runAsNonRoot?: bool
     runAsUser?: int
     seccompProfile?: ValuesServerExtensionsContainerSecurityContextSeccompProfile
+    [...str]: any
 
 schema ValuesServerExtensionsContainerSecurityContextCapabilities:
     r"""
@@ -8011,6 +8207,7 @@ schema ValuesServerExtensionsContainerSecurityContextCapabilities:
     """
 
     drop?: [str]
+    [...str]: any
 
 schema ValuesServerExtensionsContainerSecurityContextSeccompProfile:
     r"""
@@ -8022,6 +8219,7 @@ schema ValuesServerExtensionsContainerSecurityContextSeccompProfile:
     """
 
     $type?: str
+    [...str]: any
 
 schema ValuesServerExtensionsImage:
     r"""
@@ -8040,6 +8238,7 @@ schema ValuesServerExtensionsImage:
     imagePullPolicy?: str
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesServerExtensionsResources:
     r"""
@@ -8065,6 +8264,7 @@ schema ValuesServerImage:
     imagePullPolicy?: str
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesServerIngress:
     r"""
@@ -8129,6 +8329,7 @@ schema ValuesServerIngress:
     path?: str
     pathType?: str
     tls?: bool
+    [...str]: any
 
 schema ValuesServerIngressAnnotations:
     r"""
@@ -8159,6 +8360,7 @@ schema ValuesServerIngressAws:
 
     backendProtocolVersion?: str
     serviceType?: str
+    [...str]: any
 
 schema ValuesServerIngressGke:
     r"""
@@ -8181,6 +8383,7 @@ schema ValuesServerIngressGke:
     backendConfig?: ValuesServerIngressGkeBackendConfig
     frontendConfig?: ValuesServerIngressGkeFrontendConfig
     managedCertificate?: ValuesServerIngressGkeManagedCertificate
+    [...str]: any
 
 schema ValuesServerIngressGkeBackendConfig:
     r"""
@@ -8213,6 +8416,7 @@ schema ValuesServerIngressGkeManagedCertificate:
 
     create?: bool
     extraDomains?: [any]
+    [...str]: any
 
 schema ValuesServerIngressGrpc:
     r"""
@@ -8262,6 +8466,7 @@ schema ValuesServerIngressGrpc:
     path?: str
     pathType?: str
     tls?: bool
+    [...str]: any
 
 schema ValuesServerIngressGrpcAnnotations:
     r"""
@@ -8314,6 +8519,7 @@ schema ValuesServerLivenessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesServerMetrics:
     r"""
@@ -8330,6 +8536,7 @@ schema ValuesServerMetrics:
     enabled?: bool
     service?: ValuesServerMetricsService
     serviceMonitor?: ValuesServerMetricsServiceMonitor
+    [...str]: any
 
 schema ValuesServerMetricsService:
     r"""
@@ -8357,6 +8564,7 @@ schema ValuesServerMetricsService:
     portName?: str
     servicePort?: int
     $type?: str
+    [...str]: any
 
 schema ValuesServerMetricsServiceAnnotations:
     r"""
@@ -8416,6 +8624,7 @@ schema ValuesServerMetricsServiceMonitor:
     scrapeTimeout?: str
     selector?: ValuesServerMetricsServiceMonitorSelector
     tlsConfig?: ValuesServerMetricsServiceMonitorTlsConfig
+    [...str]: any
 
 schema ValuesServerMetricsServiceMonitorAdditionalLabels:
     r"""
@@ -8477,6 +8686,7 @@ schema ValuesServerPdb:
     labels?: ValuesServerPdbLabels
     maxUnavailable?: str
     minAvailable?: str
+    [...str]: any
 
 schema ValuesServerPdbAnnotations:
     r"""
@@ -8530,6 +8740,7 @@ schema ValuesServerReadinessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesServerResources:
     r"""
@@ -8564,6 +8775,7 @@ schema ValuesServerRoute:
     hostname?: str
     termination_policy?: str
     termination_type?: str
+    [...str]: any
 
 schema ValuesServerRouteAnnotations:
     r"""
@@ -8633,6 +8845,7 @@ schema ValuesServerService:
     servicePortHttpsName?: str
     sessionAffinity?: str
     $type?: str
+    [...str]: any
 
 schema ValuesServerServiceAccount:
     r"""
@@ -8657,6 +8870,7 @@ schema ValuesServerServiceAccount:
     create?: bool
     labels?: ValuesServerServiceAccountLabels
     name?: str
+    [...str]: any
 
 schema ValuesServerServiceAccountAnnotations:
     r"""

@@ -363,6 +363,7 @@ schema ValuesLivenessProbeHttpGet:
     path?: str
     port?: int
     scheme?: str
+    [...str]: any
 
 schema ValuesNodeSelector:
     r"""
@@ -429,6 +430,7 @@ schema ValuesResourcesRequests:
 
     cpu?: str
     memory?: str
+    [...str]: any
 
 schema ValuesSecurityContext:
     r"""
@@ -462,6 +464,7 @@ schema ValuesSecurityContextCapabilities:
     """
 
     drop?: [str]
+    [...str]: any
 
 schema ValuesService:
     r"""

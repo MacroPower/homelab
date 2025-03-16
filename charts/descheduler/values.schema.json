@@ -307,6 +307,7 @@
           "type": "integer"
         },
         "httpGet": {
+          "additionalProperties": true,
           "properties": {
             "path": {
               "default": "/healthz",
@@ -412,6 +413,7 @@
       "description": "  - name: container-registry-secret",
       "properties": {
         "requests": {
+          "additionalProperties": true,
           "properties": {
             "cpu": {
               "default": "500m",
@@ -451,6 +453,7 @@
           "type": "boolean"
         },
         "capabilities": {
+          "additionalProperties": true,
           "properties": {
             "drop": {
               "items": {
@@ -529,6 +532,7 @@
       "additionalProperties": true,
       "properties": {
         "annotations": {
+          "additionalProperties": true,
           "description": "Specifies custom annotations for the serviceAccount",
           "required": [],
           "title": "annotations",
@@ -557,6 +561,7 @@
       "additionalProperties": true,
       "properties": {
         "additionalLabels": {
+          "additionalProperties": true,
           "description": "The namespace where Prometheus expects to find service monitors.\nnamespace: \"\"\nAdd custom labels to the ServiceMonitor resource",
           "required": [],
           "title": "additionalLabels",

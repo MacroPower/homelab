@@ -28,6 +28,7 @@
       "description": "# ApplicationSet controller",
       "properties": {
         "affinity": {
+          "additionalProperties": true,
           "description": "Assign custom [affinity] rules",
           "required": [],
           "title": "affinity",
@@ -48,6 +49,7 @@
           "type": "boolean"
         },
         "certificate": {
+          "additionalProperties": true,
           "description": "TLS certificate configuration via cert-manager\n# Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/tls/#tls-configuration",
           "properties": {
             "additionalHosts": {
@@ -60,6 +62,7 @@
               "type": "array"
             },
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be applied to the ApplicationSet Certificate",
               "required": [],
               "title": "annotations",
@@ -87,6 +90,7 @@
               "type": "boolean"
             },
             "issuer": {
+              "additionalProperties": true,
               "description": "Certificate issuer\n# Ref: https://cert-manager.io/docs/concepts/issuer",
               "properties": {
                 "group": {
@@ -116,6 +120,7 @@
               "type": "object"
             },
             "privateKey": {
+              "additionalProperties": true,
               "description": "Private key of the certificate",
               "properties": {
                 "algorithm": {
@@ -164,6 +169,7 @@
           "type": "object"
         },
         "containerPorts": {
+          "additionalProperties": true,
           "description": "ApplicationSet controller container ports",
           "properties": {
             "metrics": {
@@ -193,6 +199,7 @@
           "type": "object"
         },
         "containerSecurityContext": {
+          "additionalProperties": true,
           "description": "ApplicationSet controller container-level security context",
           "properties": {
             "allowPrivilegeEscalation": {
@@ -202,6 +209,7 @@
               "type": "boolean"
             },
             "capabilities": {
+              "additionalProperties": true,
               "properties": {
                 "drop": {
                   "items": {
@@ -230,6 +238,7 @@
               "type": "boolean"
             },
             "seccompProfile": {
+              "additionalProperties": true,
               "properties": {
                 "type": {
                   "default": "RuntimeDefault",
@@ -248,18 +257,21 @@
           "type": "object"
         },
         "deploymentAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations to be added to ApplicationSet controller Deployment",
           "required": [],
           "title": "deploymentAnnotations",
           "type": "object"
         },
         "deploymentStrategy": {
+          "additionalProperties": true,
           "description": "Deployment strategy to be added to the ApplicationSet controller Deployment",
           "required": [],
           "title": "deploymentStrategy",
           "type": "object"
         },
         "dnsConfig": {
+          "additionalProperties": true,
           "description": "[DNS configuration]",
           "required": [],
           "title": "dnsConfig",
@@ -273,6 +285,7 @@
           "type": "string"
         },
         "emptyDir": {
+          "additionalProperties": true,
           "description": "# ApplicationSet controller emptyDir volumes",
           "properties": {
             "sizeLimit": {
@@ -342,6 +355,7 @@
           "type": "array"
         },
         "image": {
+          "additionalProperties": true,
           "description": "# ApplicationSet controller image",
           "properties": {
             "imagePullPolicy": {
@@ -380,9 +394,11 @@
           "type": "array"
         },
         "ingress": {
+          "additionalProperties": true,
           "description": "# Ingress for the Git Generator webhook\n# Ref: https://argocd-applicationset.readthedocs.io/en/master/Generators-Git/#webhook-configuration)",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Additional ingress annotations",
               "required": [],
               "title": "annotations",
@@ -446,6 +462,7 @@
               "type": "string"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Additional ingress labels",
               "required": [],
               "title": "labels",
@@ -487,6 +504,7 @@
           "type": "array"
         },
         "livenessProbe": {
+          "additionalProperties": true,
           "properties": {
             "enabled": {
               "default": false,
@@ -536,6 +554,7 @@
           "type": "object"
         },
         "metrics": {
+          "additionalProperties": true,
           "description": "# Metrics service configuration",
           "properties": {
             "enabled": {
@@ -546,8 +565,10 @@
               "type": "boolean"
             },
             "service": {
+              "additionalProperties": true,
               "properties": {
                 "annotations": {
+                  "additionalProperties": true,
                   "description": "Metrics service annotations",
                   "required": [],
                   "title": "annotations",
@@ -561,6 +582,7 @@
                   "type": "string"
                 },
                 "labels": {
+                  "additionalProperties": true,
                   "description": "Metrics service labels",
                   "required": [],
                   "title": "labels",
@@ -593,14 +615,17 @@
               "type": "object"
             },
             "serviceMonitor": {
+              "additionalProperties": true,
               "properties": {
                 "additionalLabels": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor labels",
                   "required": [],
                   "title": "additionalLabels",
                   "type": "object"
                 },
                 "annotations": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor annotations",
                   "required": [],
                   "title": "annotations",
@@ -667,12 +692,14 @@
                   "type": "string"
                 },
                 "selector": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor selector",
                   "required": [],
                   "title": "selector",
                   "type": "object"
                 },
                 "tlsConfig": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor tlsConfig",
                   "required": [],
                   "title": "tlsConfig",
@@ -696,15 +723,18 @@
           "type": "string"
         },
         "nodeSelector": {
+          "additionalProperties": true,
           "description": "[Node selector]",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
         },
         "pdb": {
+          "additionalProperties": true,
           "description": "# ApplicationSet controller Pod Disruption Budget\n# Ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be added to ApplicationSet controller pdb",
               "required": [],
               "title": "annotations",
@@ -718,6 +748,7 @@
               "type": "boolean"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Labels to be added to ApplicationSet controller pdb",
               "required": [],
               "title": "labels",
@@ -743,12 +774,14 @@
           "type": "object"
         },
         "podAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations for the ApplicationSet controller pods",
           "required": [],
           "title": "podAnnotations",
           "type": "object"
         },
         "podLabels": {
+          "additionalProperties": true,
           "description": "Labels for the ApplicationSet controller pods",
           "required": [],
           "title": "podLabels",
@@ -762,6 +795,7 @@
           "type": "string"
         },
         "readinessProbe": {
+          "additionalProperties": true,
           "description": "# Probes for ApplicationSet controller (optional)\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
           "properties": {
             "enabled": {
@@ -819,6 +853,7 @@
           "type": "integer"
         },
         "resources": {
+          "additionalProperties": true,
           "description": "Resource limits and requests for the ApplicationSet controller pods.",
           "required": [],
           "title": "resources",
@@ -832,15 +867,18 @@
           "type": "string"
         },
         "service": {
+          "additionalProperties": true,
           "description": "# ApplicationSet service configuration",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "ApplicationSet service annotations",
               "required": [],
               "title": "annotations",
               "type": "object"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "ApplicationSet service labels",
               "required": [],
               "title": "labels",
@@ -873,8 +911,10 @@
           "type": "object"
         },
         "serviceAccount": {
+          "additionalProperties": true,
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations applied to created service account",
               "required": [],
               "title": "annotations",
@@ -895,6 +935,7 @@
               "type": "boolean"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Labels applied to created service account",
               "required": [],
               "title": "labels",
@@ -960,6 +1001,7 @@
       "additionalProperties": true,
       "properties": {
         "affinity": {
+          "additionalProperties": true,
           "description": "Assign custom [affinity] rules",
           "required": [],
           "title": "affinity",
@@ -973,6 +1015,7 @@
           "type": "boolean"
         },
         "containerSecurityContext": {
+          "additionalProperties": true,
           "description": "commit server container-level security context",
           "properties": {
             "allowPrivilegeEscalation": {
@@ -982,6 +1025,7 @@
               "type": "boolean"
             },
             "capabilities": {
+              "additionalProperties": true,
               "properties": {
                 "drop": {
                   "items": {
@@ -1010,6 +1054,7 @@
               "type": "boolean"
             },
             "seccompProfile": {
+              "additionalProperties": true,
               "properties": {
                 "type": {
                   "default": "RuntimeDefault",
@@ -1028,18 +1073,21 @@
           "type": "object"
         },
         "deploymentAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations to be added to commit server Deployment",
           "required": [],
           "title": "deploymentAnnotations",
           "type": "object"
         },
         "deploymentStrategy": {
+          "additionalProperties": true,
           "description": "Deployment strategy to be added to the commit server Deployment",
           "required": [],
           "title": "deploymentStrategy",
           "type": "object"
         },
         "dnsConfig": {
+          "additionalProperties": true,
           "description": "[DNS configuration]",
           "required": [],
           "title": "dnsConfig",
@@ -1105,6 +1153,7 @@
           "type": "array"
         },
         "image": {
+          "additionalProperties": true,
           "description": "# commit server controller image",
           "properties": {
             "imagePullPolicy": {
@@ -1134,6 +1183,7 @@
           "type": "object"
         },
         "livenessProbe": {
+          "additionalProperties": true,
           "properties": {
             "enabled": {
               "default": true,
@@ -1176,6 +1226,7 @@
           "type": "object"
         },
         "metrics": {
+          "additionalProperties": true,
           "properties": {
             "enabled": {
               "default": false,
@@ -1185,8 +1236,10 @@
               "type": "boolean"
             },
             "service": {
+              "additionalProperties": true,
               "properties": {
                 "annotations": {
+                  "additionalProperties": true,
                   "description": "Metrics service annotations",
                   "required": [],
                   "title": "annotations",
@@ -1200,6 +1253,7 @@
                   "type": "string"
                 },
                 "labels": {
+                  "additionalProperties": true,
                   "description": "Metrics service labels",
                   "required": [],
                   "title": "labels",
@@ -1244,18 +1298,21 @@
           "type": "string"
         },
         "nodeSelector": {
+          "additionalProperties": true,
           "description": "[Node selector]",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
         },
         "podAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations for the commit server pods",
           "required": [],
           "title": "podAnnotations",
           "type": "object"
         },
         "podLabels": {
+          "additionalProperties": true,
           "description": "Labels for the commit server pods",
           "required": [],
           "title": "podLabels",
@@ -1269,6 +1326,7 @@
           "type": "string"
         },
         "readinessProbe": {
+          "additionalProperties": true,
           "description": "# Probes for commit server (optional)\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
           "properties": {
             "enabled": {
@@ -1312,6 +1370,7 @@
           "type": "object"
         },
         "resources": {
+          "additionalProperties": true,
           "description": "Resource limits and requests for the commit server pods.",
           "required": [],
           "title": "resources",
@@ -1325,15 +1384,18 @@
           "type": "string"
         },
         "service": {
+          "additionalProperties": true,
           "description": "# commit server service configuration",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "commit server service annotations",
               "required": [],
               "title": "annotations",
               "type": "object"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "commit server service labels",
               "required": [],
               "title": "labels",
@@ -1345,8 +1407,10 @@
           "type": "object"
         },
         "serviceAccount": {
+          "additionalProperties": true,
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations applied to created service account",
               "required": [],
               "title": "annotations",
@@ -1367,6 +1431,7 @@
               "type": "boolean"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Labels applied to created service account",
               "required": [],
               "title": "labels",
@@ -1419,6 +1484,7 @@
       "description": "# Custom labels for the redis configmap",
       "properties": {
         "labels": {
+          "additionalProperties": true,
           "description": "Custom labels for the redis configmap",
           "required": [],
           "title": "labels",
@@ -1434,6 +1500,7 @@
       "description": "# ConfigMap Test Parameters",
       "properties": {
         "image": {
+          "additionalProperties": true,
           "description": "Image for redis-ha-configmap-test hook",
           "properties": {
             "repository": {
@@ -1456,6 +1523,7 @@
           "type": "object"
         },
         "resources": {
+          "additionalProperties": true,
           "description": "Resources for the ConfigMap test pod",
           "required": [],
           "title": "resources",
@@ -1471,12 +1539,14 @@
       "description": "# Argo Configs",
       "properties": {
         "clusterCredentials": {
+          "additionalProperties": true,
           "description": "Provide one or multiple [external cluster credentials]\n# Ref:\n# - https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#clusters\n# - https://argo-cd.readthedocs.io/en/stable/operator-manual/security/#external-cluster-credentials\n# - https://argo-cd.readthedocs.io/en/stable/user-guide/projects/#project-scoped-repositories-and-clusters",
           "required": [],
           "title": "clusterCredentials",
           "type": "object"
         },
         "cm": {
+          "additionalProperties": true,
           "description": "General Argo CD configuration. Any values you put under `.configs.cm` are passed to argocd-cm ConfigMap.\n# Ref: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/argocd-cm.yaml",
           "properties": {
             "admin.enabled": {
@@ -1487,6 +1557,7 @@
               "type": "boolean"
             },
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be added to argocd-cm configmap",
               "required": [],
               "title": "annotations",
@@ -1554,9 +1625,11 @@
           "type": "object"
         },
         "cmp": {
+          "additionalProperties": true,
           "description": "ConfigMap for Config Management Plugins\nRef: https://argo-cd.readthedocs.io/en/stable/operator-manual/config-management-plugins/",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be added to argocd-cmp-cm configmap",
               "required": [],
               "title": "annotations",
@@ -1570,6 +1643,7 @@
               "type": "boolean"
             },
             "plugins": {
+              "additionalProperties": true,
               "description": "Plugin yaml files to be added to argocd-cmp-cm",
               "required": [],
               "title": "plugins",
@@ -1581,27 +1655,32 @@
           "type": "object"
         },
         "credentialTemplates": {
+          "additionalProperties": true,
           "description": "Repository credentials to be used as Templates for other repos\n# Creates a secret for each key/value specified below to create repository credentials",
           "required": [],
           "title": "credentialTemplates",
           "type": "object"
         },
         "credentialTemplatesAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations to be added to `configs.credentialTemplates` Secret",
           "required": [],
           "title": "credentialTemplatesAnnotations",
           "type": "object"
         },
         "gpg": {
+          "additionalProperties": true,
           "description": "GnuPG public keys for commit verification\n# Ref: https://argo-cd.readthedocs.io/en/stable/user-guide/gpg-verification/",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be added to argocd-gpg-keys-cm configmap",
               "required": [],
               "title": "annotations",
               "type": "object"
             },
             "keys": {
+              "additionalProperties": true,
               "description": "[GnuPG] public keys to add to the keyring\n# Note: Public keys should be exported with `gpg --export --armor \u003cKEY\u003e`",
               "required": [],
               "title": "keys",
@@ -1613,9 +1692,11 @@
           "type": "object"
         },
         "params": {
+          "additionalProperties": true,
           "description": "Argo CD configuration parameters\n# Ref: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/argocd-cmd-params-cm.yaml",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be added to the argocd-cmd-params-cm ConfigMap",
               "required": [],
               "title": "annotations",
@@ -1774,9 +1855,11 @@
           "type": "object"
         },
         "rbac": {
+          "additionalProperties": true,
           "description": "Argo CD RBAC policy configuration\n# Ref: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/rbac.md",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be added to argocd-rbac-cm configmap",
               "required": [],
               "title": "annotations",
@@ -1823,21 +1906,25 @@
           "type": "object"
         },
         "repositories": {
+          "additionalProperties": true,
           "description": "Repositories list to be used by applications\n# Creates a secret for each key/value specified below to create repositories\n# Note: the last example in the list would use a repository credential template, configured under \"configs.credentialTemplates\".",
           "required": [],
           "title": "repositories",
           "type": "object"
         },
         "repositoriesAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations to be added to `configs.repositories` Secret",
           "required": [],
           "title": "repositoriesAnnotations",
           "type": "object"
         },
         "secret": {
+          "additionalProperties": true,
           "description": "Argo CD sensitive data\nRef: https://argo-cd.readthedocs.io/en/stable/operator-manual/user-management/#sensitive-data-and-sso-client-secrets",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be added to argocd-secret",
               "required": [],
               "title": "annotations",
@@ -1858,6 +1945,7 @@
               "type": "string"
             },
             "azureDevops": {
+              "additionalProperties": true,
               "description": "# Azure DevOps",
               "properties": {
                 "password": {
@@ -1901,6 +1989,7 @@
               "type": "boolean"
             },
             "extra": {
+              "additionalProperties": true,
               "description": "add additional secrets to be added to argocd-secret\n# Custom secrets. Useful for injecting SSO secrets into environment variables.\n# Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/user-management/#sensitive-data-and-sso-client-secrets\n# Note that all values must be non-empty.",
               "required": [],
               "title": "extra",
@@ -1928,6 +2017,7 @@
               "type": "string"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Labels to be added to argocd-secret",
               "required": [],
               "title": "labels",
@@ -1939,9 +2029,11 @@
           "type": "object"
         },
         "ssh": {
+          "additionalProperties": true,
           "description": "SSH known hosts for Git repositories\n# Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#ssh-known-host-public-keys",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be added to argocd-ssh-known-hosts-cm configmap",
               "required": [],
               "title": "annotations",
@@ -1981,15 +2073,18 @@
           "type": "string"
         },
         "tls": {
+          "additionalProperties": true,
           "description": "Repository TLS certificates\nRef: https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#repositories-using-self-signed-tls-certificates-or-are-signed-by-custom-ca",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be added to argocd-tls-certs-cm configmap",
               "required": [],
               "title": "annotations",
               "type": "object"
             },
             "certificates": {
+              "additionalProperties": true,
               "description": "TLS certificates for Git repositories",
               "required": [],
               "title": "certificates",
@@ -2023,6 +2118,7 @@
           "type": "boolean"
         },
         "capabilities": {
+          "additionalProperties": true,
           "properties": {
             "drop": {
               "items": {
@@ -2051,6 +2147,7 @@
           "type": "integer"
         },
         "seccompProfile": {
+          "additionalProperties": true,
           "properties": {
             "type": {
               "default": "RuntimeDefault",
@@ -2073,6 +2170,7 @@
       "description": "# Application controller",
       "properties": {
         "affinity": {
+          "additionalProperties": true,
           "description": "Assign custom [affinity] rules to the deployment",
           "required": [],
           "title": "affinity",
@@ -2086,6 +2184,7 @@
           "type": "boolean"
         },
         "clusterRoleRules": {
+          "additionalProperties": true,
           "description": "# Enable this and set the rules: to whatever custom rules you want for the Cluster Role resource.\n# Defaults to off",
           "properties": {
             "enabled": {
@@ -2110,6 +2209,7 @@
           "type": "object"
         },
         "containerPorts": {
+          "additionalProperties": true,
           "description": "Application controller container ports",
           "properties": {
             "metrics": {
@@ -2125,6 +2225,7 @@
           "type": "object"
         },
         "containerSecurityContext": {
+          "additionalProperties": true,
           "description": "Application controller container-level security context",
           "properties": {
             "allowPrivilegeEscalation": {
@@ -2134,6 +2235,7 @@
               "type": "boolean"
             },
             "capabilities": {
+              "additionalProperties": true,
               "properties": {
                 "drop": {
                   "items": {
@@ -2162,6 +2264,7 @@
               "type": "boolean"
             },
             "seccompProfile": {
+              "additionalProperties": true,
               "properties": {
                 "type": {
                   "default": "RuntimeDefault",
@@ -2180,12 +2283,14 @@
           "type": "object"
         },
         "deploymentAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations for the application controller Deployment",
           "required": [],
           "title": "deploymentAnnotations",
           "type": "object"
         },
         "dnsConfig": {
+          "additionalProperties": true,
           "description": "[DNS configuration]",
           "required": [],
           "title": "dnsConfig",
@@ -2206,6 +2311,7 @@
           "type": "boolean"
         },
         "emptyDir": {
+          "additionalProperties": true,
           "description": "# Application controller emptyDir volumes",
           "properties": {
             "sizeLimit": {
@@ -2271,6 +2377,7 @@
           "type": "boolean"
         },
         "image": {
+          "additionalProperties": true,
           "description": "# Application controller image",
           "properties": {
             "imagePullPolicy": {
@@ -2318,9 +2425,11 @@
           "type": "array"
         },
         "metrics": {
+          "additionalProperties": true,
           "description": "# Application controller metrics configuration",
           "properties": {
             "applicationLabels": {
+              "additionalProperties": true,
               "properties": {
                 "enabled": {
                   "default": false,
@@ -2351,14 +2460,17 @@
               "type": "boolean"
             },
             "rules": {
+              "additionalProperties": true,
               "properties": {
                 "additionalLabels": {
+                  "additionalProperties": true,
                   "description": "PrometheusRule labels",
                   "required": [],
                   "title": "additionalLabels",
                   "type": "object"
                 },
                 "annotations": {
+                  "additionalProperties": true,
                   "description": "PrometheusRule annotations",
                   "required": [],
                   "title": "annotations",
@@ -2379,6 +2491,7 @@
                   "type": "string"
                 },
                 "selector": {
+                  "additionalProperties": true,
                   "description": "PrometheusRule selector",
                   "required": [],
                   "title": "selector",
@@ -2406,8 +2519,10 @@
               "type": "string"
             },
             "service": {
+              "additionalProperties": true,
               "properties": {
                 "annotations": {
+                  "additionalProperties": true,
                   "description": "Metrics service annotations",
                   "required": [],
                   "title": "annotations",
@@ -2421,6 +2536,7 @@
                   "type": "string"
                 },
                 "labels": {
+                  "additionalProperties": true,
                   "description": "Metrics service labels",
                   "required": [],
                   "title": "labels",
@@ -2453,14 +2569,17 @@
               "type": "object"
             },
             "serviceMonitor": {
+              "additionalProperties": true,
               "properties": {
                 "additionalLabels": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor labels",
                   "required": [],
                   "title": "additionalLabels",
                   "type": "object"
                 },
                 "annotations": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor annotations",
                   "required": [],
                   "title": "annotations",
@@ -2520,12 +2639,14 @@
                   "type": "string"
                 },
                 "selector": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor selector",
                   "required": [],
                   "title": "selector",
                   "type": "object"
                 },
                 "tlsConfig": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor tlsConfig",
                   "required": [],
                   "title": "tlsConfig",
@@ -2549,15 +2670,18 @@
           "type": "string"
         },
         "nodeSelector": {
+          "additionalProperties": true,
           "description": "[Node selector]",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
         },
         "pdb": {
+          "additionalProperties": true,
           "description": "# Application controller Pod Disruption Budget\n# Ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be added to application controller pdb",
               "required": [],
               "title": "annotations",
@@ -2571,6 +2695,7 @@
               "type": "boolean"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Labels to be added to application controller pdb",
               "required": [],
               "title": "labels",
@@ -2596,12 +2721,14 @@
           "type": "object"
         },
         "podAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations to be added to application controller pods",
           "required": [],
           "title": "podAnnotations",
           "type": "object"
         },
         "podLabels": {
+          "additionalProperties": true,
           "description": "Labels to be added to application controller pods",
           "required": [],
           "title": "podLabels",
@@ -2615,6 +2742,7 @@
           "type": "string"
         },
         "readinessProbe": {
+          "additionalProperties": true,
           "description": "Readiness probe for application controller\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
           "properties": {
             "failureThreshold": {
@@ -2665,6 +2793,7 @@
           "type": "integer"
         },
         "resources": {
+          "additionalProperties": true,
           "description": "Resource limits and requests for the application controller pods",
           "required": [],
           "title": "resources",
@@ -2685,8 +2814,10 @@
           "type": "string"
         },
         "serviceAccount": {
+          "additionalProperties": true,
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations applied to created service account",
               "required": [],
               "title": "annotations",
@@ -2707,6 +2838,7 @@
               "type": "boolean"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Labels applied to created service account",
               "required": [],
               "title": "labels",
@@ -2725,6 +2857,7 @@
           "type": "object"
         },
         "statefulsetAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations for the application controller StatefulSet",
           "required": [],
           "title": "statefulsetAnnotations",
@@ -2783,12 +2916,14 @@
       "description": "# Custom resource configuration",
       "properties": {
         "additionalLabels": {
+          "additionalProperties": true,
           "description": "Addtional labels to be added to all CRDs",
           "required": [],
           "title": "additionalLabels",
           "type": "object"
         },
         "annotations": {
+          "additionalProperties": true,
           "description": "Annotations to be added to all CRDs",
           "required": [],
           "title": "annotations",
@@ -2832,6 +2967,7 @@
       "description": "# Dex",
       "properties": {
         "affinity": {
+          "additionalProperties": true,
           "description": "Assign custom [affinity] rules to the deployment",
           "required": [],
           "title": "affinity",
@@ -2845,9 +2981,11 @@
           "type": "boolean"
         },
         "certificateSecret": {
+          "additionalProperties": true,
           "description": "TLS certificate configuration via Secret\n# Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/tls/#configuring-tls-to-argocd-dex-server\n# Note: Issuing certificates via cert-manager in not supported right now because it's not possible to restart Dex automatically without extra controllers.",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be added to argocd-dex-server-tls secret",
               "required": [],
               "title": "annotations",
@@ -2882,6 +3020,7 @@
               "type": "string"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Labels to be added to argocd-dex-server-tls secret",
               "required": [],
               "title": "labels",
@@ -2893,6 +3032,7 @@
           "type": "object"
         },
         "containerPorts": {
+          "additionalProperties": true,
           "description": "Dex container ports\nNOTE: These ports are currently hardcoded and cannot be changed",
           "properties": {
             "grpc": {
@@ -2922,6 +3062,7 @@
           "type": "object"
         },
         "containerSecurityContext": {
+          "additionalProperties": true,
           "description": "Dex container-level security context",
           "properties": {
             "allowPrivilegeEscalation": {
@@ -2931,6 +3072,7 @@
               "type": "boolean"
             },
             "capabilities": {
+              "additionalProperties": true,
               "properties": {
                 "drop": {
                   "items": {
@@ -2959,6 +3101,7 @@
               "type": "boolean"
             },
             "seccompProfile": {
+              "additionalProperties": true,
               "properties": {
                 "type": {
                   "default": "RuntimeDefault",
@@ -2977,18 +3120,21 @@
           "type": "object"
         },
         "deploymentAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations to be added to the Dex server Deployment",
           "required": [],
           "title": "deploymentAnnotations",
           "type": "object"
         },
         "deploymentStrategy": {
+          "additionalProperties": true,
           "description": "Deployment strategy to be added to the Dex server Deployment",
           "required": [],
           "title": "deploymentStrategy",
           "type": "object"
         },
         "dnsConfig": {
+          "additionalProperties": true,
           "description": "[DNS configuration]",
           "required": [],
           "title": "dnsConfig",
@@ -3002,6 +3148,7 @@
           "type": "string"
         },
         "emptyDir": {
+          "additionalProperties": true,
           "description": "# Dex server emptyDir volumes",
           "properties": {
             "sizeLimit": {
@@ -3060,6 +3207,7 @@
           "type": "array"
         },
         "image": {
+          "additionalProperties": true,
           "description": "# Dex image",
           "properties": {
             "imagePullPolicy": {
@@ -3107,6 +3255,7 @@
           "type": "array"
         },
         "initImage": {
+          "additionalProperties": true,
           "description": "Argo CD init image that creates Dex config",
           "properties": {
             "imagePullPolicy": {
@@ -3124,6 +3273,7 @@
               "type": "string"
             },
             "resources": {
+              "additionalProperties": true,
               "description": "Argo CD init image resources",
               "required": [],
               "title": "resources",
@@ -3142,6 +3292,7 @@
           "type": "object"
         },
         "livenessProbe": {
+          "additionalProperties": true,
           "description": "# Probes for Dex server\n# Supported from Dex \u003e= 2.28.0",
           "properties": {
             "enabled": {
@@ -3227,6 +3378,7 @@
           "type": "string"
         },
         "metrics": {
+          "additionalProperties": true,
           "properties": {
             "enabled": {
               "default": false,
@@ -3236,14 +3388,17 @@
               "type": "boolean"
             },
             "service": {
+              "additionalProperties": true,
               "properties": {
                 "annotations": {
+                  "additionalProperties": true,
                   "description": "Metrics service annotations",
                   "required": [],
                   "title": "annotations",
                   "type": "object"
                 },
                 "labels": {
+                  "additionalProperties": true,
                   "description": "Metrics service labels",
                   "required": [],
                   "title": "labels",
@@ -3262,14 +3417,17 @@
               "type": "object"
             },
             "serviceMonitor": {
+              "additionalProperties": true,
               "properties": {
                 "additionalLabels": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor labels",
                   "required": [],
                   "title": "additionalLabels",
                   "type": "object"
                 },
                 "annotations": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor annotations",
                   "required": [],
                   "title": "annotations",
@@ -3329,12 +3487,14 @@
                   "type": "string"
                 },
                 "selector": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor selector",
                   "required": [],
                   "title": "selector",
                   "type": "object"
                 },
                 "tlsConfig": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor tlsConfig",
                   "required": [],
                   "title": "tlsConfig",
@@ -3358,15 +3518,18 @@
           "type": "string"
         },
         "nodeSelector": {
+          "additionalProperties": true,
           "description": "[Node selector]",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
         },
         "pdb": {
+          "additionalProperties": true,
           "description": "# Dex Pod Disruption Budget\n# Ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be added to Dex server pdb",
               "required": [],
               "title": "annotations",
@@ -3380,6 +3543,7 @@
               "type": "boolean"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Labels to be added to Dex server pdb",
               "required": [],
               "title": "labels",
@@ -3405,12 +3569,14 @@
           "type": "object"
         },
         "podAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations to be added to the Dex server pods",
           "required": [],
           "title": "podAnnotations",
           "type": "object"
         },
         "podLabels": {
+          "additionalProperties": true,
           "description": "Labels to be added to the Dex server pods",
           "required": [],
           "title": "podLabels",
@@ -3424,6 +3590,7 @@
           "type": "string"
         },
         "readinessProbe": {
+          "additionalProperties": true,
           "properties": {
             "enabled": {
               "default": false,
@@ -3494,6 +3661,7 @@
           "type": "object"
         },
         "resources": {
+          "additionalProperties": true,
           "description": "Resource limits and requests for dex",
           "required": [],
           "title": "resources",
@@ -3507,8 +3675,10 @@
           "type": "string"
         },
         "serviceAccount": {
+          "additionalProperties": true,
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations applied to created service account",
               "required": [],
               "title": "annotations",
@@ -3656,6 +3826,7 @@
           "type": "boolean"
         },
         "extraArgs": {
+          "additionalProperties": true,
           "description": "Additional args for redis exporter",
           "required": [],
           "title": "extraArgs",
@@ -3669,9 +3840,11 @@
           "type": "string"
         },
         "livenessProbe": {
+          "additionalProperties": true,
           "description": "prometheus exporter SCANS redis db which can take some time\nallow different probe settings to not let container crashloop",
           "properties": {
             "httpGet": {
+              "additionalProperties": true,
               "properties": {
                 "path": {
                   "default": "/metrics",
@@ -3740,8 +3913,10 @@
           "type": "string"
         },
         "readinessProbe": {
+          "additionalProperties": true,
           "properties": {
             "httpGet": {
+              "additionalProperties": true,
               "properties": {
                 "path": {
                   "default": "/metrics",
@@ -3796,6 +3971,7 @@
           "type": "object"
         },
         "resources": {
+          "additionalProperties": true,
           "description": "cpu/memory resource limits/requests",
           "required": [],
           "title": "resources",
@@ -3816,6 +3992,7 @@
           "type": "string"
         },
         "serviceMonitor": {
+          "additionalProperties": true,
           "properties": {
             "disableAPICheck": {
               "default": false,
@@ -3832,6 +4009,7 @@
               "type": "boolean"
             },
             "endpointAdditionalProperties": {
+              "additionalProperties": true,
               "description": "Set additional properties for the ServiceMonitor endpoints such as relabeling, scrapeTimeout, tlsConfig, and more.",
               "required": [],
               "title": "endpointAdditionalProperties",
@@ -3845,6 +4023,7 @@
               "type": "string"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Set labels for the ServiceMonitor, use this to define your scrape label for Prometheus Operator",
               "required": [],
               "title": "labels",
@@ -3921,6 +4100,7 @@
           "type": "integer"
         },
         "secretAnnotations": {
+          "additionalProperties": true,
           "description": "External Redis Secret annotations",
           "required": [],
           "title": "secretAnnotations",
@@ -4007,15 +4187,18 @@
           "type": "boolean"
         },
         "additionalLabels": {
+          "additionalProperties": true,
           "description": "Common labels for the all resources",
           "required": [],
           "title": "additionalLabels",
           "type": "object"
         },
         "affinity": {
+          "additionalProperties": true,
           "description": "Default affinity preset for all components",
           "properties": {
             "nodeAffinity": {
+              "additionalProperties": true,
               "description": "Node affinity rules",
               "properties": {
                 "matchExpressions": {
@@ -4052,15 +4235,18 @@
           "type": "object"
         },
         "certificateAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations for the all deployed Certificates",
           "required": [],
           "title": "certificateAnnotations",
           "type": "object"
         },
         "compatibility": {
+          "additionalProperties": true,
           "description": "Openshift compatibility options",
           "properties": {
             "openshift": {
+              "additionalProperties": true,
               "properties": {
                 "adaptSecurityContext": {
                   "default": "auto",
@@ -4079,12 +4265,14 @@
           "type": "object"
         },
         "deploymentAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations for the all deployed Deployments",
           "required": [],
           "title": "deploymentAnnotations",
           "type": "object"
         },
         "deploymentStrategy": {
+          "additionalProperties": true,
           "description": "Deployment strategy for the all deployed Deployments",
           "required": [],
           "title": "deploymentStrategy",
@@ -4098,6 +4286,7 @@
           "type": "string"
         },
         "dualStack": {
+          "additionalProperties": true,
           "description": "Configure dual-stack used by all component services",
           "properties": {
             "ipFamilies": {
@@ -4140,6 +4329,7 @@
           "type": "array"
         },
         "image": {
+          "additionalProperties": true,
           "description": "Default image used by all components",
           "properties": {
             "imagePullPolicy": {
@@ -4178,6 +4368,7 @@
           "type": "array"
         },
         "logging": {
+          "additionalProperties": true,
           "description": "Default logging options used by all components",
           "properties": {
             "format": {
@@ -4200,6 +4391,7 @@
           "type": "object"
         },
         "networkPolicy": {
+          "additionalProperties": true,
           "description": "Default network policy rules used by all components",
           "properties": {
             "create": {
@@ -4222,6 +4414,7 @@
           "type": "object"
         },
         "nodeSelector": {
+          "additionalProperties": true,
           "description": "Default node selector for all components",
           "properties": {
             "kubernetes.io/os": {
@@ -4236,12 +4429,14 @@
           "type": "object"
         },
         "podAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations for the all deployed pods",
           "required": [],
           "title": "podAnnotations",
           "type": "object"
         },
         "podLabels": {
+          "additionalProperties": true,
           "description": "Labels for the all deployed pods",
           "required": [],
           "title": "podLabels",
@@ -4269,12 +4464,14 @@
           "type": "string"
         },
         "securityContext": {
+          "additionalProperties": true,
           "description": "Toggle and define pod-level security context.",
           "required": [],
           "title": "securityContext",
           "type": "object"
         },
         "statefulsetAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations for the all deployed Statefulsets",
           "required": [],
           "title": "statefulsetAnnotations",
@@ -4308,6 +4505,7 @@
       "description": "# Enables a HA Proxy for better LoadBalancing / Sentinel Master support. Automatically proxies to Redis master.\n# Recommend for externally exposed Redis clusters.\n# ref: https://cbonte.github.io/haproxy-dconv/1.9/intro.html",
       "properties": {
         "IPv6": {
+          "additionalProperties": true,
           "description": "# Enable HAProxy parameters to bind and consume IPv6 addresses. Enabled by default.",
           "properties": {
             "enabled": {
@@ -4323,6 +4521,7 @@
           "type": "object"
         },
         "additionalAffinities": {
+          "additionalProperties": true,
           "description": "Additional affinities to add to the haproxy pods.",
           "required": [],
           "title": "additionalAffinities",
@@ -4336,6 +4535,7 @@
           "type": "string"
         },
         "annotations": {
+          "additionalProperties": true,
           "description": "HAProxy template annotations",
           "required": [],
           "title": "annotations",
@@ -4363,6 +4563,7 @@
           "type": "integer"
         },
         "containerSecurityContext": {
+          "additionalProperties": true,
           "description": "Security context to be added to the HAProxy containers.",
           "properties": {
             "allowPrivilegeEscalation": {
@@ -4372,6 +4573,7 @@
               "type": "boolean"
             },
             "capabilities": {
+              "additionalProperties": true,
               "properties": {
                 "drop": {
                   "items": {
@@ -4394,6 +4596,7 @@
               "type": "boolean"
             },
             "seccompProfile": {
+              "additionalProperties": true,
               "properties": {
                 "type": {
                   "default": "RuntimeDefault",
@@ -4419,6 +4622,7 @@
           "type": "null"
         },
         "deploymentStrategy": {
+          "additionalProperties": true,
           "description": "Deployment strategy for the haproxy deployment",
           "properties": {
             "type": {
@@ -4433,6 +4637,7 @@
           "type": "object"
         },
         "emptyDir": {
+          "additionalProperties": true,
           "description": "Configuration of `emptyDir`",
           "required": [],
           "title": "emptyDir",
@@ -4460,6 +4665,7 @@
           "type": "boolean"
         },
         "image": {
+          "additionalProperties": true,
           "properties": {
             "pullPolicy": {
               "default": "IfNotPresent",
@@ -4497,8 +4703,10 @@
           "type": "array"
         },
         "init": {
+          "additionalProperties": true,
           "properties": {
             "resources": {
+              "additionalProperties": true,
               "description": "Extra init resources",
               "required": [],
               "title": "resources",
@@ -4510,18 +4718,21 @@
           "type": "object"
         },
         "labels": {
+          "additionalProperties": true,
           "description": "Custom labels for the haproxy pod",
           "required": [],
           "title": "labels",
           "type": "object"
         },
         "lifecycle": {
+          "additionalProperties": true,
           "description": "Container lifecycle hooks.\nRef: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/",
           "required": [],
           "title": "lifecycle",
           "type": "object"
         },
         "metrics": {
+          "additionalProperties": true,
           "description": "# Official HAProxy embedded prometheus metrics settings.\n# Ref: https://github.com/haproxy/haproxy/tree/master/contrib/prometheus-exporter\n#",
           "properties": {
             "enabled": {
@@ -4553,6 +4764,7 @@
               "type": "string"
             },
             "serviceMonitor": {
+              "additionalProperties": true,
               "properties": {
                 "disableAPICheck": {
                   "default": false,
@@ -4569,6 +4781,7 @@
                   "type": "boolean"
                 },
                 "endpointAdditionalProperties": {
+                  "additionalProperties": true,
                   "description": "Set additional properties for the ServiceMonitor endpoints such as relabeling, scrapeTimeout, tlsConfig, and more.",
                   "required": [],
                   "title": "endpointAdditionalProperties",
@@ -4582,6 +4795,7 @@
                   "type": "string"
                 },
                 "labels": {
+                  "additionalProperties": true,
                   "description": "Set labels for the ServiceMonitor, use this to define your scrape label for Prometheus Operator",
                   "required": [],
                   "title": "labels",
@@ -4619,8 +4833,10 @@
           "type": "object"
         },
         "networkPolicy": {
+          "additionalProperties": true,
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations for Haproxy NetworkPolicy",
               "required": [],
               "title": "annotations",
@@ -4652,6 +4868,7 @@
               "type": "array"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Labels for Haproxy NetworkPolicy",
               "required": [],
               "title": "labels",
@@ -4663,6 +4880,7 @@
           "type": "object"
         },
         "podDisruptionBudget": {
+          "additionalProperties": true,
           "description": "Pod Disruption Budget\nref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/",
           "required": [],
           "title": "podDisruptionBudget",
@@ -4676,6 +4894,7 @@
           "type": "string"
         },
         "readOnly": {
+          "additionalProperties": true,
           "description": "Enable read-only redis-slaves",
           "properties": {
             "enabled": {
@@ -4705,12 +4924,14 @@
           "type": "integer"
         },
         "resources": {
+          "additionalProperties": true,
           "description": "HAProxy resources",
           "required": [],
           "title": "resources",
           "type": "object"
         },
         "securityContext": {
+          "additionalProperties": true,
           "description": "Security context to be added to the HAProxy deployment.",
           "properties": {
             "fsGroup": {
@@ -4737,6 +4958,7 @@
           "type": "object"
         },
         "service": {
+          "additionalProperties": true,
           "description": "# Service for HAProxy",
           "properties": {
             "annotations": {
@@ -4747,6 +4969,7 @@
               "type": "null"
             },
             "externalIPs": {
+              "additionalProperties": true,
               "description": "HAProxy external IPs",
               "required": [],
               "title": "externalIPs",
@@ -4760,6 +4983,7 @@
               "type": "null"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "HAProxy service labels",
               "required": [],
               "title": "labels",
@@ -4801,6 +5025,7 @@
           "type": "object"
         },
         "serviceAccount": {
+          "additionalProperties": true,
           "properties": {
             "automountToken": {
               "default": false,
@@ -4842,9 +5067,11 @@
           "type": "boolean"
         },
         "tests": {
+          "additionalProperties": true,
           "description": "# HAProxy test related options",
           "properties": {
             "resources": {
+              "additionalProperties": true,
               "description": "Pod resources for the tests against HAProxy.",
               "required": [],
               "title": "resources",
@@ -4856,6 +5083,7 @@
           "type": "object"
         },
         "timeout": {
+          "additionalProperties": true,
           "properties": {
             "check": {
               "default": "2s",
@@ -4891,6 +5119,7 @@
           "type": "object"
         },
         "tls": {
+          "additionalProperties": true,
           "description": "Enable TLS termination on HAproxy, This will create a volume mount",
           "properties": {
             "certMountPath": {
@@ -5004,6 +5233,7 @@
       "additionalProperties": true,
       "properties": {
         "resources": {
+          "additionalProperties": true,
           "description": "Extra init resources",
           "required": [],
           "title": "resources",
@@ -5046,6 +5276,7 @@
       "additionalProperties": true,
       "properties": {
         "annotations": {
+          "additionalProperties": true,
           "description": "Annotations for NetworkPolicy",
           "required": [],
           "title": "annotations",
@@ -5133,6 +5364,7 @@
           "type": "array"
         },
         "labels": {
+          "additionalProperties": true,
           "description": "Labels for NetworkPolicy",
           "required": [],
           "title": "labels",
@@ -5155,6 +5387,7 @@
       "description": "# Notifications controller",
       "properties": {
         "affinity": {
+          "additionalProperties": true,
           "description": "Assign custom [affinity] rules",
           "required": [],
           "title": "affinity",
@@ -5175,6 +5408,7 @@
           "type": "boolean"
         },
         "clusterRoleRules": {
+          "additionalProperties": true,
           "description": "# Enable this and set the rules: to whatever custom rules you want for the Cluster Role resource.\n# Defaults to off",
           "properties": {
             "rules": {
@@ -5192,6 +5426,7 @@
           "type": "object"
         },
         "cm": {
+          "additionalProperties": true,
           "properties": {
             "create": {
               "default": true,
@@ -5206,6 +5441,7 @@
           "type": "object"
         },
         "containerPorts": {
+          "additionalProperties": true,
           "description": "Notification controller container ports",
           "properties": {
             "metrics": {
@@ -5221,6 +5457,7 @@
           "type": "object"
         },
         "containerSecurityContext": {
+          "additionalProperties": true,
           "description": "Notification controller container-level security Context",
           "properties": {
             "allowPrivilegeEscalation": {
@@ -5230,6 +5467,7 @@
               "type": "boolean"
             },
             "capabilities": {
+              "additionalProperties": true,
               "properties": {
                 "drop": {
                   "items": {
@@ -5258,6 +5496,7 @@
               "type": "boolean"
             },
             "seccompProfile": {
+              "additionalProperties": true,
               "properties": {
                 "type": {
                   "default": "RuntimeDefault",
@@ -5276,18 +5515,21 @@
           "type": "object"
         },
         "context": {
+          "additionalProperties": true,
           "description": "Define user-defined context\n# For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/templates/#defining-user-defined-context",
           "required": [],
           "title": "context",
           "type": "object"
         },
         "deploymentAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations to be applied to the notifications controller Deployment",
           "required": [],
           "title": "deploymentAnnotations",
           "type": "object"
         },
         "deploymentStrategy": {
+          "additionalProperties": true,
           "description": "Deployment strategy to be added to the notifications controller Deployment",
           "properties": {
             "type": {
@@ -5302,6 +5544,7 @@
           "type": "object"
         },
         "dnsConfig": {
+          "additionalProperties": true,
           "description": "[DNS configuration]",
           "required": [],
           "title": "dnsConfig",
@@ -5376,6 +5619,7 @@
           "type": "array"
         },
         "image": {
+          "additionalProperties": true,
           "description": "# Notifications controller image",
           "properties": {
             "imagePullPolicy": {
@@ -5423,6 +5667,7 @@
           "type": "array"
         },
         "livenessProbe": {
+          "additionalProperties": true,
           "properties": {
             "enabled": {
               "default": false,
@@ -5486,6 +5731,7 @@
           "type": "string"
         },
         "metrics": {
+          "additionalProperties": true,
           "properties": {
             "enabled": {
               "default": false,
@@ -5502,8 +5748,10 @@
               "type": "integer"
             },
             "service": {
+              "additionalProperties": true,
               "properties": {
                 "annotations": {
+                  "additionalProperties": true,
                   "description": "Metrics service annotations",
                   "required": [],
                   "title": "annotations",
@@ -5517,6 +5765,7 @@
                   "type": "string"
                 },
                 "labels": {
+                  "additionalProperties": true,
                   "description": "Metrics service labels",
                   "required": [],
                   "title": "labels",
@@ -5542,14 +5791,17 @@
               "type": "object"
             },
             "serviceMonitor": {
+              "additionalProperties": true,
               "properties": {
                 "additionalLabels": {
+                  "additionalProperties": true,
                   "description": "prometheus: kube-prometheus\nPrometheus ServiceMonitor labels",
                   "required": [],
                   "title": "additionalLabels",
                   "type": "object"
                 },
                 "annotations": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor annotations",
                   "required": [],
                   "title": "annotations",
@@ -5595,12 +5847,14 @@
                   "type": "string"
                 },
                 "selector": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor selector",
                   "required": [],
                   "title": "selector",
                   "type": "object"
                 },
                 "tlsConfig": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor tlsConfig",
                   "required": [],
                   "title": "tlsConfig",
@@ -5624,21 +5878,25 @@
           "type": "string"
         },
         "nodeSelector": {
+          "additionalProperties": true,
           "description": "[Node selector]",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
         },
         "notifiers": {
+          "additionalProperties": true,
           "description": "Configures notification services such as slack, email or custom webhook\n# For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/services/overview/",
           "required": [],
           "title": "notifiers",
           "type": "object"
         },
         "pdb": {
+          "additionalProperties": true,
           "description": "# Notifications controller Pod Disruption Budget\n# Ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be added to notifications controller pdb",
               "required": [],
               "title": "annotations",
@@ -5652,6 +5910,7 @@
               "type": "boolean"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Labels to be added to notifications controller pdb",
               "required": [],
               "title": "labels",
@@ -5677,12 +5936,14 @@
           "type": "object"
         },
         "podAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations to be applied to the notifications controller Pods",
           "required": [],
           "title": "podAnnotations",
           "type": "object"
         },
         "podLabels": {
+          "additionalProperties": true,
           "description": "Labels to be applied to the notifications controller Pods",
           "required": [],
           "title": "podLabels",
@@ -5696,6 +5957,7 @@
           "type": "string"
         },
         "readinessProbe": {
+          "additionalProperties": true,
           "description": "# Probes for notifications controller Pods (optional)\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
           "properties": {
             "enabled": {
@@ -5746,6 +6008,7 @@
           "type": "object"
         },
         "resources": {
+          "additionalProperties": true,
           "description": "Resource limits and requests for the notifications controller",
           "required": [],
           "title": "resources",
@@ -5759,8 +6022,10 @@
           "type": "string"
         },
         "secret": {
+          "additionalProperties": true,
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "key:value pairs of annotations to be added to the secret",
               "required": [],
               "title": "annotations",
@@ -5774,12 +6039,14 @@
               "type": "boolean"
             },
             "items": {
+              "additionalProperties": true,
               "description": "Generic key:value pairs to be inserted into the secret\n# Can be used for templates, notification services etc. Some examples given below.\n# For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/services/overview/",
               "required": [],
               "title": "items",
               "type": "object"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "key:value pairs of labels to be added to the secret",
               "required": [],
               "title": "labels",
@@ -5798,8 +6065,10 @@
           "type": "object"
         },
         "serviceAccount": {
+          "additionalProperties": true,
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations applied to created service account",
               "required": [],
               "title": "annotations",
@@ -5820,6 +6089,7 @@
               "type": "boolean"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Labels applied to created service account",
               "required": [],
               "title": "labels",
@@ -5847,6 +6117,7 @@
           "type": "array"
         },
         "templates": {
+          "additionalProperties": true,
           "description": "The notification template is used to generate the notification content\n# For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/templates/",
           "required": [],
           "title": "templates",
@@ -5878,6 +6149,7 @@
           "type": "array"
         },
         "triggers": {
+          "additionalProperties": true,
           "description": "The trigger defines the condition when the notification should be sent\n# For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/triggers/",
           "required": [],
           "title": "triggers",
@@ -5917,6 +6189,7 @@
           "type": "array"
         },
         "annotations": {
+          "additionalProperties": true,
           "description": "Annotations for the volume",
           "required": [],
           "title": "annotations",
@@ -5930,6 +6203,7 @@
           "type": "boolean"
         },
         "labels": {
+          "additionalProperties": true,
           "description": "Labels for the volume",
           "required": [],
           "title": "labels",
@@ -5980,6 +6254,7 @@
       "description": "# Custom PrometheusRule to be defined\n# The value is evaluated as a template, so, for example, the value can depend on .Release or .Chart\n# ref: https://github.com/coreos/prometheus-operator#customresourcedefinitions",
       "properties": {
         "additionalLabels": {
+          "additionalProperties": true,
           "description": "Additional labels to be set in metadata.",
           "required": [],
           "title": "additionalLabels",
@@ -6041,12 +6316,14 @@
       "description": "# Redis",
       "properties": {
         "affinity": {
+          "additionalProperties": true,
           "description": "Assign custom [affinity] rules to the deployment",
           "required": [],
           "title": "affinity",
           "type": "object"
         },
         "annotations": {
+          "additionalProperties": true,
           "description": "Annotations for the redis statefulset",
           "required": [],
           "title": "annotations",
@@ -6067,6 +6344,7 @@
           "type": "boolean"
         },
         "config": {
+          "additionalProperties": true,
           "description": "Any valid redis config options in this section will be applied to each server, For multi-value configs use list instead of string (for example loadmodule) (see below)",
           "properties": {
             "maxmemory": {
@@ -6129,6 +6407,7 @@
           "type": "object"
         },
         "containerPorts": {
+          "additionalProperties": true,
           "description": "Redis container ports",
           "properties": {
             "metrics": {
@@ -6151,6 +6430,7 @@
           "type": "object"
         },
         "containerSecurityContext": {
+          "additionalProperties": true,
           "description": "Redis container-level security context",
           "properties": {
             "allowPrivilegeEscalation": {
@@ -6160,6 +6440,7 @@
               "type": "boolean"
             },
             "capabilities": {
+              "additionalProperties": true,
               "properties": {
                 "drop": {
                   "items": {
@@ -6212,6 +6493,7 @@
           "type": "null"
         },
         "deploymentAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations to be added to the Redis server Deployment",
           "required": [],
           "title": "deploymentAnnotations",
@@ -6228,6 +6510,7 @@
           "type": "array"
         },
         "dnsConfig": {
+          "additionalProperties": true,
           "description": "[DNS configuration]",
           "required": [],
           "title": "dnsConfig",
@@ -6266,9 +6549,11 @@
           "type": "array"
         },
         "exporter": {
+          "additionalProperties": true,
           "description": "# Prometheus redis-exporter sidecar",
           "properties": {
             "containerSecurityContext": {
+              "additionalProperties": true,
               "description": "Redis exporter security context",
               "properties": {
                 "allowPrivilegeEscalation": {
@@ -6278,6 +6563,7 @@
                   "type": "boolean"
                 },
                 "capabilities": {
+                  "additionalProperties": true,
                   "properties": {
                     "drop": {
                       "items": {
@@ -6306,6 +6592,7 @@
                   "type": "boolean"
                 },
                 "seccompProfile": {
+                  "additionalProperties": true,
                   "properties": {
                     "type": {
                       "default": "RuntimeDefault",
@@ -6340,6 +6627,7 @@
               "type": "array"
             },
             "image": {
+              "additionalProperties": true,
               "description": "# Prometheus redis-exporter image",
               "properties": {
                 "imagePullPolicy": {
@@ -6369,6 +6657,7 @@
               "type": "object"
             },
             "livenessProbe": {
+              "additionalProperties": true,
               "properties": {
                 "enabled": {
                   "default": false,
@@ -6418,6 +6707,7 @@
               "type": "object"
             },
             "readinessProbe": {
+              "additionalProperties": true,
               "description": "# Probes for Redis exporter (optional)\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
               "properties": {
                 "enabled": {
@@ -6468,6 +6758,7 @@
               "type": "object"
             },
             "resources": {
+              "additionalProperties": true,
               "description": "Resource limits and requests for redis-exporter sidecar",
               "required": [],
               "title": "resources",
@@ -6506,6 +6797,7 @@
           "type": "array"
         },
         "image": {
+          "additionalProperties": true,
           "description": "# Redis image",
           "properties": {
             "imagePullPolicy": {
@@ -6553,11 +6845,14 @@
           "type": "array"
         },
         "lifecycle": {
+          "additionalProperties": true,
           "description": "Container Lifecycle Hooks for redis container\nRef: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/",
           "properties": {
             "preStop": {
+              "additionalProperties": true,
               "properties": {
                 "exec": {
+                  "additionalProperties": true,
                   "properties": {
                     "command": {
                       "items": {
@@ -6584,6 +6879,7 @@
           "type": "object"
         },
         "livenessProbe": {
+          "additionalProperties": true,
           "description": "Liveness probe parameters for redis container",
           "properties": {
             "enabled": {
@@ -6641,6 +6937,7 @@
           "type": "string"
         },
         "metrics": {
+          "additionalProperties": true,
           "properties": {
             "enabled": {
               "default": false,
@@ -6650,9 +6947,11 @@
               "type": "boolean"
             },
             "service": {
+              "additionalProperties": true,
               "description": "Redis metrics service configuration",
               "properties": {
                 "annotations": {
+                  "additionalProperties": true,
                   "description": "Metrics service annotations",
                   "required": [],
                   "title": "annotations",
@@ -6666,6 +6965,7 @@
                   "type": "string"
                 },
                 "labels": {
+                  "additionalProperties": true,
                   "description": "Metrics service labels",
                   "required": [],
                   "title": "labels",
@@ -6698,14 +6998,17 @@
               "type": "object"
             },
             "serviceMonitor": {
+              "additionalProperties": true,
               "properties": {
                 "additionalLabels": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor labels",
                   "required": [],
                   "title": "additionalLabels",
                   "type": "object"
                 },
                 "annotations": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor annotations",
                   "required": [],
                   "title": "annotations",
@@ -6765,12 +7068,14 @@
                   "type": "string"
                 },
                 "selector": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor selector",
                   "required": [],
                   "title": "selector",
                   "type": "object"
                 },
                 "tlsConfig": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor tlsConfig",
                   "required": [],
                   "title": "tlsConfig",
@@ -6794,15 +7099,18 @@
           "type": "string"
         },
         "nodeSelector": {
+          "additionalProperties": true,
           "description": "[Node selector]",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
         },
         "pdb": {
+          "additionalProperties": true,
           "description": "# Redis Pod Disruption Budget\n# Ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be added to Redis pdb",
               "required": [],
               "title": "annotations",
@@ -6816,6 +7124,7 @@
               "type": "boolean"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Labels to be added to Redis pdb",
               "required": [],
               "title": "labels",
@@ -6841,12 +7150,14 @@
           "type": "object"
         },
         "podAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations to be added to the Redis server pods",
           "required": [],
           "title": "podAnnotations",
           "type": "object"
         },
         "podLabels": {
+          "additionalProperties": true,
           "description": "Labels to be added to the Redis server pods",
           "required": [],
           "title": "podLabels",
@@ -6867,6 +7178,7 @@
           "type": "string"
         },
         "readinessProbe": {
+          "additionalProperties": true,
           "description": "# Probes for Redis server (optional)\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
           "properties": {
             "enabled": {
@@ -6917,6 +7229,7 @@
           "type": "object"
         },
         "resources": {
+          "additionalProperties": true,
           "description": "Resource limits and requests for redis",
           "required": [],
           "title": "resources",
@@ -6930,6 +7243,7 @@
           "type": "string"
         },
         "securityContext": {
+          "additionalProperties": true,
           "description": "Redis pod-level security context",
           "properties": {
             "runAsNonRoot": {
@@ -6945,6 +7259,7 @@
               "type": "integer"
             },
             "seccompProfile": {
+              "additionalProperties": true,
               "properties": {
                 "type": {
                   "default": "RuntimeDefault",
@@ -6963,14 +7278,17 @@
           "type": "object"
         },
         "service": {
+          "additionalProperties": true,
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Redis service annotations",
               "required": [],
               "title": "annotations",
               "type": "object"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Additional redis service labels",
               "required": [],
               "title": "labels",
@@ -6982,8 +7300,10 @@
           "type": "object"
         },
         "serviceAccount": {
+          "additionalProperties": true,
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations applied to created service account",
               "required": [],
               "title": "annotations",
@@ -7023,6 +7343,7 @@
           "type": "integer"
         },
         "startupProbe": {
+          "additionalProperties": true,
           "description": "Startup probe parameters for redis container",
           "properties": {
             "enabled": {
@@ -7112,6 +7433,7 @@
           "type": "array"
         },
         "updateStrategy": {
+          "additionalProperties": true,
           "description": "Update strategy for Redis StatefulSet\n# ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies",
           "properties": {
             "type": {
@@ -7153,6 +7475,7 @@
       "description": "# Redis-HA subchart replaces custom redis deployment when `redis-ha.enabled=true`\nRef: https://github.com/DandyDeveloper/charts/blob/master/charts/redis-ha/values.yaml",
       "properties": {
         "additionalAffinities": {
+          "additionalProperties": true,
           "description": "Additional affinities to add to the Redis server pods.",
           "required": [],
           "title": "additionalAffinities",
@@ -7173,6 +7496,7 @@
           "type": "boolean"
         },
         "containerSecurityContext": {
+          "additionalProperties": true,
           "description": "Redis HA statefulset container-level security context",
           "properties": {
             "readOnlyRootFilesystem": {
@@ -7201,6 +7525,7 @@
           "type": "string"
         },
         "exporter": {
+          "additionalProperties": true,
           "description": "# Prometheus redis-exporter sidecar",
           "properties": {
             "enabled": {
@@ -7230,9 +7555,11 @@
           "type": "object"
         },
         "haproxy": {
+          "additionalProperties": true,
           "description": "# Enables a HA Proxy for better LoadBalancing / Sentinel Master support. Automatically proxies to Redis master.",
           "properties": {
             "additionalAffinities": {
+              "additionalProperties": true,
               "description": "Additional affinities to add to the haproxy pods.",
               "required": [],
               "title": "additionalAffinities",
@@ -7246,6 +7573,7 @@
               "type": "string"
             },
             "containerSecurityContext": {
+              "additionalProperties": true,
               "description": "HAProxy container-level security context",
               "properties": {
                 "readOnlyRootFilesystem": {
@@ -7274,6 +7602,7 @@
               "type": "boolean"
             },
             "labels": {
+              "additionalProperties": true,
               "description": " Custom labels for the haproxy pod. This is relevant for Argo CD CLI.",
               "properties": {
                 "app.kubernetes.io/name": {
@@ -7288,6 +7617,7 @@
               "type": "object"
             },
             "metrics": {
+              "additionalProperties": true,
               "properties": {
                 "enabled": {
                   "default": true,
@@ -7323,6 +7653,7 @@
           "type": "boolean"
         },
         "image": {
+          "additionalProperties": true,
           "description": "# Redis image",
           "properties": {
             "repository": {
@@ -7345,6 +7676,7 @@
           "type": "object"
         },
         "persistentVolume": {
+          "additionalProperties": true,
           "properties": {
             "enabled": {
               "default": false,
@@ -7359,9 +7691,11 @@
           "type": "object"
         },
         "redis": {
+          "additionalProperties": true,
           "description": "# Redis specific configuration options",
           "properties": {
             "config": {
+              "additionalProperties": true,
               "description": "Any valid redis config options in this section will be applied to each server (see `redis-ha` chart)",
               "properties": {
                 "save": {
@@ -7398,6 +7732,7 @@
           "type": "array"
         },
         "topologySpreadConstraints": {
+          "additionalProperties": true,
           "description": "Assign custom [TopologySpreadConstraints] rules to the Redis pods.\n# https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/",
           "properties": {
             "enabled": {
@@ -7449,12 +7784,14 @@
       "additionalProperties": true,
       "properties": {
         "affinity": {
+          "additionalProperties": true,
           "description": "Assign custom [affinity] rules to the Redis secret-init Job",
           "required": [],
           "title": "affinity",
           "type": "object"
         },
         "containerSecurityContext": {
+          "additionalProperties": true,
           "description": "Application controller container-level security context",
           "properties": {
             "allowPrivilegeEscalation": {
@@ -7464,6 +7801,7 @@
               "type": "boolean"
             },
             "capabilities": {
+              "additionalProperties": true,
               "properties": {
                 "drop": {
                   "items": {
@@ -7492,6 +7830,7 @@
               "type": "boolean"
             },
             "seccompProfile": {
+              "additionalProperties": true,
               "properties": {
                 "type": {
                   "default": "RuntimeDefault",
@@ -7517,6 +7856,7 @@
           "type": "boolean"
         },
         "image": {
+          "additionalProperties": true,
           "properties": {
             "imagePullPolicy": {
               "default": "",
@@ -7554,6 +7894,7 @@
           "type": "array"
         },
         "jobAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations to be added to the Redis secret-init Job",
           "required": [],
           "title": "jobAnnotations",
@@ -7567,18 +7908,21 @@
           "type": "string"
         },
         "nodeSelector": {
+          "additionalProperties": true,
           "description": "Node selector to be added to the Redis secret-init Job",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
         },
         "podAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations to be added to the Redis secret-init Job",
           "required": [],
           "title": "podAnnotations",
           "type": "object"
         },
         "podLabels": {
+          "additionalProperties": true,
           "description": "Labels to be added to the Redis secret-init Job",
           "required": [],
           "title": "podLabels",
@@ -7592,20 +7936,24 @@
           "type": "string"
         },
         "resources": {
+          "additionalProperties": true,
           "description": "Resource limits and requests for Redis secret-init Job",
           "required": [],
           "title": "resources",
           "type": "object"
         },
         "securityContext": {
+          "additionalProperties": true,
           "description": "Redis secret-init Job pod-level security context",
           "required": [],
           "title": "securityContext",
           "type": "object"
         },
         "serviceAccount": {
+          "additionalProperties": true,
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations applied to created service account",
               "required": [],
               "title": "annotations",
@@ -7663,6 +8011,7 @@
       "description": "# Repo Server",
       "properties": {
         "affinity": {
+          "additionalProperties": true,
           "description": "Assign custom [affinity] rules to the deployment",
           "required": [],
           "title": "affinity",
@@ -7676,9 +8025,11 @@
           "type": "boolean"
         },
         "autoscaling": {
+          "additionalProperties": true,
           "description": "# Repo server Horizontal Pod Autoscaler",
           "properties": {
             "behavior": {
+              "additionalProperties": true,
               "description": "Configures the scaling behavior of the target in both Up and Down directions.",
               "required": [],
               "title": "behavior",
@@ -7734,9 +8085,11 @@
           "type": "object"
         },
         "certificateSecret": {
+          "additionalProperties": true,
           "description": "TLS certificate configuration via Secret\n# Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/tls/#configuring-tls-to-argocd-repo-server\n# Note: Issuing certificates via cert-manager in not supported right now because it's not possible to restart repo server automatically without extra controllers.",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be added to argocd-repo-server-tls secret",
               "required": [],
               "title": "annotations",
@@ -7771,6 +8124,7 @@
               "type": "string"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Labels to be added to argocd-repo-server-tls secret",
               "required": [],
               "title": "labels",
@@ -7782,6 +8136,7 @@
           "type": "object"
         },
         "clusterRoleRules": {
+          "additionalProperties": true,
           "description": "# Enable Custom Rules for the Repo server's Cluster Role resource\n# Enable this and set the rules: to whatever custom rules you want for the Cluster Role resource.\n# Defaults to off",
           "properties": {
             "enabled": {
@@ -7806,6 +8161,7 @@
           "type": "object"
         },
         "containerPorts": {
+          "additionalProperties": true,
           "description": "Repo server container ports",
           "properties": {
             "metrics": {
@@ -7828,6 +8184,7 @@
           "type": "object"
         },
         "containerSecurityContext": {
+          "additionalProperties": true,
           "description": "Repo server container-level security context",
           "properties": {
             "allowPrivilegeEscalation": {
@@ -7837,6 +8194,7 @@
               "type": "boolean"
             },
             "capabilities": {
+              "additionalProperties": true,
               "properties": {
                 "drop": {
                   "items": {
@@ -7865,6 +8223,7 @@
               "type": "boolean"
             },
             "seccompProfile": {
+              "additionalProperties": true,
               "properties": {
                 "type": {
                   "default": "RuntimeDefault",
@@ -7883,18 +8242,21 @@
           "type": "object"
         },
         "deploymentAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations to be added to repo server Deployment",
           "required": [],
           "title": "deploymentAnnotations",
           "type": "object"
         },
         "deploymentStrategy": {
+          "additionalProperties": true,
           "description": "Deployment strategy to be added to the repo server Deployment",
           "required": [],
           "title": "deploymentStrategy",
           "type": "object"
         },
         "dnsConfig": {
+          "additionalProperties": true,
           "description": "[DNS configuration]",
           "required": [],
           "title": "dnsConfig",
@@ -7908,6 +8270,7 @@
           "type": "string"
         },
         "emptyDir": {
+          "additionalProperties": true,
           "description": "# RepoServer emptyDir volumes",
           "properties": {
             "sizeLimit": {
@@ -7941,6 +8304,7 @@
           "type": "array"
         },
         "existingVolumes": {
+          "additionalProperties": true,
           "description": "Volumes to be used in replacement of emptydir on default volumes",
           "required": [],
           "title": "existingVolumes",
@@ -7972,6 +8336,7 @@
           "type": "boolean"
         },
         "image": {
+          "additionalProperties": true,
           "description": "# Repo server image",
           "properties": {
             "imagePullPolicy": {
@@ -8019,12 +8384,14 @@
           "type": "array"
         },
         "lifecycle": {
+          "additionalProperties": true,
           "description": "Specify postStart and preStop lifecycle hooks for your argo-repo-server container",
           "required": [],
           "title": "lifecycle",
           "type": "object"
         },
         "livenessProbe": {
+          "additionalProperties": true,
           "properties": {
             "failureThreshold": {
               "default": 3,
@@ -8067,6 +8434,7 @@
           "type": "object"
         },
         "metrics": {
+          "additionalProperties": true,
           "description": "# Repo server metrics service configuration",
           "properties": {
             "enabled": {
@@ -8077,8 +8445,10 @@
               "type": "boolean"
             },
             "service": {
+              "additionalProperties": true,
               "properties": {
                 "annotations": {
+                  "additionalProperties": true,
                   "description": "Metrics service annotations",
                   "required": [],
                   "title": "annotations",
@@ -8092,6 +8462,7 @@
                   "type": "string"
                 },
                 "labels": {
+                  "additionalProperties": true,
                   "description": "Metrics service labels",
                   "required": [],
                   "title": "labels",
@@ -8124,14 +8495,17 @@
               "type": "object"
             },
             "serviceMonitor": {
+              "additionalProperties": true,
               "properties": {
                 "additionalLabels": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor labels",
                   "required": [],
                   "title": "additionalLabels",
                   "type": "object"
                 },
                 "annotations": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor annotations",
                   "required": [],
                   "title": "annotations",
@@ -8198,12 +8572,14 @@
                   "type": "string"
                 },
                 "selector": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor selector",
                   "required": [],
                   "title": "selector",
                   "type": "object"
                 },
                 "tlsConfig": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor tlsConfig",
                   "required": [],
                   "title": "tlsConfig",
@@ -8227,15 +8603,18 @@
           "type": "string"
         },
         "nodeSelector": {
+          "additionalProperties": true,
           "description": "[Node selector]",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
         },
         "pdb": {
+          "additionalProperties": true,
           "description": "# Repo server Pod Disruption Budget\n# Ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be added to repo server pdb",
               "required": [],
               "title": "annotations",
@@ -8249,6 +8628,7 @@
               "type": "boolean"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Labels to be added to repo server pdb",
               "required": [],
               "title": "labels",
@@ -8274,12 +8654,14 @@
           "type": "object"
         },
         "podAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations to be added to repo server pods",
           "required": [],
           "title": "podAnnotations",
           "type": "object"
         },
         "podLabels": {
+          "additionalProperties": true,
           "description": "Labels to be added to repo server pods",
           "required": [],
           "title": "podLabels",
@@ -8302,6 +8684,7 @@
           "type": "array"
         },
         "readinessProbe": {
+          "additionalProperties": true,
           "description": "# Readiness and liveness probes for default backend\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
           "properties": {
             "failureThreshold": {
@@ -8352,6 +8735,7 @@
           "type": "integer"
         },
         "resources": {
+          "additionalProperties": true,
           "description": "Resource limits and requests for the repo server pods",
           "required": [],
           "title": "resources",
@@ -8365,15 +8749,18 @@
           "type": "string"
         },
         "service": {
+          "additionalProperties": true,
           "description": "# Repo server service configuration",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Repo server service annotations",
               "required": [],
               "title": "annotations",
               "type": "object"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Repo server service labels",
               "required": [],
               "title": "labels",
@@ -8399,9 +8786,11 @@
           "type": "object"
         },
         "serviceAccount": {
+          "additionalProperties": true,
           "description": "# Repo server service account\n# If create is set to true, make sure to uncomment the name and update the rbac section below",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations applied to created service account",
               "required": [],
               "title": "annotations",
@@ -8422,6 +8811,7 @@
               "type": "boolean"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Labels applied to created service account",
               "required": [],
               "title": "labels",
@@ -8506,6 +8896,7 @@
           "type": "boolean"
         },
         "s3": {
+          "additionalProperties": true,
           "properties": {
             "access_key": {
               "default": "",
@@ -8541,6 +8932,7 @@
           "type": "object"
         },
         "ssh": {
+          "additionalProperties": true,
           "properties": {
             "key": {
               "default": "",
@@ -8640,6 +9032,7 @@
           "type": "string"
         },
         "config": {
+          "additionalProperties": true,
           "description": "Valid sentinel config options in this section will be applied as config options to each sentinel (see below)",
           "properties": {
             "down-after-milliseconds": {
@@ -8713,12 +9106,14 @@
           "type": "array"
         },
         "lifecycle": {
+          "additionalProperties": true,
           "description": "Container Lifecycle Hooks for sentinel container.\nRef: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/",
           "required": [],
           "title": "lifecycle",
           "type": "object"
         },
         "livenessProbe": {
+          "additionalProperties": true,
           "description": "liveness probe parameters for sentinel container",
           "properties": {
             "enabled": {
@@ -8789,6 +9184,7 @@
           "type": "integer"
         },
         "readinessProbe": {
+          "additionalProperties": true,
           "description": "readiness probe parameters for sentinel container",
           "properties": {
             "enabled": {
@@ -8838,12 +9234,14 @@
           "type": "object"
         },
         "resources": {
+          "additionalProperties": true,
           "description": "CPU/Memory for sentinel node resource requests/limits",
           "required": [],
           "title": "resources",
           "type": "object"
         },
         "startupProbe": {
+          "additionalProperties": true,
           "description": "Startup probe parameters for redis container",
           "properties": {
             "enabled": {
@@ -8917,6 +9315,7 @@
       "description": "# Server",
       "properties": {
         "affinity": {
+          "additionalProperties": true,
           "description": "Assign custom [affinity] rules to the deployment",
           "required": [],
           "title": "affinity",
@@ -8930,9 +9329,11 @@
           "type": "boolean"
         },
         "autoscaling": {
+          "additionalProperties": true,
           "description": "# Argo CD server Horizontal Pod Autoscaler",
           "properties": {
             "behavior": {
+              "additionalProperties": true,
               "description": "Configures the scaling behavior of the target in both Up and Down directions.",
               "required": [],
               "title": "behavior",
@@ -8988,6 +9389,7 @@
           "type": "object"
         },
         "certificate": {
+          "additionalProperties": true,
           "description": "TLS certificate configuration via cert-manager\n# Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/tls/#tls-certificates-used-by-argocd-server",
           "properties": {
             "additionalHosts": {
@@ -9000,6 +9402,7 @@
               "type": "array"
             },
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be applied to the Server Certificate",
               "required": [],
               "title": "annotations",
@@ -9027,6 +9430,7 @@
               "type": "boolean"
             },
             "issuer": {
+              "additionalProperties": true,
               "description": "Certificate issuer\n# Ref: https://cert-manager.io/docs/concepts/issuer",
               "properties": {
                 "group": {
@@ -9056,6 +9460,7 @@
               "type": "object"
             },
             "privateKey": {
+              "additionalProperties": true,
               "description": "Private key of the certificate",
               "properties": {
                 "algorithm": {
@@ -9099,6 +9504,7 @@
               "type": "string"
             },
             "secretTemplateAnnotations": {
+              "additionalProperties": true,
               "description": "Annotations that allow the certificate to be composed from data residing in existing Kubernetes Resources",
               "required": [],
               "title": "secretTemplateAnnotations",
@@ -9119,9 +9525,11 @@
           "type": "object"
         },
         "certificateSecret": {
+          "additionalProperties": true,
           "description": "TLS certificate configuration via Secret\n# Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/tls/#tls-certificates-used-by-argocd-server",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be added to argocd-server-tls secret",
               "required": [],
               "title": "annotations",
@@ -9149,6 +9557,7 @@
               "type": "string"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Labels to be added to argocd-server-tls secret",
               "required": [],
               "title": "labels",
@@ -9160,6 +9569,7 @@
           "type": "object"
         },
         "clusterRoleRules": {
+          "additionalProperties": true,
           "description": "# Enable this and set the rules: to whatever custom rules you want for the Cluster Role resource.\n# Defaults to off",
           "properties": {
             "enabled": {
@@ -9184,6 +9594,7 @@
           "type": "object"
         },
         "containerPorts": {
+          "additionalProperties": true,
           "description": "Server container ports",
           "properties": {
             "metrics": {
@@ -9206,6 +9617,7 @@
           "type": "object"
         },
         "containerSecurityContext": {
+          "additionalProperties": true,
           "description": "Server container-level security context",
           "properties": {
             "allowPrivilegeEscalation": {
@@ -9215,6 +9627,7 @@
               "type": "boolean"
             },
             "capabilities": {
+              "additionalProperties": true,
               "properties": {
                 "drop": {
                   "items": {
@@ -9243,6 +9656,7 @@
               "type": "boolean"
             },
             "seccompProfile": {
+              "additionalProperties": true,
               "properties": {
                 "type": {
                   "default": "RuntimeDefault",
@@ -9261,18 +9675,21 @@
           "type": "object"
         },
         "deploymentAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations to be added to server Deployment",
           "required": [],
           "title": "deploymentAnnotations",
           "type": "object"
         },
         "deploymentStrategy": {
+          "additionalProperties": true,
           "description": "Deployment strategy to be added to the server Deployment",
           "required": [],
           "title": "deploymentStrategy",
           "type": "object"
         },
         "dnsConfig": {
+          "additionalProperties": true,
           "description": "[DNS configuration]",
           "required": [],
           "title": "dnsConfig",
@@ -9286,6 +9703,7 @@
           "type": "string"
         },
         "emptyDir": {
+          "additionalProperties": true,
           "description": "# Argo CD server emptyDir volumes",
           "properties": {
             "sizeLimit": {
@@ -9319,9 +9737,11 @@
           "type": "array"
         },
         "extensions": {
+          "additionalProperties": true,
           "description": "# Argo CD extensions\n# This function in tech preview stage, do expect instability or breaking changes in newer versions.\n# Ref: https://github.com/argoproj-labs/argocd-extension-installer\n# When you enable extensions, you need to configure RBAC of logged in Argo CD user.\n# Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/rbac/#the-extensions-resource",
           "properties": {
             "containerSecurityContext": {
+              "additionalProperties": true,
               "description": "Server UI extensions container-level security context",
               "properties": {
                 "allowPrivilegeEscalation": {
@@ -9331,6 +9751,7 @@
                   "type": "boolean"
                 },
                 "capabilities": {
+                  "additionalProperties": true,
                   "properties": {
                     "drop": {
                       "items": {
@@ -9365,6 +9786,7 @@
                   "type": "integer"
                 },
                 "seccompProfile": {
+                  "additionalProperties": true,
                   "properties": {
                     "type": {
                       "default": "RuntimeDefault",
@@ -9399,6 +9821,7 @@
               "type": "array"
             },
             "image": {
+              "additionalProperties": true,
               "description": "# Argo CD extension installer image",
               "properties": {
                 "imagePullPolicy": {
@@ -9428,6 +9851,7 @@
               "type": "object"
             },
             "resources": {
+              "additionalProperties": true,
               "description": "Resource limits and requests for the argocd-extensions container",
               "required": [],
               "title": "resources",
@@ -9464,6 +9888,7 @@
           "type": "boolean"
         },
         "image": {
+          "additionalProperties": true,
           "description": "# Argo CD server image",
           "properties": {
             "imagePullPolicy": {
@@ -9502,15 +9927,18 @@
           "type": "array"
         },
         "ingress": {
+          "additionalProperties": true,
           "description": "Argo CD server ingress configuration",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Additional ingress annotations\n# Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/#option-1-ssl-passthrough",
               "required": [],
               "title": "annotations",
               "type": "object"
             },
             "aws": {
+              "additionalProperties": true,
               "description": "AWS specific options for Application Load Balancer\nApplies only when `serv.ingress.controller` is set to `aws`\n# Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/#aws-application-load-balancers-albs-and-classic-elb-http-mode",
               "properties": {
                 "backendProtocolVersion": {
@@ -9583,21 +10011,25 @@
               "type": "array"
             },
             "gke": {
+              "additionalProperties": true,
               "description": "Google specific options for Google Application Load Balancer\nApplies only when `server.ingress.controller` is set to `gke`\n# Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/#google-cloud-load-balancers-with-kubernetes-ingress",
               "properties": {
                 "backendConfig": {
+                  "additionalProperties": true,
                   "description": "Google [BackendConfig] resource, for use with the GKE Ingress Controller\n# Ref: https://cloud.google.com/kubernetes-engine/docs/how-to/ingress-features#configuring_ingress_features_through_frontendconfig_parameters",
                   "required": [],
                   "title": "backendConfig",
                   "type": "object"
                 },
                 "frontendConfig": {
+                  "additionalProperties": true,
                   "description": "Google [FrontendConfig] resource, for use with the GKE Ingress Controller\n# Ref: https://cloud.google.com/kubernetes-engine/docs/how-to/ingress-features#configuring_ingress_features_through_frontendconfig_parameters",
                   "required": [],
                   "title": "frontendConfig",
                   "type": "object"
                 },
                 "managedCertificate": {
+                  "additionalProperties": true,
                   "description": "Managed GKE certificate for ingress hostname",
                   "properties": {
                     "create": {
@@ -9641,6 +10073,7 @@
               "type": "string"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Additional ingress labels",
               "required": [],
               "title": "labels",
@@ -9673,9 +10106,11 @@
           "type": "object"
         },
         "ingressGrpc": {
+          "additionalProperties": true,
           "description": "Dedicated gRPC ingress for ingress controllers that supports only single backend protocol per Ingress resource\nRef: https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/#option-2-multiple-ingress-objects-and-hosts",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Additional ingress annotations for dedicated [gRPC-ingress]",
               "required": [],
               "title": "annotations",
@@ -9739,6 +10174,7 @@
               "type": "string"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Additional ingress labels for dedicated [gRPC-ingress]",
               "required": [],
               "title": "labels",
@@ -9780,12 +10216,14 @@
           "type": "array"
         },
         "lifecycle": {
+          "additionalProperties": true,
           "description": "Specify postStart and preStop lifecycle hooks for your argo-cd-server container",
           "required": [],
           "title": "lifecycle",
           "type": "object"
         },
         "livenessProbe": {
+          "additionalProperties": true,
           "properties": {
             "failureThreshold": {
               "default": 3,
@@ -9828,6 +10266,7 @@
           "type": "object"
         },
         "metrics": {
+          "additionalProperties": true,
           "description": "# Server metrics service configuration",
           "properties": {
             "enabled": {
@@ -9838,8 +10277,10 @@
               "type": "boolean"
             },
             "service": {
+              "additionalProperties": true,
               "properties": {
                 "annotations": {
+                  "additionalProperties": true,
                   "description": "Metrics service annotations",
                   "required": [],
                   "title": "annotations",
@@ -9853,6 +10294,7 @@
                   "type": "string"
                 },
                 "labels": {
+                  "additionalProperties": true,
                   "description": "Metrics service labels",
                   "required": [],
                   "title": "labels",
@@ -9885,14 +10327,17 @@
               "type": "object"
             },
             "serviceMonitor": {
+              "additionalProperties": true,
               "properties": {
                 "additionalLabels": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor labels",
                   "required": [],
                   "title": "additionalLabels",
                   "type": "object"
                 },
                 "annotations": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor annotations",
                   "required": [],
                   "title": "annotations",
@@ -9959,12 +10404,14 @@
                   "type": "string"
                 },
                 "selector": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor selector",
                   "required": [],
                   "title": "selector",
                   "type": "object"
                 },
                 "tlsConfig": {
+                  "additionalProperties": true,
                   "description": "Prometheus ServiceMonitor tlsConfig",
                   "required": [],
                   "title": "tlsConfig",
@@ -9988,15 +10435,18 @@
           "type": "string"
         },
         "nodeSelector": {
+          "additionalProperties": true,
           "description": "[Node selector]",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
         },
         "pdb": {
+          "additionalProperties": true,
           "description": "# Argo CD server Pod Disruption Budget\n# Ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations to be added to Argo CD server pdb",
               "required": [],
               "title": "annotations",
@@ -10010,6 +10460,7 @@
               "type": "boolean"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Labels to be added to Argo CD server pdb",
               "required": [],
               "title": "labels",
@@ -10035,12 +10486,14 @@
           "type": "object"
         },
         "podAnnotations": {
+          "additionalProperties": true,
           "description": "Annotations to be added to server pods",
           "required": [],
           "title": "podAnnotations",
           "type": "object"
         },
         "podLabels": {
+          "additionalProperties": true,
           "description": "Labels to be added to server pods",
           "required": [],
           "title": "podLabels",
@@ -10054,6 +10507,7 @@
           "type": "string"
         },
         "readinessProbe": {
+          "additionalProperties": true,
           "description": "# Readiness and liveness probes for default backend\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
           "properties": {
             "failureThreshold": {
@@ -10104,15 +10558,18 @@
           "type": "integer"
         },
         "resources": {
+          "additionalProperties": true,
           "description": "Resource limits and requests for the Argo CD server",
           "required": [],
           "title": "resources",
           "type": "object"
         },
         "route": {
+          "additionalProperties": true,
           "description": "Create a OpenShift Route with SSL passthrough for UI and CLI\nConsider setting 'hostname' e.g. https://argocd.apps-crc.testing/ using your Default Ingress Controller Domain\nFind your domain with: kubectl describe --namespace=openshift-ingress-operator ingresscontroller/default | grep Domain:\nIf 'hostname' is an empty string \"\" OpenShift will create a hostname for you.",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Openshift Route annotations",
               "required": [],
               "title": "annotations",
@@ -10159,9 +10616,11 @@
           "type": "string"
         },
         "service": {
+          "additionalProperties": true,
           "description": "# Server service configuration",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Server service annotations",
               "required": [],
               "title": "annotations",
@@ -10184,6 +10643,7 @@
               "type": "string"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Server service labels",
               "required": [],
               "title": "labels",
@@ -10281,8 +10741,10 @@
           "type": "object"
         },
         "serviceAccount": {
+          "additionalProperties": true,
           "properties": {
             "annotations": {
+              "additionalProperties": true,
               "description": "Annotations applied to created service account",
               "required": [],
               "title": "annotations",
@@ -10303,6 +10765,7 @@
               "type": "boolean"
             },
             "labels": {
+              "additionalProperties": true,
               "description": "Labels applied to created service account",
               "required": [],
               "title": "labels",
@@ -10373,6 +10836,7 @@
       "description": "# Pods Service Account\n# ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/",
       "properties": {
         "annotations": {
+          "additionalProperties": true,
           "description": "Annotations to be added to the service account for the redis statefulset",
           "required": [],
           "title": "annotations",
@@ -10422,6 +10886,7 @@
           "type": "integer"
         },
         "resources": {
+          "additionalProperties": true,
           "description": "splitBrainDetection resources",
           "required": [],
           "title": "resources",
@@ -10481,6 +10946,7 @@
           "type": "string"
         },
         "resources": {
+          "additionalProperties": true,
           "description": "sysctlImage resources",
           "required": [],
           "title": "resources",

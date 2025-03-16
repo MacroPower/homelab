@@ -46,7 +46,7 @@ configs:
 repoServer:
   extraContainers:
     - name: kcl-plugin
-      image: ghcr.io/macropower/kclipper:v0.11.1
+      image: ghcr.io/macropower/kclipper:v0.11.2
       command: [/var/run/argocd/argocd-cmp-server]
       securityContext:
         runAsNonRoot: true
