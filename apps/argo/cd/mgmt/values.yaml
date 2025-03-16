@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../../../konfig/charts/argo_cd/values.schema.json
+# yaml-language-server: $schema=../../../../charts/argo_cd/values.schema.json
 
 # https://artifacthub.io/packages/helm/argo/argo-cd
 

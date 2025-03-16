@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../../../konfig/charts/cilium/values.schema.json
+# yaml-language-server: $schema=../../../../charts/cilium/values.schema.json
 
 ipam:
   mode: kubernetes
