@@ -2,18 +2,16 @@ import file
 
 import argo_tenant
 import charts.argo_cd
-import filepath
 import konfig.models.frontend
+import konfig.utils
 
-_current_dir = filepath.dir(file.current())
+_values = utils.read_yaml(file.current(), "values.yaml")
 
 app: frontend.App {
     name = "cd"
     tenantName = argo_tenant.tenantConfiguration.name
 
     charts.argo_cd = argo_cd.Chart {
-        valueFiles: [
-            filepath.join([_current_dir, "values.yaml"]),
-        ]
+        values: _values | argo_cd.Values {}
     }
 }

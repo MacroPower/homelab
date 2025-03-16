@@ -2,10 +2,12 @@ import file
 import json
 
 import argo_cd_base
-import filepath
+import charts.argo_cd
 import konfig.models.frontend.secret
+import konfig.utils
 
-_current_dir = filepath.dir(file.current())
+_base_values = argo_cd_base.app.charts.argo_cd.values
+_values = utils.read_yaml(file.current(), "values.yaml")
 
 secretStoreClusters = secret.SecretStore {
     name = "clusters"
@@ -18,9 +20,7 @@ secretStoreClusters = secret.SecretStore {
 app = argo_cd_base.app | {
     secretStores.clusters = secretStoreClusters
 
-    charts.argo_cd.valueFiles += [
-        filepath.join([_current_dir, "values.yaml"]),
-    ]
+    charts.argo_cd.values = _base_values | _values | argo_cd.Values {}
 
     externalSecrets.nas01 = secret.ExternalSecret {
         name = "nas01-credentials"

@@ -1,12 +1,10 @@
 import file
 
 import cilium_system_base
-import filepath
+import konfig.utils
 
-_current_dir = filepath.dir(file.current())
+_valueFile = utils.abs_path(file.current(), "values.yaml")
 
 app = cilium_system_base.app | {
-    charts.cilium.valueFiles += [
-        filepath.join([_current_dir, "values.yaml"]),
-    ]
+    charts.cilium.valueFiles += [_valueFile]
 }
