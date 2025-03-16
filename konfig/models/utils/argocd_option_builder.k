@@ -8,9 +8,13 @@ schema ArgoCDOptions:
         ArgoCD Sync Options
     compare: ArgoCDCompareOptions, default is Undefined, optional.
         ArgoCD Compare Options
+    finalize: bool, default is Undefined, optional.
+        Set to `True` to add the `resources-finalizer.argocd.argoproj.io`
+        finalizer to the resource.
     """
-    sync?: ArgoCDSyncOptions
-    compare?: ArgoCDCompareOptions
+    sync: ArgoCDSyncOptions = ArgoCDSyncOptions{}
+    compare: ArgoCDCompareOptions = ArgoCDCompareOptions{}
+    finalize?: bool
 
 schema ArgoCDSyncOptions:
     """
@@ -19,8 +23,9 @@ schema ArgoCDSyncOptions:
 
     Attributes
     ----------
-    Prune: bool, default is Undefined, optional.
-        Set to `False` to prevent the resource from being pruned.
+    Prune: "true" | "false" | "confirm", default is Undefined, optional.
+        Set to `false` to prevent the resource from being pruned, or `confirm`
+        to require manual confirmation before pruning.
     Validate: bool, default is Undefined, optional.
         Set to `False` to disable kubectl validation.
     SkipDryRunOnMissingResource: bool, default is Undefined, optional.
@@ -51,7 +56,7 @@ schema ArgoCDSyncOptions:
         Set to `True` to use Server-Side Apply for the resource.
         https://kubernetes.io/docs/reference/using-api/server-side-apply/
     """
-    Prune?: bool
+    Prune?: "true" | "false" | "confirm"
     Validate?: bool
     SkipDryRunOnMissingResource?: bool
     Delete?: bool
