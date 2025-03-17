@@ -55,9 +55,11 @@ app = bootstrap.app | {
 
     extraResources.bootstrapApp = argov1alpha1.Application {
         metadata = utils.AppMetadataBuilder({
-            name = "application-sets"
+            name = "bootstrap"
             namespace = _argo_cd_namespace
-        }, utils.ArgoCDOptions {})
+        }, utils.ArgoCDOptions {
+            finalize = False
+        })
         spec = {
             project = "default"
             source = {
