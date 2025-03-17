@@ -1,4 +1,4 @@
-import charts.argo_cd.crds as argocd
+import charts.argo_cd.api.v1alpha1 as argov1alpha1
 import models.frontend
 import models.mixins
 import models.metadata as kmd
@@ -19,7 +19,7 @@ schema TenantBackend[inputConfig: frontend.Tenant]:
     # Store the input config parameter, ensure it can be seen in protocol and mixin.
     config: frontend.Tenant = inputConfig
 
-    _argoAppProject: argocd.AppProject {
+    _argoAppProject: argov1alpha1.AppProject {
         metadata = utils.MetadataBuilder(config)
         spec: {
             sourceNamespaces: ["{}-*".format(config.name)]
@@ -44,7 +44,7 @@ schema TenantBackend[inputConfig: frontend.Tenant]:
             server = _c?.server or "*"
         } for _k, _c in config.destinations]
 
-    _argoApplicationSet: argocd.ApplicationSet {
+    _argoApplicationSet: argov1alpha1.ApplicationSet {
         metadata = utils.AppMetadataBuilder(config | {
             name = "${config.name}-apps"
         }, utils.ArgoCDOptions {

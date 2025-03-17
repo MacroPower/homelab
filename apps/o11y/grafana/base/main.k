@@ -1,7 +1,7 @@
 import yaml
 
 import charts.grafana_operator
-import charts.grafana_operator.crds as grafanav1beta1
+import charts.grafana_operator.api.v1beta1 as grafanav1beta1
 import konfig.models.frontend
 import konfig.models.frontend.configmap
 import konfig.models.frontend.container

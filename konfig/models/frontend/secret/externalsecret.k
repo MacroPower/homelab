@@ -1,5 +1,5 @@
+import charts.external_secrets.api.v1beta1 as externalsecretsv1beta1
 import models.frontend.common
-import charts.external_secrets.crds as externalsecretsv1beta1
 
 schema ExternalSecret(common.Metadata):
     """

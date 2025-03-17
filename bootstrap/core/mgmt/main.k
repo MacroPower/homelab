@@ -4,7 +4,7 @@ import k8s.api.core.v1 as corev1
 
 import argo_cd
 import bootstrap
-import charts.argo_cd.crds as argo_cd_crd
+import charts.argo_cd.api.v1alpha1 as argov1alpha1
 import cilium_system
 import konfig.models.frontend.secret
 import konfig.models.utils
@@ -53,7 +53,7 @@ app = bootstrap.app | {
         }
     }
 
-    extraResources.argo_cd_app_of_applicationsets = argo_cd_crd.Application {
+    extraResources.bootstrapApp = argov1alpha1.Application {
         metadata = utils.AppMetadataBuilder({
             name = "application-sets"
             namespace = _argo_cd_namespace

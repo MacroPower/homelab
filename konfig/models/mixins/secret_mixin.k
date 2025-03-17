@@ -1,8 +1,8 @@
+import charts.external_secrets.api.v1beta1 as externalsecretsv1beta1
 import k8s.api.core.v1
-import models.utils
-import models.resource
 import models.protocol
-import charts.external_secrets.crds as externalsecretsv1beta1
+import models.resource
+import models.utils
 
 mixin SecretMixin for protocol.AppProtocol:
     if config.secrets:
