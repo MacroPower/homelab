@@ -1,4 +1,4 @@
-# This file is read by the ArgoCD ApplicationSet.
+# yaml-language-server: $schema=../../../konfig/models/frontend/patch.schema.json
 
 syncPolicy:
   automated:

@@ -17,3 +17,6 @@ tasks:
     desc: Generate KCL code
     cmds:
       - kcl chart update
+      - |-
+        kcl export konfig/models/backend/ -S BackendTenantPatch \
+          --output=konfig/models/frontend/patch.schema.json

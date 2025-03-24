@@ -1,0 +1,183 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "default": "",
+  "definitions": {
+    "BackendTenantPatchIgnoreDifferences": {
+      "default": "",
+      "description": "Ignore differences at a specific JSON path, using RFC6902 JSON patches and JQ path expressions.  https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/",
+      "properties": {
+        "group": {
+          "default": "",
+          "type": "string"
+        },
+        "jqPathExpressions": {
+          "default": "",
+          "items": {
+            "default": "",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "jsonPointers": {
+          "default": "",
+          "items": {
+            "default": "",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "kind": {
+          "default": "",
+          "type": "string"
+        },
+        "managedFieldsManagers": {
+          "default": "",
+          "items": {
+            "default": "",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "name": {
+          "default": "",
+          "type": "string"
+        },
+        "namespace": {
+          "default": "",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "type": "object",
+      "x-kcl-type": {
+        "type": "BackendTenantPatchIgnoreDifferences",
+        "import": {
+          "alias": "tenant_patch.k"
+        }
+      }
+    },
+    "BackendTenantPatchInfo": {
+      "default": "",
+      "description": "Add additional information to an Application on your Argo CD dashboard.  https://argo-cd.readthedocs.io/en/stable/user-guide/extra_info/",
+      "properties": {
+        "name": {
+          "default": "",
+          "description": "Name of the info item.",
+          "type": "string"
+        },
+        "value": {
+          "default": "",
+          "description": "Value of the info item.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "value"
+      ],
+      "type": "object",
+      "x-kcl-type": {
+        "type": "BackendTenantPatchInfo",
+        "import": {
+          "alias": "tenant_patch.k"
+        }
+      }
+    },
+    "BackendTenantPatchSource": {
+      "default": "",
+      "description": "Git repository used to extract the desired Application manifests.",
+      "properties": {
+        "targetRevision": {
+          "default": "",
+          "description": "Revision (tag/branch/commit) of the repository (e.g. `HEAD`).",
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "x-kcl-type": {
+        "type": "BackendTenantPatchSource",
+        "import": {
+          "alias": "tenant_patch.k"
+        }
+      }
+    },
+    "BackendTenantPatchSyncPolicy": {
+      "default": "",
+      "description": "Customize some aspects of how the Application syncs the desired state in the target cluster.",
+      "properties": {
+        "automated": {
+          "$ref": "#/definitions/BackendTenantPatchSyncPolicyAutomated"
+        }
+      },
+      "type": "object",
+      "x-kcl-type": {
+        "type": "BackendTenantPatchSyncPolicy",
+        "import": {
+          "alias": "tenant_patch.k"
+        }
+      }
+    },
+    "BackendTenantPatchSyncPolicyAutomated": {
+      "default": "",
+      "description": "Automatically sync an application when it detects differences between the desired manifests in Git, and the live state in the cluster.  https://argo-cd.readthedocs.io/en/stable/user-guide/auto_sync/",
+      "properties": {
+        "allowEmpty": {
+          "default": "",
+          "description": "Allow applications to have empty resources.",
+          "type": "boolean"
+        },
+        "prune": {
+          "default": "",
+          "description": "Delete resources when Argo CD detects the resource is no longer defined\nin Git.",
+          "type": "boolean"
+        },
+        "selfHeal": {
+          "default": "",
+          "description": "Enable automatic sync when the live cluster's state deviates from the\nstate defined in Git.",
+          "type": "boolean"
+        }
+      },
+      "type": "object",
+      "x-kcl-type": {
+        "type": "BackendTenantPatchSyncPolicyAutomated",
+        "import": {
+          "alias": "tenant_patch.k"
+        }
+      }
+    }
+  },
+  "description": "Application-level patch.",
+  "properties": {
+    "ignoreDifferences": {
+      "default": "",
+      "description": "List of differences to ignore during synchronization.",
+      "items": {
+        "$ref": "#/definitions/BackendTenantPatchIgnoreDifferences"
+      },
+      "type": "array"
+    },
+    "info": {
+      "default": "",
+      "description": "Additional information to display on the Argo CD dashboard.",
+      "items": {
+        "$ref": "#/definitions/BackendTenantPatchInfo"
+      },
+      "type": "array"
+    },
+    "source": {
+      "$ref": "#/definitions/BackendTenantPatchSource"
+    },
+    "syncPolicy": {
+      "$ref": "#/definitions/BackendTenantPatchSyncPolicy"
+    }
+  },
+  "type": "object",
+  "x-kcl-type": {
+    "type": "BackendTenantPatch",
+    "import": {
+      "alias": "tenant_patch.k"
+    }
+  }
+}

@@ -108,7 +108,7 @@ schema TenantBackend[inputConfig: frontend.Tenant]:
                 spec:
                   {{- with (index . "source") }}
                   source:
-                    targetRevision: "{{ .targetRevision }}"
+                    targetRevision: {{ .targetRevision | quote }}
                   {{- end }}
                   {{- with (index . "syncPolicy") }}
                   syncPolicy:
