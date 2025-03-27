@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema SecretStore:
     r"""
@@ -24,18 +24,13 @@ schema SecretStore:
     status : ExternalSecretsIoV1beta1SecretStoreStatus, default is Undefined, optional
         status
     """
-
-
     apiVersion: "external-secrets.io/v1beta1" = "external-secrets.io/v1beta1"
 
     kind: "SecretStore" = "SecretStore"
 
     metadata?: v1.ObjectMeta
-
     spec?: ExternalSecretsIoV1beta1SecretStoreSpec
-
     status?: ExternalSecretsIoV1beta1SecretStoreStatus
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpec:
     r"""
@@ -55,18 +50,12 @@ schema ExternalSecretsIoV1beta1SecretStoreSpec:
     retrySettings : ExternalSecretsIoV1beta1SecretStoreSpecRetrySettings, default is Undefined, optional
         retry settings
     """
-
-
     conditions?: [ExternalSecretsIoV1beta1SecretStoreSpecConditionsItems0]
-
     controller?: str
-
     provider: ExternalSecretsIoV1beta1SecretStoreSpecProvider
 
     refreshInterval?: int
-
     retrySettings?: ExternalSecretsIoV1beta1SecretStoreSpecRetrySettings
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecConditionsItems0:
     r"""
@@ -82,20 +71,14 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecConditionsItems0:
     namespaces : [str], default is Undefined, optional
         Choose namespaces by name
     """
-
-
     namespaceRegexes?: [str]
-
     namespaceSelector?: ExternalSecretsIoV1beta1SecretStoreSpecConditionsItems0NamespaceSelector
-
     namespaces?: [str]
 
-
     check:
-        all namespaces in namespaces { len(namespaces) <= 63 if namespaces not in [None, Undefined] } if namespaces
-        all namespaces in namespaces { len(namespaces) >= 1 if namespaces not in [None, Undefined] } if namespaces
-        all namespaces in namespaces { _regex_match(str(namespaces), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespaces } if namespaces
-
+        all namespaces in namespaces {len(namespaces) <= 63 if namespaces not in [None, Undefined]} if namespaces
+        all namespaces in namespaces {len(namespaces) >= 1 if namespaces not in [None, Undefined]} if namespaces
+        all namespaces in namespaces {_regex_match(str(namespaces), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespaces} if namespaces
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecConditionsItems0NamespaceSelector:
     r"""
@@ -110,12 +93,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecConditionsItems0NamespaceSelector:
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [ExternalSecretsIoV1beta1SecretStoreSpecConditionsItems0NamespaceSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecConditionsItems0NamespaceSelectorMatchExpressionsItems0:
     r"""
@@ -135,14 +114,11 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecConditionsItems0NamespaceSelectorM
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProvider:
     r"""
@@ -219,76 +195,40 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProvider:
     yandexlockbox : ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockbox, default is Undefined, optional
         yandexlockbox
     """
-
-
     akeyless?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeyless
-
     alibaba?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibaba
-
     aws?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAws
-
     azurekv?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekv
-
     beyondtrust?: ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrust
-
     bitwardensecretsmanager?: ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanager
-
     chef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderChef
-
     conjur?: ExternalSecretsIoV1beta1SecretStoreSpecProviderConjur
-
     delinea?: ExternalSecretsIoV1beta1SecretStoreSpecProviderDelinea
-
     device42?: ExternalSecretsIoV1beta1SecretStoreSpecProviderDevice42
-
     doppler?: ExternalSecretsIoV1beta1SecretStoreSpecProviderDoppler
-
     fake?: ExternalSecretsIoV1beta1SecretStoreSpecProviderFake
-
     fortanix?: ExternalSecretsIoV1beta1SecretStoreSpecProviderFortanix
-
     gcpsm?: ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsm
-
     github?: ExternalSecretsIoV1beta1SecretStoreSpecProviderGithub
-
     gitlab?: ExternalSecretsIoV1beta1SecretStoreSpecProviderGitlab
-
     ibm?: ExternalSecretsIoV1beta1SecretStoreSpecProviderIbm
-
     infisical?: ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisical
-
     keepersecurity?: ExternalSecretsIoV1beta1SecretStoreSpecProviderKeepersecurity
-
     kubernetes?: ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetes
-
     onboardbase?: ExternalSecretsIoV1beta1SecretStoreSpecProviderOnboardbase
-
     onepassword?: ExternalSecretsIoV1beta1SecretStoreSpecProviderOnepassword
-
     oracle?: ExternalSecretsIoV1beta1SecretStoreSpecProviderOracle
-
     passbolt?: ExternalSecretsIoV1beta1SecretStoreSpecProviderPassbolt
-
     passworddepot?: ExternalSecretsIoV1beta1SecretStoreSpecProviderPassworddepot
-
     previder?: ExternalSecretsIoV1beta1SecretStoreSpecProviderPrevider
-
     pulumi?: ExternalSecretsIoV1beta1SecretStoreSpecProviderPulumi
-
     scaleway?: ExternalSecretsIoV1beta1SecretStoreSpecProviderScaleway
-
     secretserver?: ExternalSecretsIoV1beta1SecretStoreSpecProviderSecretserver
-
     senhasegura?: ExternalSecretsIoV1beta1SecretStoreSpecProviderSenhasegura
-
     vault?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVault
-
     webhook?: ExternalSecretsIoV1beta1SecretStoreSpecProviderWebhook
-
     yandexcertificatemanager?: ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanager
-
     yandexlockbox?: ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockbox
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeyless:
     r"""
@@ -307,16 +247,12 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeyless:
     caProvider : ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessCaProvider, default is Undefined, optional
         ca provider
     """
-
-
     akeylessGWApiURL: str
 
     authSecretRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRef
 
     caBundle?: str
-
     caProvider?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessCaProvider
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRef:
     r"""
@@ -329,12 +265,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRef:
     secretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefSecretRef, default is Undefined, optional
         secret ref
     """
-
-
     kubernetesAuth?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefKubernetesAuth
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefKubernetesAuth:
     r"""
@@ -352,16 +284,12 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefKuber
     serviceAccountRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefKubernetesAuthServiceAccountRef, default is Undefined, optional
         service account ref
     """
-
-
     accessID: str
 
     k8sConfName: str
 
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefKubernetesAuthSecretRef
-
     serviceAccountRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefKubernetesAuthServiceAccountRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefKubernetesAuthSecretRef:
     r"""
@@ -381,14 +309,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefKuber
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -400,7 +323,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefKuber
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefKubernetesAuthServiceAccountRef:
     r"""
@@ -421,14 +343,10 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefKuber
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -437,7 +355,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefKuber
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefSecretRef:
     r"""
@@ -453,14 +370,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefSecre
     accessTypeParam : ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefSecretRefAccessTypeParam, default is Undefined, optional
         access type param
     """
-
-
     accessID?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefSecretRefAccessID
-
     accessType?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefSecretRefAccessType
-
     accessTypeParam?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefSecretRefAccessTypeParam
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefSecretRefAccessID:
     r"""
@@ -477,14 +389,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefSecre
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -496,7 +403,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefSecre
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefSecretRefAccessType:
     r"""
@@ -514,14 +420,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefSecre
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -533,7 +434,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefSecre
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefSecretRefAccessTypeParam:
     r"""
@@ -551,14 +451,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefSecre
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -570,7 +465,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefSecre
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessCaProvider:
     r"""
@@ -588,16 +482,11 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessCaProvider:
     $type : str, default is Undefined, required
         The type of provider to use such as "Secret", or "ConfigMap".
     """
-
-
     key?: str
-
     name: str
 
     namespace?: str
-
     $type: "Secret" | "ConfigMap"
-
 
     check:
         len(key) <= 253 if key
@@ -610,7 +499,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessCaProvider:
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibaba:
     r"""
     Alibaba configures this store to sync secrets using Alibaba Cloud provider
@@ -622,12 +510,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibaba:
     regionID : str, default is Undefined, required
         Alibaba Region to be used for the provider
     """
-
-
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuth
 
     regionID: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuth:
     r"""
@@ -640,12 +525,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuth:
     secretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuthSecretRef, default is Undefined, optional
         secret ref
     """
-
-
     rrsa?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuthRrsa
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuthSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuthRrsa:
     r"""
@@ -662,8 +543,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuthRrsa:
     sessionName : str, default is Undefined, required
         session name
     """
-
-
     oidcProviderArn: str
 
     oidcTokenFilePath: str
@@ -671,7 +550,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuthRrsa:
     roleArn: str
 
     sessionName: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuthSecretRef:
     r"""
@@ -684,12 +562,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuthSecretRef:
     accessKeySecretSecretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuthSecretRefAccessKeySecretSecretRef, default is Undefined, required
         access key secret secret ref
     """
-
-
     accessKeyIDSecretRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuthSecretRefAccessKeyIDSecretRef
 
     accessKeySecretSecretRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuthSecretRefAccessKeySecretSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuthSecretRefAccessKeyIDSecretRef:
     r"""
@@ -706,14 +581,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuthSecretRefAccess
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -725,7 +595,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuthSecretRefAccess
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuthSecretRefAccessKeySecretSecretRef:
     r"""
@@ -742,14 +611,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuthSecretRefAccess
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -761,7 +625,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAlibabaAuthSecretRefAccess
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAws:
     r"""
@@ -790,28 +653,18 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAws:
     transitiveTagKeys : [str], default is Undefined, optional
         AWS STS assume role transitive session tags. Required when multiple rules are used with the provider
     """
-
-
     additionalRoles?: [str]
-
     auth?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuth
-
     externalID?: str
-
     prefix?: str
-
     region: str
 
     role?: str
-
     secretsManager?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsSecretsManager
-
     service: "SecretsManager" | "ParameterStore"
 
     sessionTags?: [ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsSessionTagsItems0]
-
     transitiveTagKeys?: [str]
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuth:
     r"""
@@ -826,12 +679,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuth:
     secretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthSecretRef, default is Undefined, optional
         secret ref
     """
-
-
     jwt?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthJwt
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthJwt:
     r"""
@@ -842,10 +691,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthJwt:
     serviceAccountRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthJwtServiceAccountRef, default is Undefined, optional
         service account ref
     """
-
-
     serviceAccountRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthJwtServiceAccountRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthJwtServiceAccountRef:
     r"""
@@ -863,14 +709,10 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthJwtServiceAccountRe
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -879,7 +721,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthJwtServiceAccountRe
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthSecretRef:
     r"""
@@ -895,14 +736,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthSecretRef:
     sessionTokenSecretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthSecretRefSessionTokenSecretRef, default is Undefined, optional
         session token secret ref
     """
-
-
     accessKeyIDSecretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthSecretRefAccessKeyIDSecretRef
-
     secretAccessKeySecretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthSecretRefSecretAccessKeySecretRef
-
     sessionTokenSecretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthSecretRefSessionTokenSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthSecretRefAccessKeyIDSecretRef:
     r"""
@@ -919,14 +755,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthSecretRefAccessKeyI
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -938,7 +769,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthSecretRefAccessKeyI
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthSecretRefSecretAccessKeySecretRef:
     r"""
@@ -955,14 +785,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthSecretRefSecretAcce
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -974,7 +799,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthSecretRefSecretAcce
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthSecretRefSessionTokenSecretRef:
     r"""
@@ -993,14 +817,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthSecretRefSessionTok
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1012,7 +831,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthSecretRefSessionTok
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsSecretsManager:
     r"""
@@ -1033,12 +851,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsSecretsManager:
         then by default Secrets Manager uses a 30 day recovery window.
         see: https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_DeleteSecret.html#SecretsManager-DeleteSecret-request-RecoveryWindowInDays
     """
-
-
     forceDeleteWithoutRecovery?: bool
-
     recoveryWindowInDays?: int
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsSessionTagsItems0:
     r"""
@@ -1051,12 +865,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsSessionTagsItems0:
     value : str, default is Undefined, required
         value
     """
-
-
     key: str
 
     value: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekv:
     r"""
@@ -1085,22 +896,13 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekv:
     vaultUrl : str, default is Undefined, required
         Vault Url from which the secrets to be fetched from.
     """
-
-
     authSecretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRef
-
     authType?: "ServicePrincipal" | "ManagedIdentity" | "WorkloadIdentity" = "ServicePrincipal"
-
     environmentType?: "PublicCloud" | "USGovernmentCloud" | "ChinaCloud" | "GermanCloud" = "PublicCloud"
-
     identityId?: str
-
     serviceAccountRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvServiceAccountRef
-
     tenantId?: str
-
     vaultUrl: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRef:
     r"""
@@ -1117,16 +919,10 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRef:
     tenantId : ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRefTenantID, default is Undefined, optional
         tenant Id
     """
-
-
     clientCertificate?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRefClientCertificate
-
     clientId?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRefClientID
-
     clientSecret?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRefClientSecret
-
     tenantId?: ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRefTenantID
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRefClientCertificate:
     r"""
@@ -1143,14 +939,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRefClient
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1162,7 +953,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRefClient
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRefClientID:
     r"""
@@ -1179,14 +969,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRefClient
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1198,7 +983,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRefClient
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRefClientSecret:
     r"""
@@ -1215,14 +999,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRefClient
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1234,7 +1013,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRefClient
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRefTenantID:
     r"""
@@ -1251,14 +1029,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRefTenant
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1270,7 +1043,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvAuthSecretRefTenant
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvServiceAccountRef:
     r"""
@@ -1289,14 +1061,10 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvServiceAccountRef:
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -1305,7 +1073,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvServiceAccountRef:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrust:
     r"""
@@ -1318,12 +1085,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrust:
     server : ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustServer, default is Undefined, required
         server
     """
-
-
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuth
 
     server: ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustServer
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuth:
     r"""
@@ -1342,18 +1106,11 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuth:
     clientSecret : ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthClientSecret, default is Undefined, optional
         client secret
     """
-
-
     apiKey?: ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthAPIKey
-
     certificate?: ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthCertificate
-
     certificateKey?: ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthCertificateKey
-
     clientId?: ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthClientID
-
     clientSecret?: ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthClientSecret
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthAPIKey:
     r"""
@@ -1366,12 +1123,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthAPIKey:
     value : str, default is Undefined, optional
         Value can be specified directly to set a value without using a secret.
     """
-
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthAPIKeySecretRef
-
     value?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthAPIKeySecretRef:
     r"""
@@ -1388,14 +1141,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthAPIKeySecre
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1408,7 +1156,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthAPIKeySecre
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthCertificate:
     r"""
     Certificate (cert.pem) for use when authenticating with an OAuth client Id using a Client Certificate.
@@ -1420,12 +1167,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthCertificate
     value : str, default is Undefined, optional
         Value can be specified directly to set a value without using a secret.
     """
-
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthCertificateSecretRef
-
     value?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthCertificateKey:
     r"""
@@ -1438,12 +1181,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthCertificate
     value : str, default is Undefined, optional
         Value can be specified directly to set a value without using a secret.
     """
-
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthCertificateKeySecretRef
-
     value?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthCertificateKeySecretRef:
     r"""
@@ -1460,14 +1199,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthCertificate
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1479,7 +1213,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthCertificate
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthCertificateSecretRef:
     r"""
@@ -1496,14 +1229,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthCertificate
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1516,7 +1244,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthCertificate
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthClientID:
     r"""
     ClientID is the API OAuth Client ID.
@@ -1528,12 +1255,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthClientID:
     value : str, default is Undefined, optional
         Value can be specified directly to set a value without using a secret.
     """
-
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthClientIDSecretRef
-
     value?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthClientIDSecretRef:
     r"""
@@ -1550,14 +1273,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthClientIDSec
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1570,7 +1288,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthClientIDSec
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthClientSecret:
     r"""
     ClientSecret is the API OAuth Client Secret.
@@ -1582,12 +1299,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthClientSecre
     value : str, default is Undefined, optional
         Value can be specified directly to set a value without using a secret.
     """
-
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthClientSecretSecretRef
-
     value?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthClientSecretSecretRef:
     r"""
@@ -1604,14 +1317,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthClientSecre
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1623,7 +1331,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustAuthClientSecre
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustServer:
     r"""
@@ -1644,20 +1351,13 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBeyondtrustServer:
     verifyCA : bool, default is Undefined, required
         verify c a
     """
-
-
     apiUrl: str
 
     apiVersion?: str
-
     clientTimeOutSeconds?: int
-
     retrievalType?: str
-
     separator?: str
-
     verifyCA: bool
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanager:
     r"""
@@ -1683,24 +1383,16 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanager:
     projectID : str, default is Undefined, required
         ProjectID determines which project this secret store manages.
     """
-
-
     apiURL?: str
-
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanagerAuth
 
     bitwardenServerSDKURL?: str
-
     caBundle?: str
-
     caProvider?: ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanagerCaProvider
-
     identityURL?: str
-
     organizationID: str
 
     projectID: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanagerAuth:
     r"""
@@ -1712,10 +1404,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanagerAut
     secretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanagerAuthSecretRef, default is Undefined, required
         secret ref
     """
-
-
     secretRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanagerAuthSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanagerAuthSecretRef:
     r"""
@@ -1726,10 +1415,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanagerAut
     credentials : ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanagerAuthSecretRefCredentials, default is Undefined, required
         credentials
     """
-
-
     credentials: ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanagerAuthSecretRefCredentials
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanagerAuthSecretRefCredentials:
     r"""
@@ -1746,14 +1432,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanagerAut
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1765,7 +1446,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanagerAut
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanagerCaProvider:
     r"""
@@ -1783,16 +1463,11 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanagerCaP
     $type : str, default is Undefined, required
         The type of provider to use such as "Secret", or "ConfigMap".
     """
-
-
     key?: str
-
     name: str
 
     namespace?: str
-
     $type: "Secret" | "ConfigMap"
-
 
     check:
         len(key) <= 253 if key
@@ -1804,7 +1479,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderBitwardensecretsmanagerCaP
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderChef:
     r"""
@@ -1819,14 +1493,11 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderChef:
     username : str, default is Undefined, required
         UserName should be the user ID on the chef server
     """
-
-
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderChefAuth
 
     serverUrl: str
 
     username: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderChefAuth:
     r"""
@@ -1837,10 +1508,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderChefAuth:
     secretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderChefAuthSecretRef, default is Undefined, required
         secret ref
     """
-
-
     secretRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderChefAuthSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderChefAuthSecretRef:
     r"""
@@ -1851,10 +1519,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderChefAuthSecretRef:
     privateKeySecretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderChefAuthSecretRefPrivateKeySecretRef, default is Undefined, required
         private key secret ref
     """
-
-
     privateKeySecretRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderChefAuthSecretRefPrivateKeySecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderChefAuthSecretRefPrivateKeySecretRef:
     r"""
@@ -1871,14 +1536,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderChefAuthSecretRefPrivateKe
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1890,7 +1550,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderChefAuthSecretRefPrivateKe
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjur:
     r"""
@@ -1907,16 +1566,11 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjur:
     url : str, default is Undefined, required
         url
     """
-
-
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuth
 
     caBundle?: str
-
     caProvider?: ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurCaProvider
-
     url: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuth:
     r"""
@@ -1929,12 +1583,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuth:
     jwt : ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthJwt, default is Undefined, optional
         jwt
     """
-
-
     apikey?: ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthApikey
-
     jwt?: ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthJwt
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthApikey:
     r"""
@@ -1949,14 +1599,11 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthApikey:
     userRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthApikeyUserRef, default is Undefined, required
         user ref
     """
-
-
     account: str
 
     apiKeyRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthApikeyAPIKeyRef
 
     userRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthApikeyUserRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthApikeyAPIKeyRef:
     r"""
@@ -1974,14 +1621,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthApikeyAPIKeyRef:
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1993,7 +1635,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthApikeyAPIKeyRef:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthApikeyUserRef:
     r"""
@@ -2011,14 +1652,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthApikeyUserRef:
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -2030,7 +1666,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthApikeyUserRef:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthJwt:
     r"""
@@ -2050,18 +1685,12 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthJwt:
     serviceID : str, default is Undefined, required
         The conjur authn jwt webservice id
     """
-
-
     account: str
 
     hostId?: str
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthJwtSecretRef
-
     serviceAccountRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthJwtServiceAccountRef
-
     serviceID: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthJwtSecretRef:
     r"""
@@ -2079,14 +1708,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthJwtSecretRef:
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -2098,7 +1722,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthJwtSecretRef:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthJwtServiceAccountRef:
     r"""
@@ -2117,14 +1740,10 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthJwtServiceAccoun
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -2133,7 +1752,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthJwtServiceAccoun
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurCaProvider:
     r"""
@@ -2153,16 +1771,11 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurCaProvider:
     $type : str, default is Undefined, required
         The type of provider to use such as "Secret", or "ConfigMap".
     """
-
-
     key?: str
-
     name: str
 
     namespace?: str
-
     $type: "Secret" | "ConfigMap"
-
 
     check:
         len(key) <= 253 if key
@@ -2174,7 +1787,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurCaProvider:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDelinea:
     r"""
@@ -2196,8 +1808,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDelinea:
         URLTemplate
         If unset, defaults to "https://%s.secretsvaultcloud.%s/v1/%s%s".
     """
-
-
     clientId: ExternalSecretsIoV1beta1SecretStoreSpecProviderDelineaClientID
 
     clientSecret: ExternalSecretsIoV1beta1SecretStoreSpecProviderDelineaClientSecret
@@ -2205,9 +1815,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDelinea:
     tenant: str
 
     tld?: str
-
     urlTemplate?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDelineaClientID:
     r"""
@@ -2220,12 +1828,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDelineaClientID:
     value : str, default is Undefined, optional
         Value can be specified directly to set a value without using a secret.
     """
-
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderDelineaClientIDSecretRef
-
     value?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDelineaClientIDSecretRef:
     r"""
@@ -2242,14 +1846,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDelineaClientIDSecretRef:
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -2262,7 +1861,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDelineaClientIDSecretRef:
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDelineaClientSecret:
     r"""
     ClientSecret is the secret part of the credential.
@@ -2274,12 +1872,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDelineaClientSecret:
     value : str, default is Undefined, optional
         Value can be specified directly to set a value without using a secret.
     """
-
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderDelineaClientSecretSecretRef
-
     value?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDelineaClientSecretSecretRef:
     r"""
@@ -2296,14 +1890,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDelineaClientSecretSecretR
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -2316,7 +1905,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDelineaClientSecretSecretR
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDevice42:
     r"""
     Device42 configures this store to sync secrets using the Device42 provider
@@ -2328,12 +1916,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDevice42:
     host : str, default is Undefined, required
         URL configures the Device42 instance URL.
     """
-
-
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderDevice42Auth
 
     host: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDevice42Auth:
     r"""
@@ -2344,10 +1929,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDevice42Auth:
     secretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderDevice42AuthSecretRef, default is Undefined, required
         secret ref
     """
-
-
     secretRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderDevice42AuthSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDevice42AuthSecretRef:
     r"""
@@ -2358,10 +1940,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDevice42AuthSecretRef:
     credentials : ExternalSecretsIoV1beta1SecretStoreSpecProviderDevice42AuthSecretRefCredentials, default is Undefined, optional
         credentials
     """
-
-
     credentials?: ExternalSecretsIoV1beta1SecretStoreSpecProviderDevice42AuthSecretRefCredentials
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDevice42AuthSecretRefCredentials:
     r"""
@@ -2378,14 +1957,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDevice42AuthSecretRefCrede
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -2397,7 +1971,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDevice42AuthSecretRefCrede
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDoppler:
     r"""
@@ -2416,18 +1989,12 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDoppler:
     project : str, default is Undefined, optional
         Doppler project (required if not using a Service Token)
     """
-
-
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderDopplerAuth
 
     config?: str
-
     format?: "json" | "dotnet-json" | "env" | "yaml" | "docker"
-
     nameTransformer?: "upper-camel" | "camel" | "lower-snake" | "tf-var" | "dotnet-env" | "lower-kebab"
-
     project?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDopplerAuth:
     r"""
@@ -2438,10 +2005,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDopplerAuth:
     secretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderDopplerAuthSecretRef, default is Undefined, required
         secret ref
     """
-
-
     secretRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderDopplerAuthSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDopplerAuthSecretRef:
     r"""
@@ -2452,10 +2016,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDopplerAuthSecretRef:
     dopplerToken : ExternalSecretsIoV1beta1SecretStoreSpecProviderDopplerAuthSecretRefDopplerToken, default is Undefined, required
         doppler token
     """
-
-
     dopplerToken: ExternalSecretsIoV1beta1SecretStoreSpecProviderDopplerAuthSecretRefDopplerToken
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDopplerAuthSecretRefDopplerToken:
     r"""
@@ -2474,14 +2035,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDopplerAuthSecretRefDopple
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -2494,7 +2050,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderDopplerAuthSecretRefDopple
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderFake:
     r"""
     Fake configures a store with static key/value pairs
@@ -2504,10 +2059,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderFake:
     data : [ExternalSecretsIoV1beta1SecretStoreSpecProviderFakeDataItems0], default is Undefined, required
         data
     """
-
-
     data: [ExternalSecretsIoV1beta1SecretStoreSpecProviderFakeDataItems0]
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderFakeDataItems0:
     r"""
@@ -2524,16 +2076,11 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderFakeDataItems0:
     version : str, default is Undefined, optional
         version
     """
-
-
     key: str
 
     value?: str
-
     valueMap?: {str:str}
-
     version?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderFortanix:
     r"""
@@ -2546,12 +2093,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderFortanix:
     apiUrl : str, default is Undefined, optional
         APIURL is the URL of SDKMS API. Defaults to `sdkms.fortanix.com`.
     """
-
-
     apiKey?: ExternalSecretsIoV1beta1SecretStoreSpecProviderFortanixAPIKey
-
     apiUrl?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderFortanixAPIKey:
     r"""
@@ -2562,10 +2105,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderFortanixAPIKey:
     secretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderFortanixAPIKeySecretRef, default is Undefined, optional
         secret ref
     """
-
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderFortanixAPIKeySecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderFortanixAPIKeySecretRef:
     r"""
@@ -2582,14 +2122,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderFortanixAPIKeySecretRef:
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -2601,7 +2136,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderFortanixAPIKeySecretRef:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsm:
     r"""
@@ -2616,14 +2150,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsm:
     projectID : str, default is Undefined, optional
         ProjectID project where secret is located
     """
-
-
     auth?: ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuth
-
     location?: str
-
     projectID?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuth:
     r"""
@@ -2636,12 +2165,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuth:
     workloadIdentity : ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuthWorkloadIdentity, default is Undefined, optional
         workload identity
     """
-
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuthSecretRef
-
     workloadIdentity?: ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuthWorkloadIdentity
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuthSecretRef:
     r"""
@@ -2652,10 +2177,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuthSecretRef:
     secretAccessKeySecretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuthSecretRefSecretAccessKeySecretRef, default is Undefined, optional
         secret access key secret ref
     """
-
-
     secretAccessKeySecretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuthSecretRefSecretAccessKeySecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuthSecretRefSecretAccessKeySecretRef:
     r"""
@@ -2672,14 +2194,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuthSecretRefSecretAc
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -2691,7 +2208,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuthSecretRefSecretAc
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuthWorkloadIdentity:
     r"""
@@ -2708,16 +2224,12 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuthWorkloadIdentity:
     serviceAccountRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuthWorkloadIdentityServiceAccountRef, default is Undefined, required
         service account ref
     """
-
-
     clusterLocation: str
 
     clusterName: str
 
     clusterProjectID?: str
-
     serviceAccountRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuthWorkloadIdentityServiceAccountRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuthWorkloadIdentityServiceAccountRef:
     r"""
@@ -2735,14 +2247,10 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuthWorkloadIdentityS
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -2751,7 +2259,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuthWorkloadIdentityS
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGithub:
     r"""
@@ -2776,24 +2283,18 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGithub:
     url : str, default is "https://github.com/", optional
         URL configures the Github instance URL. Defaults to https://github.com/.
     """
-
-
     appID: int
 
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderGithubAuth
 
     environment?: str
-
     installationID: int
 
     organization: str
 
     repository?: str
-
     uploadURL?: str
-
     url?: str = "https://github.com/"
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGithubAuth:
     r"""
@@ -2804,10 +2305,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGithubAuth:
     privateKey : ExternalSecretsIoV1beta1SecretStoreSpecProviderGithubAuthPrivateKey, default is Undefined, required
         private key
     """
-
-
     privateKey: ExternalSecretsIoV1beta1SecretStoreSpecProviderGithubAuthPrivateKey
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGithubAuthPrivateKey:
     r"""
@@ -2825,14 +2323,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGithubAuthPrivateKey:
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -2844,7 +2337,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGithubAuthPrivateKey:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGitlab:
     r"""
@@ -2865,20 +2357,13 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGitlab:
     url : str, default is Undefined, optional
         URL configures the GitLab instance URL. Defaults to https://gitlab.com/.
     """
-
-
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderGitlabAuth
 
     environment?: str
-
     groupIDs?: [str]
-
     inheritFromGroups?: bool
-
     projectID?: str
-
     url?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGitlabAuth:
     r"""
@@ -2889,10 +2374,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGitlabAuth:
     SecretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderGitlabAuthSecretRef, default is Undefined, required
         secret ref
     """
-
-
     SecretRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderGitlabAuthSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGitlabAuthSecretRef:
     r"""
@@ -2903,10 +2385,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGitlabAuthSecretRef:
     accessToken : ExternalSecretsIoV1beta1SecretStoreSpecProviderGitlabAuthSecretRefAccessToken, default is Undefined, optional
         access token
     """
-
-
     accessToken?: ExternalSecretsIoV1beta1SecretStoreSpecProviderGitlabAuthSecretRefAccessToken
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGitlabAuthSecretRefAccessToken:
     r"""
@@ -2923,14 +2402,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGitlabAuthSecretRefAccessT
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -2943,7 +2417,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGitlabAuthSecretRefAccessT
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderIbm:
     r"""
     IBM configures this store to sync secrets using IBM Cloud provider
@@ -2955,12 +2428,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderIbm:
     serviceUrl : str, default is Undefined, optional
         ServiceURL is the Endpoint URL that is specific to the Secrets Manager service instance
     """
-
-
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderIbmAuth
 
     serviceUrl?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderIbmAuth:
     r"""
@@ -2973,12 +2443,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderIbmAuth:
     secretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderIbmAuthSecretRef, default is Undefined, optional
         secret ref
     """
-
-
     containerAuth?: ExternalSecretsIoV1beta1SecretStoreSpecProviderIbmAuthContainerAuth
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderIbmAuthSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderIbmAuthContainerAuth:
     r"""
@@ -2993,14 +2459,10 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderIbmAuthContainerAuth:
     tokenLocation : str, default is Undefined, optional
         Location the token is mounted on the pod
     """
-
-
     iamEndpoint?: str
-
     profile: str
 
     tokenLocation?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderIbmAuthSecretRef:
     r"""
@@ -3011,10 +2473,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderIbmAuthSecretRef:
     secretApiKeySecretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderIbmAuthSecretRefSecretAPIKeySecretRef, default is Undefined, optional
         secret Api key secret ref
     """
-
-
     secretApiKeySecretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderIbmAuthSecretRefSecretAPIKeySecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderIbmAuthSecretRefSecretAPIKeySecretRef:
     r"""
@@ -3031,14 +2490,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderIbmAuthSecretRefSecretAPIK
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -3050,7 +2504,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderIbmAuthSecretRefSecretAPIK
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisical:
     r"""
@@ -3065,14 +2518,10 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisical:
     secretsScope : ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalSecretsScope, default is Undefined, required
         secrets scope
     """
-
-
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalAuth
 
     hostAPI?: str = "https://app.infisical.com/api"
-
     secretsScope: ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalSecretsScope
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalAuth:
     r"""
@@ -3083,10 +2532,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalAuth:
     universalAuthCredentials : ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalAuthUniversalAuthCredentials, default is Undefined, optional
         universal auth credentials
     """
-
-
     universalAuthCredentials?: ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalAuthUniversalAuthCredentials
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalAuthUniversalAuthCredentials:
     r"""
@@ -3099,12 +2545,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalAuthUniversalAuth
     clientSecret : ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalAuthUniversalAuthCredentialsClientSecret, default is Undefined, required
         client secret
     """
-
-
     clientId: ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalAuthUniversalAuthCredentialsClientID
 
     clientSecret: ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalAuthUniversalAuthCredentialsClientSecret
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalAuthUniversalAuthCredentialsClientID:
     r"""
@@ -3122,14 +2565,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalAuthUniversalAuth
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -3141,7 +2579,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalAuthUniversalAuth
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalAuthUniversalAuthCredentialsClientSecret:
     r"""
@@ -3159,14 +2596,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalAuthUniversalAuth
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -3178,7 +2610,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalAuthUniversalAuth
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalSecretsScope:
     r"""
@@ -3195,16 +2626,12 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderInfisicalSecretsScope:
     secretsPath : str, default is "/", optional
         secrets path
     """
-
-
     environmentSlug: str
 
     projectSlug: str
 
     recursive?: bool = False
-
     secretsPath?: str = "/"
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKeepersecurity:
     r"""
@@ -3217,12 +2644,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKeepersecurity:
     folderID : str, default is Undefined, required
         folder ID
     """
-
-
     authRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderKeepersecurityAuthRef
 
     folderID: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKeepersecurityAuthRef:
     r"""
@@ -3240,14 +2664,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKeepersecurityAuthRef:
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -3259,7 +2678,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKeepersecurityAuthRef:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetes:
     r"""
@@ -3276,22 +2694,15 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetes:
     server : ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesServer, default is Undefined, optional
         server
     """
-
-
     auth?: ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuth
-
     authRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthRef
-
     remoteNamespace?: str = "default"
-
     server?: ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesServer
-
 
     check:
         len(remoteNamespace) <= 63 if remoteNamespace
         len(remoteNamespace) >= 1 if remoteNamespace
         _regex_match(str(remoteNamespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if remoteNamespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuth:
     r"""
@@ -3306,14 +2717,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuth:
     token : ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthToken, default is Undefined, optional
         token
     """
-
-
     cert?: ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthCert
-
     serviceAccount?: ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthServiceAccount
-
     token?: ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthToken
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthCert:
     r"""
@@ -3326,12 +2732,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthCert:
     clientKey : ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthCertClientKey, default is Undefined, optional
         client key
     """
-
-
     clientCert?: ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthCertClientCert
-
     clientKey?: ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthCertClientKey
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthCertClientCert:
     r"""
@@ -3349,14 +2751,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthCertClientCe
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -3368,7 +2765,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthCertClientCe
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthCertClientKey:
     r"""
@@ -3386,14 +2782,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthCertClientKe
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -3405,7 +2796,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthCertClientKe
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthRef:
     r"""
@@ -3422,14 +2812,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthRef:
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -3441,7 +2826,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthRef:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthServiceAccount:
     r"""
@@ -3459,14 +2843,10 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthServiceAccou
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -3475,7 +2855,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthServiceAccou
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthToken:
     r"""
@@ -3486,10 +2865,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthToken:
     bearerToken : ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthTokenBearerToken, default is Undefined, optional
         bearer token
     """
-
-
     bearerToken?: ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthTokenBearerToken
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthTokenBearerToken:
     r"""
@@ -3507,14 +2883,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthTokenBearerT
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -3526,7 +2897,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthTokenBearerT
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesServer:
     r"""
@@ -3541,14 +2911,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesServer:
     url : str, default is "kubernetes.default", optional
         configures the Kubernetes server Address.
     """
-
-
     caBundle?: str
-
     caProvider?: ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesServerCaProvider
-
     url?: str = "kubernetes.default"
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesServerCaProvider:
     r"""
@@ -3566,16 +2931,11 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesServerCaProvider
     $type : str, default is Undefined, required
         The type of provider to use such as "Secret", or "ConfigMap".
     """
-
-
     key?: str
-
     name: str
 
     namespace?: str
-
     $type: "Secret" | "ConfigMap"
-
 
     check:
         len(key) <= 253 if key
@@ -3587,7 +2947,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesServerCaProvider
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnboardbase:
     r"""
@@ -3604,8 +2963,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnboardbase:
     project : str, default is "development", required
         Project is an onboardbase project that the secrets should be pulled from
     """
-
-
     apiHost: str = "https://public.onboardbase.com/api/v1/"
 
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderOnboardbaseAuth
@@ -3613,7 +2970,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnboardbase:
     environment: str = "development"
 
     project: str = "development"
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnboardbaseAuth:
     r"""
@@ -3626,12 +2982,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnboardbaseAuth:
     passcodeRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderOnboardbaseAuthPasscodeRef, default is Undefined, required
         passcode ref
     """
-
-
     apiKeyRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderOnboardbaseAuthAPIKeyRef
 
     passcodeRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderOnboardbaseAuthPasscodeRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnboardbaseAuthAPIKeyRef:
     r"""
@@ -3649,14 +3002,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnboardbaseAuthAPIKeyRef:
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -3668,7 +3016,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnboardbaseAuthAPIKeyRef:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnboardbaseAuthPasscodeRef:
     r"""
@@ -3685,14 +3032,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnboardbaseAuthPasscodeRef
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -3704,7 +3046,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnboardbaseAuthPasscodeRef
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnepassword:
     r"""
@@ -3719,14 +3060,11 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnepassword:
     vaults : {str:int}, default is Undefined, required
         Vaults defines which OnePassword vaults to search in which order
     """
-
-
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderOnepasswordAuth
 
     connectHost: str
 
     vaults: {str:int}
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnepasswordAuth:
     r"""
@@ -3737,10 +3075,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnepasswordAuth:
     secretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderOnepasswordAuthSecretRef, default is Undefined, required
         secret ref
     """
-
-
     secretRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderOnepasswordAuthSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnepasswordAuthSecretRef:
     r"""
@@ -3751,10 +3086,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnepasswordAuthSecretRef:
     connectTokenSecretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderOnepasswordAuthSecretRefConnectTokenSecretRef, default is Undefined, required
         connect token secret ref
     """
-
-
     connectTokenSecretRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderOnepasswordAuthSecretRefConnectTokenSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnepasswordAuthSecretRefConnectTokenSecretRef:
     r"""
@@ -3771,14 +3103,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnepasswordAuthSecretRefCo
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -3790,7 +3117,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOnepasswordAuthSecretRefCo
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOracle:
     r"""
@@ -3817,22 +3143,14 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOracle:
     vault : str, default is Undefined, required
         Vault is the vault's OCID of the specific vault where secret is located.
     """
-
-
     auth?: ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleAuth
-
     compartment?: str
-
     encryptionKey?: str
-
     principalType?: "" | "UserPrincipal" | "InstancePrincipal" | "Workload"
-
     region: str
 
     serviceAccountRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleServiceAccountRef
-
     vault: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleAuth:
     r"""
@@ -3848,14 +3166,11 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleAuth:
     user : str, default is Undefined, required
         User is an access OCID specific to the account.
     """
-
-
     secretRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleAuthSecretRef
 
     tenancy: str
 
     user: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleAuthSecretRef:
     r"""
@@ -3868,12 +3183,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleAuthSecretRef:
     privatekey : ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleAuthSecretRefPrivatekey, default is Undefined, required
         privatekey
     """
-
-
     fingerprint: ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleAuthSecretRefFingerprint
 
     privatekey: ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleAuthSecretRefPrivatekey
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleAuthSecretRefFingerprint:
     r"""
@@ -3890,14 +3202,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleAuthSecretRefFingerp
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -3909,7 +3216,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleAuthSecretRefFingerp
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleAuthSecretRefPrivatekey:
     r"""
@@ -3926,14 +3232,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleAuthSecretRefPrivate
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -3945,7 +3246,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleAuthSecretRefPrivate
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleServiceAccountRef:
     r"""
@@ -3964,14 +3264,10 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleServiceAccountRef:
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -3980,7 +3276,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleServiceAccountRef:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassbolt:
     r"""
@@ -3993,12 +3288,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassbolt:
     host : str, default is Undefined, required
         Host defines the Passbolt Server to connect to
     """
-
-
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderPassboltAuth
 
     host: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassboltAuth:
     r"""
@@ -4011,12 +3303,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassboltAuth:
     privateKeySecretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderPassboltAuthPrivateKeySecretRef, default is Undefined, required
         private key secret ref
     """
-
-
     passwordSecretRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderPassboltAuthPasswordSecretRef
 
     privateKeySecretRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderPassboltAuthPrivateKeySecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassboltAuthPasswordSecretRef:
     r"""
@@ -4034,14 +3323,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassboltAuthPasswordSecret
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -4053,7 +3337,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassboltAuthPasswordSecret
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassboltAuthPrivateKeySecretRef:
     r"""
@@ -4071,14 +3354,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassboltAuthPrivateKeySecr
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -4090,7 +3368,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassboltAuthPrivateKeySecr
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassworddepot:
     r"""
@@ -4105,14 +3382,11 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassworddepot:
     host : str, default is Undefined, required
         URL configures the Password Depot instance URL.
     """
-
-
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderPassworddepotAuth
 
     database: str
 
     host: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassworddepotAuth:
     r"""
@@ -4123,10 +3397,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassworddepotAuth:
     secretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderPassworddepotAuthSecretRef, default is Undefined, required
         secret ref
     """
-
-
     secretRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderPassworddepotAuthSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassworddepotAuthSecretRef:
     r"""
@@ -4137,10 +3408,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassworddepotAuthSecretRef
     credentials : ExternalSecretsIoV1beta1SecretStoreSpecProviderPassworddepotAuthSecretRefCredentials, default is Undefined, optional
         credentials
     """
-
-
     credentials?: ExternalSecretsIoV1beta1SecretStoreSpecProviderPassworddepotAuthSecretRefCredentials
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassworddepotAuthSecretRefCredentials:
     r"""
@@ -4157,14 +3425,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassworddepotAuthSecretRef
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -4177,7 +3440,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPassworddepotAuthSecretRef
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPrevider:
     r"""
     Previder configures this store to sync secrets using the Previder provider
@@ -4189,12 +3451,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPrevider:
     baseUri : str, default is Undefined, optional
         base Uri
     """
-
-
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderPreviderAuth
 
     baseUri?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPreviderAuth:
     r"""
@@ -4205,10 +3464,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPreviderAuth:
     secretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderPreviderAuthSecretRef, default is Undefined, optional
         secret ref
     """
-
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderPreviderAuthSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPreviderAuthSecretRef:
     r"""
@@ -4219,10 +3475,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPreviderAuthSecretRef:
     accessToken : ExternalSecretsIoV1beta1SecretStoreSpecProviderPreviderAuthSecretRefAccessToken, default is Undefined, required
         access token
     """
-
-
     accessToken: ExternalSecretsIoV1beta1SecretStoreSpecProviderPreviderAuthSecretRefAccessToken
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPreviderAuthSecretRefAccessToken:
     r"""
@@ -4239,14 +3492,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPreviderAuthSecretRefAcces
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -4258,7 +3506,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPreviderAuthSecretRefAcces
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPulumi:
     r"""
@@ -4281,18 +3528,14 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPulumi:
     project : str, default is Undefined, required
         Project is the name of the Pulumi ESC project the environment belongs to.
     """
-
-
     accessToken: ExternalSecretsIoV1beta1SecretStoreSpecProviderPulumiAccessToken
 
     apiUrl?: str = "https://api.pulumi.com/api/esc"
-
     environment: str
 
     organization: str
 
     project: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPulumiAccessToken:
     r"""
@@ -4303,10 +3546,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPulumiAccessToken:
     secretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderPulumiAccessTokenSecretRef, default is Undefined, optional
         secret ref
     """
-
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderPulumiAccessTokenSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPulumiAccessTokenSecretRef:
     r"""
@@ -4323,14 +3563,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPulumiAccessTokenSecretRef
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -4342,7 +3577,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderPulumiAccessTokenSecretRef
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderScaleway:
     r"""
@@ -4361,18 +3595,14 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderScaleway:
     secretKey : ExternalSecretsIoV1beta1SecretStoreSpecProviderScalewaySecretKey, default is Undefined, required
         secret key
     """
-
-
     accessKey: ExternalSecretsIoV1beta1SecretStoreSpecProviderScalewayAccessKey
 
     apiUrl?: str
-
     projectId: str
 
     region: str
 
     secretKey: ExternalSecretsIoV1beta1SecretStoreSpecProviderScalewaySecretKey
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderScalewayAccessKey:
     r"""
@@ -4385,12 +3615,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderScalewayAccessKey:
     value : str, default is Undefined, optional
         Value can be specified directly to set a value without using a secret.
     """
-
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderScalewayAccessKeySecretRef
-
     value?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderScalewayAccessKeySecretRef:
     r"""
@@ -4407,14 +3633,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderScalewayAccessKeySecretRef
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -4427,7 +3648,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderScalewayAccessKeySecretRef
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderScalewaySecretKey:
     r"""
     SecretKey is the non-secret part of the api key.
@@ -4439,12 +3659,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderScalewaySecretKey:
     value : str, default is Undefined, optional
         Value can be specified directly to set a value without using a secret.
     """
-
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderScalewaySecretKeySecretRef
-
     value?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderScalewaySecretKeySecretRef:
     r"""
@@ -4461,14 +3677,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderScalewaySecretKeySecretRef
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -4480,7 +3691,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderScalewaySecretKeySecretRef
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSecretserver:
     r"""
@@ -4497,14 +3707,11 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSecretserver:
     username : ExternalSecretsIoV1beta1SecretStoreSpecProviderSecretserverUsername, default is Undefined, required
         username
     """
-
-
     password: ExternalSecretsIoV1beta1SecretStoreSpecProviderSecretserverPassword
 
     serverURL: str
 
     username: ExternalSecretsIoV1beta1SecretStoreSpecProviderSecretserverUsername
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSecretserverPassword:
     r"""
@@ -4517,12 +3724,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSecretserverPassword:
     value : str, default is Undefined, optional
         Value can be specified directly to set a value without using a secret.
     """
-
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderSecretserverPasswordSecretRef
-
     value?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSecretserverPasswordSecretRef:
     r"""
@@ -4539,14 +3742,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSecretserverPasswordSecret
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -4559,7 +3757,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSecretserverPasswordSecret
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSecretserverUsername:
     r"""
     Username is the secret server account username.
@@ -4571,12 +3768,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSecretserverUsername:
     value : str, default is Undefined, optional
         Value can be specified directly to set a value without using a secret.
     """
-
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderSecretserverUsernameSecretRef
-
     value?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSecretserverUsernameSecretRef:
     r"""
@@ -4593,14 +3786,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSecretserverUsernameSecret
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -4612,7 +3800,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSecretserverUsernameSecret
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSenhasegura:
     r"""
@@ -4629,16 +3816,12 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSenhasegura:
     url : str, default is Undefined, required
         URL of senhasegura
     """
-
-
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderSenhaseguraAuth
 
     ignoreSslCertificate?: bool = False
-
     module: str
 
     url: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSenhaseguraAuth:
     r"""
@@ -4651,12 +3834,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSenhaseguraAuth:
     clientSecretSecretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderSenhaseguraAuthClientSecretSecretRef, default is Undefined, required
         client secret secret ref
     """
-
-
     clientId: str
 
     clientSecretSecretRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderSenhaseguraAuthClientSecretSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSenhaseguraAuthClientSecretSecretRef:
     r"""
@@ -4674,14 +3854,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSenhaseguraAuthClientSecre
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -4693,7 +3868,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderSenhaseguraAuthClientSecre
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVault:
     r"""
@@ -4739,30 +3913,19 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVault:
         Version is the Vault KV secret engine version. This can be either "v1" or
         "v2". Version defaults to "v2".
     """
-
-
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuth
 
     caBundle?: str
-
     caProvider?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultCaProvider
-
     forwardInconsistent?: bool
-
     headers?: {str:str}
-
     namespace?: str
-
     path?: str
-
     readYourWrites?: bool
-
     server: str
 
     tls?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultTLS
-
     version?: "v1" | "v2" = "v2"
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuth:
     r"""
@@ -4793,26 +3956,15 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuth:
     userPass : ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthUserPass, default is Undefined, optional
         user pass
     """
-
-
     appRole?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthAppRole
-
     cert?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthCert
-
     iam?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIam
-
     jwt?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthJwt
-
     kubernetes?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthKubernetes
-
     ldap?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthLdap
-
     namespace?: str
-
     tokenSecretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthTokenSecretRef
-
     userPass?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthUserPass
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthAppRole:
     r"""
@@ -4832,16 +3984,11 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthAppRole:
     secretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthAppRoleSecretRef, default is Undefined, required
         secret ref
     """
-
-
     path: str = "approle"
 
     roleId?: str
-
     roleRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthAppRoleRoleRef
-
     secretRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthAppRoleSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthAppRoleRoleRef:
     r"""
@@ -4861,14 +4008,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthAppRoleRoleRef:
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -4880,7 +4022,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthAppRoleRoleRef:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthAppRoleSecretRef:
     r"""
@@ -4900,14 +4041,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthAppRoleSecretRef:
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -4919,7 +4055,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthAppRoleSecretRef:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthCert:
     r"""
@@ -4933,12 +4068,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthCert:
     secretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthCertSecretRef, default is Undefined, optional
         secret ref
     """
-
-
     clientCert?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthCertClientCert
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthCertSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthCertClientCert:
     r"""
@@ -4956,14 +4087,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthCertClientCert:
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -4975,7 +4101,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthCertClientCert:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthCertSecretRef:
     r"""
@@ -4993,14 +4118,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthCertSecretRef:
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -5012,7 +4132,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthCertSecretRef:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIam:
     r"""
@@ -5038,24 +4157,14 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIam:
     vaultRole : str, default is Undefined, required
         Vault Role. In vault, a role describes an identity with a set of permissions, groups, or policies you want to attach a user of the secrets engine
     """
-
-
     externalID?: str
-
     jwt?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamJwt
-
     path?: str
-
     region?: str
-
     role?: str
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamSecretRef
-
     vaultAwsIamServerID?: str
-
     vaultRole: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamJwt:
     r"""
@@ -5066,10 +4175,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamJwt:
     serviceAccountRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamJwtServiceAccountRef, default is Undefined, optional
         service account ref
     """
-
-
     serviceAccountRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamJwtServiceAccountRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamJwtServiceAccountRef:
     r"""
@@ -5087,14 +4193,10 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamJwtServiceAcco
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -5103,7 +4205,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamJwtServiceAcco
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamSecretRef:
     r"""
@@ -5118,14 +4219,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamSecretRef:
     sessionTokenSecretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamSecretRefSessionTokenSecretRef, default is Undefined, optional
         session token secret ref
     """
-
-
     accessKeyIDSecretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamSecretRefAccessKeyIDSecretRef
-
     secretAccessKeySecretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamSecretRefSecretAccessKeySecretRef
-
     sessionTokenSecretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamSecretRefSessionTokenSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamSecretRefAccessKeyIDSecretRef:
     r"""
@@ -5142,14 +4238,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamSecretRefAcces
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -5161,7 +4252,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamSecretRefAcces
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamSecretRefSecretAccessKeySecretRef:
     r"""
@@ -5178,14 +4268,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamSecretRefSecre
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -5197,7 +4282,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamSecretRefSecre
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamSecretRefSessionTokenSecretRef:
     r"""
@@ -5216,14 +4300,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamSecretRefSessi
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -5235,7 +4314,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamSecretRefSessi
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthJwt:
     r"""
@@ -5255,16 +4333,11 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthJwt:
     secretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthJwtSecretRef, default is Undefined, optional
         secret ref
     """
-
-
     kubernetesServiceAccountToken?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthJwtKubernetesServiceAccountToken
-
     path: str = "jwt"
 
     role?: str
-
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthJwtSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthJwtKubernetesServiceAccountToken:
     r"""
@@ -5287,14 +4360,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthJwtKubernetesServ
     serviceAccountRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthJwtKubernetesServiceAccountTokenServiceAccountRef, default is Undefined, required
         service account ref
     """
-
-
     audiences?: [str]
-
     expirationSeconds?: int
-
     serviceAccountRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthJwtKubernetesServiceAccountTokenServiceAccountRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthJwtKubernetesServiceAccountTokenServiceAccountRef:
     r"""
@@ -5312,14 +4380,10 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthJwtKubernetesServ
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -5328,7 +4392,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthJwtKubernetesServ
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthJwtSecretRef:
     r"""
@@ -5346,14 +4409,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthJwtSecretRef:
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -5365,7 +4423,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthJwtSecretRef:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthKubernetes:
     r"""
@@ -5385,16 +4442,12 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthKubernetes:
     serviceAccountRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthKubernetesServiceAccountRef, default is Undefined, optional
         service account ref
     """
-
-
     mountPath: str = "kubernetes"
 
     role: str
 
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthKubernetesSecretRef
-
     serviceAccountRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthKubernetesServiceAccountRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthKubernetesSecretRef:
     r"""
@@ -5414,14 +4467,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthKubernetesSecretR
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -5433,7 +4481,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthKubernetesSecretR
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthKubernetesServiceAccountRef:
     r"""
@@ -5454,14 +4501,10 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthKubernetesService
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -5470,7 +4513,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthKubernetesService
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthLdap:
     r"""
@@ -5488,14 +4530,10 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthLdap:
         Username is an LDAP username used to authenticate using the LDAP Vault
         authentication method
     """
-
-
     path: str = "ldap"
 
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthLdapSecretRef
-
     username: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthLdapSecretRef:
     r"""
@@ -5514,14 +4552,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthLdapSecretRef:
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -5533,7 +4566,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthLdapSecretRef:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthTokenSecretRef:
     r"""
@@ -5550,14 +4582,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthTokenSecretRef:
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -5569,7 +4596,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthTokenSecretRef:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthUserPass:
     r"""
@@ -5586,14 +4612,10 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthUserPass:
         Username is a username used to authenticate using the UserPass Vault
         authentication method
     """
-
-
     path: str = "userpass"
 
     secretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthUserPassSecretRef
-
     username: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthUserPassSecretRef:
     r"""
@@ -5612,14 +4634,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthUserPassSecretRef
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -5631,7 +4648,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthUserPassSecretRef
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultCaProvider:
     r"""
@@ -5649,16 +4665,11 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultCaProvider:
     $type : str, default is Undefined, required
         The type of provider to use such as "Secret", or "ConfigMap".
     """
-
-
     key?: str
-
     name: str
 
     namespace?: str
-
     $type: "Secret" | "ConfigMap"
-
 
     check:
         len(key) <= 253 if key
@@ -5670,7 +4681,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultCaProvider:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultTLS:
     r"""
@@ -5687,12 +4697,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultTLS:
     keySecretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultTLSKeySecretRef, default is Undefined, optional
         key secret ref
     """
-
-
     certSecretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultTLSCertSecretRef
-
     keySecretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultTLSKeySecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultTLSCertSecretRef:
     r"""
@@ -5711,14 +4717,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultTLSCertSecretRef:
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -5730,7 +4731,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultTLSCertSecretRef:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultTLSKeySecretRef:
     r"""
@@ -5749,14 +4749,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultTLSKeySecretRef:
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -5768,7 +4763,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultTLSKeySecretRef:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderWebhook:
     r"""
@@ -5799,26 +4793,16 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderWebhook:
     url : str, default is Undefined, required
         Webhook url to call
     """
-
-
     body?: str
-
     caBundle?: str
-
     caProvider?: ExternalSecretsIoV1beta1SecretStoreSpecProviderWebhookCaProvider
-
     headers?: {str:str}
-
     method?: str
-
     result: ExternalSecretsIoV1beta1SecretStoreSpecProviderWebhookResult
 
     secrets?: [ExternalSecretsIoV1beta1SecretStoreSpecProviderWebhookSecretsItems0]
-
     timeout?: str
-
     url: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderWebhookCaProvider:
     r"""
@@ -5835,16 +4819,11 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderWebhookCaProvider:
     $type : str, default is Undefined, required
         The type of provider to use such as "Secret", or "ConfigMap".
     """
-
-
     key?: str
-
     name: str
 
     namespace?: str
-
     $type: "Secret" | "ConfigMap"
-
 
     check:
         len(key) <= 253 if key
@@ -5857,7 +4836,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderWebhookCaProvider:
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderWebhookResult:
     r"""
     Result formatting
@@ -5867,10 +4845,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderWebhookResult:
     jsonPath : str, default is Undefined, optional
         Json path of return value
     """
-
-
     jsonPath?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderWebhookSecretsItems0:
     r"""
@@ -5883,12 +4858,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderWebhookSecretsItems0:
     secretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderWebhookSecretsItems0SecretRef, default is Undefined, required
         secret ref
     """
-
-
     name: str
 
     secretRef: ExternalSecretsIoV1beta1SecretStoreSpecProviderWebhookSecretsItems0SecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderWebhookSecretsItems0SecretRef:
     r"""
@@ -5905,14 +4877,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderWebhookSecretsItems0Secret
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -5924,7 +4891,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderWebhookSecretsItems0Secret
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanager:
     r"""
@@ -5939,14 +4905,10 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanager:
     caProvider : ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanagerCaProvider, default is Undefined, optional
         ca provider
     """
-
-
     apiEndpoint?: str
-
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanagerAuth
 
     caProvider?: ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanagerCaProvider
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanagerAuth:
     r"""
@@ -5957,10 +4919,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanagerAu
     authorizedKeySecretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanagerAuthAuthorizedKeySecretRef, default is Undefined, optional
         authorized key secret ref
     """
-
-
     authorizedKeySecretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanagerAuthAuthorizedKeySecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanagerAuthAuthorizedKeySecretRef:
     r"""
@@ -5977,14 +4936,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanagerAu
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -5997,7 +4951,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanagerAu
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanagerCaProvider:
     r"""
     The provider for the CA bundle to use to validate Yandex.Cloud server certificate.
@@ -6007,10 +4960,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanagerCa
     certSecretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanagerCaProviderCertSecretRef, default is Undefined, optional
         cert secret ref
     """
-
-
     certSecretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanagerCaProviderCertSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanagerCaProviderCertSecretRef:
     r"""
@@ -6028,14 +4978,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanagerCa
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -6047,7 +4992,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexcertificatemanagerCa
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockbox:
     r"""
@@ -6062,14 +5006,10 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockbox:
     caProvider : ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockboxCaProvider, default is Undefined, optional
         ca provider
     """
-
-
     apiEndpoint?: str
-
     auth: ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockboxAuth
 
     caProvider?: ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockboxCaProvider
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockboxAuth:
     r"""
@@ -6080,10 +5020,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockboxAuth:
     authorizedKeySecretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockboxAuthAuthorizedKeySecretRef, default is Undefined, optional
         authorized key secret ref
     """
-
-
     authorizedKeySecretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockboxAuthAuthorizedKeySecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockboxAuthAuthorizedKeySecretRef:
     r"""
@@ -6100,14 +5037,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockboxAuthAuthorize
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -6120,7 +5052,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockboxAuthAuthorize
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockboxCaProvider:
     r"""
     The provider for the CA bundle to use to validate Yandex.Cloud server certificate.
@@ -6130,10 +5061,7 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockboxCaProvider:
     certSecretRef : ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockboxCaProviderCertSecretRef, default is Undefined, optional
         cert secret ref
     """
-
-
     certSecretRef?: ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockboxCaProviderCertSecretRef
-
 
 schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockboxCaProviderCertSecretRef:
     r"""
@@ -6151,14 +5079,9 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockboxCaProviderCer
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -6171,7 +5094,6 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderYandexlockboxCaProviderCer
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema ExternalSecretsIoV1beta1SecretStoreSpecRetrySettings:
     r"""
     Used to configure http retries if failed
@@ -6183,12 +5105,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecRetrySettings:
     retryInterval : str, default is Undefined, optional
         retry interval
     """
-
-
     maxRetries?: int
-
     retryInterval?: str
-
 
 schema ExternalSecretsIoV1beta1SecretStoreStatus:
     r"""
@@ -6201,12 +5119,8 @@ schema ExternalSecretsIoV1beta1SecretStoreStatus:
     conditions : [ExternalSecretsIoV1beta1SecretStoreStatusConditionsItems0], default is Undefined, optional
         conditions
     """
-
-
     capabilities?: str
-
     conditions?: [ExternalSecretsIoV1beta1SecretStoreStatusConditionsItems0]
-
 
 schema ExternalSecretsIoV1beta1SecretStoreStatusConditionsItems0:
     r"""
@@ -6225,16 +5139,10 @@ schema ExternalSecretsIoV1beta1SecretStoreStatusConditionsItems0:
     $type : str, default is Undefined, required
         type
     """
-
-
     lastTransitionTime?: str
-
     message?: str
-
     reason?: str
-
     status: str
 
     $type: str
-
 

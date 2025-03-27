@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema GCRAccessToken:
     r"""
@@ -23,16 +23,12 @@ schema GCRAccessToken:
     spec : GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpec, default is Undefined, optional
         spec
     """
-
-
     apiVersion: "generators.external-secrets.io/v1alpha1" = "generators.external-secrets.io/v1alpha1"
 
     kind: "GCRAccessToken" = "GCRAccessToken"
 
     metadata?: v1.ObjectMeta
-
     spec?: GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpec
-
 
 schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpec:
     r"""
@@ -45,12 +41,9 @@ schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpec:
     projectID : str, default is Undefined, required
         ProjectID defines which project to use to authenticate with
     """
-
-
     auth: GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuth
 
     projectID: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuth:
     r"""
@@ -63,12 +56,8 @@ schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuth:
     workloadIdentity : GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentity, default is Undefined, optional
         workload identity
     """
-
-
     secretRef?: GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthSecretRef
-
     workloadIdentity?: GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentity
-
 
 schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthSecretRef:
     r"""
@@ -79,10 +68,7 @@ schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthSecretRef:
     secretAccessKeySecretRef : GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthSecretRefSecretAccessKeySecretRef, default is Undefined, optional
         secret access key secret ref
     """
-
-
     secretAccessKeySecretRef?: GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthSecretRefSecretAccessKeySecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthSecretRefSecretAccessKeySecretRef:
     r"""
@@ -99,14 +85,9 @@ schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthSecretRefSecretA
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -118,7 +99,6 @@ schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthSecretRefSecretA
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentity:
     r"""
@@ -135,16 +115,12 @@ schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentity
     serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityServiceAccountRef, default is Undefined, required
         service account ref
     """
-
-
     clusterLocation: str
 
     clusterName: str
 
     clusterProjectID?: str
-
     serviceAccountRef: GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityServiceAccountRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityServiceAccountRef:
     r"""
@@ -162,14 +138,10 @@ schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentity
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -178,5 +150,4 @@ schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentity
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 

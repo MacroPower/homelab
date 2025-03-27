@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema STSSessionToken:
     r"""
@@ -25,16 +25,12 @@ schema STSSessionToken:
     spec : GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpec, default is Undefined, optional
         spec
     """
-
-
     apiVersion: "generators.external-secrets.io/v1alpha1" = "generators.external-secrets.io/v1alpha1"
 
     kind: "STSSessionToken" = "STSSessionToken"
 
     metadata?: v1.ObjectMeta
-
     spec?: GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpec
-
 
 schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpec:
     r"""
@@ -52,16 +48,11 @@ schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpec:
         You can assume a role before making calls to the
         desired AWS service.
     """
-
-
     auth?: GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuth
-
     region: str
 
     requestParameters?: GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecRequestParameters
-
     role?: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuth:
     r"""
@@ -74,12 +65,8 @@ schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuth:
     secretRef : GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthSecretRef, default is Undefined, optional
         secret ref
     """
-
-
     jwt?: GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthJwt
-
     secretRef?: GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthSecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthJwt:
     r"""
@@ -90,10 +77,7 @@ schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthJwt:
     serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthJwtServiceAccountRef, default is Undefined, optional
         service account ref
     """
-
-
     serviceAccountRef?: GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthJwtServiceAccountRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthJwtServiceAccountRef:
     r"""
@@ -111,14 +95,10 @@ schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthJwtServiceAccou
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -127,7 +107,6 @@ schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthJwtServiceAccou
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthSecretRef:
     r"""
@@ -143,14 +122,9 @@ schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthSecretRef:
     sessionTokenSecretRef : GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthSecretRefSessionTokenSecretRef, default is Undefined, optional
         session token secret ref
     """
-
-
     accessKeyIDSecretRef?: GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthSecretRefAccessKeyIDSecretRef
-
     secretAccessKeySecretRef?: GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthSecretRefSecretAccessKeySecretRef
-
     sessionTokenSecretRef?: GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthSecretRefSessionTokenSecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthSecretRefAccessKeyIDSecretRef:
     r"""
@@ -167,14 +141,9 @@ schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthSecretRefAccess
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -186,7 +155,6 @@ schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthSecretRefAccess
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthSecretRefSecretAccessKeySecretRef:
     r"""
@@ -203,14 +171,9 @@ schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthSecretRefSecret
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -222,7 +185,6 @@ schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthSecretRefSecret
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthSecretRefSessionTokenSecretRef:
     r"""
@@ -241,14 +203,9 @@ schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthSecretRefSessio
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -260,7 +217,6 @@ schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthSecretRefSessio
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecRequestParameters:
     r"""
@@ -280,12 +236,7 @@ schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecRequestParameters:
     tokenCode : str, default is Undefined, optional
         TokenCode is the value provided by the MFA device, if MFA is required.
     """
-
-
     serialNumber?: str
-
     sessionDuration?: int
-
     tokenCode?: str
-
 

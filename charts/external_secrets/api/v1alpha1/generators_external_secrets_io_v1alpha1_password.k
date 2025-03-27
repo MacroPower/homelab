@@ -4,7 +4,6 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import k8s.apimachinery.pkg.apis.meta.v1
 
-
 schema Password:
     r"""
     Password generates a random password based on the
@@ -22,16 +21,12 @@ schema Password:
     spec : GeneratorsExternalSecretsIoV1alpha1PasswordSpec, default is Undefined, optional
         spec
     """
-
-
     apiVersion: "generators.external-secrets.io/v1alpha1" = "generators.external-secrets.io/v1alpha1"
 
     kind: "Password" = "Password"
 
     metadata?: v1.ObjectMeta
-
     spec?: GeneratorsExternalSecretsIoV1alpha1PasswordSpec
-
 
 schema GeneratorsExternalSecretsIoV1alpha1PasswordSpec:
     r"""
@@ -56,18 +51,13 @@ schema GeneratorsExternalSecretsIoV1alpha1PasswordSpec:
         Symbols specifies the number of symbol characters in the generated
         password. If omitted it defaults to 25% of the length of the password
     """
-
-
     allowRepeat: bool = False
 
     digits?: int
-
     length: int = 24
 
     noUpper: bool = False
 
     symbolCharacters?: str
-
     symbols?: int
-
 

@@ -4,7 +4,6 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import k8s.apimachinery.pkg.apis.meta.v1
 
-
 schema AppProject:
     r"""
     AppProject provides a logical grouping of applications, providing controls for:
@@ -27,8 +26,6 @@ schema AppProject:
     status : ArgoprojIoV1alpha1AppProjectStatus, default is Undefined, optional
         status
     """
-
-
     apiVersion: "argoproj.io/v1alpha1" = "argoproj.io/v1alpha1"
 
     kind: "AppProject" = "AppProject"
@@ -38,7 +35,6 @@ schema AppProject:
     spec: ArgoprojIoV1alpha1AppProjectSpec
 
     status?: ArgoprojIoV1alpha1AppProjectStatus
-
 
 schema ArgoprojIoV1alpha1AppProjectSpec:
     r"""
@@ -75,36 +71,20 @@ schema ArgoprojIoV1alpha1AppProjectSpec:
     syncWindows : [ArgoprojIoV1alpha1AppProjectSpecSyncWindowsItems0], default is Undefined, optional
         SyncWindows controls when syncs can be run for apps in this project
     """
-
-
     clusterResourceBlacklist?: [ArgoprojIoV1alpha1AppProjectSpecClusterResourceBlacklistItems0]
-
     clusterResourceWhitelist?: [ArgoprojIoV1alpha1AppProjectSpecClusterResourceWhitelistItems0]
-
     description?: str
-
     destinationServiceAccounts?: [ArgoprojIoV1alpha1AppProjectSpecDestinationServiceAccountsItems0]
-
     destinations?: [ArgoprojIoV1alpha1AppProjectSpecDestinationsItems0]
-
     namespaceResourceBlacklist?: [ArgoprojIoV1alpha1AppProjectSpecNamespaceResourceBlacklistItems0]
-
     namespaceResourceWhitelist?: [ArgoprojIoV1alpha1AppProjectSpecNamespaceResourceWhitelistItems0]
-
     orphanedResources?: ArgoprojIoV1alpha1AppProjectSpecOrphanedResources
-
     permitOnlyProjectScopedClusters?: bool
-
     roles?: [ArgoprojIoV1alpha1AppProjectSpecRolesItems0]
-
     signatureKeys?: [ArgoprojIoV1alpha1AppProjectSpecSignatureKeysItems0]
-
     sourceNamespaces?: [str]
-
     sourceRepos?: [str]
-
     syncWindows?: [ArgoprojIoV1alpha1AppProjectSpecSyncWindowsItems0]
-
 
 schema ArgoprojIoV1alpha1AppProjectSpecClusterResourceBlacklistItems0:
     r"""
@@ -118,12 +98,9 @@ schema ArgoprojIoV1alpha1AppProjectSpecClusterResourceBlacklistItems0:
     kind : str, default is Undefined, required
         kind
     """
-
-
     group: str
 
     kind: str
-
 
 schema ArgoprojIoV1alpha1AppProjectSpecClusterResourceWhitelistItems0:
     r"""
@@ -137,12 +114,9 @@ schema ArgoprojIoV1alpha1AppProjectSpecClusterResourceWhitelistItems0:
     kind : str, default is Undefined, required
         kind
     """
-
-
     group: str
 
     kind: str
-
 
 schema ArgoprojIoV1alpha1AppProjectSpecDestinationServiceAccountsItems0:
     r"""
@@ -157,14 +131,10 @@ schema ArgoprojIoV1alpha1AppProjectSpecDestinationServiceAccountsItems0:
     server : str, default is Undefined, required
         Server specifies the URL of the target cluster's Kubernetes control plane API.
     """
-
-
     defaultServiceAccount: str
 
     namespace?: str
-
     server: str
-
 
 schema ArgoprojIoV1alpha1AppProjectSpecDestinationsItems0:
     r"""
@@ -180,14 +150,9 @@ schema ArgoprojIoV1alpha1AppProjectSpecDestinationsItems0:
     server : str, default is Undefined, optional
         Server specifies the URL of the target cluster's Kubernetes control plane API. This must be set if Name is not set.
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1AppProjectSpecNamespaceResourceBlacklistItems0:
     r"""
@@ -201,12 +166,9 @@ schema ArgoprojIoV1alpha1AppProjectSpecNamespaceResourceBlacklistItems0:
     kind : str, default is Undefined, required
         kind
     """
-
-
     group: str
 
     kind: str
-
 
 schema ArgoprojIoV1alpha1AppProjectSpecNamespaceResourceWhitelistItems0:
     r"""
@@ -220,12 +182,9 @@ schema ArgoprojIoV1alpha1AppProjectSpecNamespaceResourceWhitelistItems0:
     kind : str, default is Undefined, required
         kind
     """
-
-
     group: str
 
     kind: str
-
 
 schema ArgoprojIoV1alpha1AppProjectSpecOrphanedResources:
     r"""
@@ -238,12 +197,8 @@ schema ArgoprojIoV1alpha1AppProjectSpecOrphanedResources:
     warn : bool, default is Undefined, optional
         Warn indicates if warning condition should be created for apps which have orphaned resources
     """
-
-
     ignore?: [ArgoprojIoV1alpha1AppProjectSpecOrphanedResourcesIgnoreItems0]
-
     warn?: bool
-
 
 schema ArgoprojIoV1alpha1AppProjectSpecOrphanedResourcesIgnoreItems0:
     r"""
@@ -258,14 +213,9 @@ schema ArgoprojIoV1alpha1AppProjectSpecOrphanedResourcesIgnoreItems0:
     name : str, default is Undefined, optional
         name
     """
-
-
     group?: str
-
     kind?: str
-
     name?: str
-
 
 schema ArgoprojIoV1alpha1AppProjectSpecRolesItems0:
     r"""
@@ -284,18 +234,12 @@ schema ArgoprojIoV1alpha1AppProjectSpecRolesItems0:
     policies : [str], default is Undefined, optional
         Policies Stores a list of casbin formatted strings that define access policies for the role in the project
     """
-
-
     description?: str
-
     groups?: [str]
-
     jwtTokens?: [ArgoprojIoV1alpha1AppProjectSpecRolesItems0JwtTokensItems0]
-
     name: str
 
     policies?: [str]
-
 
 schema ArgoprojIoV1alpha1AppProjectSpecRolesItems0JwtTokensItems0:
     r"""
@@ -310,14 +254,10 @@ schema ArgoprojIoV1alpha1AppProjectSpecRolesItems0JwtTokensItems0:
     id : str, default is Undefined, optional
         id
     """
-
-
     exp?: int
-
     iat: int
 
     id?: str
-
 
 schema ArgoprojIoV1alpha1AppProjectSpecSignatureKeysItems0:
     r"""
@@ -328,10 +268,7 @@ schema ArgoprojIoV1alpha1AppProjectSpecSignatureKeysItems0:
     keyID : str, default is Undefined, required
         The ID of the key in hexadecimal notation
     """
-
-
     keyID: str
-
 
 schema ArgoprojIoV1alpha1AppProjectSpecSyncWindowsItems0:
     r"""
@@ -356,24 +293,14 @@ schema ArgoprojIoV1alpha1AppProjectSpecSyncWindowsItems0:
     timeZone : str, default is Undefined, optional
         TimeZone of the sync that will be applied to the schedule
     """
-
-
     applications?: [str]
-
     clusters?: [str]
-
     duration?: str
-
     kind?: str
-
     manualSync?: bool
-
     namespaces?: [str]
-
     schedule?: str
-
     timeZone?: str
-
 
 schema ArgoprojIoV1alpha1AppProjectStatus:
     r"""
@@ -384,10 +311,7 @@ schema ArgoprojIoV1alpha1AppProjectStatus:
     jwtTokensByRole : {str:ArgoprojIoV1alpha1AppProjectStatusJwtTokensByRoleAnon}, default is Undefined, optional
         JWTTokensByRole contains a list of JWT tokens issued for a given role
     """
-
-
     jwtTokensByRole?: {str:ArgoprojIoV1alpha1AppProjectStatusJwtTokensByRoleAnon}
-
 
 schema ArgoprojIoV1alpha1AppProjectStatusJwtTokensByRoleAnon:
     r"""
@@ -398,10 +322,7 @@ schema ArgoprojIoV1alpha1AppProjectStatusJwtTokensByRoleAnon:
     items : [ArgoprojIoV1alpha1AppProjectStatusJwtTokensByRoleAnonItemsItems0], default is Undefined, optional
         items
     """
-
-
     items?: [ArgoprojIoV1alpha1AppProjectStatusJwtTokensByRoleAnonItemsItems0]
-
 
 schema ArgoprojIoV1alpha1AppProjectStatusJwtTokensByRoleAnonItemsItems0:
     r"""
@@ -416,12 +337,8 @@ schema ArgoprojIoV1alpha1AppProjectStatusJwtTokensByRoleAnonItemsItems0:
     id : str, default is Undefined, optional
         id
     """
-
-
     exp?: int
-
     iat: int
 
     id?: str
-
 

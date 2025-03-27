@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema ExternalSecret:
     r"""
@@ -24,18 +24,13 @@ schema ExternalSecret:
     status : ExternalSecretsIoV1beta1ExternalSecretStatus, default is Undefined, optional
         status
     """
-
-
     apiVersion: "external-secrets.io/v1beta1" = "external-secrets.io/v1beta1"
 
     kind: "ExternalSecret" = "ExternalSecret"
 
     metadata?: v1.ObjectMeta
-
     spec?: ExternalSecretsIoV1beta1ExternalSecretSpec
-
     status?: ExternalSecretsIoV1beta1ExternalSecretStatus
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpec:
     r"""
@@ -59,18 +54,11 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpec:
     target : ExternalSecretsIoV1beta1ExternalSecretSpecTarget, default is Undefined, optional
         target
     """
-
-
     data?: [ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0]
-
     dataFrom?: [ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0]
-
     refreshInterval?: str = "1h"
-
     secretStoreRef?: ExternalSecretsIoV1beta1ExternalSecretSpecSecretStoreRef
-
     target?: ExternalSecretsIoV1beta1ExternalSecretSpecTarget
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0:
     r"""
@@ -88,16 +76,10 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0:
     sourceRef : ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRef, default is Undefined, optional
         source ref
     """
-
-
     extract?: ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0Extract
-
     find?: ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0Find
-
     rewrite?: [ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0]
-
     sourceRef?: ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRef
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0Extract:
     r"""
@@ -119,20 +101,13 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0Extract:
     version : str, default is Undefined, optional
         Used to select a specific version of the Provider value, if supported
     """
-
-
     conversionStrategy?: "Default" | "Unicode" = "Default"
-
     decodingStrategy?: "Auto" | "Base64" | "Base64URL" | "None" = "None"
-
     key: str
 
     metadataPolicy?: "None" | "Fetch" = "None"
-
     property?: str
-
     version?: str
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0Find:
     r"""
@@ -152,18 +127,11 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0Find:
     tags : {str:str}, default is Undefined, optional
         Find secrets based on tags.
     """
-
-
     conversionStrategy?: "Default" | "Unicode" = "Default"
-
     decodingStrategy?: "Auto" | "Base64" | "Base64URL" | "None" = "None"
-
     name?: ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0FindName
-
     path?: str
-
     tags?: {str:str}
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0FindName:
     r"""
@@ -174,10 +142,7 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0FindName:
     regexp : str, default is Undefined, optional
         Finds secrets base
     """
-
-
     regexp?: str
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0:
     r"""
@@ -190,12 +155,8 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0:
     transform : ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0Transform, default is Undefined, optional
         transform
     """
-
-
     regexp?: ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0Regexp
-
     transform?: ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0Transform
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0Regexp:
     r"""
@@ -209,12 +170,9 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0Rege
     target : str, default is Undefined, required
         Used to define the target pattern of a ReplaceAll operation.
     """
-
-
     source: str
 
     target: str
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0Transform:
     r"""
@@ -227,10 +185,7 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0Tran
         Used to define the template to apply on the secret name.
         `.value ` will specify the secret name in the template.
     """
-
-
     template: str
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRef:
     r"""
@@ -248,12 +203,8 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRef:
     storeRef : ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRefStoreRef, default is Undefined, optional
         store ref
     """
-
-
     generatorRef?: ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRefGeneratorRef
-
     storeRef?: ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRefStoreRef
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRefGeneratorRef:
     r"""
@@ -268,20 +219,15 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRefGenerato
     name : str, default is Undefined, required
         Specify the name of the generator resource
     """
-
-
     apiVersion?: str = "generators.external-secrets.io/v1alpha1"
-
     kind: "ACRAccessToken" | "ClusterGenerator" | "ECRAuthorizationToken" | "Fake" | "GCRAccessToken" | "GithubAccessToken" | "QuayAccessToken" | "Password" | "STSSessionToken" | "UUID" | "VaultDynamicSecret" | "Webhook" | "Grafana"
 
     name: str
-
 
     check:
         len(name) <= 253
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRefStoreRef:
     r"""
@@ -295,18 +241,13 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRefStoreRef
     name : str, default is Undefined, optional
         Name of the SecretStore resource
     """
-
-
     kind?: "SecretStore" | "ClusterSecretStore"
-
     name?: str
-
 
     check:
         len(name) <= 253 if name
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0:
     r"""
@@ -321,20 +262,16 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0:
     sourceRef : ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRef, default is Undefined, optional
         source ref
     """
-
-
     remoteRef: ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0RemoteRef
 
     secretKey: str
 
     sourceRef?: ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRef
 
-
     check:
         len(secretKey) <= 253
         len(secretKey) >= 1
         _regex_match(str(secretKey), r"^[-._a-zA-Z0-9]+$")
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0RemoteRef:
     r"""
@@ -356,20 +293,13 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0RemoteRef:
     version : str, default is Undefined, optional
         Used to select a specific version of the Provider value, if supported
     """
-
-
     conversionStrategy?: "Default" | "Unicode" = "Default"
-
     decodingStrategy?: "Auto" | "Base64" | "Base64URL" | "None" = "None"
-
     key: str
 
     metadataPolicy?: "None" | "Fetch" = "None"
-
     property?: str
-
     version?: str
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRef:
     r"""
@@ -383,12 +313,8 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRef:
     storeRef : ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefStoreRef, default is Undefined, optional
         store ref
     """
-
-
     generatorRef?: ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefGeneratorRef
-
     storeRef?: ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefStoreRef
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefGeneratorRef:
     r"""
@@ -406,20 +332,15 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefGeneratorRef
     name : str, default is Undefined, required
         Specify the name of the generator resource
     """
-
-
     apiVersion?: str = "generators.external-secrets.io/v1alpha1"
-
     kind: "ACRAccessToken" | "ClusterGenerator" | "ECRAuthorizationToken" | "Fake" | "GCRAccessToken" | "GithubAccessToken" | "QuayAccessToken" | "Password" | "STSSessionToken" | "UUID" | "VaultDynamicSecret" | "Webhook" | "Grafana"
 
     name: str
-
 
     check:
         len(name) <= 253
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefStoreRef:
     r"""
@@ -433,18 +354,13 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefStoreRef:
     name : str, default is Undefined, optional
         Name of the SecretStore resource
     """
-
-
     kind?: "SecretStore" | "ClusterSecretStore"
-
     name?: str
-
 
     check:
         len(name) <= 253 if name
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecSecretStoreRef:
     r"""
@@ -458,18 +374,13 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecSecretStoreRef:
     name : str, default is Undefined, optional
         Name of the SecretStore resource
     """
-
-
     kind?: "SecretStore" | "ClusterSecretStore"
-
     name?: str
-
 
     check:
         len(name) <= 253 if name
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecTarget:
     r"""
@@ -492,24 +403,16 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecTarget:
     template : ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplate, default is Undefined, optional
         template
     """
-
-
     creationPolicy?: "Owner" | "Orphan" | "Merge" | "None" = "Owner"
-
     deletionPolicy?: "Delete" | "Merge" | "Retain" = "Retain"
-
     immutable?: bool
-
     name?: str
-
     template?: ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplate
-
 
     check:
         len(name) <= 253 if name
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplate:
     r"""
@@ -532,20 +435,12 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplate:
     $type : str, default is Undefined, optional
         type
     """
-
-
     data?: {str:str}
-
     engineVersion?: "v1" | "v2" = "v2"
-
     mergePolicy?: "Replace" | "Merge" = "Replace"
-
     metadata?: ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateMetadata
-
     templateFrom?: [ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0]
-
     $type?: str
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateMetadata:
     r"""
@@ -558,12 +453,8 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateMetadata:
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0:
     r"""
@@ -580,16 +471,10 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems
     target : str, default is "Data", optional
         target
     """
-
-
     configMap?: ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMap
-
     literal?: str
-
     secret?: ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0Secret
-
     target?: "Data" | "Annotations" | "Labels" = "Data"
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMap:
     r"""
@@ -602,18 +487,14 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems
     name : str, default is Undefined, required
         The name of the ConfigMap/Secret resource
     """
-
-
     items: [ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMapItemsItems0]
 
     name: str
-
 
     check:
         len(name) <= 253
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMapItemsItems0:
     r"""
@@ -626,18 +507,14 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems
     templateAs : str, default is "Values", optional
         template as
     """
-
-
     key: str
 
     templateAs?: "Values" | "KeysAndValues" = "Values"
-
 
     check:
         len(key) <= 253
         len(key) >= 1
         _regex_match(str(key), r"^[-._a-zA-Z0-9]+$")
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0Secret:
     r"""
@@ -650,18 +527,14 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems
     name : str, default is Undefined, required
         The name of the ConfigMap/Secret resource
     """
-
-
     items: [ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0SecretItemsItems0]
 
     name: str
-
 
     check:
         len(name) <= 253
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0SecretItemsItems0:
     r"""
@@ -674,18 +547,14 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems
     templateAs : str, default is "Values", optional
         template as
     """
-
-
     key: str
 
     templateAs?: "Values" | "KeysAndValues" = "Values"
-
 
     check:
         len(key) <= 253
         len(key) >= 1
         _regex_match(str(key), r"^[-._a-zA-Z0-9]+$")
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretStatus:
     r"""
@@ -703,16 +572,10 @@ schema ExternalSecretsIoV1beta1ExternalSecretStatus:
     syncedResourceVersion : str, default is Undefined, optional
         SyncedResourceVersion keeps track of the last synced version
     """
-
-
     binding?: ExternalSecretsIoV1beta1ExternalSecretStatusBinding
-
     conditions?: [ExternalSecretsIoV1beta1ExternalSecretStatusConditionsItems0]
-
     refreshTime?: str
-
     syncedResourceVersion?: str
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretStatusBinding:
     r"""
@@ -727,10 +590,7 @@ schema ExternalSecretsIoV1beta1ExternalSecretStatusBinding:
         almost certainly wrong.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
     """
-
-
     name?: str = ""
-
 
 schema ExternalSecretsIoV1beta1ExternalSecretStatusConditionsItems0:
     r"""
@@ -749,16 +609,10 @@ schema ExternalSecretsIoV1beta1ExternalSecretStatusConditionsItems0:
     $type : str, default is Undefined, required
         type
     """
-
-
     lastTransitionTime?: str
-
     message?: str
-
     reason?: str
-
     status: str
 
     $type: str
-
 

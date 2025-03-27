@@ -4,7 +4,6 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import k8s.apimachinery.pkg.apis.meta.v1
 
-
 schema ApplicationSet:
     r"""
     argoproj io v1alpha1 application set
@@ -22,8 +21,6 @@ schema ApplicationSet:
     status : ArgoprojIoV1alpha1ApplicationSetStatus, default is Undefined, optional
         status
     """
-
-
     apiVersion: "argoproj.io/v1alpha1" = "argoproj.io/v1alpha1"
 
     kind: "ApplicationSet" = "ApplicationSet"
@@ -33,7 +30,6 @@ schema ApplicationSet:
     spec: ArgoprojIoV1alpha1ApplicationSetSpec
 
     status?: ArgoprojIoV1alpha1ApplicationSetStatus
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpec:
     r"""
@@ -62,28 +58,18 @@ schema ArgoprojIoV1alpha1ApplicationSetSpec:
     templatePatch : str, default is Undefined, optional
         template patch
     """
-
-
     applyNestedSelectors?: bool
-
     generators: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0]
 
     goTemplate?: bool
-
     goTemplateOptions?: [str]
-
     ignoreApplicationDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecIgnoreApplicationDifferencesItems0]
-
     preservedFields?: ArgoprojIoV1alpha1ApplicationSetSpecPreservedFields
-
     strategy?: ArgoprojIoV1alpha1ApplicationSetSpecStrategy
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecSyncPolicy
-
     template: ArgoprojIoV1alpha1ApplicationSetSpecTemplate
 
     templatePatch?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0:
     r"""
@@ -112,28 +98,16 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0:
     selector : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Selector, default is Undefined, optional
         selector
     """
-
-
     clusterDecisionResource?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResource
-
     clusters?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Clusters
-
     git?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Git
-
     list?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0List
-
     matrix?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Matrix
-
     merge?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Merge
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Plugin
-
     pullRequest?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequest
-
     scmProvider?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProvider
-
     selector?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Selector
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResource:
     r"""
@@ -154,20 +128,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     values : {str:str}, default is Undefined, optional
         values
     """
-
-
     configMapRef: str
 
     labelSelector?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceLabelSelector
-
     name?: str
-
     requeueAfterSeconds?: int
-
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplate
-
     values?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceLabelSelector:
     r"""
@@ -180,12 +147,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     matchLabels : {str:str}, default is Undefined, optional
         match labels
     """
-
-
     matchExpressions?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceLabelSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceLabelSelectorMatchExpressionsItems0:
     r"""
@@ -200,14 +163,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     values : [str], default is Undefined, optional
         values
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplate:
     r"""
@@ -220,12 +180,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateMetadata:
     r"""
@@ -244,18 +201,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpec:
     r"""
@@ -282,26 +232,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecDestination:
     r"""
@@ -316,14 +257,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -346,22 +282,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecInfoItems0:
     r"""
@@ -374,12 +302,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSource:
     r"""
@@ -408,28 +333,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectory:
     r"""
@@ -446,16 +360,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -470,14 +378,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -492,14 +395,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -514,14 +413,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHelm:
     r"""
@@ -560,38 +455,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -604,12 +482,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -624,14 +498,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydrator:
     r"""
@@ -646,14 +515,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorDrySource:
     r"""
@@ -668,14 +533,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -686,10 +548,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -702,12 +561,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomize:
     r"""
@@ -748,40 +604,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -798,16 +636,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -830,22 +662,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -858,12 +681,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePlugin:
     r"""
@@ -878,14 +698,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -898,12 +713,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -920,16 +732,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0:
     r"""
@@ -958,28 +764,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Directory:
     r"""
@@ -996,16 +791,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -1020,14 +809,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -1042,14 +826,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -1064,14 +844,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Helm:
     r"""
@@ -1110,38 +886,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -1154,12 +913,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -1174,14 +929,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -1222,40 +972,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -1272,16 +1004,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -1304,22 +1030,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -1332,12 +1049,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Plugin:
     r"""
@@ -1352,14 +1066,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -1372,12 +1081,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -1394,16 +1100,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicy:
     r"""
@@ -1420,16 +1120,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyAutomated:
     r"""
@@ -1444,14 +1138,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -1464,12 +1153,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyRetry:
     r"""
@@ -1482,12 +1167,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -1502,14 +1183,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Clusters:
     r"""
@@ -1526,16 +1202,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Clusters:
     values : {str:str}, default is Undefined, optional
         values
     """
-
-
     flatList?: bool
-
     selector?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersSelector
-
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplate
-
     values?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersSelector:
     r"""
@@ -1548,12 +1218,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersSelector:
     matchLabels : {str:str}, default is Undefined, optional
         match labels
     """
-
-
     matchExpressions?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersSelectorMatchExpressionsItems0:
     r"""
@@ -1568,14 +1234,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersSelectorMatch
     values : [str], default is Undefined, optional
         values
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplate:
     r"""
@@ -1588,12 +1251,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplate:
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateMetadata:
     r"""
@@ -1612,18 +1272,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateMetad
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpec:
     r"""
@@ -1650,26 +1303,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpec:
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecDestination:
     r"""
@@ -1684,14 +1328,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecD
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -1714,22 +1353,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecI
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecInfoItems0:
     r"""
@@ -1742,12 +1373,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecI
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSource:
     r"""
@@ -1776,28 +1404,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceDirectory:
     r"""
@@ -1814,16 +1431,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -1838,14 +1449,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -1860,14 +1466,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -1882,14 +1484,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceHelm:
     r"""
@@ -1928,38 +1526,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -1972,12 +1553,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -1992,14 +1569,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceHydrator:
     r"""
@@ -2014,14 +1586,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceHydratorDrySource:
     r"""
@@ -2036,14 +1604,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -2054,10 +1619,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -2070,12 +1632,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceKustomize:
     r"""
@@ -2116,40 +1675,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -2166,16 +1707,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -2198,22 +1733,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -2226,12 +1752,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcePlugin:
     r"""
@@ -2246,14 +1769,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -2266,12 +1784,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -2288,16 +1803,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0:
     r"""
@@ -2326,28 +1835,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0Directory:
     r"""
@@ -2364,16 +1862,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -2388,14 +1880,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -2410,14 +1897,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -2432,14 +1915,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0Helm:
     r"""
@@ -2478,38 +1957,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -2522,12 +1984,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -2542,14 +2000,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -2590,40 +2043,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -2640,16 +2075,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -2672,22 +2101,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -2700,12 +2120,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0Plugin:
     r"""
@@ -2720,14 +2137,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -2740,12 +2152,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -2762,16 +2171,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSyncPolicy:
     r"""
@@ -2788,16 +2191,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSyncPolicyAutomated:
     r"""
@@ -2812,14 +2209,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -2832,12 +2224,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSyncPolicyRetry:
     r"""
@@ -2850,12 +2238,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -2870,14 +2254,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Git:
     r"""
@@ -2902,24 +2281,16 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Git:
     values : {str:str}, default is Undefined, optional
         values
     """
-
-
     directories?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitDirectoriesItems0]
-
     files?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitFilesItems0]
-
     pathParamPrefix?: str
-
     repoURL: str
 
     requeueAfterSeconds?: int
-
     revision: str
 
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplate
-
     values?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitDirectoriesItems0:
     r"""
@@ -2932,12 +2303,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitDirectoriesItems0:
     path : str, default is Undefined, required
         path
     """
-
-
     exclude?: bool
-
     path: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitFilesItems0:
     r"""
@@ -2948,10 +2315,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitFilesItems0:
     path : str, default is Undefined, required
         path
     """
-
-
     path: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplate:
     r"""
@@ -2964,12 +2328,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplate:
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateMetadata:
     r"""
@@ -2988,18 +2349,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateMetadata:
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpec:
     r"""
@@ -3026,26 +2380,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpec:
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecDestination:
     r"""
@@ -3060,14 +2405,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecDestin
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -3090,22 +2430,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecIgnore
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecInfoItems0:
     r"""
@@ -3118,12 +2450,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecInfoIt
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource:
     r"""
@@ -3152,28 +2481,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceDirectory:
     r"""
@@ -3190,16 +2508,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -3214,14 +2526,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -3236,14 +2543,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -3258,14 +2561,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceHelm:
     r"""
@@ -3304,38 +2603,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -3348,12 +2630,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -3368,14 +2646,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceHydrator:
     r"""
@@ -3390,14 +2663,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceHydratorDrySource:
     r"""
@@ -3412,14 +2681,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -3430,10 +2696,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -3446,12 +2709,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceKustomize:
     r"""
@@ -3492,40 +2752,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -3542,16 +2784,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -3574,22 +2810,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -3602,12 +2829,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcePlugin:
     r"""
@@ -3622,14 +2846,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -3642,12 +2861,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -3664,16 +2880,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0:
     r"""
@@ -3702,28 +2912,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0Directory:
     r"""
@@ -3740,16 +2939,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -3764,14 +2957,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -3786,14 +2974,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -3808,14 +2992,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0Helm:
     r"""
@@ -3854,38 +3034,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -3898,12 +3061,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -3918,14 +3077,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -3966,40 +3120,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -4016,16 +3152,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -4048,22 +3178,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -4076,12 +3197,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0Plugin:
     r"""
@@ -4096,14 +3214,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -4116,12 +3229,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -4138,16 +3248,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSyncPolicy:
     r"""
@@ -4164,16 +3268,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSyncPo
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSyncPolicyAutomated:
     r"""
@@ -4188,14 +3286,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSyncPo
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -4208,12 +3301,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSyncPo
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSyncPolicyRetry:
     r"""
@@ -4226,12 +3315,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSyncPo
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -4246,14 +3331,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSyncPo
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0List:
     r"""
@@ -4268,14 +3348,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0List:
     template : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplate, default is Undefined, optional
         template
     """
-
-
     elements?: [any]
-
     elementsYaml?: str
-
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplate
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplate:
     r"""
@@ -4288,12 +3363,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplate:
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateMetadata:
     r"""
@@ -4312,18 +3384,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateMetadata:
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpec:
     r"""
@@ -4350,26 +3415,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpec:
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecDestination:
     r"""
@@ -4384,14 +3440,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecDesti
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -4414,22 +3465,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecIgnor
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecInfoItems0:
     r"""
@@ -4442,12 +3485,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecInfoI
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSource:
     r"""
@@ -4476,28 +3516,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceDirectory:
     r"""
@@ -4514,16 +3543,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -4538,14 +3561,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -4560,14 +3578,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -4582,14 +3596,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceHelm:
     r"""
@@ -4628,38 +3638,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -4672,12 +3665,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -4692,14 +3681,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceHydrator:
     r"""
@@ -4714,14 +3698,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceHydratorDrySource:
     r"""
@@ -4736,14 +3716,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -4754,10 +3731,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -4770,12 +3744,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceKustomize:
     r"""
@@ -4816,40 +3787,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -4866,16 +3819,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -4898,22 +3845,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -4926,12 +3864,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcePlugin:
     r"""
@@ -4946,14 +3881,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -4966,12 +3896,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -4988,16 +3915,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0:
     r"""
@@ -5026,28 +3947,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0Directory:
     r"""
@@ -5064,16 +3974,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -5088,14 +3992,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -5110,14 +4009,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -5132,14 +4027,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0Helm:
     r"""
@@ -5178,38 +4069,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -5222,12 +4096,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -5242,14 +4112,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -5290,40 +4155,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -5340,16 +4187,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -5372,22 +4213,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -5400,12 +4232,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0Plugin:
     r"""
@@ -5420,14 +4249,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -5440,12 +4264,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -5462,16 +4283,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSyncPolicy:
     r"""
@@ -5488,16 +4303,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSyncP
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSyncPolicyAutomated:
     r"""
@@ -5512,14 +4321,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSyncP
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -5532,12 +4336,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSyncP
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSyncPolicyRetry:
     r"""
@@ -5550,12 +4350,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSyncP
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -5570,14 +4366,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSyncP
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Matrix:
     r"""
@@ -5590,12 +4381,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Matrix:
     template : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplate, default is Undefined, optional
         template
     """
-
-
     generators: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0]
 
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplate
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0:
     r"""
@@ -5624,28 +4412,16 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     selector : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0Selector, default is Undefined, optional
         selector
     """
-
-
     clusterDecisionResource?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResource
-
     clusters?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0Clusters
-
     git?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0Git
-
     list?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0List
-
     matrix?: any
-
     merge?: any
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0Plugin
-
     pullRequest?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequest
-
     scmProvider?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProvider
-
     selector?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0Selector
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResource:
     r"""
@@ -5666,20 +4442,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     values : {str:str}, default is Undefined, optional
         values
     """
-
-
     configMapRef: str
 
     labelSelector?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceLabelSelector
-
     name?: str
-
     requeueAfterSeconds?: int
-
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplate
-
     values?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceLabelSelector:
     r"""
@@ -5692,12 +4461,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     matchLabels : {str:str}, default is Undefined, optional
         match labels
     """
-
-
     matchExpressions?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceLabelSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceLabelSelectorMatchExpressionsItems0:
     r"""
@@ -5712,14 +4477,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     values : [str], default is Undefined, optional
         values
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplate:
     r"""
@@ -5732,12 +4494,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateMetadata:
     r"""
@@ -5756,18 +4515,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpec:
     r"""
@@ -5794,26 +4546,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecDestination:
     r"""
@@ -5828,14 +4571,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -5858,22 +4596,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecInfoItems0:
     r"""
@@ -5886,12 +4616,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSource:
     r"""
@@ -5920,28 +4647,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectory:
     r"""
@@ -5958,16 +4674,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -5982,14 +4692,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -6004,14 +4709,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -6026,14 +4727,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHelm:
     r"""
@@ -6072,38 +4769,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -6116,12 +4796,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -6136,14 +4812,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydrator:
     r"""
@@ -6158,14 +4829,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorDrySource:
     r"""
@@ -6180,14 +4847,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -6198,10 +4862,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -6214,12 +4875,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomize:
     r"""
@@ -6260,40 +4918,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -6310,16 +4950,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -6342,22 +4976,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -6370,12 +4995,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePlugin:
     r"""
@@ -6390,14 +5012,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -6410,12 +5027,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -6432,16 +5046,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0:
     r"""
@@ -6470,28 +5078,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Directory:
     r"""
@@ -6508,16 +5105,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -6532,14 +5123,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -6554,14 +5140,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -6576,14 +5158,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Helm:
     r"""
@@ -6622,38 +5200,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -6666,12 +5227,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -6686,14 +5243,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -6734,40 +5286,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -6784,16 +5318,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -6816,22 +5344,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -6844,12 +5363,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Plugin:
     r"""
@@ -6864,14 +5380,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -6884,12 +5395,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -6906,16 +5414,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicy:
     r"""
@@ -6932,16 +5434,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyAutomated:
     r"""
@@ -6956,14 +5452,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -6976,12 +5467,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyRetry:
     r"""
@@ -6994,12 +5481,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -7014,14 +5497,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0Clusters:
     r"""
@@ -7038,16 +5516,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     values : {str:str}, default is Undefined, optional
         values
     """
-
-
     flatList?: bool
-
     selector?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersSelector
-
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplate
-
     values?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersSelector:
     r"""
@@ -7060,12 +5532,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     matchLabels : {str:str}, default is Undefined, optional
         match labels
     """
-
-
     matchExpressions?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersSelectorMatchExpressionsItems0:
     r"""
@@ -7080,14 +5548,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     values : [str], default is Undefined, optional
         values
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplate:
     r"""
@@ -7100,12 +5565,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateMetadata:
     r"""
@@ -7124,18 +5586,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpec:
     r"""
@@ -7162,26 +5617,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecDestination:
     r"""
@@ -7196,14 +5642,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -7226,22 +5667,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecInfoItems0:
     r"""
@@ -7254,12 +5687,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSource:
     r"""
@@ -7288,28 +5718,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceDirectory:
     r"""
@@ -7326,16 +5745,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -7350,14 +5763,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -7372,14 +5780,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -7394,14 +5798,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceHelm:
     r"""
@@ -7440,38 +5840,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -7484,12 +5867,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -7504,14 +5883,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceHydrator:
     r"""
@@ -7526,14 +5900,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceHydratorDrySource:
     r"""
@@ -7548,14 +5918,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -7566,10 +5933,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -7582,12 +5946,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceKustomize:
     r"""
@@ -7628,40 +5989,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -7678,16 +6021,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -7710,22 +6047,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -7738,12 +6066,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcePlugin:
     r"""
@@ -7758,14 +6083,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -7778,12 +6098,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -7800,16 +6117,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0:
     r"""
@@ -7838,28 +6149,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0Directory:
     r"""
@@ -7876,16 +6176,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -7900,14 +6194,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -7922,14 +6211,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -7944,14 +6229,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0Helm:
     r"""
@@ -7990,38 +6271,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -8034,12 +6298,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -8054,14 +6314,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -8102,40 +6357,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -8152,16 +6389,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -8184,22 +6415,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -8212,12 +6434,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0Plugin:
     r"""
@@ -8232,14 +6451,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -8252,12 +6466,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -8274,16 +6485,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSyncPolicy:
     r"""
@@ -8300,16 +6505,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSyncPolicyAutomated:
     r"""
@@ -8324,14 +6523,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -8344,12 +6538,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSyncPolicyRetry:
     r"""
@@ -8362,12 +6552,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -8382,14 +6568,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0Git:
     r"""
@@ -8414,24 +6595,16 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     values : {str:str}, default is Undefined, optional
         values
     """
-
-
     directories?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitDirectoriesItems0]
-
     files?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitFilesItems0]
-
     pathParamPrefix?: str
-
     repoURL: str
 
     requeueAfterSeconds?: int
-
     revision: str
 
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplate
-
     values?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitDirectoriesItems0:
     r"""
@@ -8444,12 +6617,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     path : str, default is Undefined, required
         path
     """
-
-
     exclude?: bool
-
     path: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitFilesItems0:
     r"""
@@ -8460,10 +6629,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     path : str, default is Undefined, required
         path
     """
-
-
     path: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplate:
     r"""
@@ -8476,12 +6642,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateMetadata:
     r"""
@@ -8500,18 +6663,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpec:
     r"""
@@ -8538,26 +6694,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecDestination:
     r"""
@@ -8572,14 +6719,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -8602,22 +6744,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecInfoItems0:
     r"""
@@ -8630,12 +6764,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSource:
     r"""
@@ -8664,28 +6795,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceDirectory:
     r"""
@@ -8702,16 +6822,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -8726,14 +6840,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -8748,14 +6857,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -8770,14 +6875,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceHelm:
     r"""
@@ -8816,38 +6917,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -8860,12 +6944,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -8880,14 +6960,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceHydrator:
     r"""
@@ -8902,14 +6977,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceHydratorDrySource:
     r"""
@@ -8924,14 +6995,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -8942,10 +7010,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -8958,12 +7023,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceKustomize:
     r"""
@@ -9004,40 +7066,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -9054,16 +7098,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -9086,22 +7124,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -9114,12 +7143,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcePlugin:
     r"""
@@ -9134,14 +7160,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -9154,12 +7175,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -9176,16 +7194,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0:
     r"""
@@ -9214,28 +7226,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0Directory:
     r"""
@@ -9252,16 +7253,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -9276,14 +7271,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -9298,14 +7288,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -9320,14 +7306,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0Helm:
     r"""
@@ -9366,38 +7348,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -9410,12 +7375,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -9430,14 +7391,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -9478,40 +7434,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -9528,16 +7466,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -9560,22 +7492,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -9588,12 +7511,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0Plugin:
     r"""
@@ -9608,14 +7528,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -9628,12 +7543,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -9650,16 +7562,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSyncPolicy:
     r"""
@@ -9676,16 +7582,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSyncPolicyAutomated:
     r"""
@@ -9700,14 +7600,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -9720,12 +7615,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSyncPolicyRetry:
     r"""
@@ -9738,12 +7629,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -9758,14 +7645,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0List:
     r"""
@@ -9780,14 +7662,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     template : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplate, default is Undefined, optional
         template
     """
-
-
     elements?: [any]
-
     elementsYaml?: str
-
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplate
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplate:
     r"""
@@ -9800,12 +7677,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateMetadata:
     r"""
@@ -9824,18 +7698,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpec:
     r"""
@@ -9862,26 +7729,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecDestination:
     r"""
@@ -9896,14 +7754,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -9926,22 +7779,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecInfoItems0:
     r"""
@@ -9954,12 +7799,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSource:
     r"""
@@ -9988,28 +7830,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceDirectory:
     r"""
@@ -10026,16 +7857,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -10050,14 +7875,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -10072,14 +7892,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -10094,14 +7910,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceHelm:
     r"""
@@ -10140,38 +7952,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -10184,12 +7979,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -10204,14 +7995,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceHydrator:
     r"""
@@ -10226,14 +8012,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceHydratorDrySource:
     r"""
@@ -10248,14 +8030,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -10266,10 +8045,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -10282,12 +8058,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceKustomize:
     r"""
@@ -10328,40 +8101,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -10378,16 +8133,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -10410,22 +8159,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -10438,12 +8178,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcePlugin:
     r"""
@@ -10458,14 +8195,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -10478,12 +8210,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -10500,16 +8229,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0:
     r"""
@@ -10538,28 +8261,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0Directory:
     r"""
@@ -10576,16 +8288,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -10600,14 +8306,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -10622,14 +8323,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -10644,14 +8341,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0Helm:
     r"""
@@ -10690,38 +8383,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -10734,12 +8410,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -10754,14 +8426,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -10802,40 +8469,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -10852,16 +8501,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -10884,22 +8527,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -10912,12 +8546,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0Plugin:
     r"""
@@ -10932,14 +8563,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -10952,12 +8578,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -10974,16 +8597,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSyncPolicy:
     r"""
@@ -11000,16 +8617,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSyncPolicyAutomated:
     r"""
@@ -11024,14 +8635,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -11044,12 +8650,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSyncPolicyRetry:
     r"""
@@ -11062,12 +8664,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -11082,14 +8680,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0Plugin:
     r"""
@@ -11108,18 +8701,12 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     values : {str:str}, default is Undefined, optional
         values
     """
-
-
     configMapRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginConfigMapRef
 
     input?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginInput
-
     requeueAfterSeconds?: int
-
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplate
-
     values?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginConfigMapRef:
     r"""
@@ -11130,10 +8717,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     name : str, default is Undefined, required
         name
     """
-
-
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginInput:
     r"""
@@ -11144,10 +8728,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     parameters : {str:any}, default is Undefined, optional
         parameters
     """
-
-
     parameters?: {str:any}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplate:
     r"""
@@ -11160,12 +8741,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateMetadata:
     r"""
@@ -11184,18 +8762,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpec:
     r"""
@@ -11222,26 +8793,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecDestination:
     r"""
@@ -11256,14 +8818,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -11286,22 +8843,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecInfoItems0:
     r"""
@@ -11314,12 +8863,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSource:
     r"""
@@ -11348,28 +8894,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceDirectory:
     r"""
@@ -11386,16 +8921,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -11410,14 +8939,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -11432,14 +8956,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -11454,14 +8974,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceHelm:
     r"""
@@ -11500,38 +9016,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -11544,12 +9043,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -11564,14 +9059,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceHydrator:
     r"""
@@ -11586,14 +9076,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceHydratorDrySource:
     r"""
@@ -11608,14 +9094,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -11626,10 +9109,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -11642,12 +9122,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceKustomize:
     r"""
@@ -11688,40 +9165,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -11738,16 +9197,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -11770,22 +9223,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -11798,12 +9242,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcePlugin:
     r"""
@@ -11818,14 +9259,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -11838,12 +9274,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -11860,16 +9293,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0:
     r"""
@@ -11898,28 +9325,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0Directory:
     r"""
@@ -11936,16 +9352,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -11960,14 +9370,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -11982,14 +9387,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -12004,14 +9405,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0Helm:
     r"""
@@ -12050,38 +9447,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -12094,12 +9474,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -12114,14 +9490,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -12162,40 +9533,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -12212,16 +9565,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -12244,22 +9591,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -12272,12 +9610,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0Plugin:
     r"""
@@ -12292,14 +9627,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -12312,12 +9642,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -12334,16 +9661,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSyncPolicy:
     r"""
@@ -12360,16 +9681,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSyncPolicyAutomated:
     r"""
@@ -12384,14 +9699,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -12404,12 +9714,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSyncPolicyRetry:
     r"""
@@ -12422,12 +9728,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -12442,14 +9744,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequest:
     r"""
@@ -12476,26 +9773,15 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     template : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplate, default is Undefined, optional
         template
     """
-
-
     azuredevops?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestAzuredevops
-
     bitbucket?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucket
-
     bitbucketServer?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketServer
-
     filters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestFiltersItems0]
-
     gitea?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestGitea
-
     github?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestGithub
-
     gitlab?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestGitlab
-
     requeueAfterSeconds?: int
-
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplate
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestAzuredevops:
     r"""
@@ -12516,12 +9802,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestAzuredevopsTokenRef, default is Undefined, optional
         token ref
     """
-
-
     api?: str
-
     labels?: [str]
-
     organization: str
 
     project: str
@@ -12529,7 +9811,6 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     repo: str
 
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestAzuredevopsTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestAzuredevopsTokenRef:
     r"""
@@ -12542,12 +9823,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucket:
     r"""
@@ -12566,18 +9844,12 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     repo : str, default is Undefined, required
         repo
     """
-
-
     api?: str
-
     basicAuth?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketBasicAuth
-
     bearerToken?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketBearerToken
-
     owner: str
 
     repo: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketBasicAuth:
     r"""
@@ -12590,12 +9862,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     username : str, default is Undefined, required
         username
     """
-
-
     passwordRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketBasicAuthPasswordRef
 
     username: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketBasicAuthPasswordRef:
     r"""
@@ -12608,12 +9877,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketBearerToken:
     r"""
@@ -12624,10 +9890,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketBearerTokenTokenRef, default is Undefined, required
         token ref
     """
-
-
     tokenRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketBearerTokenTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketBearerTokenTokenRef:
     r"""
@@ -12640,12 +9903,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketServer:
     r"""
@@ -12668,22 +9928,15 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     repo : str, default is Undefined, required
         repo
     """
-
-
     api: str
 
     basicAuth?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketServerBasicAuth
-
     bearerToken?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketServerBearerToken
-
     caRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketServerCaRef
-
     insecure?: bool
-
     project: str
 
     repo: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketServerBasicAuth:
     r"""
@@ -12696,12 +9949,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     username : str, default is Undefined, required
         username
     """
-
-
     passwordRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketServerBasicAuthPasswordRef
 
     username: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketServerBasicAuthPasswordRef:
     r"""
@@ -12714,12 +9964,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketServerBearerToken:
     r"""
@@ -12730,10 +9977,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketServerBearerTokenTokenRef, default is Undefined, required
         token ref
     """
-
-
     tokenRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketServerBearerTokenTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketServerBearerTokenTokenRef:
     r"""
@@ -12746,12 +9990,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestBitbucketServerCaRef:
     r"""
@@ -12764,12 +10005,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     key : str, default is Undefined, required
         key
     """
-
-
     configMapName: str
 
     key: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestFiltersItems0:
     r"""
@@ -12782,12 +10020,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetBranchMatch : str, default is Undefined, optional
         target branch match
     """
-
-
     branchMatch?: str
-
     targetBranchMatch?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestGitea:
     r"""
@@ -12806,18 +10040,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestGiteaTokenRef, default is Undefined, optional
         token ref
     """
-
-
     api: str
 
     insecure?: bool
-
     owner: str
 
     repo: str
 
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestGiteaTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestGiteaTokenRef:
     r"""
@@ -12830,12 +10060,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestGithub:
     r"""
@@ -12856,20 +10083,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestGithubTokenRef, default is Undefined, optional
         token ref
     """
-
-
     api?: str
-
     appSecretName?: str
-
     labels?: [str]
-
     owner: str
 
     repo: str
 
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestGithubTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestGithubTokenRef:
     r"""
@@ -12882,12 +10103,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestGitlab:
     r"""
@@ -12910,22 +10128,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestGitlabTokenRef, default is Undefined, optional
         token ref
     """
-
-
     api?: str
-
     caRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestGitlabCaRef
-
     insecure?: bool
-
     labels?: [str]
-
     project: str
 
     pullRequestState?: str
-
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestGitlabTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestGitlabCaRef:
     r"""
@@ -12938,12 +10148,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     key : str, default is Undefined, required
         key
     """
-
-
     configMapName: str
 
     key: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestGitlabTokenRef:
     r"""
@@ -12956,12 +10163,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplate:
     r"""
@@ -12974,12 +10178,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateMetadata:
     r"""
@@ -12998,18 +10199,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpec:
     r"""
@@ -13036,26 +10230,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecDestination:
     r"""
@@ -13070,14 +10255,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -13100,22 +10280,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecInfoItems0:
     r"""
@@ -13128,12 +10300,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSource:
     r"""
@@ -13162,28 +10331,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceDirectory:
     r"""
@@ -13200,16 +10358,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -13224,14 +10376,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -13246,14 +10393,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -13268,14 +10411,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceHelm:
     r"""
@@ -13314,38 +10453,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -13358,12 +10480,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -13378,14 +10496,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceHydrator:
     r"""
@@ -13400,14 +10513,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceHydratorDrySource:
     r"""
@@ -13422,14 +10531,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -13440,10 +10546,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -13456,12 +10559,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceKustomize:
     r"""
@@ -13502,40 +10602,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -13552,16 +10634,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -13584,22 +10660,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -13612,12 +10679,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcePlugin:
     r"""
@@ -13632,14 +10696,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -13652,12 +10711,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -13674,16 +10730,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0:
     r"""
@@ -13712,28 +10762,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0Directory:
     r"""
@@ -13750,16 +10789,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -13774,14 +10807,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -13796,14 +10824,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -13818,14 +10842,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0Helm:
     r"""
@@ -13864,38 +10884,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -13908,12 +10911,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -13928,14 +10927,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -13976,40 +10970,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -14026,16 +11002,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -14058,22 +11028,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -14086,12 +11047,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0Plugin:
     r"""
@@ -14106,14 +11064,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -14126,12 +11079,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -14148,16 +11098,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSyncPolicy:
     r"""
@@ -14174,16 +11118,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSyncPolicyAutomated:
     r"""
@@ -14198,14 +11136,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -14218,12 +11151,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSyncPolicyRetry:
     r"""
@@ -14236,12 +11165,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -14256,14 +11181,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProvider:
     r"""
@@ -14296,32 +11216,18 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     values : {str:str}, default is Undefined, optional
         values
     """
-
-
     awsCodeCommit?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderAwsCodeCommit
-
     azureDevOps?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderAzureDevOps
-
     bitbucket?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderBitbucket
-
     bitbucketServer?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderBitbucketServer
-
     cloneProtocol?: str
-
     filters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderFiltersItems0]
-
     gitea?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGitea
-
     github?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGithub
-
     gitlab?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGitlab
-
     requeueAfterSeconds?: int
-
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplate
-
     values?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderAwsCodeCommit:
     r"""
@@ -14338,16 +11244,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tagFilters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderAwsCodeCommitTagFiltersItems0], default is Undefined, optional
         tag filters
     """
-
-
     allBranches?: bool
-
     region?: str
-
     role?: str
-
     tagFilters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderAwsCodeCommitTagFiltersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderAwsCodeCommitTagFiltersItems0:
     r"""
@@ -14360,12 +11260,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, optional
         value
     """
-
-
     key: str
 
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderAzureDevOps:
     r"""
@@ -14384,18 +11281,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     teamProject : str, default is Undefined, required
         team project
     """
-
-
     accessTokenRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderAzureDevOpsAccessTokenRef
 
     allBranches?: bool
-
     api?: str
-
     organization: str
 
     teamProject: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderAzureDevOpsAccessTokenRef:
     r"""
@@ -14408,12 +11300,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderBitbucket:
     r"""
@@ -14430,16 +11319,12 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     user : str, default is Undefined, required
         user
     """
-
-
     allBranches?: bool
-
     appPasswordRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderBitbucketAppPasswordRef
 
     owner: str
 
     user: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderBitbucketAppPasswordRef:
     r"""
@@ -14452,12 +11337,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderBitbucketServer:
     r"""
@@ -14480,22 +11362,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     project : str, default is Undefined, required
         project
     """
-
-
     allBranches?: bool
-
     api: str
 
     basicAuth?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderBitbucketServerBasicAuth
-
     bearerToken?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderBitbucketServerBearerToken
-
     caRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderBitbucketServerCaRef
-
     insecure?: bool
-
     project: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderBitbucketServerBasicAuth:
     r"""
@@ -14508,12 +11382,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     username : str, default is Undefined, required
         username
     """
-
-
     passwordRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderBitbucketServerBasicAuthPasswordRef
 
     username: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderBitbucketServerBasicAuthPasswordRef:
     r"""
@@ -14526,12 +11397,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderBitbucketServerBearerToken:
     r"""
@@ -14542,10 +11410,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderBitbucketServerBearerTokenTokenRef, default is Undefined, required
         token ref
     """
-
-
     tokenRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderBitbucketServerBearerTokenTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderBitbucketServerBearerTokenTokenRef:
     r"""
@@ -14558,12 +11423,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderBitbucketServerCaRef:
     r"""
@@ -14576,12 +11438,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     key : str, default is Undefined, required
         key
     """
-
-
     configMapName: str
 
     key: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderFiltersItems0:
     r"""
@@ -14600,18 +11459,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     repositoryMatch : str, default is Undefined, optional
         repository match
     """
-
-
     branchMatch?: str
-
     labelMatch?: str
-
     pathsDoNotExist?: [str]
-
     pathsExist?: [str]
-
     repositoryMatch?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGitea:
     r"""
@@ -14630,18 +11482,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGiteaTokenRef, default is Undefined, optional
         token ref
     """
-
-
     allBranches?: bool
-
     api: str
 
     insecure?: bool
-
     owner: str
 
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGiteaTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGiteaTokenRef:
     r"""
@@ -14654,12 +11501,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGithub:
     r"""
@@ -14678,18 +11522,12 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGithubTokenRef, default is Undefined, optional
         token ref
     """
-
-
     allBranches?: bool
-
     api?: str
-
     appSecretName?: str
-
     organization: str
 
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGithubTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGithubTokenRef:
     r"""
@@ -14702,12 +11540,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGitlab:
     r"""
@@ -14734,26 +11569,16 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     topic : str, default is Undefined, optional
         topic
     """
-
-
     allBranches?: bool
-
     api?: str
-
     caRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGitlabCaRef
-
     group: str
 
     includeSharedProjects?: bool
-
     includeSubgroups?: bool
-
     insecure?: bool
-
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGitlabTokenRef
-
     topic?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGitlabCaRef:
     r"""
@@ -14766,12 +11591,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     key : str, default is Undefined, required
         key
     """
-
-
     configMapName: str
 
     key: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGitlabTokenRef:
     r"""
@@ -14784,12 +11606,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplate:
     r"""
@@ -14802,12 +11621,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateMetadata:
     r"""
@@ -14826,18 +11642,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpec:
     r"""
@@ -14864,26 +11673,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecDestination:
     r"""
@@ -14898,14 +11698,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -14928,22 +11723,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecInfoItems0:
     r"""
@@ -14956,12 +11743,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSource:
     r"""
@@ -14990,28 +11774,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceDirectory:
     r"""
@@ -15028,16 +11801,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -15052,14 +11819,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -15074,14 +11836,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -15096,14 +11854,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceHelm:
     r"""
@@ -15142,38 +11896,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -15186,12 +11923,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -15206,14 +11939,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceHydrator:
     r"""
@@ -15228,14 +11956,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceHydratorDrySource:
     r"""
@@ -15250,14 +11974,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -15268,10 +11989,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -15284,12 +12002,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceKustomize:
     r"""
@@ -15330,40 +12045,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -15380,16 +12077,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -15412,22 +12103,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -15440,12 +12122,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcePlugin:
     r"""
@@ -15460,14 +12139,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -15480,12 +12154,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -15502,16 +12173,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0:
     r"""
@@ -15540,28 +12205,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Directory:
     r"""
@@ -15578,16 +12232,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -15602,14 +12250,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -15624,14 +12267,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -15646,14 +12285,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Helm:
     r"""
@@ -15692,38 +12327,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -15736,12 +12354,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -15756,14 +12370,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -15804,40 +12413,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -15854,16 +12445,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -15886,22 +12471,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -15914,12 +12490,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Plugin:
     r"""
@@ -15934,14 +12507,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -15954,12 +12522,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -15976,16 +12541,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSyncPolicy:
     r"""
@@ -16002,16 +12561,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSyncPolicyAutomated:
     r"""
@@ -16026,14 +12579,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -16046,12 +12594,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSyncPolicyRetry:
     r"""
@@ -16064,12 +12608,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -16084,14 +12624,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0Selector:
     r"""
@@ -16104,12 +12639,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     matchLabels : {str:str}, default is Undefined, optional
         match labels
     """
-
-
     matchExpressions?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0SelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0SelectorMatchExpressionsItems0:
     r"""
@@ -16124,14 +12655,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     values : [str], default is Undefined, optional
         values
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplate:
     r"""
@@ -16144,12 +12672,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplate:
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateMetadata:
     r"""
@@ -16168,18 +12693,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateMetadat
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpec:
     r"""
@@ -16206,26 +12724,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpec:
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecDestination:
     r"""
@@ -16240,14 +12749,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecDes
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -16270,22 +12774,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecIgn
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecInfoItems0:
     r"""
@@ -16298,12 +12794,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecInf
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSource:
     r"""
@@ -16332,28 +12825,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceDirectory:
     r"""
@@ -16370,16 +12852,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -16394,14 +12870,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -16416,14 +12887,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -16438,14 +12905,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceHelm:
     r"""
@@ -16484,38 +12947,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -16528,12 +12974,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -16548,14 +12990,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceHydrator:
     r"""
@@ -16570,14 +13007,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceHydratorDrySource:
     r"""
@@ -16592,14 +13025,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -16610,10 +13040,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -16626,12 +13053,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceKustomize:
     r"""
@@ -16672,40 +13096,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -16722,16 +13128,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -16754,22 +13154,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -16782,12 +13173,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcePlugin:
     r"""
@@ -16802,14 +13190,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -16822,12 +13205,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -16844,16 +13224,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0:
     r"""
@@ -16882,28 +13256,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0Directory:
     r"""
@@ -16920,16 +13283,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -16944,14 +13301,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -16966,14 +13318,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -16988,14 +13336,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0Helm:
     r"""
@@ -17034,38 +13378,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -17078,12 +13405,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -17098,14 +13421,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -17146,40 +13464,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -17196,16 +13496,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -17228,22 +13522,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -17256,12 +13541,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0Plugin:
     r"""
@@ -17276,14 +13558,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -17296,12 +13573,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -17318,16 +13592,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSyncPolicy:
     r"""
@@ -17344,16 +13612,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSyn
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSyncPolicyAutomated:
     r"""
@@ -17368,14 +13630,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSyn
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -17388,12 +13645,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSyn
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSyncPolicyRetry:
     r"""
@@ -17406,12 +13659,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSyn
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -17426,14 +13675,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSyn
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Merge:
     r"""
@@ -17448,14 +13692,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Merge:
     template : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplate, default is Undefined, optional
         template
     """
-
-
     generators: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0]
 
     mergeKeys: [str]
 
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplate
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0:
     r"""
@@ -17484,28 +13725,16 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     selector : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0Selector, default is Undefined, optional
         selector
     """
-
-
     clusterDecisionResource?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResource
-
     clusters?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0Clusters
-
     git?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0Git
-
     list?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0List
-
     matrix?: any
-
     merge?: any
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0Plugin
-
     pullRequest?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequest
-
     scmProvider?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProvider
-
     selector?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0Selector
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResource:
     r"""
@@ -17526,20 +13755,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     values : {str:str}, default is Undefined, optional
         values
     """
-
-
     configMapRef: str
 
     labelSelector?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceLabelSelector
-
     name?: str
-
     requeueAfterSeconds?: int
-
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplate
-
     values?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceLabelSelector:
     r"""
@@ -17552,12 +13774,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     matchLabels : {str:str}, default is Undefined, optional
         match labels
     """
-
-
     matchExpressions?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceLabelSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceLabelSelectorMatchExpressionsItems0:
     r"""
@@ -17572,14 +13790,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     values : [str], default is Undefined, optional
         values
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplate:
     r"""
@@ -17592,12 +13807,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateMetadata:
     r"""
@@ -17616,18 +13828,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpec:
     r"""
@@ -17654,26 +13859,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecDestination:
     r"""
@@ -17688,14 +13884,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -17718,22 +13909,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecInfoItems0:
     r"""
@@ -17746,12 +13929,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSource:
     r"""
@@ -17780,28 +13960,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectory:
     r"""
@@ -17818,16 +13987,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -17842,14 +14005,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -17864,14 +14022,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -17886,14 +14040,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHelm:
     r"""
@@ -17932,38 +14082,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -17976,12 +14109,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -17996,14 +14125,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydrator:
     r"""
@@ -18018,14 +14142,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorDrySource:
     r"""
@@ -18040,14 +14160,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -18058,10 +14175,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -18074,12 +14188,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomize:
     r"""
@@ -18120,40 +14231,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -18170,16 +14263,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -18202,22 +14289,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -18230,12 +14308,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePlugin:
     r"""
@@ -18250,14 +14325,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -18270,12 +14340,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -18292,16 +14359,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0:
     r"""
@@ -18330,28 +14391,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Directory:
     r"""
@@ -18368,16 +14418,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -18392,14 +14436,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -18414,14 +14453,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -18436,14 +14471,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Helm:
     r"""
@@ -18482,38 +14513,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -18526,12 +14540,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -18546,14 +14556,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -18594,40 +14599,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -18644,16 +14631,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -18676,22 +14657,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -18704,12 +14676,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Plugin:
     r"""
@@ -18724,14 +14693,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -18744,12 +14708,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -18766,16 +14727,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicy:
     r"""
@@ -18792,16 +14747,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyAutomated:
     r"""
@@ -18816,14 +14765,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -18836,12 +14780,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyRetry:
     r"""
@@ -18854,12 +14794,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -18874,14 +14810,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0Clusters:
     r"""
@@ -18898,16 +14829,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     values : {str:str}, default is Undefined, optional
         values
     """
-
-
     flatList?: bool
-
     selector?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersSelector
-
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplate
-
     values?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersSelector:
     r"""
@@ -18920,12 +14845,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     matchLabels : {str:str}, default is Undefined, optional
         match labels
     """
-
-
     matchExpressions?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersSelectorMatchExpressionsItems0:
     r"""
@@ -18940,14 +14861,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     values : [str], default is Undefined, optional
         values
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplate:
     r"""
@@ -18960,12 +14878,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateMetadata:
     r"""
@@ -18984,18 +14899,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpec:
     r"""
@@ -19022,26 +14930,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecDestination:
     r"""
@@ -19056,14 +14955,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -19086,22 +14980,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecInfoItems0:
     r"""
@@ -19114,12 +15000,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSource:
     r"""
@@ -19148,28 +15031,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceDirectory:
     r"""
@@ -19186,16 +15058,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -19210,14 +15076,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -19232,14 +15093,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -19254,14 +15111,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceHelm:
     r"""
@@ -19300,38 +15153,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -19344,12 +15180,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -19364,14 +15196,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceHydrator:
     r"""
@@ -19386,14 +15213,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceHydratorDrySource:
     r"""
@@ -19408,14 +15231,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -19426,10 +15246,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -19442,12 +15259,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceKustomize:
     r"""
@@ -19488,40 +15302,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -19538,16 +15334,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -19570,22 +15360,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -19598,12 +15379,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcePlugin:
     r"""
@@ -19618,14 +15396,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -19638,12 +15411,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -19660,16 +15430,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0:
     r"""
@@ -19698,28 +15462,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0Directory:
     r"""
@@ -19736,16 +15489,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -19760,14 +15507,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -19782,14 +15524,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -19804,14 +15542,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0Helm:
     r"""
@@ -19850,38 +15584,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -19894,12 +15611,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -19914,14 +15627,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -19962,40 +15670,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -20012,16 +15702,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -20044,22 +15728,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -20072,12 +15747,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0Plugin:
     r"""
@@ -20092,14 +15764,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -20112,12 +15779,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -20134,16 +15798,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSyncPolicy:
     r"""
@@ -20160,16 +15818,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSyncPolicyAutomated:
     r"""
@@ -20184,14 +15836,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -20204,12 +15851,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSyncPolicyRetry:
     r"""
@@ -20222,12 +15865,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -20242,14 +15881,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0Git:
     r"""
@@ -20274,24 +15908,16 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     values : {str:str}, default is Undefined, optional
         values
     """
-
-
     directories?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitDirectoriesItems0]
-
     files?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitFilesItems0]
-
     pathParamPrefix?: str
-
     repoURL: str
 
     requeueAfterSeconds?: int
-
     revision: str
 
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplate
-
     values?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitDirectoriesItems0:
     r"""
@@ -20304,12 +15930,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     path : str, default is Undefined, required
         path
     """
-
-
     exclude?: bool
-
     path: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitFilesItems0:
     r"""
@@ -20320,10 +15942,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     path : str, default is Undefined, required
         path
     """
-
-
     path: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplate:
     r"""
@@ -20336,12 +15955,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateMetadata:
     r"""
@@ -20360,18 +15976,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpec:
     r"""
@@ -20398,26 +16007,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecDestination:
     r"""
@@ -20432,14 +16032,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -20462,22 +16057,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecInfoItems0:
     r"""
@@ -20490,12 +16077,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSource:
     r"""
@@ -20524,28 +16108,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceDirectory:
     r"""
@@ -20562,16 +16135,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -20586,14 +16153,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -20608,14 +16170,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -20630,14 +16188,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceHelm:
     r"""
@@ -20676,38 +16230,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -20720,12 +16257,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -20740,14 +16273,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceHydrator:
     r"""
@@ -20762,14 +16290,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceHydratorDrySource:
     r"""
@@ -20784,14 +16308,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -20802,10 +16323,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -20818,12 +16336,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceKustomize:
     r"""
@@ -20864,40 +16379,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -20914,16 +16411,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -20946,22 +16437,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -20974,12 +16456,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcePlugin:
     r"""
@@ -20994,14 +16473,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -21014,12 +16488,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -21036,16 +16507,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0:
     r"""
@@ -21074,28 +16539,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0Directory:
     r"""
@@ -21112,16 +16566,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -21136,14 +16584,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -21158,14 +16601,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -21180,14 +16619,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0Helm:
     r"""
@@ -21226,38 +16661,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -21270,12 +16688,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -21290,14 +16704,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -21338,40 +16747,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -21388,16 +16779,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -21420,22 +16805,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -21448,12 +16824,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0Plugin:
     r"""
@@ -21468,14 +16841,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -21488,12 +16856,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -21510,16 +16875,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSyncPolicy:
     r"""
@@ -21536,16 +16895,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSyncPolicyAutomated:
     r"""
@@ -21560,14 +16913,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -21580,12 +16928,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSyncPolicyRetry:
     r"""
@@ -21598,12 +16942,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -21618,14 +16958,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0List:
     r"""
@@ -21640,14 +16975,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     template : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplate, default is Undefined, optional
         template
     """
-
-
     elements?: [any]
-
     elementsYaml?: str
-
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplate
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplate:
     r"""
@@ -21660,12 +16990,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateMetadata:
     r"""
@@ -21684,18 +17011,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpec:
     r"""
@@ -21722,26 +17042,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecDestination:
     r"""
@@ -21756,14 +17067,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -21786,22 +17092,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecInfoItems0:
     r"""
@@ -21814,12 +17112,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSource:
     r"""
@@ -21848,28 +17143,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceDirectory:
     r"""
@@ -21886,16 +17170,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -21910,14 +17188,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -21932,14 +17205,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -21954,14 +17223,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceHelm:
     r"""
@@ -22000,38 +17265,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -22044,12 +17292,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -22064,14 +17308,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceHydrator:
     r"""
@@ -22086,14 +17325,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceHydratorDrySource:
     r"""
@@ -22108,14 +17343,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -22126,10 +17358,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -22142,12 +17371,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceKustomize:
     r"""
@@ -22188,40 +17414,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -22238,16 +17446,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -22270,22 +17472,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -22298,12 +17491,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcePlugin:
     r"""
@@ -22318,14 +17508,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -22338,12 +17523,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -22360,16 +17542,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0:
     r"""
@@ -22398,28 +17574,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0Directory:
     r"""
@@ -22436,16 +17601,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -22460,14 +17619,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -22482,14 +17636,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -22504,14 +17654,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0Helm:
     r"""
@@ -22550,38 +17696,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -22594,12 +17723,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -22614,14 +17739,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -22662,40 +17782,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -22712,16 +17814,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -22744,22 +17840,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -22772,12 +17859,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0Plugin:
     r"""
@@ -22792,14 +17876,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -22812,12 +17891,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -22834,16 +17910,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSyncPolicy:
     r"""
@@ -22860,16 +17930,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSyncPolicyAutomated:
     r"""
@@ -22884,14 +17948,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -22904,12 +17963,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSyncPolicyRetry:
     r"""
@@ -22922,12 +17977,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -22942,14 +17993,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0Plugin:
     r"""
@@ -22968,18 +18014,12 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     values : {str:str}, default is Undefined, optional
         values
     """
-
-
     configMapRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginConfigMapRef
 
     input?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginInput
-
     requeueAfterSeconds?: int
-
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplate
-
     values?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginConfigMapRef:
     r"""
@@ -22990,10 +18030,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     name : str, default is Undefined, required
         name
     """
-
-
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginInput:
     r"""
@@ -23004,10 +18041,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     parameters : {str:any}, default is Undefined, optional
         parameters
     """
-
-
     parameters?: {str:any}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplate:
     r"""
@@ -23020,12 +18054,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateMetadata:
     r"""
@@ -23044,18 +18075,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpec:
     r"""
@@ -23082,26 +18106,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecDestination:
     r"""
@@ -23116,14 +18131,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -23146,22 +18156,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecInfoItems0:
     r"""
@@ -23174,12 +18176,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSource:
     r"""
@@ -23208,28 +18207,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceDirectory:
     r"""
@@ -23246,16 +18234,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -23270,14 +18252,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -23292,14 +18269,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -23314,14 +18287,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceHelm:
     r"""
@@ -23360,38 +18329,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -23404,12 +18356,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -23424,14 +18372,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceHydrator:
     r"""
@@ -23446,14 +18389,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceHydratorDrySource:
     r"""
@@ -23468,14 +18407,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -23486,10 +18422,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -23502,12 +18435,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceKustomize:
     r"""
@@ -23548,40 +18478,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -23598,16 +18510,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -23630,22 +18536,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -23658,12 +18555,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcePlugin:
     r"""
@@ -23678,14 +18572,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -23698,12 +18587,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -23720,16 +18606,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0:
     r"""
@@ -23758,28 +18638,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0Directory:
     r"""
@@ -23796,16 +18665,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -23820,14 +18683,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -23842,14 +18700,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -23864,14 +18718,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0Helm:
     r"""
@@ -23910,38 +18760,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -23954,12 +18787,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -23974,14 +18803,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -24022,40 +18846,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -24072,16 +18878,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -24104,22 +18904,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -24132,12 +18923,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0Plugin:
     r"""
@@ -24152,14 +18940,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -24172,12 +18955,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -24194,16 +18974,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSyncPolicy:
     r"""
@@ -24220,16 +18994,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSyncPolicyAutomated:
     r"""
@@ -24244,14 +19012,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -24264,12 +19027,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSyncPolicyRetry:
     r"""
@@ -24282,12 +19041,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -24302,14 +19057,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequest:
     r"""
@@ -24336,26 +19086,15 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     template : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplate, default is Undefined, optional
         template
     """
-
-
     azuredevops?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestAzuredevops
-
     bitbucket?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucket
-
     bitbucketServer?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketServer
-
     filters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestFiltersItems0]
-
     gitea?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestGitea
-
     github?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestGithub
-
     gitlab?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestGitlab
-
     requeueAfterSeconds?: int
-
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplate
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestAzuredevops:
     r"""
@@ -24376,12 +19115,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestAzuredevopsTokenRef, default is Undefined, optional
         token ref
     """
-
-
     api?: str
-
     labels?: [str]
-
     organization: str
 
     project: str
@@ -24389,7 +19124,6 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     repo: str
 
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestAzuredevopsTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestAzuredevopsTokenRef:
     r"""
@@ -24402,12 +19136,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucket:
     r"""
@@ -24426,18 +19157,12 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     repo : str, default is Undefined, required
         repo
     """
-
-
     api?: str
-
     basicAuth?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketBasicAuth
-
     bearerToken?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketBearerToken
-
     owner: str
 
     repo: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketBasicAuth:
     r"""
@@ -24450,12 +19175,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     username : str, default is Undefined, required
         username
     """
-
-
     passwordRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketBasicAuthPasswordRef
 
     username: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketBasicAuthPasswordRef:
     r"""
@@ -24468,12 +19190,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketBearerToken:
     r"""
@@ -24484,10 +19203,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketBearerTokenTokenRef, default is Undefined, required
         token ref
     """
-
-
     tokenRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketBearerTokenTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketBearerTokenTokenRef:
     r"""
@@ -24500,12 +19216,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketServer:
     r"""
@@ -24528,22 +19241,15 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     repo : str, default is Undefined, required
         repo
     """
-
-
     api: str
 
     basicAuth?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketServerBasicAuth
-
     bearerToken?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketServerBearerToken
-
     caRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketServerCaRef
-
     insecure?: bool
-
     project: str
 
     repo: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketServerBasicAuth:
     r"""
@@ -24556,12 +19262,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     username : str, default is Undefined, required
         username
     """
-
-
     passwordRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketServerBasicAuthPasswordRef
 
     username: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketServerBasicAuthPasswordRef:
     r"""
@@ -24574,12 +19277,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketServerBearerToken:
     r"""
@@ -24590,10 +19290,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketServerBearerTokenTokenRef, default is Undefined, required
         token ref
     """
-
-
     tokenRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketServerBearerTokenTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketServerBearerTokenTokenRef:
     r"""
@@ -24606,12 +19303,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestBitbucketServerCaRef:
     r"""
@@ -24624,12 +19318,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     key : str, default is Undefined, required
         key
     """
-
-
     configMapName: str
 
     key: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestFiltersItems0:
     r"""
@@ -24642,12 +19333,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetBranchMatch : str, default is Undefined, optional
         target branch match
     """
-
-
     branchMatch?: str
-
     targetBranchMatch?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestGitea:
     r"""
@@ -24666,18 +19353,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestGiteaTokenRef, default is Undefined, optional
         token ref
     """
-
-
     api: str
 
     insecure?: bool
-
     owner: str
 
     repo: str
 
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestGiteaTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestGiteaTokenRef:
     r"""
@@ -24690,12 +19373,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestGithub:
     r"""
@@ -24716,20 +19396,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestGithubTokenRef, default is Undefined, optional
         token ref
     """
-
-
     api?: str
-
     appSecretName?: str
-
     labels?: [str]
-
     owner: str
 
     repo: str
 
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestGithubTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestGithubTokenRef:
     r"""
@@ -24742,12 +19416,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestGitlab:
     r"""
@@ -24770,22 +19441,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestGitlabTokenRef, default is Undefined, optional
         token ref
     """
-
-
     api?: str
-
     caRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestGitlabCaRef
-
     insecure?: bool
-
     labels?: [str]
-
     project: str
 
     pullRequestState?: str
-
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestGitlabTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestGitlabCaRef:
     r"""
@@ -24798,12 +19461,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     key : str, default is Undefined, required
         key
     """
-
-
     configMapName: str
 
     key: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestGitlabTokenRef:
     r"""
@@ -24816,12 +19476,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplate:
     r"""
@@ -24834,12 +19491,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateMetadata:
     r"""
@@ -24858,18 +19512,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpec:
     r"""
@@ -24896,26 +19543,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecDestination:
     r"""
@@ -24930,14 +19568,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -24960,22 +19593,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecInfoItems0:
     r"""
@@ -24988,12 +19613,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSource:
     r"""
@@ -25022,28 +19644,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceDirectory:
     r"""
@@ -25060,16 +19671,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -25084,14 +19689,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -25106,14 +19706,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -25128,14 +19724,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceHelm:
     r"""
@@ -25174,38 +19766,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -25218,12 +19793,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -25238,14 +19809,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceHydrator:
     r"""
@@ -25260,14 +19826,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceHydratorDrySource:
     r"""
@@ -25282,14 +19844,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -25300,10 +19859,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -25316,12 +19872,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceKustomize:
     r"""
@@ -25362,40 +19915,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -25412,16 +19947,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -25444,22 +19973,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -25472,12 +19992,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcePlugin:
     r"""
@@ -25492,14 +20009,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -25512,12 +20024,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -25534,16 +20043,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0:
     r"""
@@ -25572,28 +20075,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0Directory:
     r"""
@@ -25610,16 +20102,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -25634,14 +20120,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -25656,14 +20137,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -25678,14 +20155,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0Helm:
     r"""
@@ -25724,38 +20197,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -25768,12 +20224,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -25788,14 +20240,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -25836,40 +20283,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -25886,16 +20315,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -25918,22 +20341,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -25946,12 +20360,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0Plugin:
     r"""
@@ -25966,14 +20377,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -25986,12 +20392,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -26008,16 +20411,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSyncPolicy:
     r"""
@@ -26034,16 +20431,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSyncPolicyAutomated:
     r"""
@@ -26058,14 +20449,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -26078,12 +20464,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSyncPolicyRetry:
     r"""
@@ -26096,12 +20478,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -26116,14 +20494,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProvider:
     r"""
@@ -26156,32 +20529,18 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     values : {str:str}, default is Undefined, optional
         values
     """
-
-
     awsCodeCommit?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderAwsCodeCommit
-
     azureDevOps?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderAzureDevOps
-
     bitbucket?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderBitbucket
-
     bitbucketServer?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderBitbucketServer
-
     cloneProtocol?: str
-
     filters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderFiltersItems0]
-
     gitea?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGitea
-
     github?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGithub
-
     gitlab?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGitlab
-
     requeueAfterSeconds?: int
-
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplate
-
     values?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderAwsCodeCommit:
     r"""
@@ -26198,16 +20557,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tagFilters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderAwsCodeCommitTagFiltersItems0], default is Undefined, optional
         tag filters
     """
-
-
     allBranches?: bool
-
     region?: str
-
     role?: str
-
     tagFilters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderAwsCodeCommitTagFiltersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderAwsCodeCommitTagFiltersItems0:
     r"""
@@ -26220,12 +20573,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, optional
         value
     """
-
-
     key: str
 
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderAzureDevOps:
     r"""
@@ -26244,18 +20594,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     teamProject : str, default is Undefined, required
         team project
     """
-
-
     accessTokenRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderAzureDevOpsAccessTokenRef
 
     allBranches?: bool
-
     api?: str
-
     organization: str
 
     teamProject: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderAzureDevOpsAccessTokenRef:
     r"""
@@ -26268,12 +20613,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderBitbucket:
     r"""
@@ -26290,16 +20632,12 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     user : str, default is Undefined, required
         user
     """
-
-
     allBranches?: bool
-
     appPasswordRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderBitbucketAppPasswordRef
 
     owner: str
 
     user: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderBitbucketAppPasswordRef:
     r"""
@@ -26312,12 +20650,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderBitbucketServer:
     r"""
@@ -26340,22 +20675,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     project : str, default is Undefined, required
         project
     """
-
-
     allBranches?: bool
-
     api: str
 
     basicAuth?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderBitbucketServerBasicAuth
-
     bearerToken?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderBitbucketServerBearerToken
-
     caRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderBitbucketServerCaRef
-
     insecure?: bool
-
     project: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderBitbucketServerBasicAuth:
     r"""
@@ -26368,12 +20695,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     username : str, default is Undefined, required
         username
     """
-
-
     passwordRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderBitbucketServerBasicAuthPasswordRef
 
     username: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderBitbucketServerBasicAuthPasswordRef:
     r"""
@@ -26386,12 +20710,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderBitbucketServerBearerToken:
     r"""
@@ -26402,10 +20723,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderBitbucketServerBearerTokenTokenRef, default is Undefined, required
         token ref
     """
-
-
     tokenRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderBitbucketServerBearerTokenTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderBitbucketServerBearerTokenTokenRef:
     r"""
@@ -26418,12 +20736,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderBitbucketServerCaRef:
     r"""
@@ -26436,12 +20751,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     key : str, default is Undefined, required
         key
     """
-
-
     configMapName: str
 
     key: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderFiltersItems0:
     r"""
@@ -26460,18 +20772,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     repositoryMatch : str, default is Undefined, optional
         repository match
     """
-
-
     branchMatch?: str
-
     labelMatch?: str
-
     pathsDoNotExist?: [str]
-
     pathsExist?: [str]
-
     repositoryMatch?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGitea:
     r"""
@@ -26490,18 +20795,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGiteaTokenRef, default is Undefined, optional
         token ref
     """
-
-
     allBranches?: bool
-
     api: str
 
     insecure?: bool
-
     owner: str
 
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGiteaTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGiteaTokenRef:
     r"""
@@ -26514,12 +20814,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGithub:
     r"""
@@ -26538,18 +20835,12 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGithubTokenRef, default is Undefined, optional
         token ref
     """
-
-
     allBranches?: bool
-
     api?: str
-
     appSecretName?: str
-
     organization: str
 
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGithubTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGithubTokenRef:
     r"""
@@ -26562,12 +20853,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGitlab:
     r"""
@@ -26594,26 +20882,16 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     topic : str, default is Undefined, optional
         topic
     """
-
-
     allBranches?: bool
-
     api?: str
-
     caRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGitlabCaRef
-
     group: str
 
     includeSharedProjects?: bool
-
     includeSubgroups?: bool
-
     insecure?: bool
-
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGitlabTokenRef
-
     topic?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGitlabCaRef:
     r"""
@@ -26626,12 +20904,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     key : str, default is Undefined, required
         key
     """
-
-
     configMapName: str
 
     key: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGitlabTokenRef:
     r"""
@@ -26644,12 +20919,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplate:
     r"""
@@ -26662,12 +20934,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateMetadata:
     r"""
@@ -26686,18 +20955,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpec:
     r"""
@@ -26724,26 +20986,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecDestination:
     r"""
@@ -26758,14 +21011,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -26788,22 +21036,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecInfoItems0:
     r"""
@@ -26816,12 +21056,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSource:
     r"""
@@ -26850,28 +21087,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceDirectory:
     r"""
@@ -26888,16 +21114,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -26912,14 +21132,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -26934,14 +21149,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -26956,14 +21167,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceHelm:
     r"""
@@ -27002,38 +21209,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -27046,12 +21236,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -27066,14 +21252,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceHydrator:
     r"""
@@ -27088,14 +21269,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceHydratorDrySource:
     r"""
@@ -27110,14 +21287,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -27128,10 +21302,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -27144,12 +21315,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceKustomize:
     r"""
@@ -27190,40 +21358,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -27240,16 +21390,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -27272,22 +21416,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -27300,12 +21435,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcePlugin:
     r"""
@@ -27320,14 +21452,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -27340,12 +21467,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -27362,16 +21486,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0:
     r"""
@@ -27400,28 +21518,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Directory:
     r"""
@@ -27438,16 +21545,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -27462,14 +21563,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -27484,14 +21580,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -27506,14 +21598,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Helm:
     r"""
@@ -27552,38 +21640,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -27596,12 +21667,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -27616,14 +21683,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -27664,40 +21726,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -27714,16 +21758,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -27746,22 +21784,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -27774,12 +21803,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Plugin:
     r"""
@@ -27794,14 +21820,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -27814,12 +21835,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -27836,16 +21854,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSyncPolicy:
     r"""
@@ -27862,16 +21874,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSyncPolicyAutomated:
     r"""
@@ -27886,14 +21892,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -27906,12 +21907,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSyncPolicyRetry:
     r"""
@@ -27924,12 +21921,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -27944,14 +21937,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0Selector:
     r"""
@@ -27964,12 +21952,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     matchLabels : {str:str}, default is Undefined, optional
         match labels
     """
-
-
     matchExpressions?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0SelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0SelectorMatchExpressionsItems0:
     r"""
@@ -27984,14 +21968,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     values : [str], default is Undefined, optional
         values
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplate:
     r"""
@@ -28004,12 +21985,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplate:
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateMetadata:
     r"""
@@ -28028,18 +22006,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateMetadata
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpec:
     r"""
@@ -28066,26 +22037,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpec:
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecDestination:
     r"""
@@ -28100,14 +22062,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecDest
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -28130,22 +22087,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecIgno
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecInfoItems0:
     r"""
@@ -28158,12 +22107,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecInfo
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSource:
     r"""
@@ -28192,28 +22138,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceDirectory:
     r"""
@@ -28230,16 +22165,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -28254,14 +22183,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -28276,14 +22200,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -28298,14 +22218,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceHelm:
     r"""
@@ -28344,38 +22260,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -28388,12 +22287,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -28408,14 +22303,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceHydrator:
     r"""
@@ -28430,14 +22320,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceHydratorDrySource:
     r"""
@@ -28452,14 +22338,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -28470,10 +22353,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -28486,12 +22366,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceKustomize:
     r"""
@@ -28532,40 +22409,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -28582,16 +22441,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -28614,22 +22467,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -28642,12 +22486,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcePlugin:
     r"""
@@ -28662,14 +22503,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -28682,12 +22518,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -28704,16 +22537,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0:
     r"""
@@ -28742,28 +22569,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0Directory:
     r"""
@@ -28780,16 +22596,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -28804,14 +22614,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -28826,14 +22631,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -28848,14 +22649,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0Helm:
     r"""
@@ -28894,38 +22691,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -28938,12 +22718,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -28958,14 +22734,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -29006,40 +22777,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -29056,16 +22809,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -29088,22 +22835,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -29116,12 +22854,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0Plugin:
     r"""
@@ -29136,14 +22871,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -29156,12 +22886,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -29178,16 +22905,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSyncPolicy:
     r"""
@@ -29204,16 +22925,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSync
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSyncPolicyAutomated:
     r"""
@@ -29228,14 +22943,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSync
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -29248,12 +22958,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSync
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSyncPolicyRetry:
     r"""
@@ -29266,12 +22972,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSync
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -29286,14 +22988,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSync
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Plugin:
     r"""
@@ -29312,18 +23009,12 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Plugin:
     values : {str:str}, default is Undefined, optional
         values
     """
-
-
     configMapRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginConfigMapRef
 
     input?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginInput
-
     requeueAfterSeconds?: int
-
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplate
-
     values?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginConfigMapRef:
     r"""
@@ -29334,10 +23025,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginConfigMapRef:
     name : str, default is Undefined, required
         name
     """
-
-
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginInput:
     r"""
@@ -29348,10 +23036,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginInput:
     parameters : {str:any}, default is Undefined, optional
         parameters
     """
-
-
     parameters?: {str:any}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplate:
     r"""
@@ -29364,12 +23049,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplate:
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateMetadata:
     r"""
@@ -29388,18 +23070,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateMetadat
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpec:
     r"""
@@ -29426,26 +23101,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpec:
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecDestination:
     r"""
@@ -29460,14 +23126,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecDes
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -29490,22 +23151,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecIgn
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecInfoItems0:
     r"""
@@ -29518,12 +23171,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecInf
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSource:
     r"""
@@ -29552,28 +23202,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceDirectory:
     r"""
@@ -29590,16 +23229,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -29614,14 +23247,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -29636,14 +23264,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -29658,14 +23282,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceHelm:
     r"""
@@ -29704,38 +23324,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -29748,12 +23351,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -29768,14 +23367,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceHydrator:
     r"""
@@ -29790,14 +23384,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceHydratorDrySource:
     r"""
@@ -29812,14 +23402,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -29830,10 +23417,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -29846,12 +23430,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceKustomize:
     r"""
@@ -29892,40 +23473,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -29942,16 +23505,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -29974,22 +23531,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -30002,12 +23550,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcePlugin:
     r"""
@@ -30022,14 +23567,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -30042,12 +23582,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -30064,16 +23601,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0:
     r"""
@@ -30102,28 +23633,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0Directory:
     r"""
@@ -30140,16 +23660,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -30164,14 +23678,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -30186,14 +23695,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -30208,14 +23713,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0Helm:
     r"""
@@ -30254,38 +23755,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -30298,12 +23782,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -30318,14 +23798,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -30366,40 +23841,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -30416,16 +23873,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -30448,22 +23899,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -30476,12 +23918,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0Plugin:
     r"""
@@ -30496,14 +23935,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -30516,12 +23950,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -30538,16 +23969,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSyncPolicy:
     r"""
@@ -30564,16 +23989,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSyn
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSyncPolicyAutomated:
     r"""
@@ -30588,14 +24007,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSyn
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -30608,12 +24022,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSyn
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSyncPolicyRetry:
     r"""
@@ -30626,12 +24036,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSyn
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -30646,14 +24052,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSyn
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequest:
     r"""
@@ -30680,26 +24081,15 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequest:
     template : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplate, default is Undefined, optional
         template
     """
-
-
     azuredevops?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestAzuredevops
-
     bitbucket?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucket
-
     bitbucketServer?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketServer
-
     filters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestFiltersItems0]
-
     gitea?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGitea
-
     github?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGithub
-
     gitlab?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGitlab
-
     requeueAfterSeconds?: int
-
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplate
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestAzuredevops:
     r"""
@@ -30720,12 +24110,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestAzuredevop
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestAzuredevopsTokenRef, default is Undefined, optional
         token ref
     """
-
-
     api?: str
-
     labels?: [str]
-
     organization: str
 
     project: str
@@ -30733,7 +24119,6 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestAzuredevop
     repo: str
 
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestAzuredevopsTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestAzuredevopsTokenRef:
     r"""
@@ -30746,12 +24131,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestAzuredevop
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucket:
     r"""
@@ -30770,18 +24152,12 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucket:
     repo : str, default is Undefined, required
         repo
     """
-
-
     api?: str
-
     basicAuth?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketBasicAuth
-
     bearerToken?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketBearerToken
-
     owner: str
 
     repo: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketBasicAuth:
     r"""
@@ -30794,12 +24170,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketB
     username : str, default is Undefined, required
         username
     """
-
-
     passwordRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketBasicAuthPasswordRef
 
     username: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketBasicAuthPasswordRef:
     r"""
@@ -30812,12 +24185,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketB
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketBearerToken:
     r"""
@@ -30828,10 +24198,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketB
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketBearerTokenTokenRef, default is Undefined, required
         token ref
     """
-
-
     tokenRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketBearerTokenTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketBearerTokenTokenRef:
     r"""
@@ -30844,12 +24211,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketB
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketServer:
     r"""
@@ -30872,22 +24236,15 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketS
     repo : str, default is Undefined, required
         repo
     """
-
-
     api: str
 
     basicAuth?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketServerBasicAuth
-
     bearerToken?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketServerBearerToken
-
     caRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketServerCaRef
-
     insecure?: bool
-
     project: str
 
     repo: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketServerBasicAuth:
     r"""
@@ -30900,12 +24257,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketS
     username : str, default is Undefined, required
         username
     """
-
-
     passwordRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketServerBasicAuthPasswordRef
 
     username: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketServerBasicAuthPasswordRef:
     r"""
@@ -30918,12 +24272,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketS
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketServerBearerToken:
     r"""
@@ -30934,10 +24285,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketS
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketServerBearerTokenTokenRef, default is Undefined, required
         token ref
     """
-
-
     tokenRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketServerBearerTokenTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketServerBearerTokenTokenRef:
     r"""
@@ -30950,12 +24298,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketS
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketServerCaRef:
     r"""
@@ -30968,12 +24313,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestBitbucketS
     key : str, default is Undefined, required
         key
     """
-
-
     configMapName: str
 
     key: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestFiltersItems0:
     r"""
@@ -30986,12 +24328,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestFiltersIte
     targetBranchMatch : str, default is Undefined, optional
         target branch match
     """
-
-
     branchMatch?: str
-
     targetBranchMatch?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGitea:
     r"""
@@ -31010,18 +24348,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGitea:
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGiteaTokenRef, default is Undefined, optional
         token ref
     """
-
-
     api: str
 
     insecure?: bool
-
     owner: str
 
     repo: str
 
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGiteaTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGiteaTokenRef:
     r"""
@@ -31034,12 +24368,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGiteaToken
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGithub:
     r"""
@@ -31060,20 +24391,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGithub:
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGithubTokenRef, default is Undefined, optional
         token ref
     """
-
-
     api?: str
-
     appSecretName?: str
-
     labels?: [str]
-
     owner: str
 
     repo: str
 
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGithubTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGithubTokenRef:
     r"""
@@ -31086,12 +24411,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGithubToke
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGitlab:
     r"""
@@ -31114,22 +24436,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGitlab:
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGitlabTokenRef, default is Undefined, optional
         token ref
     """
-
-
     api?: str
-
     caRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGitlabCaRef
-
     insecure?: bool
-
     labels?: [str]
-
     project: str
 
     pullRequestState?: str
-
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGitlabTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGitlabCaRef:
     r"""
@@ -31142,12 +24456,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGitlabCaRe
     key : str, default is Undefined, required
         key
     """
-
-
     configMapName: str
 
     key: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGitlabTokenRef:
     r"""
@@ -31160,12 +24471,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGitlabToke
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplate:
     r"""
@@ -31178,12 +24486,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplate:
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateMetadata:
     r"""
@@ -31202,18 +24507,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateMe
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpec:
     r"""
@@ -31240,26 +24538,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecDestination:
     r"""
@@ -31274,14 +24563,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -31304,22 +24588,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecInfoItems0:
     r"""
@@ -31332,12 +24608,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSource:
     r"""
@@ -31366,28 +24639,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceDirectory:
     r"""
@@ -31404,16 +24666,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -31428,14 +24684,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -31450,14 +24701,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -31472,14 +24719,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceHelm:
     r"""
@@ -31518,38 +24761,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -31562,12 +24788,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -31582,14 +24804,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceHydrator:
     r"""
@@ -31604,14 +24821,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceHydratorDrySource:
     r"""
@@ -31626,14 +24839,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -31644,10 +24854,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -31660,12 +24867,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceKustomize:
     r"""
@@ -31706,40 +24910,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -31756,16 +24942,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -31788,22 +24968,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -31816,12 +24987,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcePlugin:
     r"""
@@ -31836,14 +25004,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -31856,12 +25019,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -31878,16 +25038,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0:
     r"""
@@ -31916,28 +25070,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0Directory:
     r"""
@@ -31954,16 +25097,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -31978,14 +25115,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -32000,14 +25132,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -32022,14 +25150,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0Helm:
     r"""
@@ -32068,38 +25192,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -32112,12 +25219,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -32132,14 +25235,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -32180,40 +25278,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -32230,16 +25310,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -32262,22 +25336,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -32290,12 +25355,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0Plugin:
     r"""
@@ -32310,14 +25372,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -32330,12 +25387,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -32352,16 +25406,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSyncPolicy:
     r"""
@@ -32378,16 +25426,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSyncPolicyAutomated:
     r"""
@@ -32402,14 +25444,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -32422,12 +25459,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSyncPolicyRetry:
     r"""
@@ -32440,12 +25473,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -32460,14 +25489,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProvider:
     r"""
@@ -32500,32 +25524,18 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProvider:
     values : {str:str}, default is Undefined, optional
         values
     """
-
-
     awsCodeCommit?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderAwsCodeCommit
-
     azureDevOps?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderAzureDevOps
-
     bitbucket?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucket
-
     bitbucketServer?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketServer
-
     cloneProtocol?: str
-
     filters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderFiltersItems0]
-
     gitea?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGitea
-
     github?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGithub
-
     gitlab?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGitlab
-
     requeueAfterSeconds?: int
-
     template?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplate
-
     values?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderAwsCodeCommit:
     r"""
@@ -32542,16 +25552,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderAwsCodeCom
     tagFilters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderAwsCodeCommitTagFiltersItems0], default is Undefined, optional
         tag filters
     """
-
-
     allBranches?: bool
-
     region?: str
-
     role?: str
-
     tagFilters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderAwsCodeCommitTagFiltersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderAwsCodeCommitTagFiltersItems0:
     r"""
@@ -32564,12 +25568,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderAwsCodeCom
     value : str, default is Undefined, optional
         value
     """
-
-
     key: str
 
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderAzureDevOps:
     r"""
@@ -32588,18 +25589,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderAzureDevOp
     teamProject : str, default is Undefined, required
         team project
     """
-
-
     accessTokenRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderAzureDevOpsAccessTokenRef
 
     allBranches?: bool
-
     api?: str
-
     organization: str
 
     teamProject: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderAzureDevOpsAccessTokenRef:
     r"""
@@ -32612,12 +25608,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderAzureDevOp
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucket:
     r"""
@@ -32634,16 +25627,12 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucket:
     user : str, default is Undefined, required
         user
     """
-
-
     allBranches?: bool
-
     appPasswordRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketAppPasswordRef
 
     owner: str
 
     user: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketAppPasswordRef:
     r"""
@@ -32656,12 +25645,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketA
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketServer:
     r"""
@@ -32684,22 +25670,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketS
     project : str, default is Undefined, required
         project
     """
-
-
     allBranches?: bool
-
     api: str
 
     basicAuth?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketServerBasicAuth
-
     bearerToken?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketServerBearerToken
-
     caRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketServerCaRef
-
     insecure?: bool
-
     project: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketServerBasicAuth:
     r"""
@@ -32712,12 +25690,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketS
     username : str, default is Undefined, required
         username
     """
-
-
     passwordRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketServerBasicAuthPasswordRef
 
     username: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketServerBasicAuthPasswordRef:
     r"""
@@ -32730,12 +25705,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketS
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketServerBearerToken:
     r"""
@@ -32746,10 +25718,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketS
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketServerBearerTokenTokenRef, default is Undefined, required
         token ref
     """
-
-
     tokenRef: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketServerBearerTokenTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketServerBearerTokenTokenRef:
     r"""
@@ -32762,12 +25731,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketS
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketServerCaRef:
     r"""
@@ -32780,12 +25746,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderBitbucketS
     key : str, default is Undefined, required
         key
     """
-
-
     configMapName: str
 
     key: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderFiltersItems0:
     r"""
@@ -32804,18 +25767,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderFiltersIte
     repositoryMatch : str, default is Undefined, optional
         repository match
     """
-
-
     branchMatch?: str
-
     labelMatch?: str
-
     pathsDoNotExist?: [str]
-
     pathsExist?: [str]
-
     repositoryMatch?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGitea:
     r"""
@@ -32834,18 +25790,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGitea:
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGiteaTokenRef, default is Undefined, optional
         token ref
     """
-
-
     allBranches?: bool
-
     api: str
 
     insecure?: bool
-
     owner: str
 
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGiteaTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGiteaTokenRef:
     r"""
@@ -32858,12 +25809,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGiteaToken
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGithub:
     r"""
@@ -32882,18 +25830,12 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGithub:
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGithubTokenRef, default is Undefined, optional
         token ref
     """
-
-
     allBranches?: bool
-
     api?: str
-
     appSecretName?: str
-
     organization: str
 
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGithubTokenRef
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGithubTokenRef:
     r"""
@@ -32906,12 +25848,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGithubToke
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGitlab:
     r"""
@@ -32938,26 +25877,16 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGitlab:
     topic : str, default is Undefined, optional
         topic
     """
-
-
     allBranches?: bool
-
     api?: str
-
     caRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGitlabCaRef
-
     group: str
 
     includeSharedProjects?: bool
-
     includeSubgroups?: bool
-
     insecure?: bool
-
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGitlabTokenRef
-
     topic?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGitlabCaRef:
     r"""
@@ -32970,12 +25899,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGitlabCaRe
     key : str, default is Undefined, required
         key
     """
-
-
     configMapName: str
 
     key: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGitlabTokenRef:
     r"""
@@ -32988,12 +25914,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGitlabToke
     secretName : str, default is Undefined, required
         secret name
     """
-
-
     key: str
 
     secretName: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplate:
     r"""
@@ -33006,12 +25929,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplate:
     spec : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateMetadata:
     r"""
@@ -33030,18 +25950,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateMe
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpec:
     r"""
@@ -33068,26 +25981,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecDestination:
     r"""
@@ -33102,14 +26006,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -33132,22 +26031,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecInfoItems0:
     r"""
@@ -33160,12 +26051,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSource:
     r"""
@@ -33194,28 +26082,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceDirectory:
     r"""
@@ -33232,16 +26109,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -33256,14 +26127,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -33278,14 +26144,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -33300,14 +26162,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceHelm:
     r"""
@@ -33346,38 +26204,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -33390,12 +26231,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -33410,14 +26247,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceHydrator:
     r"""
@@ -33432,14 +26264,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceHydratorDrySource:
     r"""
@@ -33454,14 +26282,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -33472,10 +26297,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -33488,12 +26310,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceKustomize:
     r"""
@@ -33534,40 +26353,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -33584,16 +26385,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -33616,22 +26411,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -33644,12 +26430,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcePlugin:
     r"""
@@ -33664,14 +26447,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -33684,12 +26462,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -33706,16 +26481,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0:
     r"""
@@ -33744,28 +26513,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Directory:
     r"""
@@ -33782,16 +26540,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -33806,14 +26558,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -33828,14 +26575,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -33850,14 +26593,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Helm:
     r"""
@@ -33896,38 +26635,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -33940,12 +26662,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -33960,14 +26678,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -34008,40 +26721,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -34058,16 +26753,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     target : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -34090,22 +26779,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -34118,12 +26798,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Plugin:
     r"""
@@ -34138,14 +26815,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -34158,12 +26830,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -34180,16 +26849,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSyncPolicy:
     r"""
@@ -34206,16 +26869,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSyncPolicyAutomated:
     r"""
@@ -34230,14 +26887,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -34250,12 +26902,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSyncPolicyRetry:
     r"""
@@ -34268,12 +26916,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -34288,14 +26932,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Selector:
     r"""
@@ -34308,12 +26947,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0Selector:
     matchLabels : {str:str}, default is Undefined, optional
         match labels
     """
-
-
     matchExpressions?: [ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0SelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0SelectorMatchExpressionsItems0:
     r"""
@@ -34328,14 +26963,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0SelectorMatchExpressi
     values : [str], default is Undefined, optional
         values
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecIgnoreApplicationDifferencesItems0:
     r"""
@@ -34350,14 +26982,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecIgnoreApplicationDifferencesItems0:
     name : str, default is Undefined, optional
         name
     """
-
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     name?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecPreservedFields:
     r"""
@@ -34370,12 +26997,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecPreservedFields:
     labels : [str], default is Undefined, optional
         labels
     """
-
-
     annotations?: [str]
-
     labels?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecStrategy:
     r"""
@@ -34388,12 +27011,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecStrategy:
     $type : str, default is Undefined, optional
         type
     """
-
-
     rollingSync?: ArgoprojIoV1alpha1ApplicationSetSpecStrategyRollingSync
-
     $type?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecStrategyRollingSync:
     r"""
@@ -34404,10 +27023,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecStrategyRollingSync:
     steps : [ArgoprojIoV1alpha1ApplicationSetSpecStrategyRollingSyncStepsItems0], default is Undefined, optional
         steps
     """
-
-
     steps?: [ArgoprojIoV1alpha1ApplicationSetSpecStrategyRollingSyncStepsItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecStrategyRollingSyncStepsItems0:
     r"""
@@ -34420,12 +27036,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecStrategyRollingSyncStepsItems0:
     maxUpdate : int | str, default is Undefined, optional
         max update
     """
-
-
     matchExpressions?: [ArgoprojIoV1alpha1ApplicationSetSpecStrategyRollingSyncStepsItems0MatchExpressionsItems0]
-
     maxUpdate?: int | str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecStrategyRollingSyncStepsItems0MatchExpressionsItems0:
     r"""
@@ -34440,14 +27052,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecStrategyRollingSyncStepsItems0MatchEx
     values : [str], default is Undefined, optional
         values
     """
-
-
     key?: str
-
     operator?: str
-
     values?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecSyncPolicy:
     r"""
@@ -34460,12 +27067,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecSyncPolicy:
     preserveResourcesOnDeletion : bool, default is Undefined, optional
         preserve resources on deletion
     """
-
-
     applicationsSync?: "create-only" | "create-update" | "create-delete" | "sync"
-
     preserveResourcesOnDeletion?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplate:
     r"""
@@ -34478,12 +27081,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplate:
     spec : ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata: ArgoprojIoV1alpha1ApplicationSetSpecTemplateMetadata
 
     spec: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpec
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateMetadata:
     r"""
@@ -34502,18 +27102,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateMetadata:
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     annotations?: {str:str}
-
     finalizers?: [str]
-
     labels?: {str:str}
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpec:
     r"""
@@ -34540,26 +27133,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpec:
     syncPolicy : ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecDestination:
     r"""
@@ -34574,14 +27158,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecDestination:
     server : str, default is Undefined, optional
         server
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecIgnoreDifferencesItems0:
     r"""
@@ -34604,22 +27183,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecIgnoreDifferencesItems0:
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecInfoItems0:
     r"""
@@ -34632,12 +27203,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecInfoItems0:
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSource:
     r"""
@@ -34666,28 +27234,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSource:
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceDirectory:
     r"""
@@ -34704,16 +27261,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceDirectory:
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceDirectoryJsonnet:
     r"""
@@ -34728,14 +27279,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceDirectoryJsonnet:
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -34750,14 +27296,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceDirectoryJsonnetExt
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -34772,14 +27314,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceDirectoryJsonnetTla
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHelm:
     r"""
@@ -34818,38 +27356,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHelm:
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHelmFileParametersItems0:
     r"""
@@ -34862,12 +27383,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHelmFileParametersI
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHelmParametersItems0:
     r"""
@@ -34882,14 +27399,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHelmParametersItems
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHydrator:
     r"""
@@ -34904,14 +27416,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHydrator:
     syncSource : ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHydratorDrySource:
     r"""
@@ -34926,14 +27434,11 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHydratorDrySource:
     targetRevision : str, default is Undefined, required
         target revision
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHydratorHydrateTo:
     r"""
@@ -34944,10 +27449,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHydratorHydrateTo:
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHydratorSyncSource:
     r"""
@@ -34960,12 +27462,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHydratorSyncSource:
     targetBranch : str, default is Undefined, required
         target branch
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceKustomize:
     r"""
@@ -35006,40 +27505,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceKustomize:
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceKustomizePatchesItems0:
     r"""
@@ -35056,16 +27537,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceKustomizePatchesIte
     target : ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -35088,22 +27563,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceKustomizePatchesIte
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceKustomizeReplicasItems0:
     r"""
@@ -35116,12 +27582,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceKustomizeReplicasIt
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcePlugin:
     r"""
@@ -35136,14 +27599,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcePlugin:
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcePluginEnvItems0:
     r"""
@@ -35156,12 +27614,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcePluginEnvItems0:
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcePluginParametersItems0:
     r"""
@@ -35178,16 +27633,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcePluginParametersIte
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0:
     r"""
@@ -35216,28 +27665,17 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0:
     targetRevision : str, default is Undefined, optional
         target revision
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0Directory:
     r"""
@@ -35254,16 +27692,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0Directory:
     recurse : bool, default is Undefined, optional
         recurse
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -35278,14 +27710,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0DirectoryJso
     tlas : [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         tlas
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -35300,14 +27727,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0DirectoryJso
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -35322,14 +27745,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0DirectoryJso
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0Helm:
     r"""
@@ -35368,38 +27787,21 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0Helm:
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -35412,12 +27814,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0HelmFilePara
     path : str, default is Undefined, optional
         path
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -35432,14 +27830,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0HelmParamete
     value : str, default is Undefined, optional
         value
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0Kustomize:
     r"""
@@ -35480,40 +27873,22 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0Kustomize:
     version : str, default is Undefined, optional
         version
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -35530,16 +27905,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0KustomizePat
     target : ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -35562,22 +27931,13 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0KustomizePat
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -35590,12 +27950,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0KustomizeRep
     name : str, default is Undefined, required
         name
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0Plugin:
     r"""
@@ -35610,14 +27967,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0Plugin:
     parameters : [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -35630,12 +27982,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0PluginEnvIte
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -35652,16 +28001,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0PluginParame
     string : str, default is Undefined, optional
         string
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSyncPolicy:
     r"""
@@ -35678,16 +28021,10 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSyncPolicy:
     syncOptions : [str], default is Undefined, optional
         sync options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSyncPolicyAutomated:
     r"""
@@ -35702,14 +28039,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSyncPolicyAutomated:
     selfHeal : bool, default is Undefined, optional
         self heal
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -35722,12 +28054,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSyncPolicyManagedNamespac
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSyncPolicyRetry:
     r"""
@@ -35740,12 +28068,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSyncPolicyRetry:
     limit : int, default is Undefined, optional
         limit
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSyncPolicyRetryBackoff:
     r"""
@@ -35760,14 +28084,9 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSyncPolicyRetryBackoff:
     maxDuration : str, default is Undefined, optional
         max duration
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetStatus:
     r"""
@@ -35782,14 +28101,9 @@ schema ArgoprojIoV1alpha1ApplicationSetStatus:
     resources : [ArgoprojIoV1alpha1ApplicationSetStatusResourcesItems0], default is Undefined, optional
         resources
     """
-
-
     applicationStatus?: [ArgoprojIoV1alpha1ApplicationSetStatusApplicationStatusItems0]
-
     conditions?: [ArgoprojIoV1alpha1ApplicationSetStatusConditionsItems0]
-
     resources?: [ArgoprojIoV1alpha1ApplicationSetStatusResourcesItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetStatusApplicationStatusItems0:
     r"""
@@ -35810,12 +28124,9 @@ schema ArgoprojIoV1alpha1ApplicationSetStatusApplicationStatusItems0:
     targetRevisions : [str], default is Undefined, required
         target revisions
     """
-
-
     application: str
 
     lastTransitionTime?: str
-
     message: str
 
     status: str
@@ -35823,7 +28134,6 @@ schema ArgoprojIoV1alpha1ApplicationSetStatusApplicationStatusItems0:
     step: str
 
     targetRevisions: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSetStatusConditionsItems0:
     r"""
@@ -35842,10 +28152,7 @@ schema ArgoprojIoV1alpha1ApplicationSetStatusConditionsItems0:
     $type : str, default is Undefined, required
         type
     """
-
-
     lastTransitionTime?: str
-
     message: str
 
     reason: str
@@ -35853,7 +28160,6 @@ schema ArgoprojIoV1alpha1ApplicationSetStatusConditionsItems0:
     status: str
 
     $type: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetStatusResourcesItems0:
     r"""
@@ -35884,30 +28190,17 @@ schema ArgoprojIoV1alpha1ApplicationSetStatusResourcesItems0:
     version : str, default is Undefined, optional
         version
     """
-
-
     group?: str
-
     health?: ArgoprojIoV1alpha1ApplicationSetStatusResourcesItems0Health
-
     hook?: bool
-
     kind?: str
-
     name?: str
-
     namespace?: str
-
     requiresDeletionConfirmation?: bool
-
     requiresPruning?: bool
-
     status?: str
-
     syncWave?: int
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSetStatusResourcesItems0Health:
     r"""
@@ -35922,12 +28215,7 @@ schema ArgoprojIoV1alpha1ApplicationSetStatusResourcesItems0Health:
     status : str, default is Undefined, optional
         status
     """
-
-
     lastTransitionTime?: str
-
     message?: str
-
     status?: str
-
 

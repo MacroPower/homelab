@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema GrafanaContactPoint:
     r"""
@@ -24,18 +24,13 @@ schema GrafanaContactPoint:
     status : GrafanaIntegreatlyOrgV1beta1GrafanaContactPointStatus, default is Undefined, optional
         status
     """
-
-
     apiVersion: "grafana.integreatly.org/v1beta1" = "grafana.integreatly.org/v1beta1"
 
     kind: "GrafanaContactPoint" = "GrafanaContactPoint"
 
     metadata?: v1.ObjectMeta
-
     spec?: GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpec
-
     status?: GrafanaIntegreatlyOrgV1beta1GrafanaContactPointStatus
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpec:
     r"""
@@ -62,30 +57,21 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpec:
     valuesFrom : [GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0], default is Undefined, optional
         values from
     """
-
-
     allowCrossNamespaceImport?: bool = False
-
     disableResolveMessage?: bool
-
     instanceSelector: GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecInstanceSelector
 
     name: str
 
     resyncPeriod?: str = "10m0s"
-
     settings: any
 
     $type?: "alertmanager" | "prometheus-alertmanager" | "dingding" | "discord" | "email" | "googlechat" | "kafka" | "line" | "opsgenie" | "pagerduty" | "pushover" | "sensugo" | "sensu" | "slack" | "teams" | "telegram" | "threema" | "victorops" | "webex" | "webhook" | "wecom" | "hipchat" | "oncall"
-
     uid?: str
-
     valuesFrom?: [GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0]
-
 
     check:
         len(valuesFrom) <= 99 if valuesFrom
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecInstanceSelector:
     r"""
@@ -100,12 +86,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecInstanceSelector:
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecInstanceSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecInstanceSelectorMatchExpressionsItems0:
     r"""
@@ -125,14 +107,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecInstanceSelectorMatchE
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0:
     r"""
@@ -145,12 +124,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0:
     valueFrom : GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueFrom, default is Undefined, required
         value from
     """
-
-
     targetPath: str
 
     valueFrom: GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueFrom
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueFrom:
     r"""
@@ -163,12 +139,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueF
     secretKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueFromSecretKeyRef, default is Undefined, optional
         secret key ref
     """
-
-
     configMapKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueFromConfigMapKeyRef
-
     secretKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueFromSecretKeyRef
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueFromConfigMapKeyRef:
     r"""
@@ -187,14 +159,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueF
     optional : bool, default is Undefined, optional
         Specify whether the ConfigMap or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueFromSecretKeyRef:
     r"""
@@ -213,14 +181,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueF
     optional : bool, default is Undefined, optional
         Specify whether the Secret or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointStatus:
     r"""
@@ -233,12 +197,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointStatus:
     lastResync : str, default is Undefined, optional
         Last time the resource was synchronized with Grafana instances
     """
-
-
     conditions?: [GrafanaIntegreatlyOrgV1beta1GrafanaContactPointStatusConditionsItems0]
-
     lastResync?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointStatusConditionsItems0:
     r"""
@@ -267,20 +227,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointStatusConditionsItems0:
     $type : str, default is Undefined, required
         type of condition in CamelCase or in foo.example.com/CamelCase.
     """
-
-
     lastTransitionTime: str
 
     message: str
 
     observedGeneration?: int
-
     reason: str
 
     status: "True" | "False" | "Unknown"
 
     $type: str
-
 
     check:
         len(message) <= 32768
@@ -290,5 +246,4 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointStatusConditionsItems0:
         _regex_match(str(reason), r"^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$")
         len($type) <= 316
         _regex_match(str($type), r"^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$")
-
 

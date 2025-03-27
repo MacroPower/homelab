@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema Grafana:
     r"""
@@ -22,16 +22,12 @@ schema Grafana:
     spec : GeneratorsExternalSecretsIoV1alpha1GrafanaSpec, default is Undefined, optional
         spec
     """
-
-
     apiVersion: "generators.external-secrets.io/v1alpha1" = "generators.external-secrets.io/v1alpha1"
 
     kind: "Grafana" = "Grafana"
 
     metadata?: v1.ObjectMeta
-
     spec?: GeneratorsExternalSecretsIoV1alpha1GrafanaSpec
-
 
 schema GeneratorsExternalSecretsIoV1alpha1GrafanaSpec:
     r"""
@@ -46,14 +42,11 @@ schema GeneratorsExternalSecretsIoV1alpha1GrafanaSpec:
     url : str, default is Undefined, required
         URL is the URL of the Grafana instance.
     """
-
-
     auth: GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuth
 
     serviceAccount: GeneratorsExternalSecretsIoV1alpha1GrafanaSpecServiceAccount
 
     url: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuth:
     r"""
@@ -65,10 +58,7 @@ schema GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuth:
     token : GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuthToken, default is Undefined, required
         token
     """
-
-
     token: GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuthToken
-
 
 schema GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuthToken:
     r"""
@@ -84,12 +74,8 @@ schema GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuthToken:
     name : str, default is Undefined, optional
         The name of the Secret resource being referred to.
     """
-
-
     key?: str
-
     name?: str
-
 
     check:
         len(key) <= 253 if key
@@ -98,7 +84,6 @@ schema GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuthToken:
         len(name) <= 253 if name
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
-
 
 schema GeneratorsExternalSecretsIoV1alpha1GrafanaSpecServiceAccount:
     r"""
@@ -114,10 +99,7 @@ schema GeneratorsExternalSecretsIoV1alpha1GrafanaSpecServiceAccount:
         See here for the documentation on basic roles offered by Grafana:
         https://grafana.com/docs/grafana/latest/administration/roles-and-permissions/access-control/rbac-fixed-basic-role-definitions/
     """
-
-
     name: str
 
     role: str
-
 

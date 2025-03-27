@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema Webhook:
     r"""
@@ -25,16 +25,12 @@ schema Webhook:
     spec : GeneratorsExternalSecretsIoV1alpha1WebhookSpec, default is Undefined, optional
         spec
     """
-
-
     apiVersion: "generators.external-secrets.io/v1alpha1" = "generators.external-secrets.io/v1alpha1"
 
     kind: "Webhook" = "Webhook"
 
     metadata?: v1.ObjectMeta
-
     spec?: GeneratorsExternalSecretsIoV1alpha1WebhookSpec
-
 
 schema GeneratorsExternalSecretsIoV1alpha1WebhookSpec:
     r"""
@@ -65,26 +61,16 @@ schema GeneratorsExternalSecretsIoV1alpha1WebhookSpec:
     url : str, default is Undefined, required
         Webhook url to call
     """
-
-
     body?: str
-
     caBundle?: str
-
     caProvider?: GeneratorsExternalSecretsIoV1alpha1WebhookSpecCaProvider
-
     headers?: {str:str}
-
     method?: str
-
     result: GeneratorsExternalSecretsIoV1alpha1WebhookSpecResult
 
     secrets?: [GeneratorsExternalSecretsIoV1alpha1WebhookSpecSecretsItems0]
-
     timeout?: str
-
     url: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecCaProvider:
     r"""
@@ -101,16 +87,11 @@ schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecCaProvider:
     $type : str, default is Undefined, required
         The type of provider to use such as "Secret", or "ConfigMap".
     """
-
-
     key?: str
-
     name: str
 
     namespace?: str
-
     $type: "Secret" | "ConfigMap"
-
 
     check:
         len(key) <= 253 if key
@@ -123,7 +104,6 @@ schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecCaProvider:
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecResult:
     r"""
     Result formatting
@@ -133,10 +113,7 @@ schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecResult:
     jsonPath : str, default is Undefined, optional
         Json path of return value
     """
-
-
     jsonPath?: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecSecretsItems0:
     r"""
@@ -149,12 +126,9 @@ schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecSecretsItems0:
     secretRef : GeneratorsExternalSecretsIoV1alpha1WebhookSpecSecretsItems0SecretRef, default is Undefined, required
         secret ref
     """
-
-
     name: str
 
     secretRef: GeneratorsExternalSecretsIoV1alpha1WebhookSpecSecretsItems0SecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecSecretsItems0SecretRef:
     r"""
@@ -167,12 +141,8 @@ schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecSecretsItems0SecretRef:
     name : str, default is Undefined, optional
         The name of the Secret resource being referred to.
     """
-
-
     key?: str
-
     name?: str
-
 
     check:
         len(key) <= 253 if key
@@ -181,5 +151,4 @@ schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecSecretsItems0SecretRef:
         len(name) <= 253 if name
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
-
 

@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema GrafanaDashboard:
     r"""
@@ -24,18 +24,13 @@ schema GrafanaDashboard:
     status : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatus, default is Undefined, optional
         status
     """
-
-
     apiVersion: "grafana.integreatly.org/v1beta1" = "grafana.integreatly.org/v1beta1"
 
     kind: "GrafanaDashboard" = "GrafanaDashboard"
 
     metadata?: v1.ObjectMeta
-
     spec?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpec
-
     status?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatus
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpec:
     r"""
@@ -84,48 +79,27 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpec:
     urlAuthorization : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorization, default is Undefined, optional
         url authorization
     """
-
-
     allowCrossNamespaceImport?: bool = False
-
     configMapRef?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecConfigMapRef
-
     contentCacheDuration?: str
-
     datasources?: [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecDatasourcesItems0]
-
     envFrom?: [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0]
-
     envs?: [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0]
-
     folder?: str
-
     folderRef?: str
-
     folderUID?: str
-
     grafanaCom?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecGrafanaCom
-
     gzipJson?: str
-
     instanceSelector: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecInstanceSelector
 
     json?: str
-
     jsonnet?: str
-
     jsonnetLib?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecJsonnetLib
-
     plugins?: [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecPluginsItems0]
-
     resyncPeriod?: str = "10m0s"
-
     uid?: str
-
     url?: str
-
     urlAuthorization?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorization
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecConfigMapRef:
     r"""
@@ -144,14 +118,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecConfigMapRef:
     optional : bool, default is Undefined, optional
         Specify whether the ConfigMap or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecDatasourcesItems0:
     r"""
@@ -164,12 +134,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecDatasourcesItems0:
     inputName : str, default is Undefined, required
         input name
     """
-
-
     datasourceName: str
 
     inputName: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0:
     r"""
@@ -182,12 +149,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0:
     secretKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0SecretKeyRef, default is Undefined, optional
         secret key ref
     """
-
-
     configMapKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0ConfigMapKeyRef
-
     secretKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0SecretKeyRef
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0ConfigMapKeyRef:
     r"""
@@ -206,14 +169,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0ConfigMapKey
     optional : bool, default is Undefined, optional
         Specify whether the ConfigMap or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0SecretKeyRef:
     r"""
@@ -232,14 +191,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0SecretKeyRef
     optional : bool, default is Undefined, optional
         Specify whether the Secret or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0:
     r"""
@@ -254,14 +209,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0:
     valueFrom : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFrom, default is Undefined, optional
         value from
     """
-
-
     name: str
 
     value?: str
-
     valueFrom?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFrom
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFrom:
     r"""
@@ -274,12 +225,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFrom:
     secretKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFromSecretKeyRef, default is Undefined, optional
         secret key ref
     """
-
-
     configMapKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFromConfigMapKeyRef
-
     secretKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFromSecretKeyRef
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFromConfigMapKeyRef:
     r"""
@@ -298,14 +245,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFromConfig
     optional : bool, default is Undefined, optional
         Specify whether the ConfigMap or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFromSecretKeyRef:
     r"""
@@ -324,14 +267,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFromSecret
     optional : bool, default is Undefined, optional
         Specify whether the Secret or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecGrafanaCom:
     r"""
@@ -344,12 +283,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecGrafanaCom:
     revision : int, default is Undefined, optional
         revision
     """
-
-
     id: int
 
     revision?: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecInstanceSelector:
     r"""
@@ -364,12 +300,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecInstanceSelector:
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecInstanceSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecInstanceSelectorMatchExpressionsItems0:
     r"""
@@ -389,14 +321,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecInstanceSelectorMatchExpr
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecJsonnetLib:
     r"""
@@ -411,14 +340,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecJsonnetLib:
     jPath : [str], default is Undefined, optional
         j path
     """
-
-
     fileName: str
 
     gzipJsonnetProject: str
 
     jPath?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecPluginsItems0:
     r"""
@@ -431,12 +357,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecPluginsItems0:
     version : str, default is Undefined, required
         version
     """
-
-
     name: str
 
     version: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorization:
     r"""
@@ -447,10 +370,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorization:
     basicAuth : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuth, default is Undefined, optional
         basic auth
     """
-
-
     basicAuth?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuth
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuth:
     r"""
@@ -463,12 +383,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuth
     username : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuthUsername, default is Undefined, optional
         username
     """
-
-
     password?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuthPassword
-
     username?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuthUsername
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuthPassword:
     r"""
@@ -487,14 +403,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuth
     optional : bool, default is Undefined, optional
         Specify whether the Secret or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuthUsername:
     r"""
@@ -513,14 +425,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuth
     optional : bool, default is Undefined, optional
         Specify whether the Secret or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatus:
     r"""
@@ -545,24 +453,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatus:
     uid : str, default is Undefined, optional
         uid
     """
-
-
     NoMatchingInstances?: bool
-
     conditions?: [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatusConditionsItems0]
-
     contentCache?: str
-
     contentTimestamp?: str
-
     contentUrl?: str
-
     hash?: str
-
     lastResync?: str
-
     uid?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatusConditionsItems0:
     r"""
@@ -591,20 +489,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatusConditionsItems0:
     $type : str, default is Undefined, required
         type of condition in CamelCase or in foo.example.com/CamelCase.
     """
-
-
     lastTransitionTime: str
 
     message: str
 
     observedGeneration?: int
-
     reason: str
 
     status: "True" | "False" | "Unknown"
 
     $type: str
-
 
     check:
         len(message) <= 32768
@@ -614,5 +508,4 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatusConditionsItems0:
         _regex_match(str(reason), r"^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$")
         len($type) <= 316
         _regex_match(str($type), r"^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$")
-
 

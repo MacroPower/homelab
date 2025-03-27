@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema Grafana:
     r"""
@@ -24,18 +24,13 @@ schema Grafana:
     status : GrafanaIntegreatlyOrgV1beta1GrafanaStatus, default is Undefined, optional
         status
     """
-
-
     apiVersion: "grafana.integreatly.org/v1beta1" = "grafana.integreatly.org/v1beta1"
 
     kind: "Grafana" = "Grafana"
 
     metadata?: v1.ObjectMeta
-
     spec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpec
-
     status?: GrafanaIntegreatlyOrgV1beta1GrafanaStatus
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpec:
     r"""
@@ -68,32 +63,18 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpec:
     version : str, default is Undefined, optional
         Version specifies the version of Grafana to use for this deployment. It follows the same format as the docker.io/grafana/grafana tags
     """
-
-
     client?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecClient
-
     config?: {str:{str:str}}
-
     deployment?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeployment
-
     external?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternal
-
     ingress?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngress
-
     jsonnet?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecJsonnet
-
     persistentVolumeClaim?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaim
-
     preferences?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecPreferences
-
     route?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecRoute
-
     service?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecService
-
     serviceAccount?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceAccount
-
     version?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecClient:
     r"""
@@ -110,16 +91,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecClient:
     tls : GrafanaIntegreatlyOrgV1beta1GrafanaSpecClientTLS, default is Undefined, optional
         tls
     """
-
-
     headers?: {str:str}
-
     preferIngress?: bool
-
     timeout?: int
-
     tls?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecClientTLS
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecClientTLS:
     r"""
@@ -132,12 +107,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecClientTLS:
     insecureSkipVerify : bool, default is Undefined, optional
         Disable the CA check of the server
     """
-
-
     certSecretRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecClientTLSCertSecretRef
-
     insecureSkipVerify?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecClientTLSCertSecretRef:
     r"""
@@ -150,12 +121,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecClientTLSCertSecretRef:
     namespace : str, default is Undefined, optional
         namespace defines the space within which the secret name must be unique.
     """
-
-
     name?: str
-
     namespace?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeployment:
     r"""
@@ -168,12 +135,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeployment:
     spec : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpec, default is Undefined, optional
         spec
     """
-
-
     metadata?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentMetadata
-
     spec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpec
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentMetadata:
     r"""
@@ -186,12 +149,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentMetadata:
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpec:
     r"""
@@ -216,24 +175,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpec:
     template : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplate, default is Undefined, optional
         template
     """
-
-
     minReadySeconds?: int
-
     paused?: bool
-
     progressDeadlineSeconds?: int
-
     replicas?: int
-
     revisionHistoryLimit?: int
-
     selector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecSelector
-
     strategy?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecStrategy
-
     template?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplate
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecSelector:
     r"""
@@ -250,12 +199,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecSelector:
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecSelectorMatchExpressionsItems0:
     r"""
@@ -275,14 +220,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecSelectorMatchExpress
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecStrategy:
     r"""
@@ -295,12 +237,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecStrategy:
     $type : str, default is Undefined, optional
         Type of deployment. Can be "Recreate" or "RollingUpdate". Default is RollingUpdate.
     """
-
-
     rollingUpdate?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecStrategyRollingUpdate
-
     $type?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecStrategyRollingUpdate:
     r"""
@@ -333,12 +271,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecStrategyRollingUpdat
         that the total number of pods available at all times during the update is at
         least 70% of desired pods.
     """
-
-
     maxSurge?: int | str
-
     maxUnavailable?: int | str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplate:
     r"""
@@ -351,12 +285,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplate:
     spec : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpec, default is Undefined, optional
         spec
     """
-
-
     metadata?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateMetadata
-
     spec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpec
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateMetadata:
     r"""
@@ -370,12 +300,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateMetadata:
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpec:
     r"""
@@ -522,86 +448,46 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpec:
     volumes : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0], default is Undefined, optional
         volumes
     """
-
-
     activeDeadlineSeconds?: int
-
     affinity?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
-
     automountServiceAccountToken?: bool
-
     containers?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0]
-
     dnsConfig?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecDNSConfig
-
     dnsPolicy?: str
-
     enableServiceLinks?: bool
-
     ephemeralContainers?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0]
-
     hostAliases?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecHostAliasesItems0]
-
     hostIPC?: bool
-
     hostNetwork?: bool
-
     hostPID?: bool
-
     hostUsers?: bool
-
     hostname?: str
-
     imagePullSecrets?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecImagePullSecretsItems0]
-
     initContainers?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0]
-
     nodeName?: str
-
     nodeSelector?: {str:str}
-
     os?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecOs
-
     overhead?: {str:int | str}
-
     preemptionPolicy?: str
-
     priority?: int
-
     priorityClassName?: str
-
     readinessGates?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecReadinessGatesItems0]
-
     restartPolicy?: str
-
     runtimeClassName?: str
-
     schedulerName?: str
-
     securityContext?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContext
-
     serviceAccount?: str
-
     serviceAccountName?: str
-
     setHostnameAsFQDN?: bool
-
     shareProcessNamespace?: bool
-
     subdomain?: str
-
     terminationGracePeriodSeconds?: int
-
     tolerations?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTolerationsItems0]
-
     topologySpreadConstraints?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopologySpreadConstraintsItems0]
-
     volumes?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0]
 
-
     check:
-        all _, overhead in overhead { _regex_match(str(overhead), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if overhead } if overhead
-
+        all _, overhead in overhead {_regex_match(str(overhead), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if overhead} if overhead
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity:
     r"""
@@ -616,14 +502,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
     podAntiAffinity : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinity, default is Undefined, optional
         pod anti affinity
     """
-
-
     nodeAffinity?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinity
-
     podAffinity?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinity
-
     podAntiAffinity?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinity
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinity:
     r"""
@@ -644,12 +525,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
     requiredDuringSchedulingIgnoredDuringExecution : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecution, default is Undefined, optional
         required during scheduling ignored during execution
     """
-
-
     preferredDuringSchedulingIgnoredDuringExecution?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0]
-
     requiredDuringSchedulingIgnoredDuringExecution?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecution
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0:
     r"""
@@ -663,12 +540,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
     weight : int, default is Undefined, required
         Weight associated with matching the corresponding nodeSelectorTerm, in the range 1-100.
     """
-
-
     preference: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0Preference
 
     weight: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0Preference:
     r"""
@@ -681,12 +555,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
     matchFields : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PreferenceMatchFieldsItems0], default is Undefined, optional
         A list of node selector requirements by node's fields.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PreferenceMatchExpressionsItems0]
-
     matchFields?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PreferenceMatchFieldsItems0]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PreferenceMatchExpressionsItems0:
     r"""
@@ -707,14 +577,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         array must have a single element, which will be interpreted as an integer.
         This array is replaced during a strategic merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PreferenceMatchFieldsItems0:
     r"""
@@ -735,14 +602,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         array must have a single element, which will be interpreted as an integer.
         This array is replaced during a strategic merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecution:
     r"""
@@ -757,10 +621,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
     nodeSelectorTerms : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0], default is Undefined, required
         Required. A list of node selector terms. The terms are ORed.
     """
-
-
     nodeSelectorTerms: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0:
     r"""
@@ -775,12 +636,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
     matchFields : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchFieldsItems0], default is Undefined, optional
         A list of node selector requirements by node's fields.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchExpressionsItems0]
-
     matchFields?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchFieldsItems0]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchExpressionsItems0:
     r"""
@@ -801,14 +658,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         array must have a single element, which will be interpreted as an integer.
         This array is replaced during a strategic merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchFieldsItems0:
     r"""
@@ -829,14 +683,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         array must have a single element, which will be interpreted as an integer.
         This array is replaced during a strategic merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinity:
     r"""
@@ -863,12 +714,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         When there are multiple elements, the lists of nodes corresponding to each
         podAffinityTerm are intersected, i.e. all terms must be satisfied.
     """
-
-
     preferredDuringSchedulingIgnoredDuringExecution?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0]
-
     requiredDuringSchedulingIgnoredDuringExecution?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0:
     r"""
@@ -882,12 +729,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         weight associated with matching the corresponding podAffinityTerm,
         in the range 1-100.
     """
-
-
     podAffinityTerm: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTerm
 
     weight: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTerm:
     r"""
@@ -931,20 +775,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         selected pods is running.
         Empty topologyKey is not allowed.
     """
-
-
     labelSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelector
-
     matchLabelKeys?: [str]
-
     mismatchLabelKeys?: [str]
-
     namespaceSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector
-
     namespaces?: [str]
-
     topologyKey: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelector:
     r"""
@@ -960,12 +796,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelectorMatchExpressionsItems0:
     r"""
@@ -985,14 +817,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector:
     r"""
@@ -1011,12 +840,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelectorMatchExpressionsItems0:
     r"""
@@ -1036,14 +861,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0:
     r"""
@@ -1092,20 +914,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         selected pods is running.
         Empty topologyKey is not allowed.
     """
-
-
     labelSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelector
-
     matchLabelKeys?: [str]
-
     mismatchLabelKeys?: [str]
-
     namespaceSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector
-
     namespaces?: [str]
-
     topologyKey: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelector:
     r"""
@@ -1121,12 +935,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelectorMatchExpressionsItems0:
     r"""
@@ -1146,14 +956,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector:
     r"""
@@ -1172,12 +979,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelectorMatchExpressionsItems0:
     r"""
@@ -1197,14 +1000,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinity:
     r"""
@@ -1231,12 +1031,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         When there are multiple elements, the lists of nodes corresponding to each
         podAffinityTerm are intersected, i.e. all terms must be satisfied.
     """
-
-
     preferredDuringSchedulingIgnoredDuringExecution?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0]
-
     requiredDuringSchedulingIgnoredDuringExecution?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0:
     r"""
@@ -1250,12 +1046,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         weight associated with matching the corresponding podAffinityTerm,
         in the range 1-100.
     """
-
-
     podAffinityTerm: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTerm
 
     weight: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTerm:
     r"""
@@ -1299,20 +1092,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         selected pods is running.
         Empty topologyKey is not allowed.
     """
-
-
     labelSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelector
-
     matchLabelKeys?: [str]
-
     mismatchLabelKeys?: [str]
-
     namespaceSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector
-
     namespaces?: [str]
-
     topologyKey: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelector:
     r"""
@@ -1328,12 +1113,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelectorMatchExpressionsItems0:
     r"""
@@ -1353,14 +1134,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector:
     r"""
@@ -1379,12 +1157,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelectorMatchExpressionsItems0:
     r"""
@@ -1404,14 +1178,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0:
     r"""
@@ -1460,20 +1231,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         selected pods is running.
         Empty topologyKey is not allowed.
     """
-
-
     labelSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelector
-
     matchLabelKeys?: [str]
-
     mismatchLabelKeys?: [str]
-
     namespaceSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector
-
     namespaces?: [str]
-
     topologyKey: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelector:
     r"""
@@ -1489,12 +1252,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelectorMatchExpressionsItems0:
     r"""
@@ -1514,14 +1273,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector:
     r"""
@@ -1540,12 +1296,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelectorMatchExpressionsItems0:
     r"""
@@ -1565,14 +1317,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0:
     r"""
@@ -1703,56 +1452,31 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         might be configured in the container image.
         Cannot be updated.
     """
-
-
     args?: [str]
-
     command?: [str]
-
     env?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0]
-
     envFrom?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvFromItems0]
-
     image?: str
-
     imagePullPolicy?: str
-
     lifecycle?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0Lifecycle
-
     livenessProbe?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbe
-
     name: str
 
     ports?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0PortsItems0]
-
     readinessProbe?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbe
-
     resizePolicy?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ResizePolicyItems0]
-
     resources?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0Resources
-
     restartPolicy?: str
-
     securityContext?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContext
-
     startupProbe?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbe
-
     stdin?: bool
-
     stdinOnce?: bool
-
     terminationMessagePath?: str
-
     terminationMessagePolicy?: str
-
     tty?: bool
-
     volumeDevices?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0VolumeDevicesItems0]
-
     volumeMounts?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0VolumeMountsItems0]
-
     workingDir?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvFromItems0:
     r"""
@@ -1767,14 +1491,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     secretRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvFromItems0SecretRef, default is Undefined, optional
         secret ref
     """
-
-
     configMapRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvFromItems0ConfigMapRef
-
     prefix?: str
-
     secretRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvFromItems0SecretRef
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvFromItems0ConfigMapRef:
     r"""
@@ -1791,12 +1510,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     optional : bool, default is Undefined, optional
         Specify whether the ConfigMap must be defined
     """
-
-
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvFromItems0SecretRef:
     r"""
@@ -1813,12 +1528,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     optional : bool, default is Undefined, optional
         Specify whether the Secret must be defined
     """
-
-
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0:
     r"""
@@ -1841,14 +1552,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     valueFrom : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFrom, default is Undefined, optional
         value from
     """
-
-
     name: str
 
     value?: str
-
     valueFrom?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFrom
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFrom:
     r"""
@@ -1865,16 +1572,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     secretKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromSecretKeyRef, default is Undefined, optional
         secret key ref
     """
-
-
     configMapKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromConfigMapKeyRef
-
     fieldRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromFieldRef
-
     resourceFieldRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromResourceFieldRef
-
     secretKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromSecretKeyRef
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromConfigMapKeyRef:
     r"""
@@ -1893,14 +1594,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     optional : bool, default is Undefined, optional
         Specify whether the ConfigMap or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromFieldRef:
     r"""
@@ -1914,12 +1611,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     fieldPath : str, default is Undefined, required
         Path of the field to select in the specified API version.
     """
-
-
     apiVersion?: str
-
     fieldPath: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromResourceFieldRef:
     r"""
@@ -1935,18 +1628,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     resource : str, default is Undefined, required
         Required: resource to select
     """
-
-
     containerName?: str
-
     divisor?: int | str
-
     resource: str
-
 
     check:
         _regex_match(str(divisor), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if divisor
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromSecretKeyRef:
     r"""
@@ -1965,14 +1652,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     optional : bool, default is Undefined, optional
         Specify whether the Secret or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0Lifecycle:
     r"""
@@ -1986,12 +1669,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     preStop : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStop, default is Undefined, optional
         pre stop
     """
-
-
     postStart?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStart
-
     preStop?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStop
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStart:
     r"""
@@ -2011,16 +1690,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     tcpSocket : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStartTCPSocket, default is Undefined, optional
         tcp socket
     """
-
-
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStartExec
-
     httpGet?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStartHTTPGet
-
     sleep?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStartSleep
-
     tcpSocket?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStartTCPSocket
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStartExec:
     r"""
@@ -2035,10 +1708,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         a shell, you need to explicitly call out to that shell.
         Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
     """
-
-
     command?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStartHTTPGet:
     r"""
@@ -2061,18 +1731,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         Scheme to use for connecting to the host.
         Defaults to HTTP.
     """
-
-
     host?: str
-
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0]
-
     path?: str
-
     port: int | str
 
     scheme?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0:
     r"""
@@ -2086,12 +1750,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     value : str, default is Undefined, required
         The header field value
     """
-
-
     name: str
 
     value: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStartSleep:
     r"""
@@ -2102,10 +1763,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     seconds : int, default is Undefined, required
         Seconds is the number of seconds to sleep.
     """
-
-
     seconds: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStartTCPSocket:
     r"""
@@ -2122,12 +1780,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
     """
-
-
     host?: str
-
     port: int | str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStop:
     r"""
@@ -2152,16 +1806,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     tcpSocket : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStopTCPSocket, default is Undefined, optional
         tcp socket
     """
-
-
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStopExec
-
     httpGet?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStopHTTPGet
-
     sleep?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStopSleep
-
     tcpSocket?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStopTCPSocket
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStopExec:
     r"""
@@ -2176,10 +1824,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         a shell, you need to explicitly call out to that shell.
         Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
     """
-
-
     command?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStopHTTPGet:
     r"""
@@ -2202,18 +1847,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         Scheme to use for connecting to the host.
         Defaults to HTTP.
     """
-
-
     host?: str
-
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0]
-
     path?: str
-
     port: int | str
 
     scheme?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0:
     r"""
@@ -2227,12 +1866,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     value : str, default is Undefined, required
         The header field value
     """
-
-
     name: str
 
     value: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStopSleep:
     r"""
@@ -2243,10 +1879,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     seconds : int, default is Undefined, required
         Seconds is the number of seconds to sleep.
     """
-
-
     seconds: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStopTCPSocket:
     r"""
@@ -2263,12 +1896,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
     """
-
-
     host?: str
-
     port: int | str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbe:
     r"""
@@ -2315,28 +1944,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         Defaults to 1 second. Minimum value is 1.
         More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
     """
-
-
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeExec
-
     failureThreshold?: int
-
     grpc?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeGrpc
-
     httpGet?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeHTTPGet
-
     initialDelaySeconds?: int
-
     periodSeconds?: int
-
     successThreshold?: int
-
     tcpSocket?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeTCPSocket
-
     terminationGracePeriodSeconds?: int
-
     timeoutSeconds?: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeExec:
     r"""
@@ -2351,10 +1968,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         a shell, you need to explicitly call out to that shell.
         Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
     """
-
-
     command?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeGrpc:
     r"""
@@ -2370,12 +1984,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
         If this is not specified, the default behavior is defined by gRPC.
     """
-
-
     port: int
 
     service?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeHTTPGet:
     r"""
@@ -2398,18 +2009,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         Scheme to use for connecting to the host.
         Defaults to HTTP.
     """
-
-
     host?: str
-
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0]
-
     path?: str
-
     port: int | str
 
     scheme?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0:
     r"""
@@ -2423,12 +2028,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     value : str, default is Undefined, required
         The header field value
     """
-
-
     name: str
 
     value: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeTCPSocket:
     r"""
@@ -2443,12 +2045,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
     """
-
-
     host?: str
-
     port: int | str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0PortsItems0:
     r"""
@@ -2474,18 +2072,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         Protocol for port. Must be UDP, TCP, or SCTP.
         Defaults to "TCP".
     """
-
-
     containerPort: int
 
     hostIP?: str
-
     hostPort?: int
-
     name?: str
-
     $protocol?: str = "TCP"
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbe:
     r"""
@@ -2532,28 +2124,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         Defaults to 1 second. Minimum value is 1.
         More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
     """
-
-
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeExec
-
     failureThreshold?: int
-
     grpc?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeGrpc
-
     httpGet?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeHTTPGet
-
     initialDelaySeconds?: int
-
     periodSeconds?: int
-
     successThreshold?: int
-
     tcpSocket?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeTCPSocket
-
     terminationGracePeriodSeconds?: int
-
     timeoutSeconds?: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeExec:
     r"""
@@ -2568,10 +2148,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         a shell, you need to explicitly call out to that shell.
         Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
     """
-
-
     command?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeGrpc:
     r"""
@@ -2587,12 +2164,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
         If this is not specified, the default behavior is defined by gRPC.
     """
-
-
     port: int
 
     service?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeHTTPGet:
     r"""
@@ -2615,18 +2189,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         Scheme to use for connecting to the host.
         Defaults to HTTP.
     """
-
-
     host?: str
-
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0]
-
     path?: str
-
     port: int | str
 
     scheme?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0:
     r"""
@@ -2640,12 +2208,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     value : str, default is Undefined, required
         The header field value
     """
-
-
     name: str
 
     value: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeTCPSocket:
     r"""
@@ -2660,12 +2225,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
     """
-
-
     host?: str
-
     port: int | str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ResizePolicyItems0:
     r"""
@@ -2680,12 +2241,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         Restart policy to apply when specified resource is resized.
         If not specified, it defaults to NotRequired.
     """
-
-
     resourceName: str
 
     restartPolicy: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0Resources:
     r"""
@@ -2712,19 +2270,13 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         otherwise to an implementation-defined value. Requests cannot exceed Limits.
         More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
     """
-
-
     claims?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ResourcesClaimsItems0]
-
     limits?: {str:int | str}
-
     requests?: {str:int | str}
 
-
     check:
-        all _, limits in limits { _regex_match(str(limits), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if limits } if limits
-        all _, requests in requests { _regex_match(str(requests), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if requests } if requests
-
+        all _, limits in limits {_regex_match(str(limits), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if limits} if limits
+        all _, requests in requests {_regex_match(str(requests), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if requests} if requests
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ResourcesClaimsItems0:
     r"""
@@ -2741,12 +2293,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         If empty, everything from the claim is made available, otherwise
         only the result of this request.
     """
-
-
     name: str
 
     request?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContext:
     r"""
@@ -2809,32 +2358,18 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     windowsOptions : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextWindowsOptions, default is Undefined, optional
         windows options
     """
-
-
     allowPrivilegeEscalation?: bool
-
     appArmorProfile?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextAppArmorProfile
-
     capabilities?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextCapabilities
-
     privileged?: bool
-
     procMount?: str
-
     readOnlyRootFilesystem?: bool
-
     runAsGroup?: int
-
     runAsNonRoot?: bool
-
     runAsUser?: int
-
     seLinuxOptions?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextSeLinuxOptions
-
     seccompProfile?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextSeccompProfile
-
     windowsOptions?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextWindowsOptions
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextAppArmorProfile:
     r"""
@@ -2856,12 +2391,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
           RuntimeDefault - the container runtime's default profile.
           Unconfined - no AppArmor enforcement.
     """
-
-
     localhostProfile?: str
-
     $type: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextCapabilities:
     r"""
@@ -2876,12 +2407,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     drop : [str], default is Undefined, optional
         Removed capabilities
     """
-
-
     add?: [str]
-
     drop?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextSeLinuxOptions:
     r"""
@@ -2902,16 +2429,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     user : str, default is Undefined, optional
         User is a SELinux user label that applies to the container.
     """
-
-
     level?: str
-
     role?: str
-
     $type?: str
-
     user?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextSeccompProfile:
     r"""
@@ -2935,12 +2456,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         RuntimeDefault - the container runtime default profile should be used.
         Unconfined - no profile should be applied.
     """
-
-
     localhostProfile?: str
-
     $type: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextWindowsOptions:
     r"""
@@ -2968,16 +2485,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         May also be set in PodSecurityContext. If set in both SecurityContext and
         PodSecurityContext, the value specified in SecurityContext takes precedence.
     """
-
-
     gmsaCredentialSpec?: str
-
     gmsaCredentialSpecName?: str
-
     hostProcess?: bool
-
     runAsUserName?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbe:
     r"""
@@ -3027,28 +2538,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         Defaults to 1 second. Minimum value is 1.
         More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
     """
-
-
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeExec
-
     failureThreshold?: int
-
     grpc?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeGrpc
-
     httpGet?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeHTTPGet
-
     initialDelaySeconds?: int
-
     periodSeconds?: int
-
     successThreshold?: int
-
     tcpSocket?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeTCPSocket
-
     terminationGracePeriodSeconds?: int
-
     timeoutSeconds?: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeExec:
     r"""
@@ -3063,10 +2562,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         a shell, you need to explicitly call out to that shell.
         Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
     """
-
-
     command?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeGrpc:
     r"""
@@ -3082,12 +2578,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
         If this is not specified, the default behavior is defined by gRPC.
     """
-
-
     port: int
 
     service?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeHTTPGet:
     r"""
@@ -3110,18 +2603,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         Scheme to use for connecting to the host.
         Defaults to HTTP.
     """
-
-
     host?: str
-
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeHTTPGetHTTPHeadersItems0]
-
     path?: str
-
     port: int | str
 
     scheme?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeHTTPGetHTTPHeadersItems0:
     r"""
@@ -3135,12 +2622,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     value : str, default is Undefined, required
         The header field value
     """
-
-
     name: str
 
     value: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeTCPSocket:
     r"""
@@ -3155,12 +2639,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
     """
-
-
     host?: str
-
     port: int | str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0VolumeDevicesItems0:
     r"""
@@ -3173,12 +2653,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     name : str, default is Undefined, required
         name must match the name of a persistentVolumeClaim in the pod
     """
-
-
     devicePath: str
 
     name: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0VolumeMountsItems0:
     r"""
@@ -3227,22 +2704,15 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         Defaults to "" (volume's root).
         SubPathExpr and SubPath are mutually exclusive.
     """
-
-
     mountPath: str
 
     mountPropagation?: str
-
     name: str
 
     readOnly?: bool
-
     recursiveReadOnly?: str
-
     subPath?: str
-
     subPathExpr?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecDNSConfig:
     r"""
@@ -3266,14 +2736,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecDNSConfi
         This will be appended to the base search paths generated from DNSPolicy.
         Duplicated search paths will be removed.
     """
-
-
     nameservers?: [str]
-
     options?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecDNSConfigOptionsItems0]
-
     searches?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecDNSConfigOptionsItems0:
     r"""
@@ -3287,12 +2752,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecDNSConfi
     value : str, default is Undefined, optional
         Value is this DNS resolver option's value.
     """
-
-
     name?: str
-
     value?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0:
     r"""
@@ -3417,58 +2878,32 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         might be configured in the container image.
         Cannot be updated.
     """
-
-
     args?: [str]
-
     command?: [str]
-
     env?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0]
-
     envFrom?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvFromItems0]
-
     image?: str
-
     imagePullPolicy?: str
-
     lifecycle?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0Lifecycle
-
     livenessProbe?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbe
-
     name: str
 
     ports?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0PortsItems0]
-
     readinessProbe?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbe
-
     resizePolicy?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ResizePolicyItems0]
-
     resources?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0Resources
-
     restartPolicy?: str
-
     securityContext?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContext
-
     startupProbe?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbe
-
     stdin?: bool
-
     stdinOnce?: bool
-
     targetContainerName?: str
-
     terminationMessagePath?: str
-
     terminationMessagePolicy?: str
-
     tty?: bool
-
     volumeDevices?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0VolumeDevicesItems0]
-
     volumeMounts?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0VolumeMountsItems0]
-
     workingDir?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvFromItems0:
     r"""
@@ -3483,14 +2918,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     secretRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvFromItems0SecretRef, default is Undefined, optional
         secret ref
     """
-
-
     configMapRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvFromItems0ConfigMapRef
-
     prefix?: str
-
     secretRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvFromItems0SecretRef
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvFromItems0ConfigMapRef:
     r"""
@@ -3507,12 +2937,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     optional : bool, default is Undefined, optional
         Specify whether the ConfigMap must be defined
     """
-
-
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvFromItems0SecretRef:
     r"""
@@ -3529,12 +2955,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     optional : bool, default is Undefined, optional
         Specify whether the Secret must be defined
     """
-
-
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0:
     r"""
@@ -3557,14 +2979,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     valueFrom : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFrom, default is Undefined, optional
         value from
     """
-
-
     name: str
 
     value?: str
-
     valueFrom?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFrom
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFrom:
     r"""
@@ -3581,16 +2999,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     secretKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromSecretKeyRef, default is Undefined, optional
         secret key ref
     """
-
-
     configMapKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromConfigMapKeyRef
-
     fieldRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromFieldRef
-
     resourceFieldRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromResourceFieldRef
-
     secretKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromSecretKeyRef
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromConfigMapKeyRef:
     r"""
@@ -3609,14 +3021,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     optional : bool, default is Undefined, optional
         Specify whether the ConfigMap or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromFieldRef:
     r"""
@@ -3630,12 +3038,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     fieldPath : str, default is Undefined, required
         Path of the field to select in the specified API version.
     """
-
-
     apiVersion?: str
-
     fieldPath: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromResourceFieldRef:
     r"""
@@ -3651,18 +3055,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     resource : str, default is Undefined, required
         Required: resource to select
     """
-
-
     containerName?: str
-
     divisor?: int | str
-
     resource: str
-
 
     check:
         _regex_match(str(divisor), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if divisor
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromSecretKeyRef:
     r"""
@@ -3681,14 +3079,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     optional : bool, default is Undefined, optional
         Specify whether the Secret or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0Lifecycle:
     r"""
@@ -3701,12 +3095,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     preStop : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStop, default is Undefined, optional
         pre stop
     """
-
-
     postStart?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStart
-
     preStop?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStop
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStart:
     r"""
@@ -3726,16 +3116,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     tcpSocket : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartTCPSocket, default is Undefined, optional
         tcp socket
     """
-
-
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartExec
-
     httpGet?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartHTTPGet
-
     sleep?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartSleep
-
     tcpSocket?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartTCPSocket
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartExec:
     r"""
@@ -3750,10 +3134,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         a shell, you need to explicitly call out to that shell.
         Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
     """
-
-
     command?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartHTTPGet:
     r"""
@@ -3776,18 +3157,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         Scheme to use for connecting to the host.
         Defaults to HTTP.
     """
-
-
     host?: str
-
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0]
-
     path?: str
-
     port: int | str
 
     scheme?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0:
     r"""
@@ -3801,12 +3176,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     value : str, default is Undefined, required
         The header field value
     """
-
-
     name: str
 
     value: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartSleep:
     r"""
@@ -3817,10 +3189,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     seconds : int, default is Undefined, required
         Seconds is the number of seconds to sleep.
     """
-
-
     seconds: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartTCPSocket:
     r"""
@@ -3837,12 +3206,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
     """
-
-
     host?: str
-
     port: int | str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStop:
     r"""
@@ -3867,16 +3232,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     tcpSocket : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopTCPSocket, default is Undefined, optional
         tcp socket
     """
-
-
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopExec
-
     httpGet?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopHTTPGet
-
     sleep?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopSleep
-
     tcpSocket?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopTCPSocket
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopExec:
     r"""
@@ -3891,10 +3250,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         a shell, you need to explicitly call out to that shell.
         Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
     """
-
-
     command?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopHTTPGet:
     r"""
@@ -3917,18 +3273,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         Scheme to use for connecting to the host.
         Defaults to HTTP.
     """
-
-
     host?: str
-
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0]
-
     path?: str
-
     port: int | str
 
     scheme?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0:
     r"""
@@ -3942,12 +3292,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     value : str, default is Undefined, required
         The header field value
     """
-
-
     name: str
 
     value: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopSleep:
     r"""
@@ -3958,10 +3305,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     seconds : int, default is Undefined, required
         Seconds is the number of seconds to sleep.
     """
-
-
     seconds: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopTCPSocket:
     r"""
@@ -3978,12 +3322,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
     """
-
-
     host?: str
-
     port: int | str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbe:
     r"""
@@ -4027,28 +3367,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         Defaults to 1 second. Minimum value is 1.
         More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
     """
-
-
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeExec
-
     failureThreshold?: int
-
     grpc?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeGrpc
-
     httpGet?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeHTTPGet
-
     initialDelaySeconds?: int
-
     periodSeconds?: int
-
     successThreshold?: int
-
     tcpSocket?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeTCPSocket
-
     terminationGracePeriodSeconds?: int
-
     timeoutSeconds?: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeExec:
     r"""
@@ -4063,10 +3391,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         a shell, you need to explicitly call out to that shell.
         Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
     """
-
-
     command?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeGrpc:
     r"""
@@ -4082,12 +3407,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
         If this is not specified, the default behavior is defined by gRPC.
     """
-
-
     port: int
 
     service?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeHTTPGet:
     r"""
@@ -4110,18 +3432,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         Scheme to use for connecting to the host.
         Defaults to HTTP.
     """
-
-
     host?: str
-
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0]
-
     path?: str
-
     port: int | str
 
     scheme?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0:
     r"""
@@ -4135,12 +3451,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     value : str, default is Undefined, required
         The header field value
     """
-
-
     name: str
 
     value: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeTCPSocket:
     r"""
@@ -4155,12 +3468,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
     """
-
-
     host?: str
-
     port: int | str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0PortsItems0:
     r"""
@@ -4186,18 +3495,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         Protocol for port. Must be UDP, TCP, or SCTP.
         Defaults to "TCP".
     """
-
-
     containerPort: int
 
     hostIP?: str
-
     hostPort?: int
-
     name?: str
-
     $protocol?: str = "TCP"
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbe:
     r"""
@@ -4241,28 +3544,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         Defaults to 1 second. Minimum value is 1.
         More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
     """
-
-
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeExec
-
     failureThreshold?: int
-
     grpc?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeGrpc
-
     httpGet?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeHTTPGet
-
     initialDelaySeconds?: int
-
     periodSeconds?: int
-
     successThreshold?: int
-
     tcpSocket?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeTCPSocket
-
     terminationGracePeriodSeconds?: int
-
     timeoutSeconds?: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeExec:
     r"""
@@ -4277,10 +3568,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         a shell, you need to explicitly call out to that shell.
         Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
     """
-
-
     command?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeGrpc:
     r"""
@@ -4296,12 +3584,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
         If this is not specified, the default behavior is defined by gRPC.
     """
-
-
     port: int
 
     service?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeHTTPGet:
     r"""
@@ -4324,18 +3609,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         Scheme to use for connecting to the host.
         Defaults to HTTP.
     """
-
-
     host?: str
-
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0]
-
     path?: str
-
     port: int | str
 
     scheme?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0:
     r"""
@@ -4349,12 +3628,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     value : str, default is Undefined, required
         The header field value
     """
-
-
     name: str
 
     value: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeTCPSocket:
     r"""
@@ -4369,12 +3645,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
     """
-
-
     host?: str
-
     port: int | str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ResizePolicyItems0:
     r"""
@@ -4389,12 +3661,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         Restart policy to apply when specified resource is resized.
         If not specified, it defaults to NotRequired.
     """
-
-
     resourceName: str
 
     restartPolicy: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0Resources:
     r"""
@@ -4420,19 +3689,13 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         otherwise to an implementation-defined value. Requests cannot exceed Limits.
         More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
     """
-
-
     claims?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ResourcesClaimsItems0]
-
     limits?: {str:int | str}
-
     requests?: {str:int | str}
 
-
     check:
-        all _, limits in limits { _regex_match(str(limits), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if limits } if limits
-        all _, requests in requests { _regex_match(str(requests), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if requests } if requests
-
+        all _, limits in limits {_regex_match(str(limits), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if limits} if limits
+        all _, requests in requests {_regex_match(str(requests), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if requests} if requests
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ResourcesClaimsItems0:
     r"""
@@ -4449,12 +3712,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         If empty, everything from the claim is made available, otherwise
         only the result of this request.
     """
-
-
     name: str
 
     request?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContext:
     r"""
@@ -4516,32 +3776,18 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     windowsOptions : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextWindowsOptions, default is Undefined, optional
         windows options
     """
-
-
     allowPrivilegeEscalation?: bool
-
     appArmorProfile?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextAppArmorProfile
-
     capabilities?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextCapabilities
-
     privileged?: bool
-
     procMount?: str
-
     readOnlyRootFilesystem?: bool
-
     runAsGroup?: int
-
     runAsNonRoot?: bool
-
     runAsUser?: int
-
     seLinuxOptions?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextSeLinuxOptions
-
     seccompProfile?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextSeccompProfile
-
     windowsOptions?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextWindowsOptions
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextAppArmorProfile:
     r"""
@@ -4563,12 +3809,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
           RuntimeDefault - the container runtime's default profile.
           Unconfined - no AppArmor enforcement.
     """
-
-
     localhostProfile?: str
-
     $type: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextCapabilities:
     r"""
@@ -4583,12 +3825,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     drop : [str], default is Undefined, optional
         Removed capabilities
     """
-
-
     add?: [str]
-
     drop?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextSeLinuxOptions:
     r"""
@@ -4609,16 +3847,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     user : str, default is Undefined, optional
         User is a SELinux user label that applies to the container.
     """
-
-
     level?: str
-
     role?: str
-
     $type?: str
-
     user?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextSeccompProfile:
     r"""
@@ -4642,12 +3874,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         RuntimeDefault - the container runtime default profile should be used.
         Unconfined - no profile should be applied.
     """
-
-
     localhostProfile?: str
-
     $type: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextWindowsOptions:
     r"""
@@ -4675,16 +3903,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         May also be set in PodSecurityContext. If set in both SecurityContext and
         PodSecurityContext, the value specified in SecurityContext takes precedence.
     """
-
-
     gmsaCredentialSpec?: str
-
     gmsaCredentialSpecName?: str
-
     hostProcess?: bool
-
     runAsUserName?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbe:
     r"""
@@ -4728,28 +3950,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         Defaults to 1 second. Minimum value is 1.
         More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
     """
-
-
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeExec
-
     failureThreshold?: int
-
     grpc?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeGrpc
-
     httpGet?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeHTTPGet
-
     initialDelaySeconds?: int
-
     periodSeconds?: int
-
     successThreshold?: int
-
     tcpSocket?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeTCPSocket
-
     terminationGracePeriodSeconds?: int
-
     timeoutSeconds?: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeExec:
     r"""
@@ -4764,10 +3974,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         a shell, you need to explicitly call out to that shell.
         Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
     """
-
-
     command?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeGrpc:
     r"""
@@ -4783,12 +3990,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
         If this is not specified, the default behavior is defined by gRPC.
     """
-
-
     port: int
 
     service?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeHTTPGet:
     r"""
@@ -4811,18 +4015,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         Scheme to use for connecting to the host.
         Defaults to HTTP.
     """
-
-
     host?: str
-
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeHTTPGetHTTPHeadersItems0]
-
     path?: str
-
     port: int | str
 
     scheme?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeHTTPGetHTTPHeadersItems0:
     r"""
@@ -4836,12 +4034,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     value : str, default is Undefined, required
         The header field value
     """
-
-
     name: str
 
     value: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeTCPSocket:
     r"""
@@ -4856,12 +4051,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
     """
-
-
     host?: str
-
     port: int | str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0VolumeDevicesItems0:
     r"""
@@ -4874,12 +4065,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     name : str, default is Undefined, required
         name must match the name of a persistentVolumeClaim in the pod
     """
-
-
     devicePath: str
 
     name: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0VolumeMountsItems0:
     r"""
@@ -4928,22 +4116,15 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         Defaults to "" (volume's root).
         SubPathExpr and SubPath are mutually exclusive.
     """
-
-
     mountPath: str
 
     mountPropagation?: str
-
     name: str
 
     readOnly?: bool
-
     recursiveReadOnly?: str
-
     subPath?: str
-
     subPathExpr?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecHostAliasesItems0:
     r"""
@@ -4957,12 +4138,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecHostAlia
     ip : str, default is Undefined, required
         IP address of the host file entry.
     """
-
-
     hostnames?: [str]
-
     ip: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecImagePullSecretsItems0:
     r"""
@@ -4978,10 +4155,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecImagePul
         almost certainly wrong.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
     """
-
-
     name?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0:
     r"""
@@ -5112,56 +4286,31 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         might be configured in the container image.
         Cannot be updated.
     """
-
-
     args?: [str]
-
     command?: [str]
-
     env?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0]
-
     envFrom?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvFromItems0]
-
     image?: str
-
     imagePullPolicy?: str
-
     lifecycle?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0Lifecycle
-
     livenessProbe?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbe
-
     name: str
 
     ports?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0PortsItems0]
-
     readinessProbe?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbe
-
     resizePolicy?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ResizePolicyItems0]
-
     resources?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0Resources
-
     restartPolicy?: str
-
     securityContext?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContext
-
     startupProbe?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbe
-
     stdin?: bool
-
     stdinOnce?: bool
-
     terminationMessagePath?: str
-
     terminationMessagePolicy?: str
-
     tty?: bool
-
     volumeDevices?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0VolumeDevicesItems0]
-
     volumeMounts?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0VolumeMountsItems0]
-
     workingDir?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvFromItems0:
     r"""
@@ -5176,14 +4325,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     secretRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvFromItems0SecretRef, default is Undefined, optional
         secret ref
     """
-
-
     configMapRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvFromItems0ConfigMapRef
-
     prefix?: str
-
     secretRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvFromItems0SecretRef
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvFromItems0ConfigMapRef:
     r"""
@@ -5200,12 +4344,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     optional : bool, default is Undefined, optional
         Specify whether the ConfigMap must be defined
     """
-
-
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvFromItems0SecretRef:
     r"""
@@ -5222,12 +4362,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     optional : bool, default is Undefined, optional
         Specify whether the Secret must be defined
     """
-
-
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0:
     r"""
@@ -5250,14 +4386,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     valueFrom : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFrom, default is Undefined, optional
         value from
     """
-
-
     name: str
 
     value?: str
-
     valueFrom?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFrom
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFrom:
     r"""
@@ -5274,16 +4406,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     secretKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromSecretKeyRef, default is Undefined, optional
         secret key ref
     """
-
-
     configMapKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromConfigMapKeyRef
-
     fieldRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromFieldRef
-
     resourceFieldRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromResourceFieldRef
-
     secretKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromSecretKeyRef
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromConfigMapKeyRef:
     r"""
@@ -5302,14 +4428,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     optional : bool, default is Undefined, optional
         Specify whether the ConfigMap or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromFieldRef:
     r"""
@@ -5323,12 +4445,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     fieldPath : str, default is Undefined, required
         Path of the field to select in the specified API version.
     """
-
-
     apiVersion?: str
-
     fieldPath: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromResourceFieldRef:
     r"""
@@ -5344,18 +4462,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     resource : str, default is Undefined, required
         Required: resource to select
     """
-
-
     containerName?: str
-
     divisor?: int | str
-
     resource: str
-
 
     check:
         _regex_match(str(divisor), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if divisor
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromSecretKeyRef:
     r"""
@@ -5374,14 +4486,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     optional : bool, default is Undefined, optional
         Specify whether the Secret or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0Lifecycle:
     r"""
@@ -5395,12 +4503,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     preStop : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStop, default is Undefined, optional
         pre stop
     """
-
-
     postStart?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStart
-
     preStop?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStop
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStart:
     r"""
@@ -5420,16 +4524,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     tcpSocket : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStartTCPSocket, default is Undefined, optional
         tcp socket
     """
-
-
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStartExec
-
     httpGet?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStartHTTPGet
-
     sleep?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStartSleep
-
     tcpSocket?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStartTCPSocket
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStartExec:
     r"""
@@ -5444,10 +4542,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         a shell, you need to explicitly call out to that shell.
         Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
     """
-
-
     command?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStartHTTPGet:
     r"""
@@ -5470,18 +4565,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         Scheme to use for connecting to the host.
         Defaults to HTTP.
     """
-
-
     host?: str
-
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0]
-
     path?: str
-
     port: int | str
 
     scheme?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0:
     r"""
@@ -5495,12 +4584,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     value : str, default is Undefined, required
         The header field value
     """
-
-
     name: str
 
     value: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStartSleep:
     r"""
@@ -5511,10 +4597,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     seconds : int, default is Undefined, required
         Seconds is the number of seconds to sleep.
     """
-
-
     seconds: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStartTCPSocket:
     r"""
@@ -5531,12 +4614,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
     """
-
-
     host?: str
-
     port: int | str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStop:
     r"""
@@ -5561,16 +4640,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     tcpSocket : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStopTCPSocket, default is Undefined, optional
         tcp socket
     """
-
-
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStopExec
-
     httpGet?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStopHTTPGet
-
     sleep?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStopSleep
-
     tcpSocket?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStopTCPSocket
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStopExec:
     r"""
@@ -5585,10 +4658,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         a shell, you need to explicitly call out to that shell.
         Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
     """
-
-
     command?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStopHTTPGet:
     r"""
@@ -5611,18 +4681,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         Scheme to use for connecting to the host.
         Defaults to HTTP.
     """
-
-
     host?: str
-
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0]
-
     path?: str
-
     port: int | str
 
     scheme?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0:
     r"""
@@ -5636,12 +4700,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     value : str, default is Undefined, required
         The header field value
     """
-
-
     name: str
 
     value: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStopSleep:
     r"""
@@ -5652,10 +4713,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     seconds : int, default is Undefined, required
         Seconds is the number of seconds to sleep.
     """
-
-
     seconds: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStopTCPSocket:
     r"""
@@ -5672,12 +4730,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
     """
-
-
     host?: str
-
     port: int | str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbe:
     r"""
@@ -5724,28 +4778,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         Defaults to 1 second. Minimum value is 1.
         More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
     """
-
-
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeExec
-
     failureThreshold?: int
-
     grpc?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeGrpc
-
     httpGet?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeHTTPGet
-
     initialDelaySeconds?: int
-
     periodSeconds?: int
-
     successThreshold?: int
-
     tcpSocket?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeTCPSocket
-
     terminationGracePeriodSeconds?: int
-
     timeoutSeconds?: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeExec:
     r"""
@@ -5760,10 +4802,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         a shell, you need to explicitly call out to that shell.
         Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
     """
-
-
     command?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeGrpc:
     r"""
@@ -5779,12 +4818,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
         If this is not specified, the default behavior is defined by gRPC.
     """
-
-
     port: int
 
     service?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeHTTPGet:
     r"""
@@ -5807,18 +4843,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         Scheme to use for connecting to the host.
         Defaults to HTTP.
     """
-
-
     host?: str
-
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0]
-
     path?: str
-
     port: int | str
 
     scheme?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0:
     r"""
@@ -5832,12 +4862,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     value : str, default is Undefined, required
         The header field value
     """
-
-
     name: str
 
     value: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeTCPSocket:
     r"""
@@ -5852,12 +4879,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
     """
-
-
     host?: str
-
     port: int | str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0PortsItems0:
     r"""
@@ -5883,18 +4906,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         Protocol for port. Must be UDP, TCP, or SCTP.
         Defaults to "TCP".
     """
-
-
     containerPort: int
 
     hostIP?: str
-
     hostPort?: int
-
     name?: str
-
     $protocol?: str = "TCP"
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbe:
     r"""
@@ -5941,28 +4958,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         Defaults to 1 second. Minimum value is 1.
         More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
     """
-
-
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeExec
-
     failureThreshold?: int
-
     grpc?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeGrpc
-
     httpGet?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeHTTPGet
-
     initialDelaySeconds?: int
-
     periodSeconds?: int
-
     successThreshold?: int
-
     tcpSocket?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeTCPSocket
-
     terminationGracePeriodSeconds?: int
-
     timeoutSeconds?: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeExec:
     r"""
@@ -5977,10 +4982,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         a shell, you need to explicitly call out to that shell.
         Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
     """
-
-
     command?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeGrpc:
     r"""
@@ -5996,12 +4998,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
         If this is not specified, the default behavior is defined by gRPC.
     """
-
-
     port: int
 
     service?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeHTTPGet:
     r"""
@@ -6024,18 +5023,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         Scheme to use for connecting to the host.
         Defaults to HTTP.
     """
-
-
     host?: str
-
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0]
-
     path?: str
-
     port: int | str
 
     scheme?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0:
     r"""
@@ -6049,12 +5042,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     value : str, default is Undefined, required
         The header field value
     """
-
-
     name: str
 
     value: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeTCPSocket:
     r"""
@@ -6069,12 +5059,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
     """
-
-
     host?: str
-
     port: int | str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ResizePolicyItems0:
     r"""
@@ -6089,12 +5075,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         Restart policy to apply when specified resource is resized.
         If not specified, it defaults to NotRequired.
     """
-
-
     resourceName: str
 
     restartPolicy: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0Resources:
     r"""
@@ -6121,19 +5104,13 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         otherwise to an implementation-defined value. Requests cannot exceed Limits.
         More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
     """
-
-
     claims?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ResourcesClaimsItems0]
-
     limits?: {str:int | str}
-
     requests?: {str:int | str}
 
-
     check:
-        all _, limits in limits { _regex_match(str(limits), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if limits } if limits
-        all _, requests in requests { _regex_match(str(requests), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if requests } if requests
-
+        all _, limits in limits {_regex_match(str(limits), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if limits} if limits
+        all _, requests in requests {_regex_match(str(requests), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if requests} if requests
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ResourcesClaimsItems0:
     r"""
@@ -6150,12 +5127,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         If empty, everything from the claim is made available, otherwise
         only the result of this request.
     """
-
-
     name: str
 
     request?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContext:
     r"""
@@ -6218,32 +5192,18 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     windowsOptions : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextWindowsOptions, default is Undefined, optional
         windows options
     """
-
-
     allowPrivilegeEscalation?: bool
-
     appArmorProfile?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextAppArmorProfile
-
     capabilities?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextCapabilities
-
     privileged?: bool
-
     procMount?: str
-
     readOnlyRootFilesystem?: bool
-
     runAsGroup?: int
-
     runAsNonRoot?: bool
-
     runAsUser?: int
-
     seLinuxOptions?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextSeLinuxOptions
-
     seccompProfile?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextSeccompProfile
-
     windowsOptions?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextWindowsOptions
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextAppArmorProfile:
     r"""
@@ -6265,12 +5225,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
           RuntimeDefault - the container runtime's default profile.
           Unconfined - no AppArmor enforcement.
     """
-
-
     localhostProfile?: str
-
     $type: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextCapabilities:
     r"""
@@ -6285,12 +5241,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     drop : [str], default is Undefined, optional
         Removed capabilities
     """
-
-
     add?: [str]
-
     drop?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextSeLinuxOptions:
     r"""
@@ -6311,16 +5263,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     user : str, default is Undefined, optional
         User is a SELinux user label that applies to the container.
     """
-
-
     level?: str
-
     role?: str
-
     $type?: str
-
     user?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextSeccompProfile:
     r"""
@@ -6344,12 +5290,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         RuntimeDefault - the container runtime default profile should be used.
         Unconfined - no profile should be applied.
     """
-
-
     localhostProfile?: str
-
     $type: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextWindowsOptions:
     r"""
@@ -6377,16 +5319,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         May also be set in PodSecurityContext. If set in both SecurityContext and
         PodSecurityContext, the value specified in SecurityContext takes precedence.
     """
-
-
     gmsaCredentialSpec?: str
-
     gmsaCredentialSpecName?: str
-
     hostProcess?: bool
-
     runAsUserName?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbe:
     r"""
@@ -6436,28 +5372,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         Defaults to 1 second. Minimum value is 1.
         More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
     """
-
-
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeExec
-
     failureThreshold?: int
-
     grpc?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeGrpc
-
     httpGet?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeHTTPGet
-
     initialDelaySeconds?: int
-
     periodSeconds?: int
-
     successThreshold?: int
-
     tcpSocket?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeTCPSocket
-
     terminationGracePeriodSeconds?: int
-
     timeoutSeconds?: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeExec:
     r"""
@@ -6472,10 +5396,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         a shell, you need to explicitly call out to that shell.
         Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
     """
-
-
     command?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeGrpc:
     r"""
@@ -6491,12 +5412,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
         If this is not specified, the default behavior is defined by gRPC.
     """
-
-
     port: int
 
     service?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeHTTPGet:
     r"""
@@ -6519,18 +5437,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         Scheme to use for connecting to the host.
         Defaults to HTTP.
     """
-
-
     host?: str
-
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeHTTPGetHTTPHeadersItems0]
-
     path?: str
-
     port: int | str
 
     scheme?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeHTTPGetHTTPHeadersItems0:
     r"""
@@ -6544,12 +5456,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     value : str, default is Undefined, required
         The header field value
     """
-
-
     name: str
 
     value: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeTCPSocket:
     r"""
@@ -6564,12 +5473,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
     """
-
-
     host?: str
-
     port: int | str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0VolumeDevicesItems0:
     r"""
@@ -6582,12 +5487,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     name : str, default is Undefined, required
         name must match the name of a persistentVolumeClaim in the pod
     """
-
-
     devicePath: str
 
     name: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0VolumeMountsItems0:
     r"""
@@ -6636,22 +5538,15 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         Defaults to "" (volume's root).
         SubPathExpr and SubPath are mutually exclusive.
     """
-
-
     mountPath: str
 
     mountPropagation?: str
-
     name: str
 
     readOnly?: bool
-
     recursiveReadOnly?: str
-
     subPath?: str
-
     subPathExpr?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecOs:
     r"""
@@ -6692,10 +5587,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecOs:
         https://github.com/opencontainers/runtime-spec/blob/master/config.md#platform-specific-configuration
         Clients should expect to handle additional values and treat unrecognized values in this field as os: null
     """
-
-
     name: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecReadinessGatesItems0:
     r"""
@@ -6706,10 +5598,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecReadines
     conditionType : str, default is Undefined, required
         ConditionType refers to a condition in the pod's condition list with matching type.
     """
-
-
     conditionType: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContext:
     r"""
@@ -6811,34 +5700,19 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurity
     windowsOptions : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextWindowsOptions, default is Undefined, optional
         windows options
     """
-
-
     appArmorProfile?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextAppArmorProfile
-
     fsGroup?: int
-
     fsGroupChangePolicy?: str
-
     runAsGroup?: int
-
     runAsNonRoot?: bool
-
     runAsUser?: int
-
     seLinuxChangePolicy?: str
-
     seLinuxOptions?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextSeLinuxOptions
-
     seccompProfile?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextSeccompProfile
-
     supplementalGroups?: [int]
-
     supplementalGroupsPolicy?: str
-
     sysctls?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextSysctlsItems0]
-
     windowsOptions?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextWindowsOptions
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextAppArmorProfile:
     r"""
@@ -6859,12 +5733,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurity
           RuntimeDefault - the container runtime's default profile.
           Unconfined - no AppArmor enforcement.
     """
-
-
     localhostProfile?: str
-
     $type: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextSeLinuxOptions:
     r"""
@@ -6886,16 +5756,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurity
     user : str, default is Undefined, optional
         User is a SELinux user label that applies to the container.
     """
-
-
     level?: str
-
     role?: str
-
     $type?: str
-
     user?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextSeccompProfile:
     r"""
@@ -6917,12 +5781,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurity
         RuntimeDefault - the container runtime default profile should be used.
         Unconfined - no profile should be applied.
     """
-
-
     localhostProfile?: str
-
     $type: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextSysctlsItems0:
     r"""
@@ -6935,12 +5795,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurity
     value : str, default is Undefined, required
         Value of a property to set
     """
-
-
     name: str
 
     value: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextWindowsOptions:
     r"""
@@ -6968,16 +5825,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurity
         May also be set in PodSecurityContext. If set in both SecurityContext and
         PodSecurityContext, the value specified in SecurityContext takes precedence.
     """
-
-
     gmsaCredentialSpec?: str
-
     gmsaCredentialSpecName?: str
-
     hostProcess?: bool
-
     runAsUserName?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTolerationsItems0:
     r"""
@@ -7006,18 +5857,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTolerati
         Value is the taint value the toleration matches to.
         If the operator is Exists, the value should be empty, otherwise just a regular string.
     """
-
-
     effect?: str
-
     key?: str
-
     operator?: str
-
     tolerationSeconds?: int
-
     value?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopologySpreadConstraintsItems0:
     r"""
@@ -7124,24 +5968,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopology
         won't make it *more* imbalanced.
         It's a required field.
     """
-
-
     labelSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopologySpreadConstraintsItems0LabelSelector
-
     matchLabelKeys?: [str]
-
     maxSkew: int
 
     minDomains?: int
-
     nodeAffinityPolicy?: str
-
     nodeTaintsPolicy?: str
-
     topologyKey: str
 
     whenUnsatisfiable: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopologySpreadConstraintsItems0LabelSelector:
     r"""
@@ -7158,12 +5994,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopology
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopologySpreadConstraintsItems0LabelSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopologySpreadConstraintsItems0LabelSelectorMatchExpressionsItems0:
     r"""
@@ -7183,14 +6015,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopology
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0:
     r"""
@@ -7263,70 +6092,38 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     vsphereVolume : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0VsphereVolume, default is Undefined, optional
         vsphere volume
     """
-
-
     awsElasticBlockStore?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0AwsElasticBlockStore
-
     azureDisk?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0AzureDisk
-
     azureFile?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0AzureFile
-
     cephfs?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Cephfs
-
     cinder?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Cinder
-
     configMap?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ConfigMap
-
     csi?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Csi
-
     downwardAPI?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0DownwardAPI
-
     emptyDir?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EmptyDir
-
     ephemeral?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Ephemeral
-
     fc?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Fc
-
     flexVolume?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0FlexVolume
-
     flocker?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Flocker
-
     gcePersistentDisk?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0GcePersistentDisk
-
     gitRepo?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0GitRepo
-
     glusterfs?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Glusterfs
-
     hostPath?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0HostPath
-
     image?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Image
-
     iscsi?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Iscsi
-
     name: str
 
     nfs?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Nfs
-
     persistentVolumeClaim?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0PersistentVolumeClaim
-
     photonPersistentDisk?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0PhotonPersistentDisk
-
     portworxVolume?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0PortworxVolume
-
     projected?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Projected
-
     quobyte?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Quobyte
-
     rbd?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Rbd
-
     scaleIO?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ScaleIO
-
     secret?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Secret
-
     storageos?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Storageos
-
     vsphereVolume?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0VsphereVolume
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0AwsElasticBlockStore:
     r"""
@@ -7355,16 +6152,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         volumeID is unique ID of the persistent disk resource in AWS (Amazon EBS volume).
         More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
     """
-
-
     fsType?: str
-
     partition?: int
-
     readOnly?: bool
-
     volumeID: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0AzureDisk:
     r"""
@@ -7390,20 +6181,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         readOnly Defaults to false (read/write). ReadOnly here will force
         the ReadOnly setting in VolumeMounts.
     """
-
-
     cachingMode?: str
-
     diskName: str
 
     diskURI: str
 
     fsType?: str = "ext4"
-
     kind?: str
-
     readOnly?: bool = False
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0AzureFile:
     r"""
@@ -7421,14 +6206,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     shareName : str, default is Undefined, required
         shareName is the azure share Name
     """
-
-
     readOnly?: bool
-
     secretName: str
 
     shareName: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Cephfs:
     r"""
@@ -7455,20 +6236,13 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         user is optional: User is the rados user name, default is admin
         More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
     """
-
-
     monitors: [str]
 
     path?: str
-
     readOnly?: bool
-
     secretFile?: str
-
     secretRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0CephfsSecretRef
-
     user?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0CephfsSecretRef:
     r"""
@@ -7484,10 +6258,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         almost certainly wrong.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
     """
-
-
     name?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Cinder:
     r"""
@@ -7513,16 +6284,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         volumeID used to identify the volume in cinder.
         More info: https://examples.k8s.io/mysql-cinder-pd/README.md
     """
-
-
     fsType?: str
-
     readOnly?: bool
-
     secretRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0CinderSecretRef
-
     volumeID: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0CinderSecretRef:
     r"""
@@ -7538,10 +6303,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         almost certainly wrong.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
     """
-
-
     name?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ConfigMap:
     r"""
@@ -7574,16 +6336,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     optional : bool, default is Undefined, optional
         optional specify whether the ConfigMap or its keys must be defined
     """
-
-
     defaultMode?: int
-
     items?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ConfigMapItemsItems0]
-
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ConfigMapItemsItems0:
     r"""
@@ -7606,14 +6362,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         May not contain the path element '..'.
         May not start with the string '..'.
     """
-
-
     key: str
 
     mode?: int
-
     path: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Csi:
     r"""
@@ -7637,18 +6389,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         volumeAttributes stores driver-specific properties that are passed to the CSI
         driver. Consult your driver's documentation for supported values.
     """
-
-
     driver: str
 
     fsType?: str
-
     nodePublishSecretRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0CsiNodePublishSecretRef
-
     readOnly?: bool
-
     volumeAttributes?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0CsiNodePublishSecretRef:
     r"""
@@ -7667,10 +6413,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         almost certainly wrong.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
     """
-
-
     name?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0DownwardAPI:
     r"""
@@ -7690,12 +6433,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     items : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0], default is Undefined, optional
         Items is a list of downward API volume file
     """
-
-
     defaultMode?: int
-
     items?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0:
     r"""
@@ -7717,16 +6456,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     resourceFieldRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0ResourceFieldRef, default is Undefined, optional
         resource field ref
     """
-
-
     fieldRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0FieldRef
-
     mode?: int
-
     path: str
 
     resourceFieldRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0ResourceFieldRef
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0FieldRef:
     r"""
@@ -7739,12 +6473,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     fieldPath : str, default is Undefined, required
         Path of the field to select in the specified API version.
     """
-
-
     apiVersion?: str
-
     fieldPath: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0ResourceFieldRef:
     r"""
@@ -7760,18 +6490,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     resource : str, default is Undefined, required
         Required: resource to select
     """
-
-
     containerName?: str
-
     divisor?: int | str
-
     resource: str
-
 
     check:
         _regex_match(str(divisor), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if divisor
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EmptyDir:
     r"""
@@ -7793,16 +6517,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         The default is nil which means that the limit is undefined.
         More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
     """
-
-
     medium?: str
-
     sizeLimit?: int | str
-
 
     check:
         _regex_match(str(sizeLimit), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if sizeLimit
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Ephemeral:
     r"""
@@ -7836,10 +6555,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     volumeClaimTemplate : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplate, default is Undefined, optional
         volume claim template
     """
-
-
     volumeClaimTemplate?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplate
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplate:
     r"""
@@ -7874,12 +6590,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     spec : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpec, default is Undefined, required
         spec
     """
-
-
     metadata?: any
-
     spec: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpec
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpec:
     r"""
@@ -7923,26 +6635,15 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     volumeName : str, default is Undefined, optional
         volumeName is the binding reference to the PersistentVolume backing this claim.
     """
-
-
     accessModes?: [str]
-
     dataSource?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecDataSource
-
     dataSourceRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecDataSourceRef
-
     resources?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecResources
-
     selector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecSelector
-
     storageClassName?: str
-
     volumeAttributesClassName?: str
-
     volumeMode?: str
-
     volumeName?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecDataSource:
     r"""
@@ -7966,14 +6667,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     name : str, default is Undefined, required
         Name is the name of resource being referenced
     """
-
-
     apiGroup?: str
-
     kind: str
 
     name: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecDataSourceRef:
     r"""
@@ -8016,16 +6713,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         Note that when a namespace is specified, a gateway.networking.k8s.io/ReferenceGrant object is required in the referent namespace to allow that namespace's owner to accept the reference. See the ReferenceGrant documentation for details.
         (Alpha) This field requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
     """
-
-
     apiGroup?: str
-
     kind: str
 
     name: str
 
     namespace?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecResources:
     r"""
@@ -8046,17 +6739,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         otherwise to an implementation-defined value. Requests cannot exceed Limits.
         More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
     """
-
-
     limits?: {str:int | str}
-
     requests?: {str:int | str}
 
-
     check:
-        all _, limits in limits { _regex_match(str(limits), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if limits } if limits
-        all _, requests in requests { _regex_match(str(requests), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if requests } if requests
-
+        all _, limits in limits {_regex_match(str(limits), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if limits} if limits
+        all _, requests in requests {_regex_match(str(requests), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if requests} if requests
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecSelector:
     r"""
@@ -8071,12 +6759,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecSelectorMatchExpressionsItems0:
     r"""
@@ -8096,14 +6780,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Fc:
     r"""
@@ -8126,18 +6807,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         wwids Optional: FC volume world wide identifiers (wwids)
         Either wwids or combination of targetWWNs and lun must be set, but not both simultaneously.
     """
-
-
     fsType?: str
-
     lun?: int
-
     readOnly?: bool
-
     targetWWNs?: [str]
-
     wwids?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0FlexVolume:
     r"""
@@ -8161,18 +6835,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     secretRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0FlexVolumeSecretRef, default is Undefined, optional
         secret ref
     """
-
-
     driver: str
 
     fsType?: str
-
     options?: {str:str}
-
     readOnly?: bool
-
     secretRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0FlexVolumeSecretRef
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0FlexVolumeSecretRef:
     r"""
@@ -8191,10 +6859,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         almost certainly wrong.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
     """
-
-
     name?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Flocker:
     r"""
@@ -8209,12 +6874,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     datasetUUID : str, default is Undefined, optional
         datasetUUID is the UUID of the dataset. This is unique identifier of a Flocker dataset
     """
-
-
     datasetName?: str
-
     datasetUUID?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0GcePersistentDisk:
     r"""
@@ -8245,16 +6906,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         Defaults to false.
         More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
     """
-
-
     fsType?: str
-
     partition?: int
-
     pdName: str
 
     readOnly?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0GitRepo:
     r"""
@@ -8275,14 +6931,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     revision : str, default is Undefined, optional
         revision is the commit hash for the specified revision.
     """
-
-
     directory?: str
-
     repository: str
 
     revision?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Glusterfs:
     r"""
@@ -8303,14 +6955,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         Defaults to false.
         More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
     """
-
-
     endpoints: str
 
     path: str
 
     readOnly?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0HostPath:
     r"""
@@ -8331,12 +6980,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         Defaults to ""
         More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath
     """
-
-
     path: str
 
     $type?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Image:
     r"""
@@ -8371,12 +7017,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         This field is optional to allow higher level config management to default or override
         container images in workload controllers like Deployments and StatefulSets.
     """
-
-
     pullPolicy?: str
-
     reference?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Iscsi:
     r"""
@@ -8418,30 +7060,19 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         targetPortal is iSCSI Target Portal. The Portal is either an IP or ip_addr:port if the port
         is other than default (typically TCP ports 860 and 3260).
     """
-
-
     chapAuthDiscovery?: bool
-
     chapAuthSession?: bool
-
     fsType?: str
-
     initiatorName?: str
-
     iqn: str
 
     iscsiInterface?: str = "default"
-
     lun: int
 
     portals?: [str]
-
     readOnly?: bool
-
     secretRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0IscsiSecretRef
-
     targetPortal: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0IscsiSecretRef:
     r"""
@@ -8456,10 +7087,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         almost certainly wrong.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
     """
-
-
     name?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Nfs:
     r"""
@@ -8479,14 +7107,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         server is the hostname or IP address of the NFS server.
         More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
     """
-
-
     path: str
 
     readOnly?: bool
-
     server: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0PersistentVolumeClaim:
     r"""
@@ -8503,12 +7127,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         readOnly Will force the ReadOnly setting in VolumeMounts.
         Default false.
     """
-
-
     claimName: str
 
     readOnly?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0PhotonPersistentDisk:
     r"""
@@ -8524,12 +7145,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     pdID : str, default is Undefined, required
         pdID is the ID that identifies Photon Controller persistent disk
     """
-
-
     fsType?: str
-
     pdID: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0PortworxVolume:
     r"""
@@ -8550,14 +7167,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     volumeID : str, default is Undefined, required
         volumeID uniquely identifies a Portworx volume
     """
-
-
     fsType?: str
-
     readOnly?: bool
-
     volumeID: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Projected:
     r"""
@@ -8576,12 +7188,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         sources is the list of volume projections. Each entry in this list
         handles one source.
     """
-
-
     defaultMode?: int
-
     sources?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0:
     r"""
@@ -8601,18 +7209,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     serviceAccountToken : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken, default is Undefined, optional
         service account token
     """
-
-
     clusterTrustBundle?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundle
-
     configMap?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ConfigMap
-
     downwardAPI?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPI
-
     secret?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0Secret
-
     serviceAccountToken?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundle:
     r"""
@@ -8650,18 +7251,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         Mutually-exclusive with name.  The contents of all selected
         ClusterTrustBundles will be unified and deduplicated.
     """
-
-
     labelSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelector
-
     name?: str
-
     optional?: bool
-
     path: str
 
     signerName?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelector:
     r"""
@@ -8679,12 +7274,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelectorMatchExpressionsItems0:
     r"""
@@ -8704,14 +7295,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ConfigMap:
     r"""
@@ -8736,14 +7324,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     optional : bool, default is Undefined, optional
         optional specify whether the ConfigMap or its keys must be defined
     """
-
-
     items?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ConfigMapItemsItems0]
-
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ConfigMapItemsItems0:
     r"""
@@ -8766,14 +7349,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         May not contain the path element '..'.
         May not start with the string '..'.
     """
-
-
     key: str
 
     mode?: int
-
     path: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPI:
     r"""
@@ -8784,10 +7363,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     items : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0], default is Undefined, optional
         Items is a list of DownwardAPIVolume file
     """
-
-
     items?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0:
     r"""
@@ -8809,16 +7385,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     resourceFieldRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0ResourceFieldRef, default is Undefined, optional
         resource field ref
     """
-
-
     fieldRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0FieldRef
-
     mode?: int
-
     path: str
 
     resourceFieldRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0ResourceFieldRef
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0FieldRef:
     r"""
@@ -8831,12 +7402,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     fieldPath : str, default is Undefined, required
         Path of the field to select in the specified API version.
     """
-
-
     apiVersion?: str
-
     fieldPath: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0ResourceFieldRef:
     r"""
@@ -8852,18 +7419,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     resource : str, default is Undefined, required
         Required: resource to select
     """
-
-
     containerName?: str
-
     divisor?: int | str
-
     resource: str
-
 
     check:
         _regex_match(str(divisor), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if divisor
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0Secret:
     r"""
@@ -8888,14 +7449,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     optional : bool, default is Undefined, optional
         optional field specify whether the Secret or its key must be defined
     """
-
-
     items?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0SecretItemsItems0]
-
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0SecretItemsItems0:
     r"""
@@ -8918,14 +7474,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         May not contain the path element '..'.
         May not start with the string '..'.
     """
-
-
     key: str
 
     mode?: int
-
     path: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken:
     r"""
@@ -8949,14 +7501,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         path is the path relative to the mount point of the file to project the
         token into.
     """
-
-
     audience?: str
-
     expirationSeconds?: int
-
     path: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Quobyte:
     r"""
@@ -8984,20 +7531,13 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     volume : str, default is Undefined, required
         volume is a string that references an already created Quobyte volume by name.
     """
-
-
     group?: str
-
     readOnly?: bool
-
     registry: str
 
     tenant?: str
-
     user?: str
-
     volume: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Rbd:
     r"""
@@ -9037,24 +7577,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         Default is admin.
         More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
     """
-
-
     fsType?: str
-
     image: str
 
     keyring?: str = "/etc/ceph/keyring"
-
     monitors: [str]
 
     pool?: str = "rbd"
-
     readOnly?: bool
-
     secretRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0RbdSecretRef
-
     user?: str = "admin"
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0RbdSecretRef:
     r"""
@@ -9072,10 +7604,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         almost certainly wrong.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
     """
-
-
     name?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ScaleIO:
     r"""
@@ -9111,28 +7640,19 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         volumeName is the name of a volume already created in the ScaleIO system
         that is associated with this volume source.
     """
-
-
     fsType?: str = "xfs"
-
     gateway: str
 
     protectionDomain?: str
-
     readOnly?: bool
-
     secretRef: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ScaleIOSecretRef
 
     sslEnabled?: bool
-
     storageMode?: str = "ThinProvisioned"
-
     storagePool?: str
-
     system: str
 
     volumeName?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ScaleIOSecretRef:
     r"""
@@ -9148,10 +7668,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         almost certainly wrong.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
     """
-
-
     name?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Secret:
     r"""
@@ -9182,16 +7699,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         secretName is the name of the secret in the pod's namespace to use.
         More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
     """
-
-
     defaultMode?: int
-
     items?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0SecretItemsItems0]
-
     optional?: bool
-
     secretName?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0SecretItemsItems0:
     r"""
@@ -9214,14 +7725,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         May not contain the path element '..'.
         May not start with the string '..'.
     """
-
-
     key: str
 
     mode?: int
-
     path: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Storageos:
     r"""
@@ -9250,18 +7757,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         Set to "default" if you are not using namespaces within StorageOS.
         Namespaces that do not pre-exist within StorageOS will be created.
     """
-
-
     fsType?: str
-
     readOnly?: bool
-
     secretRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0StorageosSecretRef
-
     volumeName?: str
-
     volumeNamespace?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0StorageosSecretRef:
     r"""
@@ -9277,10 +7777,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         almost certainly wrong.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
     """
-
-
     name?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0VsphereVolume:
     r"""
@@ -9301,16 +7798,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     volumePath : str, default is Undefined, required
         volumePath is the path that identifies vSphere volume vmdk
     """
-
-
     fsType?: str
-
     storagePolicyID?: str
-
     storagePolicyName?: str
-
     volumePath: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternal:
     r"""
@@ -9329,18 +7820,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternal:
     url : str, default is Undefined, required
         URL of the external grafana instance you want to manage.
     """
-
-
     adminPassword?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternalAdminPassword
-
     adminUser?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternalAdminUser
-
     apiKey?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternalAPIKey
-
     tls?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternalTLS
-
     url: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternalAPIKey:
     r"""
@@ -9359,14 +7843,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternalAPIKey:
     optional : bool, default is Undefined, optional
         Specify whether the Secret or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternalAdminPassword:
     r"""
@@ -9385,14 +7865,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternalAdminPassword:
     optional : bool, default is Undefined, optional
         Specify whether the Secret or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternalAdminUser:
     r"""
@@ -9411,14 +7887,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternalAdminUser:
     optional : bool, default is Undefined, optional
         Specify whether the Secret or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternalTLS:
     r"""
@@ -9431,12 +7903,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternalTLS:
     insecureSkipVerify : bool, default is Undefined, optional
         Disable the CA check of the server
     """
-
-
     certSecretRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternalTLSCertSecretRef
-
     insecureSkipVerify?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternalTLSCertSecretRef:
     r"""
@@ -9449,12 +7917,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternalTLSCertSecretRef:
     namespace : str, default is Undefined, optional
         namespace defines the space within which the secret name must be unique.
     """
-
-
     name?: str
-
     namespace?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngress:
     r"""
@@ -9467,12 +7931,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngress:
     spec : GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpec, default is Undefined, optional
         spec
     """
-
-
     metadata?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressMetadata
-
     spec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpec
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressMetadata:
     r"""
@@ -9485,12 +7945,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressMetadata:
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpec:
     r"""
@@ -9521,16 +7977,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpec:
         through the SNI TLS extension, if the ingress controller fulfilling the
         ingress supports SNI.
     """
-
-
     defaultBackend?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecDefaultBackend
-
     ingressClassName?: str
-
     rules?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0]
-
     tls?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecTLSItems0]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecDefaultBackend:
     r"""
@@ -9546,12 +7996,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecDefaultBackend:
     service : GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecDefaultBackendService, default is Undefined, optional
         service
     """
-
-
     resource?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecDefaultBackendResource
-
     service?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecDefaultBackendService
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecDefaultBackendResource:
     r"""
@@ -9571,14 +8017,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecDefaultBackendResource:
     name : str, default is Undefined, required
         Name is the name of resource being referenced
     """
-
-
     apiGroup?: str
-
     kind: str
 
     name: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecDefaultBackendService:
     r"""
@@ -9593,12 +8035,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecDefaultBackendService:
     port : GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecDefaultBackendServicePort, default is Undefined, optional
         port
     """
-
-
     name: str
 
     port?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecDefaultBackendServicePort
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecDefaultBackendServicePort:
     r"""
@@ -9614,12 +8053,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecDefaultBackendServicePo
         number is the numerical port number (e.g. 80) on the Service.
         This is a mutually exclusive setting with "Name".
     """
-
-
     name?: str
-
     number?: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0:
     r"""
@@ -9655,12 +8090,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0:
     http : GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTP, default is Undefined, optional
         http
     """
-
-
     host?: str
-
     http?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTP
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTP:
     r"""
@@ -9675,10 +8106,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTP:
     paths : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTPPathsItems0], default is Undefined, required
         paths is a collection of paths that map requests to backends.
     """
-
-
     paths: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTPPathsItems0]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTPPathsItems0:
     r"""
@@ -9710,14 +8138,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTPPathsIte
           or treat it identically to Prefix or Exact path types.
         Implementations are required to support all path types.
     """
-
-
     backend: GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTPPathsItems0Backend
 
     path?: str
-
     pathType: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTPPathsItems0Backend:
     r"""
@@ -9731,12 +8155,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTPPathsIte
     service : GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTPPathsItems0BackendService, default is Undefined, optional
         service
     """
-
-
     resource?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTPPathsItems0BackendResource
-
     service?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTPPathsItems0BackendService
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTPPathsItems0BackendResource:
     r"""
@@ -9756,14 +8176,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTPPathsIte
     name : str, default is Undefined, required
         Name is the name of resource being referenced
     """
-
-
     apiGroup?: str
-
     kind: str
 
     name: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTPPathsItems0BackendService:
     r"""
@@ -9778,12 +8194,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTPPathsIte
     port : GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTPPathsItems0BackendServicePort, default is Undefined, optional
         port
     """
-
-
     name: str
 
     port?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTPPathsItems0BackendServicePort
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTPPathsItems0BackendServicePort:
     r"""
@@ -9799,12 +8212,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecRulesItems0HTTPPathsIte
         number is the numerical port number (e.g. 80) on the Service.
         This is a mutually exclusive setting with "Name".
     """
-
-
     name?: str
-
     number?: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecTLSItems0:
     r"""
@@ -9824,12 +8233,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngressSpecTLSItems0:
         header field used by an IngressRule, the SNI host is used for termination
         and value of the "Host" header is used for routing.
     """
-
-
     hosts?: [str]
-
     secretName?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecJsonnet:
     r"""
@@ -9840,10 +8245,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecJsonnet:
     libraryLabelSelector : GrafanaIntegreatlyOrgV1beta1GrafanaSpecJsonnetLibraryLabelSelector, default is Undefined, optional
         library label selector
     """
-
-
     libraryLabelSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecJsonnetLibraryLabelSelector
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecJsonnetLibraryLabelSelector:
     r"""
@@ -9860,12 +8262,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecJsonnetLibraryLabelSelector:
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecJsonnetLibraryLabelSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecJsonnetLibraryLabelSelectorMatchExpressionsItems0:
     r"""
@@ -9885,14 +8283,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecJsonnetLibraryLabelSelectorMatchEx
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaim:
     r"""
@@ -9905,12 +8300,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaim:
     spec : GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpec, default is Undefined, optional
         spec
     """
-
-
     metadata?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimMetadata
-
     spec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpec
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimMetadata:
     r"""
@@ -9923,12 +8314,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimMetadata:
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpec:
     r"""
@@ -9953,24 +8340,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpec:
     volumeName : str, default is Undefined, optional
         VolumeName is the binding reference to the PersistentVolume backing this claim.
     """
-
-
     accessModes?: [str]
-
     dataSource?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecDataSource
-
     dataSourceRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecDataSourceRef
-
     resources?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecResources
-
     selector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecSelector
-
     storageClassName?: str
-
     volumeMode?: str
-
     volumeName?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecDataSource:
     r"""
@@ -9988,14 +8365,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecDataSourc
     name : str, default is Undefined, required
         Name is the name of resource being referenced
     """
-
-
     apiGroup?: str
-
     kind: str
 
     name: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecDataSourceRef:
     r"""
@@ -10013,14 +8386,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecDataSourc
     name : str, default is Undefined, required
         Name is the name of resource being referenced
     """
-
-
     apiGroup?: str
-
     kind: str
 
     name: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecResources:
     r"""
@@ -10045,19 +8414,13 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecResources
         otherwise to an implementation-defined value. Requests cannot exceed Limits.
         More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
     """
-
-
     claims?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecResourcesClaimsItems0]
-
     limits?: {str:int | str}
-
     requests?: {str:int | str}
 
-
     check:
-        all _, limits in limits { _regex_match(str(limits), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if limits } if limits
-        all _, requests in requests { _regex_match(str(requests), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if requests } if requests
-
+        all _, limits in limits {_regex_match(str(limits), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if limits} if limits
+        all _, requests in requests {_regex_match(str(requests), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if requests} if requests
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecResourcesClaimsItems0:
     r"""
@@ -10074,12 +8437,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecResources
         If empty, everything from the claim is made available, otherwise
         only the result of this request.
     """
-
-
     name: str
 
     request?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecSelector:
     r"""
@@ -10096,12 +8456,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecSelector:
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecSelectorMatchExpressionsItems0:
     r"""
@@ -10121,14 +8477,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecSelectorM
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPreferences:
     r"""
@@ -10139,10 +8492,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPreferences:
     homeDashboardUid : str, default is Undefined, optional
         home dashboard Uid
     """
-
-
     homeDashboardUid?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRoute:
     r"""
@@ -10155,12 +8505,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRoute:
     spec : GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpec, default is Undefined, optional
         spec
     """
-
-
     metadata?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteMetadata
-
     spec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpec
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteMetadata:
     r"""
@@ -10173,12 +8519,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteMetadata:
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpec:
     r"""
@@ -10201,22 +8543,13 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpec:
     wildcardPolicy : str, default is Undefined, optional
         WildcardPolicyType indicates the type of wildcard support needed by routes.
     """
-
-
     alternateBackends?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecAlternateBackendsItems0]
-
     host?: str
-
     path?: str
-
     port?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecPort
-
     tls?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecTLS
-
     to?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecTo
-
     wildcardPolicy?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecAlternateBackendsItems0:
     r"""
@@ -10233,14 +8566,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecAlternateBackendsItems0:
         weight as an integer between 0 and 256, default 100, that specifies the target's relative weight
         against other target reference objects. 0 suppresses requests to this backend.
     """
-
-
     kind: str
 
     name: str
 
     weight: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecPort:
     r"""
@@ -10253,10 +8583,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecPort:
         If this is a string, it will be looked up as a named port in the target
         endpoints port list. Required
     """
-
-
     targetPort: int | str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecTLS:
     r"""
@@ -10286,20 +8613,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecTLS:
     termination : str, default is Undefined, required
         termination indicates termination type.
     """
-
-
     caCertificate?: str
-
     certificate?: str
-
     destinationCACertificate?: str
-
     insecureEdgeTerminationPolicy?: str
-
     key?: str
-
     termination: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecTo:
     r"""
@@ -10316,14 +8635,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecTo:
         weight as an integer between 0 and 256, default 100, that specifies the target's relative weight
         against other target reference objects. 0 suppresses requests to this backend.
     """
-
-
     kind: str
 
     name: str
 
     weight: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecService:
     r"""
@@ -10336,12 +8652,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecService:
     spec : GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceSpec, default is Undefined, optional
         spec
     """
-
-
     metadata?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceMetadata
-
     spec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceSpec
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceAccount:
     r"""
@@ -10358,16 +8670,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceAccount:
     secrets : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceAccountSecretsItems0], default is Undefined, optional
         secrets
     """
-
-
     automountServiceAccountToken?: bool
-
     imagePullSecrets?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceAccountImagePullSecretsItems0]
-
     metadata?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceAccountMetadata
-
     secrets?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceAccountSecretsItems0]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceAccountImagePullSecretsItems0:
     r"""
@@ -10383,10 +8689,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceAccountImagePullSecretsItem
         almost certainly wrong.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
     """
-
-
     name?: str = ""
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceAccountMetadata:
     r"""
@@ -10399,12 +8702,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceAccountMetadata:
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceAccountSecretsItems0:
     r"""
@@ -10438,22 +8737,13 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceAccountSecretsItems0:
         UID of the referent.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids
     """
-
-
     apiVersion?: str
-
     fieldPath?: str
-
     kind?: str
-
     name?: str
-
     namespace?: str
-
     resourceVersion?: str
-
     uid?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceMetadata:
     r"""
@@ -10466,12 +8756,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceMetadata:
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceSpec:
     r"""
@@ -10673,48 +8959,26 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceSpec:
         Several other fields do not apply to ExternalName services.
         More info: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
     """
-
-
     allocateLoadBalancerNodePorts?: bool
-
     clusterIP?: str
-
     clusterIPs?: [str]
-
     externalIPs?: [str]
-
     externalName?: str
-
     externalTrafficPolicy?: str
-
     healthCheckNodePort?: int
-
     internalTrafficPolicy?: str
-
     ipFamilies?: [str]
-
     ipFamilyPolicy?: str
-
     loadBalancerClass?: str
-
     loadBalancerIP?: str
-
     loadBalancerSourceRanges?: [str]
-
     ports?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceSpecPortsItems0]
-
     publishNotReadyAddresses?: bool
-
     selector?: {str:str}
-
     sessionAffinity?: str
-
     sessionAffinityConfig?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceSpecSessionAffinityConfig
-
     trafficDistribution?: str
-
     $type?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceSpecPortsItems0:
     r"""
@@ -10769,20 +9033,13 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceSpecPortsItems0:
         omitted or set equal to the 'port' field.
         More info: https://kubernetes.io/docs/concepts/services-networking/service/#defining-a-service
     """
-
-
     appProtocol?: str
-
     name?: str
-
     nodePort?: int
-
     port: int
 
     $protocol?: str = "TCP"
-
     targetPort?: int | str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceSpecSessionAffinityConfig:
     r"""
@@ -10793,10 +9050,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceSpecSessionAffinityConfig:
     clientIP : GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceSpecSessionAffinityConfigClientIP, default is Undefined, optional
         client IP
     """
-
-
     clientIP?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceSpecSessionAffinityConfigClientIP
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceSpecSessionAffinityConfigClientIP:
     r"""
@@ -10809,10 +9063,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceSpecSessionAffinityConfigCl
         The value must be >0 && <=86400(for 1 day) if ServiceAffinity == "ClientIP".
         Default value is 10800(for 3 hours).
     """
-
-
     timeoutSeconds?: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaStatus:
     r"""
@@ -10837,22 +9088,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaStatus:
     version : str, default is Undefined, optional
         version
     """
-
-
     adminUrl?: str
-
     dashboards?: [str]
-
     datasources?: [str]
-
     folders?: [str]
-
     lastMessage?: str
-
     stage?: str
-
     stageStatus?: str
-
     version?: str
-
 

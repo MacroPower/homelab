@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema GrafanaFolder:
     r"""
@@ -24,18 +24,13 @@ schema GrafanaFolder:
     status : GrafanaIntegreatlyOrgV1beta1GrafanaFolderStatus, default is Undefined, optional
         status
     """
-
-
     apiVersion: "grafana.integreatly.org/v1beta1" = "grafana.integreatly.org/v1beta1"
 
     kind: "GrafanaFolder" = "GrafanaFolder"
 
     metadata?: v1.ObjectMeta
-
     spec?: GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpec
-
     status?: GrafanaIntegreatlyOrgV1beta1GrafanaFolderStatus
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpec:
     r"""
@@ -60,24 +55,15 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpec:
     uid : str, default is Undefined, optional
         Manually specify the UID the Folder is created with
     """
-
-
     allowCrossNamespaceImport?: bool = False
-
     instanceSelector: GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpecInstanceSelector
 
     parentFolderRef?: str
-
     parentFolderUID?: str
-
     permissions?: str
-
     resyncPeriod?: str = "10m0s"
-
     title?: str
-
     uid?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpecInstanceSelector:
     r"""
@@ -92,12 +78,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpecInstanceSelector:
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpecInstanceSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpecInstanceSelectorMatchExpressionsItems0:
     r"""
@@ -117,14 +99,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpecInstanceSelectorMatchExpress
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaFolderStatus:
     r"""
@@ -141,16 +120,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaFolderStatus:
     lastResync : str, default is Undefined, optional
         Last time the resource was synchronized with Grafana instances
     """
-
-
     NoMatchingInstances?: bool
-
     conditions?: [GrafanaIntegreatlyOrgV1beta1GrafanaFolderStatusConditionsItems0]
-
     hash?: str
-
     lastResync?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaFolderStatusConditionsItems0:
     r"""
@@ -179,20 +152,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaFolderStatusConditionsItems0:
     $type : str, default is Undefined, required
         type of condition in CamelCase or in foo.example.com/CamelCase.
     """
-
-
     lastTransitionTime: str
 
     message: str
 
     observedGeneration?: int
-
     reason: str
 
     status: "True" | "False" | "Unknown"
 
     $type: str
-
 
     check:
         len(message) <= 32768
@@ -202,5 +171,4 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaFolderStatusConditionsItems0:
         _regex_match(str(reason), r"^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$")
         len($type) <= 316
         _regex_match(str($type), r"^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$")
-
 

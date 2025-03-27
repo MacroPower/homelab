@@ -4,7 +4,6 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import k8s.apimachinery.pkg.apis.meta.v1
 
-
 schema Fake:
     r"""
     Fake generator is used for testing. It lets you define
@@ -21,16 +20,12 @@ schema Fake:
     spec : GeneratorsExternalSecretsIoV1alpha1FakeSpec, default is Undefined, optional
         spec
     """
-
-
     apiVersion: "generators.external-secrets.io/v1alpha1" = "generators.external-secrets.io/v1alpha1"
 
     kind: "Fake" = "Fake"
 
     metadata?: v1.ObjectMeta
-
     spec?: GeneratorsExternalSecretsIoV1alpha1FakeSpec
-
 
 schema GeneratorsExternalSecretsIoV1alpha1FakeSpec:
     r"""
@@ -45,10 +40,6 @@ schema GeneratorsExternalSecretsIoV1alpha1FakeSpec:
         Data defines the static data returned
         by this generator.
     """
-
-
     controller?: str
-
     data?: {str:str}
-
 

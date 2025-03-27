@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema ECRAuthorizationToken:
     r"""
@@ -27,16 +27,12 @@ schema ECRAuthorizationToken:
     spec : GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpec, default is Undefined, optional
         spec
     """
-
-
     apiVersion: "generators.external-secrets.io/v1alpha1" = "generators.external-secrets.io/v1alpha1"
 
     kind: "ECRAuthorizationToken" = "ECRAuthorizationToken"
 
     metadata?: v1.ObjectMeta
-
     spec?: GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpec
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpec:
     r"""
@@ -55,16 +51,11 @@ schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpec:
         Scope specifies the ECR service scope.
         Valid options are private and public.
     """
-
-
     auth?: GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuth
-
     region: str
 
     role?: str
-
     scope?: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuth:
     r"""
@@ -77,12 +68,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuth:
     secretRef : GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthSecretRef, default is Undefined, optional
         secret ref
     """
-
-
     jwt?: GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthJwt
-
     secretRef?: GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthSecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthJwt:
     r"""
@@ -93,10 +80,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthJwt:
     serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthJwtServiceAccountRef, default is Undefined, optional
         service account ref
     """
-
-
     serviceAccountRef?: GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthJwtServiceAccountRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthJwtServiceAccountRef:
     r"""
@@ -114,14 +98,10 @@ schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthJwtServic
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -130,7 +110,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthJwtServic
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthSecretRef:
     r"""
@@ -146,14 +125,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthSecretRef
     sessionTokenSecretRef : GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthSecretRefSessionTokenSecretRef, default is Undefined, optional
         session token secret ref
     """
-
-
     accessKeyIDSecretRef?: GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthSecretRefAccessKeyIDSecretRef
-
     secretAccessKeySecretRef?: GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthSecretRefSecretAccessKeySecretRef
-
     sessionTokenSecretRef?: GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthSecretRefSessionTokenSecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthSecretRefAccessKeyIDSecretRef:
     r"""
@@ -170,14 +144,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthSecretRef
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -189,7 +158,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthSecretRef
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthSecretRefSecretAccessKeySecretRef:
     r"""
@@ -206,14 +174,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthSecretRef
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -225,7 +188,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthSecretRef
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthSecretRefSessionTokenSecretRef:
     r"""
@@ -244,14 +206,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthSecretRef
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -263,5 +220,4 @@ schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthSecretRef
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 

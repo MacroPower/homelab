@@ -4,7 +4,6 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import k8s.apimachinery.pkg.apis.meta.v1
 
-
 schema UUID:
     r"""
     UUID generates a version 1 UUID (e56657e3-764f-11ef-a397-65231a88c216).
@@ -20,14 +19,10 @@ schema UUID:
     spec : any, default is Undefined, optional
         UUIDSpec controls the behavior of the uuid generator.
     """
-
-
     apiVersion: "generators.external-secrets.io/v1alpha1" = "generators.external-secrets.io/v1alpha1"
 
     kind: "UUID" = "UUID"
 
     metadata?: v1.ObjectMeta
-
     spec?: any
-
 

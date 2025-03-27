@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema GrafanaNotificationPolicy:
     r"""
@@ -24,18 +24,13 @@ schema GrafanaNotificationPolicy:
     status : GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyStatus, default is Undefined, optional
         status
     """
-
-
     apiVersion: "grafana.integreatly.org/v1beta1" = "grafana.integreatly.org/v1beta1"
 
     kind: "GrafanaNotificationPolicy" = "GrafanaNotificationPolicy"
 
     metadata?: v1.ObjectMeta
-
     spec?: GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpec
-
     status?: GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyStatus
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpec:
     r"""
@@ -54,18 +49,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpec:
     route : GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRoute, default is Undefined, required
         route
     """
-
-
     allowCrossNamespaceImport?: bool = False
-
     editable?: bool
-
     instanceSelector: GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecInstanceSelector
 
     resyncPeriod?: str = "10m0s"
-
     route: GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRoute
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecInstanceSelector:
     r"""
@@ -80,12 +69,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecInstanceSelector
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecInstanceSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecInstanceSelectorMatchExpressionsItems0:
     r"""
@@ -105,14 +90,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecInstanceSelector
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRoute:
     r"""
@@ -145,32 +127,18 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRoute:
     routes : any, default is Undefined, optional
         routes
     """
-
-
     continue?: bool
-
     group_by?: [str]
-
     group_interval?: str
-
     group_wait?: str
-
     match_re?: {str:str}
-
     matchers?: [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRouteMatchersItems0]
-
     mute_time_intervals?: [str]
-
     object_matchers?: [[str]]
-
     provenance?: str
-
     receiver?: str
-
     repeat_interval?: str
-
     routes?: any
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRouteMatchersItems0:
     r"""
@@ -187,16 +155,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRouteMatchersIte
     value : str, default is Undefined, required
         value
     """
-
-
     isEqual?: bool
-
     isRegex: bool
 
     name?: str
-
     value: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyStatus:
     r"""
@@ -209,12 +172,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyStatus:
     lastResync : str, default is Undefined, optional
         Last time the resource was synchronized with Grafana instances
     """
-
-
     conditions?: [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyStatusConditionsItems0]
-
     lastResync?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyStatusConditionsItems0:
     r"""
@@ -243,20 +202,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyStatusConditionsItem
     $type : str, default is Undefined, required
         type of condition in CamelCase or in foo.example.com/CamelCase.
     """
-
-
     lastTransitionTime: str
 
     message: str
 
     observedGeneration?: int
-
     reason: str
 
     status: "True" | "False" | "Unknown"
 
     $type: str
-
 
     check:
         len(message) <= 32768
@@ -266,5 +221,4 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyStatusConditionsItem
         _regex_match(str(reason), r"^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$")
         len($type) <= 316
         _regex_match(str($type), r"^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$")
-
 

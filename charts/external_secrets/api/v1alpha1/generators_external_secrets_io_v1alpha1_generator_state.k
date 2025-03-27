@@ -4,7 +4,6 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import k8s.apimachinery.pkg.apis.meta.v1
 
-
 schema GeneratorState:
     r"""
     generators external secrets io v1alpha1 generator state
@@ -22,18 +21,13 @@ schema GeneratorState:
     status : GeneratorsExternalSecretsIoV1alpha1GeneratorStateStatus, default is Undefined, optional
         status
     """
-
-
     apiVersion: "generators.external-secrets.io/v1alpha1" = "generators.external-secrets.io/v1alpha1"
 
     kind: "GeneratorState" = "GeneratorState"
 
     metadata?: v1.ObjectMeta
-
     spec?: GeneratorsExternalSecretsIoV1alpha1GeneratorStateSpec
-
     status?: GeneratorsExternalSecretsIoV1alpha1GeneratorStateStatus
-
 
 schema GeneratorsExternalSecretsIoV1alpha1GeneratorStateSpec:
     r"""
@@ -56,14 +50,10 @@ schema GeneratorsExternalSecretsIoV1alpha1GeneratorStateSpec:
     state : any, default is Undefined, required
         State is the state that was produced by the generator implementation.
     """
-
-
     garbageCollectionDeadline?: str
-
     resource: any
 
     state: any
-
 
 schema GeneratorsExternalSecretsIoV1alpha1GeneratorStateStatus:
     r"""
@@ -74,10 +64,7 @@ schema GeneratorsExternalSecretsIoV1alpha1GeneratorStateStatus:
     conditions : [GeneratorsExternalSecretsIoV1alpha1GeneratorStateStatusConditionsItems0], default is Undefined, optional
         conditions
     """
-
-
     conditions?: [GeneratorsExternalSecretsIoV1alpha1GeneratorStateStatusConditionsItems0]
-
 
 schema GeneratorsExternalSecretsIoV1alpha1GeneratorStateStatusConditionsItems0:
     r"""
@@ -96,16 +83,10 @@ schema GeneratorsExternalSecretsIoV1alpha1GeneratorStateStatusConditionsItems0:
     $type : str, default is Undefined, required
         type
     """
-
-
     lastTransitionTime?: str
-
     message?: str
-
     reason?: str
-
     status: str
 
     $type: str
-
 

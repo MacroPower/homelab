@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema ClusterExternalSecret:
     r"""
@@ -24,18 +24,13 @@ schema ClusterExternalSecret:
     status : ExternalSecretsIoV1beta1ClusterExternalSecretStatus, default is Undefined, optional
         status
     """
-
-
     apiVersion: "external-secrets.io/v1beta1" = "external-secrets.io/v1beta1"
 
     kind: "ClusterExternalSecret" = "ClusterExternalSecret"
 
     metadata?: v1.ObjectMeta
-
     spec?: ExternalSecretsIoV1beta1ClusterExternalSecretSpec
-
     status?: ExternalSecretsIoV1beta1ClusterExternalSecretStatus
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpec:
     r"""
@@ -59,31 +54,22 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpec:
     refreshTime : str, default is Undefined, optional
         The time in which the controller should reconcile its objects and recheck namespaces for labels.
     """
-
-
     externalSecretMetadata?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretMetadata
-
     externalSecretName?: str
-
     externalSecretSpec: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpec
 
     namespaceSelector?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecNamespaceSelector
-
     namespaceSelectors?: [ExternalSecretsIoV1beta1ClusterExternalSecretSpecNamespaceSelectorsItems0]
-
     namespaces?: [str]
-
     refreshTime?: str
-
 
     check:
         len(externalSecretName) <= 253 if externalSecretName
         len(externalSecretName) >= 1 if externalSecretName
         _regex_match(str(externalSecretName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if externalSecretName
-        all namespaces in namespaces { len(namespaces) <= 63 if namespaces not in [None, Undefined] } if namespaces
-        all namespaces in namespaces { len(namespaces) >= 1 if namespaces not in [None, Undefined] } if namespaces
-        all namespaces in namespaces { _regex_match(str(namespaces), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespaces } if namespaces
-
+        all namespaces in namespaces {len(namespaces) <= 63 if namespaces not in [None, Undefined]} if namespaces
+        all namespaces in namespaces {len(namespaces) >= 1 if namespaces not in [None, Undefined]} if namespaces
+        all namespaces in namespaces {_regex_match(str(namespaces), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespaces} if namespaces
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretMetadata:
     r"""
@@ -96,12 +82,8 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretMetadata:
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpec:
     r"""
@@ -125,18 +107,11 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpec:
     target : ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget, default is Undefined, optional
         target
     """
-
-
     data?: [ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataItems0]
-
     dataFrom?: [ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0]
-
     refreshInterval?: str = "1h"
-
     secretStoreRef?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecSecretStoreRef
-
     target?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0:
     r"""
@@ -154,16 +129,10 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFr
     sourceRef : ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0SourceRef, default is Undefined, optional
         source ref
     """
-
-
     extract?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0Extract
-
     find?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0Find
-
     rewrite?: [ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0RewriteItems0]
-
     sourceRef?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0SourceRef
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0Extract:
     r"""
@@ -185,20 +154,13 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFr
     version : str, default is Undefined, optional
         Used to select a specific version of the Provider value, if supported
     """
-
-
     conversionStrategy?: "Default" | "Unicode" = "Default"
-
     decodingStrategy?: "Auto" | "Base64" | "Base64URL" | "None" = "None"
-
     key: str
 
     metadataPolicy?: "None" | "Fetch" = "None"
-
     property?: str
-
     version?: str
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0Find:
     r"""
@@ -218,18 +180,11 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFr
     tags : {str:str}, default is Undefined, optional
         Find secrets based on tags.
     """
-
-
     conversionStrategy?: "Default" | "Unicode" = "Default"
-
     decodingStrategy?: "Auto" | "Base64" | "Base64URL" | "None" = "None"
-
     name?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0FindName
-
     path?: str
-
     tags?: {str:str}
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0FindName:
     r"""
@@ -240,10 +195,7 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFr
     regexp : str, default is Undefined, optional
         Finds secrets base
     """
-
-
     regexp?: str
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0RewriteItems0:
     r"""
@@ -256,12 +208,8 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFr
     transform : ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0RewriteItems0Transform, default is Undefined, optional
         transform
     """
-
-
     regexp?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0RewriteItems0Regexp
-
     transform?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0RewriteItems0Transform
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0RewriteItems0Regexp:
     r"""
@@ -275,12 +223,9 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFr
     target : str, default is Undefined, required
         Used to define the target pattern of a ReplaceAll operation.
     """
-
-
     source: str
 
     target: str
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0RewriteItems0Transform:
     r"""
@@ -293,10 +238,7 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFr
         Used to define the template to apply on the secret name.
         `.value ` will specify the secret name in the template.
     """
-
-
     template: str
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0SourceRef:
     r"""
@@ -314,12 +256,8 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFr
     storeRef : ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0SourceRefStoreRef, default is Undefined, optional
         store ref
     """
-
-
     generatorRef?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0SourceRefGeneratorRef
-
     storeRef?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0SourceRefStoreRef
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0SourceRefGeneratorRef:
     r"""
@@ -334,20 +272,15 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFr
     name : str, default is Undefined, required
         Specify the name of the generator resource
     """
-
-
     apiVersion?: str = "generators.external-secrets.io/v1alpha1"
-
     kind: "ACRAccessToken" | "ClusterGenerator" | "ECRAuthorizationToken" | "Fake" | "GCRAccessToken" | "GithubAccessToken" | "QuayAccessToken" | "Password" | "STSSessionToken" | "UUID" | "VaultDynamicSecret" | "Webhook" | "Grafana"
 
     name: str
-
 
     check:
         len(name) <= 253
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0SourceRefStoreRef:
     r"""
@@ -361,18 +294,13 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFr
     name : str, default is Undefined, optional
         Name of the SecretStore resource
     """
-
-
     kind?: "SecretStore" | "ClusterSecretStore"
-
     name?: str
-
 
     check:
         len(name) <= 253 if name
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataItems0:
     r"""
@@ -387,20 +315,16 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataIt
     sourceRef : ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataItems0SourceRef, default is Undefined, optional
         source ref
     """
-
-
     remoteRef: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataItems0RemoteRef
 
     secretKey: str
 
     sourceRef?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataItems0SourceRef
 
-
     check:
         len(secretKey) <= 253
         len(secretKey) >= 1
         _regex_match(str(secretKey), r"^[-._a-zA-Z0-9]+$")
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataItems0RemoteRef:
     r"""
@@ -422,20 +346,13 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataIt
     version : str, default is Undefined, optional
         Used to select a specific version of the Provider value, if supported
     """
-
-
     conversionStrategy?: "Default" | "Unicode" = "Default"
-
     decodingStrategy?: "Auto" | "Base64" | "Base64URL" | "None" = "None"
-
     key: str
 
     metadataPolicy?: "None" | "Fetch" = "None"
-
     property?: str
-
     version?: str
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataItems0SourceRef:
     r"""
@@ -449,12 +366,8 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataIt
     storeRef : ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataItems0SourceRefStoreRef, default is Undefined, optional
         store ref
     """
-
-
     generatorRef?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataItems0SourceRefGeneratorRef
-
     storeRef?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataItems0SourceRefStoreRef
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataItems0SourceRefGeneratorRef:
     r"""
@@ -472,20 +385,15 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataIt
     name : str, default is Undefined, required
         Specify the name of the generator resource
     """
-
-
     apiVersion?: str = "generators.external-secrets.io/v1alpha1"
-
     kind: "ACRAccessToken" | "ClusterGenerator" | "ECRAuthorizationToken" | "Fake" | "GCRAccessToken" | "GithubAccessToken" | "QuayAccessToken" | "Password" | "STSSessionToken" | "UUID" | "VaultDynamicSecret" | "Webhook" | "Grafana"
 
     name: str
-
 
     check:
         len(name) <= 253
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataItems0SourceRefStoreRef:
     r"""
@@ -499,18 +407,13 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataIt
     name : str, default is Undefined, optional
         Name of the SecretStore resource
     """
-
-
     kind?: "SecretStore" | "ClusterSecretStore"
-
     name?: str
-
 
     check:
         len(name) <= 253 if name
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecSecretStoreRef:
     r"""
@@ -524,18 +427,13 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecSecret
     name : str, default is Undefined, optional
         Name of the SecretStore resource
     """
-
-
     kind?: "SecretStore" | "ClusterSecretStore"
-
     name?: str
-
 
     check:
         len(name) <= 253 if name
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget:
     r"""
@@ -558,24 +456,16 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget
     template : ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplate, default is Undefined, optional
         template
     """
-
-
     creationPolicy?: "Owner" | "Orphan" | "Merge" | "None" = "Owner"
-
     deletionPolicy?: "Delete" | "Merge" | "Retain" = "Retain"
-
     immutable?: bool
-
     name?: str
-
     template?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplate
-
 
     check:
         len(name) <= 253 if name
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplate:
     r"""
@@ -598,20 +488,12 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget
     $type : str, default is Undefined, optional
         type
     """
-
-
     data?: {str:str}
-
     engineVersion?: "v1" | "v2" = "v2"
-
     mergePolicy?: "Replace" | "Merge" = "Replace"
-
     metadata?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateMetadata
-
     templateFrom?: [ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateTemplateFromItems0]
-
     $type?: str
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateMetadata:
     r"""
@@ -624,12 +506,8 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateTemplateFromItems0:
     r"""
@@ -646,16 +524,10 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget
     target : str, default is "Data", optional
         target
     """
-
-
     configMap?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMap
-
     literal?: str
-
     secret?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateTemplateFromItems0Secret
-
     target?: "Data" | "Annotations" | "Labels" = "Data"
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMap:
     r"""
@@ -668,18 +540,14 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget
     name : str, default is Undefined, required
         The name of the ConfigMap/Secret resource
     """
-
-
     items: [ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMapItemsItems0]
 
     name: str
-
 
     check:
         len(name) <= 253
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMapItemsItems0:
     r"""
@@ -692,18 +560,14 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget
     templateAs : str, default is "Values", optional
         template as
     """
-
-
     key: str
 
     templateAs?: "Values" | "KeysAndValues" = "Values"
-
 
     check:
         len(key) <= 253
         len(key) >= 1
         _regex_match(str(key), r"^[-._a-zA-Z0-9]+$")
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateTemplateFromItems0Secret:
     r"""
@@ -716,18 +580,14 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget
     name : str, default is Undefined, required
         The name of the ConfigMap/Secret resource
     """
-
-
     items: [ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateTemplateFromItems0SecretItemsItems0]
 
     name: str
-
 
     check:
         len(name) <= 253
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateTemplateFromItems0SecretItemsItems0:
     r"""
@@ -740,18 +600,14 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget
     templateAs : str, default is "Values", optional
         template as
     """
-
-
     key: str
 
     templateAs?: "Values" | "KeysAndValues" = "Values"
-
 
     check:
         len(key) <= 253
         len(key) >= 1
         _regex_match(str(key), r"^[-._a-zA-Z0-9]+$")
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecNamespaceSelector:
     r"""
@@ -767,12 +623,8 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecNamespaceSelector:
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [ExternalSecretsIoV1beta1ClusterExternalSecretSpecNamespaceSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecNamespaceSelectorMatchExpressionsItems0:
     r"""
@@ -792,14 +644,11 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecNamespaceSelectorMatchEx
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecNamespaceSelectorsItems0:
     r"""
@@ -816,12 +665,8 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecNamespaceSelectorsItems0
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [ExternalSecretsIoV1beta1ClusterExternalSecretSpecNamespaceSelectorsItems0MatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecNamespaceSelectorsItems0MatchExpressionsItems0:
     r"""
@@ -841,14 +686,11 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecNamespaceSelectorsItems0
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretStatus:
     r"""
@@ -865,16 +707,10 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretStatus:
     provisionedNamespaces : [str], default is Undefined, optional
         ProvisionedNamespaces are the namespaces where the ClusterExternalSecret has secrets
     """
-
-
     conditions?: [ExternalSecretsIoV1beta1ClusterExternalSecretStatusConditionsItems0]
-
     externalSecretName?: str
-
     failedNamespaces?: [ExternalSecretsIoV1beta1ClusterExternalSecretStatusFailedNamespacesItems0]
-
     provisionedNamespaces?: [str]
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretStatusConditionsItems0:
     r"""
@@ -889,14 +725,10 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretStatusConditionsItems0:
     $type : str, default is Undefined, required
         type
     """
-
-
     message?: str
-
     status: str
 
     $type: str
-
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretStatusFailedNamespacesItems0:
     r"""
@@ -909,10 +741,7 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretStatusFailedNamespacesItems0
     reason : str, default is Undefined, optional
         Reason is why the ExternalSecret failed to apply to the namespace
     """
-
-
     namespace: str
 
     reason?: str
-
 

@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema QuayAccessToken:
     r"""
@@ -22,16 +22,12 @@ schema QuayAccessToken:
     spec : GeneratorsExternalSecretsIoV1alpha1QuayAccessTokenSpec, default is Undefined, optional
         spec
     """
-
-
     apiVersion: "generators.external-secrets.io/v1alpha1" = "generators.external-secrets.io/v1alpha1"
 
     kind: "QuayAccessToken" = "QuayAccessToken"
 
     metadata?: v1.ObjectMeta
-
     spec?: GeneratorsExternalSecretsIoV1alpha1QuayAccessTokenSpec
-
 
 schema GeneratorsExternalSecretsIoV1alpha1QuayAccessTokenSpec:
     r"""
@@ -46,14 +42,11 @@ schema GeneratorsExternalSecretsIoV1alpha1QuayAccessTokenSpec:
     url : str, default is Undefined, optional
         URL configures the Quay instance URL. Defaults to quay.io.
     """
-
-
     robotAccount: str
 
     serviceAccountRef: GeneratorsExternalSecretsIoV1alpha1QuayAccessTokenSpecServiceAccountRef
 
     url?: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1QuayAccessTokenSpecServiceAccountRef:
     r"""
@@ -71,14 +64,10 @@ schema GeneratorsExternalSecretsIoV1alpha1QuayAccessTokenSpecServiceAccountRef:
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -87,5 +76,4 @@ schema GeneratorsExternalSecretsIoV1alpha1QuayAccessTokenSpecServiceAccountRef:
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 

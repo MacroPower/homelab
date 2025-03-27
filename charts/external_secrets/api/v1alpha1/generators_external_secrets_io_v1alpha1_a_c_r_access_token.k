@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema ACRAccessToken:
     r"""
@@ -29,16 +29,12 @@ schema ACRAccessToken:
     spec : GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpec, default is Undefined, optional
         spec
     """
-
-
     apiVersion: "generators.external-secrets.io/v1alpha1" = "generators.external-secrets.io/v1alpha1"
 
     kind: "ACRAccessToken" = "ACRAccessToken"
 
     metadata?: v1.ObjectMeta
-
     spec?: GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpec
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpec:
     r"""
@@ -71,18 +67,13 @@ schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpec:
     tenantId : str, default is Undefined, optional
         TenantID configures the Azure Tenant to send requests to. Required for ServicePrincipal auth type.
     """
-
-
     auth: GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuth
 
     environmentType?: "PublicCloud" | "USGovernmentCloud" | "ChinaCloud" | "GermanCloud" = "PublicCloud"
-
     registry: str
 
     scope?: str
-
     tenantId?: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuth:
     r"""
@@ -97,14 +88,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuth:
     workloadIdentity : GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthWorkloadIdentity, default is Undefined, optional
         workload identity
     """
-
-
     managedIdentity?: GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthManagedIdentity
-
     servicePrincipal?: GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthServicePrincipal
-
     workloadIdentity?: GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthWorkloadIdentity
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthManagedIdentity:
     r"""
@@ -115,10 +101,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthManagedIdentity:
     identityId : str, default is Undefined, optional
         If multiple Managed Identity is assigned to the pod, you can select the one to be used
     """
-
-
     identityId?: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthServicePrincipal:
     r"""
@@ -129,10 +112,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthServicePrincipal
     secretRef : GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthServicePrincipalSecretRef, default is Undefined, required
         secret ref
     """
-
-
     secretRef: GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthServicePrincipalSecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthServicePrincipalSecretRef:
     r"""
@@ -146,12 +126,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthServicePrincipal
     clientSecret : GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthServicePrincipalSecretRefClientSecret, default is Undefined, optional
         client secret
     """
-
-
     clientId?: GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthServicePrincipalSecretRefClientID
-
     clientSecret?: GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthServicePrincipalSecretRefClientSecret
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthServicePrincipalSecretRefClientID:
     r"""
@@ -168,14 +144,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthServicePrincipal
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -187,7 +158,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthServicePrincipal
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthServicePrincipalSecretRefClientSecret:
     r"""
@@ -204,14 +174,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthServicePrincipal
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -224,7 +189,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthServicePrincipal
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthWorkloadIdentity:
     r"""
     WorkloadIdentity uses Azure Workload Identity to authenticate with Azure.
@@ -234,10 +198,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthWorkloadIdentity
     serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthWorkloadIdentityServiceAccountRef, default is Undefined, optional
         service account ref
     """
-
-
     serviceAccountRef?: GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthWorkloadIdentityServiceAccountRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthWorkloadIdentityServiceAccountRef:
     r"""
@@ -256,14 +217,10 @@ schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthWorkloadIdentity
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -272,5 +229,4 @@ schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthWorkloadIdentity
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 

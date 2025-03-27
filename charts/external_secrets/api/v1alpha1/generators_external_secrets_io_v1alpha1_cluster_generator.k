@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema ClusterGenerator:
     r"""
@@ -22,16 +22,12 @@ schema ClusterGenerator:
     spec : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpec, default is Undefined, optional
         spec
     """
-
-
     apiVersion: "generators.external-secrets.io/v1alpha1" = "generators.external-secrets.io/v1alpha1"
 
     kind: "ClusterGenerator" = "ClusterGenerator"
 
     metadata?: v1.ObjectMeta
-
     spec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpec
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpec:
     r"""
@@ -44,12 +40,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpec:
     kind : str, default is Undefined, required
         Kind the kind of this generator.
     """
-
-
     generator: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGenerator
 
     kind: "ACRAccessToken" | "ECRAuthorizationToken" | "Fake" | "GCRAccessToken" | "GithubAccessToken" | "QuayAccessToken" | "Password" | "STSSessionToken" | "UUID" | "VaultDynamicSecret" | "Webhook" | "Grafana"
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGenerator:
     r"""
@@ -82,32 +75,18 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGenerator:
     webhookSpec : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSpec, default is Undefined, optional
         webhook spec
     """
-
-
     acrAccessTokenSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpec
-
     ecrAuthorizationTokenSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpec
-
     fakeSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorFakeSpec
-
     gcrAccessTokenSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpec
-
     githubAccessTokenSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAccessTokenSpec
-
     grafanaSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGrafanaSpec
-
     passwordSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorPasswordSpec
-
     quayAccessTokenSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorQuayAccessTokenSpec
-
     stsSessionTokenSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpec
-
     uuidSpec?: any
-
     vaultDynamicSecretSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpec
-
     webhookSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSpec
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpec:
     r"""
@@ -140,18 +119,13 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccess
     tenantId : str, default is Undefined, optional
         TenantID configures the Azure Tenant to send requests to. Required for ServicePrincipal auth type.
     """
-
-
     auth: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuth
 
     environmentType?: "PublicCloud" | "USGovernmentCloud" | "ChinaCloud" | "GermanCloud" = "PublicCloud"
-
     registry: str
 
     scope?: str
-
     tenantId?: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuth:
     r"""
@@ -166,14 +140,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccess
     workloadIdentity : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthWorkloadIdentity, default is Undefined, optional
         workload identity
     """
-
-
     managedIdentity?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthManagedIdentity
-
     servicePrincipal?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthServicePrincipal
-
     workloadIdentity?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthWorkloadIdentity
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthManagedIdentity:
     r"""
@@ -184,10 +153,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccess
     identityId : str, default is Undefined, optional
         If multiple Managed Identity is assigned to the pod, you can select the one to be used
     """
-
-
     identityId?: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthServicePrincipal:
     r"""
@@ -198,10 +164,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccess
     secretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthServicePrincipalSecretRef, default is Undefined, required
         secret ref
     """
-
-
     secretRef: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthServicePrincipalSecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthServicePrincipalSecretRef:
     r"""
@@ -215,12 +178,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccess
     clientSecret : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthServicePrincipalSecretRefClientSecret, default is Undefined, optional
         client secret
     """
-
-
     clientId?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthServicePrincipalSecretRefClientID
-
     clientSecret?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthServicePrincipalSecretRefClientSecret
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthServicePrincipalSecretRefClientID:
     r"""
@@ -237,14 +196,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccess
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -256,7 +210,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccess
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthServicePrincipalSecretRefClientSecret:
     r"""
@@ -273,14 +226,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccess
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -293,7 +241,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccess
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthWorkloadIdentity:
     r"""
     WorkloadIdentity uses Azure Workload Identity to authenticate with Azure.
@@ -303,10 +250,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccess
     serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthWorkloadIdentityServiceAccountRef, default is Undefined, optional
         service account ref
     """
-
-
     serviceAccountRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthWorkloadIdentityServiceAccountRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthWorkloadIdentityServiceAccountRef:
     r"""
@@ -325,14 +269,10 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccess
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -341,7 +281,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccess
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpec:
     r"""
@@ -360,16 +299,11 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthor
         Scope specifies the ECR service scope.
         Valid options are private and public.
     """
-
-
     auth?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuth
-
     region: str
 
     role?: str
-
     scope?: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuth:
     r"""
@@ -382,12 +316,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthor
     secretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuthSecretRef, default is Undefined, optional
         secret ref
     """
-
-
     jwt?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuthJwt
-
     secretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuthSecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuthJwt:
     r"""
@@ -398,10 +328,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthor
     serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuthJwtServiceAccountRef, default is Undefined, optional
         service account ref
     """
-
-
     serviceAccountRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuthJwtServiceAccountRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuthJwtServiceAccountRef:
     r"""
@@ -419,14 +346,10 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthor
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -435,7 +358,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthor
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuthSecretRef:
     r"""
@@ -451,14 +373,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthor
     sessionTokenSecretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuthSecretRefSessionTokenSecretRef, default is Undefined, optional
         session token secret ref
     """
-
-
     accessKeyIDSecretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuthSecretRefAccessKeyIDSecretRef
-
     secretAccessKeySecretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuthSecretRefSecretAccessKeySecretRef
-
     sessionTokenSecretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuthSecretRefSessionTokenSecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuthSecretRefAccessKeyIDSecretRef:
     r"""
@@ -475,14 +392,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthor
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -494,7 +406,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthor
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuthSecretRefSecretAccessKeySecretRef:
     r"""
@@ -511,14 +422,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthor
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -530,7 +436,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthor
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuthSecretRefSessionTokenSecretRef:
     r"""
@@ -549,14 +454,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthor
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -568,7 +468,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthor
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorFakeSpec:
     r"""
@@ -583,12 +482,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorFakeSpec:
         Data defines the static data returned
         by this generator.
     """
-
-
     controller?: str
-
     data?: {str:str}
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpec:
     r"""
@@ -601,12 +496,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccess
     projectID : str, default is Undefined, required
         ProjectID defines which project to use to authenticate with
     """
-
-
     auth: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuth
 
     projectID: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuth:
     r"""
@@ -619,12 +511,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccess
     workloadIdentity : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthWorkloadIdentity, default is Undefined, optional
         workload identity
     """
-
-
     secretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthSecretRef
-
     workloadIdentity?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthWorkloadIdentity
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthSecretRef:
     r"""
@@ -635,10 +523,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccess
     secretAccessKeySecretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthSecretRefSecretAccessKeySecretRef, default is Undefined, optional
         secret access key secret ref
     """
-
-
     secretAccessKeySecretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthSecretRefSecretAccessKeySecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthSecretRefSecretAccessKeySecretRef:
     r"""
@@ -655,14 +540,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccess
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -674,7 +554,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccess
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthWorkloadIdentity:
     r"""
@@ -691,16 +570,12 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccess
     serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthWorkloadIdentityServiceAccountRef, default is Undefined, required
         service account ref
     """
-
-
     clusterLocation: str
 
     clusterName: str
 
     clusterProjectID?: str
-
     serviceAccountRef: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthWorkloadIdentityServiceAccountRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthWorkloadIdentityServiceAccountRef:
     r"""
@@ -718,14 +593,10 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccess
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -734,7 +605,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccess
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAccessTokenSpec:
     r"""
@@ -756,8 +626,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAcc
     url : str, default is Undefined, optional
         URL configures the Github instance URL. Defaults to https://github.com/.
     """
-
-
     appID: str
 
     auth: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAccessTokenSpecAuth
@@ -765,11 +633,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAcc
     installID: str
 
     permissions?: {str:str}
-
     repositories?: [str]
-
     url?: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAccessTokenSpecAuth:
     r"""
@@ -780,10 +645,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAcc
     privateKey : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAccessTokenSpecAuthPrivateKey, default is Undefined, required
         private key
     """
-
-
     privateKey: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAccessTokenSpecAuthPrivateKey
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAccessTokenSpecAuthPrivateKey:
     r"""
@@ -794,10 +656,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAcc
     secretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAccessTokenSpecAuthPrivateKeySecretRef, default is Undefined, required
         secret ref
     """
-
-
     secretRef: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAccessTokenSpecAuthPrivateKeySecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAccessTokenSpecAuthPrivateKeySecretRef:
     r"""
@@ -815,14 +674,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAcc
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -834,7 +688,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAcc
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGrafanaSpec:
     r"""
@@ -849,14 +702,11 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGrafanaSp
     url : str, default is Undefined, required
         URL is the URL of the Grafana instance.
     """
-
-
     auth: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGrafanaSpecAuth
 
     serviceAccount: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGrafanaSpecServiceAccount
 
     url: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGrafanaSpecAuth:
     r"""
@@ -868,10 +718,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGrafanaSp
     token : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGrafanaSpecAuthToken, default is Undefined, required
         token
     """
-
-
     token: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGrafanaSpecAuthToken
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGrafanaSpecAuthToken:
     r"""
@@ -887,12 +734,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGrafanaSp
     name : str, default is Undefined, optional
         The name of the Secret resource being referred to.
     """
-
-
     key?: str
-
     name?: str
-
 
     check:
         len(key) <= 253 if key
@@ -901,7 +744,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGrafanaSp
         len(name) <= 253 if name
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGrafanaSpecServiceAccount:
     r"""
@@ -917,12 +759,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGrafanaSp
         See here for the documentation on basic roles offered by Grafana:
         https://grafana.com/docs/grafana/latest/administration/roles-and-permissions/access-control/rbac-fixed-basic-role-definitions/
     """
-
-
     name: str
 
     role: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorPasswordSpec:
     r"""
@@ -947,20 +786,15 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorPasswordS
         Symbols specifies the number of symbol characters in the generated
         password. If omitted it defaults to 25% of the length of the password
     """
-
-
     allowRepeat: bool = False
 
     digits?: int
-
     length: int = 24
 
     noUpper: bool = False
 
     symbolCharacters?: str
-
     symbols?: int
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorQuayAccessTokenSpec:
     r"""
@@ -975,14 +809,11 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorQuayAcces
     url : str, default is Undefined, optional
         URL configures the Quay instance URL. Defaults to quay.io.
     """
-
-
     robotAccount: str
 
     serviceAccountRef: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorQuayAccessTokenSpecServiceAccountRef
 
     url?: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorQuayAccessTokenSpecServiceAccountRef:
     r"""
@@ -1000,14 +831,10 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorQuayAcces
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -1016,7 +843,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorQuayAcces
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpec:
     r"""
@@ -1034,16 +860,11 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessio
         You can assume a role before making calls to the
         desired AWS service.
     """
-
-
     auth?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuth
-
     region: str
 
     requestParameters?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecRequestParameters
-
     role?: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuth:
     r"""
@@ -1056,12 +877,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessio
     secretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuthSecretRef, default is Undefined, optional
         secret ref
     """
-
-
     jwt?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuthJwt
-
     secretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuthSecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuthJwt:
     r"""
@@ -1072,10 +889,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessio
     serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuthJwtServiceAccountRef, default is Undefined, optional
         service account ref
     """
-
-
     serviceAccountRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuthJwtServiceAccountRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuthJwtServiceAccountRef:
     r"""
@@ -1093,14 +907,10 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessio
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -1109,7 +919,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessio
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuthSecretRef:
     r"""
@@ -1125,14 +934,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessio
     sessionTokenSecretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuthSecretRefSessionTokenSecretRef, default is Undefined, optional
         session token secret ref
     """
-
-
     accessKeyIDSecretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuthSecretRefAccessKeyIDSecretRef
-
     secretAccessKeySecretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuthSecretRefSecretAccessKeySecretRef
-
     sessionTokenSecretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuthSecretRefSessionTokenSecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuthSecretRefAccessKeyIDSecretRef:
     r"""
@@ -1149,14 +953,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessio
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1168,7 +967,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessio
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuthSecretRefSecretAccessKeySecretRef:
     r"""
@@ -1185,14 +983,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessio
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1204,7 +997,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessio
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuthSecretRefSessionTokenSecretRef:
     r"""
@@ -1223,14 +1015,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessio
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1242,7 +1029,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessio
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecRequestParameters:
     r"""
@@ -1262,14 +1048,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessio
     tokenCode : str, default is Undefined, optional
         TokenCode is the value provided by the MFA device, if MFA is required.
     """
-
-
     serialNumber?: str
-
     sessionDuration?: int
-
     tokenCode?: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpec:
     r"""
@@ -1300,24 +1081,16 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     retrySettings : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecRetrySettings, default is Undefined, optional
         retry settings
     """
-
-
     allowEmptyResponse?: bool = False
-
     controller?: str
-
     method?: str
-
     parameters?: any
-
     path: str
 
     provider: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProvider
 
     resultType?: "Data" | "Auth" | "Raw" = "Data"
-
     retrySettings?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecRetrySettings
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProvider:
     r"""
@@ -1363,30 +1136,19 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         Version is the Vault KV secret engine version. This can be either "v1" or
         "v2". Version defaults to "v2".
     """
-
-
     auth: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuth
 
     caBundle?: str
-
     caProvider?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderCaProvider
-
     forwardInconsistent?: bool
-
     headers?: {str:str}
-
     namespace?: str
-
     path?: str
-
     readYourWrites?: bool
-
     server: str
 
     tls?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderTLS
-
     version?: "v1" | "v2" = "v2"
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuth:
     r"""
@@ -1417,26 +1179,15 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     userPass : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthUserPass, default is Undefined, optional
         user pass
     """
-
-
     appRole?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthAppRole
-
     cert?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCert
-
     iam?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIam
-
     jwt?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthJwt
-
     kubernetes?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthKubernetes
-
     ldap?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthLdap
-
     namespace?: str
-
     tokenSecretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthTokenSecretRef
-
     userPass?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthUserPass
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthAppRole:
     r"""
@@ -1456,16 +1207,11 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     secretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthAppRoleSecretRef, default is Undefined, required
         secret ref
     """
-
-
     path: str = "approle"
 
     roleId?: str
-
     roleRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthAppRoleRoleRef
-
     secretRef: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthAppRoleSecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthAppRoleRoleRef:
     r"""
@@ -1485,14 +1231,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1504,7 +1245,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthAppRoleSecretRef:
     r"""
@@ -1524,14 +1264,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1543,7 +1278,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCert:
     r"""
@@ -1557,12 +1291,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     secretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCertSecretRef, default is Undefined, optional
         secret ref
     """
-
-
     clientCert?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCertClientCert
-
     secretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCertSecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCertClientCert:
     r"""
@@ -1580,14 +1310,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1599,7 +1324,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCertSecretRef:
     r"""
@@ -1617,14 +1341,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1636,7 +1355,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIam:
     r"""
@@ -1662,24 +1380,14 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     vaultRole : str, default is Undefined, required
         Vault Role. In vault, a role describes an identity with a set of permissions, groups, or policies you want to attach a user of the secrets engine
     """
-
-
     externalID?: str
-
     jwt?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIamJwt
-
     path?: str
-
     region?: str
-
     role?: str
-
     secretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIamSecretRef
-
     vaultAwsIamServerID?: str
-
     vaultRole: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIamJwt:
     r"""
@@ -1690,10 +1398,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIamJwtServiceAccountRef, default is Undefined, optional
         service account ref
     """
-
-
     serviceAccountRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIamJwtServiceAccountRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIamJwtServiceAccountRef:
     r"""
@@ -1711,14 +1416,10 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -1727,7 +1428,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIamSecretRef:
     r"""
@@ -1742,14 +1442,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     sessionTokenSecretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIamSecretRefSessionTokenSecretRef, default is Undefined, optional
         session token secret ref
     """
-
-
     accessKeyIDSecretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIamSecretRefAccessKeyIDSecretRef
-
     secretAccessKeySecretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIamSecretRefSecretAccessKeySecretRef
-
     sessionTokenSecretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIamSecretRefSessionTokenSecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIamSecretRefAccessKeyIDSecretRef:
     r"""
@@ -1766,14 +1461,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1785,7 +1475,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIamSecretRefSecretAccessKeySecretRef:
     r"""
@@ -1802,14 +1491,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1821,7 +1505,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIamSecretRefSessionTokenSecretRef:
     r"""
@@ -1840,14 +1523,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1859,7 +1537,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthJwt:
     r"""
@@ -1879,16 +1556,11 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     secretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthJwtSecretRef, default is Undefined, optional
         secret ref
     """
-
-
     kubernetesServiceAccountToken?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthJwtKubernetesServiceAccountToken
-
     path: str = "jwt"
 
     role?: str
-
     secretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthJwtSecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthJwtKubernetesServiceAccountToken:
     r"""
@@ -1911,14 +1583,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthJwtKubernetesServiceAccountTokenServiceAccountRef, default is Undefined, required
         service account ref
     """
-
-
     audiences?: [str]
-
     expirationSeconds?: int
-
     serviceAccountRef: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthJwtKubernetesServiceAccountTokenServiceAccountRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthJwtKubernetesServiceAccountTokenServiceAccountRef:
     r"""
@@ -1936,14 +1603,10 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -1952,7 +1615,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthJwtSecretRef:
     r"""
@@ -1970,14 +1632,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1989,7 +1646,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthKubernetes:
     r"""
@@ -2009,16 +1665,12 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthKubernetesServiceAccountRef, default is Undefined, optional
         service account ref
     """
-
-
     mountPath: str = "kubernetes"
 
     role: str
 
     secretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthKubernetesSecretRef
-
     serviceAccountRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthKubernetesServiceAccountRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthKubernetesSecretRef:
     r"""
@@ -2038,14 +1690,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -2057,7 +1704,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthKubernetesServiceAccountRef:
     r"""
@@ -2078,14 +1724,10 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -2094,7 +1736,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthLdap:
     r"""
@@ -2112,14 +1753,10 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         Username is an LDAP username used to authenticate using the LDAP Vault
         authentication method
     """
-
-
     path: str = "ldap"
 
     secretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthLdapSecretRef
-
     username: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthLdapSecretRef:
     r"""
@@ -2138,14 +1775,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -2157,7 +1789,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthTokenSecretRef:
     r"""
@@ -2174,14 +1805,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -2193,7 +1819,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthUserPass:
     r"""
@@ -2210,14 +1835,10 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         Username is a username used to authenticate using the UserPass Vault
         authentication method
     """
-
-
     path: str = "userpass"
 
     secretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthUserPassSecretRef
-
     username: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthUserPassSecretRef:
     r"""
@@ -2236,14 +1857,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -2255,7 +1871,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderCaProvider:
     r"""
@@ -2273,16 +1888,11 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     $type : str, default is Undefined, required
         The type of provider to use such as "Secret", or "ConfigMap".
     """
-
-
     key?: str
-
     name: str
 
     namespace?: str
-
     $type: "Secret" | "ConfigMap"
-
 
     check:
         len(key) <= 253 if key
@@ -2294,7 +1904,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderTLS:
     r"""
@@ -2311,12 +1920,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     keySecretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderTLSKeySecretRef, default is Undefined, optional
         key secret ref
     """
-
-
     certSecretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderTLSCertSecretRef
-
     keySecretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderTLSKeySecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderTLSCertSecretRef:
     r"""
@@ -2335,14 +1940,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -2354,7 +1954,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderTLSKeySecretRef:
     r"""
@@ -2373,14 +1972,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -2393,7 +1987,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecRetrySettings:
     r"""
     Used to configure http retries if failed
@@ -2405,12 +1998,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     retryInterval : str, default is Undefined, optional
         retry interval
     """
-
-
     maxRetries?: int
-
     retryInterval?: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSpec:
     r"""
@@ -2441,26 +2030,16 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSp
     url : str, default is Undefined, required
         Webhook url to call
     """
-
-
     body?: str
-
     caBundle?: str
-
     caProvider?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSpecCaProvider
-
     headers?: {str:str}
-
     method?: str
-
     result: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSpecResult
 
     secrets?: [GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSpecSecretsItems0]
-
     timeout?: str
-
     url: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSpecCaProvider:
     r"""
@@ -2477,16 +2056,11 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSp
     $type : str, default is Undefined, required
         The type of provider to use such as "Secret", or "ConfigMap".
     """
-
-
     key?: str
-
     name: str
 
     namespace?: str
-
     $type: "Secret" | "ConfigMap"
-
 
     check:
         len(key) <= 253 if key
@@ -2499,7 +2073,6 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSp
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSpecResult:
     r"""
     Result formatting
@@ -2509,10 +2082,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSp
     jsonPath : str, default is Undefined, optional
         Json path of return value
     """
-
-
     jsonPath?: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSpecSecretsItems0:
     r"""
@@ -2525,12 +2095,9 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSp
     secretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSpecSecretsItems0SecretRef, default is Undefined, required
         secret ref
     """
-
-
     name: str
 
     secretRef: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSpecSecretsItems0SecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSpecSecretsItems0SecretRef:
     r"""
@@ -2543,12 +2110,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSp
     name : str, default is Undefined, optional
         The name of the Secret resource being referred to.
     """
-
-
     key?: str
-
     name?: str
-
 
     check:
         len(key) <= 253 if key
@@ -2557,5 +2120,4 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSp
         len(name) <= 253 if name
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
-
 

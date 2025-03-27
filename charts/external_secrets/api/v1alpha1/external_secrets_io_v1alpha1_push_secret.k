@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema PushSecret:
     r"""
@@ -24,18 +24,13 @@ schema PushSecret:
     status : ExternalSecretsIoV1alpha1PushSecretStatus, default is Undefined, optional
         status
     """
-
-
     apiVersion: "external-secrets.io/v1alpha1" = "external-secrets.io/v1alpha1"
 
     kind: "PushSecret" = "PushSecret"
 
     metadata?: v1.ObjectMeta
-
     spec?: ExternalSecretsIoV1alpha1PushSecretSpec
-
     status?: ExternalSecretsIoV1alpha1PushSecretStatus
-
 
 schema ExternalSecretsIoV1alpha1PushSecretSpec:
     r"""
@@ -58,22 +53,15 @@ schema ExternalSecretsIoV1alpha1PushSecretSpec:
     updatePolicy : str, default is "Replace", optional
         UpdatePolicy to handle Secrets in the provider.
     """
-
-
     data?: [ExternalSecretsIoV1alpha1PushSecretSpecDataItems0]
-
     deletionPolicy?: "Delete" | "None" = "None"
-
     refreshInterval?: str = "1h"
-
     secretStoreRefs: [ExternalSecretsIoV1alpha1PushSecretSpecSecretStoreRefsItems0]
 
     selector: ExternalSecretsIoV1alpha1PushSecretSpecSelector
 
     template?: ExternalSecretsIoV1alpha1PushSecretSpecTemplate
-
     updatePolicy?: "Replace" | "IfNotExists" = "Replace"
-
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecDataItems0:
     r"""
@@ -89,14 +77,10 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecDataItems0:
         Metadata is metadata attached to the secret.
         The structure of metadata is provider specific, please look it up in the provider documentation.
     """
-
-
     conversionStrategy?: "None" | "ReverseUnicode" = "None"
-
     match: ExternalSecretsIoV1alpha1PushSecretSpecDataItems0Match
 
     metadata?: any
-
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecDataItems0Match:
     r"""
@@ -109,12 +93,9 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecDataItems0Match:
     secretKey : str, default is Undefined, optional
         Secret Key to be pushed
     """
-
-
     remoteRef: ExternalSecretsIoV1alpha1PushSecretSpecDataItems0MatchRemoteRef
 
     secretKey?: str
-
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecDataItems0MatchRemoteRef:
     r"""
@@ -127,12 +108,8 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecDataItems0MatchRemoteRef:
     remoteKey : str, default is Undefined, required
         Name of the resulting provider secret.
     """
-
-
     property?: str
-
     remoteKey: str
-
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecSecretStoreRefsItems0:
     r"""
@@ -147,20 +124,14 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecSecretStoreRefsItems0:
     name : str, default is Undefined, optional
         Optionally, sync to the SecretStore of the given name
     """
-
-
     kind?: "SecretStore" | "ClusterSecretStore" = "SecretStore"
-
     labelSelector?: ExternalSecretsIoV1alpha1PushSecretSpecSecretStoreRefsItems0LabelSelector
-
     name?: str
-
 
     check:
         len(name) <= 253 if name
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
-
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecSecretStoreRefsItems0LabelSelector:
     r"""
@@ -175,12 +146,8 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecSecretStoreRefsItems0LabelSelector
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [ExternalSecretsIoV1alpha1PushSecretSpecSecretStoreRefsItems0LabelSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecSecretStoreRefsItems0LabelSelectorMatchExpressionsItems0:
     r"""
@@ -200,14 +167,11 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecSecretStoreRefsItems0LabelSelector
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecSelector:
     r"""
@@ -220,12 +184,8 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecSelector:
     secret : ExternalSecretsIoV1alpha1PushSecretSpecSelectorSecret, default is Undefined, optional
         secret
     """
-
-
     generatorRef?: ExternalSecretsIoV1alpha1PushSecretSpecSelectorGeneratorRef
-
     secret?: ExternalSecretsIoV1alpha1PushSecretSpecSelectorSecret
-
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecSelectorGeneratorRef:
     r"""
@@ -240,20 +200,15 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecSelectorGeneratorRef:
     name : str, default is Undefined, required
         Specify the name of the generator resource
     """
-
-
     apiVersion?: str = "generators.external-secrets.io/v1alpha1"
-
     kind: "ACRAccessToken" | "ClusterGenerator" | "ECRAuthorizationToken" | "Fake" | "GCRAccessToken" | "GithubAccessToken" | "QuayAccessToken" | "Password" | "STSSessionToken" | "UUID" | "VaultDynamicSecret" | "Webhook" | "Grafana"
 
     name: str
-
 
     check:
         len(name) <= 253
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
-
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecSelectorSecret:
     r"""
@@ -265,16 +220,12 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecSelectorSecret:
         Name of the Secret.
         The Secret must exist in the same namespace as the PushSecret manifest.
     """
-
-
     name: str
-
 
     check:
         len(name) <= 253
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
-
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecTemplate:
     r"""
@@ -297,20 +248,12 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecTemplate:
     $type : str, default is Undefined, optional
         type
     """
-
-
     data?: {str:str}
-
     engineVersion?: "v1" | "v2" = "v2"
-
     mergePolicy?: "Replace" | "Merge" = "Replace"
-
     metadata?: ExternalSecretsIoV1alpha1PushSecretSpecTemplateMetadata
-
     templateFrom?: [ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0]
-
     $type?: str
-
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateMetadata:
     r"""
@@ -323,12 +266,8 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateMetadata:
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0:
     r"""
@@ -345,16 +284,10 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0:
     target : str, default is "Data", optional
         target
     """
-
-
     configMap?: ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0ConfigMap
-
     literal?: str
-
     secret?: ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0Secret
-
     target?: "Data" | "Annotations" | "Labels" = "Data"
-
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0ConfigMap:
     r"""
@@ -367,18 +300,14 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0ConfigMa
     name : str, default is Undefined, required
         The name of the ConfigMap/Secret resource
     """
-
-
     items: [ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0ConfigMapItemsItems0]
 
     name: str
-
 
     check:
         len(name) <= 253
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
-
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0ConfigMapItemsItems0:
     r"""
@@ -391,18 +320,14 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0ConfigMa
     templateAs : str, default is "Values", optional
         template as
     """
-
-
     key: str
 
     templateAs?: "Values" | "KeysAndValues" = "Values"
-
 
     check:
         len(key) <= 253
         len(key) >= 1
         _regex_match(str(key), r"^[-._a-zA-Z0-9]+$")
-
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0Secret:
     r"""
@@ -415,18 +340,14 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0Secret:
     name : str, default is Undefined, required
         The name of the ConfigMap/Secret resource
     """
-
-
     items: [ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0SecretItemsItems0]
 
     name: str
-
 
     check:
         len(name) <= 253
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
-
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0SecretItemsItems0:
     r"""
@@ -439,18 +360,14 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0SecretIt
     templateAs : str, default is "Values", optional
         template as
     """
-
-
     key: str
 
     templateAs?: "Values" | "KeysAndValues" = "Values"
-
 
     check:
         len(key) <= 253
         len(key) >= 1
         _regex_match(str(key), r"^[-._a-zA-Z0-9]+$")
-
 
 schema ExternalSecretsIoV1alpha1PushSecretStatus:
     r"""
@@ -469,16 +386,10 @@ schema ExternalSecretsIoV1alpha1PushSecretStatus:
     syncedResourceVersion : str, default is Undefined, optional
         SyncedResourceVersion keeps track of the last synced version.
     """
-
-
     conditions?: [ExternalSecretsIoV1alpha1PushSecretStatusConditionsItems0]
-
     refreshTime?: str
-
     syncedPushSecrets?: {str:{str:ExternalSecretsIoV1alpha1PushSecretStatusSyncedPushSecretsAnon}}
-
     syncedResourceVersion?: str
-
 
 schema ExternalSecretsIoV1alpha1PushSecretStatusConditionsItems0:
     r"""
@@ -497,18 +408,12 @@ schema ExternalSecretsIoV1alpha1PushSecretStatusConditionsItems0:
     $type : str, default is Undefined, required
         PushSecretConditionType indicates the condition of the PushSecret.
     """
-
-
     lastTransitionTime?: str
-
     message?: str
-
     reason?: str
-
     status: str
 
     $type: str
-
 
 schema ExternalSecretsIoV1alpha1PushSecretStatusSyncedPushSecretsAnon:
     r"""
@@ -524,14 +429,10 @@ schema ExternalSecretsIoV1alpha1PushSecretStatusSyncedPushSecretsAnon:
         Metadata is metadata attached to the secret.
         The structure of metadata is provider specific, please look it up in the provider documentation.
     """
-
-
     conversionStrategy?: "None" | "ReverseUnicode" = "None"
-
     match: ExternalSecretsIoV1alpha1PushSecretStatusSyncedPushSecretsAnonMatch
 
     metadata?: any
-
 
 schema ExternalSecretsIoV1alpha1PushSecretStatusSyncedPushSecretsAnonMatch:
     r"""
@@ -544,12 +445,9 @@ schema ExternalSecretsIoV1alpha1PushSecretStatusSyncedPushSecretsAnonMatch:
     secretKey : str, default is Undefined, optional
         Secret Key to be pushed
     """
-
-
     remoteRef: ExternalSecretsIoV1alpha1PushSecretStatusSyncedPushSecretsAnonMatchRemoteRef
 
     secretKey?: str
-
 
 schema ExternalSecretsIoV1alpha1PushSecretStatusSyncedPushSecretsAnonMatchRemoteRef:
     r"""
@@ -562,10 +460,6 @@ schema ExternalSecretsIoV1alpha1PushSecretStatusSyncedPushSecretsAnonMatchRemote
     remoteKey : str, default is Undefined, required
         Name of the resulting provider secret.
     """
-
-
     property?: str
-
     remoteKey: str
-
 

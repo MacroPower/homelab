@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema GithubAccessToken:
     r"""
@@ -22,16 +22,12 @@ schema GithubAccessToken:
     spec : GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpec, default is Undefined, optional
         spec
     """
-
-
     apiVersion: "generators.external-secrets.io/v1alpha1" = "generators.external-secrets.io/v1alpha1"
 
     kind: "GithubAccessToken" = "GithubAccessToken"
 
     metadata?: v1.ObjectMeta
-
     spec?: GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpec
-
 
 schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpec:
     r"""
@@ -53,8 +49,6 @@ schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpec:
     url : str, default is Undefined, optional
         URL configures the Github instance URL. Defaults to https://github.com/.
     """
-
-
     appID: str
 
     auth: GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuth
@@ -62,11 +56,8 @@ schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpec:
     installID: str
 
     permissions?: {str:str}
-
     repositories?: [str]
-
     url?: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuth:
     r"""
@@ -77,10 +68,7 @@ schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuth:
     privateKey : GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuthPrivateKey, default is Undefined, required
         private key
     """
-
-
     privateKey: GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuthPrivateKey
-
 
 schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuthPrivateKey:
     r"""
@@ -91,10 +79,7 @@ schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuthPrivateKey:
     secretRef : GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuthPrivateKeySecretRef, default is Undefined, required
         secret ref
     """
-
-
     secretRef: GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuthPrivateKeySecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuthPrivateKeySecretRef:
     r"""
@@ -112,14 +97,9 @@ schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuthPrivateKeySec
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -131,5 +111,4 @@ schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuthPrivateKeySec
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 

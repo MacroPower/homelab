@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema GrafanaAlertRuleGroup:
     r"""
@@ -24,18 +24,13 @@ schema GrafanaAlertRuleGroup:
     status : GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupStatus, default is Undefined, optional
         status
     """
-
-
     apiVersion: "grafana.integreatly.org/v1beta1" = "grafana.integreatly.org/v1beta1"
 
     kind: "GrafanaAlertRuleGroup" = "GrafanaAlertRuleGroup"
 
     metadata?: v1.ObjectMeta
-
     spec?: GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpec
-
     status?: GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupStatus
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpec:
     r"""
@@ -63,26 +58,17 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpec:
     rules : [GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0], default is Undefined, required
         rules
     """
-
-
     allowCrossNamespaceImport?: bool = False
-
     editable?: bool
-
     folderRef?: str
-
     folderUID?: str
-
     instanceSelector: GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecInstanceSelector
 
     interval: str
 
     name?: str
-
     resyncPeriod?: str = "10m0s"
-
     rules: [GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecInstanceSelector:
     r"""
@@ -97,12 +83,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecInstanceSelector:
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecInstanceSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecInstanceSelectorMatchExpressionsItems0:
     r"""
@@ -122,14 +104,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecInstanceSelectorMatc
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0:
     r"""
@@ -160,10 +139,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0:
     uid : str, default is Undefined, required
         uid
     """
-
-
     annotations?: {str:str}
-
     condition: str
 
     data: [GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0DataItems0]
@@ -173,23 +149,18 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0:
     $for: str
 
     isPaused?: bool
-
     labels?: {str:str}
-
     noDataState: "Alerting" | "NoData" | "OK" | "KeepLast"
 
     notificationSettings?: GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0NotificationSettings
-
     title: str
 
     uid: str
-
 
     check:
         len(title) <= 190
         len(title) >= 1
         _regex_match(str(uid), r"^[a-zA-Z0-9-_]+$")
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0DataItems0:
     r"""
@@ -209,18 +180,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0DataItems
     relativeTimeRange : GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0DataItems0RelativeTimeRange, default is Undefined, optional
         relative time range
     """
-
-
     datasourceUid?: str
-
     model?: any
-
     queryType?: str
-
     refId?: str
-
     relativeTimeRange?: GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0DataItems0RelativeTimeRange
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0DataItems0RelativeTimeRange:
     r"""
@@ -233,12 +197,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0DataItems
     to : int, default is Undefined, optional
         to
     """
-
-
     from?: int
-
     to?: int
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0NotificationSettings:
     r"""
@@ -259,20 +219,13 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0Notificat
     repeat_interval : str, default is Undefined, optional
         repeat interval
     """
-
-
     group_by?: [str]
-
     group_interval?: str
-
     group_wait?: str
-
     mute_time_intervals?: [str]
-
     receiver: str
 
     repeat_interval?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupStatus:
     r"""
@@ -285,12 +238,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupStatus:
     lastResync : str, default is Undefined, optional
         Last time the resource was synchronized with Grafana instances
     """
-
-
     conditions?: [GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupStatusConditionsItems0]
-
     lastResync?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupStatusConditionsItems0:
     r"""
@@ -319,20 +268,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupStatusConditionsItems0:
     $type : str, default is Undefined, required
         type of condition in CamelCase or in foo.example.com/CamelCase.
     """
-
-
     lastTransitionTime: str
 
     message: str
 
     observedGeneration?: int
-
     reason: str
 
     status: "True" | "False" | "Unknown"
 
     $type: str
-
 
     check:
         len(message) <= 32768
@@ -342,5 +287,4 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupStatusConditionsItems0:
         _regex_match(str(reason), r"^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$")
         len($type) <= 316
         _regex_match(str($type), r"^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$")
-
 

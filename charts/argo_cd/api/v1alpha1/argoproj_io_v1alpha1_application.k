@@ -4,7 +4,6 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import k8s.apimachinery.pkg.apis.meta.v1
 
-
 schema Application:
     r"""
     Application is a definition of Application resource.
@@ -24,8 +23,6 @@ schema Application:
     status : ArgoprojIoV1alpha1ApplicationStatus, default is Undefined, optional
         status
     """
-
-
     apiVersion: "argoproj.io/v1alpha1" = "argoproj.io/v1alpha1"
 
     kind: "Application" = "Application"
@@ -33,11 +30,9 @@ schema Application:
     metadata: v1.ObjectMeta
 
     operation?: ArgoprojIoV1alpha1ApplicationOperation
-
     spec: ArgoprojIoV1alpha1ApplicationSpec
 
     status?: ArgoprojIoV1alpha1ApplicationStatus
-
 
 schema ArgoprojIoV1alpha1ApplicationOperation:
     r"""
@@ -54,16 +49,10 @@ schema ArgoprojIoV1alpha1ApplicationOperation:
     sync : ArgoprojIoV1alpha1ApplicationOperationSync, default is Undefined, optional
         sync
     """
-
-
     info?: [ArgoprojIoV1alpha1ApplicationOperationInfoItems0]
-
     initiatedBy?: ArgoprojIoV1alpha1ApplicationOperationInitiatedBy
-
     retry?: ArgoprojIoV1alpha1ApplicationOperationRetry
-
     sync?: ArgoprojIoV1alpha1ApplicationOperationSync
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationInfoItems0:
     r"""
@@ -76,12 +65,9 @@ schema ArgoprojIoV1alpha1ApplicationOperationInfoItems0:
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationInitiatedBy:
     r"""
@@ -94,12 +80,8 @@ schema ArgoprojIoV1alpha1ApplicationOperationInitiatedBy:
     username : str, default is Undefined, optional
         Username contains the name of a user who started operation
     """
-
-
     automated?: bool
-
     username?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationRetry:
     r"""
@@ -112,12 +94,8 @@ schema ArgoprojIoV1alpha1ApplicationOperationRetry:
     limit : int, default is Undefined, optional
         Limit is the maximum number of attempts for retrying a failed sync. If set to 0, no retries will be performed.
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationOperationRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationRetryBackoff:
     r"""
@@ -132,14 +110,9 @@ schema ArgoprojIoV1alpha1ApplicationOperationRetryBackoff:
     maxDuration : str, default is Undefined, optional
         MaxDuration is the maximum amount of time allowed for the backoff strategy
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSync:
     r"""
@@ -173,30 +146,17 @@ schema ArgoprojIoV1alpha1ApplicationOperationSync:
     syncStrategy : ArgoprojIoV1alpha1ApplicationOperationSyncSyncStrategy, default is Undefined, optional
         sync strategy
     """
-
-
     autoHealAttemptsCount?: int
-
     dryRun?: bool
-
     manifests?: [str]
-
     prune?: bool
-
     resources?: [ArgoprojIoV1alpha1ApplicationOperationSyncResourcesItems0]
-
     revision?: str
-
     revisions?: [str]
-
     source?: ArgoprojIoV1alpha1ApplicationOperationSyncSource
-
     sources?: [ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0]
-
     syncOptions?: [str]
-
     syncStrategy?: ArgoprojIoV1alpha1ApplicationOperationSyncSyncStrategy
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncResourcesItems0:
     r"""
@@ -213,16 +173,12 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncResourcesItems0:
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     kind: str
 
     name: str
 
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSource:
     r"""
@@ -254,28 +210,17 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSource:
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
         In case of Helm, this is a semver tag for the Chart's version.
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationOperationSyncSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationOperationSyncSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationOperationSyncSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationOperationSyncSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceDirectory:
     r"""
@@ -292,16 +237,10 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceDirectory:
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationOperationSyncSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceDirectoryJsonnet:
     r"""
@@ -316,14 +255,9 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceDirectoryJsonnet:
     tlas : [ArgoprojIoV1alpha1ApplicationOperationSyncSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         TLAS is a list of Jsonnet Top-level Arguments
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationOperationSyncSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationOperationSyncSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -338,14 +272,10 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceDirectoryJsonnetExtVarsIt
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -360,14 +290,10 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceDirectoryJsonnetTlasItems
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceHelm:
     r"""
@@ -408,38 +334,21 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceHelm:
     version : str, default is Undefined, optional
         Version is the Helm version to use for templating ("3")
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationOperationSyncSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationOperationSyncSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceHelmFileParametersItems0:
     r"""
@@ -452,12 +361,8 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceHelmFileParametersItems0:
     path : str, default is Undefined, optional
         Path is the path to the file containing the values for the Helm parameter
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceHelmParametersItems0:
     r"""
@@ -472,14 +377,9 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceHelmParametersItems0:
     value : str, default is Undefined, optional
         Value is the value for the Helm parameter
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceKustomize:
     r"""
@@ -522,40 +422,22 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceKustomize:
     version : str, default is Undefined, optional
         Version controls which version of Kustomize to use for rendering manifests
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationOperationSyncSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationOperationSyncSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceKustomizePatchesItems0:
     r"""
@@ -572,16 +454,10 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceKustomizePatchesItems0:
     target : ArgoprojIoV1alpha1ApplicationOperationSyncSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationOperationSyncSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceKustomizePatchesItems0Target:
     r"""
@@ -604,22 +480,13 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceKustomizePatchesItems0Tar
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceKustomizeReplicasItems0:
     r"""
@@ -632,12 +499,9 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceKustomizeReplicasItems0:
     name : str, default is Undefined, required
         Name of Deployment or StatefulSet
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcePlugin:
     r"""
@@ -652,14 +516,9 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcePlugin:
     parameters : [ArgoprojIoV1alpha1ApplicationOperationSyncSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationOperationSyncSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationOperationSyncSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcePluginEnvItems0:
     r"""
@@ -672,12 +531,9 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcePluginEnvItems0:
     value : str, default is Undefined, required
         Value is the value of the variable
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcePluginParametersItems0:
     r"""
@@ -694,16 +550,10 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcePluginParametersItems0:
     string : str, default is Undefined, optional
         String_ is the value of a string type parameter.
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0:
     r"""
@@ -734,28 +584,17 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0:
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
         In case of Helm, this is a semver tag for the Chart's version.
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0Directory:
     r"""
@@ -772,16 +611,10 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0Directory:
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0DirectoryJsonnet:
     r"""
@@ -796,14 +629,9 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0DirectoryJsonnet:
     tlas : [ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         TLAS is a list of Jsonnet Top-level Arguments
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -818,14 +646,10 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0DirectoryJsonnetEx
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -840,14 +664,10 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0DirectoryJsonnetTl
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0Helm:
     r"""
@@ -888,38 +708,21 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0Helm:
     version : str, default is Undefined, optional
         Version is the Helm version to use for templating ("3")
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0HelmFileParametersItems0:
     r"""
@@ -932,12 +735,8 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0HelmFileParameters
     path : str, default is Undefined, optional
         Path is the path to the file containing the values for the Helm parameter
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0HelmParametersItems0:
     r"""
@@ -952,14 +751,9 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0HelmParametersItem
     value : str, default is Undefined, optional
         Value is the value for the Helm parameter
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0Kustomize:
     r"""
@@ -1002,40 +796,22 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0Kustomize:
     version : str, default is Undefined, optional
         Version controls which version of Kustomize to use for rendering manifests
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0KustomizePatchesItems0:
     r"""
@@ -1052,16 +828,10 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0KustomizePatchesIt
     target : ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -1084,22 +854,13 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0KustomizePatchesIt
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -1112,12 +873,9 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0KustomizeReplicasI
     name : str, default is Undefined, required
         Name of Deployment or StatefulSet
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0Plugin:
     r"""
@@ -1132,14 +890,9 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0Plugin:
     parameters : [ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0PluginEnvItems0:
     r"""
@@ -1152,12 +905,9 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0PluginEnvItems0:
     value : str, default is Undefined, required
         Value is the value of the variable
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0PluginParametersItems0:
     r"""
@@ -1174,16 +924,10 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0PluginParametersIt
     string : str, default is Undefined, optional
         String_ is the value of a string type parameter.
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSyncStrategy:
     r"""
@@ -1196,12 +940,8 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSyncStrategy:
     hook : ArgoprojIoV1alpha1ApplicationOperationSyncSyncStrategyHook, default is Undefined, optional
         hook
     """
-
-
     apply?: ArgoprojIoV1alpha1ApplicationOperationSyncSyncStrategyApply
-
     hook?: ArgoprojIoV1alpha1ApplicationOperationSyncSyncStrategyHook
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSyncStrategyApply:
     r"""
@@ -1214,10 +954,7 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSyncStrategyApply:
         The --force flag deletes and re-create the resource, when PATCH encounters conflict and has
         retried for 5 times.
     """
-
-
     force?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSyncStrategyHook:
     r"""
@@ -1230,10 +967,7 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSyncStrategyHook:
         The --force flag deletes and re-create the resource, when PATCH encounters conflict and has
         retried for 5 times.
     """
-
-
     force?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSpec:
     r"""
@@ -1265,26 +999,17 @@ schema ArgoprojIoV1alpha1ApplicationSpec:
     syncPolicy : ArgoprojIoV1alpha1ApplicationSpecSyncPolicy, default is Undefined, optional
         sync policy
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationSpecDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationSpecIgnoreDifferencesItems0]
-
     info?: [ArgoprojIoV1alpha1ApplicationSpecInfoItems0]
-
     project: str
 
     revisionHistoryLimit?: int
-
     source?: ArgoprojIoV1alpha1ApplicationSpecSource
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationSpecSourceHydrator
-
     sources?: [ArgoprojIoV1alpha1ApplicationSpecSourcesItems0]
-
     syncPolicy?: ArgoprojIoV1alpha1ApplicationSpecSyncPolicy
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecDestination:
     r"""
@@ -1300,14 +1025,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecDestination:
     server : str, default is Undefined, optional
         Server specifies the URL of the target cluster's Kubernetes control plane API. This must be set if Name is not set.
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecIgnoreDifferencesItems0:
     r"""
@@ -1331,22 +1051,14 @@ schema ArgoprojIoV1alpha1ApplicationSpecIgnoreDifferencesItems0:
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecInfoItems0:
     r"""
@@ -1359,12 +1071,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecInfoItems0:
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSource:
     r"""
@@ -1395,28 +1104,17 @@ schema ArgoprojIoV1alpha1ApplicationSpecSource:
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
         In case of Helm, this is a semver tag for the Chart's version.
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSpecSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationSpecSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSpecSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSpecSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourceDirectory:
     r"""
@@ -1433,16 +1131,10 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceDirectory:
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSpecSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourceDirectoryJsonnet:
     r"""
@@ -1457,14 +1149,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceDirectoryJsonnet:
     tlas : [ArgoprojIoV1alpha1ApplicationSpecSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         TLAS is a list of Jsonnet Top-level Arguments
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSpecSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSpecSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -1479,14 +1166,10 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceDirectoryJsonnetExtVarsItems0:
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -1501,14 +1184,10 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceDirectoryJsonnetTlasItems0:
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourceHelm:
     r"""
@@ -1549,38 +1228,21 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceHelm:
     version : str, default is Undefined, optional
         Version is the Helm version to use for templating ("3")
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSpecSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSpecSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourceHelmFileParametersItems0:
     r"""
@@ -1593,12 +1255,8 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceHelmFileParametersItems0:
     path : str, default is Undefined, optional
         Path is the path to the file containing the values for the Helm parameter
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourceHelmParametersItems0:
     r"""
@@ -1613,14 +1271,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceHelmParametersItems0:
     value : str, default is Undefined, optional
         Value is the value for the Helm parameter
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourceHydrator:
     r"""
@@ -1635,14 +1288,10 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceHydrator:
     syncSource : ArgoprojIoV1alpha1ApplicationSpecSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationSpecSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationSpecSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySource:
     r"""
@@ -1657,14 +1306,11 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySource:
     targetRevision : str, default is Undefined, required
         TargetRevision defines the revision of the source to hydrate
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorHydrateTo:
     r"""
@@ -1676,10 +1322,7 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorHydrateTo:
     targetBranch : str, default is Undefined, required
         TargetBranch is the branch to which hydrated manifests should be committed
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorSyncSource:
     r"""
@@ -1693,12 +1336,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorSyncSource:
     targetBranch : str, default is Undefined, required
         TargetBranch is the branch to which hydrated manifests should be committed
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourceKustomize:
     r"""
@@ -1741,40 +1381,22 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceKustomize:
     version : str, default is Undefined, optional
         Version controls which version of Kustomize to use for rendering manifests
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSpecSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSpecSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourceKustomizePatchesItems0:
     r"""
@@ -1791,16 +1413,10 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceKustomizePatchesItems0:
     target : ArgoprojIoV1alpha1ApplicationSpecSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSpecSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourceKustomizePatchesItems0Target:
     r"""
@@ -1823,22 +1439,13 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceKustomizePatchesItems0Target:
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourceKustomizeReplicasItems0:
     r"""
@@ -1851,12 +1458,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceKustomizeReplicasItems0:
     name : str, default is Undefined, required
         Name of Deployment or StatefulSet
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcePlugin:
     r"""
@@ -1871,14 +1475,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcePlugin:
     parameters : [ArgoprojIoV1alpha1ApplicationSpecSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSpecSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSpecSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcePluginEnvItems0:
     r"""
@@ -1891,12 +1490,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcePluginEnvItems0:
     value : str, default is Undefined, required
         Value is the value of the variable
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcePluginParametersItems0:
     r"""
@@ -1913,16 +1509,10 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcePluginParametersItems0:
     string : str, default is Undefined, optional
         String_ is the value of a string type parameter.
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0:
     r"""
@@ -1953,28 +1543,17 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0:
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
         In case of Helm, this is a semver tag for the Chart's version.
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationSpecSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationSpecSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationSpecSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationSpecSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0Directory:
     r"""
@@ -1991,16 +1570,10 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0Directory:
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationSpecSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0DirectoryJsonnet:
     r"""
@@ -2015,14 +1588,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0DirectoryJsonnet:
     tlas : [ArgoprojIoV1alpha1ApplicationSpecSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         TLAS is a list of Jsonnet Top-level Arguments
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationSpecSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationSpecSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -2037,14 +1605,10 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0DirectoryJsonnetExtVarsItem
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -2059,14 +1623,10 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0DirectoryJsonnetTlasItems0:
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0Helm:
     r"""
@@ -2107,38 +1667,21 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0Helm:
     version : str, default is Undefined, optional
         Version is the Helm version to use for templating ("3")
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationSpecSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSpecSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0HelmFileParametersItems0:
     r"""
@@ -2151,12 +1694,8 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0HelmFileParametersItems0:
     path : str, default is Undefined, optional
         Path is the path to the file containing the values for the Helm parameter
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0HelmParametersItems0:
     r"""
@@ -2171,14 +1710,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0HelmParametersItems0:
     value : str, default is Undefined, optional
         Value is the value for the Helm parameter
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0Kustomize:
     r"""
@@ -2221,40 +1755,22 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0Kustomize:
     version : str, default is Undefined, optional
         Version controls which version of Kustomize to use for rendering manifests
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationSpecSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationSpecSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0KustomizePatchesItems0:
     r"""
@@ -2271,16 +1787,10 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0KustomizePatchesItems0:
     target : ArgoprojIoV1alpha1ApplicationSpecSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationSpecSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -2303,22 +1813,13 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0KustomizePatchesItems0Targe
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -2331,12 +1832,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0KustomizeReplicasItems0:
     name : str, default is Undefined, required
         Name of Deployment or StatefulSet
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0Plugin:
     r"""
@@ -2351,14 +1849,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0Plugin:
     parameters : [ArgoprojIoV1alpha1ApplicationSpecSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationSpecSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationSpecSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0PluginEnvItems0:
     r"""
@@ -2371,12 +1864,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0PluginEnvItems0:
     value : str, default is Undefined, required
         Value is the value of the variable
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0PluginParametersItems0:
     r"""
@@ -2393,16 +1883,10 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0PluginParametersItems0:
     string : str, default is Undefined, optional
         String_ is the value of a string type parameter.
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSyncPolicy:
     r"""
@@ -2419,16 +1903,10 @@ schema ArgoprojIoV1alpha1ApplicationSpecSyncPolicy:
     syncOptions : [str], default is Undefined, optional
         Options allow you to specify whole app sync-options
     """
-
-
     automated?: ArgoprojIoV1alpha1ApplicationSpecSyncPolicyAutomated
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationSpecSyncPolicyManagedNamespaceMetadata
-
     retry?: ArgoprojIoV1alpha1ApplicationSpecSyncPolicyRetry
-
     syncOptions?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSyncPolicyAutomated:
     r"""
@@ -2443,14 +1921,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSyncPolicyAutomated:
     selfHeal : bool, default is Undefined, optional
         SelfHeal specifies whether to revert resources back to their desired state upon modification in the cluster (default: false)
     """
-
-
     allowEmpty?: bool
-
     prune?: bool
-
     selfHeal?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSyncPolicyManagedNamespaceMetadata:
     r"""
@@ -2463,12 +1936,8 @@ schema ArgoprojIoV1alpha1ApplicationSpecSyncPolicyManagedNamespaceMetadata:
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSyncPolicyRetry:
     r"""
@@ -2481,12 +1950,8 @@ schema ArgoprojIoV1alpha1ApplicationSpecSyncPolicyRetry:
     limit : int, default is Undefined, optional
         Limit is the maximum number of attempts for retrying a failed sync. If set to 0, no retries will be performed.
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationSpecSyncPolicyRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationSpecSyncPolicyRetryBackoff:
     r"""
@@ -2501,14 +1966,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSyncPolicyRetryBackoff:
     maxDuration : str, default is Undefined, optional
         MaxDuration is the maximum amount of time allowed for the backoff strategy
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatus:
     r"""
@@ -2546,36 +2006,20 @@ schema ArgoprojIoV1alpha1ApplicationStatus:
     sync : ArgoprojIoV1alpha1ApplicationStatusSync, default is Undefined, optional
         sync
     """
-
-
     conditions?: [ArgoprojIoV1alpha1ApplicationStatusConditionsItems0]
-
     controllerNamespace?: str
-
     health?: ArgoprojIoV1alpha1ApplicationStatusHealth
-
     history?: [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0]
-
     observedAt?: str
-
     operationState?: ArgoprojIoV1alpha1ApplicationStatusOperationState
-
     reconciledAt?: str
-
     resourceHealthSource?: str
-
     resources?: [ArgoprojIoV1alpha1ApplicationStatusResourcesItems0]
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationStatusSourceHydrator
-
     sourceType?: str
-
     sourceTypes?: [str]
-
     summary?: ArgoprojIoV1alpha1ApplicationStatusSummary
-
     sync?: ArgoprojIoV1alpha1ApplicationStatusSync
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusConditionsItems0:
     r"""
@@ -2590,14 +2034,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusConditionsItems0:
     $type : str, default is Undefined, required
         Type is an application condition type
     """
-
-
     lastTransitionTime?: str
-
     message: str
 
     $type: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHealth:
     r"""
@@ -2612,14 +2052,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusHealth:
     status : str, default is Undefined, optional
         Status holds the status code of the application or resource
     """
-
-
     lastTransitionTime?: str
-
     message?: str
-
     status?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0:
     r"""
@@ -2644,24 +2079,16 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0:
     sources : [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0], default is Undefined, optional
         Sources is a reference to the application sources used for the sync operation
     """
-
-
     deployStartedAt?: str
-
     deployedAt: str
 
     id: int
 
     initiatedBy?: ArgoprojIoV1alpha1ApplicationStatusHistoryItems0InitiatedBy
-
     revision?: str
-
     revisions?: [str]
-
     source?: ArgoprojIoV1alpha1ApplicationStatusHistoryItems0Source
-
     sources?: [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0InitiatedBy:
     r"""
@@ -2674,12 +2101,8 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0InitiatedBy:
     username : str, default is Undefined, optional
         Username contains the name of a user who started operation
     """
-
-
     automated?: bool
-
     username?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0Source:
     r"""
@@ -2710,28 +2133,17 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0Source:
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
         In case of Helm, this is a semver tag for the Chart's version.
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceDirectory:
     r"""
@@ -2748,16 +2160,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceDirectory:
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceDirectoryJsonnet:
     r"""
@@ -2772,14 +2178,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceDirectoryJsonnet:
     tlas : [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         TLAS is a list of Jsonnet Top-level Arguments
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -2794,14 +2195,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceDirectoryJsonnetExt
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceDirectoryJsonnetTlasItems0:
     r"""
@@ -2816,14 +2213,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceDirectoryJsonnetTla
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceHelm:
     r"""
@@ -2864,38 +2257,21 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceHelm:
     version : str, default is Undefined, optional
         Version is the Helm version to use for templating ("3")
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceHelmFileParametersItems0:
     r"""
@@ -2908,12 +2284,8 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceHelmFileParametersI
     path : str, default is Undefined, optional
         Path is the path to the file containing the values for the Helm parameter
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceHelmParametersItems0:
     r"""
@@ -2928,14 +2300,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceHelmParametersItems
     value : str, default is Undefined, optional
         Value is the value for the Helm parameter
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceKustomize:
     r"""
@@ -2978,40 +2345,22 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceKustomize:
     version : str, default is Undefined, optional
         Version controls which version of Kustomize to use for rendering manifests
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceKustomizePatchesItems0:
     r"""
@@ -3028,16 +2377,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceKustomizePatchesIte
     target : ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceKustomizePatchesItems0Target:
     r"""
@@ -3060,22 +2403,13 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceKustomizePatchesIte
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceKustomizeReplicasItems0:
     r"""
@@ -3088,12 +2422,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceKustomizeReplicasIt
     name : str, default is Undefined, required
         Name of Deployment or StatefulSet
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcePlugin:
     r"""
@@ -3108,14 +2439,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcePlugin:
     parameters : [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcePluginEnvItems0:
     r"""
@@ -3128,12 +2454,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcePluginEnvItems0:
     value : str, default is Undefined, required
         Value is the value of the variable
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcePluginParametersItems0:
     r"""
@@ -3150,16 +2473,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcePluginParametersIte
     string : str, default is Undefined, optional
         String_ is the value of a string type parameter.
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0:
     r"""
@@ -3190,28 +2507,17 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0:
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
         In case of Helm, this is a semver tag for the Chart's version.
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0Directory:
     r"""
@@ -3228,16 +2534,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0Directory:
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0DirectoryJsonnet:
     r"""
@@ -3252,14 +2552,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0DirectoryJso
     tlas : [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         TLAS is a list of Jsonnet Top-level Arguments
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -3274,14 +2569,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0DirectoryJso
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -3296,14 +2587,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0DirectoryJso
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0Helm:
     r"""
@@ -3344,38 +2631,21 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0Helm:
     version : str, default is Undefined, optional
         Version is the Helm version to use for templating ("3")
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0HelmFileParametersItems0:
     r"""
@@ -3388,12 +2658,8 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0HelmFilePara
     path : str, default is Undefined, optional
         Path is the path to the file containing the values for the Helm parameter
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0HelmParametersItems0:
     r"""
@@ -3408,14 +2674,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0HelmParamete
     value : str, default is Undefined, optional
         Value is the value for the Helm parameter
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0Kustomize:
     r"""
@@ -3458,40 +2719,22 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0Kustomize:
     version : str, default is Undefined, optional
         Version controls which version of Kustomize to use for rendering manifests
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0KustomizePatchesItems0:
     r"""
@@ -3508,16 +2751,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0KustomizePat
     target : ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -3540,22 +2777,13 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0KustomizePat
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0KustomizeReplicasItems0:
     r"""
@@ -3568,12 +2796,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0KustomizeRep
     name : str, default is Undefined, required
         Name of Deployment or StatefulSet
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0Plugin:
     r"""
@@ -3588,14 +2813,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0Plugin:
     parameters : [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0PluginEnvItems0:
     r"""
@@ -3608,12 +2828,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0PluginEnvIte
     value : str, default is Undefined, required
         Value is the value of the variable
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0PluginParametersItems0:
     r"""
@@ -3630,16 +2847,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0PluginParame
     string : str, default is Undefined, optional
         String_ is the value of a string type parameter.
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationState:
     r"""
@@ -3662,22 +2873,16 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationState:
     syncResult : ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResult, default is Undefined, optional
         sync result
     """
-
-
     finishedAt?: str
-
     message?: str
-
     operation: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperation
 
     phase: str
 
     retryCount?: int
-
     startedAt: str
 
     syncResult?: ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResult
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperation:
     r"""
@@ -3694,16 +2899,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperation:
     sync : ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSync, default is Undefined, optional
         sync
     """
-
-
     info?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationInfoItems0]
-
     initiatedBy?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationInitiatedBy
-
     retry?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationRetry
-
     sync?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSync
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationInfoItems0:
     r"""
@@ -3716,12 +2915,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationInfoItems0:
     value : str, default is Undefined, required
         value
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationInitiatedBy:
     r"""
@@ -3734,12 +2930,8 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationInitiatedBy:
     username : str, default is Undefined, optional
         Username contains the name of a user who started operation
     """
-
-
     automated?: bool
-
     username?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationRetry:
     r"""
@@ -3752,12 +2944,8 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationRetry:
     limit : int, default is Undefined, optional
         Limit is the maximum number of attempts for retrying a failed sync. If set to 0, no retries will be performed.
     """
-
-
     backoff?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationRetryBackoff
-
     limit?: int
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationRetryBackoff:
     r"""
@@ -3772,14 +2960,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationRetryBackoff:
     maxDuration : str, default is Undefined, optional
         MaxDuration is the maximum amount of time allowed for the backoff strategy
     """
-
-
     duration?: str
-
     factor?: int
-
     maxDuration?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSync:
     r"""
@@ -3813,30 +2996,17 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSync:
     syncStrategy : ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSyncStrategy, default is Undefined, optional
         sync strategy
     """
-
-
     autoHealAttemptsCount?: int
-
     dryRun?: bool
-
     manifests?: [str]
-
     prune?: bool
-
     resources?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncResourcesItems0]
-
     revision?: str
-
     revisions?: [str]
-
     source?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSource
-
     sources?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0]
-
     syncOptions?: [str]
-
     syncStrategy?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSyncStrategy
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncResourcesItems0:
     r"""
@@ -3853,16 +3023,12 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncResourcesIt
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     kind: str
 
     name: str
 
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSource:
     r"""
@@ -3894,28 +3060,17 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSource:
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
         In case of Helm, this is a semver tag for the Chart's version.
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceDirectory:
     r"""
@@ -3932,16 +3087,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceDirec
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceDirectoryJsonnet:
     r"""
@@ -3956,14 +3105,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceDirec
     tlas : [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         TLAS is a list of Jsonnet Top-level Arguments
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -3978,14 +3122,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceDirec
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -4000,14 +3140,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceDirec
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceHelm:
     r"""
@@ -4048,38 +3184,21 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceHelm:
     version : str, default is Undefined, optional
         Version is the Helm version to use for templating ("3")
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceHelmFileParametersItems0:
     r"""
@@ -4092,12 +3211,8 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceHelmF
     path : str, default is Undefined, optional
         Path is the path to the file containing the values for the Helm parameter
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceHelmParametersItems0:
     r"""
@@ -4112,14 +3227,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceHelmP
     value : str, default is Undefined, optional
         Value is the value for the Helm parameter
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceKustomize:
     r"""
@@ -4162,40 +3272,22 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceKusto
     version : str, default is Undefined, optional
         Version controls which version of Kustomize to use for rendering manifests
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceKustomizePatchesItems0:
     r"""
@@ -4212,16 +3304,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceKusto
     target : ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceKustomizePatchesItems0Target:
     r"""
@@ -4244,22 +3330,13 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceKusto
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceKustomizeReplicasItems0:
     r"""
@@ -4272,12 +3349,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceKusto
     name : str, default is Undefined, required
         Name of Deployment or StatefulSet
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcePlugin:
     r"""
@@ -4292,14 +3366,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcePlugi
     parameters : [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcePluginEnvItems0:
     r"""
@@ -4312,12 +3381,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcePlugi
     value : str, default is Undefined, required
         Value is the value of the variable
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcePluginParametersItems0:
     r"""
@@ -4334,16 +3400,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcePlugi
     string : str, default is Undefined, optional
         String_ is the value of a string type parameter.
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0:
     r"""
@@ -4374,28 +3434,17 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
         In case of Helm, this is a semver tag for the Chart's version.
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0Directory:
     r"""
@@ -4412,16 +3461,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0DirectoryJsonnet:
     r"""
@@ -4436,14 +3479,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
     tlas : [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         TLAS is a list of Jsonnet Top-level Arguments
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -4458,14 +3496,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -4480,14 +3514,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0Helm:
     r"""
@@ -4528,38 +3558,21 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
     version : str, default is Undefined, optional
         Version is the Helm version to use for templating ("3")
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0HelmFileParametersItems0:
     r"""
@@ -4572,12 +3585,8 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
     path : str, default is Undefined, optional
         Path is the path to the file containing the values for the Helm parameter
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0HelmParametersItems0:
     r"""
@@ -4592,14 +3601,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
     value : str, default is Undefined, optional
         Value is the value for the Helm parameter
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0Kustomize:
     r"""
@@ -4642,40 +3646,22 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
     version : str, default is Undefined, optional
         Version controls which version of Kustomize to use for rendering manifests
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0KustomizePatchesItems0:
     r"""
@@ -4692,16 +3678,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
     target : ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -4724,22 +3704,13 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -4752,12 +3723,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
     name : str, default is Undefined, required
         Name of Deployment or StatefulSet
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0Plugin:
     r"""
@@ -4772,14 +3740,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
     parameters : [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0PluginEnvItems0:
     r"""
@@ -4792,12 +3755,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
     value : str, default is Undefined, required
         Value is the value of the variable
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0PluginParametersItems0:
     r"""
@@ -4814,16 +3774,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
     string : str, default is Undefined, optional
         String_ is the value of a string type parameter.
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSyncStrategy:
     r"""
@@ -4836,12 +3790,8 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSyncStrateg
     hook : ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSyncStrategyHook, default is Undefined, optional
         hook
     """
-
-
     apply?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSyncStrategyApply
-
     hook?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSyncStrategyHook
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSyncStrategyApply:
     r"""
@@ -4854,10 +3804,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSyncStrateg
         The --force flag deletes and re-create the resource, when PATCH encounters conflict and has
         retried for 5 times.
     """
-
-
     force?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSyncStrategyHook:
     r"""
@@ -4870,10 +3817,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSyncStrateg
         The --force flag deletes and re-create the resource, when PATCH encounters conflict and has
         retried for 5 times.
     """
-
-
     force?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResult:
     r"""
@@ -4894,20 +3838,13 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResult:
     sources : [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0], default is Undefined, optional
         Source records the application source information of the sync, used for comparing auto-sync
     """
-
-
     managedNamespaceMetadata?: ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultManagedNamespaceMetadata
-
     resources?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultResourcesItems0]
-
     revision: str
 
     revisions?: [str]
-
     source?: ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSource
-
     sources?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultManagedNamespaceMetadata:
     r"""
@@ -4920,12 +3857,8 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultManagedNamespa
     labels : {str:str}, default is Undefined, optional
         labels
     """
-
-
     annotations?: {str:str}
-
     labels?: {str:str}
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultResourcesItems0:
     r"""
@@ -4955,28 +3888,20 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultResourcesItems
     version : str, default is Undefined, required
         Version specifies the API version of the resource
     """
-
-
     group: str
 
     hookPhase?: str
-
     hookType?: str
-
     kind: str
 
     message?: str
-
     name: str
 
     namespace: str
 
     status?: str
-
     syncPhase?: str
-
     version: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSource:
     r"""
@@ -5007,28 +3932,17 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSource:
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
         In case of Helm, this is a semver tag for the Chart's version.
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceDirectory:
     r"""
@@ -5045,16 +3959,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceDirector
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceDirectoryJsonnet:
     r"""
@@ -5069,14 +3977,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceDirector
     tlas : [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         TLAS is a list of Jsonnet Top-level Arguments
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -5091,14 +3994,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceDirector
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -5113,14 +4012,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceDirector
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceHelm:
     r"""
@@ -5161,38 +4056,21 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceHelm:
     version : str, default is Undefined, optional
         Version is the Helm version to use for templating ("3")
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceHelmFileParametersItems0:
     r"""
@@ -5205,12 +4083,8 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceHelmFile
     path : str, default is Undefined, optional
         Path is the path to the file containing the values for the Helm parameter
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceHelmParametersItems0:
     r"""
@@ -5225,14 +4099,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceHelmPara
     value : str, default is Undefined, optional
         Value is the value for the Helm parameter
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceKustomize:
     r"""
@@ -5275,40 +4144,22 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceKustomiz
     version : str, default is Undefined, optional
         Version controls which version of Kustomize to use for rendering manifests
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceKustomizePatchesItems0:
     r"""
@@ -5325,16 +4176,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceKustomiz
     target : ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceKustomizePatchesItems0Target:
     r"""
@@ -5357,22 +4202,13 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceKustomiz
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceKustomizeReplicasItems0:
     r"""
@@ -5385,12 +4221,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceKustomiz
     name : str, default is Undefined, required
         Name of Deployment or StatefulSet
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcePlugin:
     r"""
@@ -5405,14 +4238,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcePlugin:
     parameters : [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcePluginEnvItems0:
     r"""
@@ -5425,12 +4253,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcePluginEn
     value : str, default is Undefined, required
         Value is the value of the variable
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcePluginParametersItems0:
     r"""
@@ -5447,16 +4272,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcePluginPa
     string : str, default is Undefined, optional
         String_ is the value of a string type parameter.
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0:
     r"""
@@ -5487,28 +4306,17 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0:
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
         In case of Helm, this is a semver tag for the Chart's version.
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0Directory:
     r"""
@@ -5525,16 +4333,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0D
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0DirectoryJsonnet:
     r"""
@@ -5549,14 +4351,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0D
     tlas : [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         TLAS is a list of Jsonnet Top-level Arguments
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -5571,14 +4368,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0D
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -5593,14 +4386,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0D
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0Helm:
     r"""
@@ -5641,38 +4430,21 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0H
     version : str, default is Undefined, optional
         Version is the Helm version to use for templating ("3")
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0HelmFileParametersItems0:
     r"""
@@ -5685,12 +4457,8 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0H
     path : str, default is Undefined, optional
         Path is the path to the file containing the values for the Helm parameter
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0HelmParametersItems0:
     r"""
@@ -5705,14 +4473,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0H
     value : str, default is Undefined, optional
         Value is the value for the Helm parameter
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0Kustomize:
     r"""
@@ -5755,40 +4518,22 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0K
     version : str, default is Undefined, optional
         Version controls which version of Kustomize to use for rendering manifests
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0KustomizePatchesItems0:
     r"""
@@ -5805,16 +4550,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0K
     target : ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -5837,22 +4576,13 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0K
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -5865,12 +4595,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0K
     name : str, default is Undefined, required
         Name of Deployment or StatefulSet
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0Plugin:
     r"""
@@ -5885,14 +4612,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0P
     parameters : [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0PluginEnvItems0:
     r"""
@@ -5905,12 +4627,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0P
     value : str, default is Undefined, required
         Value is the value of the variable
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0PluginParametersItems0:
     r"""
@@ -5927,16 +4646,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0P
     string : str, default is Undefined, optional
         String_ is the value of a string type parameter.
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusResourcesItems0:
     r"""
@@ -5968,30 +4681,17 @@ schema ArgoprojIoV1alpha1ApplicationStatusResourcesItems0:
     version : str, default is Undefined, optional
         version
     """
-
-
     group?: str
-
     health?: ArgoprojIoV1alpha1ApplicationStatusResourcesItems0Health
-
     hook?: bool
-
     kind?: str
-
     name?: str
-
     namespace?: str
-
     requiresDeletionConfirmation?: bool
-
     requiresPruning?: bool
-
     status?: str
-
     syncWave?: int
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusResourcesItems0Health:
     r"""
@@ -6006,14 +4706,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusResourcesItems0Health:
     status : str, default is Undefined, optional
         Status holds the status code of the application or resource
     """
-
-
     lastTransitionTime?: str
-
     message?: str
-
     status?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSourceHydrator:
     r"""
@@ -6026,12 +4721,8 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydrator:
     lastSuccessfulOperation : ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperation, default is Undefined, optional
         last successful operation
     """
-
-
     currentOperation?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperation
-
     lastSuccessfulOperation?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperation
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperation:
     r"""
@@ -6054,22 +4745,15 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperation:
     startedAt : str, default is Undefined, optional
         StartedAt indicates when the hydrate operation started
     """
-
-
     drySHA?: str
-
     finishedAt?: str
-
     hydratedSHA?: str
-
     message: str
 
     phase: "Hydrating" | "Failed" | "Hydrated"
 
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydrator
-
     startedAt?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydrator:
     r"""
@@ -6084,14 +4768,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHy
     syncSource : ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySource:
     r"""
@@ -6106,14 +4786,11 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHy
     targetRevision : str, default is Undefined, required
         TargetRevision defines the revision of the source to hydrate
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorHydrateTo:
     r"""
@@ -6125,10 +4802,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHy
     targetBranch : str, default is Undefined, required
         TargetBranch is the branch to which hydrated manifests should be committed
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorSyncSource:
     r"""
@@ -6142,12 +4816,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHy
     targetBranch : str, default is Undefined, required
         TargetBranch is the branch to which hydrated manifests should be committed
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperation:
     r"""
@@ -6162,14 +4833,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperation:
     sourceHydrator : ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydrator, default is Undefined, optional
         source hydrator
     """
-
-
     drySHA?: str
-
     hydratedSHA?: str
-
     sourceHydrator?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydrator
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydrator:
     r"""
@@ -6184,14 +4850,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationS
     syncSource : ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorSyncSource, default is Undefined, required
         sync source
     """
-
-
     drySource: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySource
 
     hydrateTo?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorHydrateTo
-
     syncSource: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorSyncSource
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySource:
     r"""
@@ -6206,14 +4868,11 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationS
     targetRevision : str, default is Undefined, required
         TargetRevision defines the revision of the source to hydrate
     """
-
-
     path: str
 
     repoURL: str
 
     targetRevision: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorHydrateTo:
     r"""
@@ -6225,10 +4884,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationS
     targetBranch : str, default is Undefined, required
         TargetBranch is the branch to which hydrated manifests should be committed
     """
-
-
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorSyncSource:
     r"""
@@ -6242,12 +4898,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationS
     targetBranch : str, default is Undefined, required
         TargetBranch is the branch to which hydrated manifests should be committed
     """
-
-
     path: str
 
     targetBranch: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSummary:
     r"""
@@ -6260,12 +4913,8 @@ schema ArgoprojIoV1alpha1ApplicationStatusSummary:
     images : [str], default is Undefined, optional
         Images holds all images of application child resources.
     """
-
-
     externalURLs?: [str]
-
     images?: [str]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSync:
     r"""
@@ -6282,16 +4931,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusSync:
     status : str, default is Undefined, required
         Status is the sync state of the comparison
     """
-
-
     comparedTo?: ArgoprojIoV1alpha1ApplicationStatusSyncComparedTo
-
     revision?: str
-
     revisions?: [str]
-
     status: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedTo:
     r"""
@@ -6308,16 +4951,11 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedTo:
     sources : [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0], default is Undefined, optional
         Sources is a reference to the application's multiple sources used for comparison
     """
-
-
     destination: ArgoprojIoV1alpha1ApplicationStatusSyncComparedToDestination
 
     ignoreDifferences?: [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToIgnoreDifferencesItems0]
-
     source?: ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSource
-
     sources?: [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToDestination:
     r"""
@@ -6333,14 +4971,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToDestination:
     server : str, default is Undefined, optional
         Server specifies the URL of the target cluster's Kubernetes control plane API. This must be set if Name is not set.
     """
-
-
     name?: str
-
     namespace?: str
-
     server?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToIgnoreDifferencesItems0:
     r"""
@@ -6364,22 +4997,14 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToIgnoreDifferencesItems0:
     namespace : str, default is Undefined, optional
         namespace
     """
-
-
     group?: str
-
     jqPathExpressions?: [str]
-
     jsonPointers?: [str]
-
     kind: str
 
     managedFieldsManagers?: [str]
-
     name?: str
-
     namespace?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSource:
     r"""
@@ -6410,28 +5035,17 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSource:
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
         In case of Helm, this is a semver tag for the Chart's version.
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceDirectory
-
     helm?: ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceHelm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceKustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcePlugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceDirectory:
     r"""
@@ -6448,16 +5062,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceDirectory:
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceDirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceDirectoryJsonnet:
     r"""
@@ -6472,14 +5080,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceDirectoryJsonnet:
     tlas : [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceDirectoryJsonnetTlasItems0], default is Undefined, optional
         TLAS is a list of Jsonnet Top-level Arguments
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceDirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceDirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceDirectoryJsonnetExtVarsItems0:
     r"""
@@ -6494,14 +5097,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceDirectoryJsonnetEx
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceDirectoryJsonnetTlasItems0:
     r"""
@@ -6516,14 +5115,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceDirectoryJsonnetTl
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceHelm:
     r"""
@@ -6564,38 +5159,21 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceHelm:
     version : str, default is Undefined, optional
         Version is the Helm version to use for templating ("3")
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceHelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceHelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceHelmFileParametersItems0:
     r"""
@@ -6608,12 +5186,8 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceHelmFileParameters
     path : str, default is Undefined, optional
         Path is the path to the file containing the values for the Helm parameter
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceHelmParametersItems0:
     r"""
@@ -6628,14 +5202,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceHelmParametersItem
     value : str, default is Undefined, optional
         Value is the value for the Helm parameter
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceKustomize:
     r"""
@@ -6678,40 +5247,22 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceKustomize:
     version : str, default is Undefined, optional
         Version controls which version of Kustomize to use for rendering manifests
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceKustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceKustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceKustomizePatchesItems0:
     r"""
@@ -6728,16 +5279,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceKustomizePatchesIt
     target : ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceKustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceKustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceKustomizePatchesItems0Target:
     r"""
@@ -6760,22 +5305,13 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceKustomizePatchesIt
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceKustomizeReplicasItems0:
     r"""
@@ -6788,12 +5324,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceKustomizeReplicasI
     name : str, default is Undefined, required
         Name of Deployment or StatefulSet
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcePlugin:
     r"""
@@ -6808,14 +5341,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcePlugin:
     parameters : [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcePluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcePluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcePluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcePluginEnvItems0:
     r"""
@@ -6828,12 +5356,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcePluginEnvItems0:
     value : str, default is Undefined, required
         Value is the value of the variable
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcePluginParametersItems0:
     r"""
@@ -6850,16 +5375,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcePluginParametersIt
     string : str, default is Undefined, optional
         String_ is the value of a string type parameter.
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0:
     r"""
@@ -6890,28 +5409,17 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0:
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
         In case of Helm, this is a semver tag for the Chart's version.
     """
-
-
     chart?: str
-
     directory?: ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0Directory
-
     helm?: ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0Helm
-
     kustomize?: ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0Kustomize
-
     name?: str
-
     path?: str
-
     plugin?: ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0Plugin
-
     ref?: str
-
     repoURL: str
 
     targetRevision?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0Directory:
     r"""
@@ -6928,16 +5436,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0Directory:
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
-
-
     exclude?: str
-
     include?: str
-
     jsonnet?: ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0DirectoryJsonnet
-
     recurse?: bool
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0DirectoryJsonnet:
     r"""
@@ -6952,14 +5454,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0DirectoryJs
     tlas : [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0DirectoryJsonnetTlasItems0], default is Undefined, optional
         TLAS is a list of Jsonnet Top-level Arguments
     """
-
-
     extVars?: [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0DirectoryJsonnetExtVarsItems0]
-
     libs?: [str]
-
     tlas?: [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0DirectoryJsonnetTlasItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0DirectoryJsonnetExtVarsItems0:
     r"""
@@ -6974,14 +5471,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0DirectoryJs
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0DirectoryJsonnetTlasItems0:
     r"""
@@ -6996,14 +5489,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0DirectoryJs
     value : str, default is Undefined, required
         value
     """
-
-
     code?: bool
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0Helm:
     r"""
@@ -7044,38 +5533,21 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0Helm:
     version : str, default is Undefined, optional
         Version is the Helm version to use for templating ("3")
     """
-
-
     apiVersions?: [str]
-
     fileParameters?: [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0HelmFileParametersItems0]
-
     ignoreMissingValueFiles?: bool
-
     kubeVersion?: str
-
     namespace?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0HelmParametersItems0]
-
     passCredentials?: bool
-
     releaseName?: str
-
     skipCrds?: bool
-
     skipSchemaValidation?: bool
-
     skipTests?: bool
-
     valueFiles?: [str]
-
     values?: str
-
     valuesObject?: any
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0HelmFileParametersItems0:
     r"""
@@ -7088,12 +5560,8 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0HelmFilePar
     path : str, default is Undefined, optional
         Path is the path to the file containing the values for the Helm parameter
     """
-
-
     name?: str
-
     path?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0HelmParametersItems0:
     r"""
@@ -7108,14 +5576,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0HelmParamet
     value : str, default is Undefined, optional
         Value is the value for the Helm parameter
     """
-
-
     forceString?: bool
-
     name?: str
-
     value?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0Kustomize:
     r"""
@@ -7158,40 +5621,22 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0Kustomize:
     version : str, default is Undefined, optional
         Version controls which version of Kustomize to use for rendering manifests
     """
-
-
     apiVersions?: [str]
-
     commonAnnotations?: {str:str}
-
     commonAnnotationsEnvsubst?: bool
-
     commonLabels?: {str:str}
-
     components?: [str]
-
     forceCommonAnnotations?: bool
-
     forceCommonLabels?: bool
-
     images?: [str]
-
     kubeVersion?: str
-
     labelWithoutSelector?: bool
-
     namePrefix?: str
-
     nameSuffix?: str
-
     namespace?: str
-
     patches?: [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0KustomizePatchesItems0]
-
     replicas?: [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0KustomizeReplicasItems0]
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0KustomizePatchesItems0:
     r"""
@@ -7208,16 +5653,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0KustomizePa
     target : ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0KustomizePatchesItems0Target, default is Undefined, optional
         target
     """
-
-
     options?: {str:bool}
-
     patch?: str
-
     path?: str
-
     target?: ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0KustomizePatchesItems0Target
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0KustomizePatchesItems0Target:
     r"""
@@ -7240,22 +5679,13 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0KustomizePa
     version : str, default is Undefined, optional
         version
     """
-
-
     annotationSelector?: str
-
     group?: str
-
     kind?: str
-
     labelSelector?: str
-
     name?: str
-
     namespace?: str
-
     version?: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0KustomizeReplicasItems0:
     r"""
@@ -7268,12 +5698,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0KustomizeRe
     name : str, default is Undefined, required
         Name of Deployment or StatefulSet
     """
-
-
     count: int | str
 
     name: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0Plugin:
     r"""
@@ -7288,14 +5715,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0Plugin:
     parameters : [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0PluginParametersItems0], default is Undefined, optional
         parameters
     """
-
-
     env?: [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0PluginEnvItems0]
-
     name?: str
-
     parameters?: [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0PluginParametersItems0]
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0PluginEnvItems0:
     r"""
@@ -7308,12 +5730,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0PluginEnvIt
     value : str, default is Undefined, required
         Value is the value of the variable
     """
-
-
     name: str
 
     value: str
-
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0PluginParametersItems0:
     r"""
@@ -7330,14 +5749,8 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0PluginParam
     string : str, default is Undefined, optional
         String_ is the value of a string type parameter.
     """
-
-
     array?: [str]
-
     $map?: {str:str}
-
     name?: str
-
     string?: str
-
 

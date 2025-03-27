@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema VaultDynamicSecret:
     r"""
@@ -22,16 +22,12 @@ schema VaultDynamicSecret:
     spec : GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpec, default is Undefined, optional
         spec
     """
-
-
     apiVersion: "generators.external-secrets.io/v1alpha1" = "generators.external-secrets.io/v1alpha1"
 
     kind: "VaultDynamicSecret" = "VaultDynamicSecret"
 
     metadata?: v1.ObjectMeta
-
     spec?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpec
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpec:
     r"""
@@ -62,24 +58,16 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpec:
     retrySettings : GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecRetrySettings, default is Undefined, optional
         retry settings
     """
-
-
     allowEmptyResponse?: bool = False
-
     controller?: str
-
     method?: str
-
     parameters?: any
-
     path: str
 
     provider: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProvider
 
     resultType?: "Data" | "Auth" | "Raw" = "Data"
-
     retrySettings?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecRetrySettings
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProvider:
     r"""
@@ -125,30 +113,19 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProvider:
         Version is the Vault KV secret engine version. This can be either "v1" or
         "v2". Version defaults to "v2".
     """
-
-
     auth: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuth
 
     caBundle?: str
-
     caProvider?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderCaProvider
-
     forwardInconsistent?: bool
-
     headers?: {str:str}
-
     namespace?: str
-
     path?: str
-
     readYourWrites?: bool
-
     server: str
 
     tls?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderTLS
-
     version?: "v1" | "v2" = "v2"
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuth:
     r"""
@@ -179,26 +156,15 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuth:
     userPass : GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthUserPass, default is Undefined, optional
         user pass
     """
-
-
     appRole?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthAppRole
-
     cert?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCert
-
     iam?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIam
-
     jwt?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthJwt
-
     kubernetes?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthKubernetes
-
     ldap?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthLdap
-
     namespace?: str
-
     tokenSecretRef?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthTokenSecretRef
-
     userPass?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthUserPass
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthAppRole:
     r"""
@@ -218,16 +184,11 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthAppR
     secretRef : GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthAppRoleSecretRef, default is Undefined, required
         secret ref
     """
-
-
     path: str = "approle"
 
     roleId?: str
-
     roleRef?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthAppRoleRoleRef
-
     secretRef: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthAppRoleSecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthAppRoleRoleRef:
     r"""
@@ -247,14 +208,9 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthAppR
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -266,7 +222,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthAppR
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthAppRoleSecretRef:
     r"""
@@ -286,14 +241,9 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthAppR
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -305,7 +255,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthAppR
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCert:
     r"""
@@ -319,12 +268,8 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCert
     secretRef : GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCertSecretRef, default is Undefined, optional
         secret ref
     """
-
-
     clientCert?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCertClientCert
-
     secretRef?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCertSecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCertClientCert:
     r"""
@@ -342,14 +287,9 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCert
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -361,7 +301,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCert
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCertSecretRef:
     r"""
@@ -379,14 +318,9 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCert
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -398,7 +332,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCert
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIam:
     r"""
@@ -424,24 +357,14 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIam:
     vaultRole : str, default is Undefined, required
         Vault Role. In vault, a role describes an identity with a set of permissions, groups, or policies you want to attach a user of the secrets engine
     """
-
-
     externalID?: str
-
     jwt?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamJwt
-
     path?: str
-
     region?: str
-
     role?: str
-
     secretRef?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamSecretRef
-
     vaultAwsIamServerID?: str
-
     vaultRole: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamJwt:
     r"""
@@ -452,10 +375,7 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamJ
     serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamJwtServiceAccountRef, default is Undefined, optional
         service account ref
     """
-
-
     serviceAccountRef?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamJwtServiceAccountRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamJwtServiceAccountRef:
     r"""
@@ -473,14 +393,10 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamJ
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -489,7 +405,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamJ
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamSecretRef:
     r"""
@@ -504,14 +419,9 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamS
     sessionTokenSecretRef : GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamSecretRefSessionTokenSecretRef, default is Undefined, optional
         session token secret ref
     """
-
-
     accessKeyIDSecretRef?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamSecretRefAccessKeyIDSecretRef
-
     secretAccessKeySecretRef?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamSecretRefSecretAccessKeySecretRef
-
     sessionTokenSecretRef?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamSecretRefSessionTokenSecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamSecretRefAccessKeyIDSecretRef:
     r"""
@@ -528,14 +438,9 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamS
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -547,7 +452,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamS
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamSecretRefSecretAccessKeySecretRef:
     r"""
@@ -564,14 +468,9 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamS
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -583,7 +482,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamS
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamSecretRefSessionTokenSecretRef:
     r"""
@@ -602,14 +500,9 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamS
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -621,7 +514,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthIamS
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthJwt:
     r"""
@@ -641,16 +533,11 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthJwt:
     secretRef : GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthJwtSecretRef, default is Undefined, optional
         secret ref
     """
-
-
     kubernetesServiceAccountToken?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthJwtKubernetesServiceAccountToken
-
     path: str = "jwt"
 
     role?: str
-
     secretRef?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthJwtSecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthJwtKubernetesServiceAccountToken:
     r"""
@@ -673,14 +560,9 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthJwtK
     serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthJwtKubernetesServiceAccountTokenServiceAccountRef, default is Undefined, required
         service account ref
     """
-
-
     audiences?: [str]
-
     expirationSeconds?: int
-
     serviceAccountRef: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthJwtKubernetesServiceAccountTokenServiceAccountRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthJwtKubernetesServiceAccountTokenServiceAccountRef:
     r"""
@@ -698,14 +580,10 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthJwtK
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -714,7 +592,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthJwtK
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthJwtSecretRef:
     r"""
@@ -732,14 +609,9 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthJwtS
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -751,7 +623,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthJwtS
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthKubernetes:
     r"""
@@ -771,16 +642,12 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthKube
     serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthKubernetesServiceAccountRef, default is Undefined, optional
         service account ref
     """
-
-
     mountPath: str = "kubernetes"
 
     role: str
 
     secretRef?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthKubernetesSecretRef
-
     serviceAccountRef?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthKubernetesServiceAccountRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthKubernetesSecretRef:
     r"""
@@ -800,14 +667,9 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthKube
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -819,7 +681,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthKube
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthKubernetesServiceAccountRef:
     r"""
@@ -840,14 +701,10 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthKube
         Namespace of the resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     audiences?: [str]
-
     name: str
 
     namespace?: str
-
 
     check:
         len(name) <= 253
@@ -856,7 +713,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthKube
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthLdap:
     r"""
@@ -874,14 +730,10 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthLdap
         Username is an LDAP username used to authenticate using the LDAP Vault
         authentication method
     """
-
-
     path: str = "ldap"
 
     secretRef?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthLdapSecretRef
-
     username: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthLdapSecretRef:
     r"""
@@ -900,14 +752,9 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthLdap
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -919,7 +766,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthLdap
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthTokenSecretRef:
     r"""
@@ -936,14 +782,9 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthToke
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -955,7 +796,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthToke
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthUserPass:
     r"""
@@ -972,14 +812,10 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthUser
         Username is a username used to authenticate using the UserPass Vault
         authentication method
     """
-
-
     path: str = "userpass"
 
     secretRef?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthUserPassSecretRef
-
     username: str
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthUserPassSecretRef:
     r"""
@@ -998,14 +834,9 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthUser
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1017,7 +848,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthUser
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderCaProvider:
     r"""
@@ -1035,16 +865,11 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderCaProvid
     $type : str, default is Undefined, required
         The type of provider to use such as "Secret", or "ConfigMap".
     """
-
-
     key?: str
-
     name: str
 
     namespace?: str
-
     $type: "Secret" | "ConfigMap"
-
 
     check:
         len(key) <= 253 if key
@@ -1056,7 +881,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderCaProvid
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderTLS:
     r"""
@@ -1073,12 +897,8 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderTLS:
     keySecretRef : GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderTLSKeySecretRef, default is Undefined, optional
         key secret ref
     """
-
-
     certSecretRef?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderTLSCertSecretRef
-
     keySecretRef?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderTLSKeySecretRef
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderTLSCertSecretRef:
     r"""
@@ -1097,14 +917,9 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderTLSCertS
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1116,7 +931,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderTLSCertS
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderTLSKeySecretRef:
     r"""
@@ -1135,14 +949,9 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderTLSKeySe
         The namespace of the Secret resource being referred to.
         Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
     """
-
-
     key?: str
-
     name?: str
-
     namespace?: str
-
 
     check:
         len(key) <= 253 if key
@@ -1155,7 +964,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderTLSKeySe
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecRetrySettings:
     r"""
     Used to configure http retries if failed
@@ -1167,10 +975,6 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecRetrySettings:
     retryInterval : str, default is Undefined, optional
         retry interval
     """
-
-
     maxRetries?: int
-
     retryInterval?: str
-
 

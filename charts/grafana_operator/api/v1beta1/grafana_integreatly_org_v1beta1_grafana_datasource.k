@@ -4,8 +4,8 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 import regex
 import k8s.apimachinery.pkg.apis.meta.v1
-_regex_match = regex.match
 
+_regex_match = regex.match
 
 schema GrafanaDatasource:
     r"""
@@ -24,18 +24,13 @@ schema GrafanaDatasource:
     status : GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceStatus, default is Undefined, optional
         status
     """
-
-
     apiVersion: "grafana.integreatly.org/v1beta1" = "grafana.integreatly.org/v1beta1"
 
     kind: "GrafanaDatasource" = "GrafanaDatasource"
 
     metadata?: v1.ObjectMeta
-
     spec?: GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpec
-
     status?: GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceStatus
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpec:
     r"""
@@ -58,26 +53,18 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpec:
     valuesFrom : [GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0], default is Undefined, optional
         environments variables from secrets or config maps
     """
-
-
     allowCrossNamespaceImport?: bool = False
-
     datasource: GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecDatasource
 
     instanceSelector: GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecInstanceSelector
 
     plugins?: [GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecPluginsItems0]
-
     resyncPeriod?: str = "10m0s"
-
     uid?: str
-
     valuesFrom?: [GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0]
-
 
     check:
         len(valuesFrom) <= 99 if valuesFrom
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecDatasource:
     r"""
@@ -114,36 +101,20 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecDatasource:
     user : str, default is Undefined, optional
         user
     """
-
-
     access?: str
-
     basicAuth?: bool
-
     basicAuthUser?: str
-
     database?: str
-
     editable?: bool
-
     isDefault?: bool
-
     jsonData?: any
-
     name?: str
-
     orgId?: int
-
     secureJsonData?: any
-
     $type?: str
-
     uid?: str
-
     url?: str
-
     user?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecInstanceSelector:
     r"""
@@ -158,12 +129,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecInstanceSelector:
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-
-
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecInstanceSelectorMatchExpressionsItems0]
-
     matchLabels?: {str:str}
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecInstanceSelectorMatchExpressionsItems0:
     r"""
@@ -183,14 +150,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecInstanceSelectorMatchExp
         the values array must be empty. This array is replaced during a strategic
         merge patch.
     """
-
-
     key: str
 
     operator: str
 
     values?: [str]
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecPluginsItems0:
     r"""
@@ -203,12 +167,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecPluginsItems0:
     version : str, default is Undefined, required
         version
     """
-
-
     name: str
 
     version: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0:
     r"""
@@ -221,12 +182,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0:
     valueFrom : GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0ValueFrom, default is Undefined, required
         value from
     """
-
-
     targetPath: str
 
     valueFrom: GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0ValueFrom
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0ValueFrom:
     r"""
@@ -239,12 +197,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0ValueFro
     secretKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0ValueFromSecretKeyRef, default is Undefined, optional
         secret key ref
     """
-
-
     configMapKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0ValueFromConfigMapKeyRef
-
     secretKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0ValueFromSecretKeyRef
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0ValueFromConfigMapKeyRef:
     r"""
@@ -263,14 +217,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0ValueFro
     optional : bool, default is Undefined, optional
         Specify whether the ConfigMap or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0ValueFromSecretKeyRef:
     r"""
@@ -289,14 +239,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0ValueFro
     optional : bool, default is Undefined, optional
         Specify whether the Secret or its key must be defined
     """
-
-
     key: str
 
     name?: str = ""
-
     optional?: bool
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceStatus:
     r"""
@@ -317,20 +263,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceStatus:
     uid : str, default is Undefined, optional
         uid
     """
-
-
     NoMatchingInstances?: bool
-
     conditions?: [GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceStatusConditionsItems0]
-
     hash?: str
-
     lastMessage?: str
-
     lastResync?: str
-
     uid?: str
-
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceStatusConditionsItems0:
     r"""
@@ -359,20 +297,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceStatusConditionsItems0:
     $type : str, default is Undefined, required
         type of condition in CamelCase or in foo.example.com/CamelCase.
     """
-
-
     lastTransitionTime: str
 
     message: str
 
     observedGeneration?: int
-
     reason: str
 
     status: "True" | "False" | "Unknown"
 
     $type: str
-
 
     check:
         len(message) <= 32768
@@ -382,5 +316,4 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceStatusConditionsItems0:
         _regex_match(str(reason), r"^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$")
         len($type) <= 316
         _regex_match(str($type), r"^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$")
-
 
