@@ -1,0 +1,607 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "additionalLabels": {
+      "additionalProperties": true,
+      "description": "Additional labels to add to all resources",
+      "required": [],
+      "title": "additionalLabels",
+      "type": "object"
+    },
+    "crds": {
+      "additionalProperties": true,
+      "description": "# Custom resource configuration",
+      "properties": {
+        "install": {
+          "default": true,
+          "description": "Install and upgrade CRDs",
+          "required": [],
+          "title": "install",
+          "type": "boolean"
+        },
+        "keep": {
+          "default": true,
+          "description": "Keep CRDs on chart uninstall",
+          "required": [],
+          "title": "keep",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "crds",
+      "type": "object"
+    },
+    "fullnameOverride": {
+      "default": "",
+      "required": [],
+      "title": "fullnameOverride",
+      "type": "string"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "grafanaDashboard": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Grafana dashboard configmap annotations.",
+          "properties": {
+            "name": {
+              "default": "grafana_folder",
+              "required": [],
+              "title": "name",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "folder": {
+          "default": "database",
+          "required": [],
+          "title": "folder",
+          "type": "string"
+        },
+        "grafanaOperator": {
+          "additionalProperties": true,
+          "properties": {
+            "allowCrossNamespaceImport": {
+              "default": true,
+              "required": [],
+              "title": "allowCrossNamespaceImport",
+              "type": "boolean"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "matchLabels": {
+              "additionalProperties": true,
+              "description": "Selected labels for Grafana instance",
+              "properties": {
+                "dashboards": {
+                  "default": "grafana",
+                  "required": [],
+                  "title": "dashboards",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "matchLabels",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "grafanaOperator",
+          "type": "object"
+        },
+        "labels": {
+          "additionalProperties": true,
+          "description": "Grafana dashboard configmap labels",
+          "properties": {
+            "name": {
+              "default": "grafana_dashboard",
+              "required": [],
+              "title": "name",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "labels",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "grafanaDashboard",
+      "type": "object"
+    },
+    "manager": {
+      "additionalProperties": true,
+      "properties": {
+        "affinity": {
+          "additionalProperties": true,
+          "description": "- maxSkew: 1\n  topologyKey: topology.kubernetes.io/zone\n  whenUnsatisfiable: DoNotSchedule",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "docker.dragonflydb.io/dragonflydb/operator",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "",
+              "description": "Overrides the image tag whose default is the chart appVersion.",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "properties": {
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/healthz",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "port": {
+                  "default": 8081,
+                  "required": [],
+                  "title": "port",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 15,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 20,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
+        "nodeSelector": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
+        "readinessProbe": {
+          "additionalProperties": true,
+          "properties": {
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/readyz",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "port": {
+                  "default": 8081,
+                  "required": [],
+                  "title": "port",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 5,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "readinessProbe",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "securityContext": {
+          "additionalProperties": true,
+          "properties": {
+            "allowPrivilegeEscalation": {
+              "default": false,
+              "required": [],
+              "title": "allowPrivilegeEscalation",
+              "type": "boolean"
+            },
+            "capabilities": {
+              "additionalProperties": true,
+              "properties": {
+                "drop": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "capabilities",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "securityContext",
+          "type": "object"
+        },
+        "tolerations": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
+        },
+        "topologySpreadConstraints": {
+          "description": "Assign custom [TopologySpreadConstraints] rules to the application controller\n# Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/\n# If labelSelector is left out, it will default to the labelSelector configuration of the deployment",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "topologySpreadConstraints",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "manager",
+      "type": "object"
+    },
+    "nameOverride": {
+      "default": "",
+      "required": [],
+      "title": "nameOverride",
+      "type": "string"
+    },
+    "podAnnotations": {
+      "additionalProperties": true,
+      "properties": {
+        "kubectl.kubernetes.io/default-container": {
+          "default": "manager",
+          "required": [],
+          "title": "kubectl.kubernetes.io/default-container",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "podAnnotations",
+      "type": "object"
+    },
+    "podLabels": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podLabels",
+      "type": "object"
+    },
+    "podSecurityContext": {
+      "additionalProperties": true,
+      "properties": {
+        "runAsNonRoot": {
+          "default": true,
+          "required": [],
+          "title": "runAsNonRoot",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "podSecurityContext",
+      "type": "object"
+    },
+    "rbacProxy": {
+      "additionalProperties": true,
+      "properties": {
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "quay.io/brancz/kube-rbac-proxy",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "v0.13.1",
+              "description": "Overrides the image tag whose default is the chart appVersion.",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "properties": {
+            "limits": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "500m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "128Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "10m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "64Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "securityContext": {
+          "additionalProperties": true,
+          "properties": {
+            "allowPrivilegeEscalation": {
+              "default": false,
+              "required": [],
+              "title": "allowPrivilegeEscalation",
+              "type": "boolean"
+            },
+            "capabilities": {
+              "additionalProperties": true,
+              "properties": {
+                "drop": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "capabilities",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "securityContext",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "rbacProxy",
+      "type": "object"
+    },
+    "replicaCount": {
+      "default": 1,
+      "required": [],
+      "title": "replicaCount",
+      "type": "integer"
+    },
+    "service": {
+      "additionalProperties": true,
+      "properties": {
+        "metricsPort": {
+          "default": 8080,
+          "required": [],
+          "title": "metricsPort",
+          "type": "integer"
+        },
+        "port": {
+          "default": 8443,
+          "required": [],
+          "title": "port",
+          "type": "integer"
+        },
+        "type": {
+          "default": "ClusterIP",
+          "required": [],
+          "title": "type",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "service",
+      "type": "object"
+    },
+    "serviceAccount": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations to add to the service account",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "automount": {
+          "default": true,
+          "description": "Automatically mount a ServiceAccount's API credentials?",
+          "required": [],
+          "title": "automount",
+          "type": "boolean"
+        },
+        "create": {
+          "default": true,
+          "description": "Specifies whether a service account should be created",
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "name": {
+          "default": "dragonfly-operator-controller-manager",
+          "description": "The name of the service account to use.\nIf not set and create is true, a name is generated using the fullname template",
+          "required": [],
+          "title": "name",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "serviceAccount",
+      "type": "object"
+    },
+    "serviceMonitor": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "description": "When set true then use a ServiceMonitor to configure scraping",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "interval": {
+          "default": "30s",
+          "description": "Set how frequently Prometheus should scrape",
+          "required": [],
+          "title": "interval",
+          "type": "string"
+        },
+        "labels": {
+          "additionalProperties": true,
+          "description": "Set labels for the ServiceMonitor, use this to define your scrape label for Prometheus Operator",
+          "required": [],
+          "title": "labels",
+          "type": "object"
+        },
+        "metricRelabelings": {
+          "description": "Set metricRelabelings for the ServiceMonitor, use to apply to samples for ingestion",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "metricRelabelings",
+          "type": "array"
+        },
+        "path": {
+          "default": "/metrics",
+          "description": "Set path to cloudwatch-exporter telemtery-path",
+          "required": [],
+          "title": "path",
+          "type": "string"
+        },
+        "relabelings": {
+          "description": "Set relabelings for the ServiceMonitor, use to apply to samples before scraping",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "relabelings",
+          "type": "array"
+        },
+        "timeout": {
+          "default": "10s",
+          "description": "Set timeout for scrape",
+          "required": [],
+          "title": "timeout",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "serviceMonitor",
+      "type": "object"
+    },
+    "terminationGracePeriodSeconds": {
+      "default": 10,
+      "required": [],
+      "title": "terminationGracePeriodSeconds",
+      "type": "integer"
+    }
+  },
+  "required": [],
+  "type": "object"
+}

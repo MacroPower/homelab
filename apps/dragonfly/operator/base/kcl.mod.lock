@@ -1,0 +1,53 @@
+[dependencies]
+  [dependencies.charts]
+    name = "charts"
+    full_name = "charts_0.1.0"
+    version = "0.1.0"
+  [dependencies.cilium]
+    name = "cilium"
+    full_name = "cilium_0.4.1"
+    version = "0.4.1"
+    sum = "YmVvSokDKgHSwDc7XRfVyNdniLwF+lA57/Vgi60MDGo="
+    reg = "ghcr.io"
+    repo = "kcl-lang/cilium"
+    oci_tag = "0.4.1"
+  [dependencies.dragonfly_tenant]
+    name = "dragonfly_tenant"
+    full_name = "dragonfly_tenant_0.1.0"
+    version = "0.1.0"
+  [dependencies.filepath]
+    name = "filepath"
+    full_name = "filepath_0.12.0"
+    version = "0.12.0"
+    sum = "zok5+7YXY/qutpo/CnjoJRbrvjWclw40zkBrB2peSa4="
+    reg = "ghcr.io"
+    repo = "macropower/kclipper/filepath"
+    oci_tag = "0.12.0"
+  [dependencies.helm]
+    name = "helm"
+    full_name = "helm_0.12.0"
+    version = "0.12.0"
+    sum = "7vrtMRNYMwG+F+lTKbmp0eC/yh0mHwWv0rYV4oP5h9I="
+    reg = "ghcr.io"
+    repo = "macropower/kclipper/helm"
+    oci_tag = "0.12.0"
+  [dependencies.json_merge_patch]
+    name = "json_merge_patch"
+    full_name = "json_merge_patch_0.1.1"
+    version = "0.1.1"
+    sum = "o1aamShk1L2MGjnN9u3IErRZ3xBNDxgmFxXsGVMt8Wk="
+    reg = "ghcr.io"
+    repo = "kcl-lang/json_merge_patch"
+    oci_tag = "0.1.1"
+  [dependencies.k8s]
+    name = "k8s"
+    full_name = "k8s_1.31.2"
+    version = "1.31.2"
+    sum = "xBZgPsnpVVyWBpahuPQHReeRx28eUHGFoaPeqbct+vs="
+    reg = "ghcr.io"
+    repo = "kcl-lang/k8s"
+    oci_tag = "1.31.2"
+  [dependencies.konfig]
+    name = "konfig"
+    full_name = "konfig_0.0.1"
+    version = "0.0.1"

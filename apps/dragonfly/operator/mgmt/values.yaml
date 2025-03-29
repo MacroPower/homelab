@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=../../../../charts/dragonfly_operator/values.schema.json
+
+replicaCount: 1
+
+manager:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 150Mi
+    limits:
+      cpu: 500m
+      memory: 150Mi
