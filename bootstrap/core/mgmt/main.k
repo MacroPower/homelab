@@ -1,4 +1,5 @@
 import json
+import file
 
 import k8s.api.core.v1 as corev1
 
@@ -33,6 +34,14 @@ app = bootstrap.app | {
 
     charts.argo_cd = argo_cd.app.charts.argo_cd | {
         namespace = _argo_cd_namespace
+    }
+
+    secrets.argo_cd_doppler_credentials = secret.Secret {
+        name = "doppler-credentials"
+        namespace = _argo_cd_namespace
+        stringData = {
+            token = file.read_env("DOPPLER_ARGO_CD_TOKEN")
+        }
     }
 
     secrets.local_cluster = secret.Secret {
