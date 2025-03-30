@@ -313,8 +313,6 @@ server:
 
 repoServer:
   replicas: 2
-  nodeSelector:
-    kubernetes.io/arch: amd64
   resources:
     requests:
       cpu: 500m
