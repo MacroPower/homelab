@@ -15,6 +15,7 @@ spec:
           - clusters:
               selector:
                 matchLabels:
+                  kubernetes.io/environment: mgmt
                   argocd.argoproj.io/secret-type: cluster
               values:
                 clusterName: "{{.name}}"
@@ -27,7 +28,7 @@ spec:
               pathParamPrefix: app
   template:
     metadata:
-      name: "{{index .app.path.segments 1}}"
+      name: "{{index .app.path.segments 1}}-{{.values.clusterName}}"
       annotations:
         argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
       finalizers:
