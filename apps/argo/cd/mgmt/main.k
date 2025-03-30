@@ -11,6 +11,10 @@ _baseValues = argo_cd_base.app.charts.argo_cd.values
 _envValues = utils.read_yaml(file.current(), "values.yaml")
 _values = utils.json_merge_patch(_baseValues, _envValues)
 
+_namespace = argo_cd_base.app.namespace
+_dragonflyName = "argocd-redis-dragonfly"
+_redisSecretKey = "redis-password"
+
 _secretStoreClusters = secret.SecretStore {
     name = "clusters"
     provider.doppler.auth.secretRef.dopplerToken = {
@@ -19,69 +23,77 @@ _secretStoreClusters = secret.SecretStore {
     }
 }
 
-_dragonflyName = "argocd-redis-dragonfly"
+_argoCreds = secret.ExternalSecret {
+    name = "argocd-credentials"
+    refreshInterval = "0"
+    data: {
+        "${_redisSecretKey}" = {
+            sourceRef.generatorRef = {
+                name = "alphanumeric-password"
+            }
+        }
+    }
+}
+
+_nas01Creds = secret.ExternalSecret {
+    name = "nas01-credentials"
+    secretStoreRef = _secretStoreClusters.getRef()
+    data: {
+        NAS01_API_SERVER = {}
+        NAS01_CA_DATA = {}
+        NAS01_CERT_DATA = {}
+        NAS01_KEY_DATA = {}
+    }
+    target.template.metadata.labels: {
+        "kubernetes.io/environment" = "nas01"
+        "argocd.argoproj.io/secret-type" = "cluster"
+    }
+    target.template.data: {
+        name = "nas01"
+        server = "{{ .NAS01_API_SERVER }}"
+        config = json.encode({
+            tlsClientConfig = {
+                insecure = True
+                certData = "{{ .NAS01_CERT_DATA }}"
+                keyData = "{{ .NAS01_KEY_DATA }}"
+            }
+        })
+    }
+}
+
+_dragonfly = dragonflyv1alpha1.Dragonfly {
+    metadata: {
+        name = _dragonflyName
+    }
+    spec: {
+        replicas = 3
+        authentication.passwordFromSecret = {
+            name = _argoCreds.name
+            key = _redisSecretKey
+        }
+    }
+}
 
 app = argo_cd_base.app | {
-    secretStores.clusters = _secretStoreClusters
-
-    charts.argo_cd.values = _values | argo_cd.Values {
-        redis.enabled = False
-        externalRedis: {
-            host: "${_dragonflyName}.argo-cd.svc.cluster.local"
-            port: 6379
-            username: "default"
-            existingSecret: "argocd-credentials"
-        }
+    secretStores: {
+        clusters = _secretStoreClusters
     }
-
-    externalSecrets.nas01 = secret.ExternalSecret {
-        name = "nas01-credentials"
-        secretStoreRef = _secretStoreClusters.getRef()
-        data = {
-            NAS01_API_SERVER = {}
-            NAS01_CA_DATA = {}
-            NAS01_CERT_DATA = {}
-            NAS01_KEY_DATA = {}
-        }
-        target.template.metadata.labels = {
-            "kubernetes.io/environment" = "nas01"
-            "argocd.argoproj.io/secret-type" = "cluster"
-        }
-        target.template.data = {
-            name = "nas01"
-            server = "{{ .NAS01_API_SERVER }}"
-            config = json.encode({
-                tlsClientConfig = {
-                    insecure = True
-                    certData = "{{ .NAS01_CERT_DATA }}"
-                    keyData = "{{ .NAS01_KEY_DATA }}"
-                }
-            })
-        }
-    }
-
-    externalSecrets.argocd = secret.ExternalSecret {
-        name = "argocd-credentials"
-        refreshInterval = "0"
-        data: {
-            "redis-password" = {
-                sourceRef.generatorRef = {
-                    name = "alphanumeric-password"
-                }
+    charts: {
+        argo_cd.values = _values | argo_cd.Values {
+            redis.enabled = False
+            externalRedis: {
+                host = "${_dragonflyName}.${_namespace}.svc.cluster.local"
+                port = 6379
+                username = "default"
+                existingSecret = _argoCreds.name
             }
         }
     }
-
-    extraResources.redis = dragonflyv1alpha1.Dragonfly {
-        metadata: {
-            name = _dragonflyName
-        }
-        spec: {
-            replicas = 3
-            authentication.passwordFromSecret = {
-                name = externalSecrets.argocd.name
-                key = "redis-password"
-            }
-        }
+    externalSecrets: {
+        nas01 = _nas01Creds
+        argocd = _argoCreds
+    }
+    extraResources: {
+        redis = _dragonfly
     }
 }
