@@ -288,15 +288,6 @@ configs:
       g, ArgoCD Admins, role:admin
       g, ArgoCD Editors, role:readonly
 
-redis:
-  enabled: false
-
-externalRedis:
-  host: "argocd-redis-dragonfly.argocd.svc"
-  port: 6379
-  username: default
-  existingSecret: argocd-credentials
-
 controller:
   replicas: 3
   resources:

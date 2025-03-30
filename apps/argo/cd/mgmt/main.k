@@ -3,6 +3,7 @@ import json
 
 import argo_cd_base
 import charts.argo_cd
+import charts.dragonfly_operator.api.v1alpha1 as dragonflyv1alpha1
 import konfig.models.frontend.secret
 import konfig.utils
 
@@ -18,10 +19,20 @@ _secretStoreClusters = secret.SecretStore {
     }
 }
 
+_dragonflyName = "argocd-redis-dragonfly"
+
 app = argo_cd_base.app | {
     secretStores.clusters = _secretStoreClusters
 
-    charts.argo_cd.values = _values | argo_cd.Values {}
+    charts.argo_cd.values = _values | argo_cd.Values {
+        redis.enabled = False
+        externalRedis: {
+            host: "${_dragonflyName}.argo-cd.svc.cluster.local"
+            port: 6379
+            username: "default"
+            existingSecret: "argocd-credentials"
+        }
+    }
 
     externalSecrets.nas01 = secret.ExternalSecret {
         name = "nas01-credentials"
@@ -46,6 +57,31 @@ app = argo_cd_base.app | {
                     keyData = "{{ .NAS01_KEY_DATA }}"
                 }
             })
+        }
+    }
+
+    externalSecrets.argocd = secret.ExternalSecret {
+        name = "argocd-credentials"
+        refreshInterval = "0"
+        data: {
+            "redis-password" = {
+                sourceRef.generatorRef = {
+                    name = "alphanumeric-password"
+                }
+            }
+        }
+    }
+
+    extraResources.redis = dragonflyv1alpha1.Dragonfly {
+        metadata: {
+            name = _dragonflyName
+        }
+        spec: {
+            replicas = 3
+            authentication.passwordFromSecret = {
+                name = externalSecrets.argocd.name
+                key = "redis-password"
+            }
         }
     }
 }

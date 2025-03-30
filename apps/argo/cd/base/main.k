@@ -10,6 +10,7 @@ _values = utils.read_yaml(file.current(), "values.yaml")
 app: frontend.App {
     name = "cd"
     tenantName = argo_tenant.tenantConfiguration.name
+    secretStore = argo_tenant.tenantConfiguration.secretStores.default.name
 
     charts.argo_cd = argo_cd.Chart {
         values: _values | argo_cd.Values {}

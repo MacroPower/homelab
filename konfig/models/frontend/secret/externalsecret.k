@@ -55,4 +55,38 @@ schema ExternalSecretData:
     """
     secretKey?: str
     remoteRef?: externalsecretsv1beta1.ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0RemoteRef
-    sourceRef?: externalsecretsv1beta1.ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRef
+    sourceRef?: ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRef
+
+schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRef:
+    """
+    SourceRef allows you to override the source
+    from which the value will be pulled.
+
+    Attributes
+    ----------
+    generatorRef : ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefGeneratorRef, default is Undefined, optional
+        generator ref
+    storeRef : ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefStoreRef, default is Undefined, optional
+        store ref
+    """
+    generatorRef?: ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefGeneratorRef
+
+schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefGeneratorRef:
+    """
+    GeneratorRef points to a generator custom resource.
+
+    Deprecated: The generatorRef is not implemented in .data[].
+    this will be removed with v1.
+
+    Attributes
+    ----------
+    apiVersion : str, default is "generators.external-secrets.io/v1alpha1", optional
+        Specify the apiVersion of the generator resource
+    kind : str, default is "ClusterGenerator", optional
+        Specify the Kind of the generator resource
+    name : str, default is Undefined, required
+        Specify the name of the generator resource
+    """
+    apiVersion?: str = "generators.external-secrets.io/v1alpha1"
+    kind: str = "ClusterGenerator"
+    name: str

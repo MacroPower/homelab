@@ -49,14 +49,32 @@ mixin ExternalSecretMixin for protocol.AppProtocol:
                             kind: "ClusterSecretStore"
                             name: config.secretStore
                         }
-                    data: [{
+                    data: [
+                        {
                             secretKey: _i or _d.secretKey
                             if _d?.remoteRef:
                                 remoteRef: _d?.remoteRef
                             else:
                                 remoteRef.key: secretKey
-                            sourceRef: _d?.sourceRef
-                    } for _i, _d in _c.data]
+                        }
+                        for _i, _d in _c.data if not _d?.sourceRef
+                    ]
+                    dataFrom: [
+                        {
+                            sourceRef.generatorRef: {
+                                apiVersion = _d?.sourceRef.generatorRef?.apiVersion or "generators.external-secrets.io/v1alpha1"
+                                kind = _d?.sourceRef.generatorRef?.kind or "ClusterGenerator"
+                                name = _d?.sourceRef.generatorRef.name
+                            }
+                            rewrite: [
+                                {
+                                    regexp.source = "password"
+                                    regexp.target = _i or _d.secretKey
+                                }
+                            ]
+                        }
+                        for _i, _d in _c.data if _d?.sourceRef
+                    ]
                     refreshInterval: _c.refreshInterval
                     target: _c.target
                 }
