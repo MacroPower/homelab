@@ -24,11 +24,13 @@ spec:
               repoURL: https://github.com/MacroPower/homelab
               revision: main
               files:
-                - path: apps/*/_tenant/.argocd.yaml
+                - path: apps/*/_tenant/base/.tenant.yaml
               pathParamPrefix: app
   template:
     metadata:
-      name: "{{index .app.path.segments 1}}-{{.values.clusterName}}"
+      name: "{{index .app.path.segments 1}}"
+      labels:
+        tenant: "{{index .app.path.segments 1}}"
       annotations:
         argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
       finalizers:

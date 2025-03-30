@@ -1,11 +1,11 @@
 import charts.kubelet_csr_approver
 import konfig.models.frontend
 import konfig.models.templates.networkpolicy
-import kube_tenant
+import kube
 
 app: frontend.App {
     name = "csr-approver"
-    tenantName = kube_tenant.tenantConfiguration.name
+    tenantName = kube.tenant.name
 
     networkPolicies = {
         denyDefault = networkpolicy.denyDefault

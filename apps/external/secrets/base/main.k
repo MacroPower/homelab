@@ -2,7 +2,7 @@ import file
 
 import charts.external_secrets
 import charts.external_secrets.api.v1alpha1 as externalsecretsv1alpha1
-import external_tenant
+import external
 import konfig.models.frontend
 import konfig.utils
 
@@ -10,7 +10,7 @@ _values = utils.read_yaml(file.current(), "values.yaml")
 
 app: frontend.App {
     name = "system"
-    tenantName = external_tenant.tenantConfiguration.name
+    tenantName = external.tenant.name
 
     charts.external_secrets = external_secrets.Chart {
         values: _values | external_secrets.Values {}

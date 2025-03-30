@@ -1,4 +1,8 @@
 [dependencies]
+  [dependencies.argo]
+    name = "argo"
+    full_name = "argo_shared_0.1.0"
+    version = "0.1.0"
   [dependencies.argo_cd_base]
     name = "argo_cd_base"
     full_name = "argo_cd_base_0.1.0"
