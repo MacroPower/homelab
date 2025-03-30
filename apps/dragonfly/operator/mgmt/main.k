@@ -6,8 +6,9 @@ import charts.dragonfly_operator
 import konfig.utils
 
 _baseValues = dragonfly_operator_base.app.charts.dragonfly_operator.values
-_values = utils.read_yaml(file.current(), "values.yaml")
+_envValues = utils.read_yaml(file.current(), "values.yaml")
+_values = utils.json_merge_patch(_baseValues, _envValues)
 
 app = dragonfly_operator_base.app | {
-    charts.dragonfly_operator.values = _baseValues | _values | dragonfly_operator.Values {}
+    charts.dragonfly_operator.values = _values | dragonfly_operator.Values {}
 }

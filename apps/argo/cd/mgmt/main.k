@@ -7,7 +7,8 @@ import konfig.models.frontend.secret
 import konfig.utils
 
 _baseValues = argo_cd_base.app.charts.argo_cd.values
-_values = utils.read_yaml(file.current(), "values.yaml")
+_envValues = utils.read_yaml(file.current(), "values.yaml")
+_values = utils.json_merge_patch(_baseValues, _envValues)
 
 _secretStoreClusters = secret.SecretStore {
     name = "clusters"
@@ -20,7 +21,7 @@ _secretStoreClusters = secret.SecretStore {
 app = argo_cd_base.app | {
     secretStores.clusters = _secretStoreClusters
 
-    charts.argo_cd.values = _baseValues | _values | argo_cd.Values {}
+    charts.argo_cd.values = _values | argo_cd.Values {}
 
     externalSecrets.nas01 = secret.ExternalSecret {
         name = "nas01-credentials"
