@@ -34,12 +34,15 @@ remove_duplicated_iter = lambda data: [], func {
 
 __renderTenantFrontendInstances__ = [inst for inst in frontend.Tenant.instances() if typeof(inst) == "Tenant"]
 __renderTenantBackendInstances__ = [backend.TenantBackend(inst) for inst in __renderTenantFrontendInstances__]
+__renderSharedAppFrontendInstances__ = [inst for inst in frontend.SharedApp.instances() if typeof(inst) == "SharedApp"]
+__renderSharedAppBackendInstances__ = [backend.SharedAppBackend(inst) for inst in __renderSharedAppFrontendInstances__]
 __renderAppFrontendInstances__ = [inst for inst in frontend.App.instances() if typeof(inst) == "App"]
 __renderAppBackendInstances__ = [backend.AppBackend(inst) for inst in __renderAppFrontendInstances__]
 __appExtraResources = [v for s in __renderAppFrontendInstances__ for k, v in s.extraResources]
 
 __renderBackendInstances__ = [
     *__renderAppBackendInstances__,
+    *__renderSharedAppBackendInstances__,
     *__renderTenantBackendInstances__
 ]
 

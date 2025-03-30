@@ -1,4 +1,8 @@
 [dependencies]
+  [dependencies.argo_tenant]
+    name = "argo_tenant"
+    full_name = "argo_tenant_0.1.0"
+    version = "0.1.0"
   [dependencies.charts]
     name = "charts"
     full_name = "charts_0.1.0"
@@ -47,15 +51,3 @@
     name = "konfig"
     full_name = "konfig_0.0.1"
     version = "0.0.1"
-  [dependencies.kube]
-    name = "kube"
-    full_name = "kube_0.1.0"
-    version = "0.1.0"
-  [dependencies.kube_csr_approver_base]
-    name = "kube_csr_approver_base"
-    full_name = "kube_csr_approver_base_0.1.0"
-    version = "0.1.0"
-  [dependencies.kube_tenant]
-    name = "kube_tenant"
-    full_name = "kube_tenant_0.1.0"
-    version = "0.1.0"

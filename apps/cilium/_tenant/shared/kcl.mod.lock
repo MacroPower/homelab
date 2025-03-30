@@ -11,6 +11,10 @@
     reg = "ghcr.io"
     repo = "kcl-lang/cilium"
     oci_tag = "0.4.1"
+  [dependencies.cilium_tenant]
+    name = "cilium_tenant"
+    full_name = "cilium_tenant_0.1.0"
+    version = "0.1.0"
   [dependencies.filepath]
     name = "filepath"
     full_name = "filepath_0.12.0"
@@ -47,15 +51,3 @@
     name = "konfig"
     full_name = "konfig_0.0.1"
     version = "0.0.1"
-  [dependencies.kube]
-    name = "kube"
-    full_name = "kube_0.1.0"
-    version = "0.1.0"
-  [dependencies.kube_csr_approver_base]
-    name = "kube_csr_approver_base"
-    full_name = "kube_csr_approver_base_0.1.0"
-    version = "0.1.0"
-  [dependencies.kube_tenant]
-    name = "kube_tenant"
-    full_name = "kube_tenant_0.1.0"
-    version = "0.1.0"

@@ -1,8 +1,9 @@
+import argo_tenant
 import konfig.models.frontend
 
-tenantConfiguration: frontend.Tenant {
-    name = "argo"
+tenant = argo_tenant.tenantConfiguration
 
+shared: frontend.SharedApp {
     secretStores.default = {
         name = "argo"
         provider.doppler.auth.secretRef.dopplerToken = {
