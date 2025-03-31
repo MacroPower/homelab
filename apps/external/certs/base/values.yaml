@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=../../../../charts/cert_manager/values.schema.json
+
+crds:
+  enabled: true
+  keep: true
+
+replicaCount: 2
+
+## When enableCertificateOwnerRef is enabled, secrets will be automatically
+## removed when the certificate resource is deleted.
+##
+enableCertificateOwnerRef: true
+
+extraArgs:
+  - --logging-format=json
+  - --dns01-recursive-nameservers-only
+  - --dns01-recursive-nameservers=1.1.1.1:53,1.0.0.1:53
+
+prometheus:
+  servicemonitor:
+    enabled: false
+
+resources:
+  requests:
+    cpu: 1m
+    memory: 100Mi
+  limits:
+    cpu: 100m
+    memory: 100Mi
+
+webhook:
+  replicaCount: 2
+  resources:
+    requests:
+      cpu: 1m
+      memory: 100Mi
+    limits:
+      cpu: 100m
+      memory: 100Mi
+
+cainjector:
+  replicaCount: 2
+  resources:
+    requests:
+      cpu: 1m
+      memory: 250Mi
+    limits:
+      cpu: 100m
+      memory: 250Mi

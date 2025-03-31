@@ -9,7 +9,7 @@ import konfig.utils
 _values = utils.read_yaml(file.current(), "values.yaml")
 
 app: frontend.App {
-    name = "system"
+    name = "secrets"
     tenantName = external.tenant.name
 
     charts.external_secrets = external_secrets.Chart {

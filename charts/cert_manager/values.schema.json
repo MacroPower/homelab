@@ -1,0 +1,1893 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "acmesolver": {
+      "additionalProperties": true,
+      "description": "+docs:section=ACME Solver",
+      "properties": {
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "Kubernetes imagePullPolicy on Deployment.",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "quay.io/jetstack/cert-manager-acmesolver",
+              "description": "The container image for the cert-manager acmesolver.\n+docs:property",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "acmesolver",
+      "type": "object"
+    },
+    "affinity": {
+      "additionalProperties": true,
+      "description": "A Kubernetes Affinity, if required. For more information, see [Affinity v1 core](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#affinity-v1-core).\n\nFor example:\n  affinity:\n    nodeAffinity:\n     requiredDuringSchedulingIgnoredDuringExecution:\n       nodeSelectorTerms:\n       - matchExpressions:\n         - key: foo.bar.com/role\n           operator: In\n           values:\n           - master",
+      "required": [],
+      "title": "affinity",
+      "type": "object"
+    },
+    "approveSignerNames": {
+      "description": "List of signer names that cert-manager will approve by default. CertificateRequests\nreferencing these signer names will be auto-approved by cert-manager. Defaults to just\napproving the cert-manager.io Issuer and ClusterIssuer issuers. When set to an empty\narray, ALL issuers will be auto-approved by cert-manager. To disable the auto-approval,\nbecause eg. you are using approver-policy, you can enable 'disableAutoApproval'.\nref: https://cert-manager.io/docs/concepts/certificaterequest/#approval\n+docs:property",
+      "items": {
+        "required": [],
+        "type": "string"
+      },
+      "required": [],
+      "title": "approveSignerNames",
+      "type": "array"
+    },
+    "cainjector": {
+      "additionalProperties": true,
+      "description": "+docs:section=CA Injector",
+      "properties": {
+        "affinity": {
+          "additionalProperties": true,
+          "description": "A Kubernetes Affinity, if required. For more information, see [Affinity v1 core](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#affinity-v1-core).\n\nFor example:\n  affinity:\n    nodeAffinity:\n     requiredDuringSchedulingIgnoredDuringExecution:\n       nodeSelectorTerms:\n       - matchExpressions:\n         - key: foo.bar.com/role\n           operator: In\n           values:\n           - master",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
+        "config": {
+          "additionalProperties": true,
+          "description": "This is used to configure options for the cainjector pod.\nIt allows setting options that are usually provided via flags.\n\nIf `apiVersion` and `kind` are unspecified they default to the current latest\nversion (currently `cainjector.config.cert-manager.io/v1alpha1`). You can pin\nthe version by specifying the `apiVersion` yourself.\n\nFor example:\n apiVersion: cainjector.config.cert-manager.io/v1alpha1\n kind: CAInjectorConfiguration\n logging:\n  verbosity: 2\n  format: text\n leaderElectionConfig:\n  namespace: kube-system\n # Configure the metrics server for TLS\n # See https://cert-manager.io/docs/devops-tips/prometheus-metrics/#tls\n metricsTLSConfig:\n   dynamic:\n     secretNamespace: \"cert-manager\"\n     secretName: \"cert-manager-metrics-ca\"\n     dnsNames:\n     - cert-manager-metrics",
+          "required": [],
+          "title": "config",
+          "type": "object"
+        },
+        "containerSecurityContext": {
+          "additionalProperties": true,
+          "description": "Container Security Context to be set on the cainjector component container\nFor more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).\n+docs:property",
+          "properties": {
+            "allowPrivilegeEscalation": {
+              "default": false,
+              "required": [],
+              "title": "allowPrivilegeEscalation",
+              "type": "boolean"
+            },
+            "capabilities": {
+              "additionalProperties": true,
+              "properties": {
+                "drop": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "capabilities",
+              "type": "object"
+            },
+            "readOnlyRootFilesystem": {
+              "default": true,
+              "required": [],
+              "title": "readOnlyRootFilesystem",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "containerSecurityContext",
+          "type": "object"
+        },
+        "enableServiceLinks": {
+          "default": false,
+          "description": "enableServiceLinks indicates whether information about services should be\ninjected into the pod's environment variables, matching the syntax of Docker\nlinks.",
+          "required": [],
+          "title": "enableServiceLinks",
+          "type": "boolean"
+        },
+        "enabled": {
+          "default": true,
+          "description": "Create the CA Injector deployment",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraArgs": {
+          "description": "Additional command line flags to pass to cert-manager cainjector binary.\nTo see all available flags run `docker run quay.io/jetstack/cert-manager-cainjector:\u003cversion\u003e --help`.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraArgs",
+          "type": "array"
+        },
+        "extraEnv": {
+          "description": "Additional environment variables to pass to cert-manager cainjector binary.\nFor example:\n extraEnv:\n - name: SOME_VAR\n   value: 'some value'",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraEnv",
+          "type": "array"
+        },
+        "featureGates": {
+          "default": "",
+          "description": "Comma separated list of feature gates that should be enabled on the\ncainjector pod.",
+          "required": [],
+          "title": "featureGates",
+          "type": "string"
+        },
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "Kubernetes imagePullPolicy on Deployment.",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "quay.io/jetstack/cert-manager-cainjector",
+              "description": "The container image for the cert-manager cainjector\n+docs:property",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "nodeSelector": {
+          "additionalProperties": true,
+          "description": "The nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with\nmatching labels.\nFor more information, see [Assigning Pods to Nodes](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/).\n\nThis default ensures that Pods are only scheduled to Linux nodes.\nIt prevents Pods being scheduled to Windows nodes in a mixed OS cluster.\n+docs:property",
+          "properties": {
+            "kubernetes.io/os": {
+              "default": "linux",
+              "required": [],
+              "title": "kubernetes.io/os",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
+        "podDisruptionBudget": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable or disable the PodDisruptionBudget resource.\n\nThis prevents downtime during voluntary disruptions such as during a Node upgrade.\nFor example, the PodDisruptionBudget will block `kubectl drain`\nif it is used on the Node where the only remaining cert-manager\nPod is currently running.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podDisruptionBudget",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "description": "Optional additional labels to add to the CA Injector Pods.",
+          "required": [],
+          "title": "podLabels",
+          "type": "object"
+        },
+        "replicaCount": {
+          "default": 1,
+          "description": "The number of replicas of the cert-manager cainjector to run.\n\nThe default is 1, but in production set this to 2 or 3 to provide high\navailability.\n\nIf `replicas \u003e 1`, consider setting `cainjector.podDisruptionBudget.enabled=true`.\n\nNote that cert-manager uses leader election to ensure that there can\nonly be a single instance active at a time.",
+          "required": [],
+          "title": "replicaCount",
+          "type": "integer"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resources to provide to the cert-manager cainjector pod.\n\nFor example:\n requests:\n   cpu: 10m\n   memory: 32Mi\n\nFor more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "securityContext": {
+          "additionalProperties": true,
+          "description": "Pod Security Context to be set on the cainjector component Pod\nFor more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).\n+docs:property",
+          "properties": {
+            "runAsNonRoot": {
+              "default": true,
+              "required": [],
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            },
+            "seccompProfile": {
+              "additionalProperties": true,
+              "properties": {
+                "type": {
+                  "default": "RuntimeDefault",
+                  "required": [],
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "seccompProfile",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "securityContext",
+          "type": "object"
+        },
+        "serviceAccount": {
+          "additionalProperties": true,
+          "properties": {
+            "automountServiceAccountToken": {
+              "default": true,
+              "description": "Automount API credentials for a Service Account.",
+              "required": [],
+              "title": "automountServiceAccountToken",
+              "type": "boolean"
+            },
+            "create": {
+              "default": true,
+              "description": "Specifies whether a service account should be created.",
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "serviceAccount",
+          "type": "object"
+        },
+        "serviceLabels": {
+          "additionalProperties": true,
+          "description": "Optional additional labels to add to the CA Injector metrics Service.",
+          "required": [],
+          "title": "serviceLabels",
+          "type": "object"
+        },
+        "strategy": {
+          "additionalProperties": true,
+          "description": "Deployment update strategy for the cert-manager cainjector deployment.\nFor more information, see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy).\n\nFor example:\n strategy:\n   type: RollingUpdate\n   rollingUpdate:\n     maxSurge: 0\n     maxUnavailable: 1",
+          "required": [],
+          "title": "strategy",
+          "type": "object"
+        },
+        "tolerations": {
+          "description": "A list of Kubernetes Tolerations, if required. For more information, see [Toleration v1 core](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#toleration-v1-core).\n\nFor example:\n  tolerations:\n  - key: foo.bar.com/role\n    operator: Equal\n    value: master\n    effect: NoSchedule",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
+        },
+        "topologySpreadConstraints": {
+          "description": "A list of Kubernetes TopologySpreadConstraints, if required. For more information, see [Topology spread constraint v1 core](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#topologyspreadconstraint-v1-core).\n\nFor example:\n  topologySpreadConstraints:\n  - maxSkew: 2\n    topologyKey: topology.kubernetes.io/zone\n    whenUnsatisfiable: ScheduleAnyway\n    labelSelector:\n      matchLabels:\n        app.kubernetes.io/instance: cert-manager\n        app.kubernetes.io/component: controller",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "topologySpreadConstraints",
+          "type": "array"
+        },
+        "volumeMounts": {
+          "description": "Additional volume mounts to add to the cert-manager controller container.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "volumeMounts",
+          "type": "array"
+        },
+        "volumes": {
+          "description": "Additional volumes to add to the cert-manager controller pod.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "volumes",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "cainjector",
+      "type": "object"
+    },
+    "clusterResourceNamespace": {
+      "default": "",
+      "description": "Override the namespace used to store DNS provider credentials etc. for ClusterIssuer\nresources. By default, the same namespace as cert-manager is deployed within is\nused. This namespace will not be automatically created by the Helm chart.",
+      "required": [],
+      "title": "clusterResourceNamespace",
+      "type": "string"
+    },
+    "config": {
+      "additionalProperties": true,
+      "description": "This property is used to configure options for the controller pod.\nThis allows setting options that would usually be provided using flags.\n\nIf `apiVersion` and `kind` are unspecified they default to the current latest\nversion (currently `controller.config.cert-manager.io/v1alpha1`). You can pin\nthe version by specifying the `apiVersion` yourself.\n\nFor example:\n config:\n   apiVersion: controller.config.cert-manager.io/v1alpha1\n   kind: ControllerConfiguration\n   logging:\n     verbosity: 2\n     format: text\n   leaderElectionConfig:\n     namespace: kube-system\n   kubernetesAPIQPS: 9000\n   kubernetesAPIBurst: 9000\n   numberOfConcurrentWorkers: 200\n   enableGatewayAPI: true\n   # Feature gates as of v1.17.0. Listed with their default values.\n   # See https://cert-manager.io/docs/cli/controller/\n   featureGates:\n     AdditionalCertificateOutputFormats: true # BETA - default=true\n     AllAlpha: false # ALPHA - default=false\n     AllBeta: false # BETA - default=false\n     ExperimentalCertificateSigningRequestControllers: false # ALPHA - default=false\n     ExperimentalGatewayAPISupport: true # BETA - default=true\n     LiteralCertificateSubject: true # BETA - default=true\n     NameConstraints: true # BETA - default=true\n     OtherNames: false # ALPHA - default=false\n     SecretsFilteredCaching: true # BETA - default=true\n     ServerSideApply: false # ALPHA - default=false\n     StableCertificateRequestName: true # BETA - default=true\n     UseCertificateRequestBasicConstraints: false # ALPHA - default=false\n     UseDomainQualifiedFinalizer: true # BETA - default=false\n     ValidateCAA: false # ALPHA - default=false\n   # Configure the metrics server for TLS\n   # See https://cert-manager.io/docs/devops-tips/prometheus-metrics/#tls\n   metricsTLSConfig:\n     dynamic:\n       secretNamespace: \"cert-manager\"\n       secretName: \"cert-manager-metrics-ca\"\n       dnsNames:\n       - cert-manager-metrics",
+      "required": [],
+      "title": "config",
+      "type": "object"
+    },
+    "containerSecurityContext": {
+      "additionalProperties": true,
+      "description": "Container Security Context to be set on the controller component container.\nFor more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).\n+docs:property",
+      "properties": {
+        "allowPrivilegeEscalation": {
+          "default": false,
+          "required": [],
+          "title": "allowPrivilegeEscalation",
+          "type": "boolean"
+        },
+        "capabilities": {
+          "additionalProperties": true,
+          "properties": {
+            "drop": {
+              "items": {
+                "required": [],
+                "type": "string"
+              },
+              "required": [],
+              "title": "drop",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "capabilities",
+          "type": "object"
+        },
+        "readOnlyRootFilesystem": {
+          "default": true,
+          "required": [],
+          "title": "readOnlyRootFilesystem",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "containerSecurityContext",
+      "type": "object"
+    },
+    "crds": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "description": "This option decides if the CRDs should be installed\nas part of the Helm installation.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "keep": {
+          "default": true,
+          "description": "This option makes it so that the \"helm.sh/resource-policy\": keep\nannotation is added to the CRD. This will prevent Helm from uninstalling\nthe CRD when the Helm release is uninstalled.\nWARNING: when the CRDs are removed, all cert-manager custom resources\n(Certificates, Issuers, ...) will be removed too by the garbage collector.",
+          "required": [],
+          "title": "keep",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "crds",
+      "type": "object"
+    },
+    "creator": {
+      "default": "helm",
+      "description": "Field used by our release pipeline to produce the static manifests.\nThe field defaults to \"helm\" but is set to \"static\" when we render\nthe static YAML manifests.\n+docs:hidden",
+      "required": [],
+      "title": "creator",
+      "type": "string"
+    },
+    "disableAutoApproval": {
+      "default": false,
+      "description": "Option to disable cert-manager's build-in auto-approver. The auto-approver\napproves all CertificateRequests that reference issuers matching the 'approveSignerNames'\noption. This 'disableAutoApproval' option is useful when you want to make all approval decisions\nusing a different approver (like approver-policy - https://github.com/cert-manager/approver-policy).",
+      "required": [],
+      "title": "disableAutoApproval",
+      "type": "boolean"
+    },
+    "dns01RecursiveNameservers": {
+      "default": "",
+      "description": "A comma-separated string with the host and port of the recursive nameservers cert-manager should query.",
+      "required": [],
+      "title": "dns01RecursiveNameservers",
+      "type": "string"
+    },
+    "dns01RecursiveNameserversOnly": {
+      "default": false,
+      "description": "Forces cert-manager to use only the recursive nameservers for verification.\nEnabling this option could cause the DNS01 self check to take longer owing to caching performed by the recursive nameservers.",
+      "required": [],
+      "title": "dns01RecursiveNameserversOnly",
+      "type": "boolean"
+    },
+    "enableCertificateOwnerRef": {
+      "default": false,
+      "description": "When this flag is enabled, secrets will be automatically removed when the certificate resource is deleted.",
+      "required": [],
+      "title": "enableCertificateOwnerRef",
+      "type": "boolean"
+    },
+    "enableServiceLinks": {
+      "default": false,
+      "description": "enableServiceLinks indicates whether information about services should be\ninjected into the pod's environment variables, matching the syntax of Docker\nlinks.",
+      "required": [],
+      "title": "enableServiceLinks",
+      "type": "boolean"
+    },
+    "enabled": {
+      "default": true,
+      "description": "Field that can be used as a condition when cert-manager is a dependency.\nThis definition is only here as a placeholder such that it is included in\nthe json schema.\nSee https://helm.sh/docs/chart_best_practices/dependencies/#conditions-and-tags\nfor more info.\n+docs:hidden",
+      "required": [],
+      "title": "enabled",
+      "type": "boolean"
+    },
+    "extraArgs": {
+      "description": "Additional command line flags to pass to cert-manager controller binary.\nTo see all available flags run `docker run quay.io/jetstack/cert-manager-controller:\u003cversion\u003e --help`.\n\nUse this flag to enable or disable arbitrary controllers. For example, to disable the CertificateRequests approver.\n\nFor example:\n extraArgs:\n   - --controllers=*,-certificaterequests-approver",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraArgs",
+      "type": "array"
+    },
+    "extraEnv": {
+      "description": "Additional environment variables to pass to cert-manager controller binary.\nFor example:\n extraEnv:\n - name: SOME_VAR\n   value: 'some value'",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraEnv",
+      "type": "array"
+    },
+    "extraObjects": {
+      "description": "Create dynamic manifests via values.\n\nFor example:\nextraObjects:\n  - |\n    apiVersion: v1\n    kind: ConfigMap\n    metadata:\n      name: '{{ template \"cert-manager.fullname\" . }}-extra-configmap'",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraObjects",
+      "type": "array"
+    },
+    "featureGates": {
+      "default": "",
+      "description": "A comma-separated list of feature gates that should be enabled on the\ncontroller pod.",
+      "required": [],
+      "title": "featureGates",
+      "type": "string"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Default values for cert-manager.\nThis is a YAML-formatted file.\nDeclare variables to be passed into your templates.",
+      "properties": {
+        "commonLabels": {
+          "additionalProperties": true,
+          "description": "Labels to apply to all resources.\nPlease note that this does not add labels to the resources created dynamically by the controllers.\nFor these resources, you have to add the labels in the template in the cert-manager custom resource:\nFor example, podTemplate/ ingressTemplate in ACMEChallengeSolverHTTP01Ingress\nFor more information, see the [cert-manager documentation](https://cert-manager.io/docs/reference/api-docs/#acme.cert-manager.io/v1.ACMEChallengeSolverHTTP01Ingress).\nFor example, secretTemplate in CertificateSpec\nFor more information, see the [cert-manager documentation](https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec).",
+          "required": [],
+          "title": "commonLabels",
+          "type": "object"
+        },
+        "imagePullSecrets": {
+          "description": "Reference to one or more secrets to be used when pulling images.\nFor more information, see [Pull an Image from a Private Registry](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/).\n\nFor example:\n imagePullSecrets:\n   - name: \"image-pull-secret\"",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "imagePullSecrets",
+          "type": "array"
+        },
+        "leaderElection": {
+          "additionalProperties": true,
+          "properties": {
+            "namespace": {
+              "default": "kube-system",
+              "description": "Override the namespace used for the leader election lease.",
+              "required": [],
+              "title": "namespace",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "leaderElection",
+          "type": "object"
+        },
+        "logLevel": {
+          "default": 2,
+          "description": "Set the verbosity of cert-manager. A range of 0 - 6, with 6 being the most verbose.",
+          "required": [],
+          "title": "logLevel",
+          "type": "integer"
+        },
+        "podSecurityPolicy": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Create PodSecurityPolicy for cert-manager.\n\nNote that PodSecurityPolicy was deprecated in Kubernetes 1.21 and removed in Kubernetes 1.25.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "useAppArmor": {
+              "default": true,
+              "description": "Configure the PodSecurityPolicy to use AppArmor.",
+              "required": [],
+              "title": "useAppArmor",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podSecurityPolicy",
+          "type": "object"
+        },
+        "priorityClassName": {
+          "default": "",
+          "description": "The optional priority class to be used for the cert-manager pods.",
+          "required": [],
+          "title": "priorityClassName",
+          "type": "string"
+        },
+        "rbac": {
+          "additionalProperties": true,
+          "properties": {
+            "aggregateClusterRoles": {
+              "default": true,
+              "description": "Aggregate ClusterRoles to Kubernetes default user-facing roles. For more information, see [User-facing roles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles)",
+              "required": [],
+              "title": "aggregateClusterRoles",
+              "type": "boolean"
+            },
+            "create": {
+              "default": true,
+              "description": "Create required ClusterRoles and ClusterRoleBindings for cert-manager.",
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "rbac",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "hostAliases": {
+      "description": "Optional hostAliases for cert-manager-controller pods. May be useful when performing ACME DNS-01 self checks.",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "hostAliases",
+      "type": "array"
+    },
+    "image": {
+      "additionalProperties": true,
+      "properties": {
+        "pullPolicy": {
+          "default": "IfNotPresent",
+          "description": "Kubernetes imagePullPolicy on Deployment.",
+          "required": [],
+          "title": "pullPolicy",
+          "type": "string"
+        },
+        "repository": {
+          "default": "quay.io/jetstack/cert-manager-controller",
+          "description": "The container image for the cert-manager controller.\n+docs:property",
+          "required": [],
+          "title": "repository",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "image",
+      "type": "object"
+    },
+    "ingressShim": {
+      "additionalProperties": true,
+      "description": "+docs:ignore",
+      "required": [],
+      "title": "ingressShim",
+      "type": "object"
+    },
+    "installCRDs": {
+      "default": false,
+      "description": "This option is equivalent to setting crds.enabled=true and crds.keep=true.\nDeprecated: use crds.enabled and crds.keep instead.",
+      "required": [],
+      "title": "installCRDs",
+      "type": "boolean"
+    },
+    "livenessProbe": {
+      "additionalProperties": true,
+      "description": "LivenessProbe settings for the controller container of the controller Pod.\n\nThis is enabled by default, in order to enable the clock-skew liveness probe that\nrestarts the controller in case of a skew between the system clock and the monotonic clock.\nLivenessProbe durations and thresholds are based on those used for the Kubernetes\ncontroller-manager. For more information see the following on the\n[Kubernetes GitHub repository](https://github.com/kubernetes/kubernetes/blob/806b30170c61a38fedd54cc9ede4cd6275a1ad3b/cmd/kubeadm/app/util/staticpod/utils.go#L241-L245)\n+docs:property",
+      "properties": {
+        "enabled": {
+          "default": true,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "failureThreshold": {
+          "default": 8,
+          "required": [],
+          "title": "failureThreshold",
+          "type": "integer"
+        },
+        "initialDelaySeconds": {
+          "default": 10,
+          "required": [],
+          "title": "initialDelaySeconds",
+          "type": "integer"
+        },
+        "periodSeconds": {
+          "default": 10,
+          "required": [],
+          "title": "periodSeconds",
+          "type": "integer"
+        },
+        "successThreshold": {
+          "default": 1,
+          "required": [],
+          "title": "successThreshold",
+          "type": "integer"
+        },
+        "timeoutSeconds": {
+          "default": 15,
+          "required": [],
+          "title": "timeoutSeconds",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "livenessProbe",
+      "type": "object"
+    },
+    "maxConcurrentChallenges": {
+      "default": 60,
+      "description": "The maximum number of challenges that can be scheduled as 'processing' at once.",
+      "required": [],
+      "title": "maxConcurrentChallenges",
+      "type": "integer"
+    },
+    "namespace": {
+      "default": "",
+      "description": "This namespace allows you to define where the services are installed into.\nIf not set then they use the namespace of the release.\nThis is helpful when installing cert manager as a chart dependency (sub chart).",
+      "required": [],
+      "title": "namespace",
+      "type": "string"
+    },
+    "nodeSelector": {
+      "additionalProperties": true,
+      "description": "The nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with\nmatching labels.\nFor more information, see [Assigning Pods to Nodes](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/).\n\nThis default ensures that Pods are only scheduled to Linux nodes.\nIt prevents Pods being scheduled to Windows nodes in a mixed OS cluster.\n+docs:property",
+      "properties": {
+        "kubernetes.io/os": {
+          "default": "linux",
+          "required": [],
+          "title": "kubernetes.io/os",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "nodeSelector",
+      "type": "object"
+    },
+    "podDisruptionBudget": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "description": "Enable or disable the PodDisruptionBudget resource.\n\nThis prevents downtime during voluntary disruptions such as during a Node upgrade.\nFor example, the PodDisruptionBudget will block `kubectl drain`\nif it is used on the Node where the only remaining cert-manager\nPod is currently running.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "podDisruptionBudget",
+      "type": "object"
+    },
+    "podLabels": {
+      "additionalProperties": true,
+      "description": "Optional additional labels to add to the controller Pods.",
+      "required": [],
+      "title": "podLabels",
+      "type": "object"
+    },
+    "prometheus": {
+      "additionalProperties": true,
+      "description": "+docs:section=Prometheus",
+      "properties": {
+        "enabled": {
+          "default": true,
+          "description": "Enable Prometheus monitoring for the cert-manager controller and webhook.\nIf you use the Prometheus Operator, set prometheus.podmonitor.enabled or\nprometheus.servicemonitor.enabled, to create a PodMonitor or a\nServiceMonitor resource.\nOtherwise, 'prometheus.io' annotations are added to the cert-manager and\ncert-manager-webhook Deployments.\nNote that you can not enable both PodMonitor and ServiceMonitor as they are\nmutually exclusive. Enabling both will result in an error.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "podmonitor": {
+          "additionalProperties": true,
+          "description": "Note that you can not enable both PodMonitor and ServiceMonitor as they are mutually exclusive. Enabling both will result in an error.",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Additional annotations to add to the PodMonitor.",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Create a PodMonitor to add cert-manager to Prometheus.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "endpointAdditionalProperties": {
+              "additionalProperties": true,
+              "description": "EndpointAdditionalProperties allows setting additional properties on the\nendpoint such as relabelings, metricRelabelings etc.\n\nFor example:\n endpointAdditionalProperties:\n  relabelings:\n  - action: replace\n    sourceLabels:\n    - __meta_kubernetes_pod_node_name\n    targetLabel: instance\n  # Configure the PodMonitor for TLS connections\n  # See https://cert-manager.io/docs/devops-tips/prometheus-metrics/#tls\n  scheme: https\n  tlsConfig:\n    serverName: cert-manager-metrics\n    ca:\n      secret:\n        name: cert-manager-metrics-ca\n        key: \"tls.crt\"\n\n+docs:property",
+              "required": [],
+              "title": "endpointAdditionalProperties",
+              "type": "object"
+            },
+            "honorLabels": {
+              "default": false,
+              "description": "Keep labels from scraped data, overriding server-side labels.",
+              "required": [],
+              "title": "honorLabels",
+              "type": "boolean"
+            },
+            "interval": {
+              "default": "60s",
+              "description": "The interval to scrape metrics.",
+              "required": [],
+              "title": "interval",
+              "type": "string"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Additional labels to add to the PodMonitor.",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "path": {
+              "default": "/metrics",
+              "description": "The path to scrape for metrics.",
+              "required": [],
+              "title": "path",
+              "type": "string"
+            },
+            "prometheusInstance": {
+              "default": "default",
+              "description": "Specifies the `prometheus` label on the created PodMonitor. This is\nused when different Prometheus instances have label selectors matching\ndifferent PodMonitors.",
+              "required": [],
+              "title": "prometheusInstance",
+              "type": "string"
+            },
+            "scrapeTimeout": {
+              "default": "30s",
+              "description": "The timeout before a metrics scrape fails.",
+              "required": [],
+              "title": "scrapeTimeout",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "podmonitor",
+          "type": "object"
+        },
+        "servicemonitor": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Additional annotations to add to the ServiceMonitor.",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Create a ServiceMonitor to add cert-manager to Prometheus.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "endpointAdditionalProperties": {
+              "additionalProperties": true,
+              "description": "EndpointAdditionalProperties allows setting additional properties on the\nendpoint such as relabelings, metricRelabelings etc.\n\nFor example:\n endpointAdditionalProperties:\n  relabelings:\n  - action: replace\n    sourceLabels:\n    - __meta_kubernetes_pod_node_name\n    targetLabel: instance\n\n+docs:property",
+              "required": [],
+              "title": "endpointAdditionalProperties",
+              "type": "object"
+            },
+            "honorLabels": {
+              "default": false,
+              "description": "Keep labels from scraped data, overriding server-side labels.",
+              "required": [],
+              "title": "honorLabels",
+              "type": "boolean"
+            },
+            "interval": {
+              "default": "60s",
+              "description": "The interval to scrape metrics.",
+              "required": [],
+              "title": "interval",
+              "type": "string"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Additional labels to add to the ServiceMonitor.",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "path": {
+              "default": "/metrics",
+              "description": "The path to scrape for metrics.",
+              "required": [],
+              "title": "path",
+              "type": "string"
+            },
+            "prometheusInstance": {
+              "default": "default",
+              "description": "Specifies the `prometheus` label on the created ServiceMonitor. This is\nused when different Prometheus instances have label selectors matching\ndifferent ServiceMonitors.",
+              "required": [],
+              "title": "prometheusInstance",
+              "type": "string"
+            },
+            "scrapeTimeout": {
+              "default": "30s",
+              "description": "The timeout before a metrics scrape fails.",
+              "required": [],
+              "title": "scrapeTimeout",
+              "type": "string"
+            },
+            "targetPort": {
+              "default": 9402,
+              "description": "The target port to set on the ServiceMonitor. This must match the port that the\ncert-manager controller is listening on for metrics.",
+              "required": [],
+              "title": "targetPort",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "servicemonitor",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "prometheus",
+      "type": "object"
+    },
+    "replicaCount": {
+      "default": 1,
+      "description": "The number of replicas of the cert-manager controller to run.\n\nThe default is 1, but in production set this to 2 or 3 to provide high\navailability.\n\nIf `replicas \u003e 1`, consider setting `podDisruptionBudget.enabled=true`.\n\nNote that cert-manager uses leader election to ensure that there can\nonly be a single instance active at a time.",
+      "required": [],
+      "title": "replicaCount",
+      "type": "integer"
+    },
+    "resources": {
+      "additionalProperties": true,
+      "description": "Resources to provide to the cert-manager controller pod.\n\nFor example:\n requests:\n   cpu: 10m\n   memory: 32Mi\n\nFor more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).",
+      "required": [],
+      "title": "resources",
+      "type": "object"
+    },
+    "securityContext": {
+      "additionalProperties": true,
+      "description": "Pod Security Context.\nFor more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).\n+docs:property",
+      "properties": {
+        "runAsNonRoot": {
+          "default": true,
+          "required": [],
+          "title": "runAsNonRoot",
+          "type": "boolean"
+        },
+        "seccompProfile": {
+          "additionalProperties": true,
+          "properties": {
+            "type": {
+              "default": "RuntimeDefault",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "seccompProfile",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "securityContext",
+      "type": "object"
+    },
+    "serviceAccount": {
+      "additionalProperties": true,
+      "description": "Override the \"cert-manager.name\" value, which is used to annotate some of\nthe resources that are created by this Chart (using \"app.kubernetes.io/name\").\nNOTE: There are some inconsistencies in the Helm chart when it comes to\nthese annotations (some resources use eg. \"cainjector.name\" which resolves\nto the value \"cainjector\").\n+docs:property\nnameOverride: \"my-cert-manager\"",
+      "properties": {
+        "automountServiceAccountToken": {
+          "default": true,
+          "description": "Automount API credentials for a Service Account.",
+          "required": [],
+          "title": "automountServiceAccountToken",
+          "type": "boolean"
+        },
+        "create": {
+          "default": true,
+          "description": "Specifies whether a service account should be created.",
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "serviceAccount",
+      "type": "object"
+    },
+    "startupapicheck": {
+      "additionalProperties": true,
+      "description": "+docs:section=Startup API Check\nThis startupapicheck is a Helm post-install hook that waits for the webhook\nendpoints to become available.\nThe check is implemented using a Kubernetes Job - if you are injecting mesh\nsidecar proxies into cert-manager pods, ensure that they\nare not injected into this Job's pod. Otherwise, the installation may time out\nowing to the Job never being completed because the sidecar proxy does not exit.\nFor more information, see [this note](https://github.com/cert-manager/cert-manager/pull/4414).",
+      "properties": {
+        "affinity": {
+          "additionalProperties": true,
+          "description": "A Kubernetes Affinity, if required. For more information, see [Affinity v1 core](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#affinity-v1-core).\nFor example:\n  affinity:\n    nodeAffinity:\n     requiredDuringSchedulingIgnoredDuringExecution:\n       nodeSelectorTerms:\n       - matchExpressions:\n         - key: foo.bar.com/role\n           operator: In\n           values:\n           - master",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
+        "backoffLimit": {
+          "default": 4,
+          "description": "Job backoffLimit",
+          "required": [],
+          "title": "backoffLimit",
+          "type": "integer"
+        },
+        "containerSecurityContext": {
+          "additionalProperties": true,
+          "description": "Container Security Context to be set on the controller component container.\nFor more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).\n+docs:property",
+          "properties": {
+            "allowPrivilegeEscalation": {
+              "default": false,
+              "required": [],
+              "title": "allowPrivilegeEscalation",
+              "type": "boolean"
+            },
+            "capabilities": {
+              "additionalProperties": true,
+              "properties": {
+                "drop": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "capabilities",
+              "type": "object"
+            },
+            "readOnlyRootFilesystem": {
+              "default": true,
+              "required": [],
+              "title": "readOnlyRootFilesystem",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "containerSecurityContext",
+          "type": "object"
+        },
+        "enableServiceLinks": {
+          "default": false,
+          "description": "enableServiceLinks indicates whether information about services should be\ninjected into pod's environment variables, matching the syntax of Docker\nlinks.",
+          "required": [],
+          "title": "enableServiceLinks",
+          "type": "boolean"
+        },
+        "enabled": {
+          "default": true,
+          "description": "Enables the startup api check.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraArgs": {
+          "description": "Additional command line flags to pass to startupapicheck binary.\nTo see all available flags run `docker run quay.io/jetstack/cert-manager-startupapicheck:\u003cversion\u003e --help`.\n\nVerbose logging is enabled by default so that if startupapicheck fails, you\ncan know what exactly caused the failure. Verbose logs include details of\nthe webhook URL, IP address and TCP connect errors for example.\n+docs:property",
+          "items": {
+            "required": [],
+            "type": "string"
+          },
+          "required": [],
+          "title": "extraArgs",
+          "type": "array"
+        },
+        "extraEnv": {
+          "description": "Additional environment variables to pass to cert-manager startupapicheck binary.\nFor example:\n extraEnv:\n - name: SOME_VAR\n   value: 'some value'",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraEnv",
+          "type": "array"
+        },
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "Kubernetes imagePullPolicy on Deployment.",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "quay.io/jetstack/cert-manager-startupapicheck",
+              "description": "The container image for the cert-manager startupapicheck.\n+docs:property",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "jobAnnotations": {
+          "additionalProperties": true,
+          "description": "Optional additional annotations to add to the startupapicheck Job.\n+docs:property",
+          "properties": {
+            "helm.sh/hook": {
+              "default": "post-install",
+              "required": [],
+              "title": "helm.sh/hook",
+              "type": "string"
+            },
+            "helm.sh/hook-delete-policy": {
+              "default": "before-hook-creation,hook-succeeded",
+              "required": [],
+              "title": "helm.sh/hook-delete-policy",
+              "type": "string"
+            },
+            "helm.sh/hook-weight": {
+              "default": "1",
+              "required": [],
+              "title": "helm.sh/hook-weight",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "jobAnnotations",
+          "type": "object"
+        },
+        "nodeSelector": {
+          "additionalProperties": true,
+          "description": "The nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with\nmatching labels.\nFor more information, see [Assigning Pods to Nodes](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/).\n\nThis default ensures that Pods are only scheduled to Linux nodes.\nIt prevents Pods being scheduled to Windows nodes in a mixed OS cluster.\n+docs:property",
+          "properties": {
+            "kubernetes.io/os": {
+              "default": "linux",
+              "required": [],
+              "title": "kubernetes.io/os",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "description": "Optional additional labels to add to the startupapicheck Pods.",
+          "required": [],
+          "title": "podLabels",
+          "type": "object"
+        },
+        "rbac": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "annotations for the startup API Check job RBAC and PSP resources.\n+docs:property",
+              "properties": {
+                "helm.sh/hook": {
+                  "default": "post-install",
+                  "required": [],
+                  "title": "helm.sh/hook",
+                  "type": "string"
+                },
+                "helm.sh/hook-delete-policy": {
+                  "default": "before-hook-creation,hook-succeeded",
+                  "required": [],
+                  "title": "helm.sh/hook-delete-policy",
+                  "type": "string"
+                },
+                "helm.sh/hook-weight": {
+                  "default": "-5",
+                  "required": [],
+                  "title": "helm.sh/hook-weight",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "rbac",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resources to provide to the cert-manager controller pod.\n\nFor example:\n requests:\n   cpu: 10m\n   memory: 32Mi\n\nFor more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "securityContext": {
+          "additionalProperties": true,
+          "description": "Pod Security Context to be set on the startupapicheck component Pod.\nFor more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).\n+docs:property",
+          "properties": {
+            "runAsNonRoot": {
+              "default": true,
+              "required": [],
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            },
+            "seccompProfile": {
+              "additionalProperties": true,
+              "properties": {
+                "type": {
+                  "default": "RuntimeDefault",
+                  "required": [],
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "seccompProfile",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "securityContext",
+          "type": "object"
+        },
+        "serviceAccount": {
+          "additionalProperties": true,
+          "description": "Automounting API credentials for a particular pod.\n+docs:property\nautomountServiceAccountToken: true",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Optional additional annotations to add to the Job's Service Account.\n+docs:property",
+              "properties": {
+                "helm.sh/hook": {
+                  "default": "post-install",
+                  "required": [],
+                  "title": "helm.sh/hook",
+                  "type": "string"
+                },
+                "helm.sh/hook-delete-policy": {
+                  "default": "before-hook-creation,hook-succeeded",
+                  "required": [],
+                  "title": "helm.sh/hook-delete-policy",
+                  "type": "string"
+                },
+                "helm.sh/hook-weight": {
+                  "default": "-5",
+                  "required": [],
+                  "title": "helm.sh/hook-weight",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "automountServiceAccountToken": {
+              "default": true,
+              "description": "Automount API credentials for a Service Account.\n+docs:property",
+              "required": [],
+              "title": "automountServiceAccountToken",
+              "type": "boolean"
+            },
+            "create": {
+              "default": true,
+              "description": "Specifies whether a service account should be created.",
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "serviceAccount",
+          "type": "object"
+        },
+        "timeout": {
+          "default": "1m",
+          "description": "Timeout for 'kubectl check api' command.",
+          "required": [],
+          "title": "timeout",
+          "type": "string"
+        },
+        "tolerations": {
+          "description": "A list of Kubernetes Tolerations, if required. For more information, see [Toleration v1 core](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#toleration-v1-core).\n\nFor example:\n  tolerations:\n  - key: foo.bar.com/role\n    operator: Equal\n    value: master\n    effect: NoSchedule",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
+        },
+        "volumeMounts": {
+          "description": "Additional volume mounts to add to the cert-manager controller container.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "volumeMounts",
+          "type": "array"
+        },
+        "volumes": {
+          "description": "Additional volumes to add to the cert-manager controller pod.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "volumes",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "startupapicheck",
+      "type": "object"
+    },
+    "strategy": {
+      "additionalProperties": true,
+      "description": "Deployment update strategy for the cert-manager controller deployment.\nFor more information, see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy).\n\nFor example:\n strategy:\n   type: RollingUpdate\n   rollingUpdate:\n     maxSurge: 0\n     maxUnavailable: 1",
+      "required": [],
+      "title": "strategy",
+      "type": "object"
+    },
+    "tolerations": {
+      "description": "A list of Kubernetes Tolerations, if required. For more information, see [Toleration v1 core](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#toleration-v1-core).\n\nFor example:\n  tolerations:\n  - key: foo.bar.com/role\n    operator: Equal\n    value: master\n    effect: NoSchedule",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "tolerations",
+      "type": "array"
+    },
+    "topologySpreadConstraints": {
+      "description": "A list of Kubernetes TopologySpreadConstraints, if required. For more information, see [Topology spread constraint v1 core](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#topologyspreadconstraint-v1-core\n\nFor example:\n  topologySpreadConstraints:\n  - maxSkew: 2\n    topologyKey: topology.kubernetes.io/zone\n    whenUnsatisfiable: ScheduleAnyway\n    labelSelector:\n      matchLabels:\n        app.kubernetes.io/instance: cert-manager\n        app.kubernetes.io/component: controller",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "topologySpreadConstraints",
+      "type": "array"
+    },
+    "volumeMounts": {
+      "description": "Additional volume mounts to add to the cert-manager controller container.",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "volumeMounts",
+      "type": "array"
+    },
+    "volumes": {
+      "description": "Additional volumes to add to the cert-manager controller pod.",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "volumes",
+      "type": "array"
+    },
+    "webhook": {
+      "additionalProperties": true,
+      "description": "+docs:section=Webhook",
+      "properties": {
+        "affinity": {
+          "additionalProperties": true,
+          "description": "A Kubernetes Affinity, if required. For more information, see [Affinity v1 core](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#affinity-v1-core).\n\nFor example:\n  affinity:\n    nodeAffinity:\n     requiredDuringSchedulingIgnoredDuringExecution:\n       nodeSelectorTerms:\n       - matchExpressions:\n         - key: foo.bar.com/role\n           operator: In\n           values:\n           - master",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
+        "config": {
+          "additionalProperties": true,
+          "description": "This is used to configure options for the webhook pod.\nThis allows setting options that would usually be provided using flags.\n\nIf `apiVersion` and `kind` are unspecified they default to the current latest\nversion (currently `webhook.config.cert-manager.io/v1alpha1`). You can pin\nthe version by specifying the `apiVersion` yourself.\n\nFor example:\n apiVersion: webhook.config.cert-manager.io/v1alpha1\n kind: WebhookConfiguration\n # The port that the webhook listens on for requests.\n # In GKE private clusters, by default Kubernetes apiservers are allowed to\n # talk to the cluster nodes only on 443 and 10250. Configuring\n # securePort: 10250 therefore will work out-of-the-box without needing to add firewall\n # rules or requiring NET_BIND_SERVICE capabilities to bind port numbers \u003c 1000.\n # This should be uncommented and set as a default by the chart once\n # the apiVersion of WebhookConfiguration graduates beyond v1alpha1.\n securePort: 10250\n # Configure the metrics server for TLS\n # See https://cert-manager.io/docs/devops-tips/prometheus-metrics/#tls\n metricsTLSConfig:\n   dynamic:\n     secretNamespace: \"cert-manager\"\n     secretName: \"cert-manager-metrics-ca\"\n     dnsNames:\n     - cert-manager-metrics",
+          "required": [],
+          "title": "config",
+          "type": "object"
+        },
+        "containerSecurityContext": {
+          "additionalProperties": true,
+          "description": "Container Security Context to be set on the webhook component container.\nFor more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).\n+docs:property",
+          "properties": {
+            "allowPrivilegeEscalation": {
+              "default": false,
+              "required": [],
+              "title": "allowPrivilegeEscalation",
+              "type": "boolean"
+            },
+            "capabilities": {
+              "additionalProperties": true,
+              "properties": {
+                "drop": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "capabilities",
+              "type": "object"
+            },
+            "readOnlyRootFilesystem": {
+              "default": true,
+              "required": [],
+              "title": "readOnlyRootFilesystem",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "containerSecurityContext",
+          "type": "object"
+        },
+        "enableServiceLinks": {
+          "default": false,
+          "description": "enableServiceLinks indicates whether information about services should be\ninjected into the pod's environment variables, matching the syntax of Docker\nlinks.",
+          "required": [],
+          "title": "enableServiceLinks",
+          "type": "boolean"
+        },
+        "extraArgs": {
+          "description": "Additional command line flags to pass to cert-manager webhook binary.\nTo see all available flags run `docker run quay.io/jetstack/cert-manager-webhook:\u003cversion\u003e --help`.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraArgs",
+          "type": "array"
+        },
+        "extraEnv": {
+          "description": "Additional environment variables to pass to cert-manager webhook binary.\nFor example:\n extraEnv:\n - name: SOME_VAR\n   value: 'some value'",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraEnv",
+          "type": "array"
+        },
+        "featureGates": {
+          "default": "",
+          "description": "Comma separated list of feature gates that should be enabled on the\nwebhook pod.",
+          "required": [],
+          "title": "featureGates",
+          "type": "string"
+        },
+        "hostNetwork": {
+          "default": false,
+          "description": "Specifies if the webhook should be started in hostNetwork mode.\n\nRequired for use in some managed kubernetes clusters (such as AWS EKS) with custom\nCNI (such as calico), because control-plane managed by AWS cannot communicate\nwith pods' IP CIDR and admission webhooks are not working\n\nSince the default port for the webhook conflicts with kubelet on the host\nnetwork, `webhook.securePort` should be changed to an available port if\nrunning in hostNetwork mode.",
+          "required": [],
+          "title": "hostNetwork",
+          "type": "boolean"
+        },
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "Kubernetes imagePullPolicy on Deployment.",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "quay.io/jetstack/cert-manager-webhook",
+              "description": "The container image for the cert-manager webhook\n+docs:property",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "description": "Liveness probe values.\nFor more information, see [Container probes](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes).\n\n+docs:property",
+          "properties": {
+            "failureThreshold": {
+              "default": 3,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "default": 60,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 1,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
+        "mutatingWebhookConfiguration": {
+          "additionalProperties": true,
+          "properties": {
+            "namespaceSelector": {
+              "additionalProperties": true,
+              "description": "Configure spec.namespaceSelector for mutating webhooks.\n+docs:property",
+              "required": [],
+              "title": "namespaceSelector",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "mutatingWebhookConfiguration",
+          "type": "object"
+        },
+        "networkPolicy": {
+          "additionalProperties": true,
+          "description": "Enables default network policies for webhooks.",
+          "properties": {
+            "egress": {
+              "description": "Egress rule for the webhook network policy. By default, it allows all\noutbound traffic to ports 80 and 443, as well as DNS ports.\n+docs:property",
+              "items": {
+                "properties": {
+                  "ports": {
+                    "items": {
+                      "properties": {
+                        "port": {
+                          "default": 6443,
+                          "required": [],
+                          "title": "port",
+                          "type": "integer"
+                        },
+                        "protocol": {
+                          "default": "TCP",
+                          "required": [],
+                          "title": "protocol",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "type": "object"
+                    },
+                    "required": [],
+                    "title": "ports",
+                    "type": "array"
+                  },
+                  "to": {
+                    "items": {
+                      "properties": {
+                        "ipBlock": {
+                          "properties": {
+                            "cidr": {
+                              "default": "0.0.0.0/0",
+                              "required": [],
+                              "title": "cidr",
+                              "type": "string"
+                            }
+                          },
+                          "required": [],
+                          "title": "ipBlock",
+                          "type": "object"
+                        }
+                      },
+                      "required": [],
+                      "type": "object"
+                    },
+                    "required": [],
+                    "title": "to",
+                    "type": "array"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "title": "egress",
+              "type": "array"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Create network policies for the webhooks.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "ingress": {
+              "description": "Ingress rule for the webhook network policy. By default, it allows all\ninbound traffic.\n+docs:property",
+              "items": {
+                "properties": {
+                  "from": {
+                    "items": {
+                      "properties": {
+                        "ipBlock": {
+                          "properties": {
+                            "cidr": {
+                              "default": "0.0.0.0/0",
+                              "required": [],
+                              "title": "cidr",
+                              "type": "string"
+                            }
+                          },
+                          "required": [],
+                          "title": "ipBlock",
+                          "type": "object"
+                        }
+                      },
+                      "required": [],
+                      "type": "object"
+                    },
+                    "required": [],
+                    "title": "from",
+                    "type": "array"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "title": "ingress",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "networkPolicy",
+          "type": "object"
+        },
+        "nodeSelector": {
+          "additionalProperties": true,
+          "description": "The nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with\nmatching labels.\nFor more information, see [Assigning Pods to Nodes](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/).\n\nThis default ensures that Pods are only scheduled to Linux nodes.\nIt prevents Pods being scheduled to Windows nodes in a mixed OS cluster.\n+docs:property",
+          "properties": {
+            "kubernetes.io/os": {
+              "default": "linux",
+              "required": [],
+              "title": "kubernetes.io/os",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
+        "podDisruptionBudget": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable or disable the PodDisruptionBudget resource.\n\nThis prevents downtime during voluntary disruptions such as during a Node upgrade.\nFor example, the PodDisruptionBudget will block `kubectl drain`\nif it is used on the Node where the only remaining cert-manager\nPod is currently running.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podDisruptionBudget",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "description": "Optional additional labels to add to the Webhook Pods.",
+          "required": [],
+          "title": "podLabels",
+          "type": "object"
+        },
+        "readinessProbe": {
+          "additionalProperties": true,
+          "description": "Readiness probe values.\nFor more information, see [Container probes](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes).\n\n+docs:property",
+          "properties": {
+            "failureThreshold": {
+              "default": 3,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "default": 5,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 5,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 1,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "readinessProbe",
+          "type": "object"
+        },
+        "replicaCount": {
+          "default": 1,
+          "description": "Number of replicas of the cert-manager webhook to run.\n\nThe default is 1, but in production set this to 2 or 3 to provide high\navailability.\n\nIf `replicas \u003e 1`, consider setting `webhook.podDisruptionBudget.enabled=true`.",
+          "required": [],
+          "title": "replicaCount",
+          "type": "integer"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resources to provide to the cert-manager webhook pod.\n\nFor example:\n requests:\n   cpu: 10m\n   memory: 32Mi\n\nFor more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "securePort": {
+          "default": 10250,
+          "description": "The port that the webhook listens on for requests.\nIn GKE private clusters, by default Kubernetes apiservers are allowed to\ntalk to the cluster nodes only on 443 and 10250. Configuring\nsecurePort: 10250, therefore will work out-of-the-box without needing to add firewall\nrules or requiring NET_BIND_SERVICE capabilities to bind port numbers \u003c1000.",
+          "required": [],
+          "title": "securePort",
+          "type": "integer"
+        },
+        "securityContext": {
+          "additionalProperties": true,
+          "description": "Pod Security Context to be set on the webhook component Pod.\nFor more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).\n+docs:property",
+          "properties": {
+            "runAsNonRoot": {
+              "default": true,
+              "required": [],
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            },
+            "seccompProfile": {
+              "additionalProperties": true,
+              "properties": {
+                "type": {
+                  "default": "RuntimeDefault",
+                  "required": [],
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "seccompProfile",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "securityContext",
+          "type": "object"
+        },
+        "serviceAccount": {
+          "additionalProperties": true,
+          "properties": {
+            "automountServiceAccountToken": {
+              "default": true,
+              "description": "Automount API credentials for a Service Account.",
+              "required": [],
+              "title": "automountServiceAccountToken",
+              "type": "boolean"
+            },
+            "create": {
+              "default": true,
+              "description": "Specifies whether a service account should be created.",
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "serviceAccount",
+          "type": "object"
+        },
+        "serviceIPFamilies": {
+          "description": "Optionally set the IP families for the controller Service that should be supported, in the order in which they should be applied to ClusterIP. Can be IPv4 and/or IPv6.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "serviceIPFamilies",
+          "type": "array"
+        },
+        "serviceIPFamilyPolicy": {
+          "default": "",
+          "description": "Optionally set the IP family policy for the controller Service to configure dual-stack; see [Configure dual-stack](https://kubernetes.io/docs/concepts/services-networking/dual-stack/#services).",
+          "required": [],
+          "title": "serviceIPFamilyPolicy",
+          "type": "string"
+        },
+        "serviceLabels": {
+          "additionalProperties": true,
+          "description": "Optional additional labels to add to the Webhook Service.",
+          "required": [],
+          "title": "serviceLabels",
+          "type": "object"
+        },
+        "serviceType": {
+          "default": "ClusterIP",
+          "description": "Specifies how the service should be handled. Useful if you want to expose the\nwebhook outside of the cluster. In some cases, the control plane cannot\nreach internal services.",
+          "required": [],
+          "title": "serviceType",
+          "type": "string"
+        },
+        "strategy": {
+          "additionalProperties": true,
+          "description": "The update strategy for the cert-manager webhook deployment.\nFor more information, see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)\n\nFor example:\n strategy:\n   type: RollingUpdate\n   rollingUpdate:\n     maxSurge: 0\n     maxUnavailable: 1",
+          "required": [],
+          "title": "strategy",
+          "type": "object"
+        },
+        "timeoutSeconds": {
+          "default": 30,
+          "description": "The number of seconds the API server should wait for the webhook to respond before treating the call as a failure.\nThe value must be between 1 and 30 seconds. For more information, see\n[Validating webhook configuration v1](https://kubernetes.io/docs/reference/kubernetes-api/extend-resources/validating-webhook-configuration-v1/).\n\nThe default is set to the maximum value of 30 seconds as\nusers sometimes report that the connection between the K8S API server and\nthe cert-manager webhook server times out.\nIf *this* timeout is reached, the error message will be \"context deadline exceeded\",\nwhich doesn't help the user diagnose what phase of the HTTPS connection timed out.\nFor example, it could be during DNS resolution, TCP connection, TLS\nnegotiation, HTTP negotiation, or slow HTTP response from the webhook\nserver.\nBy setting this timeout to its maximum value the underlying timeout error\nmessage has more chance of being returned to the end user.",
+          "required": [],
+          "title": "timeoutSeconds",
+          "type": "integer"
+        },
+        "tolerations": {
+          "description": "A list of Kubernetes Tolerations, if required. For more information, see [Toleration v1 core](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#toleration-v1-core).\n\nFor example:\n  tolerations:\n  - key: foo.bar.com/role\n    operator: Equal\n    value: master\n    effect: NoSchedule",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
+        },
+        "topologySpreadConstraints": {
+          "description": "A list of Kubernetes TopologySpreadConstraints, if required. For more information, see [Topology spread constraint v1 core](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#topologyspreadconstraint-v1-core).\n\nFor example:\n  topologySpreadConstraints:\n  - maxSkew: 2\n    topologyKey: topology.kubernetes.io/zone\n    whenUnsatisfiable: ScheduleAnyway\n    labelSelector:\n      matchLabels:\n        app.kubernetes.io/instance: cert-manager\n        app.kubernetes.io/component: controller",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "topologySpreadConstraints",
+          "type": "array"
+        },
+        "url": {
+          "additionalProperties": true,
+          "description": "Overrides the mutating webhook and validating webhook so they reach the webhook\nservice using the `url` field instead of a service.",
+          "required": [],
+          "title": "url",
+          "type": "object"
+        },
+        "validatingWebhookConfiguration": {
+          "additionalProperties": true,
+          "description": "Optional additional annotations to add to the webhook ValidatingWebhookConfiguration.\n+docs:property\nvalidatingWebhookConfigurationAnnotations: {}",
+          "properties": {
+            "namespaceSelector": {
+              "additionalProperties": true,
+              "description": "Configure spec.namespaceSelector for validating webhooks.\n+docs:property",
+              "properties": {
+                "matchExpressions": {
+                  "items": {
+                    "properties": {
+                      "key": {
+                        "default": "cert-manager.io/disable-validation",
+                        "required": [],
+                        "title": "key",
+                        "type": "string"
+                      },
+                      "operator": {
+                        "default": "NotIn",
+                        "required": [],
+                        "title": "operator",
+                        "type": "string"
+                      },
+                      "values": {
+                        "items": {
+                          "required": [],
+                          "type": "string"
+                        },
+                        "required": [],
+                        "title": "values",
+                        "type": "array"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  "required": [],
+                  "title": "matchExpressions",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "namespaceSelector",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "validatingWebhookConfiguration",
+          "type": "object"
+        },
+        "volumeMounts": {
+          "description": "Additional volume mounts to add to the cert-manager controller container.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "volumeMounts",
+          "type": "array"
+        },
+        "volumes": {
+          "description": "Additional volumes to add to the cert-manager controller pod.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "volumes",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "webhook",
+      "type": "object"
+    }
+  },
+  "required": [],
+  "type": "object"
+}

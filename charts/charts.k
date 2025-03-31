@@ -51,6 +51,18 @@ charts: helm.Charts = {
         targetRevision = "0.30.1"
         schemaGenerator = "AUTO"
     }
+    cert_manager: {
+        chart = "cert-manager"
+        repoURL = "https://charts.jetstack.io"
+        targetRevision = "v1.17.1"
+        schemaGenerator = "AUTO"
+        crdGenerator = "TEMPLATE"
+        values: {
+            crds: {
+                enabled = True
+            }
+        }
+    }
     dragonfly_operator: {
         chart = "dragonfly-operator"
         repoURL = "oci://ghcr.io/dragonflydb/dragonfly-operator/helm/dragonfly-operator"
