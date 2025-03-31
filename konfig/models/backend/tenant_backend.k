@@ -55,20 +55,8 @@ schema TenantBackend[inputConfig: frontend.Tenant]:
             finalize = False
         })
         spec: {
-            goTemplate = True
-            goTemplateOptions = ["missingkey=error"]
             generators = [{
                 matrix.generators = [
-                    {
-                        clusters: {
-                            selector.matchLabels = {
-                                "argocd.argoproj.io/secret-type" = "cluster"
-                            }
-                            values = {
-                                clusterName = "{{.name}}"
-                            }
-                        }
-                    }
                     {
                         git: {
                             repoURL = kmd.__META_REPO_URL
@@ -76,13 +64,31 @@ schema TenantBackend[inputConfig: frontend.Tenant]:
                             files = [{
                                 path = "apps/${config.name}/_tenant/shared/.tenant.yaml"
                             }]
-                            pathParamPrefix = "app"
+                            pathParamPrefix = "tenant"
                         }
+                    }
+                    {
+                        merge.mergeKeys = ["values.cluster"]
+                        merge.generators = [
+                            {
+                                git: {
+                                    repoURL = kmd.__META_REPO_URL
+                                    revision = kmd.__META_REVISION
+                                    files = [{
+                                        path = "apps/${config.name}/*/*/.app.yaml"
+                                    }]
+                                    pathParamPrefix = "app"
+                                    values = {
+                                        cluster = "{{index .app.path.segments 3}}"
+                                    }
+                                }
+                            }
+                        ]
                     }
                 ]
             }]
             template.metadata: utils.AppMetadataBuilder(_metadata | {
-                name = "${config.name}-{{.values.clusterName}}"
+                name = "${config.name}-{{.values.cluster}}"
             }, utils.ArgoCDOptions {
                 compare.ServerSideDiff = True
                 compare.IncludeMutationWebhook = True
@@ -93,10 +99,10 @@ schema TenantBackend[inputConfig: frontend.Tenant]:
                 source: {
                     repoURL = kmd.__META_REPO_URL
                     targetRevision = kmd.__META_REVISION
-                    path = "{{.app.path.path}}"
+                    path = "{{.tenant.path.path}}"
                 }
                 destination: {
-                    name = "{{.values.clusterName}}"
+                    name = "{{.values.cluster}}"
                     namespace = "default" # This appset should only deploy cluster resources.
                 }
                 syncPolicy: {
