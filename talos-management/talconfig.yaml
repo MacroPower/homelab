@@ -1,26 +1,26 @@
-clusterName: home
-talosVersion: v1.7.1
-kubernetesVersion: v1.30.0
-endpoint: https://mgmt.cin.macro.network:6443
+clusterName: mgmt
+talosVersion: v1.9.5
+kubernetesVersion: v1.32.3
+endpoint: https://kmgmt.cin.macro.network:6443
 cniConfig:
   name: none
 
 additionalMachineCertSans:
-  - mgmt.cin.macro.network
+  - kmgmt.cin.macro.network
   - 127.0.0.1
 additionalApiServerCertSans:
   - 127.0.0.1
 
 clusterSvcNets:
   - 10.110.0.0/16
-  - 2603:6010:5300:ad70::/108
+  - fc42:0:0:6e::/108
 clusterPodNets:
   - 10.111.0.0/16
-  - 2603:6010:5300:ad80::/64
+  - fc42:0:0:6f::/64
 
 nodes:
-  - hostname: kman01.home.macro.network
-    ipAddress: 10.10.9.1
+  - hostname: kmgmt01.cin.macro.network
+    ipAddress: 10.10.8.1
     controlPlane: true
     installDisk: &rpiMmcDevice /dev/mmcblk0
     nodeLabels:
@@ -31,17 +31,25 @@ nodes:
       - deviceSelector: &rpiNetDevice
           driver: bcmgenet
           hardwareAddr: "e4:5f:01:*"
-        dhcp: &dhcp true
-        dhcpOptions: &dhcpOptions
-          ipv4: true
-          ipv6: true
+        dhcp: false
+        addresses:
+          - "10.10.8.1/16"
+          - "fc42:0:0:a::0801/64"
+        mtu: &mtu 1500
+        routes: &routes
+          - network: 0.0.0.0/0
+            gateway: "10.10.0.1"
+          # Link-local IPv6 route set via RA with `metric: 1024`.
+          - network: ::/0
+            gateway: "fc42:0:0:a::"
+            metric: 4096
     schematic: &rpiSchematic
       overlay:
         name: rpi_generic
         image: siderolabs/sbc-raspberrypi
 
-  - hostname: knode02.home.macro.network
-    ipAddress: 10.10.9.2
+  - hostname: kmgmt02.cin.macro.network
+    ipAddress: 10.10.8.2
     controlPlane: true
     installDisk: *rpiMmcDevice
     nodeLabels:
@@ -50,12 +58,16 @@ nodes:
       topology.kubernetes.io/zone: az02
     networkInterfaces:
       - deviceSelector: *rpiNetDevice
-        dhcp: *dhcp
-        dhcpOptions: *dhcpOptions
+        dhcp: false
+        addresses:
+          - "10.10.8.2/16"
+          - "fc42:0:0:a::0802/64"
+        mtu: *mtu
+        routes: *routes
     schematic: *rpiSchematic
 
-  - hostname: knode03.home.macro.network
-    ipAddress: 10.10.9.3
+  - hostname: kmgmt03.cin.macro.network
+    ipAddress: 10.10.8.3
     controlPlane: true
     installDisk: *rpiMmcDevice
     nodeLabels:
@@ -64,19 +76,82 @@ nodes:
       topology.kubernetes.io/zone: az03
     networkInterfaces:
       - deviceSelector: *rpiNetDevice
-        dhcp: *dhcp
-        dhcpOptions: *dhcpOptions
+        dhcp: false
+        addresses:
+          - "10.10.8.3/16"
+          - "fc42:0:0:a::0803/64"
+        mtu: *mtu
+        routes: *routes
     schematic: *rpiSchematic
+
+  - hostname: kmgmt04.cin.macro.network
+    ipAddress: 10.10.8.4
+    installDisk: &rk1device /dev/mmcblk0
+    nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 1g
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az01
+    networkInterfaces:
+      - deviceSelector: &rk1NetDevice
+          driver: rk_gmac-dwmac
+          busPath: "fe1c0000.ethernet"
+        dhcp: false
+        addresses:
+          - "10.10.8.4/16"
+          - "fc42:0:0:a::0804/64"
+        mtu: *mtu
+        routes: *routes
+    schematic: &rk1schematic
+      overlay:
+        name: turingrk1
+        image: siderolabs/sbc-rockchip
+      customization:
+        extraKernelArgs:
+          - cpufreq.default_governor=ondemand
+
+  - hostname: kmgmt05.cin.macro.network
+    ipAddress: 10.10.8.5
+    installDisk: *rk1device
+    nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 1g
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az02
+    networkInterfaces:
+      - deviceSelector: *rk1NetDevice
+        dhcp: false
+        addresses:
+          - "10.10.8.5/16"
+          - "fc42:0:0:a::0805/64"
+        mtu: *mtu
+        routes: *routes
+    schematic: *rk1schematic
+
+  - hostname: kmgmt06.cin.macro.network
+    ipAddress: 10.10.8.6
+    installDisk: *rk1device
+    nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 1g
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az03
+    networkInterfaces:
+      - deviceSelector: *rk1NetDevice
+        dhcp: false
+        addresses:
+          - "10.10.8.6/16"
+          - "fc42:0:0:a::0806/64"
+        mtu: *mtu
+        routes: *routes
+    schematic: *rk1schematic
 
 controlPlane:
   nameservers: &nameservers
     - "10.10.0.1"
-    - "2603:6010:5300:ad0a::"
+    - "fc42:0:0:a::"
   disableSearchDomain: &disableSearchDomain true
   schematic:
     customization:
       extraKernelArgs: &extraKernelArgs
-        - "talos.logging.kernel=udp://syslog.home.macro.network:6050/"
+        - "talos.logging.kernel=udp://syslog.cin.macro.network:6050/"
   patches:
     - |-
       - op: replace
@@ -98,6 +173,8 @@ controlPlane:
             ##
             node-cidr-mask-size-ipv6: "80"
             allocate-node-cidrs: "true"
+            feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true,RotateKubeletServerCertificate=true
+            tls-cipher-suites: TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_256_GCM_SHA384
     - |-
       cluster:
         etcd:
@@ -107,28 +184,48 @@ controlPlane:
       cluster:
         scheduler:
           extraArgs:
-            bind-address: 0.0.0.0
+            bind-address: "0.0.0.0"
+            feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true,RotateKubeletServerCertificate=true
+            tls-cipher-suites: TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_256_GCM_SHA384
     - |-
       cluster:
         proxy:
-          # Replaced by Cillium.
+          # Replaced by Cilium.
           disabled: true
+    - |-
+      cluster:
+        apiServer:
+          extraArgs:
+            max-mutating-requests-inflight: 20
+            max-requests-inflight: 80
+            feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true,RotateKubeletServerCertificate=true
+            tls-cipher-suites: TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_256_GCM_SHA384
     - &machineKubelet |-
       machine:
         kubelet:
+          nodeIP:
+            validSubnets:
+              - 10.10.0.0/16
+              - fc42:0:0:a::/64
           extraArgs:
-            feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true
-            #rotate-server-certificates: true
+            feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true,RotateKubeletServerCertificate=true
+            rotate-server-certificates: "true"
+            tls-cipher-suites: TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_256_GCM_SHA384
     - &machineLogging |-
       machine:
         logging:
           destinations:
-            - endpoint: "udp://syslog.home.macro.network:6051/"
+            - endpoint: "udp://syslog.cin.macro.network:6051/"
               format: json_lines
     - &machineTime |-
       machine:
         time:
-          disabled: true
+          disabled: false
+          servers:
+            - 0.north-america.pool.ntp.org
+            - 1.north-america.pool.ntp.org
+            - 2.north-america.pool.ntp.org
+            - 3.north-america.pool.ntp.org
 
 worker:
   nameservers: *nameservers
