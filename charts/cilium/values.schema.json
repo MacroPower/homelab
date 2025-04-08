@@ -665,6 +665,16 @@
           "required": [],
           "type": "boolean"
         },
+        "distributedLRU": {
+          "properties": {
+            "enabled": {
+              "required": [],
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "type": "object"
+        },
         "enableTCX": {
           "required": [],
           "type": "boolean"
@@ -2720,6 +2730,13 @@
           },
           "required": [],
           "type": "object"
+        },
+        "policyRestoreTimeoutDuration": {
+          "required": [],
+          "type": [
+            "null",
+            "string"
+          ]
         },
         "priorityClassName": {
           "required": [],
@@ -7068,6 +7085,10 @@
       "type": "integer"
     },
     "tunnelProtocol": {
+      "required": [],
+      "type": "string"
+    },
+    "tunnelSourcePortRange": {
       "required": [],
       "type": "string"
     },

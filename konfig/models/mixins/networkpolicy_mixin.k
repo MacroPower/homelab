@@ -1,8 +1,7 @@
+import charts.cilium.api.v2 as ciliumv2
 import models.utils
 import models.resource
 import models.protocol
-
-import cilium.v2 as ciliumv2
 
 mixin NetworkPolicyMixin for protocol.AppProtocol:
     if config.networkPolicies:

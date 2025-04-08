@@ -51,6 +51,7 @@
         "profiles": {
           "description": "nodeSelector: \"key1=value1,key2=value2\"\nmaxNoOfPodsToEvictPerNode: 10\nmaxNoOfPodsToEvictPerNamespace: 10\nignorePvcPods: true\nevictLocalStoragePods: true\nevictDaemonSetPods: true\ntracing:\n  collectorEndpoint: otel-collector.observability.svc.cluster.local:4317\n  transportCert: \"\"\n  serviceName: \"\"\n  serviceNamespace: \"\"\n  sampleRate: 1.0\n  fallbackToNoOpProviderOnError: true",
           "items": {
+            "additionalProperties": true,
             "properties": {
               "name": {
                 "default": "default",
@@ -60,8 +61,10 @@
               },
               "pluginConfig": {
                 "items": {
+                  "additionalProperties": true,
                   "properties": {
                     "args": {
+                      "additionalProperties": true,
                       "properties": {
                         "evictLocalStoragePods": {
                           "default": true,
@@ -97,6 +100,7 @@
                           "type": "integer"
                         },
                         "targetThresholds": {
+                          "additionalProperties": true,
                           "properties": {
                             "cpu": {
                               "default": 50,
@@ -122,6 +126,7 @@
                           "type": "object"
                         },
                         "thresholds": {
+                          "additionalProperties": true,
                           "properties": {
                             "cpu": {
                               "default": 20,
@@ -166,8 +171,10 @@
                 "type": "array"
               },
               "plugins": {
+                "additionalProperties": true,
                 "properties": {
                   "balance": {
+                    "additionalProperties": true,
                     "properties": {
                       "enabled": {
                         "items": {
@@ -184,6 +191,7 @@
                     "type": "object"
                   },
                   "deschedule": {
+                    "additionalProperties": true,
                     "properties": {
                       "enabled": {
                         "items": {

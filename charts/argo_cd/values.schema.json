@@ -5285,9 +5285,11 @@
         "egressRules": {
           "description": "user can define egress rules too, uses the same structure as ingressRules",
           "items": {
+            "additionalProperties": true,
             "properties": {
               "ports": {
                 "items": {
+                  "additionalProperties": true,
                   "properties": {
                     "port": {
                       "default": 53,
@@ -5311,8 +5313,10 @@
               },
               "selectors": {
                 "items": {
+                  "additionalProperties": true,
                   "properties": {
                     "ipBlock": {
+                      "additionalProperties": true,
                       "properties": {
                         "cidr": {
                           "default": "169.254.0.0/16",
@@ -5327,6 +5331,7 @@
                       "type": "object"
                     },
                     "namespaceSelector": {
+                      "additionalProperties": true,
                       "required": [],
                       "title": "namespaceSelector",
                       "type": "object"

@@ -1493,9 +1493,11 @@
             "egress": {
               "description": "Egress rule for the webhook network policy. By default, it allows all\noutbound traffic to ports 80 and 443, as well as DNS ports.\n+docs:property",
               "items": {
+                "additionalProperties": true,
                 "properties": {
                   "ports": {
                     "items": {
+                      "additionalProperties": true,
                       "properties": {
                         "port": {
                           "default": 6443,
@@ -1519,8 +1521,10 @@
                   },
                   "to": {
                     "items": {
+                      "additionalProperties": true,
                       "properties": {
                         "ipBlock": {
+                          "additionalProperties": true,
                           "properties": {
                             "cidr": {
                               "default": "0.0.0.0/0",
@@ -1559,11 +1563,14 @@
             "ingress": {
               "description": "Ingress rule for the webhook network policy. By default, it allows all\ninbound traffic.\n+docs:property",
               "items": {
+                "additionalProperties": true,
                 "properties": {
                   "from": {
                     "items": {
+                      "additionalProperties": true,
                       "properties": {
                         "ipBlock": {
+                          "additionalProperties": true,
                           "properties": {
                             "cidr": {
                               "default": "0.0.0.0/0",
@@ -1824,6 +1831,7 @@
               "properties": {
                 "matchExpressions": {
                   "items": {
+                    "additionalProperties": true,
                     "properties": {
                       "key": {
                         "default": "cert-manager.io/disable-validation",

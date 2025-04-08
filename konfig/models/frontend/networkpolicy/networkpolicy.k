@@ -1,5 +1,5 @@
 import models.frontend.common
-import cilium.v2 as ciliumv2
+import charts.cilium.api.v2 as ciliumv2
 
 schema NetworkPolicy(common.Metadata):
     """

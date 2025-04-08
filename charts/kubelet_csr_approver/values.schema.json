@@ -454,6 +454,7 @@
     },
     "tolerations": {
       "items": {
+        "additionalProperties": true,
         "properties": {
           "effect": {
             "default": "NoSchedule",
