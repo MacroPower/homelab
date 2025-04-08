@@ -1,9 +1,9 @@
 [package]
-name = "{{.TenantName}}_tenant"
+name = "{{.TenantName}}"
 version = "0.1.0"
 
 [dependencies]
-konfig = { path = "../../../konfig" }
+{{.TenantName}}_tenant = { path = "../base" }
 
 [profile]
 entries = ["main.k", "${konfig:KCL_MOD}/models/render/render.k"]
