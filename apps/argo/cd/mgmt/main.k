@@ -101,7 +101,6 @@ app = argo_cd_base.app | {
     }
     ingresses.main = ingress.Ingress {
         rules.main = {
-            host.fullName = "argo-cd.macro.network"
             httpPaths.main.backend.service = {
                 name = "argo-cd-server"
                 port.name = "http"
