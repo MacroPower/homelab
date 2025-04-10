@@ -3,6 +3,10 @@
     name = "charts"
     full_name = "charts_0.1.0"
     version = "0.1.0"
+  [dependencies.cluster]
+    name = "cluster"
+    full_name = "cluster_mgmt_0.1.0"
+    version = "0.1.0"
   [dependencies.external]
     name = "external"
     full_name = "external_0.1.0"
