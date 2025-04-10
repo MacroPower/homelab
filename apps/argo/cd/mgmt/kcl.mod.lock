@@ -1,7 +1,7 @@
 [dependencies]
   [dependencies.argo]
     name = "argo"
-    full_name = "argo_shared_0.1.0"
+    full_name = "argo_0.1.0"
     version = "0.1.0"
   [dependencies.argo_cd_base]
     name = "argo_cd_base"
@@ -14,6 +14,10 @@
   [dependencies.charts]
     name = "charts"
     full_name = "charts_0.1.0"
+    version = "0.1.0"
+  [dependencies.cluster]
+    name = "cluster"
+    full_name = "cluster_mgmt_0.1.0"
     version = "0.1.0"
   [dependencies.filepath]
     name = "filepath"

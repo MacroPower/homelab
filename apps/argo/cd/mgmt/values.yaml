@@ -19,7 +19,7 @@ configs:
     ## Ref: https://docs.goauthentik.io/integrations/services/argocd/#argocd-configuration
     ## Ref: https://dexidp.io/docs/connectors/oauth/
     ##
-    url: https://argocd.home.macro.network
+    url: https://argo-cd.macro.network
     dex.config: |
       connectors:
         - name: authentik
@@ -279,8 +279,7 @@ configs:
   ## Ref: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/argocd-cmd-params-cm.yaml
   ##
   params:
-    server.insecure: true
-    applicationsetcontroller.enable.new.git.file.globbing: true
+    server.disable.auth: true
 
   rbac:
     policy.csv: |

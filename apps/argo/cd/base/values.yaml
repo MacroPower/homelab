@@ -27,6 +27,7 @@ configs:
   params:
     server.insecure: true
     server.disable.auth: true
+    applicationsetcontroller.enable.new.git.file.globbing: true
 
   cmp:
     create: true

@@ -9,6 +9,6 @@ mixin ChartMixin for protocol.AppProtocol:
             Chart = [
                 _obj
                 for _, _chart in config.charts
-                for _, _obj in helm.template(_chart)
+                for _, _obj in helm.template(_chart | { namespace = config.namespace })
             ]
         }

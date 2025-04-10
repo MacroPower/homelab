@@ -57,6 +57,7 @@ schema App(common.Metadata):
     }
     """
     tenantName?: str = "default"
+    fullName?: str = "{}-{}".format(tenantName, name)
     namespace?: str = "{}-{}".format(tenantName, name)
     environment?: str
     domainName?: str

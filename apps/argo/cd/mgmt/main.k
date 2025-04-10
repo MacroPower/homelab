@@ -2,9 +2,11 @@ import file
 import json
 
 import argo_cd_base
+import cluster
 import charts.argo_cd
 import charts.dragonfly_operator.api.v1alpha1 as dragonflyv1alpha1
 import konfig.models.frontend.secret
+import konfig.models.frontend.ingress
 import konfig.utils
 
 _baseValues = argo_cd_base.app.charts.argo_cd.values
@@ -75,6 +77,7 @@ _dragonfly = dragonflyv1alpha1.Dragonfly {
 }
 
 app = argo_cd_base.app | {
+    domainName = cluster.DOMAIN_NAME
     secretStores: {
         clusters = _secretStoreClusters
     }
@@ -95,5 +98,14 @@ app = argo_cd_base.app | {
     }
     extraResources: {
         redis = _dragonfly
+    }
+    ingresses.main = ingress.Ingress {
+        rules.main = {
+            host.fullName = "argo-cd.macro.network"
+            httpPaths.main.backend.service = {
+                name = "argo-cd-server"
+                port.name = "http"
+            }
+        }
     }
 }
