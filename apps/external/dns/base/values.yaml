@@ -11,10 +11,5 @@ sources:
 
 policy: upsert-only
 
-extraArgs:
-  - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
-  - --crd-source-kind=DNSEndpoint
-  - --ingress-class=traefik
-
 serviceMonitor:
   enabled: false

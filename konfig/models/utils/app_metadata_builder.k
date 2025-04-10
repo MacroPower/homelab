@@ -1,14 +1,5 @@
 AppMetadataBuilder = lambda config: any, options: ArgoCDOptions -> {str:} {
-    _options = options
-
-    if not options.compare?.ServerSideDiff:
-        _options.compare.ServerSideDiff = True
-    if not options.compare?.IncludeMutationWebhook:
-        _options.compare.IncludeMutationWebhook = True
-    if not options?.finalize:
-        _options.finalize = True
-
-    _argoCDOptionMetadataBuilder(_options) | {
+    _argoCDOptionMetadataBuilder(options) | {
         name: config?.name
         namespace: config?.namespace
         labels: config?.labels

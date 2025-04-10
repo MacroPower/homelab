@@ -51,6 +51,8 @@ schema TenantBackend[inputConfig: frontend.Tenant]:
         metadata = utils.AppMetadataBuilder(_metadata | {
             name = "${config.name}-shared"
         }, utils.ArgoCDOptions {
+            compare.ServerSideDiff = True
+            compare.IncludeMutationWebhook = True
             sync.Prune = "false"
             finalize = False
         })
@@ -159,6 +161,8 @@ schema TenantBackend[inputConfig: frontend.Tenant]:
         metadata = utils.AppMetadataBuilder(_metadata | {
             name = "${config.name}-apps"
         }, utils.ArgoCDOptions {
+            compare.ServerSideDiff = True
+            compare.IncludeMutationWebhook = True
             sync.Prune = "false"
             finalize = False
         })

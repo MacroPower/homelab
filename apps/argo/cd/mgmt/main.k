@@ -100,6 +100,7 @@ app = argo_cd_base.app | {
         redis = _dragonfly
     }
     ingresses.main = ingress.Ingress {
+        className = "cilium"
         rules.main = {
             httpPaths.main.backend.service = {
                 name = "argo-cd-server"

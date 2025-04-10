@@ -67,6 +67,8 @@ app = bootstrap.app | {
             name = "bootstrap"
             namespace = _argo_cd_namespace
         }, utils.ArgoCDOptions {
+            compare.ServerSideDiff = True
+            compare.IncludeMutationWebhook = True
             finalize = False
         })
         spec = {

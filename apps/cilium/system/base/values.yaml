@@ -32,6 +32,33 @@ endpointRoutes:
   ##
   enabled: false
 
+bgpControlPlane:
+  enabled: true
+  secretsNamespace:
+    create: true
+    name: cilium-bgp
+
+wellKnownIdentities:
+  enabled: true
+
+loadBalancer:
+  algorithm: maglev
+  mode: dsr
+  serviceTopology: true
+  l7:
+    backend: envoy
+
+envoyConfig:
+  enabled: true
+
+encryption:
+  enabled: true
+  type: wireguard
+
+## Enable BPF clock source probing for more efficient tick retrieval.
+##
+bpfClockProbe: false
+
 dnsPolicy: ClusterFirst
 
 operator:

@@ -8,11 +8,13 @@ app = external_dns_base.app | {
         unifiCreds = external_dns_base.unifiCreds
     }
     charts: {
-        external_dns_cloudflare = external_dns.Chart {
-            values: external_dns_base.cloudflareValues
-        }
         external_dns_unifi = external_dns.Chart {
-            values: external_dns_base.unifiValues
+            values: external_dns_base.unifiValues | {
+                extraArgs = [
+                    "--crd-source-apiversion=externaldns.k8s.io/v1alpha1"
+                    "--crd-source-kind=DNSEndpoint"
+                ]
+            }
         }
     }
 }
