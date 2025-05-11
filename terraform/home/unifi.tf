@@ -154,11 +154,12 @@ locals {
       ipv4    = "10.10.8.4"
       profile = local.unifi_device_types.k8s_node_rk1.profile
     }
-    # "kmgmt05" = {
-    #   desc    = "Node 2-3"
-    #   ipv4    = "10.10.8.5"
-    #   profile = local.unifi_device_types.k8s_node_rk1.profile
-    # }
+    "kmgmt05" = {
+      desc    = "Node 2-3"
+      mac     = "de:9a:68:e8:7e:24"
+      ipv4    = "10.10.8.5"
+      profile = local.unifi_device_types.k8s_node_rk1.profile
+    }
     "kmgmt06" = {
       desc    = "Node 3-3"
       mac     = "5a:04:d1:f7:7f:32"
