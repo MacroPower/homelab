@@ -1,6 +1,6 @@
 import charts.argo_cd.api.v1alpha1 as argov1alpha1
 import models.frontend
-import models.mixins
+# import models.mixins
 import models.metadata as kmd
 import models.resource
 import models.utils

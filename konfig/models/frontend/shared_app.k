@@ -1,15 +1,6 @@
-import models.frontend.configmap
 import models.frontend.secret
-import models.frontend.service
-import models.frontend.serviceaccount as sa
-import models.frontend.ingress
 import models.frontend.rbac
-import models.frontend.networkpolicy
-import models.frontend.storage
-import models.frontend.grafana
 import models.frontend.common
-
-import helm
 
 schema SharedApp(common.Metadata):
     """Abstraction of Cluster scoped Application configuration.

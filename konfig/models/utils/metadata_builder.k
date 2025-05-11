@@ -1,5 +1,3 @@
-import models.metadata
-
 MetadataBuilder = lambda config -> {str:} {
     {
         name: config?.name
