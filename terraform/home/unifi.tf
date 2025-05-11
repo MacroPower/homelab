@@ -341,6 +341,20 @@ locals {
         "lab",
       ]
     }
+    kmgmt_services = {
+      name            = "kmgmt Services"
+      id              = 110
+      mask            = 16
+      type            = "isolated"
+      disable_ipv6_ra = true
+      disable_dhcp    = true
+    }
+    kmgmt_pods = {
+      name = "kmgmt Pods"
+      id   = 111
+      mask = 16
+      type = "reservation"
+    }
     k8s_services = {
       name            = "home Services"
       id              = 112
