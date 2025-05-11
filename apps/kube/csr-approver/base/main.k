@@ -3,7 +3,7 @@ import konfig.models.frontend
 import konfig.models.templates.networkpolicy
 import kube
 
-app: frontend.App {
+app = frontend.App {
     name = "csr-approver"
     tenantName = kube.tenant.name
 

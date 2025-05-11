@@ -3,4 +3,4 @@ import konfig.models.frontend
 
 tenant = {{.TenantName}}_tenant.tenantConfiguration
 
-shared: frontend.SharedApp {}
+shared = frontend.SharedApp {}

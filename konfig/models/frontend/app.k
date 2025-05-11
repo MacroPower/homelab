@@ -52,7 +52,7 @@ schema App(common.Metadata):
     --------
     import models.frontend
 
-    app: frontend.App {
+    app = frontend.App {
         name = "foobar"
     }
     """

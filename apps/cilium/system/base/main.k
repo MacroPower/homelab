@@ -9,7 +9,7 @@ import konfig.utils
 
 _valueFile = utils.abs_path(file.current(), "values.yaml")
 
-app: frontend.App {
+app = frontend.App {
     name = "system"
     tenantName = cilium_shared.tenant.name
 

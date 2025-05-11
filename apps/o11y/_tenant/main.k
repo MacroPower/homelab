@@ -1,6 +1,6 @@
 import konfig.models.frontend
 
-tenantConfiguration: frontend.Tenant {
+tenantConfiguration = frontend.Tenant {
     name = "o11y"
 
     secretStores.default = {

@@ -1,5 +1,5 @@
 import konfig.models.frontend
 
-tenantConfiguration: frontend.Tenant {
+tenantConfiguration = frontend.Tenant {
     name = "kube"
 }

@@ -12,7 +12,7 @@ cilium_system_ns = corev1.Namespace {
     metadata.name = "cilium-system"
 }
 
-app: frontend.App {
+app = frontend.App {
     name = "bootstrap"
     tenantName = "default"
 

@@ -7,7 +7,7 @@ import konfig.utils
 
 _values = utils.read_yaml(file.current(), "values.yaml")
 
-app: frontend.App {
+app = frontend.App {
     name = "cd"
     tenantName = argo.tenant.name
     secretStore = argo.shared.secretStores.default.name

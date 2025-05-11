@@ -3,7 +3,7 @@ import konfig.models.frontend
 import konfig.models.templates.networkpolicy
 import kube_tenant
 
-app: frontend.App {
+app = frontend.App {
     name = "descheduler"
     tenantName = kube_tenant.tenantConfiguration.name
 

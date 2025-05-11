@@ -3,4 +3,4 @@ import konfig.models.frontend
 
 tenant = kube_tenant.tenantConfiguration
 
-shared: frontend.SharedApp {}
+shared = frontend.SharedApp {}

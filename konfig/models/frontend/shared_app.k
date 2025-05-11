@@ -31,7 +31,7 @@ schema SharedApp(common.Metadata):
     --------
     import models.frontend
 
-    app: frontend.SharedApp {
+    app = frontend.SharedApp {
         name = "foobar"
     }
     """

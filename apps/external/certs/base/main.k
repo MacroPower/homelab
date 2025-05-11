@@ -37,7 +37,7 @@ _cloudflareCA = certmanagerv1.ClusterIssuer {
     }
 }
 
-app: frontend.App {
+app = frontend.App {
     name = "certs"
     tenantName = external.tenant.name
     secretStore = external.shared.secretStores.default.name

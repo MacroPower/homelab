@@ -14,7 +14,7 @@ import o11y_tenant
 
 tenantConfiguration = o11y_tenant.tenantConfiguration
 
-app: frontend.App {
+app = frontend.App {
     name = "grafana"
 
     tenantName = tenantConfiguration.name
