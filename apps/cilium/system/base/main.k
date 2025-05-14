@@ -45,24 +45,4 @@ app = frontend.App {
             ]
         }
     }
-
-    extraResources.ipPool = ciliumv2alpha1.CiliumLoadBalancerIPPool {
-        metadata: {
-            name = "cilium-ingress"
-        }
-        spec: {
-            blocks = [
-                {
-                    cidr = "10.10.30.0/24"
-                }
-                {
-                    cidr = "fc42:0:0:a::10:0/108"
-                }
-            ]
-            allowFirstLastIPs = "No"
-            serviceSelector.matchLabels = {
-                "cilium.io/ingress": "true"
-            }
-        }
-    }
 }
