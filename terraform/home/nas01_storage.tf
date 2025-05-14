@@ -65,8 +65,8 @@ module "nas01_datasets_primary" {
       quota_bytes = 50 * local.TiB
     },
     {
-      path        = "/jailmaker"
-      description = "Jails"
+      path        = "/containers"
+      description = "Containers"
       encryption  = "AES-128-GCM"
       quota_bytes = 1 * local.TiB
     },
