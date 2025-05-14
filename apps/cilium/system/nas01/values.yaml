@@ -14,5 +14,8 @@ k8sClientRateLimit:
 ipv4NativeRoutingCIDR: 10.133.0.0/16
 ipv6NativeRoutingCIDR: fc42:0:0:85::/64
 
+operator:
+  replicas: 1
+
 ingressController:
   enabled: false
