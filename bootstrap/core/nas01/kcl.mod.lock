@@ -1,16 +1,12 @@
 [dependencies]
+  [dependencies.bootstrap]
+    name = "bootstrap"
+    full_name = "bootstrap_core_base_0.1.0"
+    version = "0.1.0"
   [dependencies.charts]
     name = "charts"
     full_name = "charts_0.1.0"
     version = "0.1.0"
-  [dependencies.cilium]
-    name = "cilium"
-    full_name = "cilium_0.4.1"
-    version = "0.4.1"
-    sum = "YmVvSokDKgHSwDc7XRfVyNdniLwF+lA57/Vgi60MDGo="
-    reg = "ghcr.io"
-    repo = "kcl-lang/cilium"
-    oci_tag = "0.4.1"
   [dependencies.filepath]
     name = "filepath"
     full_name = "filepath_0.14.0"

@@ -1,4 +1,8 @@
 [dependencies]
+  [dependencies.argo]
+    name = "argo"
+    full_name = "argo_0.1.0"
+    version = "0.1.0"
   [dependencies.argo_cd]
     name = "argo_cd"
     full_name = "argo_cd_base_0.1.0"
@@ -23,6 +27,10 @@
     reg = "ghcr.io"
     repo = "kcl-lang/cilium"
     oci_tag = "0.4.1"
+  [dependencies.cilium_shared]
+    name = "cilium_shared"
+    full_name = "cilium_shared_0.1.0"
+    version = "0.1.0"
   [dependencies.cilium_system]
     name = "cilium_system"
     full_name = "cilium_system_mgmt_0.1.0"
@@ -37,20 +45,20 @@
     version = "0.1.0"
   [dependencies.filepath]
     name = "filepath"
-    full_name = "filepath_0.12.0"
-    version = "0.12.0"
-    sum = "zok5+7YXY/qutpo/CnjoJRbrvjWclw40zkBrB2peSa4="
+    full_name = "filepath_0.14.0"
+    version = "0.14.0"
+    sum = "6LyAmVYknZX+dM1g0leJ3suegpWXkb8PywaiWDjZ8jc="
     reg = "ghcr.io"
     repo = "macropower/kclipper/filepath"
-    oci_tag = "0.12.0"
+    oci_tag = "0.14.0"
   [dependencies.helm]
     name = "helm"
-    full_name = "helm_0.12.0"
-    version = "0.12.0"
-    sum = "7vrtMRNYMwG+F+lTKbmp0eC/yh0mHwWv0rYV4oP5h9I="
+    full_name = "helm_0.14.0"
+    version = "0.14.0"
+    sum = "ue7TPgLmk5KLbCexF6XSemaq1VdC2y8RQU7YOVkBw0U="
     reg = "ghcr.io"
     repo = "macropower/kclipper/helm"
-    oci_tag = "0.12.0"
+    oci_tag = "0.14.0"
   [dependencies.json_merge_patch]
     name = "json_merge_patch"
     full_name = "json_merge_patch_0.1.1"
@@ -71,6 +79,10 @@
     name = "konfig"
     full_name = "konfig_0.0.1"
     version = "0.0.1"
+  [dependencies.kube]
+    name = "kube"
+    full_name = "kube_0.1.0"
+    version = "0.1.0"
   [dependencies.kube_csr_approver]
     name = "kube_csr_approver"
     full_name = "kube_csr_approver_mgmt_0.1.0"
