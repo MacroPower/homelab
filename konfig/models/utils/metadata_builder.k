@@ -1,8 +1,8 @@
-MetadataBuilder = lambda config -> {str:} {
+MetadataBuilder = lambda metadata -> {str:} {
     {
-        name: config?.name
-        namespace: config?.namespace
-        labels: config?.labels
-        annotations: config?.annotations
+        name: metadata?.name
+        namespace: metadata?.namespace
+        labels: metadata?.labels
+        annotations: metadata?.annotations
     }
 }
