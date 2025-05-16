@@ -1,0 +1,57 @@
+[dependencies]
+  [dependencies.charts]
+    name = "charts"
+    full_name = "charts_0.1.0"
+    version = "0.1.0"
+  [dependencies.cluster]
+    name = "cluster"
+    full_name = "cluster_mgmt_0.1.0"
+    version = "0.1.0"
+  [dependencies.external]
+    name = "external"
+    full_name = "external_0.1.0"
+    version = "0.1.0"
+  [dependencies.external_certs_base]
+    name = "external_certs_base"
+    full_name = "external_certs_base_0.1.0"
+    version = "0.1.0"
+  [dependencies.external_tenant]
+    name = "external_tenant"
+    full_name = "external_tenant_0.1.0"
+    version = "0.1.0"
+  [dependencies.filepath]
+    name = "filepath"
+    full_name = "filepath_0.14.0"
+    version = "0.14.0"
+    sum = "6LyAmVYknZX+dM1g0leJ3suegpWXkb8PywaiWDjZ8jc="
+    reg = "ghcr.io"
+    repo = "macropower/kclipper/filepath"
+    oci_tag = "0.14.0"
+  [dependencies.helm]
+    name = "helm"
+    full_name = "helm_0.14.0"
+    version = "0.14.0"
+    sum = "ue7TPgLmk5KLbCexF6XSemaq1VdC2y8RQU7YOVkBw0U="
+    reg = "ghcr.io"
+    repo = "macropower/kclipper/helm"
+    oci_tag = "0.14.0"
+  [dependencies.json_merge_patch]
+    name = "json_merge_patch"
+    full_name = "json_merge_patch_0.1.1"
+    version = "0.1.1"
+    sum = "o1aamShk1L2MGjnN9u3IErRZ3xBNDxgmFxXsGVMt8Wk="
+    reg = "ghcr.io"
+    repo = "kcl-lang/json_merge_patch"
+    oci_tag = "0.1.1"
+  [dependencies.k8s]
+    name = "k8s"
+    full_name = "k8s_1.31.2"
+    version = "1.31.2"
+    sum = "xBZgPsnpVVyWBpahuPQHReeRx28eUHGFoaPeqbct+vs="
+    reg = "ghcr.io"
+    repo = "kcl-lang/k8s"
+    oci_tag = "1.31.2"
+  [dependencies.konfig]
+    name = "konfig"
+    full_name = "konfig_0.0.1"
+    version = "0.0.1"

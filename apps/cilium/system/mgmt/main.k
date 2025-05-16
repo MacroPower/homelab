@@ -9,6 +9,7 @@ _valueFile = utils.abs_path(file.current(), "values.yaml")
 app = cilium_system_base.app | {
     charts.cilium.valueFiles += [_valueFile]
 
+    extraResources.bgpPeering = cilium_system_base.unifiBGPPeering
     extraResources.ipPool = ciliumv2alpha1.CiliumLoadBalancerIPPool {
         metadata: {
             name = "cilium-ingress"
@@ -23,9 +24,7 @@ app = cilium_system_base.app | {
                 }
             ]
             allowFirstLastIPs = "No"
-            serviceSelector.matchLabels = {
-                "cilium.io/ingress": "true"
-            }
+            serviceSelector.matchLabels = cilium_system_base.ciliumIngressLabels
         }
     }
 }
