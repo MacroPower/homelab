@@ -78,7 +78,24 @@ prometheus:
     trustCRDsExist: true
 
 hubble:
-  enabled: false
+  enabled: true
+
+  relay:
+    enabled: true
+    replicas: 1
+    rollOutPods: true
+    resources: {}
+
+  ui:
+    enabled: true
+    replicas: 1 # https://github.com/cilium/hubble-ui/issues/833
+    rollOutPods: true
+    ingress:
+      enabled: false
+    frontend:
+      resources: {}
+    backend:
+      resources: {}
 
 securityContext:
   capabilities:

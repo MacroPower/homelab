@@ -1,5 +1,6 @@
 import file
 
+import cluster
 import cilium_system_base
 import charts.cilium.api.v2alpha1 as ciliumv2alpha1
 import konfig.utils
@@ -7,6 +8,8 @@ import konfig.utils
 _valueFile = utils.abs_path(file.current(), "values.yaml")
 
 app = cilium_system_base.app | {
+    domainName = cluster.DOMAIN_NAME
+
     charts.cilium.valueFiles += [_valueFile]
 
     extraResources.ipPool = ciliumv2alpha1.CiliumLoadBalancerIPPool {

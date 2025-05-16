@@ -4,6 +4,7 @@ import charts.cilium
 import charts.cilium.api.v2alpha1 as ciliumv2alpha1
 import cilium_shared
 import konfig.models.frontend
+import konfig.models.frontend.ingress
 import konfig.models.utils as modelutils
 import konfig.utils
 
@@ -46,5 +47,17 @@ app = frontend.App {
 
     charts.cilium = cilium.Chart {
         valueFiles: [_valueFile]
+    }
+
+    ingresses.main = ingress.Ingress {
+        name = "hubble-ui"
+        className = "cilium"
+        rules.main = {
+            host.name = "hubble"
+            httpPaths.main.backend.service = {
+                name = "hubble-ui"
+                port.name = "http"
+            }
+        }
     }
 }
