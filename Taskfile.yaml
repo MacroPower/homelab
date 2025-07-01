@@ -5,7 +5,7 @@ version: "3"
 dotenv: ["{{.ROOT_DIR}}/.env", "{{.HOME}}/.env"]
 
 vars:
-  TALOS_DIR: "{{.ROOT_DIR}}/talos"
+  TALOS_DIR: "{{.ROOT_DIR}}/talos-management"
   TERRAFORM_DIR: "{{.ROOT_DIR}}/terraform"
   ARGO_APP_DIR: "{{.ROOT_DIR}}/applications"
   KYVERNO_POLICY_DIR: "{{.ROOT_DIR}}/applications/base/kyverno-policies/policies"

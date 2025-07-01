@@ -126,7 +126,6 @@ in {
       "--cluster-init"
       "--node-name=${hostName}"
       "--node-ip=${ipv4Address},${ipv6Address}"
-      "--cluster-domain=${fqdn}"
       "--service-cidr=${serviceIpv4Cidr},${serviceIpv6Cidr}"
       "--cluster-cidr=${clusterIpv4Cidr},${clusterIpv6Cidr}"
       "--cluster-dns=${clusterIpv4Dns},${clusterIpv6Dns}"

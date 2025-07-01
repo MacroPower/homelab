@@ -6,7 +6,7 @@ vars:
   TPI_BIN_DIR: "{{.ROOT_DIR}}/.task/bin"
   TPI_VERSION: "v1.0.5"
   TPI_RELEASE: "x86_64-apple-darwin"
-  TPI_DOMAIN: home.macro.network
+  TPI_DOMAIN: cin.macro.network
   TPI_HOST_PREFIX: turingpi
   TPI_AUTH_ARGS: "--user=$TPI_USERNAME --password=$TPI_PASSWORD"
   DOPPLER_PROJECT: nodes
