@@ -1,7 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.11.0/.schema/devbox.schema.json",
   "packages": {
-    "github:budimanjojo/talhelper/v3.0.19": "",
+    "github:budimanjojo/talhelper/v3.0.31": "",
+    "github:macropower/nur-packages#kat": "",
+    "github:macropower/nur-packages#kclipper": "",
+    "github:macropower/nur-packages#kcl-lsp": "",
     "argocd": "2.14.2",
     "cilium-cli": "0.18.0",
     "doppler": "3.72.0",

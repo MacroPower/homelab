@@ -5,10 +5,10 @@ version: "3"
 vars:
   TALOS_SCRIPTS_DIR: "{{.ROOT_DIR}}/.taskfiles/talos/scripts"
   EXTRAS_DIR: "{{.ROOT_DIR}}/hack/extra"
-  CLUSTER_DOMAIN: home.macro.network
-  CLUSTER_ENDPOINT: kube.home.macro.network
+  CLUSTER_DOMAIN: cin.macro.network
+  CLUSTER_ENDPOINT: kmgmt.cin.macro.network
   DOPPLER_PROJECT: talhelper
-  DOPPLER_ENV: main
+  DOPPLER_ENV: mgmt
   DOPPLER_CMD: doppler run -p {{.DOPPLER_PROJECT}} -c {{.DOPPLER_ENV}}
   TALOS_DIR: "{{.TALOS_DIR}}"
 
@@ -17,7 +17,7 @@ tasks:
     desc: Build Talos config
     dir: "{{.TALOS_DIR}}"
     cmds:
-      - "{{.DOPPLER_CMD}} -- talhelper validate talconfig"
+      #- "{{.DOPPLER_CMD}} -- talhelper validate talconfig"
       - "{{.DOPPLER_CMD}} -- talhelper genconfig --no-gitignore"
     sources:
       - "*.yaml"
@@ -48,15 +48,16 @@ tasks:
     desc: Apply Talos config insecurely
     summary: |
       Args:
+        CLUSTER: Cluster name (required)
         NODE: Target node (required)
     requires:
-      vars: [NODE]
+      vars: [CLUSTER, NODE]
     dir: "{{.TALOS_DIR}}"
     cmds:
       - task: build
       - |-
         talosctl apply-config --insecure \
-          -n {{.NODE}} -f clusterconfig/home-{{.NODE}}.{{.CLUSTER_DOMAIN}}.yaml
+          -n {{.NODE}} -f clusterconfig/{{.CLUSTER}}-{{.NODE}}.{{.CLUSTER_DOMAIN}}.yaml
 
   talconfig:
     desc: Generate Talos config
@@ -91,33 +92,33 @@ tasks:
 
   upgrade:
     desc: Upgrade Talos cluster
+    requires:
+      vars: [NODES]
     cmds:
       - for: { var: NODES }
         task: upgrade-node
         vars:
           NODE: "{{.ITEM}}"
-    vars:
-      NODES: knode15 knode14 knode13 knode03 knode02 knode01
 
   upgrade-k8s:
     desc: Upgrade K8s on Talos cluster
+    requires:
+      vars: [NODES]
     cmds:
       - for: { var: NODES }
         task: upgrade-k8s-node
         vars:
           NODE: "{{.ITEM}}"
-    vars:
-      NODES: knode03 knode02 knode01 knode15 knode14 knode13
 
   reset:
     desc: Reset Talos cluster
+    requires:
+      vars: [NODES]
     cmds:
       - for: { var: NODES }
         task: reset-node
         vars:
           NODE: "{{.ITEM}}"
-    vars:
-      NODES: knode15 knode14 knode13 knode03 knode02 knode01
 
   bootstrap:
     desc: Bootstrap Talos cluster

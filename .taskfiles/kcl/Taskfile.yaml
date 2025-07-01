@@ -11,7 +11,7 @@ tasks:
       F: '{{.F | default "base"}}'
     dir: "{{.ROOT_DIR}}/apps/{{.APP}}/{{.F}}"
     cmds:
-      - kcl run
+      - kat
 
   gen:
     desc: Generate KCL code
@@ -20,3 +20,19 @@ tasks:
       - |-
         kcl export konfig/models/backend/ -S BackendTenantPatch \
           --output=konfig/models/frontend/patch.schema.json
+
+  bootstrap:
+    desc: Bootstrap a cluster
+    vars:
+      F: '{{.F | default "base"}}'
+    dir: "{{.ROOT_DIR}}/bootstrap/core/{{.F}}"
+    dotenv:
+      - .env
+    cmds:
+      - kcl run
+
+  create-app:
+    desc: Create a new app
+    interactive: true
+    cmds:
+      - go run apps/.template/main.go
