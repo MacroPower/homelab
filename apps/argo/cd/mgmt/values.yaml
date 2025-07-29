@@ -15,27 +15,6 @@ configs:
     resource.compareoptions: |
       ignoreDifferencesOnResourceUpdates: true
 
-    ## Dex configuration for Authentik
-    ## Ref: https://docs.goauthentik.io/integrations/services/argocd/#argocd-configuration
-    ## Ref: https://dexidp.io/docs/connectors/oauth/
-    ##
-    url: https://argo-cd.macro.network
-    dex.config: |
-      connectors:
-        - name: authentik
-          id: authentik
-          type: oidc
-          config:
-            issuer: https://authentik.home.macro.network/application/o/argocd/
-            clientID: $dex.authentik.clientID
-            clientSecret: $dex.authentik.clientSecret
-            insecureEnableGroups: true
-            scopes:
-              - openid
-              - profile
-              - email
-
-
     resource.exclusions: |
       - apiGroups:
           - cilium.io

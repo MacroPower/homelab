@@ -29,11 +29,15 @@ _argoCreds = secret.ExternalSecret {
     name = "argocd-credentials"
     refreshInterval = "0"
     data: {
-        "${_redisSecretKey}" = {
+        REDIS_PASSWORD = {
             sourceRef.generatorRef = {
                 name = "alphanumeric-password"
             }
         }
+    }
+    target.template.data: {
+        "redis-username" = "default"
+        "${_redisSecretKey}" = "{{ .REDIS_PASSWORD }}"
     }
 }
 
@@ -87,7 +91,6 @@ app = argo_cd_base.app | {
             externalRedis: {
                 host = "${_dragonflyName}.${_namespace}.svc.cluster.local"
                 port = 6379
-                username = "default"
                 existingSecret = _argoCreds.name
             }
         }

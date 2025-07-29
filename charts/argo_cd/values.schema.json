@@ -263,6 +263,13 @@
           "title": "deploymentAnnotations",
           "type": "object"
         },
+        "deploymentLabels": {
+          "additionalProperties": true,
+          "description": "Labels for the ApplicationSet controller Deployment",
+          "required": [],
+          "title": "deploymentLabels",
+          "type": "object"
+        },
         "deploymentStrategy": {
           "additionalProperties": true,
           "description": "Deployment strategy to be added to the ApplicationSet controller Deployment",
@@ -722,6 +729,22 @@
           "title": "name",
           "type": "string"
         },
+        "networkPolicy": {
+          "additionalProperties": true,
+          "description": "Default ApplicationSet controller's network policy",
+          "properties": {
+            "create": {
+              "default": false,
+              "description": "Default network policy rules used by ApplicationSet controller",
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "networkPolicy",
+          "type": "object"
+        },
         "nodeSelector": {
           "additionalProperties": true,
           "description": "[Node selector]",
@@ -1079,6 +1102,13 @@
           "title": "deploymentAnnotations",
           "type": "object"
         },
+        "deploymentLabels": {
+          "additionalProperties": true,
+          "description": "Labels for the commit server Deployment",
+          "required": [],
+          "title": "deploymentLabels",
+          "type": "object"
+        },
         "deploymentStrategy": {
           "additionalProperties": true,
           "description": "Deployment strategy to be added to the commit server Deployment",
@@ -1297,6 +1327,22 @@
           "title": "name",
           "type": "string"
         },
+        "networkPolicy": {
+          "additionalProperties": true,
+          "description": "Default commit server's network policy",
+          "properties": {
+            "create": {
+              "default": false,
+              "description": "Default network policy rules used by commit server",
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "networkPolicy",
+          "type": "object"
+        },
         "nodeSelector": {
           "additionalProperties": true,
           "description": "[Node selector]",
@@ -1400,6 +1446,20 @@
               "required": [],
               "title": "labels",
               "type": "object"
+            },
+            "port": {
+              "default": 8086,
+              "description": "commit server service port",
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            },
+            "portName": {
+              "default": "server",
+              "description": "commit server service port name",
+              "required": [],
+              "title": "portName",
+              "type": "string"
             }
           },
           "required": [],
@@ -1511,7 +1571,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v0.5.0",
+              "default": "v0.10.0",
               "description": "Tag of the configmap shellcheck test image.",
               "required": [],
               "title": "tag",
@@ -1590,6 +1650,69 @@
               "required": [],
               "title": "exec.enabled",
               "type": "boolean"
+            },
+            "resource.customizations.ignoreResourceUpdates.ConfigMap": {
+              "default": "jqPathExpressions:\n  # Ignore the cluster-autoscaler status\n  - '.metadata.annotations.\"cluster-autoscaler.kubernetes.io/last-updated\"'\n  # Ignore the annotation of the legacy Leases election\n  - '.metadata.annotations.\"control-plane.alpha.kubernetes.io/leader\"'\n",
+              "description": "Ignore the cluster-autoscaler status",
+              "required": [],
+              "title": "resource.customizations.ignoreResourceUpdates.ConfigMap",
+              "type": "string"
+            },
+            "resource.customizations.ignoreResourceUpdates.Endpoints": {
+              "default": "jsonPointers:\n  - /metadata\n  - /subsets\n",
+              "description": "Ignores update if Endpoints is not excluded globally",
+              "required": [],
+              "title": "resource.customizations.ignoreResourceUpdates.Endpoints",
+              "type": "string"
+            },
+            "resource.customizations.ignoreResourceUpdates.all": {
+              "default": "jsonPointers:\n  - /status\n",
+              "description": "Ignoring status for all resources. An update will still be sent if the status update causes the health to change.",
+              "required": [],
+              "title": "resource.customizations.ignoreResourceUpdates.all",
+              "type": "string"
+            },
+            "resource.customizations.ignoreResourceUpdates.apps_ReplicaSet": {
+              "default": "jqPathExpressions:\n  - '.metadata.annotations.\"deployment.kubernetes.io/desired-replicas\"'\n  - '.metadata.annotations.\"deployment.kubernetes.io/max-replicas\"'\n  - '.metadata.annotations.\"rollout.argoproj.io/desired-replicas\"'\n",
+              "description": "Ignore the common scaling annotations",
+              "required": [],
+              "title": "resource.customizations.ignoreResourceUpdates.apps_ReplicaSet",
+              "type": "string"
+            },
+            "resource.customizations.ignoreResourceUpdates.argoproj.io_Application": {
+              "default": "jqPathExpressions:\n  - '.metadata.annotations.\"notified.notifications.argoproj.io\"'\n  - '.metadata.annotations.\"argocd.argoproj.io/refresh\"'\n  - '.metadata.annotations.\"argocd.argoproj.io/hydrate\"'\n  - '.operation'\n",
+              "description": "Some Application fields are generated and not related to the application updates itself\n# The Application itself is already watched by the controller lister, but this configuration is applied for apps of apps",
+              "required": [],
+              "title": "resource.customizations.ignoreResourceUpdates.argoproj.io_Application",
+              "type": "string"
+            },
+            "resource.customizations.ignoreResourceUpdates.argoproj.io_Rollout": {
+              "default": "jqPathExpressions:\n  - '.metadata.annotations.\"notified.notifications.argoproj.io\"'\n",
+              "description": "Ignore Argo Rollouts generated fields",
+              "required": [],
+              "title": "resource.customizations.ignoreResourceUpdates.argoproj.io_Rollout",
+              "type": "string"
+            },
+            "resource.customizations.ignoreResourceUpdates.autoscaling_HorizontalPodAutoscaler": {
+              "default": "jqPathExpressions:\n  - '.metadata.annotations.\"autoscaling.alpha.kubernetes.io/behavior\"'\n  - '.metadata.annotations.\"autoscaling.alpha.kubernetes.io/conditions\"'\n  - '.metadata.annotations.\"autoscaling.alpha.kubernetes.io/metrics\"'\n  - '.metadata.annotations.\"autoscaling.alpha.kubernetes.io/current-metrics\"'\n",
+              "description": "Legacy annotations used on HPA autoscaling/v1",
+              "required": [],
+              "title": "resource.customizations.ignoreResourceUpdates.autoscaling_HorizontalPodAutoscaler",
+              "type": "string"
+            },
+            "resource.customizations.ignoreResourceUpdates.discovery.k8s.io_EndpointSlice": {
+              "default": "jsonPointers:\n  - /metadata\n  - /endpoints\n  - /ports\n",
+              "description": "Ignores update if EndpointSlice is not excluded globally",
+              "required": [],
+              "title": "resource.customizations.ignoreResourceUpdates.discovery.k8s.io_EndpointSlice",
+              "type": "string"
+            },
+            "resource.exclusions": {
+              "default": "### Network resources created by the Kubernetes control plane and excluded to reduce the number of watched events and UI clutter\n- apiGroups:\n  - ''\n  - discovery.k8s.io\n  kinds:\n  - Endpoints\n  - EndpointSlice\n### Internal Kubernetes resources excluded reduce the number of watched events\n- apiGroups:\n  - coordination.k8s.io\n  kinds:\n  - Lease\n### Internal Kubernetes Authz/Authn resources excluded reduce the number of watched events\n- apiGroups:\n  - authentication.k8s.io\n  - authorization.k8s.io\n  kinds:\n  - SelfSubjectReview\n  - TokenReview\n  - LocalSubjectAccessReview\n  - SelfSubjectAccessReview\n  - SelfSubjectRulesReview\n  - SubjectAccessReview\n### Intermediate Certificate Request excluded reduce the number of watched events\n- apiGroups:\n  - certificates.k8s.io\n  kinds:\n  - CertificateSigningRequest\n- apiGroups:\n  - cert-manager.io\n  kinds:\n  - CertificateRequest\n### Cilium internal resources excluded reduce the number of watched events and UI Clutter\n- apiGroups:\n  - cilium.io\n  kinds:\n  - CiliumIdentity\n  - CiliumEndpoint\n  - CiliumEndpointSlice\n### Kyverno intermediate and reporting resources excluded reduce the number of watched events and improve performance\n- apiGroups:\n  - kyverno.io\n  - reports.kyverno.io\n  - wgpolicyk8s.io\n  kinds:\n  - PolicyReport\n  - ClusterPolicyReport\n  - EphemeralReport\n  - ClusterEphemeralReport\n  - AdmissionReport\n  - ClusterAdmissionReport\n  - BackgroundScanReport\n  - ClusterBackgroundScanReport\n  - UpdateRequest\n",
+              "description": "Resource Exclusion/Inclusion",
+              "required": [],
+              "title": "resource.exclusions",
+              "type": "string"
             },
             "server.rbac.log.enforce.enable": {
               "default": false,
@@ -1777,6 +1900,13 @@
               "description": "Create the argocd-cmd-params-cm configmap\nIf false, it is expected the configmap will be created by something else.",
               "required": [],
               "title": "create",
+              "type": "boolean"
+            },
+            "hydrator.enabled": {
+              "default": false,
+              "description": "Enable the hydrator feature (hydrator is in Alpha phase)",
+              "required": [],
+              "title": "hydrator.enabled",
               "type": "boolean"
             },
             "otlp.address": {
@@ -2289,6 +2419,13 @@
           "title": "deploymentAnnotations",
           "type": "object"
         },
+        "deploymentLabels": {
+          "additionalProperties": true,
+          "description": "Labels for the application controller Deployment",
+          "required": [],
+          "title": "deploymentLabels",
+          "type": "object"
+        },
         "dnsConfig": {
           "additionalProperties": true,
           "description": "[DNS configuration]",
@@ -2669,6 +2806,22 @@
           "title": "name",
           "type": "string"
         },
+        "networkPolicy": {
+          "additionalProperties": true,
+          "description": "Default application controller's network policy",
+          "properties": {
+            "create": {
+              "default": false,
+              "description": "Default network policy rules used by application controller",
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "networkPolicy",
+          "type": "object"
+        },
         "nodeSelector": {
           "additionalProperties": true,
           "description": "[Node selector]",
@@ -2917,7 +3070,7 @@
       "properties": {
         "additionalLabels": {
           "additionalProperties": true,
-          "description": "Addtional labels to be added to all CRDs",
+          "description": "Additional labels to be added to all CRDs",
           "required": [],
           "title": "additionalLabels",
           "type": "object"
@@ -3126,6 +3279,13 @@
           "title": "deploymentAnnotations",
           "type": "object"
         },
+        "deploymentLabels": {
+          "additionalProperties": true,
+          "description": "Labels for the Dex server Deployment",
+          "required": [],
+          "title": "deploymentLabels",
+          "type": "object"
+        },
         "deploymentStrategy": {
           "additionalProperties": true,
           "description": "Deployment strategy to be added to the Dex server Deployment",
@@ -3225,7 +3385,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v2.42.0",
+              "default": "v2.43.1",
               "description": "Dex image tag",
               "required": [],
               "title": "tag",
@@ -3362,20 +3522,6 @@
           "required": [],
           "title": "livenessProbe",
           "type": "object"
-        },
-        "logFormat": {
-          "default": "",
-          "description": "Dex log format. Either `text` or `json`",
-          "required": [],
-          "title": "logFormat",
-          "type": "string"
-        },
-        "logLevel": {
-          "default": "",
-          "description": "Dex log level. One of: `debug`, `info`, `warn`, `error`",
-          "required": [],
-          "title": "logLevel",
-          "type": "string"
         },
         "metrics": {
           "additionalProperties": true,
@@ -3516,6 +3662,22 @@
           "required": [],
           "title": "name",
           "type": "string"
+        },
+        "networkPolicy": {
+          "additionalProperties": true,
+          "description": "Default Dex server's network policy",
+          "properties": {
+            "create": {
+              "default": false,
+              "description": "Default network policy rules used by Dex server",
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "networkPolicy",
+          "type": "object"
         },
         "nodeSelector": {
           "additionalProperties": true,
@@ -3833,7 +3995,7 @@
           "type": "object"
         },
         "image": {
-          "default": "oliver006/redis_exporter",
+          "default": "quay.io/oliver006/redis_exporter",
           "description": "Exporter image",
           "required": [],
           "title": "image",
@@ -4056,7 +4218,7 @@
           "type": "object"
         },
         "tag": {
-          "default": "v1.57.0",
+          "default": "v1.67.0",
           "description": "Exporter image tag",
           "required": [],
           "title": "tag",
@@ -4073,7 +4235,7 @@
       "properties": {
         "existingSecret": {
           "default": "",
-          "description": "The name of an existing secret with Redis (must contain key `redis-password`) and Sentinel credentials.\nWhen it's set, the `externalRedis.password` parameter is ignored",
+          "description": "The name of an existing secret with Redis (must contain key `redis-password`. And should contain `redis-username` if username is not `default`) and Sentinel credentials.\nWhen it's set, the `externalRedis.username` and `externalRedis.password` parameters are ignored",
           "required": [],
           "title": "existingSecret",
           "type": "string"
@@ -4160,13 +4322,6 @@
       "required": [],
       "title": "extraVolumes",
       "type": "array"
-    },
-    "fullNameOverride": {
-      "default": "",
-      "description": "Full name of the Redis HA Resources",
-      "required": [],
-      "title": "fullNameOverride",
-      "type": "string"
     },
     "fullnameOverride": {
       "default": "",
@@ -4269,6 +4424,13 @@
           "description": "Annotations for the all deployed Deployments",
           "required": [],
           "title": "deploymentAnnotations",
+          "type": "object"
+        },
+        "deploymentLabels": {
+          "additionalProperties": true,
+          "description": "Labels for the all deployed Deployments",
+          "required": [],
+          "title": "deploymentLabels",
           "type": "object"
         },
         "deploymentStrategy": {
@@ -4682,7 +4844,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "2.9.4-alpine",
+              "default": "3.0.8-alpine",
               "description": "HAProxy Image Tag",
               "required": [],
               "title": "tag",
@@ -5028,7 +5190,7 @@
           "additionalProperties": true,
           "properties": {
             "automountToken": {
-              "default": false,
+              "default": true,
               "required": [],
               "title": "automountToken",
               "type": "boolean"
@@ -5209,7 +5371,7 @@
           "type": "string"
         },
         "tag": {
-          "default": "7.2.4-alpine",
+          "default": "7.2.7-alpine",
           "description": "Redis image tag",
           "required": [],
           "title": "tag",
@@ -5533,6 +5695,13 @@
           "title": "deploymentAnnotations",
           "type": "object"
         },
+        "deploymentLabels": {
+          "additionalProperties": true,
+          "description": "Labels for the notifications controller Deployment",
+          "required": [],
+          "title": "deploymentLabels",
+          "type": "object"
+        },
         "deploymentStrategy": {
           "additionalProperties": true,
           "description": "Deployment strategy to be added to the notifications controller Deployment",
@@ -5721,20 +5890,6 @@
           "title": "livenessProbe",
           "type": "object"
         },
-        "logFormat": {
-          "default": "",
-          "description": "Notifications controller log format. Either `text` or `json`",
-          "required": [],
-          "title": "logFormat",
-          "type": "string"
-        },
-        "logLevel": {
-          "default": "",
-          "description": "Notifications controller log level. One of: `debug`, `info`, `warn`, `error`",
-          "required": [],
-          "title": "logLevel",
-          "type": "string"
-        },
         "metrics": {
           "additionalProperties": true,
           "properties": {
@@ -5881,6 +6036,22 @@
           "required": [],
           "title": "name",
           "type": "string"
+        },
+        "networkPolicy": {
+          "additionalProperties": true,
+          "description": "Default notifications controller's network policy",
+          "properties": {
+            "create": {
+              "default": false,
+              "description": "Default network policy rules used by notifications controller",
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "networkPolicy",
+          "type": "object"
         },
         "nodeSelector": {
           "additionalProperties": true,
@@ -6504,6 +6675,13 @@
           "title": "deploymentAnnotations",
           "type": "object"
         },
+        "deploymentLabels": {
+          "additionalProperties": true,
+          "description": "Labels for the Redis server Deployment",
+          "required": [],
+          "title": "deploymentLabels",
+          "type": "object"
+        },
         "disableCommands": {
           "description": "Array with commands to disable",
           "items": {
@@ -6643,14 +6821,14 @@
                   "type": "string"
                 },
                 "repository": {
-                  "default": "public.ecr.aws/bitnami/redis-exporter",
+                  "default": "ghcr.io/oliver006/redis_exporter",
                   "description": "Repository to use for the redis-exporter",
                   "required": [],
                   "title": "repository",
                   "type": "string"
                 },
                 "tag": {
-                  "default": "1.69.0",
+                  "default": "v1.74.0",
                   "description": "Tag to use for the redis-exporter",
                   "required": [],
                   "title": "tag",
@@ -6813,15 +6991,15 @@
               "type": "string"
             },
             "repository": {
-              "default": "public.ecr.aws/docker/library/redis",
+              "default": "ecr-public.aws.com/docker/library/redis",
               "description": "Redis repository",
               "required": [],
               "title": "repository",
               "type": "string"
             },
             "tag": {
-              "default": "7.4.2-alpine",
-              "description": "Redis tag",
+              "default": "7.2.8-alpine",
+              "description": "Redis tag\n# Do not upgrade to \u003e= 7.4.0, otherwise you are no longer using an open source version of Redis",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -7103,6 +7281,22 @@
           "title": "name",
           "type": "string"
         },
+        "networkPolicy": {
+          "additionalProperties": true,
+          "description": "Default redis's network policy",
+          "properties": {
+            "create": {
+              "default": false,
+              "description": "Default network policy rules used by redis",
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "networkPolicy",
+          "type": "object"
+        },
         "nodeSelector": {
           "additionalProperties": true,
           "description": "[Node selector]",
@@ -7359,21 +7553,21 @@
               "type": "boolean"
             },
             "failureThreshold": {
-              "default": 3,
+              "default": 5,
               "description": "Failure threshold for startup probe",
               "required": [],
               "title": "failureThreshold",
               "type": "integer"
             },
             "initialDelaySeconds": {
-              "default": 5,
+              "default": 30,
               "description": "Initial delay in seconds for startup probe",
               "required": [],
               "title": "initialDelaySeconds",
               "type": "integer"
             },
             "periodSeconds": {
-              "default": 10,
+              "default": 15,
               "description": "Period in seconds after which startup probe will be repeated",
               "required": [],
               "title": "periodSeconds",
@@ -7541,14 +7735,14 @@
               "type": "boolean"
             },
             "image": {
-              "default": "public.ecr.aws/bitnami/redis-exporter",
+              "default": "ghcr.io/oliver006/redis_exporter",
               "description": "Repository to use for the redis-exporter",
               "required": [],
               "title": "image",
               "type": "string"
             },
             "tag": {
-              "default": "1.58.0",
+              "default": "v1.69.0",
               "description": "Tag to use for the redis-exporter",
               "required": [],
               "title": "tag",
@@ -7606,6 +7800,21 @@
               "title": "hardAntiAffinity",
               "type": "boolean"
             },
+            "image": {
+              "additionalProperties": true,
+              "properties": {
+                "repository": {
+                  "default": "ecr-public.aws.com/docker/library/haproxy",
+                  "description": "HAProxy Image Repository",
+                  "required": [],
+                  "title": "repository",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "image",
+              "type": "object"
+            },
             "labels": {
               "additionalProperties": true,
               "description": " Custom labels for the haproxy pod. This is relevant for Argo CD CLI.",
@@ -7662,15 +7871,15 @@
           "description": "# Redis image",
           "properties": {
             "repository": {
-              "default": "public.ecr.aws/docker/library/redis",
+              "default": "ecr-public.aws.com/docker/library/redis",
               "description": "Redis repository",
               "required": [],
               "title": "repository",
               "type": "string"
             },
             "tag": {
-              "default": "7.4.2-alpine",
-              "description": "Redis tag",
+              "default": "7.2.8-alpine",
+              "description": "Redis tag\n# Do not upgrade to \u003e= 7.4.0, otherwise you are no longer using an open source version of Redis",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -8253,6 +8462,13 @@
           "title": "deploymentAnnotations",
           "type": "object"
         },
+        "deploymentLabels": {
+          "additionalProperties": true,
+          "description": "Labels for the repo server Deployment",
+          "required": [],
+          "title": "deploymentLabels",
+          "type": "object"
+        },
         "deploymentStrategy": {
           "additionalProperties": true,
           "description": "Deployment strategy to be added to the repo server Deployment",
@@ -8607,6 +8823,22 @@
           "title": "name",
           "type": "string"
         },
+        "networkPolicy": {
+          "additionalProperties": true,
+          "description": "Default repo server's network policy",
+          "properties": {
+            "create": {
+              "default": false,
+              "description": "Default network policy rules used by repo server",
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "networkPolicy",
+          "type": "object"
+        },
         "nodeSelector": {
           "additionalProperties": true,
           "description": "[Node selector]",
@@ -8784,6 +9016,13 @@
               "required": [],
               "title": "portName",
               "type": "string"
+            },
+            "trafficDistribution": {
+              "default": "",
+              "description": "Traffic distribution preference for the repo server service. If the field is not set, the implementation will apply its default routing strategy.",
+              "required": [],
+              "title": "trafficDistribution",
+              "type": "string"
             }
           },
           "required": [],
@@ -8891,7 +9130,7 @@
     },
     "restore": {
       "additionalProperties": true,
-      "description": "restore init container is executed if restore.[s3|ssh].source is not false\nrestore init container creates /data/dump.rdb_ from original if exists\nrestore init container overrides /data/dump.rdb\nsecrets are stored into environment of init container - stored encoded on k8s\nREQUIRED for s3 restore: AWS 'access_key' and 'secret_key' or stored in existingSecret\nEXAMPLE source for s3 restore: 's3://bucket/dump.rdb'\nREQUIRED for ssh restore: 'key' should be in one line including CR i.e. '-----BEGIN RSA PRIVATE KEY-----\\n...\\n...\\n...\\n-----END RSA PRIVATE KEY-----'\nEXAMPLE source for ssh restore: 'user",
+      "description": "restore init container is executed if restore.[s3|ssh].source is not false\nrestore init container creates /data/dump.rdb_ from original if exists\nrestore init container overrides /data/dump.rdb\nsecrets are stored into environment of init container - stored encoded on k8s\nREQUIRED for s3 restore: AWS 'access_key' and 'secret_key' or stored in existingSecret\nEXAMPLE source for s3 restore: 's3://bucket/dump.rdb'\nREQUIRED for ssh restore: 'key' should be in one line including CR i.e. '-----BEGIN RSA PRIVATE KEY-----\\n...\\n...\\n...\\n-----END RSA PRIVATE KEY-----'\nEXAMPLE source for ssh restore: 'user\nREQUIRED for redis restore: 'source' should be in form of redis connection uri: 'redis://[username:password@]host:port[/db]'\nEXAMPLE source for redis restore: 'redis://username:password",
       "properties": {
         "existingSecret": {
           "default": false,
@@ -8899,6 +9138,20 @@
           "required": [],
           "title": "existingSecret",
           "type": "boolean"
+        },
+        "redis": {
+          "additionalProperties": true,
+          "properties": {
+            "source": {
+              "default": "",
+              "required": [],
+              "title": "source",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "redis",
+          "type": "object"
         },
         "s3": {
           "additionalProperties": true,
@@ -9686,6 +9939,13 @@
           "title": "deploymentAnnotations",
           "type": "object"
         },
+        "deploymentLabels": {
+          "additionalProperties": true,
+          "description": "Labels for the server Deployment",
+          "required": [],
+          "title": "deploymentLabels",
+          "type": "object"
+        },
         "deploymentStrategy": {
           "additionalProperties": true,
           "description": "Deployment strategy to be added to the server Deployment",
@@ -10438,6 +10698,22 @@
           "required": [],
           "title": "name",
           "type": "string"
+        },
+        "networkPolicy": {
+          "additionalProperties": true,
+          "description": "Default ArgoCD Server's network policy",
+          "properties": {
+            "create": {
+              "default": false,
+              "description": "Default network policy rules used by ArgoCD Server",
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "networkPolicy",
+          "type": "object"
         },
         "nodeSelector": {
           "additionalProperties": true,
