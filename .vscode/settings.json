@@ -1,12 +1,19 @@
 {
-    "terminal.integrated.profiles.osx": {
-        "devboxCompatibleShell": {
-            "path": "/opt/homebrew/bin/fish",
-            "args": [
-                "--no-config"
-            ]
-        }
-    },
-    "terminal.integrated.defaultProfile.osx": "devboxCompatibleShell",
-    "editor.inlayHints.enabled": "offUnlessPressed"
+  "terminal.integrated.profiles.osx": {
+    "devboxCompatibleShell": {
+      "path": "/opt/homebrew/bin/fish",
+      "args": ["--no-config"]
+    }
+  },
+  "terminal.integrated.defaultProfile.osx": "devboxCompatibleShell",
+  "editor.inlayHints.enabled": "offUnlessPressed",
+  "chat.modeFilesLocations": {
+    ".github/chatmodes": true
+  },
+  "chat.promptFilesLocations": {
+    ".github/prompts": true
+  },
+  "chat.instructionsFilesLocations": {
+    ".github/instructions": true
+  }
 }

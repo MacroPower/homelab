@@ -14,8 +14,6 @@ The overall structure of the configuration library is as follows:
 .
 ├── kcl.mod             # konfig package metadata file
 ├── kcl.mod.lock        # konfig package metadata lock file
-├── charts              # Helm Charts
-│   └── charts.k        # Helm Charts configuration
 ├── models
 │   ├── backend         # Back-end models
 │   ├── frontend        # Front-end models

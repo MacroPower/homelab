@@ -37,7 +37,7 @@ Admittedly, both usages of "all" describe the end goal of this repo, not the cur
 - [Argo CD](https://github.com/argoproj/argo-cd): Reconciles kubernetes clusters with this repository.
 - [Kyverno](https://kyverno.io): Policy engine supporting validate, mutate, generate, and cleanup rules.
 - [Harbor](https://goharbor.io): Artifact registry with pull-through cache and vulnerability scanning.
-- [Jsonnet](https://jsonnet.org/): Configuration language I use to describe Argo applications.
+- [KCL](https://www.kcl-lang.io/): Configuration language I use to describe Argo applications.
 - [Renovate](https://github.com/renovatebot/renovate): Automatic updates for applications via pull requests.
 
 ### Secrets
@@ -83,18 +83,13 @@ Admittedly, both usages of "all" describe the end goal of this repo, not the cur
 Overview of this repo's structure, there's more info in the README files for each:
 
 ```sh
-📁 applications  # Kubernetes applications
-├─📁 base          # Application base config
-├─📁 environments  # Application cluster customizations
-│ ├─📁 hcloud        # Customizations for Hetzner cluster
-│ ├─📁 home          # Customizations for home cluster
-│ └─📁 seedbox       # Customizations for seedbox cluster
-└─📁 lib           # Jsonnet libraries
-
-📁 terraform     # IaC defined via Terraform
-├─📁 home          # IaC for home
-├─📁 hcloud        # IaC for Hetzner Cloud
-└─📁 hcloud-robot  # IaC for Hetzner Cloud (Robot)
+.
+├─📁 apps      # ArgoCD Applications
+├─📁 appsets   # ArgoCD ApplicationSets
+├─📁 bootstrap # Bootstrapping for ArgoCD
+├─📁 clusters  # Cluster-specific data for reference
+├─📁 konfig    # KCL libraries
+└─📁 terraform # IaC defined via Terraform
 ```
 
 ---

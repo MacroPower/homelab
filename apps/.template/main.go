@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"flag"
 	"fmt"
 	"html/template"
 	"os"
@@ -16,15 +17,62 @@ type templateData struct {
 }
 
 func main() {
-	// Prompt the user to enter a value for the tenant input
-	var tenantName string
-	fmt.Print("Enter a value for the tenant name input: ")
-	fmt.Scanln(&tenantName)
+	// Define command-line flags
+	var tenantFlag = flag.String("tenant", "", "Tenant name (required)")
+	var appFlag = flag.String("app", "", "App name (required)")
+	var envFlag = flag.String("env", "", "Comma-separated list of environments to include (e.g., 'mgmt,nas01')")
+	var helpFlag = flag.Bool("help", false, "Show help message")
 
-	// Prompt the user to enter a value for the name input
+	flag.Parse()
+
+	// Show help if requested
+	if *helpFlag {
+		fmt.Println("Usage: go run main.go [flags]")
+		fmt.Println("Flags:")
+		flag.PrintDefaults()
+		fmt.Println("\nIf flags are not provided, the program will prompt for input interactively.")
+		fmt.Println("When using -env flag, only the specified environments will be created (plus base).")
+		fmt.Println("Without -env flag, you'll be prompted for each environment module.")
+		return
+	}
+
+	var tenantName string
 	var appName string
-	fmt.Print("Enter a value for the app name input: ")
-	fmt.Scanln(&appName)
+	var selectedEnvs []string
+
+	// Parse environment list if provided
+	if *envFlag != "" {
+		selectedEnvs = strings.Split(*envFlag, ",")
+		// Trim whitespace from each environment name
+		for i, env := range selectedEnvs {
+			selectedEnvs[i] = strings.TrimSpace(env)
+		}
+	}
+
+	// Use flag values if provided, otherwise prompt for input
+	if *tenantFlag != "" {
+		tenantName = *tenantFlag
+	} else {
+		fmt.Print("Enter a value for the tenant name input: ")
+		fmt.Scanln(&tenantName)
+	}
+
+	if *appFlag != "" {
+		appName = *appFlag
+	} else {
+		fmt.Print("Enter a value for the app name input: ")
+		fmt.Scanln(&appName)
+	}
+
+	// Validate that we have both required values
+	if tenantName == "" {
+		fmt.Fprintf(os.Stderr, "Error: tenant name is required\n")
+		os.Exit(1)
+	}
+	if appName == "" {
+		fmt.Fprintf(os.Stderr, "Error: app name is required\n")
+		os.Exit(1)
+	}
 
 	// Define the input and output directories
 	tenantModInputDir := "apps/.template/templates/_tenant"
@@ -60,7 +108,7 @@ func main() {
 	if err := templateModules(modInputDir, modOutputDir, templateData{
 		TenantName: tenantName,
 		AppName:    appName,
-	}); err != nil {
+	}, selectedEnvs); err != nil {
 		panic(err)
 	}
 }
@@ -72,7 +120,7 @@ func templateDirectory(inputDir string, outputDir string, data templateData) err
 }
 
 // templateModules templates all files in each module directory and prompts the user to add the output for each module
-func templateModules(inputDir string, outputDir string, data templateData) error {
+func templateModules(inputDir string, outputDir string, data templateData, selectedEnvs []string) error {
 	modOutputDirEntries, err := os.ReadDir(inputDir)
 	if err != nil {
 		return fmt.Errorf("failed to read directory %s: %w", inputDir, err)
@@ -89,12 +137,29 @@ func templateModules(inputDir string, outputDir string, data templateData) error
 
 		response := "y"
 		if modName != "base" {
-			// Prompt the user to add the module output
-			reader := bufio.NewReader(os.Stdin)
-			fmt.Printf("Do you want to add the output for the %s module? (y/n): ", modName)
-			response, err = reader.ReadString('\n')
-			if err != nil {
-				return fmt.Errorf("failed to read user input: %w", err)
+			// If environments are specified via flag, check if this module is in the list
+			if len(selectedEnvs) > 0 {
+				found := false
+				for _, env := range selectedEnvs {
+					if env == modName {
+						found = true
+						break
+					}
+				}
+				if found {
+					response = "y"
+				} else {
+					response = "n"
+				}
+			} else {
+				// Prompt the user to add the module output
+				reader := bufio.NewReader(os.Stdin)
+				fmt.Printf("Do you want to add the output for the %s module? (y/n): ", modName)
+				var err error
+				response, err = reader.ReadString('\n')
+				if err != nil {
+					return fmt.Errorf("failed to read user input: %w", err)
+				}
 			}
 		}
 

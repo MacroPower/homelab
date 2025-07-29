@@ -13,6 +13,19 @@ tasks:
     cmds:
       - kat
 
+  render:
+    desc: Render KCL for app
+    requires:
+      vars: [APP]
+    vars:
+      F: '{{.F | default "base"}}'
+      O: '{{.O | default "out.yaml"}}'
+    dir: "{{.ROOT_DIR}}/apps/{{.APP}}/{{.F}}"
+    cmds:
+      - cmd: mkdir -p "{{joinPath .ROOT_DIR .O | dir}}"
+        silent: true
+      - kat > "{{joinPath .ROOT_DIR .O}}"
+
   gen:
     desc: Generate KCL code
     cmds:
@@ -20,6 +33,11 @@ tasks:
       - |-
         kcl export konfig/models/backend/ -S BackendTenantPatch \
           --output=konfig/models/frontend/patch.schema.json
+
+  chart:update:
+    desc: Update KCL charts
+    cmds:
+      - kcl chart update
 
   bootstrap:
     desc: Bootstrap a cluster
@@ -34,5 +52,15 @@ tasks:
   create-app:
     desc: Create a new app
     interactive: true
+    requires:
+      vars: [TENANT, APP]
+    vars:
+      ENV: '{{.ENV | default ""}}'
     cmds:
-      - go run apps/.template/main.go
+      - |-
+        go run apps/.template/main.go \
+          -tenant={{.TENANT}} \
+          -app={{.APP}}
+          {{- if ne .ENV "" }} \
+          -env={{.ENV}}
+          {{- end }}
