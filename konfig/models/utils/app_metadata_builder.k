@@ -1,9 +1,9 @@
-AppMetadataBuilder = lambda config: any, options: ArgoCDOptions -> {str:} {
+AppMetadataBuilder = lambda metadata: any, options: ArgoCDOptions -> {str:} {
     _argoCDOptionMetadataBuilder(options) | {
-        name: config?.name
-        namespace: config?.namespace
-        labels: config?.labels
-        annotations: config?.annotations
+        name: metadata?.name
+        namespace: metadata?.namespace
+        labels: metadata?.labels
+        annotations: metadata?.annotations
     }
 }
 
