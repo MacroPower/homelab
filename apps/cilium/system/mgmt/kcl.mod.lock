@@ -15,6 +15,10 @@
     name = "cilium_tenant"
     full_name = "cilium_tenant_0.1.0"
     version = "0.1.0"
+  [dependencies.cluster]
+    name = "cluster"
+    full_name = "cluster_mgmt_0.1.0"
+    version = "0.1.0"
   [dependencies.filepath]
     name = "filepath"
     full_name = "filepath_0.14.0"
