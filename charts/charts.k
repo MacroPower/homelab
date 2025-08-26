@@ -10,8 +10,8 @@ charts: helm.Charts = {
     cilium: {
         chart = "cilium"
         repoURL = "https://helm.cilium.io"
-        targetRevision = "1.17.2"
-        schemaGenerator = "AUTO"
+        targetRevision = "1.18.1"
+        schemaGenerator = "VALUE-INFERENCE"
         crdGenerator = "PATH"
         crdPaths = [
             "https://doc.crds.dev/raw/github.com/cilium/cilium"
