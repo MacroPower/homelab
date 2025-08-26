@@ -35,14 +35,6 @@ This is a multi-cluster Kubernetes homelab managed through GitOps using ArgoCD, 
 
 ## Development Workflow
 
-Render manifests:
+IMPORTANT: To render manifests, use the #kat mcp tools.
 
-```sh
-task kcl:render APP=tenant/app F=env O=.debug/app.yaml
-```
-
-Update helm charts (run this after modifying `charts/charts.k`):
-
-```sh
-task kcl:chart:update
-```
+IMPORTANT: If you update `charts/charts.k`, make sure to run `task kcl:chart:update` to re-generate files.

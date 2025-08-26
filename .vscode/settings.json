@@ -2,7 +2,9 @@
   "terminal.integrated.profiles.osx": {
     "devboxCompatibleShell": {
       "path": "/opt/homebrew/bin/fish",
-      "args": ["--no-config"]
+      "args": [
+        "--no-config"
+      ]
     }
   },
   "terminal.integrated.defaultProfile.osx": "devboxCompatibleShell",
@@ -15,5 +17,10 @@
   },
   "chat.instructionsFilesLocations": {
     ".github/instructions": true
+  },
+  "chat.mcp.serverSampling": {
+    "homelab/.vscode/mcp.json: kat": {
+      "allowedModels": ["copilot/claude-sonnet-4"]
+    }
   }
 }

@@ -218,24 +218,24 @@
       }
     },
     "github:NixOS/nixpkgs/nixpkgs-unstable": {
-      "last_modified": "2025-07-25T08:26:56Z",
-      "resolved": "github:NixOS/nixpkgs/6027c30c8e9810896b92429f0092f624f7b1aace?lastModified=1753432016&narHash=sha256-cnL5WWn%2FxkZoyH%2F03NNUS7QgW5vI7D1i74g48qplCvg%3D"
+      "last_modified": "2025-08-22T02:25:05Z",
+      "resolved": "github:NixOS/nixpkgs/f937f8ecd1c70efd7e9f90ba13dfb400cf559de4?lastModified=1755829505&narHash=sha256-4%2FJd%2BLkQ2ssw8luQVkqVs9spDBVE6h%2Fu%2FhC%2FtzngsPo%3D"
     },
     "github:budimanjojo/talhelper/v3.0.31": {
       "last_modified": "2025-07-22T03:26:56Z",
       "resolved": "github:budimanjojo/talhelper/fbf6089203b3556b0a929f742985997630859f47?lastModified=1753154816&narHash=sha256-%2FcUW9TzUCNBa%2FJ5GpadzZr%2BM1K0tIJoYe7g2T3z3kJo%3D"
     },
     "github:macropower/nur-packages#kat": {
-      "last_modified": "2025-07-27T16:42:43Z",
-      "resolved": "github:macropower/nur-packages/6ad9dc49a251c39cc3d6fb4b8b0622ad47f5ecc6?lastModified=1753634563&narHash=sha256-05a7Aftzovj3XXOT8aAqBVn590gLqW3wKbR04kk2JCk%3D#kat"
+      "last_modified": "2025-08-25T00:37:01Z",
+      "resolved": "github:macropower/nur-packages/38a2bc87955950e82e21595ab55cf4cbec8e1c71?lastModified=1756082221&narHash=sha256-lRXqug%2F%2FXeiPQ56k1Ou05BrU6a3XJLj1fJ0keVoRei4%3D#kat"
     },
     "github:macropower/nur-packages#kcl-lsp": {
-      "last_modified": "2025-07-28T02:05:10Z",
-      "resolved": "github:macropower/nur-packages/83b9b2913b6657324bf883136773ec831def759a?lastModified=1753668310&narHash=sha256-3FYABMZqZY9UQ4t9BNF2xTsyXStpYgTa9oQMAnQ5bPw%3D#kcl-lsp"
+      "last_modified": "2025-08-25T00:37:01Z",
+      "resolved": "github:macropower/nur-packages/38a2bc87955950e82e21595ab55cf4cbec8e1c71?lastModified=1756082221&narHash=sha256-lRXqug%2F%2FXeiPQ56k1Ou05BrU6a3XJLj1fJ0keVoRei4%3D#kcl-lsp"
     },
     "github:macropower/nur-packages#kclipper": {
-      "last_modified": "2025-07-27T17:00:26Z",
-      "resolved": "github:macropower/nur-packages/014f519936152640cb52336f0e0f0b589f25137f?lastModified=1753635626&narHash=sha256-H4JkVo8qo96n6JcOLBLp1lDfxL3uPMQHuQ9FG58dCZc%3D#kclipper"
+      "last_modified": "2025-08-25T00:37:01Z",
+      "resolved": "github:macropower/nur-packages/38a2bc87955950e82e21595ab55cf4cbec8e1c71?lastModified=1756082221&narHash=sha256-lRXqug%2F%2FXeiPQ56k1Ou05BrU6a3XJLj1fJ0keVoRei4%3D#kclipper"
     },
     "go-task@3.41.0": {
       "last_modified": "2025-04-17T05:47:26Z",
