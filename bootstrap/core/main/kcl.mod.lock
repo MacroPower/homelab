@@ -1,16 +1,4 @@
 [dependencies]
-  [dependencies.argo]
-    name = "argo"
-    full_name = "argo_0.1.0"
-    version = "0.1.0"
-  [dependencies.argo_cd]
-    name = "argo_cd"
-    full_name = "argo_cd_base_0.1.0"
-    version = "0.1.0"
-  [dependencies.argo_tenant]
-    name = "argo_tenant"
-    full_name = "argo_tenant_0.1.0"
-    version = "0.1.0"
   [dependencies.bootstrap]
     name = "bootstrap"
     full_name = "bootstrap_core_base_0.1.0"
@@ -19,21 +7,13 @@
     name = "charts"
     full_name = "charts_0.1.0"
     version = "0.1.0"
-  [dependencies.cilium]
-    name = "cilium"
-    full_name = "cilium_0.4.1"
-    version = "0.4.1"
-    sum = "YmVvSokDKgHSwDc7XRfVyNdniLwF+lA57/Vgi60MDGo="
-    reg = "ghcr.io"
-    repo = "kcl-lang/cilium"
-    oci_tag = "0.4.1"
   [dependencies.cilium_shared]
     name = "cilium_shared"
     full_name = "cilium_shared_0.1.0"
     version = "0.1.0"
   [dependencies.cilium_system]
     name = "cilium_system"
-    full_name = "cilium_system_mgmt_0.1.0"
+    full_name = "cilium_system_main_0.1.0"
     version = "0.1.0"
   [dependencies.cilium_system_base]
     name = "cilium_system_base"
@@ -45,7 +25,7 @@
     version = "0.1.0"
   [dependencies.cluster]
     name = "cluster"
-    full_name = "cluster_mgmt_0.1.0"
+    full_name = "cluster_main_0.1.0"
     version = "0.1.0"
   [dependencies.filepath]
     name = "filepath"
@@ -89,7 +69,7 @@
     version = "0.1.0"
   [dependencies.kube_csr_approver]
     name = "kube_csr_approver"
-    full_name = "kube_csr_approver_mgmt_0.1.0"
+    full_name = "kube_csr_approver_main_0.1.0"
     version = "0.1.0"
   [dependencies.kube_csr_approver_base]
     name = "kube_csr_approver_base"
