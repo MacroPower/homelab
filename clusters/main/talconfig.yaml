@@ -1,25 +1,25 @@
-clusterName: home
-talosVersion: v1.7.5
-kubernetesVersion: v1.30.0
-endpoint: https://kube.home.macro.network:6443
+clusterName: main
+talosVersion: v1.9.5
+kubernetesVersion: v1.32.3
+endpoint: https://kmain.cin.macro.network:6443
 cniConfig:
   name: none
 
 additionalMachineCertSans:
-  - kube.home.macro.network
+  - kmain.cin.macro.network
   - 127.0.0.1
 additionalApiServerCertSans:
   - 127.0.0.1
 
 clusterSvcNets:
   - 10.112.0.0/12
-  - 2603:6010:5300:ad70::/108
+  - fc42:0:0:70::/108
 clusterPodNets:
   - 10.128.0.0/14
-  - 2603:6010:5300:ad80::/64
+  - fc42:0:0:80::/64
 
 nodes:
-  - hostname: knode01.home.macro.network
+  - hostname: kmain01.cin.macro.network
     ipAddress: 10.10.10.1
     controlPlane: true
     installDisk: &rk1device /dev/nvme0n1
@@ -34,52 +34,42 @@ nodes:
         dhcp: false
         addresses:
           - "10.10.10.1/16"
-          - "2603:6010:5300:ad0a::a001/64"
+          - "fc42:0:0:a::1001/64"
         mtu: &mtu 1500
         routes: &routes
           - network: 0.0.0.0/0
             gateway: "10.10.0.1"
           # Link-local IPv6 route set via RA with `metric: 1024`.
           - network: ::/0
-            gateway: "2603:6010:5300:ad0a::"
+            gateway: "fc42:0:0:a::"
             metric: 4096
-    kernelModules: &rk1kernel
-      - name: rockchip-cpufreq
     schematic: &rk1schematic
+      overlay:
+        name: turingrk1
+        image: siderolabs/sbc-rockchip
       customization:
         extraKernelArgs:
-          - irqchip.gicv3_pseudo_nmi=0
           - cpufreq.default_governor=ondemand
-    patches:
-      - &rk1machine |-
-        machine:
-          install:
-            image: "ghcr.io/nberlee/installer:v1.7.5-rk3588"
 
-  - hostname: knode02.home.macro.network
+  - hostname: kmain02.cin.macro.network
     ipAddress: 10.10.10.2
     controlPlane: true
-    installDisk: &rpiMmcDevice /dev/mmcblk0
+    installDisk: *rk1device
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az02
     networkInterfaces:
-      - deviceSelector: &rpiNetDevice
-          driver: bcmgenet
-          hardwareAddr: "e4:5f:01:*"
+      - deviceSelector: *rk1NetDevice
         dhcp: false
         addresses:
           - "10.10.10.2/16"
-          - "2603:6010:5300:ad0a::a002/64"
+          - "fc42:0:0:a::1002/64"
         mtu: *mtu
         routes: *routes
-    schematic: &rpiSchematic
-      overlay:
-        name: rpi_generic
-        image: siderolabs/sbc-raspberrypi
+    schematic: *rk1schematic
 
-  - hostname: knode03.home.macro.network
+  - hostname: kmain03.cin.macro.network
     ipAddress: 10.10.10.3
     controlPlane: true
     installDisk: *rk1device
@@ -92,107 +82,104 @@ nodes:
         dhcp: false
         addresses:
           - "10.10.10.3/16"
-          - "2603:6010:5300:ad0a::a003/64"
+          - "fc42:0:0:a::1003/64"
         mtu: *mtu
         routes: *routes
-    kernelModules: *rk1kernel
     schematic: *rk1schematic
-    patches:
-      - *rk1machine
 
-  - hostname: knode06.home.macro.network
-    ipAddress: 10.10.10.6
-    controlPlane: false
-    installDisk: /dev/mmcblk0
-    nodeLabels:
-      bgp.kubernetes.macro.network/peer_group: cbgp
-      feature.node.kubernetes.io/network.max-link-speed: 1g
-      topology.kubernetes.io/region: rack01
-      topology.kubernetes.io/zone: az03
-    networkInterfaces:
-      - deviceSelector: *rk1NetDevice
-        dhcp: false
-        addresses:
-          - "10.10.10.6/16"
-          - "2603:6010:5300:ad0a::a006/64"
-        mtu: *mtu
-        routes: *routes
-    kernelModules: *rk1kernel
-    schematic: *rk1schematic
-    patches:
-      - *rk1machine
+  # - hostname: kmain06.cin.macro.network
+  #   ipAddress: 10.10.10.6
+  #   controlPlane: false
+  #   installDisk: /dev/mmcblk0
+  #   nodeLabels:
+  #     bgp.kubernetes.macro.network/peer_group: cbgp
+  #     feature.node.kubernetes.io/network.max-link-speed: 1g
+  #     topology.kubernetes.io/region: rack01
+  #     topology.kubernetes.io/zone: az03
+  #   networkInterfaces:
+  #     - deviceSelector: *rk1NetDevice
+  #       dhcp: false
+  #       addresses:
+  #         - "10.10.10.6/16"
+  #         - "2603:6010:5300:ad0a::a006/64"
+  #       mtu: *mtu
+  #       routes: *routes
+  #   kernelModules: *rk1kernel
+  #   schematic: *rk1schematic
+  #   patches:
+  #     - *rk1machine
 
-  - hostname: knode13.home.macro.network
-    ipAddress: 10.10.10.13
-    controlPlane: false
-    installDisk: /dev/sda
-    nodeLabels:
-      bgp.kubernetes.macro.network/peer_group: cbgp
-      feature.node.kubernetes.io/network.max-link-speed: 10g
-      topology.kubernetes.io/region: rack01
-      topology.kubernetes.io/zone: az01
-    networkInterfaces:
-      - interface: enp5s0
-        dhcp: false
-        addresses:
-          - "10.10.10.13/16"
-          - "2603:6010:5300:ad0a::a013/64"
-        mtu: *mtu
-        routes: *routes
-    schematic: &M11SDVschematic
-      customization:
-        systemExtensions:
-          officialExtensions:
-            - siderolabs/i915-ucode
-            - siderolabs/intel-ucode
+  # - hostname: kmain13.cin.macro.network
+  #   ipAddress: 10.10.10.13
+  #   controlPlane: false
+  #   installDisk: /dev/sda
+  #   nodeLabels:
+  #     bgp.kubernetes.macro.network/peer_group: cbgp
+  #     feature.node.kubernetes.io/network.max-link-speed: 10g
+  #     topology.kubernetes.io/region: rack01
+  #     topology.kubernetes.io/zone: az01
+  #   networkInterfaces:
+  #     - interface: enp5s0
+  #       dhcp: false
+  #       addresses:
+  #         - "10.10.10.13/16"
+  #         - "2603:6010:5300:ad0a::a013/64"
+  #       mtu: *mtu
+  #       routes: *routes
+  #   schematic: &M11SDVschematic
+  #     customization:
+  #       systemExtensions:
+  #         officialExtensions:
+  #           - siderolabs/i915-ucode
+  #           - siderolabs/intel-ucode
 
-  - hostname: knode14.home.macro.network
-    ipAddress: 10.10.10.14
-    controlPlane: false
-    installDisk: /dev/sda
-    nodeLabels:
-      bgp.kubernetes.macro.network/peer_group: cbgp
-      feature.node.kubernetes.io/network.max-link-speed: 10g
-      topology.kubernetes.io/region: rack01
-      topology.kubernetes.io/zone: az02
-    networkInterfaces:
-      - interface: enp5s0
-        dhcp: false
-        addresses:
-          - "10.10.10.14/16"
-          - "2603:6010:5300:ad0a::a014/64"
-        mtu: *mtu
-        routes: *routes
-    schematic: *M11SDVschematic
+  # - hostname: kmain14.cin.macro.network
+  #   ipAddress: 10.10.10.14
+  #   controlPlane: false
+  #   installDisk: /dev/sda
+  #   nodeLabels:
+  #     bgp.kubernetes.macro.network/peer_group: cbgp
+  #     feature.node.kubernetes.io/network.max-link-speed: 10g
+  #     topology.kubernetes.io/region: rack01
+  #     topology.kubernetes.io/zone: az02
+  #   networkInterfaces:
+  #     - interface: enp5s0
+  #       dhcp: false
+  #       addresses:
+  #         - "10.10.10.14/16"
+  #         - "2603:6010:5300:ad0a::a014/64"
+  #       mtu: *mtu
+  #       routes: *routes
+  #   schematic: *M11SDVschematic
 
-  - hostname: knode15.home.macro.network
-    ipAddress: 10.10.10.15
-    controlPlane: false
-    installDisk: /dev/sda
-    nodeLabels:
-      bgp.kubernetes.macro.network/peer_group: cbgp
-      feature.node.kubernetes.io/network.max-link-speed: 10g
-      topology.kubernetes.io/region: rack01
-      topology.kubernetes.io/zone: az03
-    networkInterfaces:
-      - interface: enp5s0
-        dhcp: false
-        addresses:
-          - "10.10.10.15/16"
-          - "2603:6010:5300:ad0a::a015/64"
-        mtu: *mtu
-        routes: *routes
-    schematic: *M11SDVschematic
+  # - hostname: kmain15.cin.macro.network
+  #   ipAddress: 10.10.10.15
+  #   controlPlane: false
+  #   installDisk: /dev/sda
+  #   nodeLabels:
+  #     bgp.kubernetes.macro.network/peer_group: cbgp
+  #     feature.node.kubernetes.io/network.max-link-speed: 10g
+  #     topology.kubernetes.io/region: rack01
+  #     topology.kubernetes.io/zone: az03
+  #   networkInterfaces:
+  #     - interface: enp5s0
+  #       dhcp: false
+  #       addresses:
+  #         - "10.10.10.15/16"
+  #         - "2603:6010:5300:ad0a::a015/64"
+  #       mtu: *mtu
+  #       routes: *routes
+  #   schematic: *M11SDVschematic
 
 controlPlane:
   nameservers: &nameservers
     - "10.10.0.1"
-    - "2603:6010:5300:ad0a::"
+    - "fc42:0:0:a::"
   disableSearchDomain: &disableSearchDomain true
   schematic:
     customization:
       extraKernelArgs: &extraKernelArgs
-        - "talos.logging.kernel=udp://syslog.home.macro.network:6050/"
+        - "talos.logging.kernel=udp://syslog.cin.macro.network:6050/"
   patches:
     - |-
       - op: replace
@@ -247,7 +234,7 @@ controlPlane:
           nodeIP:
             validSubnets:
               - 10.10.0.0/16
-              - 2603:6010:5300:ad0a::/64
+              - fc42:0:0:a::/64
           extraArgs:
             feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true,RotateKubeletServerCertificate=true
             rotate-server-certificates: "true"
@@ -256,7 +243,7 @@ controlPlane:
       machine:
         logging:
           destinations:
-            - endpoint: "udp://syslog.home.macro.network:6051/"
+            - endpoint: "udp://syslog.cin.macro.network:6051/"
               format: json_lines
     - &machineTime |-
       machine:

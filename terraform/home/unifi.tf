@@ -355,16 +355,16 @@ locals {
       mask = 16
       type = "reservation"
     }
-    k8s_services = {
-      name            = "home Services"
+    kmain_services = {
+      name            = "kmain Services"
       id              = 112
       mask            = 12
       type            = "isolated"
       disable_ipv6_ra = true
       disable_dhcp    = true
     }
-    k8s_pods = {
-      name = "home Pods"
+    kmain_pods = {
+      name = "kmain Pods"
       id   = 128
       mask = 14
       type = "reservation"

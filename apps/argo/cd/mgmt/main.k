@@ -41,6 +41,32 @@ _argoCreds = secret.ExternalSecret {
     }
 }
 
+_mainCreds = secret.ExternalSecret {
+    name = "main-credentials"
+    secretStoreRef = _secretStoreClusters.getRef()
+    data: {
+        MAIN_API_SERVER = {}
+        MAIN_CA_DATA = {}
+        MAIN_CERT_DATA = {}
+        MAIN_KEY_DATA = {}
+    }
+    target.template.metadata.labels: {
+        "kubernetes.io/environment" = "main"
+        "argocd.argoproj.io/secret-type" = "cluster"
+    }
+    target.template.data: {
+        name = "main"
+        server = "{{ .MAIN_API_SERVER }}"
+        config = json.encode({
+            tlsClientConfig = {
+                insecure = True
+                certData = "{{ .MAIN_CERT_DATA }}"
+                keyData = "{{ .MAIN_KEY_DATA }}"
+            }
+        })
+    }
+}
+
 _nas01Creds = secret.ExternalSecret {
     name = "nas01-credentials"
     secretStoreRef = _secretStoreClusters.getRef()
@@ -97,6 +123,7 @@ app = argo_cd_base.app | {
     }
     externalSecrets: {
         nas01 = _nas01Creds
+        main = _mainCreds
         argocd = _argoCreds
     }
     extraResources: {
