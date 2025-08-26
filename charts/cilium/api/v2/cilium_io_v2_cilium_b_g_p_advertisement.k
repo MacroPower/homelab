@@ -14,35 +14,35 @@ schema CiliumBGPAdvertisement:
 
     Attributes
     ----------
-    apiVersion : str, default is "cilium.io/v2alpha1", required
+    apiVersion : str, default is "cilium.io/v2", required
         APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
     kind : str, default is "CiliumBGPAdvertisement", required
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, required
         metadata
-    spec : CiliumIoV2alpha1CiliumBGPAdvertisementSpec, default is Undefined, required
+    spec : CiliumIoV2CiliumBGPAdvertisementSpec, default is Undefined, required
         spec
     """
-    apiVersion: "cilium.io/v2alpha1" = "cilium.io/v2alpha1"
+    apiVersion: "cilium.io/v2" = "cilium.io/v2"
 
     kind: "CiliumBGPAdvertisement" = "CiliumBGPAdvertisement"
 
     metadata: v1.ObjectMeta
 
-    spec: CiliumIoV2alpha1CiliumBGPAdvertisementSpec
+    spec: CiliumIoV2CiliumBGPAdvertisementSpec
 
-schema CiliumIoV2alpha1CiliumBGPAdvertisementSpec:
+schema CiliumIoV2CiliumBGPAdvertisementSpec:
     r"""
-    cilium io v2alpha1 cilium b g p advertisement spec
+    cilium io v2 cilium b g p advertisement spec
 
     Attributes
     ----------
-    advertisements : [CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0], default is Undefined, required
+    advertisements : [CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0], default is Undefined, required
         Advertisements is a list of BGP advertisements.
     """
-    advertisements: [CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0]
+    advertisements: [CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0]
 
-schema CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0:
+schema CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0:
     r"""
     BGPAdvertisement defines which routes Cilium should advertise to BGP peers. Optionally, additional attributes can be
     set to the advertised routes.
@@ -51,36 +51,36 @@ schema CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0:
     ----------
     advertisementType : str, default is Undefined, required
         AdvertisementType defines type of advertisement which has to be advertised.
-    attributes : CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0Attributes, default is Undefined, optional
+    attributes : CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Attributes, default is Undefined, optional
         attributes
-    selector : CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0Selector, default is Undefined, optional
+    selector : CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Selector, default is Undefined, optional
         selector
-    service : CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0Service, default is Undefined, optional
+    service : CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Service, default is Undefined, optional
         service
     """
     advertisementType: "PodCIDR" | "CiliumPodIPPool" | "Service"
 
-    attributes?: CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0Attributes
-    selector?: CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0Selector
-    service?: CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0Service
+    attributes?: CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Attributes
+    selector?: CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Selector
+    service?: CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Service
 
-schema CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0Attributes:
+schema CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Attributes:
     r"""
     Attributes defines additional attributes to set to the advertised routes.
     If not specified, no additional attributes are set.
 
     Attributes
     ----------
-    communities : CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0AttributesCommunities, default is Undefined, optional
+    communities : CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0AttributesCommunities, default is Undefined, optional
         communities
     localPreference : int, default is Undefined, optional
         LocalPreference sets the local preference attribute in the route.
         If not specified, no local preference attribute is set.
     """
-    communities?: CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0AttributesCommunities
+    communities?: CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0AttributesCommunities
     localPreference?: int
 
-schema CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0AttributesCommunities:
+schema CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0AttributesCommunities:
     r"""
     Communities sets the community attributes in the route.
     If not specified, no community attribute is set.
@@ -103,7 +103,7 @@ schema CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0AttributesC
         all large in large {_regex_match(str(large), r"^([0-9]|[1-9][0-9]{1,8}|[1-3][0-9]{9}|4[01][0-9]{8}|42[0-8][0-9]{7}|429[0-3][0-9]{6}|4294[0-8][0-9]{5}|42949[0-5][0-9]{4}|429496[0-6][0-9]{3}|4294967[01][0-9]{2}|42949672[0-8][0-9]|429496729[0-5]):([0-9]|[1-9][0-9]{1,8}|[1-3][0-9]{9}|4[01][0-9]{8}|42[0-8][0-9]{7}|429[0-3][0-9]{6}|4294[0-8][0-9]{5}|42949[0-5][0-9]{4}|429496[0-6][0-9]{3}|4294967[01][0-9]{2}|42949672[0-8][0-9]|429496729[0-5]):([0-9]|[1-9][0-9]{1,8}|[1-3][0-9]{9}|4[01][0-9]{8}|42[0-8][0-9]{7}|429[0-3][0-9]{6}|4294[0-8][0-9]{5}|42949[0-5][0-9]{4}|429496[0-6][0-9]{3}|4294967[01][0-9]{2}|42949672[0-8][0-9]|429496729[0-5])$") if large} if large
         all standard in standard {_regex_match(str(standard), r"^([0-9]|[1-9][0-9]{1,8}|[1-3][0-9]{9}|4[01][0-9]{8}|42[0-8][0-9]{7}|429[0-3][0-9]{6}|4294[0-8][0-9]{5}|42949[0-5][0-9]{4}|429496[0-6][0-9]{3}|4294967[01][0-9]{2}|42949672[0-8][0-9]|429496729[0-5])$|^([0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]):([0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$") if standard} if standard
 
-schema CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0Selector:
+schema CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Selector:
     r"""
     Selector is a label selector to select objects of the type specified by AdvertisementType.
     For the PodCIDR AdvertisementType it is not applicable. For other advertisement types,
@@ -111,21 +111,21 @@ schema CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0Selector:
 
     Attributes
     ----------
-    matchExpressions : [CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0SelectorMatchExpressionsItems0], default is Undefined, optional
+    matchExpressions : [CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0SelectorMatchExpressionsItems0], default is Undefined, optional
         matchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
         matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-    matchExpressions?: [CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0SelectorMatchExpressionsItems0]
+    matchExpressions?: [CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0SelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
     check:
         all _, matchLabels in matchLabels {len(matchLabels) <= 63 if matchLabels not in [None, Undefined]} if matchLabels
         all _, matchLabels in matchLabels {_regex_match(str(matchLabels), r"^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$") if matchLabels} if matchLabels
 
-schema CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0SelectorMatchExpressionsItems0:
+schema CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0SelectorMatchExpressionsItems0:
     r"""
     A label selector requirement is a selector that contains values, a key, and an operator that
     relates the key and values.
@@ -149,7 +149,7 @@ schema CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0SelectorMat
 
     values?: [str]
 
-schema CiliumIoV2alpha1CiliumBGPAdvertisementSpecAdvertisementsItems0Service:
+schema CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Service:
     r"""
     Service defines configuration options for advertisementType service.
 

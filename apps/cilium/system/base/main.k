@@ -8,7 +8,7 @@ import konfig.models.frontend.ingress
 import konfig.models.utils as modelutils
 import konfig.utils
 
-_valueFile = utils.abs_path(file.current(), "values.yaml")
+_values = utils.read_yaml(file.current(), "values.yaml")
 
 ciliumIngressLabels: {str:str} = {
     "cilium.io/ingress": "true"
@@ -46,7 +46,7 @@ app = frontend.App {
     tenantName = cilium_shared.tenant.name
 
     charts.cilium = cilium.Chart {
-        valueFiles: [_valueFile]
+        values: _values | cilium.Values {}
     }
 
     ingresses.main = ingress.Ingress {

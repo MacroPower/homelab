@@ -10,32 +10,32 @@ _regex_match = regex.match
 
 schema CiliumBGPPeerConfig:
     r"""
-    cilium io v2alpha1 cilium b g p peer config
+    cilium io v2 cilium b g p peer config
 
     Attributes
     ----------
-    apiVersion : str, default is "cilium.io/v2alpha1", required
+    apiVersion : str, default is "cilium.io/v2", required
         APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
     kind : str, default is "CiliumBGPPeerConfig", required
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, required
         metadata
-    spec : CiliumIoV2alpha1CiliumBGPPeerConfigSpec, default is Undefined, required
+    spec : CiliumIoV2CiliumBGPPeerConfigSpec, default is Undefined, required
         spec
-    status : CiliumIoV2alpha1CiliumBGPPeerConfigStatus, default is Undefined, optional
+    status : CiliumIoV2CiliumBGPPeerConfigStatus, default is Undefined, optional
         status
     """
-    apiVersion: "cilium.io/v2alpha1" = "cilium.io/v2alpha1"
+    apiVersion: "cilium.io/v2" = "cilium.io/v2"
 
     kind: "CiliumBGPPeerConfig" = "CiliumBGPPeerConfig"
 
     metadata: v1.ObjectMeta
 
-    spec: CiliumIoV2alpha1CiliumBGPPeerConfigSpec
+    spec: CiliumIoV2CiliumBGPPeerConfigSpec
 
-    status?: CiliumIoV2alpha1CiliumBGPPeerConfigStatus
+    status?: CiliumIoV2CiliumBGPPeerConfigStatus
 
-schema CiliumIoV2alpha1CiliumBGPPeerConfigSpec:
+schema CiliumIoV2CiliumBGPPeerConfigSpec:
     r"""
     Spec is the specification of the desired behavior of the CiliumBGPPeerConfig.
 
@@ -52,48 +52,48 @@ schema CiliumIoV2alpha1CiliumBGPPeerConfigSpec:
         packets sent to the peer.
 
         If not specified, EBGP multihop is disabled. This field is ignored for iBGP neighbors.
-    families : [CiliumIoV2alpha1CiliumBGPPeerConfigSpecFamiliesItems0], default is Undefined, optional
+    families : [CiliumIoV2CiliumBGPPeerConfigSpecFamiliesItems0], default is Undefined, optional
         Families, if provided, defines a set of AFI/SAFIs the speaker will
         negotiate with it's peer.
 
         If not specified, the default families of IPv6/unicast and IPv4/unicast will be created.
-    gracefulRestart : CiliumIoV2alpha1CiliumBGPPeerConfigSpecGracefulRestart, default is Undefined, optional
+    gracefulRestart : CiliumIoV2CiliumBGPPeerConfigSpecGracefulRestart, default is Undefined, optional
         graceful restart
-    timers : CiliumIoV2alpha1CiliumBGPPeerConfigSpecTimers, default is Undefined, optional
+    timers : CiliumIoV2CiliumBGPPeerConfigSpecTimers, default is Undefined, optional
         timers
-    transport : CiliumIoV2alpha1CiliumBGPPeerConfigSpecTransport, default is Undefined, optional
+    transport : CiliumIoV2CiliumBGPPeerConfigSpecTransport, default is Undefined, optional
         transport
     """
     authSecretRef?: str
     ebgpMultihop?: int = 1
-    families?: [CiliumIoV2alpha1CiliumBGPPeerConfigSpecFamiliesItems0]
-    gracefulRestart?: CiliumIoV2alpha1CiliumBGPPeerConfigSpecGracefulRestart
-    timers?: CiliumIoV2alpha1CiliumBGPPeerConfigSpecTimers
-    transport?: CiliumIoV2alpha1CiliumBGPPeerConfigSpecTransport
+    families?: [CiliumIoV2CiliumBGPPeerConfigSpecFamiliesItems0]
+    gracefulRestart?: CiliumIoV2CiliumBGPPeerConfigSpecGracefulRestart
+    timers?: CiliumIoV2CiliumBGPPeerConfigSpecTimers
+    transport?: CiliumIoV2CiliumBGPPeerConfigSpecTransport
 
     check:
         ebgpMultihop <= 255 if ebgpMultihop not in [None, Undefined]
         ebgpMultihop >= 1 if ebgpMultihop not in [None, Undefined]
 
-schema CiliumIoV2alpha1CiliumBGPPeerConfigSpecFamiliesItems0:
+schema CiliumIoV2CiliumBGPPeerConfigSpecFamiliesItems0:
     r"""
     CiliumBGPFamilyWithAdverts represents a AFI/SAFI address family pair along with reference to BGP Advertisements.
 
     Attributes
     ----------
-    advertisements : CiliumIoV2alpha1CiliumBGPPeerConfigSpecFamiliesItems0Advertisements, default is Undefined, optional
+    advertisements : CiliumIoV2CiliumBGPPeerConfigSpecFamiliesItems0Advertisements, default is Undefined, optional
         advertisements
     afi : str, default is Undefined, required
         Afi is the Address Family Identifier (AFI) of the family.
     safi : str, default is Undefined, required
         Safi is the Subsequent Address Family Identifier (SAFI) of the family.
     """
-    advertisements?: CiliumIoV2alpha1CiliumBGPPeerConfigSpecFamiliesItems0Advertisements
+    advertisements?: CiliumIoV2CiliumBGPPeerConfigSpecFamiliesItems0Advertisements
     afi: "ipv4" | "ipv6" | "l2vpn" | "ls" | "opaque"
 
     safi: "unicast" | "multicast" | "mpls_label" | "encapsulation" | "vpls" | "evpn" | "ls" | "sr_policy" | "mup" | "mpls_vpn" | "mpls_vpn_multicast" | "route_target_constraints" | "flowspec_unicast" | "flowspec_vpn" | "key_value"
 
-schema CiliumIoV2alpha1CiliumBGPPeerConfigSpecFamiliesItems0Advertisements:
+schema CiliumIoV2CiliumBGPPeerConfigSpecFamiliesItems0Advertisements:
     r"""
     Advertisements selects group of BGP Advertisement(s) to advertise for this family.
 
@@ -104,21 +104,21 @@ schema CiliumIoV2alpha1CiliumBGPPeerConfigSpecFamiliesItems0Advertisements:
 
     Attributes
     ----------
-    matchExpressions : [CiliumIoV2alpha1CiliumBGPPeerConfigSpecFamiliesItems0AdvertisementsMatchExpressionsItems0], default is Undefined, optional
+    matchExpressions : [CiliumIoV2CiliumBGPPeerConfigSpecFamiliesItems0AdvertisementsMatchExpressionsItems0], default is Undefined, optional
         matchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
         matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-    matchExpressions?: [CiliumIoV2alpha1CiliumBGPPeerConfigSpecFamiliesItems0AdvertisementsMatchExpressionsItems0]
+    matchExpressions?: [CiliumIoV2CiliumBGPPeerConfigSpecFamiliesItems0AdvertisementsMatchExpressionsItems0]
     matchLabels?: {str:str}
 
     check:
         all _, matchLabels in matchLabels {len(matchLabels) <= 63 if matchLabels not in [None, Undefined]} if matchLabels
         all _, matchLabels in matchLabels {_regex_match(str(matchLabels), r"^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$") if matchLabels} if matchLabels
 
-schema CiliumIoV2alpha1CiliumBGPPeerConfigSpecFamiliesItems0AdvertisementsMatchExpressionsItems0:
+schema CiliumIoV2CiliumBGPPeerConfigSpecFamiliesItems0AdvertisementsMatchExpressionsItems0:
     r"""
     A label selector requirement is a selector that contains values, a key, and an operator that
     relates the key and values.
@@ -142,7 +142,7 @@ schema CiliumIoV2alpha1CiliumBGPPeerConfigSpecFamiliesItems0AdvertisementsMatchE
 
     values?: [str]
 
-schema CiliumIoV2alpha1CiliumBGPPeerConfigSpecGracefulRestart:
+schema CiliumIoV2CiliumBGPPeerConfigSpecGracefulRestart:
     r"""
     GracefulRestart defines graceful restart parameters which are negotiated
     with this peer.
@@ -167,7 +167,7 @@ schema CiliumIoV2alpha1CiliumBGPPeerConfigSpecGracefulRestart:
         restartTimeSeconds <= 4095 if restartTimeSeconds not in [None, Undefined]
         restartTimeSeconds >= 1 if restartTimeSeconds not in [None, Undefined]
 
-schema CiliumIoV2alpha1CiliumBGPPeerConfigSpecTimers:
+schema CiliumIoV2CiliumBGPPeerConfigSpecTimers:
     r"""
     Timers defines the BGP timers for the peer.
 
@@ -202,7 +202,7 @@ schema CiliumIoV2alpha1CiliumBGPPeerConfigSpecTimers:
         keepAliveTimeSeconds <= 65535 if keepAliveTimeSeconds not in [None, Undefined]
         keepAliveTimeSeconds >= 1 if keepAliveTimeSeconds not in [None, Undefined]
 
-schema CiliumIoV2alpha1CiliumBGPPeerConfigSpecTransport:
+schema CiliumIoV2CiliumBGPPeerConfigSpecTransport:
     r"""
     Transport defines the BGP transport parameters for the peer.
 
@@ -210,40 +210,29 @@ schema CiliumIoV2alpha1CiliumBGPPeerConfigSpecTransport:
 
     Attributes
     ----------
-    localPort : int, default is Undefined, optional
-        Deprecated
-        LocalPort is the local port to be used for the BGP session.
-
-        If not specified, ephemeral port will be picked to initiate a connection.
-
-        This field is deprecated and will be removed in a future release.
-        Local port configuration is unnecessary and is not recommended.
     peerPort : int, default is 179, optional
         PeerPort is the peer port to be used for the BGP session.
 
         If not specified, defaults to TCP port 179.
     """
-    localPort?: int
     peerPort?: int = 179
 
     check:
-        localPort <= 65535 if localPort not in [None, Undefined]
-        localPort >= 1 if localPort not in [None, Undefined]
         peerPort <= 65535 if peerPort not in [None, Undefined]
         peerPort >= 1 if peerPort not in [None, Undefined]
 
-schema CiliumIoV2alpha1CiliumBGPPeerConfigStatus:
+schema CiliumIoV2CiliumBGPPeerConfigStatus:
     r"""
     Status is the running status of the CiliumBGPPeerConfig
 
     Attributes
     ----------
-    conditions : [CiliumIoV2alpha1CiliumBGPPeerConfigStatusConditionsItems0], default is Undefined, optional
+    conditions : [CiliumIoV2CiliumBGPPeerConfigStatusConditionsItems0], default is Undefined, optional
         The current conditions of the CiliumBGPPeerConfig
     """
-    conditions?: [CiliumIoV2alpha1CiliumBGPPeerConfigStatusConditionsItems0]
+    conditions?: [CiliumIoV2CiliumBGPPeerConfigStatusConditionsItems0]
 
-schema CiliumIoV2alpha1CiliumBGPPeerConfigStatusConditionsItems0:
+schema CiliumIoV2CiliumBGPPeerConfigStatusConditionsItems0:
     r"""
     Condition contains details for one aspect of the current state of this API Resource.
 

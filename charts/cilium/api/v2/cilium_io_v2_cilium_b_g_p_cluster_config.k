@@ -14,50 +14,50 @@ schema CiliumBGPClusterConfig:
 
     Attributes
     ----------
-    apiVersion : str, default is "cilium.io/v2alpha1", required
+    apiVersion : str, default is "cilium.io/v2", required
         APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
     kind : str, default is "CiliumBGPClusterConfig", required
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, required
         metadata
-    spec : CiliumIoV2alpha1CiliumBGPClusterConfigSpec, default is Undefined, required
+    spec : CiliumIoV2CiliumBGPClusterConfigSpec, default is Undefined, required
         spec
-    status : CiliumIoV2alpha1CiliumBGPClusterConfigStatus, default is Undefined, optional
+    status : CiliumIoV2CiliumBGPClusterConfigStatus, default is Undefined, optional
         status
     """
-    apiVersion: "cilium.io/v2alpha1" = "cilium.io/v2alpha1"
+    apiVersion: "cilium.io/v2" = "cilium.io/v2"
 
     kind: "CiliumBGPClusterConfig" = "CiliumBGPClusterConfig"
 
     metadata: v1.ObjectMeta
 
-    spec: CiliumIoV2alpha1CiliumBGPClusterConfigSpec
+    spec: CiliumIoV2CiliumBGPClusterConfigSpec
 
-    status?: CiliumIoV2alpha1CiliumBGPClusterConfigStatus
+    status?: CiliumIoV2CiliumBGPClusterConfigStatus
 
-schema CiliumIoV2alpha1CiliumBGPClusterConfigSpec:
+schema CiliumIoV2CiliumBGPClusterConfigSpec:
     r"""
     Spec defines the desired cluster configuration of the BGP control plane.
 
     Attributes
     ----------
-    bgpInstances : [CiliumIoV2alpha1CiliumBGPClusterConfigSpecBgpInstancesItems0], default is Undefined, required
+    bgpInstances : [CiliumIoV2CiliumBGPClusterConfigSpecBgpInstancesItems0], default is Undefined, required
         A list of CiliumBGPInstance(s) which instructs
         the BGP control plane how to instantiate virtual BGP routers.
-    nodeSelector : CiliumIoV2alpha1CiliumBGPClusterConfigSpecNodeSelector, default is Undefined, optional
+    nodeSelector : CiliumIoV2CiliumBGPClusterConfigSpecNodeSelector, default is Undefined, optional
         node selector
     """
-    bgpInstances: [CiliumIoV2alpha1CiliumBGPClusterConfigSpecBgpInstancesItems0]
+    bgpInstances: [CiliumIoV2CiliumBGPClusterConfigSpecBgpInstancesItems0]
 
-    nodeSelector?: CiliumIoV2alpha1CiliumBGPClusterConfigSpecNodeSelector
+    nodeSelector?: CiliumIoV2CiliumBGPClusterConfigSpecNodeSelector
 
     check:
         len(bgpInstances) >= 1
         len(bgpInstances) <= 16
 
-schema CiliumIoV2alpha1CiliumBGPClusterConfigSpecBgpInstancesItems0:
+schema CiliumIoV2CiliumBGPClusterConfigSpecBgpInstancesItems0:
     r"""
-    cilium io v2alpha1 cilium b g p cluster config spec bgp instances items0
+    cilium io v2 cilium b g p cluster config spec bgp instances items0
 
     Attributes
     ----------
@@ -71,14 +71,14 @@ schema CiliumIoV2alpha1CiliumBGPClusterConfigSpecBgpInstancesItems0:
     name : str, default is Undefined, required
         Name is the name of the BGP instance. It is a unique identifier for the BGP instance
         within the cluster configuration.
-    peers : [CiliumIoV2alpha1CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0], default is Undefined, optional
+    peers : [CiliumIoV2CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0], default is Undefined, optional
         Peers is a list of neighboring BGP peers for this virtual router
     """
     localASN?: int
     localPort?: int
     name: str
 
-    peers?: [CiliumIoV2alpha1CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0]
+    peers?: [CiliumIoV2CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0]
 
     check:
         localASN <= 4294967295 if localASN not in [None, Undefined]
@@ -88,12 +88,14 @@ schema CiliumIoV2alpha1CiliumBGPClusterConfigSpecBgpInstancesItems0:
         len(name) <= 255
         len(name) >= 1
 
-schema CiliumIoV2alpha1CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0:
+schema CiliumIoV2CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0:
     r"""
-    cilium io v2alpha1 cilium b g p cluster config spec bgp instances items0 peers items0
+    cilium io v2 cilium b g p cluster config spec bgp instances items0 peers items0
 
     Attributes
     ----------
+    autoDiscovery : CiliumIoV2CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0AutoDiscovery, default is Undefined, optional
+        auto discovery
     name : str, default is Undefined, required
         Name is the name of the BGP peer. It is a unique identifier for the peer within the BGP instance.
     peerASN : int, default is Undefined, optional
@@ -105,14 +107,15 @@ schema CiliumIoV2alpha1CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0:
     peerAddress : str, default is Undefined, optional
         PeerAddress is the IP address of the neighbor.
         Supports IPv4 and IPv6 addresses.
-    peerConfigRef : CiliumIoV2alpha1CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0PeerConfigRef, default is Undefined, optional
+    peerConfigRef : CiliumIoV2CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0PeerConfigRef, default is Undefined, optional
         peer config ref
     """
+    autoDiscovery?: CiliumIoV2CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0AutoDiscovery
     name: str
 
     peerASN?: int = 0
     peerAddress?: str
-    peerConfigRef?: CiliumIoV2alpha1CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0PeerConfigRef
+    peerConfigRef?: CiliumIoV2CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0PeerConfigRef
 
     check:
         len(name) <= 255
@@ -121,28 +124,45 @@ schema CiliumIoV2alpha1CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0:
         peerASN >= 0 if peerASN not in [None, Undefined]
         _regex_match(str(peerAddress), r"((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))") if peerAddress
 
-schema CiliumIoV2alpha1CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0PeerConfigRef:
+schema CiliumIoV2CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0AutoDiscovery:
+    r"""
+    AutoDiscovery is the configuration for auto-discovery of the peer address.
+
+    Attributes
+    ----------
+    defaultGateway : CiliumIoV2CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0AutoDiscoveryDefaultGateway, default is Undefined, optional
+        default gateway
+    mode : str, default is Undefined, required
+        mode is the mode of the auto-discovery.
+    """
+    defaultGateway?: CiliumIoV2CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0AutoDiscoveryDefaultGateway
+    mode: str
+
+schema CiliumIoV2CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0AutoDiscoveryDefaultGateway:
+    r"""
+    defaultGateway is the configuration for auto-discovery of the default gateway.
+
+    Attributes
+    ----------
+    addressFamily : str, default is Undefined, required
+        addressFamily is the address family of the default gateway.
+    """
+    addressFamily: "ipv4" | "ipv6"
+
+schema CiliumIoV2CiliumBGPClusterConfigSpecBgpInstancesItems0PeersItems0PeerConfigRef:
     r"""
     PeerConfigRef is a reference to a peer configuration resource.
     If not specified, the default BGP configuration is used for this peer.
 
     Attributes
     ----------
-    group : str, default is "cilium.io", optional
-        Group is the group of the peer config resource.
-        If not specified, the default of "cilium.io" is used.
-    kind : str, default is "CiliumBGPPeerConfig", optional
-        Kind is the kind of the peer config resource.
-        If not specified, the default of "CiliumBGPPeerConfig" is used.
     name : str, default is Undefined, required
         Name is the name of the peer config resource.
         Name refers to the name of a Kubernetes object (typically a CiliumBGPPeerConfig).
     """
-    group?: str = "cilium.io"
-    kind?: str = "CiliumBGPPeerConfig"
     name: str
 
-schema CiliumIoV2alpha1CiliumBGPClusterConfigSpecNodeSelector:
+schema CiliumIoV2CiliumBGPClusterConfigSpecNodeSelector:
     r"""
     NodeSelector selects a group of nodes where this BGP Cluster
     config applies.
@@ -150,21 +170,21 @@ schema CiliumIoV2alpha1CiliumBGPClusterConfigSpecNodeSelector:
 
     Attributes
     ----------
-    matchExpressions : [CiliumIoV2alpha1CiliumBGPClusterConfigSpecNodeSelectorMatchExpressionsItems0], default is Undefined, optional
+    matchExpressions : [CiliumIoV2CiliumBGPClusterConfigSpecNodeSelectorMatchExpressionsItems0], default is Undefined, optional
         matchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
         matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-    matchExpressions?: [CiliumIoV2alpha1CiliumBGPClusterConfigSpecNodeSelectorMatchExpressionsItems0]
+    matchExpressions?: [CiliumIoV2CiliumBGPClusterConfigSpecNodeSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
     check:
         all _, matchLabels in matchLabels {len(matchLabels) <= 63 if matchLabels not in [None, Undefined]} if matchLabels
         all _, matchLabels in matchLabels {_regex_match(str(matchLabels), r"^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$") if matchLabels} if matchLabels
 
-schema CiliumIoV2alpha1CiliumBGPClusterConfigSpecNodeSelectorMatchExpressionsItems0:
+schema CiliumIoV2CiliumBGPClusterConfigSpecNodeSelectorMatchExpressionsItems0:
     r"""
     A label selector requirement is a selector that contains values, a key, and an operator that
     relates the key and values.
@@ -188,18 +208,18 @@ schema CiliumIoV2alpha1CiliumBGPClusterConfigSpecNodeSelectorMatchExpressionsIte
 
     values?: [str]
 
-schema CiliumIoV2alpha1CiliumBGPClusterConfigStatus:
+schema CiliumIoV2CiliumBGPClusterConfigStatus:
     r"""
     Status is a running status of the cluster configuration
 
     Attributes
     ----------
-    conditions : [CiliumIoV2alpha1CiliumBGPClusterConfigStatusConditionsItems0], default is Undefined, optional
+    conditions : [CiliumIoV2CiliumBGPClusterConfigStatusConditionsItems0], default is Undefined, optional
         The current conditions of the CiliumBGPClusterConfig
     """
-    conditions?: [CiliumIoV2alpha1CiliumBGPClusterConfigStatusConditionsItems0]
+    conditions?: [CiliumIoV2CiliumBGPClusterConfigStatusConditionsItems0]
 
-schema CiliumIoV2alpha1CiliumBGPClusterConfigStatusConditionsItems0:
+schema CiliumIoV2CiliumBGPClusterConfigStatusConditionsItems0:
     r"""
     Condition contains details for one aspect of the current state of this API Resource.
 

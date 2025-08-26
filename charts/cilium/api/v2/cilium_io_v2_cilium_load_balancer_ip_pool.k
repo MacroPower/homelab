@@ -16,28 +16,28 @@ schema CiliumLoadBalancerIPPool:
 
     Attributes
     ----------
-    apiVersion : str, default is "cilium.io/v2alpha1", required
+    apiVersion : str, default is "cilium.io/v2", required
         APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
     kind : str, default is "CiliumLoadBalancerIPPool", required
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, required
         metadata
-    spec : CiliumIoV2alpha1CiliumLoadBalancerIPPoolSpec, default is Undefined, required
+    spec : CiliumIoV2CiliumLoadBalancerIPPoolSpec, default is Undefined, required
         spec
-    status : CiliumIoV2alpha1CiliumLoadBalancerIPPoolStatus, default is Undefined, optional
+    status : CiliumIoV2CiliumLoadBalancerIPPoolStatus, default is Undefined, optional
         status
     """
-    apiVersion: "cilium.io/v2alpha1" = "cilium.io/v2alpha1"
+    apiVersion: "cilium.io/v2" = "cilium.io/v2"
 
     kind: "CiliumLoadBalancerIPPool" = "CiliumLoadBalancerIPPool"
 
     metadata: v1.ObjectMeta
 
-    spec: CiliumIoV2alpha1CiliumLoadBalancerIPPoolSpec
+    spec: CiliumIoV2CiliumLoadBalancerIPPoolSpec
 
-    status?: CiliumIoV2alpha1CiliumLoadBalancerIPPoolStatus
+    status?: CiliumIoV2CiliumLoadBalancerIPPoolStatus
 
-schema CiliumIoV2alpha1CiliumLoadBalancerIPPoolSpec:
+schema CiliumIoV2CiliumLoadBalancerIPPoolSpec:
     r"""
     Spec is a human readable description for a BGP load balancer
     ip pool.
@@ -48,20 +48,20 @@ schema CiliumIoV2alpha1CiliumLoadBalancerIPPoolSpec:
         AllowFirstLastIPs, if set to `Yes` or undefined means that the first and last IPs of each CIDR will be allocatable.
         If `No`, these IPs will be reserved. This field is ignored for /{31,32} and /{127,128} CIDRs since
         reserving the first and last IPs would make the CIDRs unusable.
-    blocks : [CiliumIoV2alpha1CiliumLoadBalancerIPPoolSpecBlocksItems0], default is Undefined, optional
+    blocks : [CiliumIoV2CiliumLoadBalancerIPPoolSpecBlocksItems0], default is Undefined, optional
         Blocks is a list of CIDRs comprising this IP Pool
     disabled : bool, default is Undefined, optional
         Disabled, if set to true means that no new IPs will be allocated from this pool.
         Existing allocations will not be removed from services.
-    serviceSelector : CiliumIoV2alpha1CiliumLoadBalancerIPPoolSpecServiceSelector, default is Undefined, optional
+    serviceSelector : CiliumIoV2CiliumLoadBalancerIPPoolSpecServiceSelector, default is Undefined, optional
         service selector
     """
     allowFirstLastIPs?: "Yes" | "No"
-    blocks?: [CiliumIoV2alpha1CiliumLoadBalancerIPPoolSpecBlocksItems0]
+    blocks?: [CiliumIoV2CiliumLoadBalancerIPPoolSpecBlocksItems0]
     disabled?: bool = False
-    serviceSelector?: CiliumIoV2alpha1CiliumLoadBalancerIPPoolSpecServiceSelector
+    serviceSelector?: CiliumIoV2CiliumLoadBalancerIPPoolSpecServiceSelector
 
-schema CiliumIoV2alpha1CiliumLoadBalancerIPPoolSpecBlocksItems0:
+schema CiliumIoV2CiliumLoadBalancerIPPoolSpecBlocksItems0:
     r"""
     CiliumLoadBalancerIPPoolIPBlock describes a single IP block.
 
@@ -78,27 +78,27 @@ schema CiliumIoV2alpha1CiliumLoadBalancerIPPoolSpecBlocksItems0:
     start?: str
     stop?: str
 
-schema CiliumIoV2alpha1CiliumLoadBalancerIPPoolSpecServiceSelector:
+schema CiliumIoV2CiliumLoadBalancerIPPoolSpecServiceSelector:
     r"""
     ServiceSelector selects a set of services which are eligible to receive IPs from this
 
     Attributes
     ----------
-    matchExpressions : [CiliumIoV2alpha1CiliumLoadBalancerIPPoolSpecServiceSelectorMatchExpressionsItems0], default is Undefined, optional
+    matchExpressions : [CiliumIoV2CiliumLoadBalancerIPPoolSpecServiceSelectorMatchExpressionsItems0], default is Undefined, optional
         matchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
         matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-    matchExpressions?: [CiliumIoV2alpha1CiliumLoadBalancerIPPoolSpecServiceSelectorMatchExpressionsItems0]
+    matchExpressions?: [CiliumIoV2CiliumLoadBalancerIPPoolSpecServiceSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
     check:
         all _, matchLabels in matchLabels {len(matchLabels) <= 63 if matchLabels not in [None, Undefined]} if matchLabels
         all _, matchLabels in matchLabels {_regex_match(str(matchLabels), r"^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$") if matchLabels} if matchLabels
 
-schema CiliumIoV2alpha1CiliumLoadBalancerIPPoolSpecServiceSelectorMatchExpressionsItems0:
+schema CiliumIoV2CiliumLoadBalancerIPPoolSpecServiceSelectorMatchExpressionsItems0:
     r"""
     A label selector requirement is a selector that contains values, a key, and an operator that
     relates the key and values.
@@ -122,7 +122,7 @@ schema CiliumIoV2alpha1CiliumLoadBalancerIPPoolSpecServiceSelectorMatchExpressio
 
     values?: [str]
 
-schema CiliumIoV2alpha1CiliumLoadBalancerIPPoolStatus:
+schema CiliumIoV2CiliumLoadBalancerIPPoolStatus:
     r"""
     Status is the status of the IP Pool.
 
@@ -132,12 +132,12 @@ schema CiliumIoV2alpha1CiliumLoadBalancerIPPoolStatus:
 
     Attributes
     ----------
-    conditions : [CiliumIoV2alpha1CiliumLoadBalancerIPPoolStatusConditionsItems0], default is Undefined, optional
+    conditions : [CiliumIoV2CiliumLoadBalancerIPPoolStatusConditionsItems0], default is Undefined, optional
         Current service state
     """
-    conditions?: [CiliumIoV2alpha1CiliumLoadBalancerIPPoolStatusConditionsItems0]
+    conditions?: [CiliumIoV2CiliumLoadBalancerIPPoolStatusConditionsItems0]
 
-schema CiliumIoV2alpha1CiliumLoadBalancerIPPoolStatusConditionsItems0:
+schema CiliumIoV2CiliumLoadBalancerIPPoolStatusConditionsItems0:
     r"""
     Condition contains details for one aspect of the current state of this API Resource.
 

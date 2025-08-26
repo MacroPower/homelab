@@ -15,43 +15,43 @@ schema CiliumBGPNodeConfig:
 
     Attributes
     ----------
-    apiVersion : str, default is "cilium.io/v2alpha1", required
+    apiVersion : str, default is "cilium.io/v2", required
         APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
     kind : str, default is "CiliumBGPNodeConfig", required
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, required
         metadata
-    spec : CiliumIoV2alpha1CiliumBGPNodeConfigSpec, default is Undefined, required
+    spec : CiliumIoV2CiliumBGPNodeConfigSpec, default is Undefined, required
         spec
-    status : CiliumIoV2alpha1CiliumBGPNodeConfigStatus, default is Undefined, optional
+    status : CiliumIoV2CiliumBGPNodeConfigStatus, default is Undefined, optional
         status
     """
-    apiVersion: "cilium.io/v2alpha1" = "cilium.io/v2alpha1"
+    apiVersion: "cilium.io/v2" = "cilium.io/v2"
 
     kind: "CiliumBGPNodeConfig" = "CiliumBGPNodeConfig"
 
     metadata: v1.ObjectMeta
 
-    spec: CiliumIoV2alpha1CiliumBGPNodeConfigSpec
+    spec: CiliumIoV2CiliumBGPNodeConfigSpec
 
-    status?: CiliumIoV2alpha1CiliumBGPNodeConfigStatus
+    status?: CiliumIoV2CiliumBGPNodeConfigStatus
 
-schema CiliumIoV2alpha1CiliumBGPNodeConfigSpec:
+schema CiliumIoV2CiliumBGPNodeConfigSpec:
     r"""
     Spec is the specification of the desired behavior of the CiliumBGPNodeConfig.
 
     Attributes
     ----------
-    bgpInstances : [CiliumIoV2alpha1CiliumBGPNodeConfigSpecBgpInstancesItems0], default is Undefined, required
+    bgpInstances : [CiliumIoV2CiliumBGPNodeConfigSpecBgpInstancesItems0], default is Undefined, required
         BGPInstances is a list of BGP router instances on the node.
     """
-    bgpInstances: [CiliumIoV2alpha1CiliumBGPNodeConfigSpecBgpInstancesItems0]
+    bgpInstances: [CiliumIoV2CiliumBGPNodeConfigSpecBgpInstancesItems0]
 
     check:
         len(bgpInstances) >= 1
         len(bgpInstances) <= 16
 
-schema CiliumIoV2alpha1CiliumBGPNodeConfigSpecBgpInstancesItems0:
+schema CiliumIoV2CiliumBGPNodeConfigSpecBgpInstancesItems0:
     r"""
     CiliumBGPNodeInstance is a single BGP router instance configuration on the node.
 
@@ -66,7 +66,7 @@ schema CiliumIoV2alpha1CiliumBGPNodeConfigSpecBgpInstancesItems0:
         If not specified, BGP instance will not listen for incoming connections.
     name : str, default is Undefined, required
         Name is the name of the BGP instance. This name is used to identify the BGP instance on the node.
-    peers : [CiliumIoV2alpha1CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0], default is Undefined, optional
+    peers : [CiliumIoV2CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0], default is Undefined, optional
         Peers is a list of neighboring BGP peers for this virtual router
     routerID : str, default is Undefined, optional
         RouterID is the BGP router ID of this virtual router.
@@ -78,7 +78,7 @@ schema CiliumIoV2alpha1CiliumBGPNodeConfigSpecBgpInstancesItems0:
     localPort?: int
     name: str
 
-    peers?: [CiliumIoV2alpha1CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0]
+    peers?: [CiliumIoV2CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0]
     routerID?: str
 
     check:
@@ -89,12 +89,14 @@ schema CiliumIoV2alpha1CiliumBGPNodeConfigSpecBgpInstancesItems0:
         len(name) <= 255
         len(name) >= 1
 
-schema CiliumIoV2alpha1CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0:
+schema CiliumIoV2CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0:
     r"""
-    cilium io v2alpha1 cilium b g p node config spec bgp instances items0 peers items0
+    cilium io v2 cilium b g p node config spec bgp instances items0 peers items0
 
     Attributes
     ----------
+    autoDiscovery : CiliumIoV2CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0AutoDiscovery, default is Undefined, optional
+        auto discovery
     localAddress : str, default is Undefined, optional
         LocalAddress is the IP address of the local interface to use for the peering session.
         This configuration is derived from CiliumBGPNodeConfigOverride resource. If not specified, the local address will be used for setting up peering.
@@ -106,15 +108,16 @@ schema CiliumIoV2alpha1CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0:
     peerAddress : str, default is Undefined, optional
         PeerAddress is the IP address of the neighbor.
         Supports IPv4 and IPv6 addresses.
-    peerConfigRef : CiliumIoV2alpha1CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0PeerConfigRef, default is Undefined, optional
+    peerConfigRef : CiliumIoV2CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0PeerConfigRef, default is Undefined, optional
         peer config ref
     """
+    autoDiscovery?: CiliumIoV2CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0AutoDiscovery
     localAddress?: str
     name: str
 
     peerASN?: int
     peerAddress?: str
-    peerConfigRef?: CiliumIoV2alpha1CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0PeerConfigRef
+    peerConfigRef?: CiliumIoV2CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0PeerConfigRef
 
     check:
         _regex_match(str(localAddress), r"((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))") if localAddress
@@ -122,44 +125,61 @@ schema CiliumIoV2alpha1CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0:
         peerASN >= 0 if peerASN not in [None, Undefined]
         _regex_match(str(peerAddress), r"((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))") if peerAddress
 
-schema CiliumIoV2alpha1CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0PeerConfigRef:
+schema CiliumIoV2CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0AutoDiscovery:
+    r"""
+    AutoDiscovery is the configuration for auto-discovery of the peer address.
+
+    Attributes
+    ----------
+    defaultGateway : CiliumIoV2CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0AutoDiscoveryDefaultGateway, default is Undefined, optional
+        default gateway
+    mode : str, default is Undefined, required
+        mode is the mode of the auto-discovery.
+    """
+    defaultGateway?: CiliumIoV2CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0AutoDiscoveryDefaultGateway
+    mode: str
+
+schema CiliumIoV2CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0AutoDiscoveryDefaultGateway:
+    r"""
+    defaultGateway is the configuration for auto-discovery of the default gateway.
+
+    Attributes
+    ----------
+    addressFamily : str, default is Undefined, required
+        addressFamily is the address family of the default gateway.
+    """
+    addressFamily: "ipv4" | "ipv6"
+
+schema CiliumIoV2CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0PeerConfigRef:
     r"""
     PeerConfigRef is a reference to a peer configuration resource.
     If not specified, the default BGP configuration is used for this peer.
 
     Attributes
     ----------
-    group : str, default is "cilium.io", optional
-        Group is the group of the peer config resource.
-        If not specified, the default of "cilium.io" is used.
-    kind : str, default is "CiliumBGPPeerConfig", optional
-        Kind is the kind of the peer config resource.
-        If not specified, the default of "CiliumBGPPeerConfig" is used.
     name : str, default is Undefined, required
         Name is the name of the peer config resource.
         Name refers to the name of a Kubernetes object (typically a CiliumBGPPeerConfig).
     """
-    group?: str = "cilium.io"
-    kind?: str = "CiliumBGPPeerConfig"
     name: str
 
-schema CiliumIoV2alpha1CiliumBGPNodeConfigStatus:
+schema CiliumIoV2CiliumBGPNodeConfigStatus:
     r"""
     Status is the most recently observed status of the CiliumBGPNodeConfig.
 
     Attributes
     ----------
-    bgpInstances : [CiliumIoV2alpha1CiliumBGPNodeConfigStatusBgpInstancesItems0], default is Undefined, optional
+    bgpInstances : [CiliumIoV2CiliumBGPNodeConfigStatusBgpInstancesItems0], default is Undefined, optional
         BGPInstances is the status of the BGP instances on the node.
-    conditions : [CiliumIoV2alpha1CiliumBGPNodeConfigStatusConditionsItems0], default is Undefined, optional
+    conditions : [CiliumIoV2CiliumBGPNodeConfigStatusConditionsItems0], default is Undefined, optional
         The current conditions of the CiliumBGPNodeConfig
     """
-    bgpInstances?: [CiliumIoV2alpha1CiliumBGPNodeConfigStatusBgpInstancesItems0]
-    conditions?: [CiliumIoV2alpha1CiliumBGPNodeConfigStatusConditionsItems0]
+    bgpInstances?: [CiliumIoV2CiliumBGPNodeConfigStatusBgpInstancesItems0]
+    conditions?: [CiliumIoV2CiliumBGPNodeConfigStatusConditionsItems0]
 
-schema CiliumIoV2alpha1CiliumBGPNodeConfigStatusBgpInstancesItems0:
+schema CiliumIoV2CiliumBGPNodeConfigStatusBgpInstancesItems0:
     r"""
-    cilium io v2alpha1 cilium b g p node config status bgp instances items0
+    cilium io v2 cilium b g p node config status bgp instances items0
 
     Attributes
     ----------
@@ -167,15 +187,15 @@ schema CiliumIoV2alpha1CiliumBGPNodeConfigStatusBgpInstancesItems0:
         LocalASN is the ASN of this BGP instance.
     name : str, default is Undefined, required
         Name is the name of the BGP instance. This name is used to identify the BGP instance on the node.
-    peers : [CiliumIoV2alpha1CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0], default is Undefined, optional
+    peers : [CiliumIoV2CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0], default is Undefined, optional
         PeerStatuses is the state of the BGP peers for this BGP instance.
     """
     localASN?: int
     name: str
 
-    peers?: [CiliumIoV2alpha1CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0]
+    peers?: [CiliumIoV2CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0]
 
-schema CiliumIoV2alpha1CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0:
+schema CiliumIoV2CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0:
     r"""
     CiliumBGPNodePeerStatus is the status of a BGP peer.
 
@@ -192,9 +212,9 @@ schema CiliumIoV2alpha1CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0:
         PeerAddress is the IP address of the neighbor.
     peeringState : str, default is Undefined, optional
         PeeringState is last known state of the peering session.
-    routeCount : [CiliumIoV2alpha1CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0RouteCountItems0], default is Undefined, optional
+    routeCount : [CiliumIoV2CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0RouteCountItems0], default is Undefined, optional
         RouteCount is the number of routes exchanged with this peer per AFI/SAFI.
-    timers : CiliumIoV2alpha1CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0Timers, default is Undefined, optional
+    timers : CiliumIoV2CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0Timers, default is Undefined, optional
         timers
     """
     establishedTime?: str
@@ -204,12 +224,12 @@ schema CiliumIoV2alpha1CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0:
     peerAddress: str
 
     peeringState?: str
-    routeCount?: [CiliumIoV2alpha1CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0RouteCountItems0]
-    timers?: CiliumIoV2alpha1CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0Timers
+    routeCount?: [CiliumIoV2CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0RouteCountItems0]
+    timers?: CiliumIoV2CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0Timers
 
-schema CiliumIoV2alpha1CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0RouteCountItems0:
+schema CiliumIoV2CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0RouteCountItems0:
     r"""
-    cilium io v2alpha1 cilium b g p node config status bgp instances items0 peers items0 route count items0
+    cilium io v2 cilium b g p node config status bgp instances items0 peers items0 route count items0
 
     Attributes
     ----------
@@ -228,7 +248,7 @@ schema CiliumIoV2alpha1CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0Rou
     received?: int
     safi: "unicast" | "multicast" | "mpls_label" | "encapsulation" | "vpls" | "evpn" | "ls" | "sr_policy" | "mup" | "mpls_vpn" | "mpls_vpn_multicast" | "route_target_constraints" | "flowspec_unicast" | "flowspec_vpn" | "key_value"
 
-schema CiliumIoV2alpha1CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0Timers:
+schema CiliumIoV2CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0Timers:
     r"""
     Timers is the state of the negotiated BGP timers for this peer.
 
@@ -242,7 +262,7 @@ schema CiliumIoV2alpha1CiliumBGPNodeConfigStatusBgpInstancesItems0PeersItems0Tim
     appliedHoldTimeSeconds?: int
     appliedKeepaliveSeconds?: int
 
-schema CiliumIoV2alpha1CiliumBGPNodeConfigStatusConditionsItems0:
+schema CiliumIoV2CiliumBGPNodeConfigStatusConditionsItems0:
     r"""
     Condition contains details for one aspect of the current state of this API Resource.
 

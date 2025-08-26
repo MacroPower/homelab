@@ -5,12 +5,14 @@ import cilium_system_base
 import charts.cilium.api.v2alpha1 as ciliumv2alpha1
 import konfig.utils
 
-_valueFile = utils.abs_path(file.current(), "values.yaml")
+_baseValues = cilium_system_base.app.charts.cilium.values
+_envValues = utils.read_yaml(file.current(), "values.yaml")
+_values = utils.json_merge_patch(_baseValues, _envValues)
 
 app = cilium_system_base.app | {
     domainName = cluster.DOMAIN_NAME
 
-    charts.cilium.valueFiles += [_valueFile]
+    charts.cilium.values = _values
 
     extraResources.bgpPeering = cilium_system_base.unifiBGPPeering
     extraResources.ipPool = ciliumv2alpha1.CiliumLoadBalancerIPPool {

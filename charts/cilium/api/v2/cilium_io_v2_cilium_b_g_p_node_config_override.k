@@ -17,38 +17,38 @@ schema CiliumBGPNodeConfigOverride:
 
     Attributes
     ----------
-    apiVersion : str, default is "cilium.io/v2alpha1", required
+    apiVersion : str, default is "cilium.io/v2", required
         APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
     kind : str, default is "CiliumBGPNodeConfigOverride", required
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, required
         metadata
-    spec : CiliumIoV2alpha1CiliumBGPNodeConfigOverrideSpec, default is Undefined, required
+    spec : CiliumIoV2CiliumBGPNodeConfigOverrideSpec, default is Undefined, required
         spec
     """
-    apiVersion: "cilium.io/v2alpha1" = "cilium.io/v2alpha1"
+    apiVersion: "cilium.io/v2" = "cilium.io/v2"
 
     kind: "CiliumBGPNodeConfigOverride" = "CiliumBGPNodeConfigOverride"
 
     metadata: v1.ObjectMeta
 
-    spec: CiliumIoV2alpha1CiliumBGPNodeConfigOverrideSpec
+    spec: CiliumIoV2CiliumBGPNodeConfigOverrideSpec
 
-schema CiliumIoV2alpha1CiliumBGPNodeConfigOverrideSpec:
+schema CiliumIoV2CiliumBGPNodeConfigOverrideSpec:
     r"""
     Spec is the specification of the desired behavior of the CiliumBGPNodeConfigOverride.
 
     Attributes
     ----------
-    bgpInstances : [CiliumIoV2alpha1CiliumBGPNodeConfigOverrideSpecBgpInstancesItems0], default is Undefined, required
+    bgpInstances : [CiliumIoV2CiliumBGPNodeConfigOverrideSpecBgpInstancesItems0], default is Undefined, required
         BGPInstances is a list of BGP instances to override.
     """
-    bgpInstances: [CiliumIoV2alpha1CiliumBGPNodeConfigOverrideSpecBgpInstancesItems0]
+    bgpInstances: [CiliumIoV2CiliumBGPNodeConfigOverrideSpecBgpInstancesItems0]
 
     check:
         len(bgpInstances) >= 1
 
-schema CiliumIoV2alpha1CiliumBGPNodeConfigOverrideSpecBgpInstancesItems0:
+schema CiliumIoV2CiliumBGPNodeConfigOverrideSpecBgpInstancesItems0:
     r"""
     CiliumBGPNodeConfigInstanceOverride defines configuration options which can be overridden for a specific BGP instance.
 
@@ -60,7 +60,7 @@ schema CiliumIoV2alpha1CiliumBGPNodeConfigOverrideSpecBgpInstancesItems0:
         LocalPort is port to use for this BGP instance.
     name : str, default is Undefined, required
         Name is the name of the BGP instance for which the configuration is overridden.
-    peers : [CiliumIoV2alpha1CiliumBGPNodeConfigOverrideSpecBgpInstancesItems0PeersItems0], default is Undefined, optional
+    peers : [CiliumIoV2CiliumBGPNodeConfigOverrideSpecBgpInstancesItems0PeersItems0], default is Undefined, optional
         Peers is a list of peer configurations to override.
     routerID : str, default is Undefined, optional
         RouterID is BGP router id to use for this instance. It must be unique across all BGP instances.
@@ -69,7 +69,7 @@ schema CiliumIoV2alpha1CiliumBGPNodeConfigOverrideSpecBgpInstancesItems0:
     localPort?: int
     name: str
 
-    peers?: [CiliumIoV2alpha1CiliumBGPNodeConfigOverrideSpecBgpInstancesItems0PeersItems0]
+    peers?: [CiliumIoV2CiliumBGPNodeConfigOverrideSpecBgpInstancesItems0PeersItems0]
     routerID?: str
 
     check:
@@ -78,7 +78,7 @@ schema CiliumIoV2alpha1CiliumBGPNodeConfigOverrideSpecBgpInstancesItems0:
         len(name) <= 255
         len(name) >= 1
 
-schema CiliumIoV2alpha1CiliumBGPNodeConfigOverrideSpecBgpInstancesItems0PeersItems0:
+schema CiliumIoV2CiliumBGPNodeConfigOverrideSpecBgpInstancesItems0PeersItems0:
     r"""
     CiliumBGPNodeConfigPeerOverride defines configuration options which can be overridden for a specific peer.
 
