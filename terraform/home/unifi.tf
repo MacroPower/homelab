@@ -172,18 +172,18 @@ locals {
       ipv4    = "10.10.10.1"
       profile = local.unifi_device_types.k8s_node_rk1.profile
     }
-    # "kmain02" = {
-    #   desc    = "Node 2-1 (Control Plane)"
-    #   mac     = ""
-    #   ipv4    = "10.10.10.2"
-    #   profile = local.unifi_device_types.k8s_node_rk1.profile
-    # }
-    # "kmain03" = {
-    #   desc    = "Node 3-1 (Control Plane)"
-    #   mac     = "fa:fa:0b:10:5e:18"
-    #   ipv4    = "10.10.10.3"
-    #   profile = local.unifi_device_types.k8s_node_rk1.profile
-    # }
+    "kmain02" = {
+      desc    = "Node 2-1 (Control Plane)"
+      mac     = "56:13:8a:32:ff:96"
+      ipv4    = "10.10.10.2"
+      profile = local.unifi_device_types.k8s_node_rk1.profile
+    }
+    "kmain03" = {
+      desc    = "Node 3-1 (Control Plane)"
+      mac     = "ee:2f:d9:80:0f:c2"
+      ipv4    = "10.10.10.3"
+      profile = local.unifi_device_types.k8s_node_rk1.profile
+    }
     "kmain04" = {
       desc    = "Node 1-2"
       mac     = "fe:c2:a6:93:6e:8a"
