@@ -22,7 +22,7 @@ nodes:
   - hostname: kmain01.cin.macro.network
     ipAddress: 10.10.10.1
     controlPlane: true
-    installDisk: &rk1device /dev/nvme0n1
+    installDisk: /dev/nvme0n1
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
@@ -54,7 +54,7 @@ nodes:
   - hostname: kmain02.cin.macro.network
     ipAddress: 10.10.10.2
     controlPlane: true
-    installDisk: *rk1device
+    installDisk: /dev/nvme0n1
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
@@ -72,7 +72,7 @@ nodes:
   - hostname: kmain03.cin.macro.network
     ipAddress: 10.10.10.3
     controlPlane: true
-    installDisk: *rk1device
+    installDisk: /dev/nvme0n1
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
@@ -87,27 +87,59 @@ nodes:
         routes: *routes
     schematic: *rk1schematic
 
-  # - hostname: kmain06.cin.macro.network
-  #   ipAddress: 10.10.10.6
-  #   controlPlane: false
-  #   installDisk: /dev/mmcblk0
-  #   nodeLabels:
-  #     bgp.kubernetes.macro.network/peer_group: cbgp
-  #     feature.node.kubernetes.io/network.max-link-speed: 1g
-  #     topology.kubernetes.io/region: rack01
-  #     topology.kubernetes.io/zone: az03
-  #   networkInterfaces:
-  #     - deviceSelector: *rk1NetDevice
-  #       dhcp: false
-  #       addresses:
-  #         - "10.10.10.6/16"
-  #         - "2603:6010:5300:ad0a::a006/64"
-  #       mtu: *mtu
-  #       routes: *routes
-  #   kernelModules: *rk1kernel
-  #   schematic: *rk1schematic
-  #   patches:
-  #     - *rk1machine
+  - hostname: kmain04.cin.macro.network
+    ipAddress: 10.10.10.4
+    controlPlane: false
+    installDisk: /dev/mmcblk0
+    nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 1g
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az01
+    networkInterfaces:
+      - deviceSelector: *rk1NetDevice
+        dhcp: false
+        addresses:
+          - "10.10.10.4/16"
+          - "fc42:0:0:a::1004/64"
+        mtu: *mtu
+        routes: *routes
+    schematic: *rk1schematic
+
+  - hostname: kmain05.cin.macro.network
+    ipAddress: 10.10.10.5
+    controlPlane: false
+    installDisk: /dev/mmcblk0
+    nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 1g
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az02
+    networkInterfaces:
+      - deviceSelector: *rk1NetDevice
+        dhcp: false
+        addresses:
+          - "10.10.10.5/16"
+          - "fc42:0:0:a::1005/64"
+        mtu: *mtu
+        routes: *routes
+    schematic: *rk1schematic
+
+  - hostname: kmain06.cin.macro.network
+    ipAddress: 10.10.10.6
+    controlPlane: false
+    installDisk: /dev/mmcblk0
+    nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 1g
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az03
+    networkInterfaces:
+      - deviceSelector: *rk1NetDevice
+        dhcp: false
+        addresses:
+          - "10.10.10.6/16"
+          - "fc42:0:0:a::1006/64"
+        mtu: *mtu
+        routes: *routes
+    schematic: *rk1schematic
 
   # - hostname: kmain13.cin.macro.network
   #   ipAddress: 10.10.10.13
