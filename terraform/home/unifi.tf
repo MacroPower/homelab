@@ -220,6 +220,12 @@ locals {
       ipv4    = "10.10.10.9"
       profile = local.unifi_device_types.k8s_node_supermicro.profile
     }
+    "knas01" = {
+      desc    = "TrueNAS Container 1"
+      mac     = "e4:dd:9a:b9:42:89"
+      ipv4    = "10.10.12.1"
+      profile = local.unifi_device_types.truenas.profile
+    }
     "hass" = {
       desc    = "Home Assistant"
       mac     = "d8:3a:dd:ba:e3:3b"

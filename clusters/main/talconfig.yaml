@@ -141,6 +141,23 @@ nodes:
         routes: *routes
     schematic: *rk1schematic
 
+  - hostname: knas01.cin.macro.network
+    ipAddress: 10.10.12.1
+    controlPlane: false
+    installDisk: /tmp
+    nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 10g
+      topology.kubernetes.io/region: rack01
+    networkInterfaces:
+      - deviceSelector:
+          driver: macvlan
+        dhcp: false
+        addresses:
+          - "10.10.12.1/16"
+          - "fc42:0:0:a::1201/64"
+        mtu: *mtu
+        routes: *routes
+
   # - hostname: kmain13.cin.macro.network
   #   ipAddress: 10.10.10.13
   #   controlPlane: false

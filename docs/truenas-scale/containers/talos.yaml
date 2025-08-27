@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  talos:
+    image: ghcr.io/siderolabs/talos:v1.10.6
+    container_name: talos
+    hostname: knas01
+    tty: true
+    read_only: true
+    privileged: true
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+    security_opt:
+      - seccomp=unconfined
+    environment:
+      - PLATFORM=container
+    tmpfs:
+      - /run
+      - /system
+      - /tmp
+    volumes:
+      - talos_system_state:/system/state
+      - talos_var:/var
+      - talos_cni:/etc/cni
+      - talos_kubernetes:/etc/kubernetes
+      - talos_libexec:/usr/libexec/kubernetes
+      - talos_opt:/opt
+    networks:
+      talos_macvlan:
+        ipv4_address: "10.10.12.1"
+        ipv6_address: "fc42:0:0:a::1201"
+        mac_address: "e4:dd:9a:b9:42:89"
+    dns:
+      - "10.10.0.1"
+      - "fc42:0:0:a::"
+volumes:
+  talos_system_state: {}
+  talos_var: {}
+  talos_cni: {}
+  talos_kubernetes: {}
+  talos_libexec: {}
+  talos_opt: {}
+networks:
+  talos_macvlan:
+    driver: macvlan
+    driver_opts:
+      parent: bond0
+    ipam:
+      config:
+        - subnet: "10.10.0.0/16"
+          gateway: "10.10.0.1"
+        - subnet: "fc42:0:0:a::/64"
+          gateway: "fc42:0:0:a::"
