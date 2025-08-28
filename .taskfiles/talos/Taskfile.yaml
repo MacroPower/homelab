@@ -6,18 +6,20 @@ vars:
   TALOS_SCRIPTS_DIR: "{{.ROOT_DIR}}/.taskfiles/talos/scripts"
   EXTRAS_DIR: "{{.ROOT_DIR}}/hack/extra"
   CLUSTER_DOMAIN: cin.macro.network
-  CLUSTER_ENDPOINT: kmgmt.cin.macro.network
   DOPPLER_PROJECT: talhelper
-  DOPPLER_ENV: mgmt
-  DOPPLER_CMD: doppler run -p {{.DOPPLER_PROJECT}} -c {{.DOPPLER_ENV}}
   TALOS_DIR: "{{.TALOS_DIR}}"
 
 tasks:
   build:
     desc: Build Talos config
-    dir: "{{.TALOS_DIR}}"
+    requires:
+      vars: [CLUSTER_NAME]
+    vars:
+      CLUSTER_ENDPOINT: "k{{.CLUSTER_NAME}}.{{.CLUSTER_DOMAIN}}"
+      DOPPLER_CMD: "doppler run -p {{.DOPPLER_PROJECT}} -c {{.CLUSTER_NAME}}"
+    dir: &dir "{{.TALOS_DIR}}/{{.CLUSTER_NAME}}"
     cmds:
-      #- "{{.DOPPLER_CMD}} -- talhelper validate talconfig"
+      - "{{.DOPPLER_CMD}} -- talhelper validate talconfig"
       - "{{.DOPPLER_CMD}} -- talhelper genconfig --no-gitignore"
     sources:
       - "*.yaml"
@@ -28,10 +30,15 @@ tasks:
     desc: Apply Talos config
     summary: |
       Args:
+        CLUSTER_NAME: Cluster name.
         MODE: Apply mode [auto, interactive, no-reboot, reboot, staged, try] (default: no-reboot)
         NODE: Target node (default: all nodes)
-    dir: "{{.TALOS_DIR}}"
+    dir: *dir
+    requires:
+      vars: [CLUSTER_NAME]
     vars:
+      CLUSTER_ENDPOINT: "k{{.CLUSTER_NAME}}.{{.CLUSTER_DOMAIN}}"
+      DOPPLER_CMD: "doppler run -p {{.DOPPLER_PROJECT}} -c {{.CLUSTER_NAME}}"
       MODE: '{{.MODE | default "no-reboot"}}'
       NODE: '{{.NODE | default ""}}'
     cmds:
@@ -51,24 +58,28 @@ tasks:
         CLUSTER: Cluster name (required)
         NODE: Target node (required)
     requires:
-      vars: [CLUSTER, NODE]
-    dir: "{{.TALOS_DIR}}"
+      vars: [CLUSTER_NAME, NODE]
+    dir: *dir
     cmds:
       - task: build
       - |-
         talosctl apply-config --insecure \
-          -n {{.NODE}} -f clusterconfig/{{.CLUSTER}}-{{.NODE}}.{{.CLUSTER_DOMAIN}}.yaml
+          -n {{.NODE}} -f clusterconfig/{{.CLUSTER_NAME}}-{{.NODE}}.{{.CLUSTER_DOMAIN}}.yaml
 
   talconfig:
     desc: Generate Talos config
-    dir: "{{.TALOS_DIR}}"
+    dir: *dir
     cmds:
       - task: build
       - talosctl config merge ./clusterconfig/talosconfig
 
   kubeconfig:
     desc: Generate kubeconfig
-    dir: "{{.TALOS_DIR}}"
+    requires:
+      vars: [CLUSTER_NAME]
+    vars:
+      CLUSTER_ENDPOINT: "k{{.CLUSTER_NAME}}.{{.CLUSTER_DOMAIN}}"
+    dir: *dir
     cmds:
       - task: talconfig
       - talosctl kubeconfig -e {{.CLUSTER_ENDPOINT}} -n {{.CLUSTER_ENDPOINT}}
@@ -124,11 +135,13 @@ tasks:
     desc: Bootstrap Talos cluster
     summary: |
       Args:
-        INITIAL_NODE: Node to bootstrap (default: knode01.{{.CLUSTER_DOMAIN}})
+        INITIAL_NODE: Node to bootstrap, e.g. kmain01.{{.CLUSTER_DOMAIN}}
         RECOVERY_SNAPSHOT: Snapshot to recover from (default: "")
-    dir: "{{.TALOS_DIR}}"
+    dir: *dir
+    requires:
+      vars: [INITIAL_NODE]
     vars:
-      INITIAL_NODE: '{{.INITIAL_NODE | default (print "knode01." .CLUSTER_DOMAIN)}}'
+      RECOVERY_SNAPSHOT: '{{.RECOVERY_SNAPSHOT | default ""}}'
     cmds:
       - task: talconfig
       - task: apply-insecure
@@ -136,10 +149,8 @@ tasks:
       - cmd: echo "Applied config to {{.INITIAL_NODE}}, waiting..."
         silent: true
       - sleep 60
-      - |
-        talosctl bootstrap \
-          {{if ne .RECOVERY_SNAPSHOT ""}}--recover-from {{.RECOVERY_SNAPSHOT}} \{{end}}
-          -e {{.INITIAL_NODE}} -n {{.INITIAL_NODE}}
+      - task: bootstrap-node
+        vars: { NODE: "{{.INITIAL_NODE}}", RECOVERY_SNAPSHOT: "{{.RECOVERY_SNAPSHOT}}" }
       - cmd: echo "Issued bootstrap to {{.INITIAL_NODE}}, waiting..."
         silent: true
       - sleep 60
@@ -150,11 +161,32 @@ tasks:
       - talosctl health -n {{.INITIAL_NODE}}
       - task: apply
 
+  bootstrap-node:
+    desc: Bootstrap a Talos node
+    summary: |
+      Args:
+        NODE: Node to bootstrap (required)
+        RECOVERY_SNAPSHOT: Snapshot to recover from (default: "")
+    dir: *dir
+    requires:
+      vars: [NODE]
+    vars:
+      RECOVERY_SNAPSHOT: '{{.RECOVERY_SNAPSHOT | default ""}}'
+    cmds:
+      - |-
+        talosctl bootstrap \
+          {{- if ne .RECOVERY_SNAPSHOT "" }}
+          --recover-from {{.RECOVERY_SNAPSHOT}} \
+          {{- end }}
+          -e {{.NODE}} -n {{.NODE}}
+
   reset-node:
     desc: Reset a Talos node
     summary: |
       Args:
         NODE: Node to reset (required)
+    requires:
+      vars: [NODE]
     cmds:
       - |-
         talosctl reset --graceful=false --reboot \
@@ -163,36 +195,38 @@ tasks:
           --wipe-mode system-disk \
           --system-labels-to-wipe STATE \
           --system-labels-to-wipe EPHEMERAL
-    requires:
-      vars: [NODE]
 
   upgrade-node:
     desc: Upgrade a Talos node
     summary: |
       Args:
         NODE: Node to upgrade (required)
-    dir: "{{.TALOS_DIR}}"
+    dir: *dir
+    requires:
+      vars: [NODE]
+    vars:
+      DOPPLER_CMD: "doppler run -p {{.DOPPLER_PROJECT}} -c {{.CLUSTER_NAME}}"
     cmds:
       - |
         eval $({{.DOPPLER_CMD}} -- \
           talhelper gencommand upgrade -n {{.NODE}}.{{.CLUSTER_DOMAIN}})
       - sleep 120
-    requires:
-      vars: [NODE]
 
   upgrade-k8s-node:
     desc: Upgrade K8s on a Talos node
     summary: |
       Args:
         NODE: Node to upgrade (required)
-    dir: "{{.TALOS_DIR}}"
+    dir: *dir
+    requires:
+      vars: [NODE]
+    vars:
+      DOPPLER_CMD: "doppler run -p {{.DOPPLER_PROJECT}} -c {{.CLUSTER_NAME}}"
     cmds:
       - |
         eval $({{.DOPPLER_CMD}} -- \
           talhelper gencommand upgrade-k8s -n {{.NODE}}.{{.CLUSTER_DOMAIN}})
       - sleep 120
-    requires:
-      vars: [NODE]
 
   apply-extra:
     internal: true
@@ -211,9 +245,9 @@ tasks:
     summary: |
       Args:
         NODE: Node to download support bundle from (required)
+    dir: *dir
     requires:
       vars: [NODE]
-    dir: "{{.TALOS_DIR}}"
     cmds:
       - rm -rf {{.NODE}}.{{.CLUSTER_DOMAIN}}/ cluster/
       - defer: unzip support.zip && rm support.zip
@@ -225,10 +259,10 @@ tasks:
       Args:
         NODE: Node to take snapshot from (required)
         FILENAME: Filename to save snapshot as (default: db.snapshot)
+    dir: *dir
     requires:
       vars: [NODE]
     vars:
       FILENAME: '{{.FILENAME | default "db.snapshot"}}'
-    dir: "{{.TALOS_DIR}}"
     cmds:
       - talosctl etcd snapshot -n {{.NODE}}.{{.CLUSTER_DOMAIN}} -e {{.NODE}}.{{.CLUSTER_DOMAIN}} {{.FILENAME}}
