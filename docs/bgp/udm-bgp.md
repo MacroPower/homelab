@@ -12,7 +12,7 @@ https://pastebin.com/APqwtmtf
 ```
 ! -*- bgp -*-
 !
-hostname unifi.home.macro.network
+hostname unifi.cin.macro.network
 password ${bgp_password}
 frr defaults traditional
 log file stdout
@@ -30,11 +30,15 @@ router bgp 64512
  neighbor CBGP timers 15 45
  neighbor CBGP timers connect 15
  !
- ! Neighbors for Cilium BGP
+ ! Neighbors for Cilium BGP - mgmt
+ neighbor 10.10.8.4 peer-group CBGP
+ neighbor 10.10.8.5 peer-group CBGP
+ neighbor 10.10.8.6 peer-group CBGP
+ !
+ ! Neighbors for Cilium BGP - main
+ neighbor 10.10.10.4 peer-group CBGP
+ neighbor 10.10.10.5 peer-group CBGP
  neighbor 10.10.10.6 peer-group CBGP
- neighbor 10.10.10.13 peer-group CBGP
- neighbor 10.10.10.14 peer-group CBGP
- neighbor 10.10.10.15 peer-group CBGP
  !
  address-family ipv4 unicast
   redistribute connected
