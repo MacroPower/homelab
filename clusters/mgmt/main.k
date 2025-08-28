@@ -1,1 +1,1 @@
-DOMAIN_NAME = "kmgmt.cin.macro.network"
+DOMAIN_NAME = "mgmt.cin.macro.network"
