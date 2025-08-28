@@ -10,10 +10,14 @@ services:
     cap_add:
       - NET_ADMIN
       - SYS_ADMIN
+      - NET_RAW
     security_opt:
       - seccomp=unconfined
     environment:
       - PLATFORM=container
+    sysctls:
+      - net.ipv6.conf.all.forwarding=1
+      - net.ipv6.conf.all.disable_ipv6=0
     tmpfs:
       - /run
       - /system
@@ -25,6 +29,7 @@ services:
       - talos_kubernetes:/etc/kubernetes
       - talos_libexec:/usr/libexec/kubernetes
       - talos_opt:/opt
+      - /sys/fs/bpf:/sys/fs/bpf:rshared
     networks:
       talos_macvlan:
         ipv4_address: "10.10.12.1"
