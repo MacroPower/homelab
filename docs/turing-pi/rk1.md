@@ -41,7 +41,7 @@ ok
 
 Get a shell and write the Talos image to the NVMe drive.
 
-Using a fork for now: https://github.com/nberlee/talos
+You can get an image from <https://factory.talos.dev/>
 
 ```console
 $ # First login password: ubuntu
@@ -50,7 +50,7 @@ WARNING: Your password has expired.
 You must change your password now and login again!
 
 $ ssh ubuntu@knode01.home.macro.network
-$ curl -LO https://github.com/nberlee/talos/releases/download/v1.7.2/metal-arm64.raw.xz
+$ curl -LO https://factory.talos.dev/image/df156b82096feda49406ac03aa44e0ace524b7efe4e1f0e144a1e1ae3930f1c0/v1.9.5/metal-arm64.raw.xz
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
@@ -70,8 +70,6 @@ $ task tpi:power TPI_HOST=1 TPI_NODE=1 STATE=off
 
 Finally, re-flash the MMC flash with the Talos u-boot image.
 
-Get the latest build here: https://github.com/nberlee/pkgs/pkgs/container/u-boot
-
 ```sh
 docker pull ghcr.io/nberlee/u-boot:v1.6.0-34-gbd408d3-dirty
 # I pulled u-boot-rockchip-spi.bin from the image in the Orbstack UI
@@ -82,3 +80,4 @@ task tpi:flash TPI_HOST=1 TPI_NODE=1 IMAGE_PATH=u-boot-rockchip-spi.bin
 
 - https://github.com/nberlee/talos/blob/release-1.7-turingrk1/website/content/v1.7/talos-guides/install/single-board-computers/turing_rk1.md
 - https://github.com/bguijt/turingpi2/tree/main/projects/talos/shell
+- https://www.talos.dev/v1.10/talos-guides/install/single-board-computers/turing_rk1/
