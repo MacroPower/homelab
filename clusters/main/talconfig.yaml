@@ -144,10 +144,11 @@ nodes:
   - hostname: knas01.cin.macro.network
     ipAddress: 10.10.12.1
     controlPlane: false
-    installDisk: /tmp
+    installDisk: /dev/null
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 10g
       topology.kubernetes.io/region: rack01
+      node-role.kubernetes.io/storage: ""
     networkInterfaces:
       - deviceSelector:
           driver: macvlan
@@ -157,6 +158,14 @@ nodes:
           - "fc42:0:0:a::1201/64"
         mtu: *mtu
         routes: *routes
+    patches:
+      - |-
+        machine:
+          kubelet:
+            extraConfig:
+              registerWithTaints:
+                - key: node-role.kubernetes.io/storage
+                  value: NoSchedule
 
   # - hostname: kmain13.cin.macro.network
   #   ipAddress: 10.10.10.13
