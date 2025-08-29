@@ -250,7 +250,7 @@ locals {
     }
     "huebridge0101" = {
       mac     = "00:17:88:77:3e:3c"
-      ipv4   = "10.20.0.100"
+      ipv4    = "10.20.0.100"
       profile = local.unifi_device_types.hue_bridge.profile
       dev_id  = local.unifi_device_types.hue_bridge.dev_id
     }
@@ -321,9 +321,9 @@ locals {
       id   = 9
     }
     lab = {
-      name          = "Lab"
-      id            = 10
-      type          = "trusted"
+      name = "Lab"
+      id   = 10
+      type = "trusted"
       allow_ingress = [
         "lab_management",
       ]
@@ -409,9 +409,9 @@ module "unifi_common" {
 module "unifi" {
   source = "../modules/unifi"
 
-  domain_name  = var.domain_name
-  site_code    = "H"
-  ipv6_pd      = "fc42::/56"
+  domain_name = var.domain_name
+  site_code   = "H"
+  ipv6_pd     = "fc42::/56"
 
   clients  = local.unifi_clients
   networks = local.unifi_networks
@@ -451,24 +451,21 @@ resource "unifi_device" "agg0101" {
     port_profile_id = module.unifi.port_profile[local.unifi_clients.kmain09.profile].id
   }
   port_override {
-    number              = 21
-    name                = "SFP+ 21"
-    op_mode             = "aggregate"
-    aggregate_num_ports = 2
-    port_profile_id     = module.unifi.port_profile[local.unifi_clients.nas01.profile].id
+    number          = 21
+    name            = "SFP+ 21"
+    op_mode         = "aggregate"
+    port_profile_id = module.unifi.port_profile[local.unifi_clients.nas01.profile].id
+  }
+  port_override {
+    number            = 25
+    name              = "SFP+ 25"
+    op_mode           = "aggregate"
+    native_network_id = module.unifi.default_network_id
   }
   port_override {
     number          = 27
     name            = "SFP+ 27"
     port_profile_id = module.unifi.port_profile[local.unifi_clients.unraid.profile].id
-  }
-
-  port_override {
-    number              = 25
-    name                = "SFP+ 25"
-    op_mode             = "aggregate"
-    aggregate_num_ports = 2
-    native_network_id   = module.unifi.default_network_id
   }
 }
 
@@ -527,13 +524,11 @@ resource "unifi_device" "sw0101" {
     name            = "Port 23"
     port_profile_id = module.unifi.port_profile[local.unifi_clients.hass.profile].id
   }
-
   port_override {
-    number              = 25
-    name                = "SFP+ 1"
-    op_mode             = "aggregate"
-    aggregate_num_ports = 2
-    native_network_id   = module.unifi.default_network_id
+    number            = 25
+    name              = "SFP+ 1"
+    op_mode           = "aggregate"
+    native_network_id = module.unifi.default_network_id
   }
 }
 
