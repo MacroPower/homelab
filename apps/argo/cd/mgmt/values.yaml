@@ -15,6 +15,18 @@ configs:
     resource.compareoptions: |
       ignoreDifferencesOnResourceUpdates: true
 
+    url: https://argo-cd.mgmt.cin.macro.network
+    oidc.config: |
+      name: Auth0
+      issuer: https://auth.jacobcolvin.com/
+      # Reference keys in argocd-secret
+      clientID: $argocd-oidc:auth0.clientID
+      clientSecret: $argocd-oidc:auth0.clientSecret
+      requestedScopes:
+        - openid
+        - profile
+        - email
+
     resource.exclusions: |
       - apiGroups:
           - cilium.io
@@ -239,7 +251,6 @@ configs:
           end
 
           return health_status
-
     resource.customizations.health.argoproj.io_Application: |
       hs = {}
       hs.status = "Progressing"
