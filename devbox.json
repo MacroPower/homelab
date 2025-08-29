@@ -16,7 +16,8 @@
     "talosctl": "1.9.4",
     "terraform": "1.11.0",
     "natscli": "0.1.6",
-    "kubernetes-helm": "3.17.1"
+    "kubernetes-helm": "3.17.1",
+    "auth0-cli": "1.17.0"
   },
   "env": {
     "KCL_LIB_HOME": "${DEVBOX_PROJECT_ROOT}/.devbox/kcl/lib",

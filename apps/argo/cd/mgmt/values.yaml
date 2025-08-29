@@ -15,6 +15,19 @@ configs:
     resource.compareoptions: |
       ignoreDifferencesOnResourceUpdates: true
 
+    url: https://argo-cd.mgmt.cin.macro.network
+    oidc.config: |
+      name: Auth0
+      issuer: https://auth.jacobcolvin.com/
+      # Reference keys in argocd-secret
+      clientID: $argocd-oidc:auth0.clientID
+      clientSecret: $argocd-oidc:auth0.clientSecret
+      requestedScopes:
+        - openid
+        - profile
+        - email
+        - https://auth.jacobcolvin.com/groups
+
     resource.exclusions: |
       - apiGroups:
           - cilium.io
@@ -239,7 +252,6 @@ configs:
           end
 
           return health_status
-
     resource.customizations.health.argoproj.io_Application: |
       hs = {}
       hs.status = "Progressing"
@@ -258,12 +270,13 @@ configs:
   ## Ref: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/argocd-cmd-params-cm.yaml
   ##
   params:
-    server.disable.auth: true
+    server.disable.auth: false
 
   rbac:
     policy.csv: |
-      g, ArgoCD Admins, role:admin
-      g, ArgoCD Editors, role:readonly
+      g, argo-cd-admin, role:admin
+    policy.default: role:readonly
+    scopes: '[https://auth.jacobcolvin.com/groups, email]'
 
 controller:
   replicas: 3

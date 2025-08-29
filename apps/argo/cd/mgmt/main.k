@@ -67,6 +67,21 @@ _mainCreds = secret.ExternalSecret {
     }
 }
 
+_oidc = secret.ExternalSecret {
+    name = "argocd-oidc"
+    data: {
+        ARGO_CD_AUTH0_CLIENT_ID = {}
+        ARGO_CD_AUTH0_CLIENT_SECRET = {}
+    }
+    target.template.metadata.labels: {
+        "app.kubernetes.io/part-of" = "argocd"
+    }
+    target.template.data: {
+        "auth0.clientID" = "{{ .ARGO_CD_AUTH0_CLIENT_ID }}"
+        "auth0.clientSecret" = "{{ .ARGO_CD_AUTH0_CLIENT_SECRET }}"
+    }
+}
+
 _dragonfly = dragonflyv1alpha1.Dragonfly {
     metadata: {
         name = _dragonflyName
@@ -98,6 +113,7 @@ app = argo_cd_base.app | {
     externalSecrets: {
         main = _mainCreds
         argocd = _argoCreds
+        oidc = _oidc
     }
     extraResources: {
         redis = _dragonfly
