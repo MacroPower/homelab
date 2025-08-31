@@ -1,9 +1,9 @@
 [package]
-name = "o11y_tenant"
+name = "o11y_mimir_main"
 version = "0.1.0"
 
 [dependencies]
-konfig = { path = "../../../konfig" }
+o11y_mimir_base = { path = "../base" }
 
 [profile]
 entries = ["main.k", "${konfig:KCL_MOD}/models/render/render.k"]

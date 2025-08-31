@@ -95,4 +95,11 @@ charts: helm.Charts = {
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
     }
+    mimir: {
+        chart = "mimir-distributed"
+        repoURL = "https://grafana.github.io/helm-charts"
+        targetRevision = "5.8.0"
+        schemaGenerator = "NONE"
+        crdGenerator = "NONE"
+    }
 }

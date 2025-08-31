@@ -1,8 +1,9 @@
+import o11y_tenant
 import konfig.models.frontend
 
-tenantConfiguration = frontend.Tenant {
-    name = "o11y"
+tenant = o11y_tenant.tenantConfiguration
 
+shared = frontend.SharedApp {
     secretStores.default = {
         name = "o11y"
         provider.doppler.auth.secretRef.dopplerToken = {
