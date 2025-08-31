@@ -9,8 +9,8 @@ alertmanager:
     limits:
       memory: 1.4Gi
     requests:
-      cpu: 1
-      memory: 1Gi
+      cpu: 100m
+      memory: 200Mi
   statefulSet:
     enabled: true
 
@@ -22,8 +22,8 @@ compactor:
     limits:
       memory: 2.1Gi
     requests:
-      cpu: 1
-      memory: 1.5Gi
+      cpu: 100m
+      memory: 300Mi
 
 distributor:
   replicas: 2
@@ -31,8 +31,8 @@ distributor:
     limits:
       memory: 5.7Gi
     requests:
-      cpu: 2
-      memory: 4Gi
+      cpu: 200m
+      memory: 1Gi
 
 ingester:
   persistentVolume:
@@ -41,10 +41,10 @@ ingester:
   replicas: 3
   resources:
     limits:
-      memory: 12Gi
-    requests:
-      cpu: 3.5
       memory: 8Gi
+    requests:
+      cpu: 350m
+      memory: 2Gi
   topologySpreadConstraints: {}
   affinity:
     podAntiAffinity:
@@ -89,7 +89,7 @@ overrides_exporter:
     limits:
       memory: 128Mi
     requests:
-      cpu: 100m
+      cpu: 10m
       memory: 128Mi
 
 querier:
@@ -98,8 +98,8 @@ querier:
     limits:
       memory: 5.6Gi
     requests:
-      cpu: 2
-      memory: 4Gi
+      cpu: 200m
+      memory: 1Gi
 
 query_frontend:
   replicas: 1
@@ -107,8 +107,8 @@ query_frontend:
     limits:
       memory: 2.8Gi
     requests:
-      cpu: 2
-      memory: 2Gi
+      cpu: 200m
+      memory: 500Mi
 
 ruler:
   replicas: 1
@@ -116,8 +116,8 @@ ruler:
     limits:
       memory: 2.8Gi
     requests:
-      cpu: 1
-      memory: 2Gi
+      cpu: 100m
+      memory: 500Mi
 
 store_gateway:
   persistentVolume:
@@ -128,8 +128,8 @@ store_gateway:
     limits:
       memory: 2.1Gi
     requests:
-      cpu: 1
-      memory: 1.5Gi
+      cpu: 100m
+      memory: 300Mi
   topologySpreadConstraints: {}
   affinity:
     podAntiAffinity:
@@ -150,5 +150,5 @@ nginx:
     limits:
       memory: 731Mi
     requests:
-      cpu: 1
-      memory: 512Mi
+      cpu: 100m
+      memory: 100Mi
