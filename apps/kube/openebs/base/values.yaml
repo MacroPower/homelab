@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=../../../../charts/openebs/values.schema.json
+
+engines:
+  local:
+    lvm:
+      enabled: false
+    zfs:
+      enabled: false
+    rawfile:
+      enabled: false
+  replicated:
+    mayastor:
+      enabled: false
+
+preUpgradeHook:
+  image:
+    registry: docker.io
+    repo: bitnamilegacy/kubectl
+
+loki:
+  enabled: false
+
+alloy:
+  enabled: false
+
+minio:
+  enabled: false

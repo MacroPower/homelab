@@ -88,4 +88,11 @@ charts: helm.Charts = {
         schemaGenerator = "VALUE-INFERENCE"
         crdGenerator = "TEMPLATE"
     }
+    openebs: {
+        chart = "openebs"
+        repoURL = "https://openebs.github.io/openebs"
+        targetRevision = "4.3.3"
+        schemaGenerator = "AUTO"
+        crdGenerator = "TEMPLATE"
+    }
 }
