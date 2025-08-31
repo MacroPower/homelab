@@ -81,4 +81,11 @@ charts: helm.Charts = {
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
     }
+    cloudnative_pg: {
+        chart = "cloudnative-pg"
+        repoURL = "https://cloudnative-pg.io/charts/"
+        targetRevision = "0.26.0"
+        schemaGenerator = "VALUE-INFERENCE"
+        crdGenerator = "TEMPLATE"
+    }
 }

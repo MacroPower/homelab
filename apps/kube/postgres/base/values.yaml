@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=../../../../charts/cloudnative_pg/values.schema.json
+
+monitoring:
+  # Note: Requires PodMonitor CRD
+  podMonitorEnabled: false

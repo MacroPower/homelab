@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=../../../../charts/cloudnative_pg/values.schema.json
+
+replicaCount: 1
+
+resources: {}
