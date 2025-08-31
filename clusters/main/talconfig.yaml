@@ -22,7 +22,7 @@ nodes:
   - hostname: kmain01.cin.macro.network
     ipAddress: 10.10.10.1
     controlPlane: true
-    installDisk: /dev/nvme0n1
+    installDisk: &rk1Disk /dev/nvme0n1
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
@@ -54,7 +54,7 @@ nodes:
   - hostname: kmain02.cin.macro.network
     ipAddress: 10.10.10.2
     controlPlane: true
-    installDisk: /dev/nvme0n1
+    installDisk: *rk1Disk
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
@@ -72,7 +72,7 @@ nodes:
   - hostname: kmain03.cin.macro.network
     ipAddress: 10.10.10.3
     controlPlane: true
-    installDisk: /dev/nvme0n1
+    installDisk: *rk1Disk
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
@@ -90,7 +90,7 @@ nodes:
   - hostname: kmain04.cin.macro.network
     ipAddress: 10.10.10.4
     controlPlane: false
-    installDisk: /dev/mmcblk0
+    installDisk: *rk1Disk
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
@@ -108,7 +108,7 @@ nodes:
   - hostname: kmain05.cin.macro.network
     ipAddress: 10.10.10.5
     controlPlane: false
-    installDisk: /dev/mmcblk0
+    installDisk: *rk1Disk
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
@@ -126,7 +126,7 @@ nodes:
   - hostname: kmain06.cin.macro.network
     ipAddress: 10.10.10.6
     controlPlane: false
-    installDisk: /dev/mmcblk0
+    installDisk: *rk1Disk
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
