@@ -128,10 +128,10 @@ tasks:
       - task: power
         vars: { TPI_HOST: "{{.TPI_HOST}}", TPI_NODE: "{{.TPI_NODE}}", STATE: "on" }
       - cmd: sleep 3
-      - task: uart:set
-        vars: { TPI_HOST: "{{.TPI_HOST}}", TPI_NODE: "{{.TPI_NODE}}", CMD: 'a' }
       - task: uart:get
         vars: { TPI_HOST: "{{.TPI_HOST}}", TPI_NODE: "{{.TPI_NODE}}" }
+      - task: uart:set
+        vars: { TPI_HOST: "{{.TPI_HOST}}", TPI_NODE: "{{.TPI_NODE}}", CMD: 'a' }
       - task: uart:set
         vars: { TPI_HOST: "{{.TPI_HOST}}", TPI_NODE: "{{.TPI_NODE}}", CMD: 'setenv boot_targets "{{.TARGET}}"' }
       - task: uart:get
