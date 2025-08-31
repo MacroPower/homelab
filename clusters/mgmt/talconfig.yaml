@@ -226,6 +226,19 @@ controlPlane:
             - 1.north-america.pool.ntp.org
             - 2.north-america.pool.ntp.org
             - 3.north-america.pool.ntp.org
+    - &machineOpenEBS |-
+      machine:
+        sysctls:
+          vm.nr_hugepages: "1024"
+        kubelet:
+          extraMounts:
+            - source: /var/openebs/local
+              destination: /var/openebs/local
+              type: bind
+              options:
+                - rbind
+                - rshared
+                - rw
 
 worker:
   nameservers: *nameservers
@@ -237,3 +250,4 @@ worker:
     - *machineKubelet
     - *machineLogging
     - *machineTime
+    - *machineOpenEBS
