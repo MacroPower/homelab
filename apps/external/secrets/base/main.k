@@ -24,7 +24,8 @@ app = frontend.App {
             kind = "Password"
             generator.passwordSpec = {
                 length = 32
-                symbolCharacters = ""
+                symbols = 1
+                symbolCharacters = "-"
             }
         }
     }
