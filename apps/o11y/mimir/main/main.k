@@ -51,6 +51,15 @@ _s3Config = secret.ExternalSecret {
     }
 }
 
+_storageNodeSelector = {
+    "kubernetes.io/hostname" = "knas01"
+}
+
+_storageNodeTolerations = [{
+    key = "node-role.kubernetes.io/storage"
+    operator = "Exists"
+}]
+
 app = o11y_mimir_base.app | {
     externalSecrets.s3Config = _s3Config
 
@@ -69,28 +78,69 @@ app = o11y_mimir_base.app | {
 
     charts.seaweedfs = seaweedfs.Chart {
         values = seaweedfs.Values {
-            master.enabled = False
-            filer.enabled = False
-            volume.enabled = False
-            allInOne: {
+            master: {
                 enabled = True
-                s3.enabled = True
-                nodeSelector = yaml.encode({
-                    "kubernetes.io/hostname" = "knas01"
-                })
-                tolerations = yaml.encode([{
-                    key = "node-role.kubernetes.io/storage"
-                    operator = "Exists"
-                }])
+                replicas = 1
                 data: {
                     type = "persistentVolumeClaim"
-                    size = "1Ti"
+                    size = "10Gi"
                     storageClass = "openebs-hostpath"
                 }
+                logs: {
+                    type = "emptyDir"
+                }
+                nodeSelector = yaml.encode(_storageNodeSelector)
+                tolerations = yaml.encode(_storageNodeTolerations)
+                affinity = ""
             }
-            s3: {
-                enableAuth = True
-                existingConfigSecret = _s3Config.name
+            filer: {
+                enabled = True
+                replicas = 1
+                s3: {
+                    enabled = True
+                    enableAuth = True
+                    existingConfigSecret = _s3Config.name
+                    createBuckets = [
+                        { name = "mimir-blocks" }
+                        { name = "mimir-alertmanager" }
+                        { name = "mimir-ruler" }
+                    ]
+                }
+                data: {
+                    type = "persistentVolumeClaim"
+                    size = "10Gi"
+                    storageClass = "openebs-hostpath"
+                }
+                logs: {
+                    type = "emptyDir"
+                }
+                nodeSelector = yaml.encode(_storageNodeSelector)
+                tolerations = yaml.encode(_storageNodeTolerations)
+                affinity = ""
+            }
+            volume: {
+                enabled = True
+                replicas = 1
+                dataDirs = [
+                    {
+                        name = "primary"
+                        type = "persistentVolumeClaim"
+                        size = "1Ti"
+                        storageClass = "openebs-hostpath"
+                        maxVolumes = 14 # 1 volume = 30Gi
+                    }
+                ]
+                idx: {
+                    type = "persistentVolumeClaim"
+                    size = "20Gi"
+                    storageClass = "openebs-hostpath"
+                }
+                logs: {
+                    type = "emptyDir"
+                }
+                nodeSelector = yaml.encode(_storageNodeSelector)
+                tolerations = yaml.encode(_storageNodeTolerations)
+                affinity = ""
             }
         }
     }
