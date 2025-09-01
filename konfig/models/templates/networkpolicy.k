@@ -6,24 +6,71 @@ denyDefault = networkpolicy.NetworkPolicy {
     egress = [{}]
 }
 
+icmpV6Egress = networkpolicy.NetworkPolicy {
+    name = "icmp-v6-egress"
+    egress = [
+        {
+            toEntities = ["all"]
+            icmps = [
+                {
+                    fields = [
+                        {
+                            family = "IPv6"
+                            type = "NeighborSolicitation"
+                        }
+                        {
+                            family = "IPv6"
+                            type = "NeighborAdvertisement"
+                        }
+                        {
+                            family = "IPv6"
+                            type = "RouterSolicitation"
+                        }
+                        {
+                            family = "IPv6"
+                            type = "RouterAdvertisement"
+                        }
+                        {
+                            family = "IPv6"
+                            type = "PacketTooBig"
+                        }
+                        {
+                            family = "IPv6"
+                            type = "EchoRequest"
+                        }
+                        {
+                            family = "IPv6"
+                            type = "EchoReply"
+                        }
+                        {
+                            family = "IPv6"
+                            type = "DestinationUnreachable"
+                        }
+                        {
+                            family = "IPv6"
+                            type = "TimeExceeded"
+                        }
+                        {
+                            family = "IPv6"
+                            type = "ParameterProblem"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
 kubeDNSEgress = networkpolicy.NetworkPolicy {
     name = "kube-dns-egress"
     egress = [
         {
             toEndpoints = [
                 {
-                    matchExpressions = [
-                        {
-                            key = "k8s:io.kubernetes.pod.namespace"
-                            operator = "In"
-                            values = ["kube-system"]
-                        }
-                        {
-                            key = "k8s:k8s-app"
-                            operator = "In"
-                            values = ["kube-dns"]
-                        }
-                    ]
+                    matchLabels = {
+                        "io.kubernetes.pod.namespace": "kube-system"
+                        "k8s-app": "kube-dns"
+                    }
                 }
             ]
             toPorts = [

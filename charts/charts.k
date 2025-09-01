@@ -129,5 +129,15 @@ charts: helm.Charts = {
             }
         }
     }
+    grafana_pdc_agent: {
+        chart = "pdc-agent"
+        repoURL = "https://grafana.github.io/helm-charts"
+        targetRevision = "0.0.1"
+        schemaGenerator = "AUTO"
+        values: {
+            cluster = "kcl"
+            hostedGrafanaId = "0"
+            tokenSecretName = "kcl"
+        }
     }
 }

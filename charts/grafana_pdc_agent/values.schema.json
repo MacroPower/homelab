@@ -1,0 +1,253 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "affinity": {
+      "additionalProperties": true,
+      "description": " not required, but left in as a choice",
+      "required": [],
+      "title": "affinity",
+      "type": "object"
+    },
+    "cluster": {
+      "default": "",
+      "description": "For these values, see https://grafana.com/docs/grafana-cloud/connect-externally-hosted/private-data-source-connect/configure-pdc/#pdc-connection-steps\nThe cluster where your Hosted Grafana stack is running",
+      "required": [],
+      "title": "cluster",
+      "type": "string"
+    },
+    "debug": {
+      "default": false,
+      "description": "Enable debug logging for the agent. Useful for seeing SSH debug logs",
+      "required": [],
+      "title": "debug",
+      "type": "boolean"
+    },
+    "extraArgs": {
+      "description": "extra arguments for the pdc-agent can be found in:\nhttps://github.com/grafana/pdc-agent/blob/main/pkg/ssh/ssh.go/\nhttps://github.com/grafana/pdc-agent/blob/main/pkg/pdc/client.go\nhttps://github.com/grafana/pdc-agent/blob/main/cmd/pdc/main.go",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraArgs",
+      "type": "array"
+    },
+    "fullnameOverride": {
+      "default": "",
+      "required": [],
+      "title": "fullnameOverride",
+      "type": "string"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "hostedGrafanaId": {
+      "default": "",
+      "description": "The numeric ID of your Hosted Grafana stack",
+      "required": [],
+      "title": "hostedGrafanaId",
+      "type": "string"
+    },
+    "image": {
+      "additionalProperties": true,
+      "description": "This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/",
+      "properties": {
+        "pullPolicy": {
+          "default": "IfNotPresent",
+          "description": "This sets the pull policy for images.",
+          "required": [],
+          "title": "pullPolicy",
+          "type": "string"
+        },
+        "repository": {
+          "default": "grafana/pdc-agent",
+          "required": [],
+          "title": "repository",
+          "type": "string"
+        },
+        "tag": {
+          "default": "",
+          "description": "Overrides the image tag whose default is the chart appVersion.",
+          "required": [],
+          "title": "tag",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "image",
+      "type": "object"
+    },
+    "imagePullSecrets": {
+      "description": "This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "imagePullSecrets",
+      "type": "array"
+    },
+    "insecureTokenValue": {
+      "default": "",
+      "description": "insecureTokenValue is used to set the token value directly in the deployment.yaml file. This is useful for testing purposes.",
+      "required": [],
+      "title": "insecureTokenValue",
+      "type": "string"
+    },
+    "metricsPort": {
+      "default": 8090,
+      "description": "The port where metrics are served from the pdc agent",
+      "required": [],
+      "title": "metricsPort",
+      "type": "integer"
+    },
+    "nameOverride": {
+      "default": "",
+      "description": "This is to override the chart name.",
+      "required": [],
+      "title": "nameOverride",
+      "type": "string"
+    },
+    "nodeSelector": {
+      "additionalProperties": true,
+      "description": "not required, but left in as a choice",
+      "required": [],
+      "title": "nodeSelector",
+      "type": "object"
+    },
+    "podLabels": {
+      "additionalProperties": true,
+      "description": "This is for setting Kubernetes Labels to a Pod.\nFor more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/",
+      "required": [],
+      "title": "podLabels",
+      "type": "object"
+    },
+    "podSecurityContext": {
+      "additionalProperties": true,
+      "properties": {
+        "fsGroup": {
+          "default": 30000,
+          "required": [],
+          "title": "fsGroup",
+          "type": "integer"
+        },
+        "runAsGroup": {
+          "default": 30000,
+          "required": [],
+          "title": "runAsGroup",
+          "type": "integer"
+        },
+        "runAsUser": {
+          "default": 30000,
+          "required": [],
+          "title": "runAsUser",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "podSecurityContext",
+      "type": "object"
+    },
+    "replicaCount": {
+      "default": 3,
+      "description": "This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/",
+      "required": [],
+      "title": "replicaCount",
+      "type": "integer"
+    },
+    "resources": {
+      "additionalProperties": true,
+      "properties": {
+        "requests": {
+          "additionalProperties": true,
+          "properties": {
+            "cpu": {
+              "default": "100m",
+              "description": "CPU request for the container. There is no point setting the CPU higher than 1, because openssh is single threaded",
+              "required": [],
+              "title": "cpu",
+              "type": "string"
+            },
+            "memory": {
+              "default": "256Mi",
+              "description": "Memory request for the container.",
+              "required": [],
+              "title": "memory",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "requests",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "resources",
+      "type": "object"
+    },
+    "securityContext": {
+      "additionalProperties": true,
+      "properties": {
+        "allowPrivilegeEscalation": {
+          "default": false,
+          "required": [],
+          "title": "allowPrivilegeEscalation",
+          "type": "boolean"
+        },
+        "capabilities": {
+          "additionalProperties": true,
+          "properties": {
+            "drop": {
+              "items": {
+                "required": [],
+                "type": "string"
+              },
+              "required": [],
+              "title": "drop",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "capabilities",
+          "type": "object"
+        },
+        "privileged": {
+          "default": false,
+          "required": [],
+          "title": "privileged",
+          "type": "boolean"
+        },
+        "runAsNonRoot": {
+          "default": true,
+          "required": [],
+          "title": "runAsNonRoot",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "securityContext",
+      "type": "object"
+    },
+    "tokenSecretName": {
+      "default": "",
+      "description": "secretName Expects a secret with key `token` which contains the Access Policy token you generated",
+      "required": [],
+      "title": "tokenSecretName",
+      "type": "string"
+    },
+    "tolerations": {
+      "description": "not required, but left in as a choice",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "tolerations",
+      "type": "array"
+    }
+  },
+  "required": [],
+  "type": "object"
+}

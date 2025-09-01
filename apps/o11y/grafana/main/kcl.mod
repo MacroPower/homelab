@@ -1,5 +1,5 @@
 [package]
-name = "o11y_grafana_home"
+name = "o11y_grafana_main"
 version = "0.1.0"
 
 [dependencies]
