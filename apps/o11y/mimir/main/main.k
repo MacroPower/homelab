@@ -55,7 +55,7 @@ app = o11y_mimir_base.app | {
     externalSecrets.s3Config = _s3Config
 
     charts.mimir.values = _values | mimir.Values {
-        extraEnv: [
+        global.extraEnv: [
             {
                 name = "S3_ACCESS_KEY"
                 valueFrom = _s3Config.getSecretKeyEnvRef("S3_ACCESS_KEY")

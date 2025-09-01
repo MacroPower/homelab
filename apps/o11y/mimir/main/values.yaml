@@ -6,9 +6,10 @@ mimir:
       storage:
         backend: s3
         s3:
-          endpoint: s3.us-east-2.amazonaws.com
+          endpoint: seaweedfs-all-in-one.o11y-mimir.svc:8333
           access_key_id: "${S3_ACCESS_KEY}"
           secret_access_key: "${S3_SECRET_KEY}"
+          insecure: true
 
     blocks_storage:
       s3:
