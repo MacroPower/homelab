@@ -1,0 +1,62 @@
+# yaml-language-server: $schema=../../../../charts/tempo/values.schema.json
+
+traces:
+  otlp:
+    http:
+      enabled: true
+    grpc:
+      enabled: true
+
+storage:
+  trace:
+    backend: s3
+
+global:
+  extraArgs:
+    - -config.expand-env=true
+
+distributor:
+  replicas: 3
+  maxUnavailable: 2
+
+ingester:
+  replicas: 3
+  maxUnavailable: 2
+  persistence:
+    enabled: true
+    storageClass: openebs-hostpath
+    size: "10Gi"
+
+compactor:
+  replicas: 1
+
+querier:
+  replicas: 3
+  maxUnavailable: 2
+
+queryFrontend:
+  replicas: 2
+  maxUnavailable: 1
+  extraArgs:
+    - -config.expand-env=true
+
+gateway:
+  enabled: true
+  replicas: 2
+
+memcached:
+  enabled: true
+  replicas: 1
+
+metricsGenerator:
+  enabled: true
+  replicas: 1
+  extraArgs:
+    - -config.expand-env=true
+  persistence:
+    enabled: true
+    storageClass: openebs-hostpath
+    size: "10Gi"
+
+minio:
+  enabled: false

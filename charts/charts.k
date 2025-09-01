@@ -109,6 +109,13 @@ charts: helm.Charts = {
         schemaGenerator = "VALUE-INFERENCE"
         crdGenerator = "NONE"
     }
+    tempo: {
+        chart = "tempo-distributed"
+        repoURL = "https://grafana.github.io/helm-charts"
+        targetRevision = "1.47.1"
+        schemaGenerator = "AUTO"
+        crdGenerator = "TEMPLATE"
+    }
     mimir: {
         chart = "mimir-distributed"
         repoURL = "https://grafana.github.io/helm-charts"

@@ -15,6 +15,7 @@ filer:
       - name: mimir-ruler
       - name: loki-chunks
       - name: loki-ruler
+      - name: tempo-traces
 
 volume:
   logs: *logs

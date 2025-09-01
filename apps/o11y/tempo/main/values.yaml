@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=../../../../charts/tempo/values.schema.json
+
+storage:
+  trace:
+    backend: s3
+    s3:
+      endpoint: seaweedfs-s3.o11y-seaweedfs.svc:8333
+      access_key: "${S3_ACCESS_KEY}"
+      secret_key: "${S3_SECRET_KEY}"
+      bucket: tempo-traces
+      insecure: true

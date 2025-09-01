@@ -18,7 +18,7 @@ filer:
   data:
     type: persistentVolumeClaim
     storageClass: openebs-hostpath
-    size: 10Gi
+    size: 50Gi
   nodeSelector: *nodeSelector
   tolerations: *tolerations
   affinity: *affinity
@@ -26,15 +26,25 @@ filer:
 volume:
   replicas: 1
   dataDirs:
-    - name: primary
+    - name: data1
       type: persistentVolumeClaim
       storageClass: openebs-hostpath
-      size: 1Ti
+      size: 500Gi
+      maxVolumes: 14 # 1 volume = 30Gi
+    - name: data2
+      type: persistentVolumeClaim
+      storageClass: openebs-hostpath
+      size: 500Gi
+      maxVolumes: 14 # 1 volume = 30Gi
+    - name: data3
+      type: persistentVolumeClaim
+      storageClass: openebs-hostpath
+      size: 500Gi
       maxVolumes: 14 # 1 volume = 30Gi
   idx:
     type: persistentVolumeClaim
     storageClass: openebs-hostpath
-    size: 20Gi
+    size: 50Gi
   nodeSelector: *nodeSelector
   tolerations: *tolerations
   affinity: *affinity

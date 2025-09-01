@@ -17,6 +17,8 @@ _s3Config = secret.ExternalSecret {
         MIMIR_S3_SECRET_KEY = {}
         LOKI_S3_ACCESS_KEY = {}
         LOKI_S3_SECRET_KEY = {}
+        TEMPO_S3_ACCESS_KEY = {}
+        TEMPO_S3_SECRET_KEY = {}
     }
     target.template.metadata.labels: {
         "app.kubernetes.io/name" = "seaweedfs"
@@ -60,6 +62,20 @@ _s3Config = secret.ExternalSecret {
                         "Read:loki-ruler"
                         "Write:loki-ruler"
                         "Admin:loki-ruler"
+                    ]
+                }
+                {
+                    name = "tempo"
+                    credentials = [
+                        {
+                            accessKey = "{{.TEMPO_S3_ACCESS_KEY}}"
+                            secretKey = "{{.TEMPO_S3_SECRET_KEY}}"
+                        }
+                    ]
+                    actions = [
+                        "Read:tempo-traces"
+                        "Write:tempo-traces"
+                        "Admin:tempo-traces"
                     ]
                 }
             ]

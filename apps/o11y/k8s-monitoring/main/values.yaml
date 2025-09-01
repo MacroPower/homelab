@@ -3,5 +3,7 @@
 destinationsMap:
   loki:
     url: "http://loki-gateway.o11y-loki.svc/loki/api/v1/push"
+  tempo:
+    url: "http://tempo-distributed-gateway.o11y-tempo.svc"
   mimir:
     url: "http://mimir-distributed-nginx.o11y-mimir.svc/api/v1/push"

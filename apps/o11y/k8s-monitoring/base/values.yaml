@@ -3,6 +3,11 @@
 destinationsMap:
   loki:
     type: loki
+  tempo:
+    type: otlp
+    protocol: http
+    traces:
+      enabled: true
   mimir:
     type: prometheus
 
@@ -20,6 +25,20 @@ clusterEvents:
 podLogs:
   enabled: true
 
+applicationObservability:
+  enabled: true
+  receivers:
+    otlp:
+      grpc:
+        enabled: true
+        port: 4317
+      http:
+        enabled: true
+        port: 4318
+
+autoInstrumentation:
+  enabled: true
+
 alloy-metrics:
   enabled: true
 
@@ -28,6 +47,19 @@ alloy-singleton:
 
 alloy-logs:
   enabled: true
+
+alloy-receiver:
+  enabled: true
+  alloy:
+    extraPorts:
+      - name: otlp-grpc
+        port: 4317
+        targetPort: 4317
+        protocol: TCP
+      - name: otlp-http
+        port: 4318
+        targetPort: 4318
+        protocol: TCP
 
 integrations:
   alloy:
@@ -38,3 +70,4 @@ integrations:
             - alloy-metrics
             - alloy-singleton
             - alloy-logs
+            - alloy-receiver
