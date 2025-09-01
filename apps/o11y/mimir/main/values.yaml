@@ -4,19 +4,8 @@ mimir:
   structuredConfig:
     common:
       storage:
-        backend: s3
         s3:
-          endpoint: seaweedfs-s3.o11y-mimir.svc:8333
+          endpoint: seaweedfs-s3.o11y-seaweedfs.svc:8333
           access_key_id: "${S3_ACCESS_KEY}"
           secret_access_key: "${S3_SECRET_KEY}"
           insecure: true
-
-    blocks_storage:
-      s3:
-        bucket_name: mimir-blocks
-    alertmanager_storage:
-      s3:
-        bucket_name: mimir-alertmanager
-    ruler_storage:
-      s3:
-        bucket_name: mimir-ruler

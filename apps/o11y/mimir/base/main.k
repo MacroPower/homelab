@@ -11,6 +11,8 @@ app = frontend.App {
     name = "mimir"
     tenantName = o11y.tenant.name
 
+    secretStore = o11y.shared.secretStores.default.name
+
     charts.mimir = mimir.Chart {
         values: _values | mimir.Values {}
     }

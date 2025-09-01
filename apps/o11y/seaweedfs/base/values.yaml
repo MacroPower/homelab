@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=../../../../charts/seaweedfs/values.schema.json
+
+master:
+  logs: &logs
+    type: emptyDir
+
+filer:
+  logs: *logs
+  s3:
+    enabled: true
+    enableAuth: true
+    createBuckets:
+      - name: mimir-blocks
+      - name: mimir-alertmanager
+      - name: mimir-ruler
+
+volume:
+  logs: *logs

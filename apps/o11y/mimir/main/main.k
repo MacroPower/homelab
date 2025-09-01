@@ -1,10 +1,7 @@
 import file
-import json
-import yaml
 
 import o11y_mimir_base
 import charts.mimir
-import charts.seaweedfs
 import konfig.models.frontend.secret
 import konfig.utils
 
@@ -14,51 +11,15 @@ _values = utils.json_merge_patch(_baseValues, _envValues)
 
 _s3Config = secret.ExternalSecret {
     name = "s3-config"
-    refreshInterval = "0"
     data: {
         S3_ACCESS_KEY = {
-            sourceRef.generatorRef = {
-                name = "alphanumeric-password"
-            }
+            remoteRef.key = "MIMIR_S3_ACCESS_KEY"
         }
         S3_SECRET_KEY = {
-            sourceRef.generatorRef = {
-                name = "alphanumeric-password"
-            }
+            remoteRef.key = "MIMIR_S3_SECRET_KEY"
         }
     }
-    target.template.metadata.labels: {
-        "app.kubernetes.io/name" = "seaweedfs"
-        "app.kubernetes.io/component" = "s3"
-    }
-    target.template.data: {
-        S3_ACCESS_KEY = "{{.S3_ACCESS_KEY}}"
-        S3_SECRET_KEY = "{{.S3_SECRET_KEY}}"
-        seaweedfs_s3_config = json.encode({
-            identities = [
-                {
-                    name = "mimir"
-                    credentials = [
-                        {
-                            accessKey = "{{.S3_ACCESS_KEY}}"
-                            secretKey = "{{.S3_SECRET_KEY}}"
-                        }
-                    ]
-                    actions = ["Read", "Write"]
-                }
-            ]
-        })
-    }
 }
-
-_storageNodeSelector = {
-    "kubernetes.io/hostname" = "knas01"
-}
-
-_storageNodeTolerations = [{
-    key = "node-role.kubernetes.io/storage"
-    operator = "Exists"
-}]
 
 app = o11y_mimir_base.app | {
     externalSecrets.s3Config = _s3Config
@@ -74,74 +35,5 @@ app = o11y_mimir_base.app | {
                 valueFrom = _s3Config.getSecretKeyEnvRef("S3_SECRET_KEY")
             }
         ]
-    }
-
-    charts.seaweedfs = seaweedfs.Chart {
-        values = seaweedfs.Values {
-            master: {
-                enabled = True
-                replicas = 1
-                data: {
-                    type = "persistentVolumeClaim"
-                    size = "10Gi"
-                    storageClass = "openebs-hostpath"
-                }
-                logs: {
-                    type = "emptyDir"
-                }
-                nodeSelector = yaml.encode(_storageNodeSelector)
-                tolerations = yaml.encode(_storageNodeTolerations)
-                affinity = ""
-            }
-            filer: {
-                enabled = True
-                replicas = 1
-                s3: {
-                    enabled = True
-                    enableAuth = True
-                    existingConfigSecret = _s3Config.name
-                    createBuckets = [
-                        { name = "mimir-blocks" }
-                        { name = "mimir-alertmanager" }
-                        { name = "mimir-ruler" }
-                    ]
-                }
-                data: {
-                    type = "persistentVolumeClaim"
-                    size = "10Gi"
-                    storageClass = "openebs-hostpath"
-                }
-                logs: {
-                    type = "emptyDir"
-                }
-                nodeSelector = yaml.encode(_storageNodeSelector)
-                tolerations = yaml.encode(_storageNodeTolerations)
-                affinity = ""
-            }
-            volume: {
-                enabled = True
-                replicas = 1
-                dataDirs = [
-                    {
-                        name = "primary"
-                        type = "persistentVolumeClaim"
-                        size = "1Ti"
-                        storageClass = "openebs-hostpath"
-                        maxVolumes = 14 # 1 volume = 30Gi
-                    }
-                ]
-                idx: {
-                    type = "persistentVolumeClaim"
-                    size = "20Gi"
-                    storageClass = "openebs-hostpath"
-                }
-                logs: {
-                    type = "emptyDir"
-                }
-                nodeSelector = yaml.encode(_storageNodeSelector)
-                tolerations = yaml.encode(_storageNodeTolerations)
-                affinity = ""
-            }
-        }
     }
 }
