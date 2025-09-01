@@ -1,3 +1,21 @@
 # https://github.com/grafana/mimir/tree/main/operations/helm/charts/mimir-distributed
 
-{}
+mimir:
+  structuredConfig:
+    common:
+      storage:
+        backend: s3
+        s3:
+          endpoint: s3.us-east-2.amazonaws.com
+          access_key_id: "${S3_ACCESS_KEY}"
+          secret_access_key: "${S3_SECRET_KEY}"
+
+    blocks_storage:
+      s3:
+        bucket_name: mimir-blocks
+    alertmanager_storage:
+      s3:
+        bucket_name: mimir-alertmanager
+    ruler_storage:
+      s3:
+        bucket_name: mimir-ruler

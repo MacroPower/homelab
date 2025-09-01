@@ -1,0 +1,3470 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "allInOne": {
+      "additionalProperties": true,
+      "description": "All-in-one deployment configuration",
+      "properties": {
+        "affinity": {
+          "default": "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          app.kubernetes.io/name: {{ template \"seaweedfs.name\" . }}\n          app.kubernetes.io/instance: {{ .Release.Name }}\n          app.kubernetes.io/component: master\n      topologyKey: kubernetes.io/hostname\n",
+          "description": "Scheduling configuration\nAffinity Settings\nCommenting out or setting as empty the affinity variable, will allow\ndeployment to single node services such as Minikube",
+          "required": [],
+          "title": "affinity",
+          "type": "string"
+        },
+        "annotations": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "containerSecurityContext": {
+          "additionalProperties": true,
+          "description": "Configure security context for Container\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/\nExample:\ncontainerSecurityContext:\n  enabled: true\n  runAsUser: 2000\n  allowPrivilegeEscalation: false",
+          "required": [],
+          "title": "containerSecurityContext",
+          "type": "object"
+        },
+        "data": {
+          "additionalProperties": true,
+          "description": "Storage configuration",
+          "properties": {
+            "claimName": {
+              "default": "seaweedfs-data-pvc",
+              "required": [],
+              "title": "claimName",
+              "type": "string"
+            },
+            "hostPathPrefix": {
+              "default": "/mnt/data",
+              "required": [],
+              "title": "hostPathPrefix",
+              "type": "string"
+            },
+            "size": {
+              "default": "",
+              "required": [],
+              "title": "size",
+              "type": "string"
+            },
+            "storageClass": {
+              "default": "",
+              "required": [],
+              "title": "storageClass",
+              "type": "string"
+            },
+            "type": {
+              "default": "emptyDir",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "data",
+          "type": "object"
+        },
+        "dataCenter": {
+          "default": "",
+          "required": [],
+          "title": "dataCenter",
+          "type": "string"
+        },
+        "disableHttp": {
+          "default": false,
+          "required": [],
+          "title": "disableHttp",
+          "type": "boolean"
+        },
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraEnvironmentVars": {
+          "additionalProperties": true,
+          "description": "Additional resources",
+          "required": [],
+          "title": "extraEnvironmentVars",
+          "type": "object"
+        },
+        "extraVolumeMounts": {
+          "default": "",
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "string"
+        },
+        "extraVolumes": {
+          "default": "",
+          "required": [],
+          "title": "extraVolumes",
+          "type": "string"
+        },
+        "idleTimeout": {
+          "default": 30,
+          "description": "Core configuration",
+          "required": [],
+          "title": "idleTimeout",
+          "type": "integer"
+        },
+        "imageOverride": {
+          "default": "null",
+          "required": [],
+          "title": "imageOverride",
+          "type": "null"
+        },
+        "initContainers": {
+          "default": "",
+          "required": [],
+          "title": "initContainers",
+          "type": "string"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 5,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/cluster/status",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "port": {
+                  "default": 9333,
+                  "required": [],
+                  "title": "port",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 20,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 30,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "scheme": {
+              "default": "HTTP",
+              "required": [],
+              "title": "scheme",
+              "type": "string"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 5,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
+        "loggingOverrideLevel": {
+          "default": "null",
+          "required": [],
+          "title": "loggingOverrideLevel",
+          "type": "null"
+        },
+        "metricsIp": {
+          "default": "",
+          "required": [],
+          "title": "metricsIp",
+          "type": "string"
+        },
+        "metricsPort": {
+          "default": 9324,
+          "required": [],
+          "title": "metricsPort",
+          "type": "integer"
+        },
+        "nodeSelector": {
+          "default": "kubernetes.io/arch: amd64\n",
+          "description": "nodeSelector labels for master pod assignment, formatted as a muli-line string.\nref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "string"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "podAnnotations",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "podLabels",
+          "type": "object"
+        },
+        "podSecurityContext": {
+          "additionalProperties": true,
+          "description": "Configure security context for Pod\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/\nExample:\npodSecurityContext:\n  enabled: true\n  runAsUser: 1000\n  runAsGroup: 3000\n  fsGroup: 2000",
+          "required": [],
+          "title": "podSecurityContext",
+          "type": "object"
+        },
+        "priorityClassName": {
+          "default": "",
+          "description": "Used to assign priority to master pods\nref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/",
+          "required": [],
+          "title": "priorityClassName",
+          "type": "string"
+        },
+        "rack": {
+          "default": "",
+          "required": [],
+          "title": "rack",
+          "type": "string"
+        },
+        "readinessProbe": {
+          "additionalProperties": true,
+          "description": "Health checks",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 3,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/cluster/status",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "port": {
+                  "default": 9333,
+                  "required": [],
+                  "title": "port",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 10,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 15,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "scheme": {
+              "default": "HTTP",
+              "required": [],
+              "title": "scheme",
+              "type": "string"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 5,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "readinessProbe",
+          "type": "object"
+        },
+        "replicas": {
+          "default": 1,
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resource management",
+          "properties": {
+            "limits": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "2",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "2Gi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "500m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "restartPolicy": {
+          "default": "Always",
+          "required": [],
+          "title": "restartPolicy",
+          "type": "string"
+        },
+        "s3": {
+          "additionalProperties": true,
+          "description": "Service configuration",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "s3",
+          "type": "object"
+        },
+        "service": {
+          "additionalProperties": true,
+          "description": "Service settings",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "type": {
+              "default": "ClusterIP",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "service",
+          "type": "object"
+        },
+        "serviceAccountName": {
+          "default": "",
+          "description": "Used to assign a service account.\nref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/",
+          "required": [],
+          "title": "serviceAccountName",
+          "type": "string"
+        },
+        "sftp": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "sftp",
+          "type": "object"
+        },
+        "sidecars": {
+          "default": "",
+          "required": [],
+          "title": "sidecars",
+          "type": "string"
+        },
+        "tolerations": {
+          "default": "",
+          "description": "Toleration Settings for master pods\nThis should be a multi-line string matching the Toleration array\nin a PodSpec.",
+          "required": [],
+          "title": "tolerations",
+          "type": "string"
+        },
+        "topologySpreadConstraints": {
+          "default": "null",
+          "description": "Topology Spread Constraints Settings\nThis should map directly to the value of the topologySpreadConstraints\nfor a PodSpec. By Default no constraints are set.",
+          "required": [],
+          "title": "topologySpreadConstraints",
+          "type": "null"
+        },
+        "whiteList": {
+          "default": "",
+          "required": [],
+          "title": "whiteList",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "allInOne",
+      "type": "object"
+    },
+    "certificates": {
+      "additionalProperties": true,
+      "properties": {
+        "commonName": {
+          "default": "SeaweedFS CA",
+          "required": [],
+          "title": "commonName",
+          "type": "string"
+        },
+        "duration": {
+          "default": "2160h",
+          "required": [],
+          "title": "duration",
+          "type": "string"
+        },
+        "externalCertificates": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "This will avoid the need to use cert-manager and will rely on providing your own external certificates and CA\nyou will need to store your provided certificates in the secret read by the different services:\nseaweedfs-master-cert, seaweedfs-filer-cert, etc. Can see any statefulset definition to see secret names",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "externalCertificates",
+          "type": "object"
+        },
+        "ipAddresses": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "ipAddresses",
+          "type": "array"
+        },
+        "keyAlgorithm": {
+          "default": "RSA",
+          "required": [],
+          "title": "keyAlgorithm",
+          "type": "string"
+        },
+        "keySize": {
+          "default": 2048,
+          "required": [],
+          "title": "keySize",
+          "type": "integer"
+        },
+        "renewBefore": {
+          "default": "360h",
+          "required": [],
+          "title": "renewBefore",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "certificates",
+      "type": "object"
+    },
+    "cosi": {
+      "additionalProperties": true,
+      "description": "Deploy Kubernetes COSI Driver for SeaweedFS\nRequires COSI CRDs and controller to be installed in the cluster\nFor more information, visit: https://container-object-storage-interface.github.io/docs/deployment-guide",
+      "properties": {
+        "bucketClassName": {
+          "default": "seaweedfs",
+          "required": [],
+          "title": "bucketClassName",
+          "type": "string"
+        },
+        "containerSecurityContext": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "containerSecurityContext",
+          "type": "object"
+        },
+        "driverName": {
+          "default": "seaweedfs.objectstorage.k8s.io",
+          "required": [],
+          "title": "driverName",
+          "type": "string"
+        },
+        "enableAuth": {
+          "default": false,
+          "description": "enable user \u0026 permission to s3 (need to inject to all services)",
+          "required": [],
+          "title": "enableAuth",
+          "type": "boolean"
+        },
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "endpoint": {
+          "default": "",
+          "required": [],
+          "title": "endpoint",
+          "type": "string"
+        },
+        "existingConfigSecret": {
+          "default": "null",
+          "description": "set to the name of an existing kubernetes Secret with the s3 json config file\nshould have a secret key called seaweedfs_s3_config with an inline json configure",
+          "required": [],
+          "title": "existingConfigSecret",
+          "type": "null"
+        },
+        "extraVolumeMounts": {
+          "default": "",
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "string"
+        },
+        "extraVolumes": {
+          "default": "",
+          "required": [],
+          "title": "extraVolumes",
+          "type": "string"
+        },
+        "image": {
+          "default": "ghcr.io/seaweedfs/seaweedfs-cosi-driver:v0.1.2",
+          "required": [],
+          "title": "image",
+          "type": "string"
+        },
+        "podSecurityContext": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "podSecurityContext",
+          "type": "object"
+        },
+        "region": {
+          "default": "",
+          "required": [],
+          "title": "region",
+          "type": "string"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resource requests, limits, etc. for the server cluster placement. This\nshould map directly to the value of the resources field for a PodSpec,\nformatted as a multi-line string. By default no direct resource request\nis made.",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "sidecar": {
+          "additionalProperties": true,
+          "properties": {
+            "image": {
+              "default": "gcr.io/k8s-staging-sig-storage/objectstorage-sidecar/objectstorage-sidecar:v20230130-v0.1.0-24-gc0cf995",
+              "required": [],
+              "title": "image",
+              "type": "string"
+            },
+            "resources": {
+              "additionalProperties": true,
+              "description": "Resource requests, limits, etc. for the server cluster placement. This\nshould map directly to the value of the resources field for a PodSpec,\nformatted as a multi-line string. By default no direct resource request\nis made.",
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "sidecar",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "cosi",
+      "type": "object"
+    },
+    "filer": {
+      "additionalProperties": true,
+      "properties": {
+        "affinity": {
+          "default": "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          app.kubernetes.io/name: {{ template \"seaweedfs.name\" . }}\n          app.kubernetes.io/instance: {{ .Release.Name }}\n          app.kubernetes.io/component: filer\n      topologyKey: kubernetes.io/hostname\n",
+          "description": "Affinity Settings\nCommenting out or setting as empty the affinity variable, will allow\ndeployment to single node services such as Minikube",
+          "required": [],
+          "title": "affinity",
+          "type": "string"
+        },
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations to be added to the filer resource",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "containerSecurityContext": {
+          "additionalProperties": true,
+          "description": "Configure security context for Container\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/\nExample:\ncontainerSecurityContext:\n  enabled: true\n  runAsUser: 2000\n  allowPrivilegeEscalation: false",
+          "required": [],
+          "title": "containerSecurityContext",
+          "type": "object"
+        },
+        "data": {
+          "additionalProperties": true,
+          "description": "You may use ANY storage-class, example with local-path-provisioner\nAnnotations are optional.\n data:\n   type: \"persistentVolumeClaim\"\n   size: \"24Ti\"\n   storageClass: \"local-path-provisioner\"\n   annotations:\n     \"key\": \"value\"\n\nYou may also specify an existing claim:\n data:\n   type: \"existingClaim\"\n   claimName: \"my-pvc\"\n\nYou can also use emptyDir storage:\n data:\n   type: \"emptyDir\"",
+          "properties": {
+            "hostPathPrefix": {
+              "default": "/storage",
+              "required": [],
+              "title": "hostPathPrefix",
+              "type": "string"
+            },
+            "size": {
+              "default": "",
+              "required": [],
+              "title": "size",
+              "type": "string"
+            },
+            "storageClass": {
+              "default": "",
+              "required": [],
+              "title": "storageClass",
+              "type": "string"
+            },
+            "type": {
+              "default": "hostPath",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "data",
+          "type": "object"
+        },
+        "dataCenter": {
+          "default": "null",
+          "description": "prefer to read and write to volumes in this data center (not set by default)",
+          "required": [],
+          "title": "dataCenter",
+          "type": "null"
+        },
+        "defaultReplicaPlacement": {
+          "default": "000",
+          "description": " replication type is XYZ:\nX number of replica in other data centers\nY number of replica in other racks in the same data center\nZ number of replica in other servers in the same rack",
+          "required": [],
+          "title": "defaultReplicaPlacement",
+          "type": "string"
+        },
+        "dirListLimit": {
+          "default": 100000,
+          "description": "Limit sub dir listing size (default 100000)",
+          "required": [],
+          "title": "dirListLimit",
+          "type": "integer"
+        },
+        "disableDirListing": {
+          "default": false,
+          "description": "turn off directory listing",
+          "required": [],
+          "title": "disableDirListing",
+          "type": "boolean"
+        },
+        "disableHttp": {
+          "default": false,
+          "description": "Disable http request, only gRpc operations are allowed",
+          "required": [],
+          "title": "disableHttp",
+          "type": "boolean"
+        },
+        "enablePVC": {
+          "default": false,
+          "description": "Settings for configuring stateful storage of filer pods.\nenablePVC will create a pvc for filer for data persistence.",
+          "required": [],
+          "title": "enablePVC",
+          "type": "boolean"
+        },
+        "enabled": {
+          "default": true,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "encryptVolumeData": {
+          "default": false,
+          "description": "encrypt data on volume servers",
+          "required": [],
+          "title": "encryptVolumeData",
+          "type": "boolean"
+        },
+        "extraArgs": {
+          "description": "Custom command line arguments to add to the filer command\nExample to fix IPv6 metrics connectivity issues:\nextraArgs: [\"-metricsIp\", \"0.0.0.0\"]\nExample with multiple args:\nextraArgs: [\"-customFlag\", \"value\", \"-anotherFlag\"]",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraArgs",
+          "type": "array"
+        },
+        "extraEnvironmentVars": {
+          "additionalProperties": true,
+          "description": "extraEnvVars is a list of extra environment variables to set with the stateful set.",
+          "properties": {
+            "WEED_FILER_BUCKETS_FOLDER": {
+              "default": "/buckets",
+              "description": "directories under this folder will be automatically creating a separate bucket",
+              "required": [],
+              "title": "WEED_FILER_BUCKETS_FOLDER",
+              "type": "string"
+            },
+            "WEED_FILER_OPTIONS_RECURSIVE_DELETE": {
+              "default": "false",
+              "description": "with http DELETE, by default the filer would check whether a folder is empty.\nrecursive_delete will delete all sub folders and files, similar to \"rm -Rf\"",
+              "required": [],
+              "title": "WEED_FILER_OPTIONS_RECURSIVE_DELETE",
+              "type": "string"
+            },
+            "WEED_LEVELDB2_ENABLED": {
+              "default": "true",
+              "description": "if you want to use leveldb2, then should enable \"enablePVC\". or you may lose your data.",
+              "required": [],
+              "title": "WEED_LEVELDB2_ENABLED",
+              "type": "string"
+            },
+            "WEED_MYSQL_CONNECTION_MAX_IDLE": {
+              "default": "5",
+              "required": [],
+              "title": "WEED_MYSQL_CONNECTION_MAX_IDLE",
+              "type": "string"
+            },
+            "WEED_MYSQL_CONNECTION_MAX_LIFETIME_SECONDS": {
+              "default": "600",
+              "description": "\"refresh\" connection every 10 minutes, eliminating mysql closing \"old\" connections",
+              "required": [],
+              "title": "WEED_MYSQL_CONNECTION_MAX_LIFETIME_SECONDS",
+              "type": "string"
+            },
+            "WEED_MYSQL_CONNECTION_MAX_OPEN": {
+              "default": "75",
+              "required": [],
+              "title": "WEED_MYSQL_CONNECTION_MAX_OPEN",
+              "type": "string"
+            },
+            "WEED_MYSQL_DATABASE": {
+              "default": "sw_database",
+              "required": [],
+              "title": "WEED_MYSQL_DATABASE",
+              "type": "string"
+            },
+            "WEED_MYSQL_ENABLED": {
+              "default": "false",
+              "required": [],
+              "title": "WEED_MYSQL_ENABLED",
+              "type": "string"
+            },
+            "WEED_MYSQL_HOSTNAME": {
+              "default": "mysql-db-host",
+              "required": [],
+              "title": "WEED_MYSQL_HOSTNAME",
+              "type": "string"
+            },
+            "WEED_MYSQL_INTERPOLATEPARAMS": {
+              "default": "true",
+              "description": "enable usage of memsql as filer backend",
+              "required": [],
+              "title": "WEED_MYSQL_INTERPOLATEPARAMS",
+              "type": "string"
+            },
+            "WEED_MYSQL_PORT": {
+              "default": "3306",
+              "required": [],
+              "title": "WEED_MYSQL_PORT",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "extraEnvironmentVars",
+          "type": "object"
+        },
+        "extraVolumeMounts": {
+          "default": "",
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "string"
+        },
+        "extraVolumes": {
+          "default": "",
+          "required": [],
+          "title": "extraVolumes",
+          "type": "string"
+        },
+        "filerGroup": {
+          "default": "",
+          "required": [],
+          "title": "filerGroup",
+          "type": "string"
+        },
+        "grpcPort": {
+          "default": 18888,
+          "required": [],
+          "title": "grpcPort",
+          "type": "integer"
+        },
+        "imageOverride": {
+          "default": "null",
+          "required": [],
+          "title": "imageOverride",
+          "type": "null"
+        },
+        "ingress": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "properties": {
+                "nginx.ingress.kubernetes.io/auth-realm": {
+                  "default": "Authentication Required - SW-Filer",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/auth-realm",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/auth-secret": {
+                  "default": "default/ingress-basic-auth-secret",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/auth-secret",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/auth-type": {
+                  "default": "basic",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/auth-type",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/backend-protocol": {
+                  "default": "GRPC",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/backend-protocol",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/configuration-snippet": {
+                  "default": "sub_filter '\u003chead\u003e' '\u003chead\u003e \u003cbase href=\"/sw-filer/\"\u003e'; #add base url\nsub_filter '=\"/' '=\"./';                               #make absolute paths to relative\nsub_filter '=/' '=./';\nsub_filter '/seaweedfsstatic' './seaweedfsstatic';\nsub_filter_once off;\n",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/configuration-snippet",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/enable-rewrite-log": {
+                  "default": "true",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/enable-rewrite-log",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/force-ssl-redirect": {
+                  "default": "false",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/force-ssl-redirect",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/rewrite-target": {
+                  "default": "/$1",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/rewrite-target",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/service-upstream": {
+                  "default": "true",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/service-upstream",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/ssl-redirect": {
+                  "default": "false",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/ssl-redirect",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/use-regex": {
+                  "default": "true",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/use-regex",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "className": {
+              "default": "nginx",
+              "required": [],
+              "title": "className",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "host": {
+              "default": "seaweedfs.cluster.local",
+              "description": "host: false for \"*\" hostname",
+              "required": [],
+              "title": "host",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "ingress",
+          "type": "object"
+        },
+        "initContainers": {
+          "default": "",
+          "required": [],
+          "title": "initContainers",
+          "type": "string"
+        },
+        "ipBind": {
+          "default": "0.0.0.0",
+          "required": [],
+          "title": "ipBind",
+          "type": "string"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "description": "used to configure livenessProbe on filer containers\n",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 5,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "scheme": {
+                  "default": "HTTP",
+                  "required": [],
+                  "title": "scheme",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 20,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 30,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
+        "loggingOverrideLevel": {
+          "default": "null",
+          "required": [],
+          "title": "loggingOverrideLevel",
+          "type": "null"
+        },
+        "logs": {
+          "additionalProperties": true,
+          "description": "You can also use emptyDir storage:\n logs:\n   type: \"emptyDir\"",
+          "properties": {
+            "hostPathPrefix": {
+              "default": "/storage",
+              "required": [],
+              "title": "hostPathPrefix",
+              "type": "string"
+            },
+            "size": {
+              "default": "",
+              "required": [],
+              "title": "size",
+              "type": "string"
+            },
+            "storageClass": {
+              "default": "",
+              "required": [],
+              "title": "storageClass",
+              "type": "string"
+            },
+            "type": {
+              "default": "hostPath",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "logs",
+          "type": "object"
+        },
+        "maxMB": {
+          "default": "null",
+          "description": "split files larger than the limit, default 32",
+          "required": [],
+          "title": "maxMB",
+          "type": "null"
+        },
+        "metricsIp": {
+          "default": "",
+          "required": [],
+          "title": "metricsIp",
+          "type": "string"
+        },
+        "metricsPort": {
+          "default": 9327,
+          "required": [],
+          "title": "metricsPort",
+          "type": "integer"
+        },
+        "nodeSelector": {
+          "default": "kubernetes.io/arch: amd64\n",
+          "description": "nodeSelector labels for server pod assignment, formatted as a muli-line string.\nref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector\nExample:",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "string"
+        },
+        "notificationConfig": {
+          "default": "",
+          "description": "Add a custom notification.toml to configure filer notifications\nExample:\nnotificationConfig: |-\n  [notification.kafka]\n  enabled = false\n  hosts = [\n      \"localhost:9092\"\n  ]\n  topic = \"seaweedfs_filer\"\n  offsetFile = \"./last.offset\"\n  offsetSaveIntervalSeconds = 10",
+          "required": [],
+          "title": "notificationConfig",
+          "type": "string"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "description": "Annotations to be added to the filer pods",
+          "required": [],
+          "title": "podAnnotations",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "description": "Labels to be added to the filer pods",
+          "required": [],
+          "title": "podLabels",
+          "type": "object"
+        },
+        "podManagementPolicy": {
+          "default": "Parallel",
+          "description": "# Set podManagementPolicy",
+          "required": [],
+          "title": "podManagementPolicy",
+          "type": "string"
+        },
+        "podSecurityContext": {
+          "additionalProperties": true,
+          "description": "Configure security context for Pod\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/\nExample:\npodSecurityContext:\n  enabled: true\n  runAsUser: 1000\n  runAsGroup: 3000\n  fsGroup: 2000",
+          "required": [],
+          "title": "podSecurityContext",
+          "type": "object"
+        },
+        "port": {
+          "default": 8888,
+          "required": [],
+          "title": "port",
+          "type": "integer"
+        },
+        "priorityClassName": {
+          "default": "",
+          "description": "used to assign priority to server pods\nref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/",
+          "required": [],
+          "title": "priorityClassName",
+          "type": "string"
+        },
+        "rack": {
+          "default": "null",
+          "description": "prefer to write to volumes in this rack (not set by default)",
+          "required": [],
+          "title": "rack",
+          "type": "null"
+        },
+        "readinessProbe": {
+          "additionalProperties": true,
+          "description": "used to configure readinessProbe on filer containers\n",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 100,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "scheme": {
+                  "default": "HTTP",
+                  "required": [],
+                  "title": "scheme",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 10,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 15,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "readinessProbe",
+          "type": "object"
+        },
+        "redirectOnRead": {
+          "default": false,
+          "description": "Whether proxy or redirect to volume server during file GET request",
+          "required": [],
+          "title": "redirectOnRead",
+          "type": "boolean"
+        },
+        "replicas": {
+          "default": 1,
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resource requests, limits, etc. for the server cluster placement. This\nshould map directly to the value of the resources field for a PodSpec,\nformatted as a multi-line string. By default no direct resource request\nis made.",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "restartPolicy": {
+          "default": "null",
+          "required": [],
+          "title": "restartPolicy",
+          "type": "null"
+        },
+        "s3": {
+          "additionalProperties": true,
+          "properties": {
+            "allowEmptyFolder": {
+              "default": false,
+              "description": "allow empty folders",
+              "required": [],
+              "title": "allowEmptyFolder",
+              "type": "boolean"
+            },
+            "auditLogConfig": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "auditLogConfig",
+              "type": "object"
+            },
+            "domainName": {
+              "default": "",
+              "description": "Suffix of the host name, {bucket}.{domainName}",
+              "required": [],
+              "title": "domainName",
+              "type": "string"
+            },
+            "enableAuth": {
+              "default": false,
+              "description": "enable user \u0026 permission to s3 (need to inject to all services)",
+              "required": [],
+              "title": "enableAuth",
+              "type": "boolean"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "existingConfigSecret": {
+              "default": "null",
+              "description": "set to the name of an existing kubernetes Secret with the s3 json config file\nshould have a secret key called seaweedfs_s3_config with an inline json configure",
+              "required": [],
+              "title": "existingConfigSecret",
+              "type": "null"
+            },
+            "httpsPort": {
+              "default": 0,
+              "description": "add additional https port",
+              "required": [],
+              "title": "httpsPort",
+              "type": "integer"
+            },
+            "port": {
+              "default": 8333,
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "s3",
+          "type": "object"
+        },
+        "secretExtraEnvironmentVars": {
+          "additionalProperties": true,
+          "description": "secret env variables",
+          "required": [],
+          "title": "secretExtraEnvironmentVars",
+          "type": "object"
+        },
+        "serviceAccountName": {
+          "default": "",
+          "description": "used to assign a service account.\nref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/",
+          "required": [],
+          "title": "serviceAccountName",
+          "type": "string"
+        },
+        "sidecars": {
+          "description": "#\n# e.g:\n# sidecars:\n#   - name: your-image-name\n#     image: your-image\n#     imagePullPolicy: Always\n#     ports:\n#       - name: portname\n#         containerPort: 1234\n#",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "sidecars",
+          "type": "array"
+        },
+        "storage": {
+          "default": "25Gi",
+          "description": "storage should be set to the disk size of the attached volume.",
+          "required": [],
+          "title": "storage",
+          "type": "string"
+        },
+        "storageClass": {
+          "default": "null",
+          "description": "storageClass is the class of storage which defaults to null (the Kube cluster will pick the default).",
+          "required": [],
+          "title": "storageClass",
+          "type": "null"
+        },
+        "tolerations": {
+          "default": "",
+          "description": "Toleration Settings for server pods\nThis should be a multi-line string matching the Toleration array\nin a PodSpec.",
+          "required": [],
+          "title": "tolerations",
+          "type": "string"
+        },
+        "topologySpreadConstraints": {
+          "default": "null",
+          "description": "Topology Spread Constraints Settings\nThis should map directly to the value of the topologySpreadConstraints\nfor a PodSpec. By Default no constraints are set.",
+          "required": [],
+          "title": "topologySpreadConstraints",
+          "type": "null"
+        },
+        "updatePartition": {
+          "default": 0,
+          "description": "updatePartition is used to control a careful rolling update of SeaweedFS\nmasters.",
+          "required": [],
+          "title": "updatePartition",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "filer",
+      "type": "object"
+    },
+    "global": {
+      "additionalProperties": true,
+      "properties": {
+        "automountServiceAccountToken": {
+          "default": true,
+          "required": [],
+          "title": "automountServiceAccountToken",
+          "type": "boolean"
+        },
+        "certificates": {
+          "additionalProperties": true,
+          "properties": {
+            "alphacrds": {
+              "default": false,
+              "required": [],
+              "title": "alphacrds",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "certificates",
+          "type": "object"
+        },
+        "createClusterRole": {
+          "default": true,
+          "required": [],
+          "title": "createClusterRole",
+          "type": "boolean"
+        },
+        "enableReplication": {
+          "default": false,
+          "description": "if enabled will use global.replicationPlacement and override master \u0026 filer defaultReplicaPlacement config",
+          "required": [],
+          "title": "enableReplication",
+          "type": "boolean"
+        },
+        "enableSecurity": {
+          "default": false,
+          "required": [],
+          "title": "enableSecurity",
+          "type": "boolean"
+        },
+        "extraEnvironmentVars": {
+          "additionalProperties": true,
+          "properties": {
+            "WEED_CLUSTER_DEFAULT": {
+              "default": "sw",
+              "required": [],
+              "title": "WEED_CLUSTER_DEFAULT",
+              "type": "string"
+            },
+            "WEED_CLUSTER_SW_FILER": {
+              "default": "seaweedfs-filer-client.seaweedfs:8888",
+              "required": [],
+              "title": "WEED_CLUSTER_SW_FILER",
+              "type": "string"
+            },
+            "WEED_CLUSTER_SW_MASTER": {
+              "default": "seaweedfs-master.seaweedfs:9333",
+              "required": [],
+              "title": "WEED_CLUSTER_SW_MASTER",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "extraEnvironmentVars",
+          "type": "object"
+        },
+        "imageName": {
+          "default": "chrislusf/seaweedfs",
+          "required": [],
+          "title": "imageName",
+          "type": "string"
+        },
+        "imagePullPolicy": {
+          "default": "IfNotPresent",
+          "required": [],
+          "title": "imagePullPolicy",
+          "type": "string"
+        },
+        "imagePullSecrets": {
+          "default": "",
+          "required": [],
+          "title": "imagePullSecrets",
+          "type": "string"
+        },
+        "loggingLevel": {
+          "default": 1,
+          "required": [],
+          "title": "loggingLevel",
+          "type": "integer"
+        },
+        "masterServer": {
+          "default": "null",
+          "required": [],
+          "title": "masterServer",
+          "type": "null"
+        },
+        "monitoring": {
+          "additionalProperties": true,
+          "properties": {
+            "additionalLabels": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "additionalLabels",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "gatewayHost": {
+              "default": "null",
+              "required": [],
+              "title": "gatewayHost",
+              "type": "null"
+            },
+            "gatewayPort": {
+              "default": "null",
+              "required": [],
+              "title": "gatewayPort",
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "monitoring",
+          "type": "object"
+        },
+        "registry": {
+          "default": "",
+          "required": [],
+          "title": "registry",
+          "type": "string"
+        },
+        "replicationPlacement": {
+          "default": "001",
+          "description": " replication type is XYZ:\nX number of replica in other data centers\nY number of replica in other racks in the same data center\nZ number of replica in other servers in the same rack",
+          "required": [],
+          "title": "replicationPlacement",
+          "type": "string"
+        },
+        "repository": {
+          "default": "",
+          "required": [],
+          "title": "repository",
+          "type": "string"
+        },
+        "restartPolicy": {
+          "default": "Always",
+          "required": [],
+          "title": "restartPolicy",
+          "type": "string"
+        },
+        "securityConfig": {
+          "additionalProperties": true,
+          "properties": {
+            "jwtSigning": {
+              "additionalProperties": true,
+              "properties": {
+                "filerRead": {
+                  "default": false,
+                  "required": [],
+                  "title": "filerRead",
+                  "type": "boolean"
+                },
+                "filerWrite": {
+                  "default": false,
+                  "required": [],
+                  "title": "filerWrite",
+                  "type": "boolean"
+                },
+                "volumeRead": {
+                  "default": false,
+                  "required": [],
+                  "title": "volumeRead",
+                  "type": "boolean"
+                },
+                "volumeWrite": {
+                  "default": true,
+                  "required": [],
+                  "title": "volumeWrite",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "jwtSigning",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "securityConfig",
+          "type": "object"
+        },
+        "serviceAccountName": {
+          "default": "seaweedfs",
+          "description": "we will use this serviceAccountName for all ClusterRoles/ClusterRoleBindings",
+          "required": [],
+          "title": "serviceAccountName",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "image": {
+      "additionalProperties": true,
+      "properties": {
+        "registry": {
+          "default": "",
+          "required": [],
+          "title": "registry",
+          "type": "string"
+        },
+        "repository": {
+          "default": "",
+          "required": [],
+          "title": "repository",
+          "type": "string"
+        },
+        "tag": {
+          "default": "",
+          "required": [],
+          "title": "tag",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "image",
+      "type": "object"
+    },
+    "master": {
+      "additionalProperties": true,
+      "properties": {
+        "affinity": {
+          "default": "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          app.kubernetes.io/name: {{ template \"seaweedfs.name\" . }}\n          app.kubernetes.io/instance: {{ .Release.Name }}\n          app.kubernetes.io/component: master\n      topologyKey: kubernetes.io/hostname\n",
+          "description": "Affinity Settings\nCommenting out or setting as empty the affinity variable, will allow\ndeployment to single node services such as Minikube",
+          "required": [],
+          "title": "affinity",
+          "type": "string"
+        },
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations to be added to the master resources",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "config": {
+          "default": "# Enter any extra configuration for master.toml here.\n# It may be a multi-line string.",
+          "required": [],
+          "title": "config",
+          "type": "string"
+        },
+        "containerSecurityContext": {
+          "additionalProperties": true,
+          "description": "Configure security context for Container\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/\nExample:\ncontainerSecurityContext:\n  enabled: true\n  runAsUser: 2000\n  allowPrivilegeEscalation: false",
+          "required": [],
+          "title": "containerSecurityContext",
+          "type": "object"
+        },
+        "data": {
+          "additionalProperties": true,
+          "description": "You may use ANY storage-class, example with local-path-provisioner\nAnnotations are optional.\n data:\n   type: \"persistentVolumeClaim\"\n   size: \"24Ti\"\n   storageClass: \"local-path-provisioner\"\n   annotations:\n     \"key\": \"value\"\n\nYou may also spacify an existing claim:\n data:\n   type: \"existingClaim\"\n   claimName: \"my-pvc\"\n\nYou can also use emptyDir storage:\n data:\n   type: \"emptyDir\"",
+          "properties": {
+            "hostPathPrefix": {
+              "default": "/ssd",
+              "required": [],
+              "title": "hostPathPrefix",
+              "type": "string"
+            },
+            "storageClass": {
+              "default": "",
+              "required": [],
+              "title": "storageClass",
+              "type": "string"
+            },
+            "type": {
+              "default": "hostPath",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "data",
+          "type": "object"
+        },
+        "defaultReplication": {
+          "default": "000",
+          "description": " replication type is XYZ:\nX number of replica in other data centers\nY number of replica in other racks in the same data center\nZ number of replica in other servers in the same rack",
+          "required": [],
+          "title": "defaultReplication",
+          "type": "string"
+        },
+        "disableHttp": {
+          "default": false,
+          "description": "Disable http request, only gRpc operations are allowed",
+          "required": [],
+          "title": "disableHttp",
+          "type": "boolean"
+        },
+        "electionTimeout": {
+          "default": "10s",
+          "description": "election timeout of master servers",
+          "required": [],
+          "title": "electionTimeout",
+          "type": "string"
+        },
+        "enabled": {
+          "default": true,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraArgs": {
+          "description": "Custom command line arguments to add to the master command\nExample to fix IPv6 metrics connectivity issues:\nextraArgs: [\"-metricsIp\", \"0.0.0.0\"]\nExample with multiple args:\nextraArgs: [\"-customFlag\", \"value\", \"-anotherFlag\"]",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraArgs",
+          "type": "array"
+        },
+        "extraEnvironmentVars": {
+          "additionalProperties": true,
+          "properties": {
+            "WEED_MASTER_VOLUME_GROWTH_COPY_1": {
+              "default": "7",
+              "required": [],
+              "title": "WEED_MASTER_VOLUME_GROWTH_COPY_1",
+              "type": "string"
+            },
+            "WEED_MASTER_VOLUME_GROWTH_COPY_2": {
+              "default": "6",
+              "required": [],
+              "title": "WEED_MASTER_VOLUME_GROWTH_COPY_2",
+              "type": "string"
+            },
+            "WEED_MASTER_VOLUME_GROWTH_COPY_3": {
+              "default": "3",
+              "required": [],
+              "title": "WEED_MASTER_VOLUME_GROWTH_COPY_3",
+              "type": "string"
+            },
+            "WEED_MASTER_VOLUME_GROWTH_COPY_OTHER": {
+              "default": "1",
+              "required": [],
+              "title": "WEED_MASTER_VOLUME_GROWTH_COPY_OTHER",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "extraEnvironmentVars",
+          "type": "object"
+        },
+        "extraVolumeMounts": {
+          "default": "",
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "string"
+        },
+        "extraVolumes": {
+          "default": "",
+          "required": [],
+          "title": "extraVolumes",
+          "type": "string"
+        },
+        "garbageThreshold": {
+          "default": "null",
+          "description": "threshold to vacuum and reclaim spaces, default 0.3 (30%)",
+          "required": [],
+          "title": "garbageThreshold",
+          "type": "null"
+        },
+        "grpcPort": {
+          "default": 19333,
+          "required": [],
+          "title": "grpcPort",
+          "type": "integer"
+        },
+        "heartbeatInterval": {
+          "default": "300ms",
+          "description": "heartbeat interval of master servers, and will be randomly multiplied by [1, 1.25)",
+          "required": [],
+          "title": "heartbeatInterval",
+          "type": "string"
+        },
+        "imageOverride": {
+          "default": "null",
+          "required": [],
+          "title": "imageOverride",
+          "type": "null"
+        },
+        "ingress": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "properties": {
+                "nginx.ingress.kubernetes.io/auth-realm": {
+                  "default": "Authentication Required - SW-Master",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/auth-realm",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/auth-secret": {
+                  "default": "default/ingress-basic-auth-secret",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/auth-secret",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/auth-type": {
+                  "default": "basic",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/auth-type",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/configuration-snippet": {
+                  "default": "sub_filter '\u003chead\u003e' '\u003chead\u003e \u003cbase href=\"/sw-master/\"\u003e'; #add base url\nsub_filter '=\"/' '=\"./';                                #make absolute paths to relative\nsub_filter '=/' '=./';\nsub_filter '/seaweedfsstatic' './seaweedfsstatic';\nsub_filter_once off;\n",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/configuration-snippet",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/enable-rewrite-log": {
+                  "default": "true",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/enable-rewrite-log",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/force-ssl-redirect": {
+                  "default": "false",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/force-ssl-redirect",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/rewrite-target": {
+                  "default": "/$1",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/rewrite-target",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/service-upstream": {
+                  "default": "true",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/service-upstream",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/ssl-redirect": {
+                  "default": "false",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/ssl-redirect",
+                  "type": "string"
+                },
+                "nginx.ingress.kubernetes.io/use-regex": {
+                  "default": "true",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/use-regex",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "className": {
+              "default": "nginx",
+              "required": [],
+              "title": "className",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "host": {
+              "default": "master.seaweedfs.local",
+              "description": "host: false for \"*\" hostname",
+              "required": [],
+              "title": "host",
+              "type": "string"
+            },
+            "tls": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "tls",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "ingress",
+          "type": "object"
+        },
+        "initContainers": {
+          "default": "",
+          "required": [],
+          "title": "initContainers",
+          "type": "string"
+        },
+        "ipBind": {
+          "default": "0.0.0.0",
+          "required": [],
+          "title": "ipBind",
+          "type": "string"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "description": "used to configure livenessProbe on master-server containers\n",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 4,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/cluster/status",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "scheme": {
+                  "default": "HTTP",
+                  "required": [],
+                  "title": "scheme",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 20,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 30,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
+        "loggingOverrideLevel": {
+          "default": "null",
+          "required": [],
+          "title": "loggingOverrideLevel",
+          "type": "null"
+        },
+        "logs": {
+          "additionalProperties": true,
+          "description": "You can also use emptyDir storage:\n logs:\n   type: \"emptyDir\"",
+          "properties": {
+            "hostPathPrefix": {
+              "default": "/storage",
+              "required": [],
+              "title": "hostPathPrefix",
+              "type": "string"
+            },
+            "size": {
+              "default": "",
+              "required": [],
+              "title": "size",
+              "type": "string"
+            },
+            "storageClass": {
+              "default": "",
+              "required": [],
+              "title": "storageClass",
+              "type": "string"
+            },
+            "type": {
+              "default": "hostPath",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "logs",
+          "type": "object"
+        },
+        "metricsIntervalSec": {
+          "default": 15,
+          "description": "Prometheus push interval in seconds, default 15",
+          "required": [],
+          "title": "metricsIntervalSec",
+          "type": "integer"
+        },
+        "metricsIp": {
+          "default": "",
+          "required": [],
+          "title": "metricsIp",
+          "type": "string"
+        },
+        "metricsPort": {
+          "default": 9327,
+          "required": [],
+          "title": "metricsPort",
+          "type": "integer"
+        },
+        "nodeSelector": {
+          "default": "kubernetes.io/arch: amd64\n",
+          "description": "nodeSelector labels for master pod assignment, formatted as a muli-line string.\nref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector\nExample:",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "string"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "description": "Annotations to be added to the master pods",
+          "required": [],
+          "title": "podAnnotations",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "description": "Labels to be added to the master pods",
+          "required": [],
+          "title": "podLabels",
+          "type": "object"
+        },
+        "podManagementPolicy": {
+          "default": "Parallel",
+          "description": "# Set podManagementPolicy",
+          "required": [],
+          "title": "podManagementPolicy",
+          "type": "string"
+        },
+        "podSecurityContext": {
+          "additionalProperties": true,
+          "description": "Configure security context for Pod\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/\nExample:\npodSecurityContext:\n  enabled: true\n  runAsUser: 1000\n  runAsGroup: 3000\n  fsGroup: 2000",
+          "required": [],
+          "title": "podSecurityContext",
+          "type": "object"
+        },
+        "port": {
+          "default": 9333,
+          "required": [],
+          "title": "port",
+          "type": "integer"
+        },
+        "priorityClassName": {
+          "default": "",
+          "description": "used to assign priority to master pods\nref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/",
+          "required": [],
+          "title": "priorityClassName",
+          "type": "string"
+        },
+        "raftBootstrap": {
+          "default": false,
+          "description": "Whether to bootstrap the Raft cluster. Only use it when use Hashicorp Raft",
+          "required": [],
+          "title": "raftBootstrap",
+          "type": "boolean"
+        },
+        "raftHashicorp": {
+          "default": false,
+          "description": "Use Hashicorp Raft",
+          "required": [],
+          "title": "raftHashicorp",
+          "type": "boolean"
+        },
+        "readinessProbe": {
+          "additionalProperties": true,
+          "description": "used to configure readinessProbe on master-server containers\n",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 100,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/cluster/status",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "scheme": {
+                  "default": "HTTP",
+                  "required": [],
+                  "title": "scheme",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 10,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 45,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 2,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "readinessProbe",
+          "type": "object"
+        },
+        "replicas": {
+          "default": 1,
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resource requests, limits, etc. for the master cluster placement. This\nshould map directly to the value of the resources field for a PodSpec,\nformatted as a multi-line string. By default no direct resource request\nis made.",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "restartPolicy": {
+          "default": "null",
+          "required": [],
+          "title": "restartPolicy",
+          "type": "null"
+        },
+        "resumeState": {
+          "default": false,
+          "description": "Resume previous state on start master server",
+          "required": [],
+          "title": "resumeState",
+          "type": "boolean"
+        },
+        "serviceAccountName": {
+          "default": "",
+          "description": "used to assign a service account.\nref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/",
+          "required": [],
+          "title": "serviceAccountName",
+          "type": "string"
+        },
+        "sidecars": {
+          "description": "#\n# e.g:\n# sidecars:\n#   - name: your-image-name\n#     image: your-image\n#     imagePullPolicy: Always\n#     ports:\n#       - name: portname\n#         containerPort: 1234\n#",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "sidecars",
+          "type": "array"
+        },
+        "tolerations": {
+          "default": "",
+          "description": "Toleration Settings for master pods\nThis should be a multi-line string matching the Toleration array\nin a PodSpec.",
+          "required": [],
+          "title": "tolerations",
+          "type": "string"
+        },
+        "topologySpreadConstraints": {
+          "default": "null",
+          "description": "Topology Spread Constraints Settings\nThis should map directly to the value of the topologySpreadConstraints\nfor a PodSpec. By Default no constraints are set.",
+          "required": [],
+          "title": "topologySpreadConstraints",
+          "type": "null"
+        },
+        "updatePartition": {
+          "default": 0,
+          "description": "updatePartition is used to control a careful rolling update of SeaweedFS\nmasters.",
+          "required": [],
+          "title": "updatePartition",
+          "type": "integer"
+        },
+        "volumePreallocate": {
+          "default": false,
+          "required": [],
+          "title": "volumePreallocate",
+          "type": "boolean"
+        },
+        "volumeSizeLimitMB": {
+          "default": 1000,
+          "required": [],
+          "title": "volumeSizeLimitMB",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "master",
+      "type": "object"
+    },
+    "podAnnotations": {
+      "additionalProperties": true,
+      "description": "Annotations to be added to all the created pods",
+      "required": [],
+      "title": "podAnnotations",
+      "type": "object"
+    },
+    "podLabels": {
+      "additionalProperties": true,
+      "description": "Labels to be added to all the created pods",
+      "required": [],
+      "title": "podLabels",
+      "type": "object"
+    },
+    "s3": {
+      "additionalProperties": true,
+      "properties": {
+        "allowEmptyFolder": {
+          "default": true,
+          "description": "allow empty folders",
+          "required": [],
+          "title": "allowEmptyFolder",
+          "type": "boolean"
+        },
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations to be added to the s3 resources",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "auditLogConfig": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "auditLogConfig",
+          "type": "object"
+        },
+        "bindAddress": {
+          "default": "0.0.0.0",
+          "required": [],
+          "title": "bindAddress",
+          "type": "string"
+        },
+        "containerSecurityContext": {
+          "additionalProperties": true,
+          "description": "Configure security context for Container\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/\nExample:\ncontainerSecurityContext:\n  enabled: true\n  runAsUser: 2000\n  allowPrivilegeEscalation: false",
+          "required": [],
+          "title": "containerSecurityContext",
+          "type": "object"
+        },
+        "domainName": {
+          "default": "",
+          "description": "Suffix of the host name, {bucket}.{domainName}",
+          "required": [],
+          "title": "domainName",
+          "type": "string"
+        },
+        "enableAuth": {
+          "default": false,
+          "description": "enable user \u0026 permission to s3 (need to inject to all services)",
+          "required": [],
+          "title": "enableAuth",
+          "type": "boolean"
+        },
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "existingConfigSecret": {
+          "default": "null",
+          "description": "set to the name of an existing kubernetes Secret with the s3 json config file\nshould have a secret key called seaweedfs_s3_config with an inline json config",
+          "required": [],
+          "title": "existingConfigSecret",
+          "type": "null"
+        },
+        "extraEnvironmentVars": {
+          "default": "",
+          "required": [],
+          "title": "extraEnvironmentVars",
+          "type": "null"
+        },
+        "extraVolumeMounts": {
+          "default": "",
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "string"
+        },
+        "extraVolumes": {
+          "default": "",
+          "required": [],
+          "title": "extraVolumes",
+          "type": "string"
+        },
+        "httpsPort": {
+          "default": 0,
+          "description": "add additional https port",
+          "required": [],
+          "title": "httpsPort",
+          "type": "integer"
+        },
+        "imageOverride": {
+          "default": "null",
+          "required": [],
+          "title": "imageOverride",
+          "type": "null"
+        },
+        "ingress": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "additional ingress annotations for the s3 endpoint",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "className": {
+              "default": "nginx",
+              "required": [],
+              "title": "className",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "host": {
+              "default": "seaweedfs.cluster.local",
+              "description": "host: false for \"*\" hostname",
+              "required": [],
+              "title": "host",
+              "type": "string"
+            },
+            "tls": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "tls",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "ingress",
+          "type": "object"
+        },
+        "initContainers": {
+          "default": "",
+          "required": [],
+          "title": "initContainers",
+          "type": "string"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "description": "used to configure livenessProbe on s3 containers\n",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 20,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/status",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "scheme": {
+                  "default": "HTTP",
+                  "required": [],
+                  "title": "scheme",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 20,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 60,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
+        "loggingOverrideLevel": {
+          "default": "null",
+          "required": [],
+          "title": "loggingOverrideLevel",
+          "type": "null"
+        },
+        "logs": {
+          "additionalProperties": true,
+          "description": "You can also use emptyDir storage:\n logs:\n   type: \"emptyDir\"",
+          "properties": {
+            "hostPathPrefix": {
+              "default": "/storage",
+              "required": [],
+              "title": "hostPathPrefix",
+              "type": "string"
+            },
+            "size": {
+              "default": "",
+              "required": [],
+              "title": "size",
+              "type": "string"
+            },
+            "storageClass": {
+              "default": "",
+              "required": [],
+              "title": "storageClass",
+              "type": "string"
+            },
+            "type": {
+              "default": "hostPath",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "logs",
+          "type": "object"
+        },
+        "metricsPort": {
+          "default": 9327,
+          "required": [],
+          "title": "metricsPort",
+          "type": "integer"
+        },
+        "nodeSelector": {
+          "default": "kubernetes.io/arch: amd64\n",
+          "description": "nodeSelector labels for server pod assignment, formatted as a muli-line string.\nref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector\nExample:",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "string"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "description": "Annotations to be added to the s3 pods",
+          "required": [],
+          "title": "podAnnotations",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "description": "Labels to be added to the s3 pods",
+          "required": [],
+          "title": "podLabels",
+          "type": "object"
+        },
+        "podSecurityContext": {
+          "additionalProperties": true,
+          "description": "Configure security context for Pod\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/\nExample:\npodSecurityContext:\n  enabled: true\n  runAsUser: 1000\n  runAsGroup: 3000\n  fsGroup: 2000",
+          "required": [],
+          "title": "podSecurityContext",
+          "type": "object"
+        },
+        "port": {
+          "default": 8333,
+          "required": [],
+          "title": "port",
+          "type": "integer"
+        },
+        "priorityClassName": {
+          "default": "",
+          "description": "used to assign priority to server pods\nref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/",
+          "required": [],
+          "title": "priorityClassName",
+          "type": "string"
+        },
+        "readinessProbe": {
+          "additionalProperties": true,
+          "description": "used to configure readinessProbe on s3 containers\n",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 100,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/status",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "scheme": {
+                  "default": "HTTP",
+                  "required": [],
+                  "title": "scheme",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 15,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 15,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "readinessProbe",
+          "type": "object"
+        },
+        "replicas": {
+          "default": 1,
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resource requests, limits, etc. for the server cluster placement. This\nshould map directly to the value of the resources field for a PodSpec,\nformatted as a multi-line string. By default no direct resource request\nis made.",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "restartPolicy": {
+          "default": "null",
+          "required": [],
+          "title": "restartPolicy",
+          "type": "null"
+        },
+        "serviceAccountName": {
+          "default": "",
+          "description": "used to assign a service account.\nref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/",
+          "required": [],
+          "title": "serviceAccountName",
+          "type": "string"
+        },
+        "sidecars": {
+          "description": "#\n# e.g:\n# sidecars:\n#   - name: your-image-name\n#     image: your-image\n#     imagePullPolicy: Always\n#     ports:\n#       - name: portname\n#         containerPort: 1234\n#",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "sidecars",
+          "type": "array"
+        },
+        "tolerations": {
+          "default": "",
+          "description": "Toleration Settings for server pods\nThis should be a multi-line string matching the Toleration array\nin a PodSpec.",
+          "required": [],
+          "title": "tolerations",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "s3",
+      "type": "object"
+    },
+    "sftp": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "authMethods": {
+          "default": "password,publickey",
+          "required": [],
+          "title": "authMethods",
+          "type": "string"
+        },
+        "bannerMessage": {
+          "default": "SeaweedFS SFTP Server",
+          "required": [],
+          "title": "bannerMessage",
+          "type": "string"
+        },
+        "bindAddress": {
+          "default": "0.0.0.0",
+          "required": [],
+          "title": "bindAddress",
+          "type": "string"
+        },
+        "clientAliveCountMax": {
+          "default": 3,
+          "required": [],
+          "title": "clientAliveCountMax",
+          "type": "integer"
+        },
+        "clientAliveInterval": {
+          "default": "5s",
+          "required": [],
+          "title": "clientAliveInterval",
+          "type": "string"
+        },
+        "containerSecurityContext": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "containerSecurityContext",
+          "type": "object"
+        },
+        "dataCenter": {
+          "default": "",
+          "required": [],
+          "title": "dataCenter",
+          "type": "string"
+        },
+        "enableAuth": {
+          "default": false,
+          "description": "User authentication",
+          "required": [],
+          "title": "enableAuth",
+          "type": "boolean"
+        },
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "existingConfigSecret": {
+          "default": "null",
+          "description": "Set to the name of an existing kubernetes Secret with the sftp json config file\nShould have a secret key called seaweedfs_sftp_config with an inline json config",
+          "required": [],
+          "title": "existingConfigSecret",
+          "type": "null"
+        },
+        "existingSshConfigSecret": {
+          "default": "null",
+          "description": "Set to the name of an existing kubernetes Secret with the list of ssh private keys for sftp",
+          "required": [],
+          "title": "existingSshConfigSecret",
+          "type": "null"
+        },
+        "extraEnvironmentVars": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "extraEnvironmentVars",
+          "type": "object"
+        },
+        "extraVolumeMounts": {
+          "default": "",
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "string"
+        },
+        "extraVolumes": {
+          "default": "",
+          "required": [],
+          "title": "extraVolumes",
+          "type": "string"
+        },
+        "hostKeysFolder": {
+          "default": "/etc/sw/ssh",
+          "required": [],
+          "title": "hostKeysFolder",
+          "type": "string"
+        },
+        "imageOverride": {
+          "default": "null",
+          "required": [],
+          "title": "imageOverride",
+          "type": "null"
+        },
+        "initContainers": {
+          "default": "",
+          "required": [],
+          "title": "initContainers",
+          "type": "string"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "description": "Health checks\nHealth checks for SFTP - using tcpSocket instead of httpGet",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 20,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "default": 20,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 60,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
+        "localSocket": {
+          "default": "",
+          "required": [],
+          "title": "localSocket",
+          "type": "string"
+        },
+        "loggingOverrideLevel": {
+          "default": "null",
+          "required": [],
+          "title": "loggingOverrideLevel",
+          "type": "null"
+        },
+        "loginGraceTime": {
+          "default": "2m",
+          "required": [],
+          "title": "loginGraceTime",
+          "type": "string"
+        },
+        "logs": {
+          "additionalProperties": true,
+          "properties": {
+            "hostPathPrefix": {
+              "default": "/storage",
+              "required": [],
+              "title": "hostPathPrefix",
+              "type": "string"
+            },
+            "type": {
+              "default": "hostPath",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "logs",
+          "type": "object"
+        },
+        "maxAuthTries": {
+          "default": 6,
+          "required": [],
+          "title": "maxAuthTries",
+          "type": "integer"
+        },
+        "metricsIp": {
+          "default": "",
+          "required": [],
+          "title": "metricsIp",
+          "type": "string"
+        },
+        "metricsPort": {
+          "default": 9327,
+          "required": [],
+          "title": "metricsPort",
+          "type": "integer"
+        },
+        "nodeSelector": {
+          "default": "kubernetes.io/arch: amd64\n",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "string"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "podAnnotations",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "podLabels",
+          "type": "object"
+        },
+        "podSecurityContext": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "podSecurityContext",
+          "type": "object"
+        },
+        "port": {
+          "default": 2022,
+          "required": [],
+          "title": "port",
+          "type": "integer"
+        },
+        "priorityClassName": {
+          "default": "",
+          "required": [],
+          "title": "priorityClassName",
+          "type": "string"
+        },
+        "readinessProbe": {
+          "additionalProperties": true,
+          "description": "Health checks for SFTP - using tcpSocket instead of httpGet",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 100,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "default": 15,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 15,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "readinessProbe",
+          "type": "object"
+        },
+        "replicas": {
+          "default": 1,
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "restartPolicy": {
+          "default": "null",
+          "required": [],
+          "title": "restartPolicy",
+          "type": "null"
+        },
+        "serviceAccountName": {
+          "default": "",
+          "required": [],
+          "title": "serviceAccountName",
+          "type": "string"
+        },
+        "sidecars": {
+          "description": "Additional resources",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "sidecars",
+          "type": "array"
+        },
+        "sshPrivateKey": {
+          "default": "/etc/sw/seaweedfs_sftp_ssh_private_key",
+          "description": "SSH server configuration",
+          "required": [],
+          "title": "sshPrivateKey",
+          "type": "string"
+        },
+        "tolerations": {
+          "default": "",
+          "required": [],
+          "title": "tolerations",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "sftp",
+      "type": "object"
+    },
+    "volume": {
+      "additionalProperties": true,
+      "properties": {
+        "affinity": {
+          "default": "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          app.kubernetes.io/name: {{ template \"seaweedfs.name\" . }}\n          app.kubernetes.io/instance: {{ .Release.Name }}\n          app.kubernetes.io/component: volume\n      topologyKey: kubernetes.io/hostname\n",
+          "description": "Affinity Settings\nCommenting out or setting as empty the affinity variable, will allow\ndeployment to single node services such as Minikube",
+          "required": [],
+          "title": "affinity",
+          "type": "string"
+        },
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations to be added to the volume resources",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "compactionMBps": {
+          "default": "50",
+          "description": "limit background compaction or copying speed in mega bytes per second",
+          "required": [],
+          "title": "compactionMBps",
+          "type": "string"
+        },
+        "containerSecurityContext": {
+          "additionalProperties": true,
+          "description": "Configure security context for Container\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/\nExample:\ncontainerSecurityContext:\n  enabled: true\n  runAsUser: 2000\n  allowPrivilegeEscalation: false",
+          "required": [],
+          "title": "containerSecurityContext",
+          "type": "object"
+        },
+        "dataCenter": {
+          "default": "null",
+          "description": "Volume server's data center name",
+          "required": [],
+          "title": "dataCenter",
+          "type": "null"
+        },
+        "dataDirs": {
+          "description": "For each data disk you may use ANY storage-class, example with local-path-provisioner\nAnnotations are optional.\n dataDirs:\n  - name: data\n    type: \"persistentVolumeClaim\"\n    size: \"24Ti\"\n    storageClass: \"local-path-provisioner\"\n    annotations:\n     \"key\": \"value\"\n    maxVolumes: 0  # If set to zero on non-windows OS, the limit will be auto configured. (default \"7\")\n\nYou may also spacify an existing claim:\n  - name: data\n    type: \"existingClaim\"\n    claimName: \"my-pvc\"\n    maxVolumes: 0  # If set to zero on non-windows OS, the limit will be auto configured. (default \"7\")\n\nYou can also use emptyDir storage:\n  - name: data\n    type: \"emptyDir\"\n    maxVolumes: 0  # If set to zero on non-windows OS, the limit will be auto configured. (default \"7\")\n\nIf these don't meet your needs, you can use \"custom\" here along with extraVolumes and extraVolumeMounts\nParticularly useful when using more than 1 for the volume server replicas.\n  - name: data\n    type: \"custom\"\n    maxVolumes: 0  # If set to zero on non-windows OS, the limit will be auto configured. (default \"7\")",
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "hostPathPrefix": {
+                "default": "/ssd",
+                "required": [],
+                "title": "hostPathPrefix",
+                "type": "string"
+              },
+              "maxVolumes": {
+                "default": 0,
+                "required": [],
+                "title": "maxVolumes",
+                "type": "integer"
+              },
+              "name": {
+                "default": "data1",
+                "required": [],
+                "title": "name",
+                "type": "string"
+              },
+              "type": {
+                "default": "hostPath",
+                "required": [],
+                "title": "type",
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "required": [],
+          "title": "dataDirs",
+          "type": "array"
+        },
+        "enabled": {
+          "default": true,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraArgs": {
+          "description": "Custom command line arguments to add to the volume command\nExample to fix IPv6 metrics connectivity issues:\nextraArgs: [\"-metricsIp\", \"0.0.0.0\"]\nExample with multiple args:\nextraArgs: [\"-customFlag\", \"value\", \"-anotherFlag\"]",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraArgs",
+          "type": "array"
+        },
+        "extraEnvironmentVars": {
+          "default": "",
+          "required": [],
+          "title": "extraEnvironmentVars",
+          "type": "null"
+        },
+        "extraVolumeMounts": {
+          "default": "",
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "string"
+        },
+        "extraVolumes": {
+          "default": "",
+          "description": "Example for use when using more than 1 volume server replica\nextraVolumeMounts: |\n  - name: drive\n    mountPath: /drive\n    subPathExpr: $(POD_NAME)\nextraVolumes: |\n  - name: drive\n    hostPath:\n      path: /var/mnt/",
+          "required": [],
+          "title": "extraVolumes",
+          "type": "string"
+        },
+        "fileSizeLimitMB": {
+          "default": "null",
+          "description": "limit file size to avoid out of memory, default 256mb",
+          "required": [],
+          "title": "fileSizeLimitMB",
+          "type": "null"
+        },
+        "grpcPort": {
+          "default": 18080,
+          "required": [],
+          "title": "grpcPort",
+          "type": "integer"
+        },
+        "idx": {
+          "additionalProperties": true,
+          "description": "same applies to \"logs\"",
+          "required": [],
+          "title": "idx",
+          "type": "object"
+        },
+        "imageOverride": {
+          "default": "null",
+          "required": [],
+          "title": "imageOverride",
+          "type": "null"
+        },
+        "imagesFixOrientation": {
+          "default": false,
+          "description": "Adjust jpg orientation when uploading.",
+          "required": [],
+          "title": "imagesFixOrientation",
+          "type": "boolean"
+        },
+        "index": {
+          "default": "null",
+          "description": "Choose [memory|leveldb|leveldbMedium|leveldbLarge] mode for memory~performance balance., default memory",
+          "required": [],
+          "title": "index",
+          "type": "null"
+        },
+        "initContainers": {
+          "default": "",
+          "required": [],
+          "title": "initContainers",
+          "type": "string"
+        },
+        "ipBind": {
+          "default": "0.0.0.0",
+          "required": [],
+          "title": "ipBind",
+          "type": "string"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "description": "used to configure livenessProbe on volume-server containers\n",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 4,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/healthz",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "scheme": {
+                  "default": "HTTP",
+                  "required": [],
+                  "title": "scheme",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 20,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 90,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 30,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
+        "loggingOverrideLevel": {
+          "default": "null",
+          "required": [],
+          "title": "loggingOverrideLevel",
+          "type": "null"
+        },
+        "logs": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "logs",
+          "type": "object"
+        },
+        "metricsIp": {
+          "default": "",
+          "required": [],
+          "title": "metricsIp",
+          "type": "string"
+        },
+        "metricsPort": {
+          "default": 9327,
+          "required": [],
+          "title": "metricsPort",
+          "type": "integer"
+        },
+        "minFreeSpacePercent": {
+          "default": 7,
+          "description": "minimum free disk space(in percents). If free disk space lower this value - all volumes marks as ReadOnly",
+          "required": [],
+          "title": "minFreeSpacePercent",
+          "type": "integer"
+        },
+        "nodeSelector": {
+          "default": "kubernetes.io/arch: amd64\n",
+          "description": "nodeSelector labels for server pod assignment, formatted as a muli-line string.\nref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector\nExample:",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "string"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "description": "Annotations to be added to the volume pods",
+          "required": [],
+          "title": "podAnnotations",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "description": "Labels to be added to the volume pods",
+          "required": [],
+          "title": "podLabels",
+          "type": "object"
+        },
+        "podManagementPolicy": {
+          "default": "Parallel",
+          "description": "# Set podManagementPolicy",
+          "required": [],
+          "title": "podManagementPolicy",
+          "type": "string"
+        },
+        "podSecurityContext": {
+          "additionalProperties": true,
+          "description": "Configure security context for Pod\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/\nExample:\npodSecurityContext:\n  enabled: true\n  runAsUser: 1000\n  runAsGroup: 3000\n  fsGroup: 2000",
+          "required": [],
+          "title": "podSecurityContext",
+          "type": "object"
+        },
+        "port": {
+          "default": 8080,
+          "required": [],
+          "title": "port",
+          "type": "integer"
+        },
+        "priorityClassName": {
+          "default": "",
+          "description": "used to assign priority to server pods\nref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/",
+          "required": [],
+          "title": "priorityClassName",
+          "type": "string"
+        },
+        "pulseSeconds": {
+          "default": "null",
+          "description": "number of seconds between heartbeats, must be smaller than or equal to the master's setting",
+          "required": [],
+          "title": "pulseSeconds",
+          "type": "null"
+        },
+        "rack": {
+          "default": "null",
+          "description": "Volume server's rack name",
+          "required": [],
+          "title": "rack",
+          "type": "null"
+        },
+        "readMode": {
+          "default": "proxy",
+          "description": "Redirect moved or non-local volumes. (default proxy)",
+          "required": [],
+          "title": "readMode",
+          "type": "string"
+        },
+        "readinessProbe": {
+          "additionalProperties": true,
+          "description": "used to configure readinessProbe on volume-server containers\n",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 100,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/healthz",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "scheme": {
+                  "default": "HTTP",
+                  "required": [],
+                  "title": "scheme",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 15,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 15,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 30,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "readinessProbe",
+          "type": "object"
+        },
+        "replicas": {
+          "default": 1,
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        },
+        "resizeHook": {
+          "additionalProperties": true,
+          "description": "This will automatically create a job for patching Kubernetes resources if the dataDirs type is 'persistentVolumeClaim' and the size has changed.",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "image": {
+              "default": "bitnami/kubectl",
+              "required": [],
+              "title": "image",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "resizeHook",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resource requests, limits, etc. for the server cluster placement. This\nshould map directly to the value of the resources field for a PodSpec,\nformatted as a multi-line string. By default no direct resource request\nis made.",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "restartPolicy": {
+          "default": "null",
+          "required": [],
+          "title": "restartPolicy",
+          "type": "null"
+        },
+        "serviceAccountName": {
+          "default": "",
+          "description": "used to assign a service account.\nref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/",
+          "required": [],
+          "title": "serviceAccountName",
+          "type": "string"
+        },
+        "sidecars": {
+          "description": "#\n# e.g:\n# sidecars:\n#   - name: your-image-name\n#     image: your-image\n#     imagePullPolicy: Always\n#     ports:\n#       - name: portname\n#         containerPort: 1234\n#",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "sidecars",
+          "type": "array"
+        },
+        "tolerations": {
+          "default": "",
+          "description": "Toleration Settings for server pods\nThis should be a multi-line string matching the Toleration array\nin a PodSpec.",
+          "required": [],
+          "title": "tolerations",
+          "type": "string"
+        },
+        "topologySpreadConstraints": {
+          "default": "null",
+          "description": "Topology Spread Constraints Settings\nThis should map directly to the value of the topologySpreadConstraints\nfor a PodSpec. By Default no constraints are set.",
+          "required": [],
+          "title": "topologySpreadConstraints",
+          "type": "null"
+        },
+        "whiteList": {
+          "default": "null",
+          "description": "Comma separated Ip addresses having write permission. No limit if empty.",
+          "required": [],
+          "title": "whiteList",
+          "type": "null"
+        }
+      },
+      "required": [],
+      "title": "volume",
+      "type": "object"
+    }
+  },
+  "required": [],
+  "type": "object"
+}

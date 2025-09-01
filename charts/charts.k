@@ -95,6 +95,13 @@ charts: helm.Charts = {
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
     }
+    seaweedfs: {
+        chart = "seaweedfs"
+        repoURL = "https://seaweedfs.github.io/seaweedfs/helm"
+        targetRevision = "4.0.393"
+        schemaGenerator = "AUTO"
+        crdGenerator = "TEMPLATE"
+    }
     mimir: {
         chart = "mimir-distributed"
         repoURL = "https://grafana.github.io/helm-charts"
