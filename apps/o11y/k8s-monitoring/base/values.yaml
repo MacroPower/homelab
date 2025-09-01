@@ -8,6 +8,10 @@ destinationsMap:
     protocol: http
     traces:
       enabled: true
+    metrics:
+      enabled: false
+    logs:
+      enabled: false
   mimir:
     type: prometheus
 
