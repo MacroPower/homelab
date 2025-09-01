@@ -4,8 +4,12 @@ traces:
   otlp:
     http:
       enabled: true
+      receiverConfig:
+        max_request_body_size: 52428800
     grpc:
       enabled: true
+      receiverConfig:
+        max_recv_msg_size_mib: 50
 
 storage:
   trace:
