@@ -13,6 +13,8 @@ filer:
       - name: mimir-blocks
       - name: mimir-alertmanager
       - name: mimir-ruler
+      - name: loki-chunks
+      - name: loki-ruler
 
 volume:
   logs: *logs

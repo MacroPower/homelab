@@ -19,6 +19,12 @@ app = o11y_grafana_base.app | {
                     toEndpoints = [
                         {
                             matchLabels = {
+                                "io.kubernetes.pod.namespace" = "o11y-loki"
+                                "app.kubernetes.io/component" = "gateway"
+                            }
+                        }
+                        {
+                            matchLabels = {
                                 "io.kubernetes.pod.namespace" = "o11y-mimir"
                                 "app.kubernetes.io/component" = "nginx"
                             }

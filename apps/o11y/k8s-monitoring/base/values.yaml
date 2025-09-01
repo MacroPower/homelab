@@ -1,6 +1,8 @@
 # yaml-language-server: $schema=../../../../charts/k8s_monitoring/values.schema.json
 
 destinationsMap:
+  loki:
+    type: loki
   mimir:
     type: prometheus
 
@@ -12,5 +14,27 @@ prometheusOperatorObjects:
 clusterMetrics:
   enabled: true
 
+clusterEvents:
+  enabled: true
+
+podLogs:
+  enabled: true
+
 alloy-metrics:
   enabled: true
+
+alloy-singleton:
+  enabled: true
+
+alloy-logs:
+  enabled: true
+
+integrations:
+  alloy:
+    instances:
+      - name: alloy
+        labelSelectors:
+          app.kubernetes.io/name:
+            - alloy-metrics
+            - alloy-singleton
+            - alloy-logs

@@ -102,6 +102,13 @@ charts: helm.Charts = {
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
     }
+    loki: {
+        chart = "loki"
+        repoURL = "https://grafana.github.io/helm-charts"
+        targetRevision = "6.38.0"
+        schemaGenerator = "VALUE-INFERENCE"
+        crdGenerator = "NONE"
+    }
     mimir: {
         chart = "mimir-distributed"
         repoURL = "https://grafana.github.io/helm-charts"
