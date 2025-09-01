@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=../../../../charts/k8s_monitoring/values.schema.json
+
+destinationsMap:
+  mimir:
+    url: "http://mimir-distributed-nginx.o11y-mimir.svc/api/v1/push"

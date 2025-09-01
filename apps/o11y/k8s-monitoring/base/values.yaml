@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../../../charts/k8s_monitoring/values.schema.json
+
+destinationsMap:
+  mimir:
+    type: prometheus
+
+prometheusOperatorObjects:
+  enabled: true
+  crds:
+    deploy: true
+
+clusterMetrics:
+  enabled: true
+
+alloy-metrics:
+  enabled: true

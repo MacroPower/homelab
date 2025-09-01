@@ -109,4 +109,25 @@ charts: helm.Charts = {
         schemaGenerator = "NONE"
         crdGenerator = "NONE"
     }
+    k8s_monitoring: {
+        chart = "k8s-monitoring"
+        repoURL = "https://grafana.github.io/helm-charts"
+        targetRevision = "3.3.2"
+        schemaGenerator = "VALUE-INFERENCE"
+        crdGenerator = "TEMPLATE"
+        values: {
+            cluster: {name = "kcl"}
+            destinationsMap: {
+                mimir: {"type" = "prometheus"}
+            }
+            "alloy-metrics": {
+                enabled = True
+            }
+            prometheusOperatorObjects: {
+                enabled = True
+                crds: {deploy = True}
+            }
+        }
+    }
+    }
 }
