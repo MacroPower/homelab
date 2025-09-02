@@ -1,0 +1,834 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "addonResizer": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "repository": {
+              "default": "registry.k8s.io/autoscaling/addon-resizer",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "1.8.21",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "nanny": {
+          "additionalProperties": true,
+          "properties": {
+            "cpu": {
+              "default": "0m",
+              "required": [],
+              "title": "cpu",
+              "type": "string"
+            },
+            "extraCpu": {
+              "default": "1m",
+              "required": [],
+              "title": "extraCpu",
+              "type": "string"
+            },
+            "extraMemory": {
+              "default": "2Mi",
+              "required": [],
+              "title": "extraMemory",
+              "type": "string"
+            },
+            "memory": {
+              "default": "0Mi",
+              "required": [],
+              "title": "memory",
+              "type": "string"
+            },
+            "minClusterSize": {
+              "default": 100,
+              "required": [],
+              "title": "minClusterSize",
+              "type": "integer"
+            },
+            "pollPeriod": {
+              "default": 300000,
+              "required": [],
+              "title": "pollPeriod",
+              "type": "integer"
+            },
+            "threshold": {
+              "default": 5,
+              "required": [],
+              "title": "threshold",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "nanny",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "properties": {
+            "limits": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "40m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "25Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "40m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "25Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "securityContext": {
+          "additionalProperties": true,
+          "properties": {
+            "allowPrivilegeEscalation": {
+              "default": false,
+              "required": [],
+              "title": "allowPrivilegeEscalation",
+              "type": "boolean"
+            },
+            "capabilities": {
+              "additionalProperties": true,
+              "properties": {
+                "drop": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "capabilities",
+              "type": "object"
+            },
+            "readOnlyRootFilesystem": {
+              "default": true,
+              "required": [],
+              "title": "readOnlyRootFilesystem",
+              "type": "boolean"
+            },
+            "runAsNonRoot": {
+              "default": true,
+              "required": [],
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            },
+            "runAsUser": {
+              "default": 1000,
+              "required": [],
+              "title": "runAsUser",
+              "type": "integer"
+            },
+            "seccompProfile": {
+              "additionalProperties": true,
+              "properties": {
+                "type": {
+                  "default": "RuntimeDefault",
+                  "required": [],
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "seccompProfile",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "securityContext",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "addonResizer",
+      "type": "object"
+    },
+    "affinity": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "affinity",
+      "type": "object"
+    },
+    "apiService": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations to add to the API service",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "caBundle": {
+          "default": "",
+          "description": "The PEM encoded CA bundle for TLS verification",
+          "required": [],
+          "title": "caBundle",
+          "type": "string"
+        },
+        "create": {
+          "default": true,
+          "description": "Specifies if the v1beta1.metrics.k8s.io API service should be created.\n\nYou typically want this enabled! If you disable API service creation you have to\nmanage it outside of this chart for e.g horizontal pod autoscaling to\nwork with this release.",
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "insecureSkipTLSVerify": {
+          "default": true,
+          "description": "Specifies whether to skip TLS verification",
+          "required": [],
+          "title": "insecureSkipTLSVerify",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "apiService",
+      "type": "object"
+    },
+    "args": {
+      "items": {
+        "required": [],
+        "type": "string"
+      },
+      "required": [],
+      "title": "args",
+      "type": "array"
+    },
+    "commonLabels": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "commonLabels",
+      "type": "object"
+    },
+    "containerPort": {
+      "default": 10250,
+      "required": [],
+      "title": "containerPort",
+      "type": "integer"
+    },
+    "defaultArgs": {
+      "items": {
+        "required": [],
+        "type": "string"
+      },
+      "required": [],
+      "title": "defaultArgs",
+      "type": "array"
+    },
+    "deploymentAnnotations": {
+      "additionalProperties": true,
+      "description": "Annotations to add to the deployment",
+      "required": [],
+      "title": "deploymentAnnotations",
+      "type": "object"
+    },
+    "dnsConfig": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "dnsConfig",
+      "type": "object"
+    },
+    "extraVolumeMounts": {
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraVolumeMounts",
+      "type": "array"
+    },
+    "extraVolumes": {
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraVolumes",
+      "type": "array"
+    },
+    "fullnameOverride": {
+      "default": "",
+      "required": [],
+      "title": "fullnameOverride",
+      "type": "string"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "hostNetwork": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "description": "Specifies if metrics-server should be started in hostNetwork mode.\n\nYou would require this enabled if you use alternate overlay networking for pods and\nAPI server unable to communicate with metrics-server. As an example, this is required\nif you use Weave network on EKS",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "hostNetwork",
+      "type": "object"
+    },
+    "image": {
+      "additionalProperties": true,
+      "properties": {
+        "pullPolicy": {
+          "default": "IfNotPresent",
+          "required": [],
+          "title": "pullPolicy",
+          "type": "string"
+        },
+        "repository": {
+          "default": "registry.k8s.io/metrics-server/metrics-server",
+          "required": [],
+          "title": "repository",
+          "type": "string"
+        },
+        "tag": {
+          "default": "",
+          "description": "Overrides the image tag whose default is v{{ .Chart.AppVersion }}",
+          "required": [],
+          "title": "tag",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "image",
+      "type": "object"
+    },
+    "imagePullSecrets": {
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "imagePullSecrets",
+      "type": "array"
+    },
+    "livenessProbe": {
+      "additionalProperties": true,
+      "properties": {
+        "failureThreshold": {
+          "default": 3,
+          "required": [],
+          "title": "failureThreshold",
+          "type": "integer"
+        },
+        "httpGet": {
+          "additionalProperties": true,
+          "properties": {
+            "path": {
+              "default": "/livez",
+              "required": [],
+              "title": "path",
+              "type": "string"
+            },
+            "port": {
+              "default": "https",
+              "required": [],
+              "title": "port",
+              "type": "string"
+            },
+            "scheme": {
+              "default": "HTTPS",
+              "required": [],
+              "title": "scheme",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "httpGet",
+          "type": "object"
+        },
+        "initialDelaySeconds": {
+          "default": 0,
+          "required": [],
+          "title": "initialDelaySeconds",
+          "type": "integer"
+        },
+        "periodSeconds": {
+          "default": 10,
+          "required": [],
+          "title": "periodSeconds",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "livenessProbe",
+      "type": "object"
+    },
+    "metrics": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "metrics",
+      "type": "object"
+    },
+    "nameOverride": {
+      "default": "",
+      "required": [],
+      "title": "nameOverride",
+      "type": "string"
+    },
+    "nodeSelector": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "nodeSelector",
+      "type": "object"
+    },
+    "podAnnotations": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podAnnotations",
+      "type": "object"
+    },
+    "podDisruptionBudget": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "description": "https://kubernetes.io/docs/tasks/run-application/configure-pdb/",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "maxUnavailable": {
+          "default": "",
+          "required": [],
+          "title": "maxUnavailable",
+          "type": "null"
+        },
+        "minAvailable": {
+          "default": "",
+          "required": [],
+          "title": "minAvailable",
+          "type": "null"
+        }
+      },
+      "required": [],
+      "title": "podDisruptionBudget",
+      "type": "object"
+    },
+    "podLabels": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podLabels",
+      "type": "object"
+    },
+    "podSecurityContext": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podSecurityContext",
+      "type": "object"
+    },
+    "priorityClassName": {
+      "default": "system-cluster-critical",
+      "required": [],
+      "title": "priorityClassName",
+      "type": "string"
+    },
+    "rbac": {
+      "additionalProperties": true,
+      "properties": {
+        "create": {
+          "default": true,
+          "description": "Specifies whether RBAC resources should be created",
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "pspEnabled": {
+          "default": false,
+          "description": "Note: PodSecurityPolicy will not be created when Kubernetes version is 1.25 or later.",
+          "required": [],
+          "title": "pspEnabled",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "rbac",
+      "type": "object"
+    },
+    "readinessProbe": {
+      "additionalProperties": true,
+      "properties": {
+        "failureThreshold": {
+          "default": 3,
+          "required": [],
+          "title": "failureThreshold",
+          "type": "integer"
+        },
+        "httpGet": {
+          "additionalProperties": true,
+          "properties": {
+            "path": {
+              "default": "/readyz",
+              "required": [],
+              "title": "path",
+              "type": "string"
+            },
+            "port": {
+              "default": "https",
+              "required": [],
+              "title": "port",
+              "type": "string"
+            },
+            "scheme": {
+              "default": "HTTPS",
+              "required": [],
+              "title": "scheme",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "httpGet",
+          "type": "object"
+        },
+        "initialDelaySeconds": {
+          "default": 20,
+          "required": [],
+          "title": "initialDelaySeconds",
+          "type": "integer"
+        },
+        "periodSeconds": {
+          "default": 10,
+          "required": [],
+          "title": "periodSeconds",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "readinessProbe",
+      "type": "object"
+    },
+    "replicas": {
+      "default": 1,
+      "required": [],
+      "title": "replicas",
+      "type": "integer"
+    },
+    "resources": {
+      "additionalProperties": true,
+      "description": "See https://github.com/kubernetes-sigs/metrics-server#scaling",
+      "properties": {
+        "requests": {
+          "additionalProperties": true,
+          "properties": {
+            "cpu": {
+              "default": "100m",
+              "required": [],
+              "title": "cpu",
+              "type": "string"
+            },
+            "memory": {
+              "default": "200Mi",
+              "required": [],
+              "title": "memory",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "requests",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "resources",
+      "type": "object"
+    },
+    "revisionHistoryLimit": {
+      "default": "",
+      "required": [],
+      "title": "revisionHistoryLimit",
+      "type": "null"
+    },
+    "schedulerName": {
+      "default": "",
+      "required": [],
+      "title": "schedulerName",
+      "type": "string"
+    },
+    "securityContext": {
+      "additionalProperties": true,
+      "properties": {
+        "allowPrivilegeEscalation": {
+          "default": false,
+          "required": [],
+          "title": "allowPrivilegeEscalation",
+          "type": "boolean"
+        },
+        "capabilities": {
+          "additionalProperties": true,
+          "properties": {
+            "drop": {
+              "items": {
+                "required": [],
+                "type": "string"
+              },
+              "required": [],
+              "title": "drop",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "capabilities",
+          "type": "object"
+        },
+        "readOnlyRootFilesystem": {
+          "default": true,
+          "required": [],
+          "title": "readOnlyRootFilesystem",
+          "type": "boolean"
+        },
+        "runAsNonRoot": {
+          "default": true,
+          "required": [],
+          "title": "runAsNonRoot",
+          "type": "boolean"
+        },
+        "runAsUser": {
+          "default": 1000,
+          "required": [],
+          "title": "runAsUser",
+          "type": "integer"
+        },
+        "seccompProfile": {
+          "additionalProperties": true,
+          "properties": {
+            "type": {
+              "default": "RuntimeDefault",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "seccompProfile",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "securityContext",
+      "type": "object"
+    },
+    "service": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "labels": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "labels",
+          "type": "object"
+        },
+        "port": {
+          "default": 443,
+          "required": [],
+          "title": "port",
+          "type": "integer"
+        },
+        "type": {
+          "default": "ClusterIP",
+          "required": [],
+          "title": "type",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "service",
+      "type": "object"
+    },
+    "serviceAccount": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations to add to the service account",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "create": {
+          "default": true,
+          "description": "Specifies whether a service account should be created",
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "name": {
+          "default": "",
+          "description": "The name of the service account to use.\nIf not set and create is true, a name is generated using the fullname template",
+          "required": [],
+          "title": "name",
+          "type": "string"
+        },
+        "secrets": {
+          "description": "The list of secrets mountable by this service account.\nSee https://kubernetes.io/docs/reference/labels-annotations-taints/#enforce-mountable-secrets",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "secrets",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "serviceAccount",
+      "type": "object"
+    },
+    "serviceMonitor": {
+      "additionalProperties": true,
+      "properties": {
+        "additionalLabels": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "additionalLabels",
+          "type": "object"
+        },
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "interval": {
+          "default": "1m",
+          "required": [],
+          "title": "interval",
+          "type": "string"
+        },
+        "metricRelabelings": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "metricRelabelings",
+          "type": "array"
+        },
+        "relabelings": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "relabelings",
+          "type": "array"
+        },
+        "scrapeTimeout": {
+          "default": "10s",
+          "required": [],
+          "title": "scrapeTimeout",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "serviceMonitor",
+      "type": "object"
+    },
+    "tmpVolume": {
+      "additionalProperties": true,
+      "properties": {
+        "emptyDir": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "emptyDir",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "tmpVolume",
+      "type": "object"
+    },
+    "tolerations": {
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "tolerations",
+      "type": "array"
+    },
+    "topologySpreadConstraints": {
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "topologySpreadConstraints",
+      "type": "array"
+    },
+    "updateStrategy": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "updateStrategy",
+      "type": "object"
+    }
+  },
+  "required": [],
+  "type": "object"
+}

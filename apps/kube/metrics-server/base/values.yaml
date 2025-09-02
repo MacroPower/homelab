@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=../../../../charts/metrics_server/values.schema.json
+
+replicas: 2
+
+args:
+  - --kubelet-insecure-tls
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 200Mi
+  limits:
+    memory: 200Mi

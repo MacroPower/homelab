@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=../../../../charts/metrics_server/values.schema.json
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 100Mi
+  limits:
+    memory: 100Mi

@@ -55,6 +55,12 @@ charts: helm.Charts = {
         targetRevision = "0.30.1"
         schemaGenerator = "AUTO"
     }
+    metrics_server: {
+        chart = "metrics-server"
+        repoURL = "https://kubernetes-sigs.github.io/metrics-server/"
+        targetRevision = "3.12.2"
+        schemaGenerator = "AUTO"
+    }
     cert_manager: {
         chart = "cert-manager"
         repoURL = "https://charts.jetstack.io"
