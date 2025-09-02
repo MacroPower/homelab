@@ -169,3 +169,11 @@ nginx:
     requests:
       cpu: 100m
       memory: 100Mi
+
+metaMonitoring:
+  serviceMonitor:
+    enabled: true
+
+  prometheusRule:
+    mimirAlerts: true
+    mimirRules: true

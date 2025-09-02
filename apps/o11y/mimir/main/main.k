@@ -2,6 +2,7 @@ import file
 
 import o11y_mimir_base
 import charts.mimir
+import cluster
 import konfig.models.frontend.secret
 import konfig.utils
 
@@ -35,5 +36,6 @@ app = o11y_mimir_base.app | {
                 valueFrom = _s3Config.getSecretKeyEnvRef("S3_SECRET_KEY")
             }
         ]
+        metaMonitoring.serviceMonitor.clusterLabel = cluster.NAME
     }
 }
