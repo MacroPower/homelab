@@ -7,6 +7,8 @@ import konfig.utils
 
 _values = utils.read_yaml(file.current(), "values.yaml")
 
+_kubernetesMixin = utils.read_yaml(file.current(), "rules/kubernetes-mixin.yaml")
+
 app = frontend.App {
     name = "k8s-monitoring"
     tenantName = o11y.tenant.name
@@ -16,4 +18,6 @@ app = frontend.App {
     charts.k8s_monitoring = k8s_monitoring.Chart {
         values: _values | k8s_monitoring.Values {}
     }
+
+    extraResources.kubernetesMixin = _kubernetesMixin
 }
