@@ -7,3 +7,11 @@ destinationsMap:
     url: "http://tempo-distributed-gateway.o11y-tempo.svc"
   mimir:
     url: "http://mimir-distributed-nginx.o11y-mimir.svc/api/v1/push"
+
+alloy-singleton:
+  # https://grafana.com/docs/alloy/latest/reference/components/mimir/mimir.rules.kubernetes/
+  extraConfig: |-
+    mimir.rules.kubernetes "default" {
+      address = "http://mimir-distributed-ruler.o11y-mimir.svc:8080"
+      tenant_id = "anonymous"
+    }
