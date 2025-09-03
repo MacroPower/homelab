@@ -177,3 +177,6 @@ metaMonitoring:
   prometheusRule:
     mimirAlerts: true
     mimirRules: true
+
+rollout_operator:
+  enabled: false
