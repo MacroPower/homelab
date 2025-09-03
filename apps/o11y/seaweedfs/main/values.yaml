@@ -30,17 +30,17 @@ volume:
       type: persistentVolumeClaim
       storageClass: openebs-hostpath
       size: 500Gi
-      maxVolumes: 14 # 1 volume = 30Gi
+      maxVolumes: 128
     - name: data2
       type: persistentVolumeClaim
       storageClass: openebs-hostpath
       size: 500Gi
-      maxVolumes: 14 # 1 volume = 30Gi
+      maxVolumes: 128
     - name: data3
       type: persistentVolumeClaim
       storageClass: openebs-hostpath
       size: 500Gi
-      maxVolumes: 14 # 1 volume = 30Gi
+      maxVolumes: 128
   idx:
     type: persistentVolumeClaim
     storageClass: openebs-hostpath
