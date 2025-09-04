@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 services:
   talos:
-    image: ghcr.io/siderolabs/talos:v1.10.6
+    image: ghcr.io/siderolabs/talos:v1.10.7
     container_name: talos
     hostname: knas01
     tty: true
@@ -9,8 +9,11 @@ services:
     privileged: true
     cap_add:
       - NET_ADMIN
-      - SYS_ADMIN
       - NET_RAW
+      - SYS_ADMIN
+      - SYS_PTRACE
+      - SYS_RESOURCE
+      - SYSLOG
     security_opt:
       - seccomp=unconfined
     environment:
@@ -18,6 +21,8 @@ services:
     sysctls:
       - net.ipv6.conf.all.forwarding=1
       - net.ipv6.conf.all.disable_ipv6=0
+    devices:
+      - /dev/kmsg
     tmpfs:
       - /run
       - /system
@@ -30,6 +35,7 @@ services:
       - talos_libexec:/usr/libexec/kubernetes
       - talos_opt:/opt
       - /sys/fs/bpf:/sys/fs/bpf:rshared
+      - /mnt/main/containers/talos/var/openebs/local:/var/openebs/local:rshared
     networks:
       talos_macvlan:
         ipv4_address: "10.10.12.1"
