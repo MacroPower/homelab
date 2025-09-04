@@ -5,11 +5,9 @@ endpoint: https://kmain.cin.macro.network:6443
 cniConfig:
   name: none
 
-additionalMachineCertSans:
-  - kmain.cin.macro.network
-  - 127.0.0.1
 additionalApiServerCertSans:
-  - 127.0.0.1
+  - "10.112.0.1"
+  - "fc42:0:0:70::1"
 
 clusterSvcNets:
   - 10.112.0.0/12
@@ -230,6 +228,9 @@ nodes:
   #   schematic: *M11SDVschematic
 
 controlPlane:
+  certSANs:
+    - kmain.cin.macro.network
+    - "127.0.0.1"
   nameservers: &nameservers
     - "10.10.0.1"
     - "fc42:0:0:a::"
@@ -327,6 +328,8 @@ controlPlane:
                 - rw
 
 worker:
+  certSANs:
+    - "127.0.0.1"
   nameservers: *nameservers
   disableSearchDomain: *disableSearchDomain
   schematic:
