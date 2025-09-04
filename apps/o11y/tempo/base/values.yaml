@@ -61,6 +61,19 @@ metricsGenerator:
     enabled: true
     storageClass: openebs-hostpath
     size: "10Gi"
+  config:
+    processor:
+      local_blocks:
+        filter_server_spans: false
+        flush_to_storage: true
+
+overrides:
+  defaults:
+    metrics_generator:
+      processors:
+        - service-graphs
+        - span-metrics
+        - local-blocks
 
 minio:
   enabled: false

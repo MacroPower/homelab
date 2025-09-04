@@ -9,3 +9,10 @@ storage:
       secret_key: "${S3_SECRET_KEY}"
       bucket: tempo-traces
       insecure: true
+
+metricsGenerator:
+  config:
+    storage:
+      remote_write:
+        - url: http://mimir-distributed-nginx.o11y-mimir.svc/api/v1/push
+          send_exemplars: true
