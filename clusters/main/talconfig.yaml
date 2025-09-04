@@ -163,7 +163,7 @@ nodes:
             extraConfig:
               registerWithTaints:
                 - key: node-role.kubernetes.io/storage
-                  value: NoSchedule
+                  effect: NoSchedule
 
   # - hostname: kmain13.cin.macro.network
   #   ipAddress: 10.10.10.13
