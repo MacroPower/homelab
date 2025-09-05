@@ -1,1 +1,3 @@
-# yaml-language-server: $schema=../../../../charts/{{.TenantName}}_{{.AppName}}/values.schema.json
+# yaml-language-server: $schema=../../../../charts/{{.AppName}}/values.schema.json
+
+{}
