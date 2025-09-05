@@ -1,1 +1,0 @@
-import '../vector/namespace.libsonnet'

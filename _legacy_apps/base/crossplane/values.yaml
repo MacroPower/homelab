@@ -1,8 +1,0 @@
-webhooks:
-  enabled: true
-
-rbacManager:
-  deploy: true
-
-metrics:
-  enabled: true

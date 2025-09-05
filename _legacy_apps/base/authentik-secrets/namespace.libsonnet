@@ -1,1 +1,0 @@
-import '../authentik/namespace.libsonnet'
