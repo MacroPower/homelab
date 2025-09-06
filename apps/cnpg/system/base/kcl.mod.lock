@@ -3,6 +3,14 @@
     name = "charts"
     full_name = "charts_0.1.0"
     version = "0.1.0"
+  [dependencies.cnpg]
+    name = "cnpg"
+    full_name = "cnpg_0.1.0"
+    version = "0.1.0"
+  [dependencies.cnpg_tenant]
+    name = "cnpg_tenant"
+    full_name = "cnpg_tenant_0.1.0"
+    version = "0.1.0"
   [dependencies.filepath]
     name = "filepath"
     full_name = "filepath_0.16.1"
@@ -39,15 +47,3 @@
     name = "konfig"
     full_name = "konfig_0.0.1"
     version = "0.0.1"
-  [dependencies.kube]
-    name = "kube"
-    full_name = "kube_0.1.0"
-    version = "0.1.0"
-  [dependencies.kube_postgres_base]
-    name = "kube_postgres_base"
-    full_name = "kube_postgres_base_0.1.0"
-    version = "0.1.0"
-  [dependencies.kube_tenant]
-    name = "kube_tenant"
-    full_name = "kube_tenant_0.1.0"
-    version = "0.1.0"

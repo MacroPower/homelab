@@ -1,9 +1,9 @@
 [package]
-name = "kube_postgres_mgmt"
+name = "cnpg_tenant"
 version = "0.1.0"
 
 [dependencies]
-kube_postgres_base = { path = "../base" }
+konfig = { path = "../../../../konfig" }
 
 [profile]
 entries = ["main.k", "${konfig:KCL_MOD}/models/render/render.k"]
