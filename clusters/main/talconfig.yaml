@@ -46,8 +46,22 @@ nodes:
         name: turingrk1
         image: siderolabs/sbc-rockchip
       customization:
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/zfs
         extraKernelArgs:
           - cpufreq.default_governor=ondemand
+    kernelModules:
+      - &zfsModule
+        name: zfs
+    volumes:
+      - &fixedEphemeral
+        name: EPHEMERAL
+        provisioning:
+          maxSize: 100GiB
+          grow: false
+    extraManifests:
+      - &zfsPool manifests/volume-zfs-pool.yaml
 
   - hostname: kmain02.cin.macro.network
     ipAddress: 10.10.10.2
@@ -66,6 +80,12 @@ nodes:
         mtu: *mtu
         routes: *routes
     schematic: *rk1schematic
+    kernelModules:
+      - *zfsModule
+    volumes:
+      - *fixedEphemeral
+    extraManifests:
+      - *zfsPool
 
   - hostname: kmain03.cin.macro.network
     ipAddress: 10.10.10.3
@@ -84,6 +104,12 @@ nodes:
         mtu: *mtu
         routes: *routes
     schematic: *rk1schematic
+    kernelModules:
+      - *zfsModule
+    volumes:
+      - *fixedEphemeral
+    extraManifests:
+      - *zfsPool
 
   - hostname: kmain04.cin.macro.network
     ipAddress: 10.10.10.4
@@ -102,6 +128,12 @@ nodes:
         mtu: *mtu
         routes: *routes
     schematic: *rk1schematic
+    kernelModules:
+      - *zfsModule
+    volumes:
+      - *fixedEphemeral
+    extraManifests:
+      - *zfsPool
 
   - hostname: kmain05.cin.macro.network
     ipAddress: 10.10.10.5
@@ -120,6 +152,12 @@ nodes:
         mtu: *mtu
         routes: *routes
     schematic: *rk1schematic
+    kernelModules:
+      - *zfsModule
+    volumes:
+      - *fixedEphemeral
+    extraManifests:
+      - *zfsPool
 
   - hostname: kmain06.cin.macro.network
     ipAddress: 10.10.10.6
@@ -138,6 +176,12 @@ nodes:
         mtu: *mtu
         routes: *routes
     schematic: *rk1schematic
+    kernelModules:
+      - *zfsModule
+    volumes:
+      - *fixedEphemeral
+    extraManifests:
+      - *zfsPool
 
   - hostname: knas01.cin.macro.network
     ipAddress: 10.10.12.1

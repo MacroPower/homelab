@@ -1,3 +1,16 @@
 # yaml-language-server: $schema=../../../../charts/openebs/values.schema.json
 
-{}
+engines:
+  local:
+    zfs:
+      enabled: true
+
+zfs-localpv:
+  zfsNode:
+    encrKeysDir: /var/openebs/keys
+  crds:
+    zfsLocalPv:
+      enabled: true
+    csi:
+      volumeSnapshots:
+        enabled: true
