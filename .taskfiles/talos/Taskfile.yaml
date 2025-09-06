@@ -203,14 +203,13 @@ tasks:
         NODE: Node to upgrade (required)
     dir: *dir
     requires:
-      vars: [NODE]
+      vars: [CLUSTER_NAME, NODE]
     vars:
       DOPPLER_CMD: "doppler run -p {{.DOPPLER_PROJECT}} -c {{.CLUSTER_NAME}}"
     cmds:
-      - |
+      - |-
         eval $({{.DOPPLER_CMD}} -- \
           talhelper gencommand upgrade -n {{.NODE}}.{{.CLUSTER_DOMAIN}})
-      - sleep 120
 
   upgrade-k8s-node:
     desc: Upgrade K8s on a Talos node
