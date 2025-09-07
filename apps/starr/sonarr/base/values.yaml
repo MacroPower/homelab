@@ -75,6 +75,20 @@ service:
       http:
         port: *port
 
+route:
+  app:
+    enabled: true
+    parentRefs:
+      - name: cluster-gateway
+        namespace: envoy-gateway
+        sectionName: https
+    hostnames:
+      - sonarrgw.main.cin.macro.network
+    rules:
+      - backendRefs:
+          - identifier: app
+            port: *port
+
 persistence:
   config:
     type: emptyDir

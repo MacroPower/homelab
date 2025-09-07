@@ -1,0 +1,734 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "certgen": {
+      "additionalProperties": true,
+      "description": "Certgen is used to generate the certificates required by EnvoyGateway. If you want to construct a custom certificate, you can generate a custom certificate through Cert-Manager before installing EnvoyGateway. Certgen will not overwrite the custom certificate. Please do not manually modify `values.yaml` to disable certgen, it may cause EnvoyGateway OIDC,OAuth2,etc. to not work as expected.",
+      "properties": {
+        "job": {
+          "additionalProperties": true,
+          "properties": {
+            "affinity": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "args": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "args",
+              "type": "array"
+            },
+            "nodeSelector": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "nodeSelector",
+              "type": "object"
+            },
+            "pod": {
+              "additionalProperties": true,
+              "properties": {
+                "annotations": {
+                  "additionalProperties": true,
+                  "required": [],
+                  "title": "annotations",
+                  "type": "object"
+                },
+                "labels": {
+                  "additionalProperties": true,
+                  "required": [],
+                  "title": "labels",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "pod",
+              "type": "object"
+            },
+            "resources": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            },
+            "securityContext": {
+              "additionalProperties": true,
+              "properties": {
+                "allowPrivilegeEscalation": {
+                  "default": false,
+                  "required": [],
+                  "title": "allowPrivilegeEscalation",
+                  "type": "boolean"
+                },
+                "capabilities": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "drop": {
+                      "items": {
+                        "required": [],
+                        "type": "string"
+                      },
+                      "required": [],
+                      "title": "drop",
+                      "type": "array"
+                    }
+                  },
+                  "required": [],
+                  "title": "capabilities",
+                  "type": "object"
+                },
+                "privileged": {
+                  "default": false,
+                  "required": [],
+                  "title": "privileged",
+                  "type": "boolean"
+                },
+                "readOnlyRootFilesystem": {
+                  "default": true,
+                  "required": [],
+                  "title": "readOnlyRootFilesystem",
+                  "type": "boolean"
+                },
+                "runAsGroup": {
+                  "default": 65532,
+                  "required": [],
+                  "title": "runAsGroup",
+                  "type": "integer"
+                },
+                "runAsNonRoot": {
+                  "default": true,
+                  "required": [],
+                  "title": "runAsNonRoot",
+                  "type": "boolean"
+                },
+                "runAsUser": {
+                  "default": 65532,
+                  "required": [],
+                  "title": "runAsUser",
+                  "type": "integer"
+                },
+                "seccompProfile": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "type": {
+                      "default": "RuntimeDefault",
+                      "required": [],
+                      "title": "type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "seccompProfile",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "securityContext",
+              "type": "object"
+            },
+            "tolerations": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "tolerations",
+              "type": "array"
+            },
+            "ttlSecondsAfterFinished": {
+              "default": 30,
+              "required": [],
+              "title": "ttlSecondsAfterFinished",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "job",
+          "type": "object"
+        },
+        "rbac": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "rbac",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "certgen",
+      "type": "object"
+    },
+    "config": {
+      "additionalProperties": true,
+      "properties": {
+        "envoyGateway": {
+          "additionalProperties": true,
+          "description": "EnvoyGateway configuration. Visit https://gateway.envoyproxy.io/docs/api/extension_types/#envoygateway to view all options.",
+          "properties": {
+            "extensionApis": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "extensionApis",
+              "type": "object"
+            },
+            "gateway": {
+              "additionalProperties": true,
+              "properties": {
+                "controllerName": {
+                  "default": "gateway.envoyproxy.io/gatewayclass-controller",
+                  "required": [],
+                  "title": "controllerName",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "gateway",
+              "type": "object"
+            },
+            "logging": {
+              "additionalProperties": true,
+              "properties": {
+                "level": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "default": {
+                      "default": "info",
+                      "required": [],
+                      "title": "default",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "level",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "logging",
+              "type": "object"
+            },
+            "provider": {
+              "additionalProperties": true,
+              "properties": {
+                "type": {
+                  "default": "Kubernetes",
+                  "required": [],
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "provider",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "envoyGateway",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "config",
+      "type": "object"
+    },
+    "createNamespace": {
+      "default": false,
+      "required": [],
+      "title": "createNamespace",
+      "type": "boolean"
+    },
+    "deployment": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "envoyGateway": {
+          "additionalProperties": true,
+          "properties": {
+            "image": {
+              "additionalProperties": true,
+              "properties": {
+                "repository": {
+                  "default": "",
+                  "description": "if both this and global.imageRegistry are specified, this has to include both registry and repository explicitly, eg docker.io/envoyproxy/gateway",
+                  "required": [],
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "image",
+              "type": "object"
+            },
+            "imagePullPolicy": {
+              "default": "",
+              "required": [],
+              "title": "imagePullPolicy",
+              "type": "string"
+            },
+            "imagePullSecrets": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "imagePullSecrets",
+              "type": "array"
+            },
+            "resources": {
+              "additionalProperties": true,
+              "properties": {
+                "limits": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "memory": {
+                      "default": "1024Mi",
+                      "required": [],
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "cpu": {
+                      "default": "100m",
+                      "required": [],
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "256Mi",
+                      "required": [],
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            },
+            "securityContext": {
+              "additionalProperties": true,
+              "properties": {
+                "allowPrivilegeEscalation": {
+                  "default": false,
+                  "required": [],
+                  "title": "allowPrivilegeEscalation",
+                  "type": "boolean"
+                },
+                "capabilities": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "drop": {
+                      "items": {
+                        "required": [],
+                        "type": "string"
+                      },
+                      "required": [],
+                      "title": "drop",
+                      "type": "array"
+                    }
+                  },
+                  "required": [],
+                  "title": "capabilities",
+                  "type": "object"
+                },
+                "privileged": {
+                  "default": false,
+                  "required": [],
+                  "title": "privileged",
+                  "type": "boolean"
+                },
+                "runAsGroup": {
+                  "default": 65532,
+                  "required": [],
+                  "title": "runAsGroup",
+                  "type": "integer"
+                },
+                "runAsNonRoot": {
+                  "default": true,
+                  "required": [],
+                  "title": "runAsNonRoot",
+                  "type": "boolean"
+                },
+                "runAsUser": {
+                  "default": 65532,
+                  "required": [],
+                  "title": "runAsUser",
+                  "type": "integer"
+                },
+                "seccompProfile": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "type": {
+                      "default": "RuntimeDefault",
+                      "required": [],
+                      "title": "type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "seccompProfile",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "securityContext",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "envoyGateway",
+          "type": "object"
+        },
+        "pod": {
+          "additionalProperties": true,
+          "properties": {
+            "affinity": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
+            "annotations": {
+              "additionalProperties": true,
+              "properties": {
+                "prometheus.io/port": {
+                  "default": "19001",
+                  "required": [],
+                  "title": "prometheus.io/port",
+                  "type": "string"
+                },
+                "prometheus.io/scrape": {
+                  "default": "true",
+                  "required": [],
+                  "title": "prometheus.io/scrape",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "nodeSelector": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "nodeSelector",
+              "type": "object"
+            },
+            "tolerations": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "tolerations",
+              "type": "array"
+            },
+            "topologySpreadConstraints": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "topologySpreadConstraints",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "pod",
+          "type": "object"
+        },
+        "ports": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "name": {
+                "default": "metrics",
+                "required": [],
+                "title": "name",
+                "type": "string"
+              },
+              "port": {
+                "default": 19001,
+                "required": [],
+                "title": "port",
+                "type": "integer"
+              },
+              "targetPort": {
+                "default": 19001,
+                "required": [],
+                "title": "targetPort",
+                "type": "integer"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "required": [],
+          "title": "ports",
+          "type": "array"
+        },
+        "priorityClassName": {
+          "default": "null",
+          "required": [],
+          "title": "priorityClassName",
+          "type": "null"
+        },
+        "replicas": {
+          "default": 1,
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "deployment",
+      "type": "object"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Global settings",
+      "properties": {
+        "imagePullSecrets": {
+          "description": "Global override for image pull secrets",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "imagePullSecrets",
+          "type": "array"
+        },
+        "imageRegistry": {
+          "default": "",
+          "description": "If set, these take highest precedence and change both envoyGateway and ratelimit's container registry and pull secrets.\nGlobal override for image registry",
+          "required": [],
+          "title": "imageRegistry",
+          "type": "string"
+        },
+        "images": {
+          "additionalProperties": true,
+          "description": "If set, these override image-specific values: useful when installing the chart in a private registry environment.\nOverride image-specific values directly if a global override is not desired.",
+          "properties": {
+            "envoyGateway": {
+              "additionalProperties": true,
+              "properties": {
+                "image": {
+                  "default": "docker.io/envoyproxy/gateway:v1.5.0",
+                  "description": "This is the full image name including the hub, repo, and tag.",
+                  "required": [],
+                  "title": "image",
+                  "type": "string"
+                },
+                "pullPolicy": {
+                  "default": "IfNotPresent",
+                  "description": "Specify image pull policy if default behavior isn't desired.\nDefault behavior: latest images will be Always else IfNotPresent.",
+                  "required": [],
+                  "title": "pullPolicy",
+                  "type": "string"
+                },
+                "pullSecrets": {
+                  "description": "List of secrets in the same namespace of the component that can be used to pull images from private repositories.",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "pullSecrets",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "envoyGateway",
+              "type": "object"
+            },
+            "ratelimit": {
+              "additionalProperties": true,
+              "properties": {
+                "image": {
+                  "default": "docker.io/envoyproxy/ratelimit:3e085e5b",
+                  "description": "This is the full image name including the hub, repo, and tag.",
+                  "required": [],
+                  "title": "image",
+                  "type": "string"
+                },
+                "pullPolicy": {
+                  "default": "IfNotPresent",
+                  "description": "Specify image pull policy if default behavior isn't desired.\nDefault behavior: latest images will be Always else IfNotPresent.",
+                  "required": [],
+                  "title": "pullPolicy",
+                  "type": "string"
+                },
+                "pullSecrets": {
+                  "description": "List of secrets in the same namespace of the component that can be used to pull images from private repositories.",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "pullSecrets",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "ratelimit",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "images",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "hpa": {
+      "additionalProperties": true,
+      "properties": {
+        "behavior": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "behavior",
+          "type": "object"
+        },
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "maxReplicas": {
+          "default": 1,
+          "required": [],
+          "title": "maxReplicas",
+          "type": "integer"
+        },
+        "metrics": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "metrics",
+          "type": "array"
+        },
+        "minReplicas": {
+          "default": 1,
+          "required": [],
+          "title": "minReplicas",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "hpa",
+      "type": "object"
+    },
+    "kubernetesClusterDomain": {
+      "default": "cluster.local",
+      "required": [],
+      "title": "kubernetesClusterDomain",
+      "type": "string"
+    },
+    "podDisruptionBudget": {
+      "additionalProperties": true,
+      "properties": {
+        "minAvailable": {
+          "default": 0,
+          "required": [],
+          "title": "minAvailable",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "podDisruptionBudget",
+      "type": "object"
+    },
+    "service": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "trafficDistribution": {
+          "default": "",
+          "description": "If set to PreferClose, the Envoy fleet will prioritize connecting to the Envoy Gateway pods that are topologically closest to them.",
+          "required": [],
+          "title": "trafficDistribution",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "service",
+      "type": "object"
+    },
+    "topologyInjector": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "topologyInjector",
+      "type": "object"
+    }
+  },
+  "required": [],
+  "type": "object"
+}

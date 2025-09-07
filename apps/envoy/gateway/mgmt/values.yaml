@@ -1,0 +1,3 @@
+# yaml-language-server: $schema=../../../../charts/envoy_gateway/values.schema.json
+
+{}

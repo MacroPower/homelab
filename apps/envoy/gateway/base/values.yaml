@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=../../../../charts/envoy_gateway/values.schema.json
+
+deployment:
+  replicas: 1
+  envoyGateway:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 1Gi

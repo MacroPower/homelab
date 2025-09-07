@@ -1,0 +1,10 @@
+[package]
+name = "envoy_gateway_main"
+version = "0.1.0"
+
+[dependencies]
+envoy_gateway_base = { path = "../base" }
+cluster = { path = "../../../../clusters/main" }
+
+[profile]
+entries = ["main.k", "${konfig:KCL_MOD}/models/render/render.k"]
