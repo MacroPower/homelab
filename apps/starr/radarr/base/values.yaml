@@ -1,0 +1,90 @@
+# yaml-language-server: $schema=../../../../charts/radarr/values.schema.json
+
+global:
+  fullnameOverride: radarr
+
+controllers:
+  radarr:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    pod:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    containers:
+      app:
+        image:
+          repository: ghcr.io/home-operations/radarr
+          tag: "5.28.0.10205"
+        env:
+          RADARR__SERVER__PORT: { value: &port 7878 }
+          RADARR__APP__INSTANCENAME: { value: Radarr }
+          RADARR__APP__THEME: { value: dark }
+          RADARR__AUTH__METHOD: { value: External }
+          RADARR__AUTH__REQUIRED: { value: DisabledForLocalAddresses }
+          RADARR__AUTH__APIKEY:
+            valueFrom:
+              secretKeyRef:
+                name: radarr-credentials
+                key: RADARR_AUTH_APIKEY
+          RADARR__POSTGRES__HOST:
+            value: starr-postgres-rw.starr-system.svc.cluster.local
+          RADARR__POSTGRES__PORT: { value: "5432" }
+          RADARR__POSTGRES__USER: { value: radarr }
+          RADARR__POSTGRES__PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: radarr-credentials
+                key: RADARR_POSTGRES_PASSWORD
+          RADARR__POSTGRES__MAINDB: { value: radarr-main }
+          RADARR__LOG__DBENABLED: { value: "False" }
+          RADARR__LOG__LEVEL: { value: info }
+          RADARR__UPDATE__BRANCH: { value: develop }
+          TZ: { value: America/New_York }
+        probes:
+          liveness: &probes
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /ping
+                port: *port
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          readiness: *probes
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 2Gi
+          limits:
+            memory: 4Gi
+
+service:
+  app:
+    ports:
+      http:
+        port: *port
+
+persistence:
+  config:
+    type: emptyDir
+    globalMounts:
+      - path: /config
+  media:
+    type: emptyDir
+    globalMounts:
+      - path: /media
+  tmp:
+    type: emptyDir
+    globalMounts:
+      - path: /tmp
