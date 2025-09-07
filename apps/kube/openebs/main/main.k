@@ -1,15 +1,17 @@
 import file
 
+import konfig.files
+import konfig.objects
+
 import kube_openebs_base
 import charts.openebs
 import k8s.api.apps.v1 as appsv1
 import k8s.api.core.v1 as corev1
 import k8s.api.storage.v1 as storagev1
-import konfig.utils
 
 _baseValues = kube_openebs_base.app.charts.openebs.values
-_envValues = utils.read_yaml(file.current(), "values.yaml")
-_values = utils.json_merge_patch(_baseValues, _envValues)
+_envValues = files.read_yaml(file.current(), "values.yaml")
+_values = objects.json_merge_patch(_baseValues, _envValues)
 
 _zfsPoolManagerLabels = {
     "app.kubernetes.io/name": "openebs-zfs-node"

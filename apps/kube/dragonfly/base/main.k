@@ -3,9 +3,9 @@ import file
 import dragonfly
 import charts.dragonfly_operator
 import konfig.models.frontend
-import konfig.utils
+import konfig.files
 
-_values = utils.read_yaml(file.current(), "values.yaml")
+_values = files.read_yaml(file.current(), "values.yaml")
 
 app = frontend.App {
     name = "dragonfly"

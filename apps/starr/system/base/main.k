@@ -1,7 +1,8 @@
-import starr
-import charts.cloudnative_pg.api.v1 as cnpgv1
 import konfig.models.frontend
 import konfig.models.frontend.secret
+
+import starr
+import charts.cloudnative_pg.api.v1 as cnpgv1
 
 cnpgRole = cnpgv1.PostgresqlCnpgIoV1ClusterSpecManagedRolesItems0
 

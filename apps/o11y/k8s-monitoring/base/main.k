@@ -1,13 +1,14 @@
 import file
 
+import konfig.models.frontend
+import konfig.files
+
 import o11y
 import charts.k8s_monitoring
-import konfig.models.frontend
-import konfig.utils
 
-_values = utils.read_yaml(file.current(), "values.yaml")
+_values = files.read_yaml(file.current(), "values.yaml")
 
-_kubernetesMixin = utils.read_yaml(file.current(), "rules/kubernetes-mixin.yaml")
+_kubernetesMixin = files.read_yaml(file.current(), "rules/kubernetes-mixin.yaml")
 
 app = frontend.App {
     name = "k8s-monitoring"

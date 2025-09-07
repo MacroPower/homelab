@@ -1,13 +1,15 @@
 import file
 
+import konfig.models.frontend.secret
+import konfig.files
+import konfig.objects
+
 import o11y_tempo_base
 import charts.tempo
-import konfig.models.frontend.secret
-import konfig.utils
 
 _baseValues = o11y_tempo_base.app.charts.tempo.values
-_envValues = utils.read_yaml(file.current(), "values.yaml")
-_values = utils.json_merge_patch(_baseValues, _envValues)
+_envValues = files.read_yaml(file.current(), "values.yaml")
+_values = objects.json_merge_patch(_baseValues, _envValues)
 
 _s3Config = secret.ExternalSecret {
     name = "s3-config"

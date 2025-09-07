@@ -1,12 +1,13 @@
 import file
 
-import starr
-import charts.sonarr
 import konfig.models.frontend
 import konfig.models.frontend.secret
-import konfig.utils
+import konfig.files
 
-_values = utils.read_yaml(file.current(), "values.yaml")
+import starr
+import charts.sonarr
+
+_values = files.read_yaml(file.current(), "values.yaml")
 
 _sonarrCreds = secret.ExternalSecret {
     name = "sonarr-credentials"

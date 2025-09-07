@@ -13,7 +13,12 @@ abs_path = lambda current: str, path: str -> str {
     filepath.join([current_dir(current), path])
 }
 
+read_file = lambda current: str, path: str -> str {
+    """Read the contents of a file."""
+    file.read(abs_path(current, path))
+}
+
 read_yaml = lambda current: str, path: str -> any {
     """Read YAML data from a file."""
-    yaml.decode(file.read(abs_path(current, path)))
+    yaml.decode(read_file(current, path))
 }

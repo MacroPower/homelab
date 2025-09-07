@@ -1,7 +1,7 @@
 import cluster
+import external_certs_base
 import charts.cert_manager
 import charts.cert_manager.api.v1 as certmanagerv1
-import external_certs_base
 
 _baseValues = external_certs_base.app.charts.cert_manager.values
 

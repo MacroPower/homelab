@@ -1,7 +1,8 @@
-import o11y
-import charts.grafana_pdc_agent
 import konfig.models.frontend
 import konfig.models.frontend.secret
+
+import o11y
+import charts.grafana_pdc_agent
 
 _pdcAgentCreds = secret.ExternalSecret {
     name = "pdc-agent-credentials"

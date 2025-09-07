@@ -1,13 +1,14 @@
 import file
 
-import charts.cert_manager
-import charts.cert_manager.api.v1 as certmanagerv1
-import external
 import konfig.models.frontend
 import konfig.models.frontend.secret
-import konfig.utils
+import konfig.files
 
-_values = utils.read_yaml(file.current(), "values.yaml")
+import external
+import charts.cert_manager
+import charts.cert_manager.api.v1 as certmanagerv1
+
+_values = files.read_yaml(file.current(), "values.yaml")
 
 _cloudflareCreds = secret.ExternalSecret {
     name = "cloudflare-credentials"

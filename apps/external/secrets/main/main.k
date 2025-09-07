@@ -1,5 +1,5 @@
-import charts.external_secrets
 import external_secrets_base
+import charts.external_secrets
 
 _baseValues = external_secrets_base.app.charts.external_secrets.values
 

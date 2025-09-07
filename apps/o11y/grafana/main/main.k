@@ -1,7 +1,8 @@
-import o11y_grafana_base
-import charts.grafana_pdc_agent
 import konfig.models.frontend.networkpolicy
 import konfig.models.templates.networkpolicy as npt
+
+import o11y_grafana_base
+import charts.grafana_pdc_agent
 
 _baseValues = o11y_grafana_base.app.charts.grafana_pdc_agent.values
 

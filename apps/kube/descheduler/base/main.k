@@ -1,12 +1,13 @@
 import file
 
-import charts.descheduler
 import konfig.models.frontend
 import konfig.models.templates.networkpolicy
-import konfig.utils
-import kube
+import konfig.files
 
-_values = utils.read_yaml(file.current(), "values.yaml")
+import kube
+import charts.descheduler
+
+_values = files.read_yaml(file.current(), "values.yaml")
 
 app = frontend.App {
     name = "descheduler"

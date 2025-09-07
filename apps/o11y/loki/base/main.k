@@ -1,11 +1,12 @@
 import file
 
+import konfig.models.frontend
+import konfig.files
+
 import o11y
 import charts.loki
-import konfig.models.frontend
-import konfig.utils
 
-_values = utils.read_yaml(file.current(), "values.yaml")
+_values = files.read_yaml(file.current(), "values.yaml")
 
 app = frontend.App {
     name = "loki"

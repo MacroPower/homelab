@@ -4,7 +4,7 @@ import models.frontend
 import models.metadata as kmd
 import models.resource
 import models.utils
-import utils as kutils
+import strings
 
 schema TenantBackend[inputConfig: frontend.Tenant]:
     """
@@ -116,7 +116,7 @@ schema TenantBackend[inputConfig: frontend.Tenant]:
                     }
                 }
             }
-            templatePatch = kutils.dedent("""\
+            templatePatch = strings.dedent("""\
                 spec:
                   {{- with (index . "source") }}
                   source:
@@ -221,7 +221,7 @@ schema TenantBackend[inputConfig: frontend.Tenant]:
                     }
                 }
             }
-            templatePatch = kutils.dedent("""\
+            templatePatch = strings.dedent("""\
                 spec:
                   {{- with (index . "source") }}
                   source:

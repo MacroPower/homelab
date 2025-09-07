@@ -1,5 +1,5 @@
-import charts.kubelet_csr_approver as kca
 import kube_csr_approver_base
+import charts.kubelet_csr_approver as kca
 
 _kcaValues = kca.Values {
     providerRegex = "^kmgmt\d\d$"

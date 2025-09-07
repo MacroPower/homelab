@@ -1,14 +1,15 @@
 import file
 
-import charts.cilium
-import charts.cilium.api.v2alpha1 as ciliumv2alpha1
-import cilium_shared
 import konfig.models.frontend
 import konfig.models.frontend.ingress
 import konfig.models.utils as modelutils
-import konfig.utils
+import konfig.files
 
-_values = utils.read_yaml(file.current(), "values.yaml")
+import cilium_shared
+import charts.cilium
+import charts.cilium.api.v2alpha1 as ciliumv2alpha1
+
+_values = files.read_yaml(file.current(), "values.yaml")
 
 ciliumIngressLabels: {str:str} = {
     "cilium.io/ingress": "true"

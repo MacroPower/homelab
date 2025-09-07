@@ -1,7 +1,8 @@
-import charts.kubelet_csr_approver
 import konfig.models.frontend
 import konfig.models.templates.networkpolicy
+
 import kube
+import charts.kubelet_csr_approver
 
 app = frontend.App {
     name = "csr-approver"

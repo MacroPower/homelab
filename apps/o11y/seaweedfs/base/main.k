@@ -1,13 +1,14 @@
 import file
 import json
 
-import o11y
-import charts.seaweedfs
 import konfig.models.frontend
 import konfig.models.frontend.secret
-import konfig.utils
+import konfig.files
 
-_values = utils.read_yaml(file.current(), "values.yaml")
+import o11y
+import charts.seaweedfs
+
+_values = files.read_yaml(file.current(), "values.yaml")
 
 # TODO: Needs to reload seaweedfs-filer
 _s3Config = secret.ExternalSecret {

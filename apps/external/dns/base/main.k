@@ -1,14 +1,15 @@
 import file
 
-import external
-import charts.external_dns
 import konfig.models.frontend
 import konfig.models.frontend.container
 import konfig.models.frontend.secret
 import konfig.models.utils
-import konfig.utils as kutils
+import konfig.files
 
-_values = kutils.read_yaml(file.current(), "values.yaml")
+import external
+import charts.external_dns
+
+_values = files.read_yaml(file.current(), "values.yaml")
 
 cloudflareCreds = secret.ExternalSecret {
     name = "cloudflare-credentials"

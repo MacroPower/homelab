@@ -130,7 +130,7 @@ import konfig.models.frontend
 
 # Import with alias
 import charts.prometheus_operator as prometheus
-import konfig.utils as kutils
+import konfig.files as kutils
 ```
 
 ## Application Structure Patterns
@@ -142,13 +142,14 @@ import konfig.utils as kutils
 ```kcl
 import file
 
+import konfig.models.frontend
+import konfig.files
+
 import {tenant}_tenant  # Import tenant shared config
 import charts.{chart_name}
-import konfig.models.frontend
-import konfig.utils
 
 # Read values from YAML file
-_values = utils.read_yaml(file.current(), "values.yaml")
+_values = files.read_yaml(file.current(), "values.yaml")
 
 # Define the application
 app = frontend.App {
@@ -169,7 +170,7 @@ name = "{tenant}_{app}_base"
 version = "0.1.0"
 
 [dependencies]
-{tenant}_tenant = { path = "../../_tenant/shared" }
+{tenant} = { path = "../../_tenant/shared" }
 ```
 
 ### 2. Environment Extension Pattern
@@ -179,13 +180,15 @@ version = "0.1.0"
 ```kcl
 import file
 
+import konfig.files
+import konfig.objects
+
 import {tenant}_{app}_base
-import konfig.utils as utils
 
 # Merge base values with environment-specific values
 _baseValues = {tenant}_{app}_base.app.charts.{chart}.values
-_envValues = utils.read_yaml(file.current(), "values.yaml")
-_values = utils.json_merge_patch(_baseValues, _envValues)
+_envValues = files.read_yaml(file.current(), "values.yaml")
+_values = objects.json_merge_patch(_baseValues, _envValues)
 
 # Extend the base app with environment-specific configuration
 app = {tenant}_{app}_base.app | {
@@ -253,21 +256,16 @@ shared = {
 
 - **One schema per file**: Keep schema definitions focused and maintainable
 - **Descriptive naming**: Use clear, descriptive names for variables and schemas
-- **Consistent imports**: Group imports logically (stdlib, charts, konfig, local)
+- **Consistent imports**: Group imports logically (stdlib, konfig, other)
 
 ```kcl
-# Good import order
 import file
-import yaml
-import json
 
-import charts.prometheus
-import charts.grafana
-
-import konfig.models.frontend as frontend
-import konfig.utils as utils
+import konfig.models.frontend
+import konfig.files
 
 import local_module
+import charts.grafana
 ```
 
 ### 2. Schema Design
@@ -337,23 +335,17 @@ Use the project's task automation:
 
 ```bash
 # Create a new application with environments
-task kcl:create-app TENANT=kube APP=myapp ENV=mgmt,home,nas01
+task kcl:create-app TENANT=kube APP=myapp ENV=mgmt,main
 
 # This creates:
 # apps/kube/myapp/base/
 # apps/kube/myapp/mgmt/
-# apps/kube/myapp/home/
-# apps/kube/myapp/nas01/
+# apps/kube/myapp/main/
 ```
 
 ### 2. Development and Testing
 
-```bash
-# Validate and render KCL to YAML for inspection
-task kcl:render APP=kube/myapp F=mgmt O=.debug/myapp_mgmt.yaml
-
-# Read the rendered output at `.debug/myapp_mgmt.yaml` to verify correctness.
-```
+Use the #kat agent tools for rendering and validation.
 
 ### 3. Helm Chart Integration
 
@@ -383,117 +375,6 @@ charts = { path = "../charts" }                 # Chart wrappers
 
 [profile]
 entries = ["main.k", "${konfig:KCL_MOD}/models/render/render.k"]
-```
-
-## Common Patterns and Examples
-
-### 1. Multi-Environment Configuration
-
-```kcl
-# base/main.k
-import file
-import tenant_shared
-import charts.nginx
-import konfig.models.frontend as frontend
-import konfig.utils as utils
-
-_baseValues = {
-    replicaCount = 1
-    image = {
-        repository = "nginx"
-        tag = "1.21"
-    }
-}
-
-app = frontend.App {
-    name = "web"
-    tenantName = tenant_shared.tenant.name
-
-    charts.nginx = nginx.Chart {
-        values: _baseValues | nginx.Values {}
-    }
-}
-
-# mgmt/main.k
-import web_base
-import konfig.utils as utils
-
-_envValues = {
-    replicaCount = 2
-    image.tag = "1.22"
-}
-
-app = web_base.app | {
-    charts.nginx.values = utils.json_merge_patch(web_base.app.charts.nginx.values, _envValues)
-}
-```
-
-### 2. Secret Management
-
-```kcl
-import konfig.models.frontend.secret as secret
-
-# External secret from vault
-dbSecret = secret.ExternalSecret {
-    name = "database-credentials"
-    secretStore = "vault-backend"
-    refreshInterval = "1h"
-
-    data = [
-        {
-            secretKey = "username"
-            remoteRef = {
-                key = "database/prod"
-                property = "username"
-            }
-        }
-        {
-            secretKey = "password"
-            remoteRef = {
-                key = "database/prod"
-                property = "password"
-            }
-        }
-    ]
-}
-```
-
-### 3. Network Policies
-
-```kcl
-import konfig.models.frontend.networkpolicy as netpol
-
-apiNetworkPolicy = netpol.NetworkPolicy {
-    name = "api-network-policy"
-
-    podSelector = {
-        matchLabels = {
-            app = "api"
-        }
-    }
-
-    policyTypes = ["Ingress", "Egress"]
-
-    ingress = [
-        {
-            from = [
-                {
-                    podSelector = {
-                        matchLabels = {
-                            app = "frontend"
-                        }
-                    }
-                }
-            ]
-            ports = [
-                {
-                    protocol = "TCP"
-                    port = 8080
-                }
-            ]
-        }
-    ]
-}
 ```
 
 ## Migration from Legacy Code

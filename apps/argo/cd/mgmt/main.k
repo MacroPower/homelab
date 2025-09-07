@@ -1,17 +1,19 @@
 import file
 import json
 
-import argo_cd_base
-import cluster
-import charts.argo_cd
-import charts.dragonfly_operator.api.v1alpha1 as dragonflyv1alpha1
 import konfig.models.frontend.secret
 import konfig.models.frontend.ingress
-import konfig.utils
+import konfig.files
+import konfig.objects
+
+import cluster
+import argo_cd_base
+import charts.argo_cd
+import charts.dragonfly_operator.api.v1alpha1 as dragonflyv1alpha1
 
 _baseValues = argo_cd_base.app.charts.argo_cd.values
-_envValues = utils.read_yaml(file.current(), "values.yaml")
-_values = utils.json_merge_patch(_baseValues, _envValues)
+_envValues = files.read_yaml(file.current(), "values.yaml")
+_values = objects.json_merge_patch(_baseValues, _envValues)
 
 _namespace = argo_cd_base.app.namespace
 _dragonflyName = "argocd-redis-dragonfly"
