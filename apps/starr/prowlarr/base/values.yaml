@@ -1,0 +1,86 @@
+# yaml-language-server: $schema=../../../../charts/prowlarr/values.schema.json
+
+global:
+  fullnameOverride: prowlarr
+
+controllers:
+  prowlarr:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    pod:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    containers:
+      app:
+        image:
+          repository: ghcr.io/home-operations/prowlarr
+          tag: "2.1.0.5180"
+        env:
+          PROWLARR__SERVER__PORT: { value: &port 9696 }
+          PROWLARR__APP__INSTANCENAME: { value: Prowlarr }
+          PROWLARR__APP__THEME: { value: dark }
+          PROWLARR__AUTH__METHOD: { value: External }
+          PROWLARR__AUTH__REQUIRED: { value: DisabledForLocalAddresses }
+          PROWLARR__AUTH__APIKEY:
+            valueFrom:
+              secretKeyRef:
+                name: prowlarr-credentials
+                key: PROWLARR_AUTH_APIKEY
+          PROWLARR__POSTGRES__HOST:
+            value: starr-postgres-rw.starr-system.svc.cluster.local
+          PROWLARR__POSTGRES__PORT: { value: "5432" }
+          PROWLARR__POSTGRES__USER: { value: prowlarr }
+          PROWLARR__POSTGRES__PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: prowlarr-credentials
+                key: PROWLARR_POSTGRES_PASSWORD
+          PROWLARR__POSTGRES__MAINDB: { value: prowlarr-main }
+          PROWLARR__LOG__DBENABLED: { value: "False" }
+          PROWLARR__LOG__LEVEL: { value: info }
+          PROWLARR__UPDATE__BRANCH: { value: develop }
+          TZ: { value: America/New_York }
+        probes:
+          liveness: &probes
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /ping
+                port: *port
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          readiness: *probes
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 2Gi
+          limits:
+            memory: 4Gi
+
+service:
+  app:
+    ports:
+      http:
+        port: *port
+
+persistence:
+  config:
+    type: emptyDir
+    globalMounts:
+      - path: /config
+  tmp:
+    type: emptyDir
+    globalMounts:
+      - path: /tmp

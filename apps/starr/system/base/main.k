@@ -36,6 +36,20 @@ _radarrCreds = secret.ExternalSecret {
     }
 }
 
+_prowlarrCreds = secret.ExternalSecret {
+    name = "prowlarr-postgres-credentials"
+    data: {
+        PROWLARR_POSTGRES_PASSWORD = {}
+    }
+    target.template: {
+        metadata.labels = cnpgReload
+        data = {
+            username = "prowlarr"
+            password = "{{.PROWLARR_POSTGRES_PASSWORD}}"
+        }
+    }
+}
+
 sonarrRole = cnpgRole {
     name = "sonarr"
     login = True
@@ -48,6 +62,12 @@ radarrRole = cnpgRole {
     passwordSecret.name = _radarrCreds.name
 }
 
+prowlarrRole = cnpgRole {
+    name = "prowlarr"
+    login = True
+    passwordSecret.name = _prowlarrCreds.name
+}
+
 _pgCluster = cnpgv1.Cluster{
     metadata: {
         name = "starr-postgres"
@@ -57,6 +77,7 @@ _pgCluster = cnpgv1.Cluster{
             roles = [
                 sonarrRole
                 radarrRole
+                prowlarrRole
             ]
         }
         instances = 3
@@ -97,6 +118,15 @@ _radarrMainDatabase = cnpgv1.Database {
     }
 }
 
+_prowlarrMainDatabase = cnpgv1.Database {
+    metadata.name = "prowlarr-main"
+    spec: {
+        name = metadata.name
+        owner = prowlarrRole.name
+        cluster.name = _pgCluster.metadata.name
+    }
+}
+
 app = frontend.App {
     name = "system"
     tenantName = starr.tenant.name
@@ -105,11 +135,13 @@ app = frontend.App {
     externalSecrets: {
         sonarrCreds = _sonarrCreds
         radarrCreds = _radarrCreds
+        prowlarrCreds = _prowlarrCreds
     }
 
     extraResources: {
         pgCluster = _pgCluster
         sonarrMainDatabase = _sonarrMainDatabase
         radarrMainDatabase = _radarrMainDatabase
+        prowlarrMainDatabase = _prowlarrMainDatabase
     }
 }
