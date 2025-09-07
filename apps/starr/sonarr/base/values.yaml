@@ -1,0 +1,90 @@
+# yaml-language-server: $schema=../../../../charts/sonarr/values.schema.json
+
+global:
+  fullnameOverride: sonarr
+
+controllers:
+  sonarr:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    pod:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    containers:
+      app:
+        image:
+          repository: ghcr.io/home-operations/sonarr
+          tag: "4.0.15.2940"
+        env:
+          SONARR__SERVER__PORT: { value: &port 7878 }
+          SONARR__APP__INSTANCENAME: { value: Sonarr }
+          SONARR__APP__THEME: { value: dark }
+          SONARR__AUTH__METHOD: { value: External }
+          SONARR__AUTH__REQUIRED: { value: DisabledForLocalAddresses }
+          SONARR__AUTH__APIKEY:
+            valueFrom:
+              secretKeyRef:
+                name: sonarr-credentials
+                key: SONARR_AUTH_APIKEY
+          SONARR__POSTGRES__HOST:
+            value: starr-postgres-rw.starr-system.svc.cluster.local
+          SONARR__POSTGRES__PORT: { value: "5432" }
+          SONARR__POSTGRES__USER: { value: sonarr }
+          SONARR__POSTGRES__PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: sonarr-credentials
+                key: SONARR_POSTGRES_PASSWORD
+          SONARR__POSTGRES__MAINDB: { value: sonarr-main }
+          SONARR__LOG__DBENABLED: { value: "False" }
+          SONARR__LOG__LEVEL: { value: info }
+          SONARR__UPDATE__BRANCH: { value: develop }
+          TZ: { value: America/New_York }
+        probes:
+          liveness: &probes
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /ping
+                port: *port
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          readiness: *probes
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 2Gi
+          limits:
+            memory: 4Gi
+
+service:
+  app:
+    ports:
+      http:
+        port: *port
+
+persistence:
+  config:
+    type: emptyDir
+    globalMounts:
+      - path: /config
+  media:
+    type: emptyDir
+    globalMounts:
+      - path: /media
+  tmp:
+    type: emptyDir
+    globalMounts:
+      - path: /tmp
