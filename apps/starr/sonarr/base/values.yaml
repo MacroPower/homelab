@@ -20,7 +20,7 @@ controllers:
           repository: ghcr.io/home-operations/sonarr
           tag: "4.0.15.2940"
         env:
-          SONARR__SERVER__PORT: { value: &port 7878 }
+          SONARR__SERVER__PORT: { value: &port 8989 }
           SONARR__APP__INSTANCENAME: { value: Sonarr }
           SONARR__APP__THEME: { value: dark }
           SONARR__AUTH__METHOD: { value: External }
