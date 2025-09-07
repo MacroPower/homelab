@@ -11,7 +11,7 @@ _pgCluster = cnpgv1.Cluster{
         # https://github.com/cloudnative-pg/postgres-containers
         imageName = "ghcr.io/cloudnative-pg/postgresql:17.6-standard-bookworm"
         storage = {
-            storageClass = "openebs-hostpath"
+            storageClass = "openebs-zfs-postgres"
             size = "50Gi"
         }
         topologySpreadConstraints = [

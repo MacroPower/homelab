@@ -4,6 +4,7 @@ import kube_openebs_base
 import charts.openebs
 import k8s.api.apps.v1 as appsv1
 import k8s.api.core.v1 as corev1
+import k8s.api.storage.v1 as storagev1
 import konfig.utils
 
 _baseValues = kube_openebs_base.app.charts.openebs.values
@@ -98,9 +99,25 @@ _zfsPoolManager = appsv1.DaemonSet {
     }
 }
 
+_zfsPostgresStorageClass = storagev1.StorageClass {
+    metadata: {
+        name = "openebs-zfs-postgres"
+    }
+    provisioner = "zfs.csi.openebs.io"
+    parameters = {
+        poolname = "tank"
+        fstype = "xfs"
+        compression = "zstd-fast"
+        volblocksize = "16k"
+    }
+    reclaimPolicy = "Retain"
+    volumeBindingMode = "WaitForFirstConsumer"
+}
+
 app = kube_openebs_base.app | {
     charts.openebs.values = _values | openebs.Values {}
     extraResources: {
         zfsPoolManager = _zfsPoolManager
+        zfsPostgresStorageClass = _zfsPostgresStorageClass
     }
 }
