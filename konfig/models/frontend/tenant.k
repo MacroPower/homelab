@@ -1,6 +1,7 @@
 import charts.argo_cd.api.v1alpha1 as argov1alpha1
 import models.frontend.common
 import models.frontend.secret
+import models.frontend.gateway
 
 schema Tenant(common.Metadata):
     """
@@ -10,4 +11,6 @@ schema Tenant(common.Metadata):
     more easily manage some resources, e.g. NetworkPolicy.
     """
     secretStores?: {str:secret.ClusterSecretStore}
+    gateways?: {str:gateway.Gateway}
+    oidcIssuer?: str
     destinations?: {str:argov1alpha1.ArgoprojIoV1alpha1AppProjectSpecDestinationsItems0}

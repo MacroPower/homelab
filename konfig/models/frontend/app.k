@@ -7,6 +7,7 @@ import models.frontend.rbac
 import models.frontend.networkpolicy
 import models.frontend.storage
 import models.frontend.grafana
+import models.frontend.gateway
 import models.frontend.common
 
 import helm
@@ -79,5 +80,6 @@ schema App(common.Metadata):
     externalSecrets?: {str:secret.ExternalSecret}
     postgresDatabases?: {str:storage.PostgresDatabase}
     grafanaDashboards?: {str:grafana.GrafanaDashboard}
+    routes?: {str:gateway.Route}
 
     extraResources?: {str:} = {}

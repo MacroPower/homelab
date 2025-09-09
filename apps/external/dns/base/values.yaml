@@ -8,6 +8,7 @@ logLevel: info
 sources:
   - service
   - ingress
+  - gateway-httproute
 
 policy: upsert-only
 

@@ -25,6 +25,7 @@ schema AppBackend[inputConfig: app.App]:
         mixins.PostgresDatabaseMixin,
         mixins.NamespaceSecretStoreMixin,
         mixins.GrafanaDashboardMixin,
+        mixins.RouteMixin,
     ]
 
     # Store the input config parameter, ensure it can be seen in protocol and mixin.
