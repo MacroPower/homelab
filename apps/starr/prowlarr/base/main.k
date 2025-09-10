@@ -2,6 +2,7 @@ import file
 
 import konfig.models.frontend
 import konfig.models.frontend.secret
+import konfig.models.frontend.gateway
 import konfig.files
 
 import starr
@@ -17,14 +18,41 @@ _prowlarrCreds = secret.ExternalSecret {
     }
 }
 
+_prowlarrOIDCClient = secret.ExternalSecret {
+    name = "prowlarr-oidc-client"
+    data: {
+        "client-id" = {
+            remoteRef.key = "STARR_AUTH0_CLIENT_ID"
+        }
+        "client-secret" = {
+            remoteRef.key = "STARR_AUTH0_CLIENT_SECRET"
+        }
+    }
+}
+
 app = frontend.App {
     name = "prowlarr"
     tenantName = starr.tenant.name
 
     secretStore = starr.shared.secretStores.default.name
-    externalSecrets.prowlarrCreds = _prowlarrCreds
+    externalSecrets: {
+        prowlarrCreds = _prowlarrCreds
+        prowlarrOIDCClient = _prowlarrOIDCClient
+    }
 
     charts.prowlarr = prowlarr.Chart {
         values: _values | prowlarr.Values {}
+    }
+
+    routes.prowlarr = gateway.Route {
+        gatewayRef = starr.tenant.gateways.default
+        services.prowlarr = {
+            name = "prowlarr"
+            port = 9696
+        }
+        security = gateway.SecurityPolicy {
+            oidcClientRef = _prowlarrOIDCClient.name
+            oidcIssuer = starr.tenant.oidcIssuer
+        }
     }
 }

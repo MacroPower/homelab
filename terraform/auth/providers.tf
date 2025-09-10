@@ -21,6 +21,11 @@ provider "doppler" {
 }
 
 provider "doppler" {
+  doppler_token = var.doppler_cin_token
+  alias         = "cin"
+}
+
+provider "doppler" {
   doppler_token = var.doppler_cin_mgmt_token
   alias         = "cin_mgmt"
 }

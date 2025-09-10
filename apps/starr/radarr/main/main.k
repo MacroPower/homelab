@@ -1,6 +1,5 @@
 import file
 
-import konfig.models.frontend.ingress
 import konfig.files
 import konfig.objects
 
@@ -15,14 +14,4 @@ _values = objects.json_merge_patch(_baseValues, _envValues)
 app = starr_radarr_base.app | {
     domainName = cluster.DOMAIN_NAME
     charts.radarr.values = _values | radarr.Values {}
-    ingresses.main = ingress.Ingress {
-        className = "cilium"
-        rules.main = {
-            host.name = "radarr"
-            httpPaths.main.backend.service = {
-                name = "radarr"
-                port.name = "http"
-            }
-        }
-    }
 }
