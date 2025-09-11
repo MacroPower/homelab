@@ -172,6 +172,12 @@ charts: helm.Charts = {
         targetRevision = "4.2.0"
         schemaGenerator = "AUTO"
     }
+    configarr: {
+        chart = "app-template"
+        repoURL = "oci://ghcr.io/bjw-s-labs/helm/app-template"
+        targetRevision = "4.2.0"
+        schemaGenerator = "AUTO"
+    }
     prowlarr: {
         chart = "app-template"
         repoURL = "oci://ghcr.io/bjw-s-labs/helm/app-template"

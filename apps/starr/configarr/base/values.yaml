@@ -1,0 +1,75 @@
+# yaml-language-server: $schema=../../../../charts/configarr/values.schema.json
+
+global:
+  fullnameOverride: configarr
+
+controllers:
+  main:
+    type: cronjob
+    cronjob:
+      schedule: "*/5 * * * *"
+      successfulJobsHistory: 1
+      failedJobsHistory: 3
+      backoffLimit: 3
+      ttlSecondsAfterFinished: 300
+      concurrencyPolicy: Forbid
+    pod:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    containers:
+      app:
+        image:
+          repository: ghcr.io/raydak-labs/configarr
+          tag: "1.15.1"
+        env:
+          SONARR_AUTH_APIKEY:
+            valueFrom:
+              secretKeyRef:
+                name: configarr
+                key: SONARR_AUTH_APIKEY
+          RADARR_AUTH_APIKEY:
+            valueFrom:
+              secretKeyRef:
+                name: configarr
+                key: RADARR_AUTH_APIKEY
+        probes:
+          liveness: &probes
+            enabled: false
+          readiness: *probes
+        resources:
+          requests:
+            cpu: 10m
+            memory: 200Mi
+          limits:
+            cpu: 1000m
+            memory: 200Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: [ALL]
+
+persistence:
+  tmp:
+    type: emptyDir
+    globalMounts:
+      - path: /tmp
+  repos:
+    type: persistentVolumeClaim
+    size: 5Gi
+    accessMode: ReadWriteOnce
+    storageClass: openebs-hostpath
+    globalMounts:
+      - path: /app/repos
+  config:
+    enabled: true
+    type: configMap
+    name: configarr
+    globalMounts:
+      - path: /app/config/config.yml
+        subPath: config.yml
+        readOnly: true

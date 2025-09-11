@@ -22,5 +22,6 @@
     "homelab/.vscode/mcp.json: kat": {
       "allowedModels": ["copilot/claude-sonnet-4"]
     }
-  }
+  },
+  "yaml.customTags": ["!env"]
 }

@@ -1,0 +1,3 @@
+# yaml-language-server: $schema=../../../../charts/configarr/values.schema.json
+
+{}
