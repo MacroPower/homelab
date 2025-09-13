@@ -27,3 +27,8 @@ bpf:
   # https://docs.cilium.io/en/stable/operations/performance/tuning/#ebpf-map-backend-memory
   mapDynamicSizeRatio: 0.08
   tproxy: true
+
+# https://docs.cilium.io/en/stable/operations/performance/tuning/#bandwidth-manager
+bandwidthManager:
+  enabled: true
+  bbr: true
