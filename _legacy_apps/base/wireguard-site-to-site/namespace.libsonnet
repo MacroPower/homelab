@@ -1,1 +1,0 @@
-import '../wireguard/namespace.libsonnet'
