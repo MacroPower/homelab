@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=../../../../charts/spegel/values.schema.json
+
+resources:
+  requests:
+    memory: 128Mi
+  limits:
+    memory: 2Gi
+
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 25%
+
+tolerations:
+  - key: CriticalAddonsOnly
+    operator: Exists
+  - effect: NoExecute
+    operator: Exists
+  - effect: NoSchedule
+    operator: Exists
+
+serviceMonitor:
+  enabled: true
+
+priorityClassName: system-node-critical
+
+spegel:
+  logLevel: "INFO"
+  mirrorResolveTimeout: "50ms"
+
+  # Talos compatibility
+  # https://spegel.dev/docs/getting-started/#talos
+  containerdRegistryConfigPath: /etc/cri/conf.d/hosts

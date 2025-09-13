@@ -191,4 +191,10 @@ charts: helm.Charts = {
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
     }
+    spegel: {
+        chart = "spegel"
+        repoURL = "oci://ghcr.io/spegel-org/helm-charts/spegel"
+        targetRevision = "0.3.0"
+        schemaGenerator = "AUTO"
+    }
 }

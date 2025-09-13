@@ -1,0 +1,636 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "affinity": {
+      "additionalProperties": true,
+      "description": "Affinity settings for pod assignment.",
+      "required": [],
+      "title": "affinity",
+      "type": "object"
+    },
+    "basicAuthSecretName": {
+      "default": "",
+      "description": "Name of secret containing basic authentication credentials for registry.",
+      "required": [],
+      "title": "basicAuthSecretName",
+      "type": "string"
+    },
+    "clusterDomain": {
+      "default": "cluster.local.",
+      "description": "Domain configured for service domain names.",
+      "required": [],
+      "title": "clusterDomain",
+      "type": "string"
+    },
+    "commonLabels": {
+      "additionalProperties": true,
+      "description": "Common labels to apply to all rendered resources.",
+      "required": [],
+      "title": "commonLabels",
+      "type": "object"
+    },
+    "fullnameOverride": {
+      "default": "",
+      "description": "Overrides the full name of the chart.",
+      "required": [],
+      "title": "fullnameOverride",
+      "type": "string"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "grafanaDashboard": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations that ConfigMaps can have to get configured in Grafana,\nSee: sidecar.dashboards.folderAnnotation for specifying the dashboard folder.\nhttps://github.com/grafana/helm-charts/tree/main/charts/grafana",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "enabled": {
+          "default": false,
+          "description": "If true creates a Grafana dashboard.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "sidecarLabel": {
+          "default": "grafana_dashboard",
+          "description": "Label that ConfigMaps should have to be loaded as dashboards.",
+          "required": [],
+          "title": "sidecarLabel",
+          "type": "string"
+        },
+        "sidecarLabelValue": {
+          "default": "1",
+          "description": "Label value that ConfigMaps should have to be loaded as dashboards.",
+          "required": [],
+          "title": "sidecarLabelValue",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "grafanaDashboard",
+      "type": "object"
+    },
+    "image": {
+      "additionalProperties": true,
+      "properties": {
+        "digest": {
+          "default": "sha256:4f9f7cf0b8006f2a17599f0a9f2fa6c02c7a206726f2a89ca26c42622346d17f",
+          "description": "Image digest.",
+          "required": [],
+          "title": "digest",
+          "type": "string"
+        },
+        "pullPolicy": {
+          "default": "IfNotPresent",
+          "description": "Image Pull Policy.",
+          "required": [],
+          "title": "pullPolicy",
+          "type": "string"
+        },
+        "repository": {
+          "default": "ghcr.io/spegel-org/spegel",
+          "description": "Image repository.",
+          "required": [],
+          "title": "repository",
+          "type": "string"
+        },
+        "tag": {
+          "default": "",
+          "description": "Overrides the image tag whose default is the chart appVersion.",
+          "required": [],
+          "title": "tag",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "image",
+      "type": "object"
+    },
+    "imagePullSecrets": {
+      "description": "Image Pull Secrets",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "imagePullSecrets",
+      "type": "array"
+    },
+    "nameOverride": {
+      "default": "",
+      "description": "Overrides the name of the chart.",
+      "required": [],
+      "title": "nameOverride",
+      "type": "string"
+    },
+    "namespaceOverride": {
+      "default": "",
+      "description": "Overrides the namespace where spegel resources are installed.",
+      "required": [],
+      "title": "namespaceOverride",
+      "type": "string"
+    },
+    "nodeSelector": {
+      "additionalProperties": true,
+      "description": "Node selector for pod assignment.",
+      "properties": {
+        "kubernetes.io/os": {
+          "default": "linux",
+          "required": [],
+          "title": "kubernetes.io/os",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "nodeSelector",
+      "type": "object"
+    },
+    "podAnnotations": {
+      "additionalProperties": true,
+      "description": "Annotations to add to the pod.",
+      "required": [],
+      "title": "podAnnotations",
+      "type": "object"
+    },
+    "podSecurityContext": {
+      "additionalProperties": true,
+      "description": "Security context for the pod.",
+      "required": [],
+      "title": "podSecurityContext",
+      "type": "object"
+    },
+    "priorityClassName": {
+      "default": "system-node-critical",
+      "description": "Priority class name to use for the pod.",
+      "required": [],
+      "title": "priorityClassName",
+      "type": "string"
+    },
+    "resources": {
+      "additionalProperties": true,
+      "description": "Resource requests and limits for the Spegel container.",
+      "properties": {
+        "limits": {
+          "additionalProperties": true,
+          "properties": {
+            "memory": {
+              "default": "128Mi",
+              "required": [],
+              "title": "memory",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "limits",
+          "type": "object"
+        },
+        "requests": {
+          "additionalProperties": true,
+          "properties": {
+            "memory": {
+              "default": "128Mi",
+              "required": [],
+              "title": "memory",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "requests",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "resources",
+      "type": "object"
+    },
+    "revisionHistoryLimit": {
+      "default": 10,
+      "description": "The number of old history to retain to allow rollback.",
+      "required": [],
+      "title": "revisionHistoryLimit",
+      "type": "integer"
+    },
+    "securityContext": {
+      "additionalProperties": true,
+      "description": "Security context for the Spegel container.",
+      "properties": {
+        "readOnlyRootFilesystem": {
+          "default": true,
+          "required": [],
+          "title": "readOnlyRootFilesystem",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "securityContext",
+      "type": "object"
+    },
+    "service": {
+      "additionalProperties": true,
+      "properties": {
+        "cleanup": {
+          "additionalProperties": true,
+          "properties": {
+            "port": {
+              "default": 8080,
+              "description": "Port to expose cleanup probe on.",
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "cleanup",
+          "type": "object"
+        },
+        "metrics": {
+          "additionalProperties": true,
+          "properties": {
+            "port": {
+              "default": 9090,
+              "description": "Port to expose the metrics via the service.",
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "metrics",
+          "type": "object"
+        },
+        "registry": {
+          "additionalProperties": true,
+          "properties": {
+            "hostPort": {
+              "default": 30020,
+              "description": "Local host port to expose the registry.",
+              "required": [],
+              "title": "hostPort",
+              "type": "integer"
+            },
+            "nodeIp": {
+              "default": "",
+              "description": "Override the NODE_ID environment variable. It defaults to the field status.hostIP",
+              "required": [],
+              "title": "nodeIp",
+              "type": "string"
+            },
+            "nodePort": {
+              "default": 30021,
+              "description": "Node port to expose the registry via the service.",
+              "required": [],
+              "title": "nodePort",
+              "type": "integer"
+            },
+            "port": {
+              "default": 5000,
+              "description": "Port to expose the registry via the service.",
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            },
+            "topologyAwareHintsEnabled": {
+              "default": true,
+              "description": "If true adds topology aware hints annotation to node port service.",
+              "required": [],
+              "title": "topologyAwareHintsEnabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "registry",
+          "type": "object"
+        },
+        "router": {
+          "additionalProperties": true,
+          "properties": {
+            "port": {
+              "default": 5001,
+              "description": "Port to expose the router via the service.",
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "router",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "service",
+      "type": "object"
+    },
+    "serviceAccount": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations to add to the service account",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "name": {
+          "default": "",
+          "description": "The name of the service account to use.\nIf not set and create is true, a name is generated using the fullname template.",
+          "required": [],
+          "title": "name",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "serviceAccount",
+      "type": "object"
+    },
+    "serviceMonitor": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "description": "If true creates a Prometheus Service Monitor.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "interval": {
+          "default": "60s",
+          "description": "Prometheus scrape interval.",
+          "required": [],
+          "title": "interval",
+          "type": "string"
+        },
+        "labels": {
+          "additionalProperties": true,
+          "description": "Service monitor specific labels for prometheus to discover servicemonitor.",
+          "required": [],
+          "title": "labels",
+          "type": "object"
+        },
+        "metricRelabelings": {
+          "description": "List of relabeling rules to apply to the samples before ingestion.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "metricRelabelings",
+          "type": "array"
+        },
+        "relabelings": {
+          "description": "List of relabeling rules to apply the target’s metadata labels.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "relabelings",
+          "type": "array"
+        },
+        "scrapeTimeout": {
+          "default": "30s",
+          "description": "Prometheus scrape interval timeout.",
+          "required": [],
+          "title": "scrapeTimeout",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "serviceMonitor",
+      "type": "object"
+    },
+    "spegel": {
+      "additionalProperties": true,
+      "properties": {
+        "additionalMirrorTargets": {
+          "description": "- https://docker.io\n- https://ghcr.io\nAdditional target mirror registries other than Spegel.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "additionalMirrorTargets",
+          "type": "array"
+        },
+        "containerdContentPath": {
+          "default": "/var/lib/containerd/io.containerd.content.v1.content",
+          "description": "Path to Containerd content store..",
+          "required": [],
+          "title": "containerdContentPath",
+          "type": "string"
+        },
+        "containerdMirrorAdd": {
+          "default": true,
+          "description": "If true Spegel will add mirror configuration to the node.",
+          "required": [],
+          "title": "containerdMirrorAdd",
+          "type": "boolean"
+        },
+        "containerdNamespace": {
+          "default": "k8s.io",
+          "description": "Containerd namespace where images are stored.",
+          "required": [],
+          "title": "containerdNamespace",
+          "type": "string"
+        },
+        "containerdRegistryConfigPath": {
+          "default": "/etc/containerd/certs.d",
+          "description": "Path to Containerd mirror configuration.",
+          "required": [],
+          "title": "containerdRegistryConfigPath",
+          "type": "string"
+        },
+        "containerdSock": {
+          "default": "/run/containerd/containerd.sock",
+          "description": "Path to Containerd socket.",
+          "required": [],
+          "title": "containerdSock",
+          "type": "string"
+        },
+        "debugWebEnabled": {
+          "default": false,
+          "description": "When true enables debug web page.",
+          "required": [],
+          "title": "debugWebEnabled",
+          "type": "boolean"
+        },
+        "logLevel": {
+          "default": "INFO",
+          "description": "Minimum log level to output. Value should be DEBUG, INFO, WARN, or ERROR.",
+          "required": [],
+          "title": "logLevel",
+          "type": "string"
+        },
+        "mirrorResolveRetries": {
+          "default": 3,
+          "description": "Max amount of mirrors to attempt.",
+          "required": [],
+          "title": "mirrorResolveRetries",
+          "type": "integer"
+        },
+        "mirrorResolveTimeout": {
+          "default": "20ms",
+          "description": "Max duration spent finding a mirror.",
+          "required": [],
+          "title": "mirrorResolveTimeout",
+          "type": "string"
+        },
+        "mirroredRegistries": {
+          "description": "Registries for which mirror configuration will be created. Empty means all registires will be mirrored.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "mirroredRegistries",
+          "type": "array"
+        },
+        "prependExisting": {
+          "default": false,
+          "description": "When true existing mirror configuration will be kept and Spegel will prepend it's configuration.",
+          "required": [],
+          "title": "prependExisting",
+          "type": "boolean"
+        },
+        "resolveLatestTag": {
+          "default": true,
+          "description": "When true latest tags will be resolved to digests.",
+          "required": [],
+          "title": "resolveLatestTag",
+          "type": "boolean"
+        },
+        "resolveTags": {
+          "default": true,
+          "description": "When true Spegel will resolve tags to digests.",
+          "required": [],
+          "title": "resolveTags",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "spegel",
+      "type": "object"
+    },
+    "tolerations": {
+      "description": "Tolerations for pod assignment.",
+      "items": {
+        "additionalProperties": true,
+        "properties": {
+          "effect": {
+            "default": "NoSchedule",
+            "required": [],
+            "title": "effect",
+            "type": "string"
+          },
+          "key": {
+            "default": "CriticalAddonsOnly",
+            "required": [],
+            "title": "key",
+            "type": "string"
+          },
+          "operator": {
+            "default": "Exists",
+            "required": [],
+            "title": "operator",
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "required": [],
+      "title": "tolerations",
+      "type": "array"
+    },
+    "updateStrategy": {
+      "additionalProperties": true,
+      "description": "An update strategy to replace existing pods with new pods.",
+      "required": [],
+      "title": "updateStrategy",
+      "type": "object"
+    },
+    "verticalPodAutoscaler": {
+      "additionalProperties": true,
+      "properties": {
+        "controlledResources": {
+          "description": "List of resources that the vertical pod autoscaler can control. Defaults to cpu and memory",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "controlledResources",
+          "type": "array"
+        },
+        "controlledValues": {
+          "default": "RequestsAndLimits",
+          "description": "Specifies which resource values should be controlled: RequestsOnly or RequestsAndLimits.",
+          "required": [],
+          "title": "controlledValues",
+          "type": "string"
+        },
+        "enabled": {
+          "default": false,
+          "description": "If true creates a Vertical Pod Autoscaler.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "maxAllowed": {
+          "additionalProperties": true,
+          "description": "Define the max allowed resources for the pod",
+          "required": [],
+          "title": "maxAllowed",
+          "type": "object"
+        },
+        "minAllowed": {
+          "additionalProperties": true,
+          "description": "cpu: 100m\nmemory: 128Mi\nDefine the min allowed resources for the pod",
+          "required": [],
+          "title": "minAllowed",
+          "type": "object"
+        },
+        "recommenders": {
+          "description": "Recommender responsible for generating recommendation for the object.\nList should be empty (then the default recommender will generate the recommendation)\nor contain exactly one recommender.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "recommenders",
+          "type": "array"
+        },
+        "updatePolicy": {
+          "additionalProperties": true,
+          "properties": {
+            "minReplicas": {
+              "default": 2,
+              "description": "Specifies minimal number of replicas which need to be alive for VPA Updater to attempt pod eviction",
+              "required": [],
+              "title": "minReplicas",
+              "type": "integer"
+            },
+            "updateMode": {
+              "default": "Auto",
+              "description": "Specifies whether recommended updates are applied when a Pod is started and whether recommended updates\nare applied during the life of a Pod. Possible values are \"Off\", \"Initial\", \"Recreate\", and \"Auto\".",
+              "required": [],
+              "title": "updateMode",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "updatePolicy",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "verticalPodAutoscaler",
+      "type": "object"
+    }
+  },
+  "required": [],
+  "type": "object"
+}
