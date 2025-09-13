@@ -16,7 +16,9 @@ app = cilium_system_base.app | {
 
     charts.cilium.values = _values
 
+    extraResources.bgpPeer = cilium_system_base.unifiBGPPeer
     extraResources.bgpPeering = cilium_system_base.unifiBGPPeering
+    extraResources.bgpAdvertisement = cilium_system_base.ingressBGPAdvertisement
     extraResources.ipPool = ciliumv2alpha1.CiliumLoadBalancerIPPool {
         metadata: {
             name = "cilium-ingress"

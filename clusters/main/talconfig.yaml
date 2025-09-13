@@ -119,6 +119,7 @@ nodes:
       feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az01
+      bgp.kube.macro.network/peer-group: main
     networkInterfaces:
       - deviceSelector: *rk1NetDevice
         dhcp: false
@@ -143,6 +144,7 @@ nodes:
       feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az02
+      bgp.kube.macro.network/peer-group: main
     networkInterfaces:
       - deviceSelector: *rk1NetDevice
         dhcp: false
@@ -167,6 +169,7 @@ nodes:
       feature.node.kubernetes.io/network.max-link-speed: 1g
       topology.kubernetes.io/region: rack01
       topology.kubernetes.io/zone: az03
+      bgp.kube.macro.network/peer-group: main
     networkInterfaces:
       - deviceSelector: *rk1NetDevice
         dhcp: false

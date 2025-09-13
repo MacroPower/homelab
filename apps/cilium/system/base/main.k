@@ -7,7 +7,7 @@ import konfig.files
 
 import cilium_shared
 import charts.cilium
-import charts.cilium.api.v2alpha1 as ciliumv2alpha1
+import charts.cilium.api.v2 as ciliumv2
 
 _values = files.read_yaml(file.current(), "values.yaml")
 
@@ -15,28 +15,69 @@ ciliumIngressLabels: {str:str} = {
     "cilium.io/ingress": "true"
 }
 
-unifiBGPPeering = ciliumv2alpha1.CiliumBGPPeeringPolicy {
+unifiBGPPeer = ciliumv2.CiliumBGPPeerConfig {
     metadata: modelutils.AppMetadataBuilder({
-        name = "cilium-ingress"
+        name = "unifi"
     }, modelutils.ArgoCDOptions {
         sync.SkipDryRunOnMissingResource = True
     })
     spec: {
-        # nodeSelector.matchLabels = {
-        #     "bgp.kube.macro.network/peer-group" = "main"
-        # }
-        virtualRouters = [
+        ebgpMultihop = 1
+        families = [
             {
+                afi = "ipv4"
+                safi = "unicast"
+                advertisements.matchLabels = ciliumIngressLabels
+            }
+            {
+                afi = "ipv6"
+                safi = "unicast"
+                advertisements.matchLabels = ciliumIngressLabels
+            }
+        ]
+    }
+}
+
+unifiBGPPeering = ciliumv2.CiliumBGPClusterConfig {
+    metadata: modelutils.AppMetadataBuilder({
+        name = "unifi"
+    }, modelutils.ArgoCDOptions {
+        sync.SkipDryRunOnMissingResource = True
+    })
+    spec: {
+        nodeSelector.matchLabels = {
+            "bgp.kube.macro.network/peer-group" = "main"
+        }
+        bgpInstances = [
+            {
+                name = "unifi"
                 localASN = 64512
-                exportPodCIDR = False
-                neighbors = [
+                peers = [
                     {
-                        peerAddress = "10.1.0.1/32"
+                        name = "unifi-main"
+                        peerAddress = "10.1.0.1"
                         peerASN = 64512
-                        eBGPMultihopTTL = 1
+                        peerConfigRef.name = unifiBGPPeer.metadata.name
                     }
                 ]
-                serviceSelector.matchLabels = ciliumIngressLabels
+            }
+        ]
+    }
+}
+
+ingressBGPAdvertisement = ciliumv2.CiliumBGPAdvertisement {
+    metadata: modelutils.AppMetadataBuilder({
+        name = "cilium-ingress"
+        labels = ciliumIngressLabels
+    }, modelutils.ArgoCDOptions {
+        sync.SkipDryRunOnMissingResource = True
+    })
+    spec: {
+        advertisements = [
+            {
+                advertisementType = "Service"
+                selector.matchLabels = ciliumIngressLabels
+                service.addresses = ["LoadBalancerIP"]
             }
         ]
     }

@@ -76,6 +76,10 @@ dnsPolicy: ClusterFirst
 operator:
   replicas: 2
   rollOutPods: true
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
   prometheus:
     enabled: false
     serviceMonitor:
