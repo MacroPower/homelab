@@ -54,17 +54,11 @@ loadBalancer:
     backend: envoy
 
 bpf:
+  masquerade: true
   # https://docs.cilium.io/en/stable/operations/performance/tuning/#netkit-device-mode
   datapathMode: netkit
-  masquerade: true
-  preallocateMaps: true
-  distributedLRU:
-    enabled: true
-  # https://docs.cilium.io/en/stable/operations/performance/tuning/#ebpf-map-backend-memory
-  mapDynamicSizeRatio: 0.08
   lbAlgorithmAnnotation: true
   lbModeAnnotation: true
-  tproxy: true
 
 envoyConfig:
   enabled: true

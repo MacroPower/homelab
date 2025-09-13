@@ -19,3 +19,11 @@ ingressController:
   loadbalancerMode: shared
   defaultSecretNamespace: "external-certs"
   defaultSecretName: "cluster-ingress"
+
+bpf:
+  preallocateMaps: true
+  distributedLRU:
+    enabled: true
+  # https://docs.cilium.io/en/stable/operations/performance/tuning/#ebpf-map-backend-memory
+  mapDynamicSizeRatio: 0.08
+  tproxy: true
