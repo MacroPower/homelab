@@ -21,6 +21,10 @@ hostPort:
 ## Roll out cilium pods automatically when configmap is updated, a la reloader.
 ##
 rollOutCiliumPods: true
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
 
 ## Routing configuration.
 ## See https://docs.cilium.io/en/stable/network/concepts/routing/
