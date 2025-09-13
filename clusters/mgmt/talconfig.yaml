@@ -239,6 +239,12 @@ controlPlane:
                 - rbind
                 - rshared
                 - rw
+    - &machineDNS |-
+      machine:
+        features:
+          hostDNS:
+            enabled: true
+            forwardKubeDNSToHost: false
 
 worker:
   nameservers: *nameservers
@@ -251,3 +257,4 @@ worker:
     - *machineLogging
     - *machineTime
     - *machineOpenEBS
+    - *machineDNS

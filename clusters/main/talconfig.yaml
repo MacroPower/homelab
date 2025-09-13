@@ -370,6 +370,12 @@ controlPlane:
                 - rbind
                 - rshared
                 - rw
+    - &machineDNS |-
+      machine:
+        features:
+          hostDNS:
+            enabled: true
+            forwardKubeDNSToHost: false
 
 worker:
   certSANs:
@@ -384,6 +390,7 @@ worker:
     - *machineLogging
     - *machineTime
     - *machineOpenEBS
+    - *machineDNS
     - |-
       machine:
         kubelet:
