@@ -5,8 +5,12 @@ ipam:
 
 kubeProxyReplacement: true
 
+ipv4:
+  enabled: true
 ipv6:
   enabled: true
+
+enableIPv4BIGTCP: true
 enableIPv6BIGTCP: true
 
 externalIPs:
@@ -16,6 +20,12 @@ nodePort:
   enabled: true
 
 hostPort:
+  enabled: true
+
+hostFirewall:
+  enabled: true
+
+localRedirectPolicies:
   enabled: true
 
 ## Roll out cilium pods automatically when configmap is updated, a la reloader.
