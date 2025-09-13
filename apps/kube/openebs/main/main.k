@@ -57,7 +57,7 @@ _zfsPoolManager = appsv1.DaemonSet {
                         command = [
                             "/bin/bash"
                             "-c"
-                            file.read(utils.abs_path(file.current(), "zfs-init.sh"))
+                            file.read(files.abs_path(file.current(), "zfs-init.sh"))
                         ]
                         securityContext = {
                             privileged = True

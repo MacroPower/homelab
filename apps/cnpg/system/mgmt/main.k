@@ -1,8 +1,10 @@
 import file
 
+import konfig.files
+import konfig.objects
+
 import cnpg_system_base
 import charts.cloudnative_pg
-import konfig.files
 
 _baseValues = cnpg_system_base.app.charts.cloudnative_pg.values
 _envValues = files.read_yaml(file.current(), "values.yaml")
