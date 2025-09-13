@@ -211,6 +211,10 @@ nodes:
               registerWithTaints:
                 - key: node-role.kubernetes.io/storage
                   effect: NoSchedule
+          features:
+            hostDNS:
+              enabled: true
+              forwardKubeDNSToHost: true
 
   # - hostname: kmain13.cin.macro.network
   #   ipAddress: 10.10.10.13
