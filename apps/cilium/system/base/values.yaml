@@ -7,6 +7,7 @@ kubeProxyReplacement: true
 
 ipv6:
   enabled: true
+enableIPv6BIGTCP: true
 
 externalIPs:
   enabled: true
@@ -47,6 +48,19 @@ loadBalancer:
   serviceTopology: true
   l7:
     backend: envoy
+
+bpf:
+  # https://docs.cilium.io/en/stable/operations/performance/tuning/#netkit-device-mode
+  datapathMode: netkit
+  masquerade: true
+  preallocateMaps: true
+  distributedLRU:
+    enabled: true
+  # https://docs.cilium.io/en/stable/operations/performance/tuning/#ebpf-map-backend-memory
+  mapDynamicSizeRatio: 0.08
+  lbAlgorithmAnnotation: true
+  lbModeAnnotation: true
+  tproxy: true
 
 envoyConfig:
   enabled: true
