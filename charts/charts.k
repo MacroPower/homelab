@@ -197,6 +197,12 @@ charts: helm.Charts = {
         targetRevision = "0.3.0"
         schemaGenerator = "AUTO"
     }
+    reloader: {
+        chart = "reloader"
+        repoURL = "https://stakater.github.io/stakater-charts"
+        targetRevision = "2.2.0"
+        schemaGenerator = "VALUE-INFERENCE"
+    }
     homepage: {
         chart = "app-template"
         repoURL = "oci://ghcr.io/bjw-s-labs/helm/app-template"

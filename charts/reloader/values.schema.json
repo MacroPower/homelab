@@ -1,0 +1,783 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "fullnameOverride": {
+      "default": "",
+      "required": [],
+      "title": "fullnameOverride",
+      "type": "string"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Generated from deployments/kubernetes/templates/chart/values.yaml.tmpl",
+      "properties": {
+        "imagePullSecrets": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "imagePullSecrets",
+          "type": "array"
+        },
+        "imageRegistry": {
+          "default": "",
+          "description": "# Reference to one or more secrets to be used when pulling images\n# ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/\n#",
+          "required": [],
+          "title": "imageRegistry",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "image": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "default": "stakater/reloader",
+          "required": [],
+          "title": "name",
+          "type": "string"
+        },
+        "pullPolicy": {
+          "default": "IfNotPresent",
+          "description": "digest: sha256:1234567",
+          "required": [],
+          "title": "pullPolicy",
+          "type": "string"
+        },
+        "repository": {
+          "default": "ghcr.io/stakater/reloader",
+          "required": [],
+          "title": "repository",
+          "type": "string"
+        },
+        "tag": {
+          "default": "v1.4.6",
+          "required": [],
+          "title": "tag",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "image",
+      "type": "object"
+    },
+    "kubernetes": {
+      "additionalProperties": true,
+      "properties": {
+        "host": {
+          "default": "https://kubernetes.default",
+          "required": [],
+          "title": "host",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "kubernetes",
+      "type": "object"
+    },
+    "nameOverride": {
+      "default": "",
+      "required": [],
+      "title": "nameOverride",
+      "type": "string"
+    },
+    "reloader": {
+      "additionalProperties": true,
+      "properties": {
+        "autoReloadAll": {
+          "default": false,
+          "required": [],
+          "title": "autoReloadAll",
+          "type": "boolean"
+        },
+        "custom_annotations": {
+          "additionalProperties": true,
+          "description": "Optional flags to pass to the Reloader entrypoint\nExample:\n  custom_annotations:\n    configmap: \"my.company.com/configmap\"\n    secret: \"my.company.com/secret\"",
+          "required": [],
+          "title": "custom_annotations",
+          "type": "object"
+        },
+        "deployment": {
+          "additionalProperties": true,
+          "properties": {
+            "affinity": {
+              "additionalProperties": true,
+              "description": "An affinity stanza to be applied to the Deployment.\nExample:\n  affinity:\n    nodeAffinity:\n      requiredDuringSchedulingIgnoredDuringExecution:\n        nodeSelectorTerms:\n        - matchExpressions:\n          - key: \"node-role.kubernetes.io/infra-worker\"\n            operator: \"Exists\"",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "containerSecurityContext": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "containerSecurityContext",
+              "type": "object"
+            },
+            "env": {
+              "additionalProperties": true,
+              "description": "Support for extra environment variables.",
+              "properties": {
+                "existing": {
+                  "default": "",
+                  "description": "existing secret, you can specify multiple existing secrets, for each\nspecify the env var name followed by the key in existing secret that\nwill be used to populate the env var",
+                  "required": [],
+                  "title": "existing",
+                  "type": "null"
+                },
+                "field": {
+                  "default": "",
+                  "description": " ALERT_ON_RELOAD: \u003c\"true\"|\"false\"\u003e\n ALERT_SINK: \u003c\"slack\"\u003e # By default it will be a raw text based webhook\n ALERT_WEBHOOK_URL: \u003c\"webhook_url\"\u003e\n ALERT_ADDITIONAL_INFO: \u003c\"Additional Info like Cluster Name if needed\"\u003e\nfield supports Key value pair as environment variables. It gets the values from other fields of pod.",
+                  "required": [],
+                  "title": "field",
+                  "type": "null"
+                },
+                "open": {
+                  "default": "",
+                  "description": "Open supports Key value pair as environment variables.",
+                  "required": [],
+                  "title": "open",
+                  "type": "null"
+                },
+                "secret": {
+                  "default": "",
+                  "description": "secret supports Key value pair as environment variables. It gets the values based on keys from default reloader secret if any.",
+                  "required": [],
+                  "title": "secret",
+                  "type": "null"
+                }
+              },
+              "required": [],
+              "title": "env",
+              "type": "object"
+            },
+            "gomaxprocsOverride": {
+              "default": "",
+              "description": "Put \"0\" in either to have go runtime ignore the set value.\nOtherwise, see https://pkg.go.dev/runtime#hdr-Environment_Variables for GOMAXPROCS and GOMEMLIMIT",
+              "required": [],
+              "title": "gomaxprocsOverride",
+              "type": "string"
+            },
+            "gomemlimitOverride": {
+              "default": "",
+              "required": [],
+              "title": "gomemlimitOverride",
+              "type": "string"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "properties": {
+                "group": {
+                  "default": "com.stakater.platform",
+                  "required": [],
+                  "title": "group",
+                  "type": "string"
+                },
+                "provider": {
+                  "default": "stakater",
+                  "required": [],
+                  "title": "provider",
+                  "type": "string"
+                },
+                "version": {
+                  "default": "v1.4.6",
+                  "required": [],
+                  "title": "version",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "livenessProbe": {
+              "additionalProperties": true,
+              "description": "Liveness and readiness probe timeout values.",
+              "required": [],
+              "title": "livenessProbe",
+              "type": "object"
+            },
+            "nodeSelector": {
+              "default": "",
+              "required": [],
+              "title": "nodeSelector",
+              "type": "null"
+            },
+            "pod": {
+              "additionalProperties": true,
+              "properties": {
+                "annotations": {
+                  "additionalProperties": true,
+                  "required": [],
+                  "title": "annotations",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "pod",
+              "type": "object"
+            },
+            "priorityClassName": {
+              "default": "",
+              "required": [],
+              "title": "priorityClassName",
+              "type": "string"
+            },
+            "readinessProbe": {
+              "additionalProperties": true,
+              "description": " timeoutSeconds: 5\n failureThreshold: 5\n periodSeconds: 10\n successThreshold: 1",
+              "required": [],
+              "title": "readinessProbe",
+              "type": "object"
+            },
+            "replicas": {
+              "default": 1,
+              "description": "If you wish to run multiple replicas set reloader.enableHA = true",
+              "required": [],
+              "title": "replicas",
+              "type": "integer"
+            },
+            "resources": {
+              "additionalProperties": true,
+              "description": "Specify resource requests/limits for the deployment.\nExample:\nresources:\n  limits:\n    cpu: \"100m\"\n    memory: \"512Mi\"\n  requests:\n    cpu: \"10m\"\n    memory: \"128Mi\"",
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            },
+            "revisionHistoryLimit": {
+              "default": 2,
+              "required": [],
+              "title": "revisionHistoryLimit",
+              "type": "integer"
+            },
+            "securityContext": {
+              "additionalProperties": true,
+              "properties": {
+                "runAsNonRoot": {
+                  "default": true,
+                  "required": [],
+                  "title": "runAsNonRoot",
+                  "type": "boolean"
+                },
+                "runAsUser": {
+                  "default": 65534,
+                  "required": [],
+                  "title": "runAsUser",
+                  "type": "integer"
+                },
+                "seccompProfile": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "type": {
+                      "default": "RuntimeDefault",
+                      "required": [],
+                      "title": "type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "seccompProfile",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "securityContext",
+              "type": "object"
+            },
+            "tolerations": {
+              "description": "A list of tolerations to be applied to the Deployment.\nExample:\n  tolerations:\n  - key: \"node-role.kubernetes.io/infra-worker\"\n    operator: \"Exists\"\n    effect: \"NoSchedule\"",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "tolerations",
+              "type": "array"
+            },
+            "topologySpreadConstraints": {
+              "description": "Topology spread constraints for pod assignment\nRef: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/\nExample:\ntopologySpreadConstraints:\n  - maxSkew: 1\n    topologyKey: zone\n    whenUnsatisfiable: DoNotSchedule\n    labelSelector:\n      matchLabels:\n        app.kubernetes.io/instance: my-app",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "topologySpreadConstraints",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "deployment",
+          "type": "object"
+        },
+        "enableHA": {
+          "default": false,
+          "description": "Set to true to enable leadership election allowing you to run multiple replicas",
+          "required": [],
+          "title": "enableHA",
+          "type": "boolean"
+        },
+        "enableMetricsByNamespace": {
+          "default": false,
+          "description": "Set to true to expose a prometheus counter of reloads by namespace (this metric may have high cardinality in clusters with many namespaces)",
+          "required": [],
+          "title": "enableMetricsByNamespace",
+          "type": "boolean"
+        },
+        "enablePProf": {
+          "default": false,
+          "description": "Set to true to enable pprof for profiling",
+          "required": [],
+          "title": "enablePProf",
+          "type": "boolean"
+        },
+        "ignoreConfigMaps": {
+          "default": false,
+          "required": [],
+          "title": "ignoreConfigMaps",
+          "type": "boolean"
+        },
+        "ignoreCronJobs": {
+          "default": false,
+          "required": [],
+          "title": "ignoreCronJobs",
+          "type": "boolean"
+        },
+        "ignoreJobs": {
+          "default": false,
+          "required": [],
+          "title": "ignoreJobs",
+          "type": "boolean"
+        },
+        "ignoreNamespaces": {
+          "default": "",
+          "required": [],
+          "title": "ignoreNamespaces",
+          "type": "string"
+        },
+        "ignoreSecrets": {
+          "default": false,
+          "required": [],
+          "title": "ignoreSecrets",
+          "type": "boolean"
+        },
+        "isArgoRollouts": {
+          "default": false,
+          "required": [],
+          "title": "isArgoRollouts",
+          "type": "boolean"
+        },
+        "isOpenshift": {
+          "default": false,
+          "required": [],
+          "title": "isOpenshift",
+          "type": "boolean"
+        },
+        "legacy": {
+          "additionalProperties": true,
+          "properties": {
+            "rbac": {
+              "default": false,
+              "required": [],
+              "title": "rbac",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "legacy",
+          "type": "object"
+        },
+        "logFormat": {
+          "default": "",
+          "required": [],
+          "title": "logFormat",
+          "type": "string"
+        },
+        "logLevel": {
+          "default": "info",
+          "required": [],
+          "title": "logLevel",
+          "type": "string"
+        },
+        "matchLabels": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "matchLabels",
+          "type": "object"
+        },
+        "namespaceSelector": {
+          "default": "",
+          "required": [],
+          "title": "namespaceSelector",
+          "type": "string"
+        },
+        "netpol": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "from": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "from",
+              "type": "array"
+            },
+            "to": {
+              "description": "- podSelector:\n    matchLabels:\n      app.kubernetes.io/name: prometheus",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "to",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "netpol",
+          "type": "object"
+        },
+        "podDisruptionBudget": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podDisruptionBudget",
+          "type": "object"
+        },
+        "podMonitor": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "# Used to pass annotations that are used by the Prometheus installed in your cluster to select Service Monitors to work with\n# ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#prometheusspec",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "honorLabels": {
+              "default": true,
+              "description": "Retain the job and instance labels of the metrics pushed to the Pushgateway\n[Scraping Pushgateway](https://github.com/prometheus/pushgateway#configure-the-pushgateway-as-a-target-to-scrape)",
+              "required": [],
+              "title": "honorLabels",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "# Used to pass Labels that are used by the Prometheus installed in your cluster to select Service Monitors to work with\n# ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#prometheusspec",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "metricRelabelings": {
+              "description": "# Metric relabel configs to apply to samples before ingestion.\n# [Metric Relabeling](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#metric_relabel_configs)",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "metricRelabelings",
+              "type": "array"
+            },
+            "podTargetLabels": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "podTargetLabels",
+              "type": "array"
+            },
+            "relabelings": {
+              "description": "# Relabel configs to apply to samples before ingestion.\n# [Relabeling](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config)",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "relabelings",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "podMonitor",
+          "type": "object"
+        },
+        "pprofAddr": {
+          "default": ":6060",
+          "description": "Address to start pprof server on. Default is \":6060\"",
+          "required": [],
+          "title": "pprofAddr",
+          "type": "string"
+        },
+        "rbac": {
+          "additionalProperties": true,
+          "description": "labels: {}\nannotations: {}\nport: 9090",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "rbac",
+          "type": "object"
+        },
+        "readOnlyRootFileSystem": {
+          "default": false,
+          "description": "Set to true if you have a pod security policy that enforces readOnlyRootFilesystem",
+          "required": [],
+          "title": "readOnlyRootFileSystem",
+          "type": "boolean"
+        },
+        "reloadOnCreate": {
+          "default": false,
+          "required": [],
+          "title": "reloadOnCreate",
+          "type": "boolean"
+        },
+        "reloadOnDelete": {
+          "default": false,
+          "required": [],
+          "title": "reloadOnDelete",
+          "type": "boolean"
+        },
+        "reloadStrategy": {
+          "default": "default",
+          "required": [],
+          "title": "reloadStrategy",
+          "type": "string"
+        },
+        "resourceLabelSelector": {
+          "default": "",
+          "required": [],
+          "title": "resourceLabelSelector",
+          "type": "string"
+        },
+        "service": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "service",
+          "type": "object"
+        },
+        "serviceAccount": {
+          "additionalProperties": true,
+          "description": "Service account config for the agent pods",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "create": {
+              "default": true,
+              "description": "Specifies whether a ServiceAccount should be created",
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "name": {
+              "default": "",
+              "description": "The name of the ServiceAccount to use.\nIf not set and create is true, a name is generated using the fullname template",
+              "required": [],
+              "title": "name",
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "serviceAccount",
+          "type": "object"
+        },
+        "serviceMonitor": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "# Used to pass annotations that are used by the Prometheus installed in your cluster to select Service Monitors to work with\n# ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#prometheusspec",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Deprecated: Service monitor will be removed in future releases of reloader in favour of Pod monitor\nEnabling this requires service to be enabled as well, or no endpoints will be found",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "honorLabels": {
+              "default": true,
+              "description": "Retain the job and instance labels of the metrics pushed to the Pushgateway\n[Scraping Pushgateway](https://github.com/prometheus/pushgateway#configure-the-pushgateway-as-a-target-to-scrape)",
+              "required": [],
+              "title": "honorLabels",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "# Used to pass Labels that are used by the Prometheus installed in your cluster to select Service Monitors to work with\n# ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#prometheusspec",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "metricRelabelings": {
+              "description": "# Metric relabel configs to apply to samples before ingestion.\n# [Metric Relabeling](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#metric_relabel_configs)",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "metricRelabelings",
+              "type": "array"
+            },
+            "relabelings": {
+              "description": "# Relabel configs to apply to samples before ingestion.\n# [Relabeling](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config)",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "relabelings",
+              "type": "array"
+            },
+            "targetLabels": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "targetLabels",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "serviceMonitor",
+          "type": "object"
+        },
+        "syncAfterRestart": {
+          "default": false,
+          "required": [],
+          "title": "syncAfterRestart",
+          "type": "boolean"
+        },
+        "verticalPodAutoscaler": {
+          "additionalProperties": true,
+          "description": "Enable vertical pod autoscaler",
+          "properties": {
+            "controlledResources": {
+              "description": "List of resources that the vertical pod autoscaler can control. Defaults to cpu and memory",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "controlledResources",
+              "type": "array"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "maxAllowed": {
+              "additionalProperties": true,
+              "description": "Define the max allowed resources for the pod",
+              "required": [],
+              "title": "maxAllowed",
+              "type": "object"
+            },
+            "minAllowed": {
+              "additionalProperties": true,
+              "description": "cpu: 200m\nmemory: 100Mi\nDefine the min allowed resources for the pod",
+              "required": [],
+              "title": "minAllowed",
+              "type": "object"
+            },
+            "updatePolicy": {
+              "additionalProperties": true,
+              "properties": {
+                "updateMode": {
+                  "default": "Auto",
+                  "description": "Specifies minimal number of replicas which need to be alive for VPA Updater to attempt pod eviction\nminReplicas: 1\nSpecifies whether recommended updates are applied when a Pod is started and whether recommended updates\nare applied during the life of a Pod. Possible values are \"Off\", \"Initial\", \"Recreate\", and \"Auto\".",
+                  "required": [],
+                  "title": "updateMode",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "updatePolicy",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "verticalPodAutoscaler",
+          "type": "object"
+        },
+        "volumeMounts": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "volumeMounts",
+          "type": "array"
+        },
+        "volumes": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "volumes",
+          "type": "array"
+        },
+        "watchGlobally": {
+          "default": true,
+          "required": [],
+          "title": "watchGlobally",
+          "type": "boolean"
+        },
+        "webhookUrl": {
+          "default": "",
+          "required": [],
+          "title": "webhookUrl",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "reloader",
+      "type": "object"
+    }
+  },
+  "required": [],
+  "type": "object"
+}
