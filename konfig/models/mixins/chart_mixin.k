@@ -5,7 +5,6 @@ import helm
 
 mixin ChartMixin for protocol.AppProtocol:
     if config.charts:
-        _namespace: {str:str} = { namespace: config.namespace }
         kubernetes: resource.ResourceMapping {
             Chart = [
                 _obj
@@ -16,8 +15,7 @@ mixin ChartMixin for protocol.AppProtocol:
 
 _chartBuilder = lambda config: any, chart: helm.Chart -> helm.Chart {
     _chart = chart
-    _namespace = config.namespace
-    if _chart?.namespace == "":
-        _chart.namespace = _namespace
+    if isnullish(_chart?.namespace):
+        _chart.namespace = config.namespace
     _chart
 }
