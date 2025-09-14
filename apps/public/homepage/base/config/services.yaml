@@ -1,12 +1,21 @@
+# https://gethomepage.dev/configs/services/
+
+# Icons:
+# - https://github.com/walkxcode/dashboard-icons
+# - https://pictogrammers.com/library/mdi/ (mdi-xyz)
+# - https://simpleicons.org/ (si-xyz)
+
 - Apps:
     - UniFi:
-        href: &unifi https://unifi.home.macro.network/
+        href: https://unifi.cin.macro.network/
         icon: unifi
         description: Ubiquiti UniFi Console
-        siteMonitor: *unifi
 - Observability:
+    - Grafana:
+        href: https://macropower.grafana.net/
+        icon: grafana
+        description: Centralized Observability Platform
     - Robusta:
-        href: &robusta https://platform.robusta.dev/
+        href: https://platform.robusta.dev/
         icon: https://raw.githubusercontent.com/robusta-dev/robusta/72edd297ac8c219cbfa901bbdfe6cf3f53c7f145/logos/logo-only.png
         description: Unified Alerting, Notifications & Remediation
-        siteMonitor: *robusta

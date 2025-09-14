@@ -1,3 +1,6 @@
+# https://gethomepage.dev/configs/settings/
+
+title: Unknown Home
 layout:
   Apps:
     icon: mdi-apps
@@ -12,7 +15,6 @@ background:
   # saturate: 50 # 0, 50, 100... see https://tailwindcss.com/docs/backdrop-saturate
   brightness: 75
 theme: dark
-hideVersion: true
 quicklaunch:
   searchDescriptions: true
   showSearchSuggestions: true

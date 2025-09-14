@@ -1,1 +1,5 @@
+# https://gethomepage.dev/configs/kubernetes/
+
 mode: cluster
+ingress: true
+gateway: true

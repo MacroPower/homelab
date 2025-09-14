@@ -1,14 +1,21 @@
-- logo:
+# https://gethomepage.dev/widgets/
+
+- # https://gethomepage.dev/widgets/info/logo/
+  logo:
     icon: kubernetes
-- greeting:
+- # https://gethomepage.dev/widgets/info/greeting/
+  greeting:
     text_size: xl
     text: 'Unknown'
-- search:
-    provider: google
+- # https://gethomepage.dev/widgets/info/search/
+  search:
+    provider: custom
+    url: https://kagi.com/search?q=
     focus: false
     showSearchSuggestions: true
-    target: _blank
-- kubernetes:
+    target: _self
+- # https://gethomepage.dev/widgets/info/kubernetes/
+  kubernetes:
     cluster:
       show: true
       cpu: true

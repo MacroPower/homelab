@@ -4,6 +4,7 @@ import yaml
 import konfig.models.frontend
 import konfig.models.frontend.configmap
 import konfig.models.frontend.gateway
+import konfig.models.frontend.networkpolicy
 import konfig.models.frontend.rbac
 import konfig.models.templates.networkpolicy as npt
 import konfig.files
@@ -31,6 +32,22 @@ app = frontend.App {
         icmpV6Egress = npt.icmpV6Egress
         kubeAPIServerEgress = npt.kubeAPIServerEgress
         gatewayIngress = npt.envoyGatewayIngress
+        githubEgress = networkpolicy.NetworkPolicy {
+            name = "github-egress"
+            egress = [
+                {
+                    toFQDNs = [{
+                        matchPattern = "api.github.com"
+                    }]
+                    toPorts = [{
+                        ports = [{
+                            protocol = "TCP"
+                            port = "443"
+                        }]
+                    }]
+                }
+            ]
+        }
     }
 
     charts.homepage = homepage.Chart {
@@ -45,7 +62,6 @@ app = frontend.App {
         name = "homepage-config"
         data: {
             "bookmarks.yaml" = yaml.encode(bookmarks)
-            "docker.yaml" = ""
             "kubernetes.yaml" = yaml.encode(kubernetes)
             "services.yaml" = yaml.encode(services)
             "settings.yaml" = yaml.encode(settings)

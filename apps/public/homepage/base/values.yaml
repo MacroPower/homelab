@@ -2,6 +2,8 @@
 
 controllers:
   app:
+    replicas: 1
+    strategy: RollingUpdate
     annotations:
       reloader.stakater.com/auto: "true"
     containers:
@@ -17,6 +19,15 @@ controllers:
             cpu: 10m
           limits:
             memory: 200Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+            # Required for prerender cache.
+            add:
+              - CHOWN
+              - FOWNER
+              - DAC_OVERRIDE
         probes:
           startup:
             enabled: true
@@ -32,14 +43,16 @@ serviceAccount:
   homepage: {}
 
 persistence:
-  config:
+  config-dir:
+    type: emptyDir
+    globalMounts:
+      - path: /app/config
+  config-files:
     type: configMap
     name: homepage-config
     globalMounts:
       - subPath: kubernetes.yaml
         path: /app/config/kubernetes.yaml
-      - subPath: docker.yaml
-        path: /app/config/docker.yaml
       - subPath: settings.yaml
         path: /app/config/settings.yaml
       - subPath: bookmarks.yaml
@@ -48,3 +61,7 @@ persistence:
         path: /app/config/services.yaml
       - subPath: widgets.yaml
         path: /app/config/widgets.yaml
+  logs:
+    type: emptyDir
+    globalMounts:
+      - path: /app/config/logs
