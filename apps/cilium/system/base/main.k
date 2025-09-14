@@ -29,11 +29,6 @@ unifiBGPPeer = ciliumv2.CiliumBGPPeerConfig {
                 safi = "unicast"
                 advertisements.matchLabels = ciliumIngressLabels
             }
-            {
-                afi = "ipv6"
-                safi = "unicast"
-                advertisements.matchLabels = ciliumIngressLabels
-            }
         ]
     }
 }
@@ -76,8 +71,16 @@ ingressBGPAdvertisement = ciliumv2.CiliumBGPAdvertisement {
         advertisements = [
             {
                 advertisementType = "Service"
-                selector.matchLabels = ciliumIngressLabels
                 service.addresses = ["LoadBalancerIP"]
+                selector.matchLabels = ciliumIngressLabels
+            }
+            {
+                advertisementType = "Service"
+                service.addresses = ["LoadBalancerIP"]
+                selector.matchLabels = {
+                    "app.kubernetes.io/name" = "envoy"
+                    "app.kubernetes.io/component" = "proxy"
+                }
             }
         ]
     }

@@ -30,9 +30,7 @@ _gp = gatewayv1alpha1.EnvoyProxy {
                 }
                 envoyService = {
                     type = "LoadBalancer"
-                    labels = {
-                        "cilium.io/ingress": "true"
-                    }
+                    externalTrafficPolicy = "Cluster"
                 }
             }
         }
