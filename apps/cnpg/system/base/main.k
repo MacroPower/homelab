@@ -9,7 +9,7 @@ import charts.cloudnative_pg
 _values = files.read_yaml(file.current(), "values.yaml")
 
 app = frontend.App {
-    name = "postgres"
+    name = "system"
     tenantName = cnpg.tenant.name
 
     charts.cloudnative_pg = cloudnative_pg.Chart {
