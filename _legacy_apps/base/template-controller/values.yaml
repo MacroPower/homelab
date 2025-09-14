@@ -1,9 +1,0 @@
-# https://github.com/kluctl/charts/blob/main/charts/template-controller/values.yaml
-
-resources:
-  requests:
-    cpu: 100m
-    memory: 1Gi
-  limits:
-    cpu: 1000m
-    memory: 1Gi

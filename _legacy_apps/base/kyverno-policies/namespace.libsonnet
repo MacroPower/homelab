@@ -1,1 +1,0 @@
-import '../kyverno/namespace.libsonnet'
