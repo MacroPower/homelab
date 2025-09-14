@@ -20,14 +20,11 @@ dns:
   refuse_any: true
   upstream_dns:
     - https://dns.mullvad.net/dns-query
-    - "[/home.macro.network/]tcp://10.112.0.11"
-    - "[/macro.network/]tcp://10.10.0.1"
   upstream_dns_file: ""
   bootstrap_dns:
-    - 10.112.0.10
-    - 10.10.0.1
+    - 127.0.0.1
   fallback_dns:
-    - 10.10.0.1
+    - 127.0.0.1
   all_servers: true
   fastest_addr: false
   fastest_timeout: 1s
@@ -60,14 +57,14 @@ dns:
   private_networks: []
   use_private_ptr_resolvers: true
   local_ptr_upstreams:
-    - 10.10.0.1
+    - 127.0.0.1
   use_dns64: false
   dns64_prefixes: []
   serve_http3: false
   use_http3_upstreams: false
 tls:
   enabled: true
-  server_name: dns.home.macro.network
+  server_name: dns.macro.network
   force_https: false
   port_https: 443
   port_dns_over_tls: 853
@@ -133,9 +130,7 @@ filtering:
   blocking_mode: default
   parental_block_host: family-block.dns.adguard.com
   safebrowsing_block_host: standard-block.dns.adguard.com
-  rewrites:
-    - domain: "*.seedbox.macro.network"
-      answer: "10.43.0.20"
+  rewrites: []
   safebrowsing_cache_size: 1048576
   safesearch_cache_size: 1048576
   parental_cache_size: 1048576

@@ -31,6 +31,9 @@ _gp = gatewayv1alpha1.EnvoyProxy {
                 envoyService = {
                     type = "LoadBalancer"
                     externalTrafficPolicy = "Cluster"
+                    labels = {
+                        "bgp.kube.macro.network/peer-group" = "main"
+                    }
                 }
             }
         }

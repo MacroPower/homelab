@@ -15,6 +15,10 @@ ciliumIngressLabels: {str:str} = {
     "cilium.io/ingress": "true"
 }
 
+mainBGPGroup: {str:str} = {
+    "bgp.kube.macro.network/peer-group" = "main"
+}
+
 unifiBGPPeer = ciliumv2.CiliumBGPPeerConfig {
     metadata: modelutils.AppMetadataBuilder({
         name = "unifi"
@@ -27,7 +31,7 @@ unifiBGPPeer = ciliumv2.CiliumBGPPeerConfig {
             {
                 afi = "ipv4"
                 safi = "unicast"
-                advertisements.matchLabels = ciliumIngressLabels
+                advertisements.matchLabels = mainBGPGroup
             }
         ]
     }
@@ -40,9 +44,7 @@ unifiBGPPeering = ciliumv2.CiliumBGPClusterConfig {
         sync.SkipDryRunOnMissingResource = True
     })
     spec: {
-        nodeSelector.matchLabels = {
-            "bgp.kube.macro.network/peer-group" = "main"
-        }
+        nodeSelector.matchLabels = mainBGPGroup
         bgpInstances = [
             {
                 name = "unifi"
@@ -63,7 +65,7 @@ unifiBGPPeering = ciliumv2.CiliumBGPClusterConfig {
 ingressBGPAdvertisement = ciliumv2.CiliumBGPAdvertisement {
     metadata: modelutils.AppMetadataBuilder({
         name = "cilium-ingress"
-        labels = ciliumIngressLabels
+        labels = mainBGPGroup
     }, modelutils.ArgoCDOptions {
         sync.SkipDryRunOnMissingResource = True
     })
@@ -77,10 +79,7 @@ ingressBGPAdvertisement = ciliumv2.CiliumBGPAdvertisement {
             {
                 advertisementType = "Service"
                 service.addresses = ["LoadBalancerIP"]
-                selector.matchLabels = {
-                    "app.kubernetes.io/name" = "envoy"
-                    "app.kubernetes.io/component" = "proxy"
-                }
+                selector.matchLabels = mainBGPGroup
             }
         ]
     }

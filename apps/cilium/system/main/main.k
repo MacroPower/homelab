@@ -36,9 +36,9 @@ app = cilium_system_base.app | {
             serviceSelector.matchLabels = cilium_system_base.ciliumIngressLabels
         }
     }
-    extraResources.envoyIPPool = ciliumv2.CiliumLoadBalancerIPPool {
+    extraResources.mainIPPool = ciliumv2.CiliumLoadBalancerIPPool {
         metadata: {
-            name = "envoy-gateway"
+            name = "main-bgp-group"
         }
         spec: {
             blocks = [
@@ -50,10 +50,7 @@ app = cilium_system_base.app | {
                 }
             ]
             allowFirstLastIPs = "Yes"
-            serviceSelector.matchLabels = {
-                "app.kubernetes.io/name" = "envoy"
-                "app.kubernetes.io/component" = "proxy"
-            }
+            serviceSelector.matchLabels = cilium_system_base.mainBGPGroup
         }
     }
 }

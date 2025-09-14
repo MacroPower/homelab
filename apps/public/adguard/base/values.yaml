@@ -1,0 +1,119 @@
+# yaml-language-server: $schema=../../../../charts/adguard/values.schema.json
+
+controllers:
+  app:
+    replicas: 2
+    strategy: RollingUpdate
+    annotations:
+      reloader.stakater.com/auto: "true"
+    type: statefulset
+    statefulset:
+      volumeClaimTemplates:
+        - accessMode: ReadWriteOnce
+          storageClass: openebs-hostpath
+          name: work
+          size: 5Gi
+          globalMounts:
+            - path: /opt/adguardhome/work
+    initContainers:
+      config:
+        image:
+          repository: busybox
+          tag: latest
+        command: sh
+        args:
+          - -c
+          - cp /tmp/AdGuardHome.yaml /opt/adguardhome/conf/AdGuardHome.yaml
+        securityContext:
+          runAsUser: 0
+    containers:
+      app:
+        image:
+          repository: adguard/adguardhome
+          tag: v0.107.65
+        args:
+          - --config
+          - "/opt/adguardhome/conf/AdGuardHome.yaml"
+          - --work-dir
+          - "/opt/adguardhome/work"
+          - --no-check-update
+        resources:
+          requests:
+            cpu: 20m
+            memory: 250Mi
+          limits:
+            memory: 250Mi
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+            add:
+              - NET_BIND_SERVICE
+              - CHMOD
+              - CHOWN
+              - FOWNER
+        probes:
+          startup:
+            enabled: true
+            type: HTTP
+            path: /
+            spec:
+              failureThreshold: 30
+              periodSeconds: 5
+          liveness:
+            enabled: true
+            type: HTTP
+            path: /
+          readiness:
+            enabled: true
+            port: 53
+
+service:
+  dns:
+    type: LoadBalancer
+    ipFamilyPolicy: SingleStack
+    ipFamilies:
+      - IPv4
+    labels:
+      bgp.kube.macro.network/peer-group: main
+    ports:
+      http:
+        port: 80
+        protocol: TCP
+      https:
+        port: 443
+        protocol: TCP
+      tcp:
+        port: 53
+        protocol: TCP
+      udp:
+        port: 53
+        protocol: UDP
+      tcp-tls:
+        port: 853
+        protocol: TCP
+      udp-tls:
+        port: 853
+        protocol: UDP
+
+persistence:
+  config-dir:
+    type: emptyDir
+    globalMounts:
+      - path: /opt/adguardhome/conf
+  config-files:
+    type: configMap
+    name: adguard-config
+    globalMounts:
+      - subPath: AdGuardHome.yaml
+        path: /tmp/AdGuardHome.yaml
+  cert:
+    type: secret
+    name: adguard-dns-cert
+    globalMounts:
+      - path: /opt/adguardhome/certs/
+        readOnly: true
