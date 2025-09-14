@@ -1,0 +1,18 @@
+layout:
+  Apps:
+    icon: mdi-apps
+  Observability:
+    icon: mdi-chart-bell-curve-cumulative
+  Cluster Management:
+    icon: mdi-tools
+  Media:
+    icon: mdi-multimedia
+background:
+  blur: sm # sm, "", md, xl... see https://tailwindcss.com/docs/backdrop-blur
+  # saturate: 50 # 0, 50, 100... see https://tailwindcss.com/docs/backdrop-saturate
+  brightness: 75
+theme: dark
+hideVersion: true
+quicklaunch:
+  searchDescriptions: true
+  showSearchSuggestions: true

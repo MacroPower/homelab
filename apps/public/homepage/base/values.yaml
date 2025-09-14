@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=../../../../charts/homepage/values.schema.json
+
+global:
+  fullnameOverride: homepage
+
+controllers:
+  app:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: ghcr.io/gethomepage/homepage
+          tag: v1.4.6
+        env:
+          LOG_TARGETS: { value: "stdout" }
+        resources:
+          requests:
+            memory: 10Mi
+            cpu: 10m
+          limits:
+            memory: 200Mi
+        probes:
+          startup:
+            enabled: true
+            spec:
+              failureThreshold: 30
+              periodSeconds: 5
+          liveness:
+            enabled: true
+          readiness:
+            enabled: true
+
+serviceAccount:
+  homepage: {}
+
+persistence:
+  config:
+    type: configMap
+    name: homepage-config
+    globalMounts:
+      - subPath: kubernetes.yaml
+        path: /app/config/kubernetes.yaml
+      - subPath: docker.yaml
+        path: /app/config/docker.yaml
+      - subPath: settings.yaml
+        path: /app/config/settings.yaml
+      - subPath: bookmarks.yaml
+        path: /app/config/bookmarks.yaml
+      - subPath: services.yaml
+        path: /app/config/services.yaml
+      - subPath: widgets.yaml
+        path: /app/config/widgets.yaml

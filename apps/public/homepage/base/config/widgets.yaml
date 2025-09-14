@@ -1,0 +1,18 @@
+- logo:
+    icon: kubernetes
+- greeting:
+    text_size: xl
+    text: 'Unknown'
+- search:
+    provider: google
+    focus: false
+    showSearchSuggestions: true
+    target: _blank
+- kubernetes:
+    cluster:
+      show: true
+      cpu: true
+      memory: true
+      showLabel: false
+    nodes:
+      show: false

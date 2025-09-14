@@ -1,0 +1,26 @@
+- Clusters:
+    - Main:
+        - icon: homepage
+          href: https://homepage.main.cin.macro.network
+          target: _self
+    - Management:
+        - icon: homepage
+          href: https://homepage.mgmt.cin.macro.network
+          target: _self
+    - Seedbox:
+        - icon: homepage
+          href: https://homepage.seedbox.macro.network
+          target: _self
+- Repos:
+    - Homelab:
+        - icon: github-light
+          href: https://github.com/MacroPower/homelab
+          target: _blank
+    - Charts:
+        - icon: github-light
+          href: https://github.com/MacroPower/helm-charts
+          target: _blank
+    - Containers:
+        - icon: github-light
+          href: https://github.com/MacroPower/containers
+          target: _blank

@@ -103,8 +103,8 @@ kubeAPIServerEgress = networkpolicy.NetworkPolicy {
     ]
 }
 
-traefikIngress = networkpolicy.NetworkPolicy {
-    name = "traefik-ingress"
+envoyGatewayIngress = networkpolicy.NetworkPolicy {
+    name = "envoy-gateway-ingress"
     ingress = [
         {
             fromEndpoints = [
@@ -113,7 +113,7 @@ traefikIngress = networkpolicy.NetworkPolicy {
                         {
                             key = "k8s:io.kubernetes.pod.namespace"
                             operator = "In"
-                            values = ["traefik"]
+                            values = ["envoy-gateway"]
                         }
                     ]
                 }
