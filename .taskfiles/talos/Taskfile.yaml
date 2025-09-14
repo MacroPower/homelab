@@ -104,21 +104,23 @@ tasks:
   upgrade:
     desc: Upgrade Talos cluster
     requires:
-      vars: [NODES]
+      vars: [CLUSTER_NAME, NODES]
     cmds:
       - for: { var: NODES }
-        task: upgrade-node
+        task: upgrade-node-wait
         vars:
+          CLUSTER_NAME: "{{.CLUSTER_NAME}}"
           NODE: "{{.ITEM}}"
 
   upgrade-k8s:
     desc: Upgrade K8s on Talos cluster
     requires:
-      vars: [NODES]
+      vars: [CLUSTER_NAME, NODES]
     cmds:
       - for: { var: NODES }
-        task: upgrade-k8s-node
+        task: upgrade-k8s-node-wait
         vars:
+          CLUSTER_NAME: "{{.CLUSTER_NAME}}"
           NODE: "{{.ITEM}}"
 
   reset:
@@ -211,6 +213,18 @@ tasks:
         eval $({{.DOPPLER_CMD}} -- \
           talhelper gencommand upgrade -n {{.NODE}}.{{.CLUSTER_DOMAIN}})
 
+  upgrade-node-wait:
+    internal: true
+    dir: *dir
+    requires:
+      vars: [CLUSTER_NAME, NODE]
+    cmds:
+      - task: upgrade-node
+        vars:
+          CLUSTER_NAME: "{{.CLUSTER_NAME}}"
+          NODE: "{{.NODE}}"
+      - sleep 120
+
   upgrade-k8s-node:
     desc: Upgrade K8s on a Talos node
     summary: |
@@ -218,13 +232,24 @@ tasks:
         NODE: Node to upgrade (required)
     dir: *dir
     requires:
-      vars: [NODE]
+      vars: [CLUSTER_NAME, NODE]
     vars:
       DOPPLER_CMD: "doppler run -p {{.DOPPLER_PROJECT}} -c {{.CLUSTER_NAME}}"
     cmds:
       - |
         eval $({{.DOPPLER_CMD}} -- \
           talhelper gencommand upgrade-k8s -n {{.NODE}}.{{.CLUSTER_DOMAIN}})
+
+  upgrade-k8s-node-wait:
+    internal: true
+    dir: *dir
+    requires:
+      vars: [CLUSTER_NAME, NODE]
+    cmds:
+      - task: upgrade-k8s-node
+        vars:
+          CLUSTER_NAME: "{{.CLUSTER_NAME}}"
+          NODE: "{{.NODE}}"
       - sleep 120
 
   apply-extra:
