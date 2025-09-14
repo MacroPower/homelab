@@ -20,7 +20,7 @@ log file stdout
 router bgp 64512
  no bgp ebgp-requires-policy
  bgp router-id 10.0.0.1
- maximum-paths 1
+ maximum-paths 3
  !
  ! Peer group for Cilium BGP
  neighbor CBGP peer-group
