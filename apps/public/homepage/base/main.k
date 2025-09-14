@@ -35,6 +35,7 @@ app = frontend.App {
 
     charts.homepage = homepage.Chart {
         values: _values | homepage.Values {
+            global.nameOverride = name
             global.fullnameOverride = name
             service.app.ports.http.port = _homepagePort
         }

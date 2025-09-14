@@ -13,5 +13,11 @@ _values = objects.json_merge_patch(_baseValues, _envValues)
 
 app = public_homepage_base.app | {
     domainName = cluster.DOMAIN_NAME
-    charts.homepage.values = _values | homepage.Values {}
+    charts.homepage.values = _values | homepage.Values {
+        controllers.app.containers.app.env: {
+            HOMEPAGE_ALLOWED_HOSTS = {
+                value = "homepage.${domainName}"
+            }
+        }
+    }
 }
