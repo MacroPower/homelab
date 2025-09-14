@@ -67,8 +67,6 @@ bpf:
   masquerade: true
   # https://docs.cilium.io/en/stable/operations/performance/tuning/#netkit-device-mode
   datapathMode: netkit
-  lbAlgorithmAnnotation: true
-  lbModeAnnotation: true
 
 envoyConfig:
   enabled: true
