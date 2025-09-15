@@ -22,7 +22,6 @@ schema AppBackend[inputConfig: app.App]:
         mixins.ClusterRoleBindingMixin,
         mixins.SecretStoreMixin,
         mixins.ExternalSecretMixin,
-        mixins.PostgresDatabaseMixin,
         mixins.NamespaceSecretStoreMixin,
         mixins.GrafanaDashboardMixin,
         mixins.RouteMixin,

@@ -78,7 +78,6 @@ schema App(common.Metadata):
     namespaceSecretStores?: {str:secret.NamespaceSecretStore}
     secretStores?: {str:secret.SecretStore}
     externalSecrets?: {str:secret.ExternalSecret}
-    postgresDatabases?: {str:storage.PostgresDatabase}
     grafanaDashboards?: {str:grafana.GrafanaDashboard}
     routes?: {str:gateway.Route}
 
