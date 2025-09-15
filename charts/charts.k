@@ -17,6 +17,16 @@ charts: helm.Charts = {
             "https://doc.crds.dev/raw/github.com/cilium/cilium"
         ]
     }
+    tetragon: {
+        chart = "tetragon"
+        repoURL = "https://helm.cilium.io"
+        targetRevision = "1.5.0"
+        schemaGenerator = "VALUE-INFERENCE"
+        crdGenerator = "PATH"
+        crdPaths = [
+            "https://doc.crds.dev/raw/github.com/cilium/tetragon"
+        ]
+    }
     external_secrets: {
         chart = "external-secrets"
         repoURL = "https://charts.external-secrets.io/"

@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=../../../../charts/tetragon/values.schema.json
+
+tetragonOperator:
+  replicas: 2
+  failoverLease:
+    enabled: true
+  podInfo:
+    enabled: true
+
+tetragon:
+  enableProcessCred: true
+  enableProcessNs: true
+
+  prometheus:
+    serviceMonitor:
+      enabled: true
+
+  exportAllowList: |-
+    {"event_set":["PROCESS_EXEC", "PROCESS_EXIT", "PROCESS_KPROBE", "PROCESS_UPROBE", "PROCESS_TRACEPOINT", "PROCESS_LSM"]}
+
+  exportDenyList: |-
+    {"health_check":true}
+    {"namespace":[""]}

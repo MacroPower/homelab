@@ -1,0 +1,1542 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "affinity": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "affinity",
+      "type": "object"
+    },
+    "crds": {
+      "additionalProperties": true,
+      "properties": {
+        "installMethod": {
+          "default": "operator",
+          "description": "Method for installing CRDs. Supported values are: \"operator\", \"helm\" and \"none\".\nThe \"operator\" method allows for fine-grained control over which CRDs are installed and by\ndefault doesn't perform CRD downgrades. These can be configured in tetragonOperator section.\nThe \"helm\" method always installs all CRDs for the chart version.",
+          "required": [],
+          "title": "installMethod",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "crds",
+      "type": "object"
+    },
+    "daemonSetAnnotations": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "daemonSetAnnotations",
+      "type": "object"
+    },
+    "daemonSetLabelsOverride": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "daemonSetLabelsOverride",
+      "type": "object"
+    },
+    "dnsPolicy": {
+      "default": "Default",
+      "description": "DNS policy for Tetragon pods.\n\nhttps://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy",
+      "required": [],
+      "title": "dnsPolicy",
+      "type": "string"
+    },
+    "enabled": {
+      "default": true,
+      "description": "Global settings",
+      "required": [],
+      "title": "enabled",
+      "type": "boolean"
+    },
+    "export": {
+      "additionalProperties": true,
+      "description": "Tetragon events export settings",
+      "properties": {
+        "filenames": {
+          "description": "filenames defines list of files for fluentd to tail and export.",
+          "items": {
+            "required": [],
+            "type": "string"
+          },
+          "required": [],
+          "title": "filenames",
+          "type": "array"
+        },
+        "mode": {
+          "default": "stdout",
+          "description": "\"stdout\". \"\" to disable.",
+          "required": [],
+          "title": "mode",
+          "type": "string"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "securityContext": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "securityContext",
+          "type": "object"
+        },
+        "stdout": {
+          "additionalProperties": true,
+          "description": "stdout specific exporter settings",
+          "properties": {
+            "argsOverride": {
+              "description": "specific manifest args to use",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "argsOverride",
+              "type": "array"
+            },
+            "commandOverride": {
+              "description": "specific manifest command to use",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "commandOverride",
+              "type": "array"
+            },
+            "enabledArgs": {
+              "default": true,
+              "description": "* When enabledArgs=true and argsOverride is not set, the args inserted will be the default ones for export-stdout.\n* When enabledArgs=true and argsOverride override is set, the args value inserted will be the value of argsOverride.\n  This is useful for inserting another sidecar container that requires args override.\n* When enabledArgs=false, no command will be specified in the manifest and container's default args value will take over.",
+              "required": [],
+              "title": "enabledArgs",
+              "type": "boolean"
+            },
+            "enabledCommand": {
+              "default": true,
+              "description": "* When enabledCommand=true and commandOverride is not set, the command inserted will be hubble-export-stdout.\n  This supports the default for the current deployment instructions to deploy stdout-export sidecar container.\n* When enabledCommand=true and commandOverride override is set, the command inserted will be the value of commandOverride.\n  This is useful for inserting another sidecar container that requires a command override.\n* When enabledCommand=false, no command will be specified in the manifest and container's default command will take over.",
+              "required": [],
+              "title": "enabledCommand",
+              "type": "boolean"
+            },
+            "extraEnv": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to stdout export pod",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "image": {
+              "additionalProperties": true,
+              "properties": {
+                "override": {
+                  "default": "~",
+                  "required": [],
+                  "title": "override",
+                  "type": "null"
+                },
+                "repository": {
+                  "default": "quay.io/cilium/hubble-export-stdout",
+                  "required": [],
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "v1.1.0",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "image",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "stdout",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "export",
+      "type": "object"
+    },
+    "exportDirectory": {
+      "default": "/var/run/cilium/tetragon",
+      "description": "Directory to put Tetragon JSON export files.",
+      "required": [],
+      "title": "exportDirectory",
+      "type": "string"
+    },
+    "extraConfigmapMounts": {
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraConfigmapMounts",
+      "type": "array"
+    },
+    "extraHostPathMounts": {
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraHostPathMounts",
+      "type": "array"
+    },
+    "extraVolumes": {
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraVolumes",
+      "type": "array"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "hostNetwork": {
+      "default": true,
+      "description": "Configures whether Tetragon pods run on the host network.\n\nIMPORTANT: Tetragon must be on the host network for the process visibility to\nfunction properly.",
+      "required": [],
+      "title": "hostNetwork",
+      "type": "boolean"
+    },
+    "imagePullPolicy": {
+      "default": "IfNotPresent",
+      "required": [],
+      "title": "imagePullPolicy",
+      "type": "string"
+    },
+    "imagePullSecrets": {
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "imagePullSecrets",
+      "type": "array"
+    },
+    "nodeSelector": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "nodeSelector",
+      "type": "object"
+    },
+    "podAnnotations": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podAnnotations",
+      "type": "object"
+    },
+    "podLabels": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podLabels",
+      "type": "object"
+    },
+    "podLabelsOverride": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podLabelsOverride",
+      "type": "object"
+    },
+    "podSecurityContext": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podSecurityContext",
+      "type": "object"
+    },
+    "priorityClassName": {
+      "default": "",
+      "description": "Tetragon agent settings",
+      "required": [],
+      "title": "priorityClassName",
+      "type": "string"
+    },
+    "rthooks": {
+      "additionalProperties": true,
+      "description": "Method for installing Tetagon rthooks (tetragon-rthooks) daemonset\nThe tetragon-rthooks daemonset is responsible for installing run-time hooks on the host.\nSee: https://tetragon.io/docs/concepts/runtime-hooks",
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations for the Tetragon rthooks daemonset",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Enable the Tetragon rthooks daemonset",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraHookArgs": {
+          "additionalProperties": true,
+          "description": "extra args to pass to tetragon-oci-hook",
+          "required": [],
+          "title": "extraHookArgs",
+          "type": "object"
+        },
+        "extraLabels": {
+          "additionalProperties": true,
+          "description": "Extra labels for the Tetrargon rthooks daemonset",
+          "required": [],
+          "title": "extraLabels",
+          "type": "object"
+        },
+        "extraVolumeMounts": {
+          "description": "Extra volume mounts to add to the oci-hook-setup init container",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "failAllowNamespaces": {
+          "default": "",
+          "description": "Comma-separated list of namespaces to allow Pod creation for, in case tetragon-oci-hook fails to reach Tetragon agent.\nThe namespace Tetragon is deployed in is always added as an exception and must not be added again.",
+          "required": [],
+          "title": "failAllowNamespaces",
+          "type": "string"
+        },
+        "image": {
+          "additionalProperties": true,
+          "description": "image for the Tetragon rthooks pod",
+          "properties": {
+            "override": {
+              "default": "~",
+              "required": [],
+              "title": "override",
+              "type": "null"
+            },
+            "repository": {
+              "default": "quay.io/cilium/tetragon-rthooks",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "v0.5",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "installDir": {
+          "default": "/opt/tetragon",
+          "description": "installDir is the host location where the tetragon-oci-hook binary will be installed",
+          "required": [],
+          "title": "installDir",
+          "type": "string"
+        },
+        "interface": {
+          "default": "",
+          "description": "Method to use for installing  rthooks. Values:\n\n   \"oci-hooks\":\n      Add an apppriate file to \"/usr/share/containers/oci/hooks.d\". Use this with CRI-O.\n      See https://github.com/containers/common/blob/main/pkg/hooks/docs/oci-hooks.5.md\n      for more details.\n      Specific configuration for this interface can be found under \"ociHooks\".\n\n   \"nri-hook\":\n     Install the hook via NRI. Use this with containerd. Requires NRI being enabled.\n     see: https://github.com/containerd/containerd/blob/main/docs/NRI.md.\n     Specific configuration for this interface can be found under \"nriHook\".\n",
+          "required": [],
+          "title": "interface",
+          "type": "string"
+        },
+        "nriHook": {
+          "additionalProperties": true,
+          "description": "configuration for the \"nri-hook\" interface",
+          "properties": {
+            "nriSocket": {
+              "default": "/var/run/nri/nri.sock",
+              "description": "path to NRI socket",
+              "required": [],
+              "title": "nriSocket",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "nriHook",
+          "type": "object"
+        },
+        "ociHooks": {
+          "additionalProperties": true,
+          "description": "configuration for \"oci-hooks\" interface",
+          "properties": {
+            "hooksPath": {
+              "default": "/usr/share/containers/oci/hooks.d",
+              "description": "directory to install .json file for running the hook",
+              "required": [],
+              "title": "hooksPath",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "ociHooks",
+          "type": "object"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "description": "Pod annotations for the Tetrargon rthooks pod",
+          "required": [],
+          "title": "podAnnotations",
+          "type": "object"
+        },
+        "podSecurityContext": {
+          "additionalProperties": true,
+          "description": "security context for the Tetrargon rthooks pod",
+          "required": [],
+          "title": "podSecurityContext",
+          "type": "object"
+        },
+        "priorityClassName": {
+          "default": "",
+          "description": "priorityClassName for the Tetrargon rthooks pod",
+          "required": [],
+          "title": "priorityClassName",
+          "type": "string"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "resources for the the oci-hook-setup init container",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "serviceAccount": {
+          "additionalProperties": true,
+          "description": "rthooks service account.",
+          "properties": {
+            "name": {
+              "default": "",
+              "required": [],
+              "title": "name",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "serviceAccount",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "rthooks",
+      "type": "object"
+    },
+    "selectorLabelsOverride": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "selectorLabelsOverride",
+      "type": "object"
+    },
+    "serviceAccount": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "create": {
+          "default": true,
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "name": {
+          "default": "",
+          "required": [],
+          "title": "name",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "serviceAccount",
+      "type": "object"
+    },
+    "serviceLabelsOverride": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "serviceLabelsOverride",
+      "type": "object"
+    },
+    "tetragon": {
+      "additionalProperties": true,
+      "properties": {
+        "argsOverride": {
+          "description": "Override the arguments. For advanced users only.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "argsOverride",
+          "type": "array"
+        },
+        "btf": {
+          "default": "",
+          "description": "Set --btf option to explicitly specify an absolute path to a btf file. For advanced users only.",
+          "required": [],
+          "title": "btf",
+          "type": "string"
+        },
+        "cgidmap": {
+          "additionalProperties": true,
+          "description": "Enabling cgidmap instructs the Tetragon agent to use cgroup ids (instead of cgroup names) for\npod association. This feature depends on cri being enabled.",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "cgidmap",
+          "type": "object"
+        },
+        "clusterName": {
+          "default": "",
+          "description": "Name of the cluster where Tetragon is installed. Tetragon uses this value\nto set the cluster_name field in GetEventsResponse messages.",
+          "required": [],
+          "title": "clusterName",
+          "type": "string"
+        },
+        "commandOverride": {
+          "description": "Override the command. For advanced users only.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "commandOverride",
+          "type": "array"
+        },
+        "cri": {
+          "additionalProperties": true,
+          "description": "Configure tetragon pod so that it can contact the CRI running on the host",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "socketHostPath": {
+              "default": "",
+              "description": "path of the CRI socket on the host. This will typically be\n\"/run/containerd/containerd.sock\" for containerd or \"/var/run/crio/crio.sock\"  for crio.",
+              "required": [],
+              "title": "socketHostPath",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "cri",
+          "type": "object"
+        },
+        "debug": {
+          "default": false,
+          "description": "If you want to run Tetragon in debug mode change this value to true",
+          "required": [],
+          "title": "debug",
+          "type": "boolean"
+        },
+        "enableK8sAPI": {
+          "default": true,
+          "description": "Access Kubernetes API to associate Tetragon events with Kubernetes pods.",
+          "required": [],
+          "title": "enableK8sAPI",
+          "type": "boolean"
+        },
+        "enableKeepSensorsOnExit": {
+          "default": false,
+          "description": "Persistent enforcement to allow the enforcement policy to continue running even when its Tetragon process is gone.",
+          "required": [],
+          "title": "enableKeepSensorsOnExit",
+          "type": "boolean"
+        },
+        "enableMsgHandlingLatency": {
+          "default": false,
+          "description": "Enable latency monitoring in message handling",
+          "required": [],
+          "title": "enableMsgHandlingLatency",
+          "type": "boolean"
+        },
+        "enablePolicyFilter": {
+          "default": "True",
+          "description": "Enable policy filter. This is required for K8s namespace and pod-label filtering.",
+          "required": [],
+          "title": "enablePolicyFilter",
+          "type": "boolean"
+        },
+        "enablePolicyFilterCgroupMap": {
+          "default": false,
+          "description": "Enable policy filter cgroup map.",
+          "required": [],
+          "title": "enablePolicyFilterCgroupMap",
+          "type": "boolean"
+        },
+        "enablePolicyFilterDebug": {
+          "default": false,
+          "description": "Enable policy filter debug messages.",
+          "required": [],
+          "title": "enablePolicyFilterDebug",
+          "type": "boolean"
+        },
+        "enableProcessCred": {
+          "default": false,
+          "description": "Enable Capabilities visibility in exec and kprobe events.",
+          "required": [],
+          "title": "enableProcessCred",
+          "type": "boolean"
+        },
+        "enableProcessNs": {
+          "default": false,
+          "description": "Enable Namespaces visibility in exec and kprobe events.",
+          "required": [],
+          "title": "enableProcessNs",
+          "type": "boolean"
+        },
+        "enabled": {
+          "default": true,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "eventCacheRetries": {
+          "default": 15,
+          "description": "Configure the number of retries in tetragon's event cache.",
+          "required": [],
+          "title": "eventCacheRetries",
+          "type": "integer"
+        },
+        "eventCacheRetryDelay": {
+          "default": 2,
+          "description": "Configure the delay (in seconds) between retires in tetragon's event cache.",
+          "required": [],
+          "title": "eventCacheRetryDelay",
+          "type": "integer"
+        },
+        "exportAllowList": {
+          "default": "{\"event_set\":[\"PROCESS_EXEC\", \"PROCESS_EXIT\", \"PROCESS_KPROBE\", \"PROCESS_UPROBE\", \"PROCESS_TRACEPOINT\", \"PROCESS_LSM\"]}",
+          "description": "Allowlist for JSON export. For example, to export only process_connect events from\nthe default namespace:\n\nexportAllowList: |\n  {\"namespace\":[\"default\"],\"event_set\":[\"PROCESS_EXEC\"]}",
+          "required": [],
+          "title": "exportAllowList",
+          "type": "string"
+        },
+        "exportDenyList": {
+          "default": "{\"health_check\":true}\n{\"namespace\":[\"\", \"cilium\", \"kube-system\"]}",
+          "description": "Denylist for JSON export **(for file sinks only; does not filter gRPC output)**. For example, to exclude exec events that look similar to\nKubernetes health checks and all the events from kube-system namespace and the host:\n\nexportDenyList: |\n  {\"health_check\":true}\n  {\"namespace\":[\"kube-system\",\"\"]}\n",
+          "required": [],
+          "title": "exportDenyList",
+          "type": "string"
+        },
+        "exportFileCompress": {
+          "default": false,
+          "description": "Compress rotated JSON export files.",
+          "required": [],
+          "title": "exportFileCompress",
+          "type": "boolean"
+        },
+        "exportFileMaxBackups": {
+          "default": 5,
+          "description": "Number of rotated files to retain.",
+          "required": [],
+          "title": "exportFileMaxBackups",
+          "type": "integer"
+        },
+        "exportFileMaxSizeMB": {
+          "default": 10,
+          "description": "Size in megabytes at which to rotate JSON export files.",
+          "required": [],
+          "title": "exportFileMaxSizeMB",
+          "type": "integer"
+        },
+        "exportFilePerm": {
+          "default": "600",
+          "description": "JSON export file permissions as a string. Typically it's either \"600\" (to restrict access to\nowner) or \"640\"/\"644\" (to allow read access by logs collector or another agent).",
+          "required": [],
+          "title": "exportFilePerm",
+          "type": "string"
+        },
+        "exportFilename": {
+          "default": "tetragon.log",
+          "description": "JSON export filename. Set it to an empty string to disable JSON export altogether.",
+          "required": [],
+          "title": "exportFilename",
+          "type": "string"
+        },
+        "exportRateLimit": {
+          "default": -1,
+          "description": "Rate-limit event export (events per minute), Set to -1 to export all events.",
+          "required": [],
+          "title": "exportRateLimit",
+          "type": "integer"
+        },
+        "extraArgs": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "extraArgs",
+          "type": "object"
+        },
+        "extraEnv": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraEnv",
+          "type": "array"
+        },
+        "extraVolumeMounts": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "fieldFilters": {
+          "default": "",
+          "description": "Filters to include or exclude fields from Tetragon events. Without any filters, all\nfields are included by default. The presence of at least one inclusion filter implies\ndefault-exclude (i.e. any fields that don't match an inclusion filter will be\nexcluded). Field paths are expressed using dot notation like \"a.b.c\" and multiple\nfield paths can be separated by commas like \"a.b.c,d,e.f\". An optional \"event_set\" may\nbe specified to apply the field filter to a specific set of events.\n\nFor example, to exclude the \"parent\" field from all events and include the \"process\"\nfield in PROCESS_KPROBE events while excluding all others:\n\nfieldFilters: |\n  {\"fields\": \"parent\", \"action\": \"EXCLUDE\"}\n  {\"event_set\": [\"PROCESS_KPROBE\"], \"fields\": \"process\", \"action\": \"INCLUDE\"}\n",
+          "required": [],
+          "title": "fieldFilters",
+          "type": "string"
+        },
+        "gops": {
+          "additionalProperties": true,
+          "properties": {
+            "address": {
+              "default": "localhost",
+              "description": "The address at which to expose gops.",
+              "required": [],
+              "title": "address",
+              "type": "string"
+            },
+            "enabled": {
+              "default": true,
+              "description": "Whether to enable exposing gops server.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "port": {
+              "default": 8118,
+              "description": "The port at which to expose gops.",
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "gops",
+          "type": "object"
+        },
+        "grpc": {
+          "additionalProperties": true,
+          "properties": {
+            "address": {
+              "default": "localhost:54321",
+              "description": "The address at which to expose gRPC. Examples: localhost:54321, unix:///var/run/cilum/tetragon/tetragon.sock",
+              "required": [],
+              "title": "address",
+              "type": "string"
+            },
+            "enabled": {
+              "default": true,
+              "description": "Whether to enable exposing Tetragon gRPC.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "grpc",
+          "type": "object"
+        },
+        "healthGrpc": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Whether to enable health gRPC server.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "interval": {
+              "default": 10,
+              "description": "The interval at which to check the health of the agent.",
+              "required": [],
+              "title": "interval",
+              "type": "integer"
+            },
+            "port": {
+              "default": 6789,
+              "description": "The port at which to expose health gRPC.",
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "healthGrpc",
+          "type": "object"
+        },
+        "hostProcPath": {
+          "default": "/proc",
+          "description": "Location of the host proc filesystem in the runtime environment. If the runtime runs in the\nhost, the path is /proc. Exceptions to this are environments like kind, where the runtime itself\ndoes not run on the host.",
+          "required": [],
+          "title": "hostProcPath",
+          "type": "string"
+        },
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "override": {
+              "default": "~",
+              "required": [],
+              "title": "override",
+              "type": "null"
+            },
+            "repository": {
+              "default": "quay.io/cilium/tetragon",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "v1.5.0",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "description": "Overrides the default livenessProbe for the tetragon container.",
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
+        "nameOverride": {
+          "default": "",
+          "required": [],
+          "title": "nameOverride",
+          "type": "string"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "description": "extraEnv:\n  - name: foo\n    value: bar",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podAnnotations",
+          "type": "object"
+        },
+        "pprof": {
+          "additionalProperties": true,
+          "properties": {
+            "address": {
+              "default": "localhost",
+              "description": "The address at which to expose pprof.",
+              "required": [],
+              "title": "address",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Whether to enable exposing pprof server.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "port": {
+              "default": 6060,
+              "description": "The port at which to expose pprof.",
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "pprof",
+          "type": "object"
+        },
+        "processAncestors": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": "",
+              "description": "Comma-separated list of process event types to enable ancestors for.\nSupported event types are: base, kprobe, tracepoint, uprobe, lsm. Unknown event types will be ignored.\nType \"base\" is required by all other supported event types for correct reference counting.\nSet it to \"\" to disable ancestors completely.",
+              "required": [],
+              "title": "enabled",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "processAncestors",
+          "type": "object"
+        },
+        "processCacheGCInterval": {
+          "default": "30s",
+          "description": "Configure the interval (suffixed with s for seconds, m for minutes, etc) for the process cache garbage collector.",
+          "required": [],
+          "title": "processCacheGCInterval",
+          "type": "string"
+        },
+        "processCacheSize": {
+          "default": 65536,
+          "description": "Tetragon puts processes in an LRU cache. The cache is used to find ancestors\nfor subsequently exec'ed processes.",
+          "required": [],
+          "title": "processCacheSize",
+          "type": "integer"
+        },
+        "prometheus": {
+          "additionalProperties": true,
+          "properties": {
+            "address": {
+              "default": "",
+              "description": "The address at which to expose metrics. Set it to \"\" to expose on all available interfaces.",
+              "required": [],
+              "title": "address",
+              "type": "string"
+            },
+            "enabled": {
+              "default": true,
+              "description": "Whether to enable exposing Tetragon metrics.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "metricsLabelFilter": {
+              "default": "namespace,workload,pod,binary",
+              "description": "Comma-separated list of enabled metrics labels.\nThe configurable labels are: namespace, workload, pod, binary. Unknown labels will be ignored.\nRemoving some labels from the list might help reduce the metrics cardinality if needed.",
+              "required": [],
+              "title": "metricsLabelFilter",
+              "type": "string"
+            },
+            "port": {
+              "default": 2112,
+              "description": "The port at which to expose metrics.",
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            },
+            "serviceMonitor": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "description": "Whether to create a 'ServiceMonitor' resource targeting the tetragon pods.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "extraLabels": {
+                  "additionalProperties": true,
+                  "description": "Extra labels to be added on the Tetragon ServiceMonitor.",
+                  "required": [],
+                  "title": "extraLabels",
+                  "type": "object"
+                },
+                "labelsOverride": {
+                  "additionalProperties": true,
+                  "description": "The set of labels to place on the 'ServiceMonitor' resource.",
+                  "required": [],
+                  "title": "labelsOverride",
+                  "type": "object"
+                },
+                "scrapeInterval": {
+                  "default": "60s",
+                  "description": "Interval at which metrics should be scraped. If not specified, Prometheus' global scrape interval is used.",
+                  "required": [],
+                  "title": "scrapeInterval",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "serviceMonitor",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "prometheus",
+          "type": "object"
+        },
+        "redactionFilters": {
+          "default": "",
+          "description": "Filters to redact secrets from the args fields in Tetragon events. To perform\nredactions, redaction filters define RE2 regular expressions in the `redact`\nfield. Any capture groups in these RE2 regular expressions are redacted and\nreplaced with \"*****\".\n\nFor more control, you can select which binary or binaries should have their\narguments redacted with the `binary_regex` field.\n\nNOTE: This feature uses RE2 as its regular expression library. Make sure that you follow\nRE2 regular expression guidelines as you may observe unexpected results otherwise.\nMore information on RE2 syntax can be found [here](https://github.com/google/re2/wiki/Syntax).\n\nNOTE: When writing regular expressions in JSON, it is important to escape\nbackslash characters. For instance `\\Wpasswd\\W?` would be written as\n`{\"redact\": \"\\\\Wpasswd\\\\W?\"}`.\n\nAs a concrete example, the following will redact all passwords passed to\nprocesses with the \"--password\" argument:\n\n  {\"redact\": [\"--password(?:\\\\s+|=)(\\\\S*)\"]}\n\nNow, an event which contains the string \"--password=foo\" would have that\nstring replaced with \"--password=*****\".\n\nSuppose we also see some passwords passed via the -p shorthand for a specific binary, foo.\nWe can also redact these as follows:\n\n  {\"binary_regex\": [\"(?:^|/)foo$\"], \"redact\": [\"-p(?:\\\\s+|=)(\\\\S*)\"]}\n\nWith both of the above redaction filters in place, we are now redacting all\npassword arguments.",
+          "required": [],
+          "title": "redactionFilters",
+          "type": "string"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "securityContext": {
+          "additionalProperties": true,
+          "properties": {
+            "privileged": {
+              "default": true,
+              "required": [],
+              "title": "privileged",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "securityContext",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "tetragon",
+      "type": "object"
+    },
+    "tetragonOperator": {
+      "additionalProperties": true,
+      "description": "Tetragon Operator settings",
+      "properties": {
+        "affinity": {
+          "additionalProperties": true,
+          "properties": {
+            "podAntiAffinity": {
+              "additionalProperties": true,
+              "properties": {
+                "preferredDuringSchedulingIgnoredDuringExecution": {
+                  "items": {
+                    "additionalProperties": true,
+                    "properties": {
+                      "podAffinityTerm": {
+                        "additionalProperties": true,
+                        "properties": {
+                          "labelSelector": {
+                            "additionalProperties": true,
+                            "properties": {
+                              "matchLabels": {
+                                "additionalProperties": true,
+                                "properties": {
+                                  "app.kubernetes.io/name": {
+                                    "default": "tetragon-operator",
+                                    "required": [],
+                                    "title": "app.kubernetes.io/name",
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [],
+                                "title": "matchLabels",
+                                "type": "object"
+                              }
+                            },
+                            "required": [],
+                            "title": "labelSelector",
+                            "type": "object"
+                          },
+                          "topologyKey": {
+                            "default": "kubernetes.io/hostname",
+                            "required": [],
+                            "title": "topologyKey",
+                            "type": "string"
+                          }
+                        },
+                        "required": [],
+                        "title": "podAffinityTerm",
+                        "type": "object"
+                      },
+                      "weight": {
+                        "default": 100,
+                        "required": [],
+                        "title": "weight",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  "required": [],
+                  "title": "preferredDuringSchedulingIgnoredDuringExecution",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "podAntiAffinity",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations for the Tetragon Operator Deployment.",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "description": "Enables the Tetragon Operator.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraLabels": {
+          "additionalProperties": true,
+          "description": "Extra labels to be added on the Tetragon Operator Deployment.",
+          "required": [],
+          "title": "extraLabels",
+          "type": "object"
+        },
+        "extraPodLabels": {
+          "additionalProperties": true,
+          "description": "Extra labels to be added on the Tetragon Operator Deployment Pods.",
+          "required": [],
+          "title": "extraPodLabels",
+          "type": "object"
+        },
+        "extraVolumeMounts": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "Extra volumes for the Tetragon Operator Deployment.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumes",
+          "type": "array"
+        },
+        "failoverLease": {
+          "additionalProperties": true,
+          "description": "Lease handling for an automated failover when running multiple replicas",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable lease failover functionality",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "leaseDuration": {
+              "default": "15s",
+              "description": "If a lease is not renewed for X duration, the current leader is considered dead, a new leader is picked",
+              "required": [],
+              "title": "leaseDuration",
+              "type": "string"
+            },
+            "leaseRenewDeadline": {
+              "default": "5s",
+              "description": "The interval at which the leader will renew the lease",
+              "required": [],
+              "title": "leaseRenewDeadline",
+              "type": "string"
+            },
+            "leaseRetryPeriod": {
+              "default": "2s",
+              "description": "The timeout between retries if renewal fails",
+              "required": [],
+              "title": "leaseRetryPeriod",
+              "type": "string"
+            },
+            "namespace": {
+              "default": "",
+              "description": "Kubernetes Namespace in which the Lease resource is created. Defaults to the namespace where Tetragon is deployed in, if it's empty.",
+              "required": [],
+              "title": "namespace",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "failoverLease",
+          "type": "object"
+        },
+        "forceUpdateCRDs": {
+          "default": false,
+          "required": [],
+          "title": "forceUpdateCRDs",
+          "type": "boolean"
+        },
+        "image": {
+          "additionalProperties": true,
+          "description": "tetragon-operator image.",
+          "properties": {
+            "override": {
+              "default": "~",
+              "required": [],
+              "title": "override",
+              "type": "null"
+            },
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "quay.io/cilium/tetragon-operator",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "v1.5.0",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "nameOverride": {
+          "default": "",
+          "description": "The name of the Tetragon Operator deployment.",
+          "required": [],
+          "title": "nameOverride",
+          "type": "string"
+        },
+        "nodeSelector": {
+          "additionalProperties": true,
+          "description": "Steer the Tetragon Operator Deployment Pod placement via nodeSelector, tolerations and affinity rules.",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "description": "Annotations for the Tetragon Operator Deployment Pods.",
+          "required": [],
+          "title": "podAnnotations",
+          "type": "object"
+        },
+        "podInfo": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enables the PodInfo CRD and the controller that reconciles PodInfo\ncustom resources.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podInfo",
+          "type": "object"
+        },
+        "podSecurityContext": {
+          "additionalProperties": true,
+          "description": "securityContext for the Tetragon Operator Deployment Pods.",
+          "required": [],
+          "title": "podSecurityContext",
+          "type": "object"
+        },
+        "priorityClassName": {
+          "default": "",
+          "description": "priorityClassName for the Tetragon Operator Deployment Pods.",
+          "required": [],
+          "title": "priorityClassName",
+          "type": "string"
+        },
+        "prometheus": {
+          "additionalProperties": true,
+          "properties": {
+            "address": {
+              "default": "",
+              "description": "The address at which to expose Tetragon Operator metrics. Set it to \"\" to expose on all available interfaces.",
+              "required": [],
+              "title": "address",
+              "type": "string"
+            },
+            "enabled": {
+              "default": true,
+              "description": "Enables the Tetragon Operator metrics.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "port": {
+              "default": 2113,
+              "description": "The port at which to expose metrics.",
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            },
+            "serviceMonitor": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "description": "Whether to create a 'ServiceMonitor' resource targeting the tetragonOperator pods.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "extraLabels": {
+                  "additionalProperties": true,
+                  "description": "Extra labels to be added on the Tetragon Operator ServiceMonitor.",
+                  "required": [],
+                  "title": "extraLabels",
+                  "type": "object"
+                },
+                "labelsOverride": {
+                  "additionalProperties": true,
+                  "description": "The set of labels to place on the 'ServiceMonitor' resource.",
+                  "required": [],
+                  "title": "labelsOverride",
+                  "type": "object"
+                },
+                "scrapeInterval": {
+                  "default": "60s",
+                  "description": "Interval at which metrics should be scraped. If not specified, Prometheus' global scrape interval is used.",
+                  "required": [],
+                  "title": "scrapeInterval",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "serviceMonitor",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "prometheus",
+          "type": "object"
+        },
+        "replicas": {
+          "default": 1,
+          "description": "Number of replicas to run for the tetragon-operator deployment",
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "resources for the Tetragon Operator Deployment Pod container.",
+          "properties": {
+            "limits": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "500m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "128Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "10m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "64Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "securityContext": {
+          "additionalProperties": true,
+          "description": "securityContext for the Tetragon Operator Deployment Pod container.",
+          "properties": {
+            "allowPrivilegeEscalation": {
+              "default": false,
+              "required": [],
+              "title": "allowPrivilegeEscalation",
+              "type": "boolean"
+            },
+            "capabilities": {
+              "additionalProperties": true,
+              "properties": {
+                "drop": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "capabilities",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "securityContext",
+          "type": "object"
+        },
+        "serviceAccount": {
+          "additionalProperties": true,
+          "description": "tetragon-operator service account.",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "create": {
+              "default": true,
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            },
+            "name": {
+              "default": "",
+              "required": [],
+              "title": "name",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "serviceAccount",
+          "type": "object"
+        },
+        "strategy": {
+          "additionalProperties": true,
+          "description": "resources for the Tetragon Operator Deployment update strategy",
+          "properties": {
+            "rollingUpdate": {
+              "additionalProperties": true,
+              "properties": {
+                "maxSurge": {
+                  "default": 1,
+                  "required": [],
+                  "title": "maxSurge",
+                  "type": "integer"
+                },
+                "maxUnavailable": {
+                  "default": 0,
+                  "required": [],
+                  "title": "maxUnavailable",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "rollingUpdate",
+              "type": "object"
+            },
+            "type": {
+              "default": "RollingUpdate",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "strategy",
+          "type": "object"
+        },
+        "tolerations": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
+        },
+        "tracingPolicy": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enables the TracingPolicy and TracingPolicyNamespaced CRD creation.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "tracingPolicy",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "tetragonOperator",
+      "type": "object"
+    },
+    "tolerations": {
+      "items": {
+        "additionalProperties": true,
+        "properties": {
+          "operator": {
+            "default": "Exists",
+            "required": [],
+            "title": "operator",
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "required": [],
+      "title": "tolerations",
+      "type": "array"
+    },
+    "updateStrategy": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "updateStrategy",
+      "type": "object"
+    }
+  },
+  "required": [],
+  "type": "object"
+}
