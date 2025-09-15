@@ -1,20 +1,20 @@
-clusterName: "'{{ env.ROBUSTA_CLUSTER_NAME }}'"
+# yaml-language-server: $schema=../../../../charts/robusta/values.schema.json
+
 globalConfig:
   signing_key: "{{ env.ROBUSTA_SIGNING_KEY }}"
   account_id: "{{ env.ROBUSTA_ACCOUNT_ID }}"
-  prometheus_url: http://prometheus-operated.prometheus.svc.cluster.local:9090
+  prometheus_url: http://mimir-distributed-nginx.o11y-mimir.svc/prometheus
 
 sinksConfig:
   - robusta_sink:
       name: robusta_ui_sink
       token: "{{ env.ROBUSTA_UI_SINK_TOKEN }}"
-  - discord_sink:
-      name: main_discord_sink
-      url: "{{ env.ROBUSTA_DISCORD_WEBHOOK_URL }}"
 
 enableServiceMonitors: true
-
-enablePlatformPlaybooks: true
+enablePrometheusStack: false
+enablePlatformPlaybooks: false
+enableHolmesGPT: false
+enabledManagedConfiguration: false
 
 runner:
   sendAdditionalTelemetry: true
@@ -25,7 +25,7 @@ runner:
   resources:
     requests:
       cpu: 100m
-      memory: 2Gi
+      memory: 1Gi
     limits:
       memory: 2Gi
 
@@ -36,5 +36,3 @@ kubewatch:
       memory: 150Mi
     limits:
       memory: 150Mi
-
-rsa: ~

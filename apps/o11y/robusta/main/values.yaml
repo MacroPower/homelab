@@ -1,0 +1,3 @@
+# yaml-language-server: $schema=../../../../charts/robusta/values.schema.json
+
+{}

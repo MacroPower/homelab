@@ -215,4 +215,16 @@ charts: helm.Charts = {
         targetRevision = "4.2.0"
         schemaGenerator = "NONE"
     }
+    robusta: {
+        chart = "robusta"
+        repoURL = "https://robusta-charts.storage.googleapis.com"
+        targetRevision = "0.28.0"
+        schemaGenerator = "AUTO"
+        values: {
+            clusterName = "kcl"
+            sinksConfig = [{
+                robusta_sink: {name = "robusta_ui_sink"}
+            }]
+        }
+    }
 }
