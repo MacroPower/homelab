@@ -20,4 +20,4 @@ tetragon:
 
   exportDenyList: |-
     {"health_check":true}
-    {"namespace":[""]}
+    {"namespace":["cilium-system","cilium-tetragon",""]}
