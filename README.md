@@ -26,70 +26,94 @@ Admittedly, both usages of "all" describe the end goal of this repo, not the cur
 
 ## 🎨 Components
 
-### Infrastructure management
+### Core
 
-- [Terraform](https://github.com/hashicorp/terraform): Bootstraps and manages infrastructure needed for Kubernetes.
-- [Crossplane](https://crossplane.io): Kubernetes-native infrastructure management.
+- [KCL](https://www.kcl-lang.io/): Configuration language; with Helm support via [kclipper](https://github.com/MacroPower/kclipper).
+- [Talos](https://www.talos.dev): Immutable Kubernetes OS; built using [talhelper](https://github.com/budimanjojo/talhelper).
+- [TrueNAS](https://www.truenas.com/): Big ZFS storage; runs small Talos containers for direct I/O.
+- [Terraform](https://github.com/hashicorp/terraform): Declares any infrastructure not managed by Kubernetes.
+- [Renovate](https://github.com/renovatebot/renovate): Automatic updates for applications via pull requests.
 
 ### Cluster management
 
-- [Talos](https://www.talos.dev): Immutable Kubernetes OS; built using [talhelper](https://github.com/budimanjojo/talhelper).
-- [Argo CD](https://github.com/argoproj/argo-cd): Reconciles kubernetes clusters with this repository.
-- [Kyverno](https://kyverno.io): Policy engine supporting validate, mutate, generate, and cleanup rules.
-- [Harbor](https://goharbor.io): Artifact registry with pull-through cache and vulnerability scanning.
-- [KCL](https://www.kcl-lang.io/): Configuration language I use to describe Argo applications.
-- [Renovate](https://github.com/renovatebot/renovate): Automatic updates for applications via pull requests.
-
-### Secrets
-
-- [Doppler](https://www.doppler.com/): Hosted secrets management platform.
-- [External Secrets](https://external-secrets.io): Synchronizes secrets from Doppler into Kubernetes.
+- [Argo CD](https://github.com/argoproj/argo-cd): Reconciles Kubernetes clusters with this repository.
+- [Spegel](https://goharbor.io): Stateless, fully transparent pull-through image cache.
+- [Reloader](https://docs.stakater.com/reloader/): Automatic rollouts on ConfigMap/Secret updates.
+- [Descheduler](https://sigs.k8s.io/descheduler): Evicts Pods to maintain zone and node balance.
 
 ### Networking
 
-- [Cilium](https://cilium.io): eBPF-based CNI & service mesh.
-- [Traefik](https://traefik.io): Ingress controller & reverse proxy.
+- [Cilium](https://cilium.io): eBPF-based CNI, BGP control plane, firewall, and more.
+- [Envoy Gateway](https://gateway.envoyproxy.io/): Implements the Kubernetes Gateway API.
 - [Cert Manager](https://cert-manager.io): Automatic Let's Encrypt certificates.
+- [External DNS](https://kubernetes-sigs.github.io/external-dns/): Automatic DNS record management.
 - [AdGuard Home](https://github.com/AdguardTeam/AdguardHome): DNS server with ad-blocking.
-- [Wireguard](https://www.wireguard.com): Modern VPN tunnels; implemented using [wireguard-operator](https://github.com/jodevsa/wireguard-operator).
+- [Wireguard](https://www.wireguard.com): Modern VPN tunnels.
 
 ### Security
 
-- [Authentik](https://goauthentik.io): Identity Provider.
+- [External Secrets](https://external-secrets.io): Synchronizes secrets from [Doppler](https://www.doppler.com/) into Kubernetes.
 - [Tetragon](https://tetragon.io/): eBPF-based security observability and runtime enforcement.
 - [SecureCodeBox](https://www.securecodebox.io/): Continuous and automated security testing with familiar tools like Nmap, ZAP.
-- [Trivy](https://aquasecurity.github.io/trivy): Kubernetes and container vulnerability scanner.
 
 ### Observability
 
-- [Prometheus](https://prometheus.io): Monitoring system & TSDB.
-- [Jaeger](https://www.jaegertracing.io): Distributed tracing system.
 - [Loki](https://grafana.com/oss/loki/): Log aggregation system.
-- [Vector](https://vector.dev): Log collector, transformer, and router.
-- [OTEL Collector](https://opentelemetry.io/docs/collector/): Trace/metric collector, transformer, and router.
 - [Grafana](https://grafana.com): Visualization platform.
-- [Robusta](https://home.robusta.dev): Alerts / notifications and runbook automation.
-- [Inspektor Gadget](https://www.inspektor-gadget.io/): eBPF-based gadgets to debug and inspect Kubernetes apps and resources.
+- [Tempo](https://grafana.com/oss/tempo/): Distributed tracing system.
+- [Mimir](https://grafana.com/oss/mimir/): Prometheus-compatible monitoring system and TSDB.
+- [Alloy](https://grafana.com/oss/alloy/): Grafana's distribution of OpenTelemetry collector.
+- [Beyla](https://grafana.com/oss/beyla-ebpf/): Zero-touch eBPF auto-instrumentation (part of Alloy).
+- [Robusta](https://home.robusta.dev): Alert and notification management.
 
 ### Storage
 
-- [Rook](https://rook.io): Storage operator for Ceph.
-- [Ceph](https://ceph.io): Distributed object, block, and file storage.
+- [OpenEBS](https://openebs.io/): Manages local and replicated persistent volumes.
+- [CloudNativePG](https://cloudnative-pg.io/): Manages highly-available, cloud-native Postgres clusters.
+- [Dragonfly](https://www.dragonflydb.io): Highly-available, cloud-native Redis and Memcached implementation.
 
 ---
 
 ## 📂 Repository structure
 
-Overview of this repo's structure, there's more info in the README files for each:
+This repository implements a **GitOps architecture**, primarily orchistrated by **Argo CD ApplicationSets** defined as [KCL](https://www.kcl-lang.io/) with [kclipper](https://github.com/MacroPower/kclipper). The repo's structure directly informs ApplicationSet behavior via matrix generators. The libraries used are based on KCL's [konfig](https://github.com/kcl-lang/konfig).
 
-```sh
+This structure enables a readable application hierarchy where each tenant can effectively function independently, i.e. somewhat mirroring an actual production multi-tenant platform. However, what would be individual repositories with their own access controls, releases, and so on, are instead represented as folders in this monorepo.
+
+```yaml
 .
-├─📁 apps      # ArgoCD Applications
-├─📁 appsets   # ArgoCD ApplicationSets
-├─📁 bootstrap # Bootstrapping for ArgoCD
-├─📁 clusters  # Cluster-specific data for reference
-├─📁 konfig    # KCL libraries
-└─📁 terraform # IaC defined via Terraform
+├─📁 apps                     # KCL-based applications organized by tenants
+│ ├─📁 argo                   #   Tenant: argo project
+│ │ ├─📁 _tenant              #     Tenant-level shared configuration
+│ │ │ ├─📁 base               #       Base tenant resources
+│ │ │ │ └─📄 .tenant.yaml     #         Configures this tenant's "apps" ApplicationSet
+│ │ │ └─📁 shared             #       Shared tenant resources
+│ │ │   └─📄 .tenant.yaml     #         Configures this tenant's "shared" ApplicationSet
+│ │ └─📁 cd                   #     Application: argo-cd namespace
+│ │   ├─📁 base               #       Base app configuration
+│ │   └─📁 mgmt               #       Management cluster environment
+│ │     └─📄 .app.yaml        #         Configures this cluster's Argo CD Application
+│ └─📁 ...                    #   Additional tenants
+├─📁 appsets                  # ArgoCD ApplicationSets for multi-cluster deployment
+│ └─📄 tenants.yaml           #   Matrix generator deploying tenant ApplicationSets
+├─📁 bootstrap                # Cluster bootstrap configurations
+│ └─📁 core                   #   Essential components (Cilium, ArgoCD)
+├─📁 charts                   # Kclipper wrappers for Helm charts
+│ ├─📁 argo_cd                #   Auto-generated ArgoCD kclipper wrapper
+│ ├─📁 ...                    #   Additional auto-generated chart wrappers
+│ └─📄 charts.k               #   Kclipper chart definitions
+├─📁 clusters                 # Cluster configuration (Talos, KCL constants)
+│ ├─📁 main                   #   Main cluster config
+│ └─📁 mgmt                   #   Management cluster config
+└─📁 konfig                   # Custom KCL library for Kubernetes abstractions
+  ├─📁 models                 #   Core data models
+  │ ├─📁 backend              #     Low-level Kubernetes resource models
+  │ ├─📁 frontend             #     High-level application abstractions
+  │ ├─📁 mixins               #     Reusable configuration mixins
+  │ ├─📁 protocol             #     Interface definitions
+  │ ├─📁 render               #     Rendering logic for YAML output
+  │ └─📁 templates            #     Model templates
+  └─📁 ...                    #   Utility packages, etc.
 ```
 
 ---
@@ -98,18 +122,19 @@ Overview of this repo's structure, there's more info in the README files for eac
 
 ### Cloud Services
 
-| Service                                              | Use                                                            | Cost          |
-| ---------------------------------------------------- | -------------------------------------------------------------- | ------------- |
-| [Hetzner Cloud](https://www.hetzner.com/)            | Cloud compute and storage                                      | $40/mo        |
-| [Google Cloud](https://cloud.google.com/)            | Cloud storage                                                  | $20/mo        |
-| [Cloudflare](https://www.cloudflare.com/)            | DNS, Certs, Proxy, WAF                                         | Free          |
-| [Doppler](https://doppler.com/)                      | Secrets with [External Secrets](https://external-secrets.io/)  | Free          |
-| [GitHub](https://github.com/)                        | Hosting this repository and continuous integration/deployments | Free          |
-| [Renovate](https://github.com/renovatebot/renovate)  | Automatic updates for applications via pull requests           | Free          |
-| [Robusta](https://home.robusta.dev/)                 | Alerts / notifications and runbook automation                  | Free          |
-| [Terraform Cloud](https://www.terraform.io/)         | Storing Terraform state                                        | Free          |
-| [Grafana Cloud](https://grafana.com/products/cloud/) | Hosted Grafana & Prometheus, used for misc public projects     | Free          |
-|                                                      |                                                                | Total: $60/mo |
+| Service                                              | Use                                                           | Cost          |
+| ---------------------------------------------------- | ------------------------------------------------------------- | ------------- |
+| [Hetzner Cloud](https://www.hetzner.com/)            | Cloud compute and storage                                     | $40/mo        |
+| [Google Cloud](https://cloud.google.com/)            | Cloud storage                                                 | $20/mo        |
+| [Cloudflare](https://www.cloudflare.com/)            | DNS, Certs, Proxy, WAF                                        | Free          |
+| [Doppler](https://doppler.com/)                      | Secrets with [External Secrets](https://external-secrets.io/) | Free          |
+| [GitHub](https://github.com/)                        | Hosting this repository and CI/CD workflows                   | Free          |
+| [Robusta](https://home.robusta.dev/)                 | Alerts and notifications                                      | Free          |
+| [Terraform Cloud](https://www.terraform.io/)         | Storing Terraform state                                       | Free          |
+| [Grafana Cloud](https://grafana.com/products/cloud/) | Hosted Grafana / LGTM Stack                                   | Free          |
+| [Auth0](https://auth0.com/)                          | IDP / Authentication and authorization platform               | Free          |
+| [Unifi Site Manager](https://ui.com/)                | Multi-site Unifi gateway management                           | Free          |
+|                                                      |                                                               | Total: $60/mo |
 
 ### Internet
 
@@ -130,18 +155,28 @@ Overview of this repo's structure, there's more info in the README files for eac
 
 ## 🔧 Hardware
 
-### Computing
+### Core
 
-| Count | Device                     | OS Disk Size | Data Disk Size      | Ram   | Operating System | Purpose                        |
-| ----- | -------------------------- | ------------ | ------------------- | ----- | ---------------- | ------------------------------ |
-| 3     | Turing Pi 2                | 1GB NAND     | 32GB SD Card        | 128MB | TPi BMC Firmware | 4-Node Cluster Board           |
-| 3     | Raspberry Pi CM4           | 32GB eMMC    | N/A                 | 8GB   | Talos Linux      | K8s Management Control Plane   |
-| 3     | Turing RK1                 | 32GB eMMC    | 1TB SSD             | 32GB  | Talos Linux      | K8s Management Workers (arm64) |
-| 3     | Turing RK1                 | 1TB SSD      | N/A                 | 32GB  | Talos Linux      | K8s Control Plane              |
-| 3     | Supermicro M11SDV-8C+-LN4F | 64GB SATADOM | 4TB SSD             | 128GB | Talos Linux      | K8s Workers (x86)              |
-| 3     | Turing RK1                 | 32GB eMMC    | 1TB SSD             | 32GB  | Talos Linux      | K8s Workers (arm64)            |
-| 1     | TrueNAS Mini R             | 500GB SSD    | 200TB HDD + 2TB SSD | 64GB  | TrueNAS SCALE    | Storage Server                 |
-| 1     | Raspberry Pi 4B            | 32GB SD Card | N/A                 | 4GB   | PiKVM            | Network KVM                    |
+| Count | Device          | Memory | Disk         | OS      | Purpose              |
+| ----- | --------------- | ------ | ------------ | ------- | -------------------- |
+| 3     | Turing Pi 2     | 128MB  | 1GB NAND     | TPi BMC | 4-Node Cluster Board |
+| 1     | Raspberry Pi 4B | 4GB    | 32GB SD Card | PiKVM   | Network KVM          |
+
+### Management Cluster
+
+| Count | Device           | Memory | Disk      | OS    | Purpose         |
+| ----- | ---------------- | ------ | --------- | ----- | --------------- |
+| 3     | Raspberry Pi CM4 | 8GB    | 32GB eMMC | Talos | Control Plane   |
+| 3     | Turing RK1       | 32GB   | 1TB NVMe  | Talos | Workers (arm64) |
+
+### Main Cluster
+
+| Count | Device                     | Memory | Disk      | OS    | Purpose          |
+| ----- | -------------------------- | ------ | --------- | ----- | ---------------- |
+| 3     | Turing RK1                 | 32GB   | 1TB NVMe  | Talos | Control Plane    |
+| 3     | Supermicro M11SDV-8C+-LN4F | 128GB  | 4TB SSD   | Talos | Workers (x86)    |
+| 3     | Turing RK1                 | 32GB   | 1TB NVMe  | Talos | Workers (arm64)  |
+| 1     | TrueNAS Mini R             | 64GB   | 200TB HDD | SCALE | Storage + Worker |
 
 ### Networking
 
