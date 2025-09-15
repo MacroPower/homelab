@@ -289,11 +289,12 @@ locals {
       wifi          = true
       multicast_dns = true
       dns = [
-        "10.10.30.1",
+        "10.10.40.20",
         "10.1.0.1",
       ]
       dns_v6 = [
-        "::ffff:a0a:1e01",
+        "::ffff:a0a:2814",
+        "::ffff:a01:1",
       ]
     }
     guest = {
@@ -420,7 +421,7 @@ module "unifi" {
     adguard_home = {
       name = "Adguard Home"
       id   = 1
-      ipv4 = "10.10.30.1"
+      ipv4 = "10.10.40.20"
     }
     work_things = {
       name = "Work Things"
