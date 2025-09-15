@@ -1,6 +1,6 @@
 clusterName: main
 talosVersion: v1.11.1
-kubernetesVersion: v1.32.3
+kubernetesVersion: v1.34.1
 endpoint: https://kmain.cin.macro.network:6443
 cniConfig:
   name: none

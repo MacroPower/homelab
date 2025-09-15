@@ -265,6 +265,9 @@ configs:
         end
       end
       return hs
+    resource.customizations.ignoreDifferences.all: |
+      jsonPointers:
+        - /metadata/creationTimestamp
 
   ## Argo CD configuration parameters
   ## Ref: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/argocd-cmd-params-cm.yaml
