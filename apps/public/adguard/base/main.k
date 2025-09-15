@@ -5,6 +5,7 @@ import konfig.models.frontend
 import konfig.models.frontend.configmap
 import konfig.models.frontend.gateway
 import konfig.models.frontend.networkpolicy
+import konfig.models.frontend.secret
 import konfig.models.templates.networkpolicy as npt
 import konfig.files
 
@@ -14,6 +15,18 @@ import charts.adguard
 _values = files.read_yaml(file.current(), "values.yaml")
 
 adguardConfig = files.read_yaml(file.current(), "config/AdGuardHome.yaml")
+
+_adguardOIDCClient = secret.ExternalSecret {
+    name = "adguard-oidc-client"
+    data: {
+        "client-id" = {
+            remoteRef.key = "LAB_ADMIN_AUTH0_CLIENT_ID"
+        }
+        "client-secret" = {
+            remoteRef.key = "LAB_ADMIN_AUTH0_CLIENT_SECRET"
+        }
+    }
+}
 
 _adguardWebPort = 3000
 
@@ -97,6 +110,11 @@ app = frontend.App {
         }
     }
 
+    secretStore = public.shared.secretStores.default.name
+    externalSecrets: {
+        adguardOIDCClient = _adguardOIDCClient
+    }
+
     charts.adguard = adguard.Chart {
         values = _values | adguard.Values {
             global.nameOverride = name
@@ -117,6 +135,10 @@ app = frontend.App {
         services.adguardWeb = {
             name = "${name}-app"
             port = _adguardWebPort
+        }
+        security = gateway.SecurityPolicy {
+            oidcClientRef = _adguardOIDCClient.name
+            oidcIssuer = public.tenant.oidcIssuer
         }
     }
 }

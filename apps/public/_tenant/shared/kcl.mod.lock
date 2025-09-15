@@ -19,10 +19,6 @@
     reg = "ghcr.io"
     repo = "macropower/kclipper/helm"
     oci_tag = "0.16.1"
-  [dependencies.homepage_tenant]
-    name = "homepage_tenant"
-    full_name = "homepage_tenant_0.1.0"
-    version = "0.1.0"
   [dependencies.json_merge_patch]
     name = "json_merge_patch"
     full_name = "json_merge_patch_0.1.1"
@@ -43,3 +39,7 @@
     name = "konfig"
     full_name = "konfig_0.0.1"
     version = "0.0.1"
+  [dependencies.public_tenant]
+    name = "public_tenant"
+    full_name = "public_tenant_0.1.0"
+    version = "0.1.0"

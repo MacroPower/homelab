@@ -1,6 +1,15 @@
-import homepage_tenant
+import public_tenant
 import konfig.models.frontend
 
-tenant = homepage_tenant.tenantConfiguration
+tenant = public_tenant.tenantConfiguration
 
-shared = frontend.SharedApp {}
+shared = frontend.SharedApp {
+    secretStores.default = {
+        name = "public"
+        provider.doppler.auth.secretRef.dopplerToken = {
+            name = "doppler-credentials"
+            key = "token"
+            namespace = "kube-system"
+        }
+    }
+}

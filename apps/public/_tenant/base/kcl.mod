@@ -1,5 +1,5 @@
 [package]
-name = "homepage_tenant"
+name = "public_tenant"
 version = "0.1.0"
 
 [dependencies]

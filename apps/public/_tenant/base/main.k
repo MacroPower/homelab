@@ -7,4 +7,5 @@ tenantConfiguration = frontend.Tenant {
         name = "cluster-gateway"
         namespace = "envoy-gateway"
     }
+    oidcIssuer = "https://auth.jacobcolvin.com"
 }
