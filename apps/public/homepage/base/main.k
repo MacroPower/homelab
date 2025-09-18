@@ -75,9 +75,9 @@ app = frontend.App {
             name = name
             port = _homepagePort
         }
-        homepage = gateway.Homepage {
+        homepage = {
             name = "Homepage"
-            description = "This homepage"
+            description = "This Homepage"
             group = "Apps"
             icon = "homepage"
         }

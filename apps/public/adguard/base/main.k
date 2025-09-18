@@ -136,13 +136,13 @@ app = frontend.App {
             name = "${name}-app"
             port = _adguardWebPort
         }
-        homepage = gateway.Homepage {
+        homepage = {
             name = "AdGuard Home"
             description = "Ad-blocking DNS Server"
             group = "Apps"
             icon = "adguard-home"
         }
-        security = gateway.SecurityPolicy {
+        security = {
             oidcClientRef = _adguardOIDCClient.name
             oidcIssuer = public.tenant.oidcIssuer
         }

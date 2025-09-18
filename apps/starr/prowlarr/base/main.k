@@ -50,13 +50,13 @@ app = frontend.App {
             name = "prowlarr"
             port = 9696
         }
-        homepage = gateway.Homepage {
+        homepage = {
             name = "Prowlarr"
             description = "PVR Indexer Manager"
             group = "Media"
             icon = "prowlarr"
         }
-        security = gateway.SecurityPolicy {
+        security = {
             oidcClientRef = _prowlarrOIDCClient.name
             oidcIssuer = starr.tenant.oidcIssuer
         }

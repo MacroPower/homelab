@@ -50,13 +50,13 @@ app = frontend.App {
             name = "radarr"
             port = 7878
         }
-        homepage = gateway.Homepage {
+        homepage = {
             name = "Radarr"
             description = "PVR, Manager & Organizer for Movies"
             group = "Media"
             icon = "radarr"
         }
-        security = gateway.SecurityPolicy {
+        security = {
             oidcClientRef = _radarrOIDCClient.name
             oidcIssuer = starr.tenant.oidcIssuer
         }
