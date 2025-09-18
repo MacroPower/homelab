@@ -1,7 +1,9 @@
+# yaml-language-server: $schema=../../../../charts/tcpm/values.schema.json
+
 image:
   # https://hub.docker.com/r/rdavidoff/twitch-channel-points-miner-v2
   repository: rdavidoff/twitch-channel-points-miner-v2
-  tag: "1.9.9"
+  tag: "2.0.0"
 
 podAnnotations:
   reloader.stakater.com/auto: "true"

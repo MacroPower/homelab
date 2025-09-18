@@ -237,4 +237,10 @@ charts: helm.Charts = {
             }]
         }
     }
+    tcpm: {
+        chart = "twitch-channel-points-miner"
+        repoURL = "https://jacobcolvin.com/helm-charts/"
+        targetRevision = "0.1.0"
+        schemaGenerator = "AUTO"
+    }
 }

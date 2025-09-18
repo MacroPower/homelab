@@ -121,3 +121,37 @@ envoyGatewayIngress = networkpolicy.NetworkPolicy {
         }
     ]
 }
+
+internetIPv4Egress = networkpolicy.NetworkPolicy {
+    name = "internet-ipv4-egress"
+    egress = [
+        {
+            toCIDRSet = [
+                {
+                    cidr = "0.0.0.0/0"
+                    except = [
+                        "10.0.0.0/8"
+                        "172.16.0.0/12"
+                        "192.168.0.0/16"
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+internetIPv6Egress = networkpolicy.NetworkPolicy {
+    name = "internet-ipv6-egress"
+    egress = [
+        {
+            toCIDRSet = [
+                {
+                    cidr = "2000::/3"
+                    except = [
+                        "fc00::/7"
+                    ]
+                }
+            ]
+        }
+    ]
+}
