@@ -18,6 +18,7 @@ app = frontend.App {
         kubeDNSEgress = npt.kubeDNSEgress
         icmpV6Egress = npt.icmpV6Egress
         kubeAPIServerEgress = npt.kubeAPIServerEgress
+        openMetricsIngress = npt.openMetricsIngress
     }
 
     charts.reloader = reloader.Chart {
