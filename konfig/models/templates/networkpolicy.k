@@ -155,3 +155,22 @@ internetIPv6Egress = networkpolicy.NetworkPolicy {
         }
     ]
 }
+
+openMetricsIngress = networkpolicy.NetworkPolicy {
+    name = "open-metrics-ingress"
+    ingress = [
+        {
+            fromEndpoints = [
+                {
+                    matchExpressions = [
+                        {
+                            key = "k8s:io.kubernetes.pod.namespace"
+                            operator = "In"
+                            values = ["o11y-k8s-monitoring"]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,4 @@
+# yaml-language-server: $schema=../../../../charts/volsync/values.schema.json
+
+metrics:
+  disableAuth: true
