@@ -26,6 +26,8 @@ clusterMetrics:
     enabled: true
   kubeControllerManager:
     enabled: true
+  kubeScheduler:
+    enabled: true
 
 clusterEvents:
   enabled: true
