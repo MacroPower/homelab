@@ -41,5 +41,9 @@
     version = "0.0.1"
   [dependencies.public]
     name = "public"
-    full_name = "homepage_0.1.0"
+    full_name = "public_0.1.0"
+    version = "0.1.0"
+  [dependencies.public_tenant]
+    name = "public_tenant"
+    full_name = "public_tenant_0.1.0"
     version = "0.1.0"
