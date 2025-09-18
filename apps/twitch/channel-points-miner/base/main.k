@@ -76,6 +76,12 @@ app = frontend.App {
             name = "twitch-channel-points-miner"
             port = 5000
         }
+        homepage = gateway.Homepage {
+            name = "Twitch Channel Points Miner"
+            description = "Automated Points Collector & Gamba Participant"
+            group = "Apps"
+            icon = "twitch"
+        }
         security = gateway.SecurityPolicy {
             oidcClientRef = _tcpmOIDCClient.name
             oidcIssuer = twitch.tenant.oidcIssuer

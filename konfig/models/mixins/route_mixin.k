@@ -10,7 +10,18 @@ mixin RouteMixin for protocol.AppProtocol:
     if config.routes:
         kubernetes: resource.ResourceMapping {
             Route = [gatewayv1.HTTPRoute {
-                metadata: utils.MetadataBuilder(config | {name = config.fullName} | _route)
+                metadata: utils.MetadataBuilder(config | {name = config.fullName} | {
+                    annotations = {
+                        if not isnullish(_route?.homepage):
+                            "gethomepage.dev/enabled": "true"
+                            "gethomepage.dev/name": _route.homepage.name
+                            "gethomepage.dev/description": _route.homepage.description
+                            "gethomepage.dev/group": _route.homepage.group
+                            "gethomepage.dev/icon": _route.homepage.icon
+                            "gethomepage.dev/pod-selector": ""
+                            "gethomepage.dev/weight": str(_route.homepage.weight)
+                    }
+                } | _route)
                 spec: {
                     if _route?.hostnames:
                         hostnames = [

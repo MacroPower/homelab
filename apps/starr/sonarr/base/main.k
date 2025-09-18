@@ -50,6 +50,12 @@ app = frontend.App {
             name = "sonarr"
             port = 8989
         }
+        homepage = gateway.Homepage {
+            name = "Sonarr"
+            description = "PVR, Manager & Organizer for TV"
+            group = "Media"
+            icon = "sonarr"
+        }
         security = gateway.SecurityPolicy {
             oidcClientRef = _sonarrOIDCClient.name
             oidcIssuer = starr.tenant.oidcIssuer

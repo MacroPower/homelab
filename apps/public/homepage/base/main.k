@@ -75,6 +75,12 @@ app = frontend.App {
             name = name
             port = _homepagePort
         }
+        homepage = gateway.Homepage {
+            name = "Homepage"
+            description = "This homepage"
+            group = "Apps"
+            icon = "homepage"
+        }
     }
 
     clusterRoles.homepage = rbac.ClusterRole {
