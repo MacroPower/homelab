@@ -186,6 +186,87 @@ nodes:
     extraManifests:
       - *zfsPool
 
+  - hostname: kmain07.cin.macro.network
+    ipAddress: 10.10.10.7
+    controlPlane: false
+    installDisk: &M11SDVdisk /dev/nvme0n1
+    nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 10g
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az01
+      bgp.kube.macro.network/peer-group: main
+    networkInterfaces:
+      - deviceSelector: &M11SDVNetDevice
+          driver: mlx4_core
+        dhcp: false
+        addresses:
+          - "10.10.10.7/16"
+          - "fc42:0:0:a::1007/64"
+        mtu: *mtu
+        routes: *routes
+    schematic: &M11SDVschematic
+      customization:
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/amd-ucode
+            - siderolabs/zfs
+    kernelModules:
+      - *zfsModule
+    volumes:
+      - *fixedEphemeral
+    extraManifests:
+      - *zfsPool
+
+  - hostname: kmain08.cin.macro.network
+    ipAddress: 10.10.10.8
+    controlPlane: false
+    installDisk: *M11SDVdisk
+    nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 10g
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az02
+      bgp.kube.macro.network/peer-group: main
+    networkInterfaces:
+      - deviceSelector: *M11SDVNetDevice
+        dhcp: false
+        addresses:
+          - "10.10.10.8/16"
+          - "fc42:0:0:a::1008/64"
+        mtu: *mtu
+        routes: *routes
+    schematic: *M11SDVschematic
+    kernelModules:
+      - *zfsModule
+    volumes:
+      - *fixedEphemeral
+    extraManifests:
+      - *zfsPool
+
+  - hostname: kmain09.cin.macro.network
+    ipAddress: 10.10.10.9
+    controlPlane: false
+    installDisk: *M11SDVdisk
+    nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 10g
+      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/zone: az03
+      bgp.kube.macro.network/peer-group: main
+    networkInterfaces:
+      - deviceSelector: *M11SDVNetDevice
+        dhcp: false
+        addresses:
+          - "10.10.10.9/16"
+          - "fc42:0:0:a::1009/64"
+        mtu: *mtu
+        routes: *routes
+    schematic: *M11SDVschematic
+    kernelModules:
+      - *zfsModule
+    volumes:
+      - *fixedEphemeral
+    extraManifests:
+      - *zfsPool
+
   - hostname: knas01.cin.macro.network
     ipAddress: 10.10.12.1
     controlPlane: false
@@ -215,68 +296,6 @@ nodes:
             hostDNS:
               enabled: true
               forwardKubeDNSToHost: true
-
-  # - hostname: kmain13.cin.macro.network
-  #   ipAddress: 10.10.10.13
-  #   controlPlane: false
-  #   installDisk: /dev/sda
-  #   nodeLabels:
-  #     bgp.kubernetes.macro.network/peer_group: cbgp
-  #     feature.node.kubernetes.io/network.max-link-speed: 10g
-  #     topology.kubernetes.io/region: rack01
-  #     topology.kubernetes.io/zone: az01
-  #   networkInterfaces:
-  #     - interface: enp5s0
-  #       dhcp: false
-  #       addresses:
-  #         - "10.10.10.13/16"
-  #         - "2603:6010:5300:ad0a::a013/64"
-  #       mtu: *mtu
-  #       routes: *routes
-  #   schematic: &M11SDVschematic
-  #     customization:
-  #       systemExtensions:
-  #         officialExtensions:
-  #           - siderolabs/i915-ucode
-  #           - siderolabs/intel-ucode
-
-  # - hostname: kmain14.cin.macro.network
-  #   ipAddress: 10.10.10.14
-  #   controlPlane: false
-  #   installDisk: /dev/sda
-  #   nodeLabels:
-  #     bgp.kubernetes.macro.network/peer_group: cbgp
-  #     feature.node.kubernetes.io/network.max-link-speed: 10g
-  #     topology.kubernetes.io/region: rack01
-  #     topology.kubernetes.io/zone: az02
-  #   networkInterfaces:
-  #     - interface: enp5s0
-  #       dhcp: false
-  #       addresses:
-  #         - "10.10.10.14/16"
-  #         - "2603:6010:5300:ad0a::a014/64"
-  #       mtu: *mtu
-  #       routes: *routes
-  #   schematic: *M11SDVschematic
-
-  # - hostname: kmain15.cin.macro.network
-  #   ipAddress: 10.10.10.15
-  #   controlPlane: false
-  #   installDisk: /dev/sda
-  #   nodeLabels:
-  #     bgp.kubernetes.macro.network/peer_group: cbgp
-  #     feature.node.kubernetes.io/network.max-link-speed: 10g
-  #     topology.kubernetes.io/region: rack01
-  #     topology.kubernetes.io/zone: az03
-  #   networkInterfaces:
-  #     - interface: enp5s0
-  #       dhcp: false
-  #       addresses:
-  #         - "10.10.10.15/16"
-  #         - "2603:6010:5300:ad0a::a015/64"
-  #       mtu: *mtu
-  #       routes: *routes
-  #   schematic: *M11SDVschematic
 
 controlPlane:
   certSANs:
