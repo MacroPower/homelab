@@ -155,6 +155,13 @@ controlPlane:
     customization:
       extraKernelArgs: &extraKernelArgs
         - "talos.logging.kernel=udp://syslog.cin.macro.network:6050/"
+  machineFiles:
+    - &spegelCriConfig
+      path: /etc/cri/conf.d/20-customization.part
+      op: create
+      content: |
+        [plugins."io.containerd.cri.v1.images"]
+          discard_unpacked_layers = false
   patches:
     - |-
       - op: replace
@@ -255,6 +262,8 @@ worker:
   schematic:
     customization:
       extraKernelArgs: *extraKernelArgs
+  machineFiles:
+    - *spegelCriConfig
   patches:
     - *machineKubelet
     - *machineLogging
