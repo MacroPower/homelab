@@ -1,0 +1,199 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "global": {
+      "additionalProperties": true,
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "hook": {
+      "additionalProperties": true,
+      "properties": {
+        "affinity": {
+          "additionalProperties": true,
+          "description": "hook.affinity -- Optional affinity settings that control how the hook job is scheduled (see: https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/)",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
+        "authentication": {
+          "additionalProperties": true,
+          "description": "hook.authentication -- Optional basic authentication credentials or apikey",
+          "properties": {
+            "apikey": {
+              "additionalProperties": true,
+              "properties": {
+                "headerNameKey": {
+                  "default": "headerName",
+                  "description": "Name of the header name key in the `userSecret` secret. Use this if you already have a secret with different key / value pairs",
+                  "required": [],
+                  "title": "headerNameKey",
+                  "type": "string"
+                },
+                "headerValueKey": {
+                  "default": "headerValue",
+                  "description": "Name of the header value key in the `userSecret` secret. Use this if you already have a secret with different key / value pairs",
+                  "required": [],
+                  "title": "headerValueKey",
+                  "type": "string"
+                },
+                "userSecret": {
+                  "default": "generic-webhook-credentials",
+                  "description": "Link a pre-existing generic secret with `headerNameKey` and `headerValueKey` key / value pairs",
+                  "required": [],
+                  "title": "userSecret",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "apikey",
+              "type": "object"
+            },
+            "basic": {
+              "additionalProperties": true,
+              "properties": {
+                "passwordKey": {
+                  "default": "password",
+                  "description": "Name of the password key in the `userSecret` secret. Use this if you already have a secret with different key / value pairs",
+                  "required": [],
+                  "title": "passwordKey",
+                  "type": "string"
+                },
+                "userSecret": {
+                  "default": "generic-webhook-credentials",
+                  "description": "Link a pre-existing generic secret with `usernameKey` and `passwordKey` key / value pairs",
+                  "required": [],
+                  "title": "userSecret",
+                  "type": "string"
+                },
+                "usernameKey": {
+                  "default": "username",
+                  "description": "Name of the username key in the `userSecret` secret. Use this if you already have a secret with different key / value pairs",
+                  "required": [],
+                  "title": "usernameKey",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "basic",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "authentication",
+          "type": "object"
+        },
+        "env": {
+          "description": "hook.env -- Optional environment variables mapped into the hook (see: https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "env",
+          "type": "array"
+        },
+        "extraVolumeMounts": {
+          "description": "hook.extraVolumeMounts -- Optional VolumeMounts mapped into the hook (see: https://kubernetes.io/docs/concepts/storage/volumes/)",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "hook.extraVolumes -- Optional Volumes mapped into the hook (see: https://kubernetes.io/docs/concepts/storage/volumes/)",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumes",
+          "type": "array"
+        },
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "repository": {
+              "default": "docker.io/securecodebox/hook-generic-webhook",
+              "description": "hook.image.repository -- Hook image repository",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "null",
+              "description": "hook.image.tag -- The image Tag defaults to the charts version if not defined.",
+              "required": [],
+              "title": "tag",
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "labels": {
+          "additionalProperties": true,
+          "description": "hook.labels -- Add Kubernetes Labels to the hook definition",
+          "required": [],
+          "title": "labels",
+          "type": "object"
+        },
+        "priority": {
+          "default": 0,
+          "description": "Hook priority. Higher priority Hooks are guaranteed to execute before low priority Hooks.",
+          "required": [],
+          "title": "priority",
+          "type": "integer"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Optional resources lets you control resource limits and requests for the hook container. See https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "tolerations": {
+          "description": "hook.tolerations -- Optional tolerations settings that control how the hook job is scheduled (see: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
+        },
+        "ttlSecondsAfterFinished": {
+          "default": "null",
+          "description": "hook.ttlSecondsAfterFinished -- Seconds after which the kubernetes job for the hook will be deleted. Requires the Kubernetes TTLAfterFinished controller: https://kubernetes.io/docs/concepts/workloads/controllers/ttlafterfinished/",
+          "required": [],
+          "title": "ttlSecondsAfterFinished",
+          "type": "null"
+        }
+      },
+      "required": [],
+      "title": "hook",
+      "type": "object"
+    },
+    "imagePullSecrets": {
+      "description": "Define imagePullSecrets when a private registry is used (see: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "imagePullSecrets",
+      "type": "array"
+    },
+    "webhookUrl": {
+      "default": "http://example.com",
+      "description": "webhookUrl -- The URL of your WebHook endpoint",
+      "required": [],
+      "title": "webhookUrl",
+      "type": "string"
+    }
+  },
+  "required": [],
+  "type": "object"
+}

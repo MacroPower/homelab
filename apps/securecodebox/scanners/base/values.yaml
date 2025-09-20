@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=../../../../charts/webhook/values.schema.json
+
+global:
+  fullnameOverride: webhook
+  nameOverride: webhook
+
+controllers:
+  app:
+    strategy: RollingUpdate
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: ghcr.io/home-operations/webhook
+          tag: 2.8.2
+        env:
+          WEBHOOK__PORT: { value: &port 80 }
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        resources:
+          requests:
+            cpu: 10m
+            memory: 128Mi
+          limits:
+            memory: 256Mi
+
+service:
+  app:
+    ports:
+      http:
+        port: *port
+
+persistence:
+  config:
+    type: configMap
+    name: webhook-config
+    defaultMode: 0o755
+    globalMounts:
+      - path: /config
+        readOnly: true

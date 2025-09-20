@@ -1,1 +1,0 @@
-import '../securecodebox/namespace.libsonnet'

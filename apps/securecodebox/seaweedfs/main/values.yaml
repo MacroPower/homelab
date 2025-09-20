@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=../../../../charts/seaweedfs/values.schema.json
+
+master:
+  replicas: 1
+  data:
+    type: persistentVolumeClaim
+    storageClass: openebs-hostpath
+    size: 10Gi
+  nodeSelector: &nodeSelector |
+    kubernetes.io/hostname: knas01
+  tolerations: &tolerations |
+    - key: "node-role.kubernetes.io/storage"
+      effect: "NoSchedule"
+  affinity: &affinity ""
+
+filer:
+  replicas: 1
+  data:
+    type: persistentVolumeClaim
+    storageClass: openebs-hostpath
+    size: 10Gi
+  nodeSelector: *nodeSelector
+  tolerations: *tolerations
+  affinity: *affinity
+
+volume:
+  replicas: 1
+  dataDirs:
+    - name: data1
+      type: persistentVolumeClaim
+      storageClass: openebs-hostpath
+      size: 50Gi
+      maxVolumes: 128
+  idx:
+    type: persistentVolumeClaim
+    storageClass: openebs-hostpath
+    size: 10Gi
+  nodeSelector: *nodeSelector
+  tolerations: *tolerations
+  affinity: *affinity

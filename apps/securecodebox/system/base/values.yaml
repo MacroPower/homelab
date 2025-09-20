@@ -1,0 +1,4 @@
+# yaml-language-server: $schema=../../../../charts/securecodebox/values.schema.json
+
+minio:
+  enabled: false

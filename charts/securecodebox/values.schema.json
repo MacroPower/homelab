@@ -1,0 +1,701 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "allowIstioSidecarInjectionInJobs": {
+      "default": false,
+      "description": "Sets the value of the istio sidecar annotation (\"sidecar.istio.io/inject\") for jobs started by the operator (scans, parser and hooks). defaults to false to prevent jobs hanging indefinitely due to the sidecar never terminating. If you aren't using istio this setting/annotation has no effect.",
+      "required": [],
+      "title": "allowIstioSidecarInjectionInJobs",
+      "type": "boolean"
+    },
+    "customCACertificate": {
+      "additionalProperties": true,
+      "description": "Setup for Custom CA certificates. These are automatically mounted into every secureCodeBox component (lurker, parser \u0026 hooks).\nRequires that every namespace has a configmap with the CA certificate(s)",
+      "properties": {
+        "certificate": {
+          "default": "public.crt",
+          "description": "key in the configmap holding the certificate(s)",
+          "required": [],
+          "title": "certificate",
+          "type": "string"
+        },
+        "existingCertificate": {
+          "default": "null",
+          "description": "name of the configMap holding the ca certificate(s), needs to be the same across all namespaces",
+          "required": [],
+          "title": "existingCertificate",
+          "type": "null"
+        }
+      },
+      "required": [],
+      "title": "customCACertificate",
+      "type": "object"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "image": {
+      "additionalProperties": true,
+      "properties": {
+        "pullPolicy": {
+          "default": "IfNotPresent",
+          "description": "Image pull policy. One of Always, Never, IfNotPresent. Defaults to Always if :latest tag is specified, or IfNotPresent otherwise. More info: https://kubernetes.io/docs/concepts/containers/images#updating-images",
+          "required": [],
+          "title": "pullPolicy",
+          "type": "string"
+        },
+        "repository": {
+          "default": "docker.io/securecodebox/operator",
+          "description": "image.repository -- The operator image repository",
+          "required": [],
+          "title": "repository",
+          "type": "string"
+        },
+        "tag": {
+          "default": "null",
+          "description": "image.tag -- Parser image tag",
+          "required": [],
+          "title": "tag",
+          "type": "null"
+        }
+      },
+      "required": [],
+      "title": "image",
+      "type": "object"
+    },
+    "imagePullSecrets": {
+      "description": "Define imagePullSecrets when a private registry is used (see: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "imagePullSecrets",
+      "type": "array"
+    },
+    "lurker": {
+      "additionalProperties": true,
+      "properties": {
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "Image pull policy. One of Always, Never, IfNotPresent. Defaults to Always if :latest tag is specified, or IfNotPresent otherwise. More info: https://kubernetes.io/docs/concepts/containers/images#updating-images",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "docker.io/securecodebox/lurker",
+              "description": "lurker.image.repository -- The operator image repository",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "null",
+              "description": "lurker.image.tag -- Parser image tag",
+              "required": [],
+              "title": "tag",
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "lurker",
+      "type": "object"
+    },
+    "metrics": {
+      "additionalProperties": true,
+      "description": "Configuration for the metrics the operator exports",
+      "properties": {
+        "serviceMonitor": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Creates a prometheus operator ServiceMonitor rule to automatically scrape the operators metrics: https://github.com/prometheus-operator/prometheus-operator",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "serviceMonitor",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "metrics",
+      "type": "object"
+    },
+    "minio": {
+      "additionalProperties": true,
+      "description": "Minio configuration for direct deployment",
+      "properties": {
+        "auth": {
+          "additionalProperties": true,
+          "description": "Authentication configuration",
+          "properties": {
+            "existingSecret": {
+              "default": "",
+              "description": "Name of existing secret containing minio credentials (if set, auth.rootUser and auth.rootPassword are ignored)",
+              "required": [],
+              "title": "existingSecret",
+              "type": "string"
+            },
+            "rootPassword": {
+              "default": "",
+              "description": "Root password for minio (leave empty to generate a secure random password)",
+              "required": [],
+              "title": "rootPassword",
+              "type": "string"
+            },
+            "rootUser": {
+              "default": "admin",
+              "description": "Root user for minio",
+              "required": [],
+              "title": "rootUser",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "auth",
+          "type": "object"
+        },
+        "defaultBuckets": {
+          "default": "securecodebox",
+          "description": "Default buckets to create on startup",
+          "required": [],
+          "title": "defaultBuckets",
+          "type": "string"
+        },
+        "enabled": {
+          "default": true,
+          "description": "Enable this to use minio as storage backend instead of a cloud bucket provider like AWS S3, Google Cloud Storage, DigitalOcean Spaces etc.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "image": {
+          "additionalProperties": true,
+          "description": "Minio image configuration",
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "docker.io/minio/minio",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "RELEASE.2025-07-23T15-54-02Z",
+              "description": "renovate: image=docker.io/minio/minio",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "persistence": {
+          "additionalProperties": true,
+          "description": "Persistence configuration",
+          "properties": {
+            "size": {
+              "default": "10Gi",
+              "description": "Size of the persistent volume",
+              "required": [],
+              "title": "size",
+              "type": "string"
+            },
+            "storageClass": {
+              "default": "",
+              "description": "Storage class for minio data persistence",
+              "required": [],
+              "title": "storageClass",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "persistence",
+          "type": "object"
+        },
+        "podSecurityContext": {
+          "additionalProperties": true,
+          "description": "Pod security context for minio",
+          "properties": {
+            "fsGroup": {
+              "default": 1000,
+              "required": [],
+              "title": "fsGroup",
+              "type": "integer"
+            },
+            "runAsGroup": {
+              "default": 1000,
+              "required": [],
+              "title": "runAsGroup",
+              "type": "integer"
+            },
+            "runAsUser": {
+              "default": 1000,
+              "required": [],
+              "title": "runAsUser",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "podSecurityContext",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resource limits and requests for minio",
+          "properties": {
+            "limits": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "500m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "ephemeral-storage": {
+                  "default": "1Gi",
+                  "required": [],
+                  "title": "ephemeral-storage",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "512Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "256Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "securityContext": {
+          "additionalProperties": true,
+          "description": "Container security context for minio",
+          "properties": {
+            "allowPrivilegeEscalation": {
+              "default": false,
+              "required": [],
+              "title": "allowPrivilegeEscalation",
+              "type": "boolean"
+            },
+            "capabilities": {
+              "additionalProperties": true,
+              "properties": {
+                "drop": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "capabilities",
+              "type": "object"
+            },
+            "runAsGroup": {
+              "default": 1000,
+              "required": [],
+              "title": "runAsGroup",
+              "type": "integer"
+            },
+            "runAsNonRoot": {
+              "default": true,
+              "required": [],
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            },
+            "runAsUser": {
+              "default": 1000,
+              "required": [],
+              "title": "runAsUser",
+              "type": "integer"
+            },
+            "seccompProfile": {
+              "additionalProperties": true,
+              "properties": {
+                "type": {
+                  "default": "RuntimeDefault",
+                  "required": [],
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "seccompProfile",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "securityContext",
+          "type": "object"
+        },
+        "tls": {
+          "additionalProperties": true,
+          "description": "TLS configuration (currently not implemented)",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "tls",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "minio",
+      "type": "object"
+    },
+    "nodeSelector": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "nodeSelector",
+      "type": "object"
+    },
+    "podSecurityContext": {
+      "additionalProperties": true,
+      "description": "Sets the securityContext on the operators pod level. See: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container",
+      "required": [],
+      "title": "podSecurityContext",
+      "type": "object"
+    },
+    "presignedUrlExpirationTimes": {
+      "additionalProperties": true,
+      "description": "presignedUrlExpirationTimes -- Duration how long presigned urls are valid",
+      "properties": {
+        "hooks": {
+          "default": "1h",
+          "required": [],
+          "title": "hooks",
+          "type": "string"
+        },
+        "parsers": {
+          "default": "1h",
+          "required": [],
+          "title": "parsers",
+          "type": "string"
+        },
+        "scanners": {
+          "default": "12h",
+          "required": [],
+          "title": "scanners",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "presignedUrlExpirationTimes",
+      "type": "object"
+    },
+    "resources": {
+      "additionalProperties": true,
+      "description": "resources -- CPU/memory resource requests/limits (see: https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/, https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/)",
+      "properties": {
+        "limits": {
+          "additionalProperties": true,
+          "properties": {
+            "cpu": {
+              "default": "100m",
+              "required": [],
+              "title": "cpu",
+              "type": "string"
+            },
+            "memory": {
+              "default": "30Mi",
+              "required": [],
+              "title": "memory",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "limits",
+          "type": "object"
+        },
+        "requests": {
+          "additionalProperties": true,
+          "properties": {
+            "cpu": {
+              "default": "100m",
+              "required": [],
+              "title": "cpu",
+              "type": "string"
+            },
+            "memory": {
+              "default": "20Mi",
+              "required": [],
+              "title": "memory",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "requests",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "resources",
+      "type": "object"
+    },
+    "s3": {
+      "additionalProperties": true,
+      "description": "Config for external s3 systems",
+      "properties": {
+        "authType": {
+          "default": "access-secret-key",
+          "description": "s3.authType -- Authentication method. Supports access-secret-key (used by most s3 endpoint) and aws-irsa (Used by AWS EKS IAM Role to Kubenetes Service Account Binding. Support for AWS IRSA is considered experimental in the secureCodeBox)",
+          "required": [],
+          "title": "authType",
+          "type": "string"
+        },
+        "awsStsEndpoint": {
+          "default": "https://sts.amazonaws.com",
+          "description": "s3.awsStsEndpoint -- STS Endpoint used in AWS IRSA Authentication. Change this to the sts endpoint of your aws region. Only used when s3.authType is set to \"aws-irsa\"",
+          "required": [],
+          "title": "awsStsEndpoint",
+          "type": "string"
+        },
+        "bucket": {
+          "default": "my-bucket",
+          "required": [],
+          "title": "bucket",
+          "type": "string"
+        },
+        "enabled": {
+          "default": false,
+          "description": "s3.enabled Enable this and disable minio if you want to directly connect against AWS S3, Google Cloud Storage, DigitalOcean Spaces etc.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "endpoint": {
+          "default": "fra1.digitaloceanspaces.com",
+          "required": [],
+          "title": "endpoint",
+          "type": "string"
+        },
+        "keySecret": {
+          "default": "my-secret",
+          "description": "Name to a k8s secret in the same namespace as this release with credentials to the s3 bucket. Only used when s3.authType is set to \"access-secret-key\"\nBy default this assumes to have 'accesskey' and 'secretkey' as attributes\nExample creation via kubectl:\nkubectl create secret generic my-secret --from-literal=accesskey='******' --from-literal=secretkey='******' -n \u003cnamespace\u003e",
+          "required": [],
+          "title": "keySecret",
+          "type": "string"
+        },
+        "port": {
+          "default": "null",
+          "description": "Implicit 443. You probably only need to change this when the system uses a non default port",
+          "required": [],
+          "title": "port",
+          "type": "null"
+        },
+        "secretAttributeNames": {
+          "additionalProperties": true,
+          "description": "Names to the attributes in the s3 secret",
+          "properties": {
+            "accesskey": {
+              "default": "accesskey",
+              "required": [],
+              "title": "accesskey",
+              "type": "string"
+            },
+            "secretkey": {
+              "default": "secretkey",
+              "required": [],
+              "title": "secretkey",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "secretAttributeNames",
+          "type": "object"
+        },
+        "tls": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "tls",
+          "type": "object"
+        },
+        "urlTemplate": {
+          "default": "null",
+          "description": "Go Template that generates the path used to store raw result file and findings.json file in the s3 bucket. Can be used to store the files in a subfolder of the s3 bucket",
+          "required": [],
+          "title": "urlTemplate",
+          "type": "null"
+        }
+      },
+      "required": [],
+      "title": "s3",
+      "type": "object"
+    },
+    "securityContext": {
+      "additionalProperties": true,
+      "description": "Sets the securityContext on the operators container level. See: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod",
+      "properties": {
+        "allowPrivilegeEscalation": {
+          "default": false,
+          "description": "securityContext.allowPrivilegeEscalation -- Ensure that users privileges cannot be escalated",
+          "required": [],
+          "title": "allowPrivilegeEscalation",
+          "type": "boolean"
+        },
+        "capabilities": {
+          "additionalProperties": true,
+          "properties": {
+            "drop": {
+              "items": {
+                "required": [],
+                "type": "string"
+              },
+              "required": [],
+              "title": "drop",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "capabilities",
+          "type": "object"
+        },
+        "privileged": {
+          "default": false,
+          "description": "securityContext.privileged -- Ensures that the operator container is not run in privileged mode",
+          "required": [],
+          "title": "privileged",
+          "type": "boolean"
+        },
+        "readOnlyRootFilesystem": {
+          "default": true,
+          "description": "securityContext.readOnlyRootFilesystem -- Prevents write access to the containers file system",
+          "required": [],
+          "title": "readOnlyRootFilesystem",
+          "type": "boolean"
+        },
+        "runAsNonRoot": {
+          "default": true,
+          "description": "securityContext.runAsNonRoot -- Enforces that the Operator image is run as a non root user",
+          "required": [],
+          "title": "runAsNonRoot",
+          "type": "boolean"
+        },
+        "seccompProfile": {
+          "additionalProperties": true,
+          "properties": {
+            "type": {
+              "default": "RuntimeDefault",
+              "description": "securityContext.seccompProfile.type -- one of RuntimeDefault, Unconfined, Localhost\nTo disable seccompProfile, set to Unconfined. See: https://kubernetes.io/docs/tutorials/security/seccomp/",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "seccompProfile",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "securityContext",
+      "type": "object"
+    },
+    "serviceAccount": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations of the serviceAccount the operator uses to talk to the k8s api",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "labels": {
+          "additionalProperties": true,
+          "description": "Labels of the serviceAccount the operator uses to talk to the k8s api",
+          "required": [],
+          "title": "labels",
+          "type": "object"
+        },
+        "name": {
+          "default": "securecodebox-operator",
+          "description": "Name of the serviceAccount the operator uses to talk to the k8s api",
+          "required": [],
+          "title": "name",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "serviceAccount",
+      "type": "object"
+    },
+    "telemetryEnabled": {
+      "default": true,
+      "description": "telemetryEnabled -- The Operator sends anonymous telemetry data, to give the team an overview how much the secureCodeBox is used. Find out more at https://www.securecodebox.io/telemetry",
+      "required": [],
+      "title": "telemetryEnabled",
+      "type": "boolean"
+    }
+  },
+  "required": [],
+  "type": "object"
+}

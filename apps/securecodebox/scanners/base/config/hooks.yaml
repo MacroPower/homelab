@@ -1,0 +1,7 @@
+---
+- id: stdout
+  execute-command: /config/stdout.sh
+  command-working-directory: /config
+  pass-environment-to-command:
+    - source: entire-payload
+      envname: ENTIRE_PAYLOAD

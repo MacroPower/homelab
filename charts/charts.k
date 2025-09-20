@@ -250,4 +250,35 @@ charts: helm.Charts = {
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
     }
+    securecodebox: {
+        chart = "operator"
+        repoURL = "oci://ghcr.io/securecodebox/helm/operator"
+        targetRevision = "5.0.0"
+        schemaGenerator = "AUTO"
+        crdGenerator = "AUTO"
+    }
+    securecodebox_kube_hunter: {
+        chart = "kube-hunter"
+        repoURL = "oci://ghcr.io/securecodebox/helm/kube-hunter"
+        targetRevision = "5.0.0"
+        schemaGenerator = "AUTO"
+    }
+    securecodebox_nmap: {
+        chart = "nmap"
+        repoURL = "oci://ghcr.io/securecodebox/helm/nmap"
+        targetRevision = "5.0.0"
+        schemaGenerator = "AUTO"
+    }
+    securecodebox_generic_webhook: {
+        chart = "generic-webhook"
+        repoURL = "oci://ghcr.io/securecodebox/helm/generic-webhook"
+        targetRevision = "5.0.0"
+        schemaGenerator = "AUTO"
+    }
+    webhook: {
+        chart = "app-template"
+        repoURL = "oci://ghcr.io/bjw-s-labs/helm/app-template"
+        targetRevision = "4.2.0"
+        schemaGenerator = "AUTO"
+    }
 }

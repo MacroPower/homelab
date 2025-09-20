@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=../../../../charts/seaweedfs/values.schema.json
+
+global:
+  serviceAccountName: securecodebox-seaweedfs
+
+master:
+  logs: &logs
+    type: emptyDir
+
+filer:
+  logs: *logs
+  s3:
+    enabled: true
+    enableAuth: true
+    createBuckets:
+      - name: securecodebox
+
+volume:
+  logs: *logs

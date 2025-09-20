@@ -1,0 +1,328 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "cascadingRules": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "description": "cascadingRules.enabled -- Enables or disables the installation of the default cascading rules for this scanner",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "cascadingRules",
+      "type": "object"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "imagePullSecrets": {
+      "description": "Define imagePullSecrets when a private registry is used (see: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "imagePullSecrets",
+      "type": "array"
+    },
+    "parser": {
+      "additionalProperties": true,
+      "properties": {
+        "affinity": {
+          "additionalProperties": true,
+          "description": "parser.affinity -- Optional affinity settings that control how the parser job is scheduled (see: https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/)",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
+        "env": {
+          "description": "parser.env -- Optional environment variables mapped into each parseJob (see: https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "env",
+          "type": "array"
+        },
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "Image pull policy. One of Always, Never, IfNotPresent. Defaults to Always if :latest tag is specified, or IfNotPresent otherwise. More info: https://kubernetes.io/docs/concepts/containers/images#updating-images",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "docker.io/securecodebox/parser-nmap",
+              "description": "parser.image.repository -- Parser image repository",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "null",
+              "description": "parser.image.tag -- Parser image tag",
+              "required": [],
+              "title": "tag",
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "nodeSelector": {
+          "additionalProperties": true,
+          "description": "parser.nodeSelector -- Optional nodeSelector settings that control how the scanner job is scheduled (see: https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/)",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Optional resources lets you control resource limits and requests for the parser container. See https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "scopeLimiterAliases": {
+          "additionalProperties": true,
+          "description": "parser.scopeLimiterAliases -- Optional finding aliases to be used in the scopeLimiter.",
+          "required": [],
+          "title": "scopeLimiterAliases",
+          "type": "object"
+        },
+        "tolerations": {
+          "description": "parser.tolerations -- Optional tolerations settings that control how the parser job is scheduled (see: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
+        },
+        "ttlSecondsAfterFinished": {
+          "default": "null",
+          "description": "parser.ttlSecondsAfterFinished -- seconds after which the Kubernetes job for the parser will be deleted. Requires the Kubernetes TTLAfterFinished controller: https://kubernetes.io/docs/concepts/workloads/controllers/ttlafterfinished/",
+          "required": [],
+          "title": "ttlSecondsAfterFinished",
+          "type": "null"
+        }
+      },
+      "required": [],
+      "title": "parser",
+      "type": "object"
+    },
+    "scanner": {
+      "additionalProperties": true,
+      "properties": {
+        "activeDeadlineSeconds": {
+          "default": "null",
+          "description": "There are situations where you want to fail a scan Job after some amount of time. To do so, set activeDeadlineSeconds to define an active deadline (in seconds) when considering a scan Job as failed. (see: https://kubernetes.io/docs/concepts/workloads/controllers/job/#job-termination-and-cleanup)",
+          "required": [],
+          "title": "activeDeadlineSeconds",
+          "type": "null"
+        },
+        "affinity": {
+          "additionalProperties": true,
+          "description": "scanner.affinity -- Optional affinity settings that control how the scanner job is scheduled (see: https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/)",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
+        "backoffLimit": {
+          "default": 3,
+          "description": "There are situations where you want to fail a scan Job after some amount of retries due to a logical error in configuration etc. To do so, set backoffLimit to specify the number of retries before considering a scan Job as failed. (see: https://kubernetes.io/docs/concepts/workloads/controllers/job/#pod-backoff-failure-policy)",
+          "required": [],
+          "title": "backoffLimit",
+          "type": "integer"
+        },
+        "env": {
+          "description": "scanner.env -- Optional environment variables mapped into each scanJob (see: https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "env",
+          "type": "array"
+        },
+        "extraContainers": {
+          "description": "scanner.extraContainers -- Optional additional Containers started with each scanJob (see: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/)",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraContainers",
+          "type": "array"
+        },
+        "extraVolumeMounts": {
+          "description": "scanner.extraVolumeMounts -- Optional VolumeMounts mapped into each scanJob (see: https://kubernetes.io/docs/concepts/storage/volumes/)",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "scanner.extraVolumes -- Optional Volumes mapped into each scanJob (see: https://kubernetes.io/docs/concepts/storage/volumes/)",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumes",
+          "type": "array"
+        },
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "Image pull policy. One of Always, Never, IfNotPresent. Defaults to Always if :latest tag is specified, or IfNotPresent otherwise. More info: https://kubernetes.io/docs/concepts/containers/images#updating-images",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "docker.io/securecodebox/scanner-nmap",
+              "description": "scanner.image.repository -- Container Image to run the scan",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "null",
+              "description": "scanner.image.tag -- defaults to the charts appVersion",
+              "required": [],
+              "title": "tag",
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "nameAppend": {
+          "default": "null",
+          "description": "scanner.nameAppend -- append a string to the default scantype name.",
+          "required": [],
+          "title": "nameAppend",
+          "type": "null"
+        },
+        "nodeSelector": {
+          "additionalProperties": true,
+          "description": "scanner.nodeSelector -- Optional nodeSelector settings that control how the scanner job is scheduled (see: https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/)",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
+        "podSecurityContext": {
+          "additionalProperties": true,
+          "description": "scanner.podSecurityContext -- Optional securityContext set on scanner pod (see: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)",
+          "required": [],
+          "title": "podSecurityContext",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "scanner.resources -- CPU/memory resource requests/limits (see: https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/, https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/)",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "securityContext": {
+          "additionalProperties": true,
+          "description": "scanner.securityContext -- Optional securityContext set on scanner container (see: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)",
+          "properties": {
+            "allowPrivilegeEscalation": {
+              "default": false,
+              "description": "scanner.securityContext.allowPrivilegeEscalation -- Ensure that users privileges cannot be escalated",
+              "required": [],
+              "title": "allowPrivilegeEscalation",
+              "type": "boolean"
+            },
+            "capabilities": {
+              "additionalProperties": true,
+              "properties": {
+                "drop": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "capabilities",
+              "type": "object"
+            },
+            "privileged": {
+              "default": false,
+              "description": "scanner.securityContext.privileged -- Ensures that the scanner container is not run in privileged mode",
+              "required": [],
+              "title": "privileged",
+              "type": "boolean"
+            },
+            "readOnlyRootFilesystem": {
+              "default": true,
+              "description": "scanner.securityContext.readOnlyRootFilesystem -- Prevents write access to the containers file system",
+              "required": [],
+              "title": "readOnlyRootFilesystem",
+              "type": "boolean"
+            },
+            "runAsNonRoot": {
+              "default": true,
+              "description": "scanner.securityContext.runAsNonRoot -- Enforces that the scanner image is run as a non root user",
+              "required": [],
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "securityContext",
+          "type": "object"
+        },
+        "suspend": {
+          "default": false,
+          "description": "if set to true the scan job will be suspended after creation. You can then resume the job using `kubectl resume \u003cjobname\u003e` or using a job scheduler like kueue",
+          "required": [],
+          "title": "suspend",
+          "type": "boolean"
+        },
+        "tolerations": {
+          "description": "scanner.tolerations -- Optional tolerations settings that control how the scanner job is scheduled (see: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
+        },
+        "ttlSecondsAfterFinished": {
+          "default": "null",
+          "description": "seconds after which the Kubernetes job for the scanner will be deleted. Requires the Kubernetes TTLAfterFinished controller: https://kubernetes.io/docs/concepts/workloads/controllers/ttlafterfinished/",
+          "required": [],
+          "title": "ttlSecondsAfterFinished",
+          "type": "null"
+        }
+      },
+      "required": [],
+      "title": "scanner",
+      "type": "object"
+    }
+  },
+  "required": [],
+  "type": "object"
+}
