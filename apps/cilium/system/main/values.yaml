@@ -31,3 +31,6 @@ bpf:
 bandwidthManager:
   enabled: true
   bbr: true
+
+pmtuDiscovery:
+  enabled: true
