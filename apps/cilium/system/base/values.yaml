@@ -28,6 +28,9 @@ hostFirewall:
 localRedirectPolicies:
   enabled: true
 
+endpointRoutes:
+  enabled: true
+
 ## Roll out cilium pods automatically when configmap is updated, a la reloader.
 ##
 rollOutCiliumPods: true
@@ -41,11 +44,6 @@ updateStrategy:
 ##
 autoDirectNodeRoutes: true
 routingMode: native
-
-endpointRoutes:
-  ## Route per endpoint instead of using the cilium_host interface.
-  ##
-  enabled: false
 
 bgpControlPlane:
   enabled: true
