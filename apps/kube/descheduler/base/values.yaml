@@ -8,19 +8,31 @@ deschedulerPolicy:
       pluginConfig:
         - name: DefaultEvictor
           args:
-            ignorePvcPods: true
-            evictLocalStoragePods: true
+            nodeFit: true
+        ## Deschedule plugins
+        ##
         - name: RemovePodsHavingTooManyRestarts
           args:
             podRestartThreshold: 100
             includingInitContainers: true
+        - name: RemoveFailedPods
+          args:
+            includingInitContainers: true
+            minPodLifetimeSeconds: 3600
         - name: RemovePodsViolatingNodeAffinity
           args:
             nodeAffinityType:
               - requiredDuringSchedulingIgnoredDuringExecution
+              - preferredDuringSchedulingIgnoredDuringExecution
         - name: RemovePodsViolatingNodeTaints
+          args:
+            includePreferNoSchedule: true
         - name: RemovePodsViolatingInterPodAntiAffinity
+        ## Balance plugins
+        ##
         - name: RemovePodsViolatingTopologySpreadConstraint
+          args:
+            constraints: [DoNotSchedule, ScheduleAnyway]
         - name: LowNodeUtilization
           args:
             thresholds:
@@ -39,6 +51,7 @@ deschedulerPolicy:
         deschedule:
           enabled:
             - RemovePodsHavingTooManyRestarts
+            - RemoveFailedPods
             - RemovePodsViolatingNodeTaints
             - RemovePodsViolatingNodeAffinity
             - RemovePodsViolatingInterPodAntiAffinity
