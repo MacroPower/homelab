@@ -14,6 +14,8 @@ k8sClientRateLimit:
 ipv4NativeRoutingCIDR: 10.128.0.0/14
 ipv6NativeRoutingCIDR: fc42:0:0:80::/64
 
+bpfClockProbe: true
+
 ingressController:
   enabled: true
   loadbalancerMode: shared
