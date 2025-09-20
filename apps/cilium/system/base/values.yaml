@@ -77,9 +77,7 @@ encryption:
   enabled: true
   type: wireguard
 
-## Enable BPF clock source probing for more efficient tick retrieval.
-##
-bpfClockProbe: false
+bpfClockProbe: true
 
 dnsPolicy: ClusterFirst
 
