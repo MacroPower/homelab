@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iperf3-server-${NODE}
+  labels:
+    app.kubernetes.io/name: iperf3-server
+    app.kubernetes.io/instance: iperf3-server-${NODE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: iperf3-server
+      app.kubernetes.io/instance: iperf3-server-${NODE}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: iperf3-server
+        app.kubernetes.io/instance: iperf3-server-${NODE}
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: "${NODE}"
+      tolerations:
+        - operator: "Exists"
+          effect: "NoSchedule"
+      containers:
+        - name: iperf3-server
+          image: networkstatic/iperf3:latest
+          command: ["iperf3"]
+          args: ["-s", "-p", "5201"]
+          env:
+            - name: GOMAXPROCS
+              value: "16"
+          ports:
+            - containerPort: 5201
+              protocol: TCP
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: iperf3-server-${NODE}
+  labels:
+    app.kubernetes.io/name: iperf3-server
+    app.kubernetes.io/instance: iperf3-server-${NODE}
+spec:
+  type: ClusterIP
+  ipFamilyPolicy: RequireDualStack
+  selector:
+    app.kubernetes.io/name: iperf3-server
+    app.kubernetes.io/instance: iperf3-server-${NODE}
+  ports:
+    - port: 5201
+      targetPort: 5201
+      protocol: TCP

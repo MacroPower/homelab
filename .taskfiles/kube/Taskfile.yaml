@@ -140,3 +140,53 @@ tasks:
         | kubectl -n "{{.NS}}" apply -f -
       - defer: kubectl -n "{{.NS}}" delete pod "{{.POD_NAME}}"
       - kubectl -n "{{.NS}}" exec -it "{{.POD_NAME}}" -- /bin/zsh
+
+  iperf-server:
+    desc: Launch an iperf3 server on a specific Node
+    summary: |
+      Args:
+        NODE: Node to run the server on (required)
+        NS: Namespace to launch the Pod in (default: current)
+    requires:
+      vars: [NODE]
+    vars:
+      NS: "{{.NS | default .CURRENT_NS}}"
+    env:
+      NODE: "{{.NODE}}"
+    cmds:
+      - >-
+        envsubst < <(cat {{.KUBE_TEMPLATE_DIR}}/iperf_server.tmpl.yaml)
+        | kubectl -n "{{.NS}}" apply -f -
+
+  iperf-client:
+    desc: Launch an iperf3 client on a specific Node to test against the iperf3 server service
+    summary: |
+      Args:
+        NODE: Node to run the client on (required)
+        TARGET: Target node to test against (required)
+        NS: Namespace to launch the Job in (default: current)
+    requires:
+      vars: [NODE, TARGET]
+    vars:
+      NS: "{{.NS | default .CURRENT_NS}}"
+    env:
+      NODE: "{{.NODE}}"
+      TARGET: "{{.TARGET}}"
+    cmds:
+      - >-
+        envsubst < <(cat {{.KUBE_TEMPLATE_DIR}}/iperf_client.tmpl.yaml)
+        | kubectl -n "{{.NS}}" apply -f -
+      - kubectl -n "{{.NS}}" wait --for=condition=complete --timeout=120s job/iperf3-client-{{.NODE}}
+      - kubectl -n "{{.NS}}" logs job/iperf3-client-{{.NODE}}
+      - kubectl -n "{{.NS}}" delete job/iperf3-client-{{.NODE}}
+
+  iperf-cleanup:
+    desc: Cleanup iperf3 server and client resources in a namespace
+    summary: |
+      Args:
+        NS: Namespace to clean up in (default: current)
+    vars:
+      NS: "{{.NS | default .CURRENT_NS}}"
+    cmds:
+      - kubectl -n "{{.NS}}" delete deployment -l app.kubernetes.io/name=iperf3-server --ignore-not-found
+      - kubectl -n "{{.NS}}" delete job -l app.kubernetes.io/name=iperf3-client --ignore-not-found

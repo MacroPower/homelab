@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: iperf3-client-${NODE}
+  labels:
+    app.kubernetes.io/name: iperf3-client
+    app.kubernetes.io/instance: iperf3-client-${NODE}
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: iperf3-client
+        app.kubernetes.io/instance: iperf3-client-${NODE}
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: knas01
+      tolerations:
+        - operator: "Exists"
+          effect: "NoSchedule"
+      containers:
+        - name: iperf3-client
+          image: networkstatic/iperf3:latest
+          command: [/bin/sh]
+          args:
+            - -c
+            - |
+              echo "Starting iperf3-client-${NODE} to iperf3-server-${TARGET}...";
+              iperf3 \
+                -c iperf3-server-${TARGET} \
+                -p 5201 \
+                -t 60 \
+                -P 16 \
+                -i 10 \
+                -O 10 \
+                -w 256K;
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+      restartPolicy: Never
+  backoffLimit: 1
