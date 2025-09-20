@@ -65,6 +65,10 @@ bpf:
   masquerade: true
   # https://docs.cilium.io/en/stable/operations/performance/tuning/#netkit-device-mode
   datapathMode: netkit
+  events:
+    default:
+      rateLimit: 10000
+      burstLimit: 50000
 
 envoyConfig:
   enabled: true
