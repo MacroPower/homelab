@@ -189,4 +189,5 @@ tasks:
       NS: "{{.NS | default .CURRENT_NS}}"
     cmds:
       - kubectl -n "{{.NS}}" delete deployment -l app.kubernetes.io/name=iperf3-server --ignore-not-found
+      - kubectl -n "{{.NS}}" delete service -l app.kubernetes.io/name=iperf3-server --ignore-not-found
       - kubectl -n "{{.NS}}" delete job -l app.kubernetes.io/name=iperf3-client --ignore-not-found
