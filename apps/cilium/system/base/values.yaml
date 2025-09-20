@@ -31,6 +31,9 @@ localRedirectPolicies:
 endpointRoutes:
   enabled: true
 
+pmtuDiscovery:
+  enabled: true
+
 ## Roll out cilium pods automatically when configmap is updated, a la reloader.
 ##
 rollOutCiliumPods: true
