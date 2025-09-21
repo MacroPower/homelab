@@ -1,0 +1,1963 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "addons": {
+      "additionalProperties": true,
+      "description": "The common chart supports several add-ons. These can be configured under this key.",
+      "properties": {
+        "codeserver": {
+          "additionalProperties": true,
+          "description": "The common library supports adding a code-server add-on to access files. It can be configured under this key.\nFor more info, check out [our docs](https://bjw-s.github.io/helm-charts/docs/common-library/common-library-add-ons/##code-server)",
+          "properties": {
+            "args": {
+              "description": "Set codeserver command line arguments.\nConsider setting --user-data-dir to a persistent location to preserve code-server setting changes",
+              "items": {
+                "required": [],
+                "type": "string"
+              },
+              "required": [],
+              "title": "args",
+              "type": "array"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable running a code-server container in the pod",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "env": {
+              "additionalProperties": true,
+              "description": "Set any environment variables for code-server here",
+              "required": [],
+              "title": "env",
+              "type": "object"
+            },
+            "git": {
+              "additionalProperties": true,
+              "description": "Optionally allow access a Git repository by passing in a private SSH key",
+              "properties": {
+                "deployKey": {
+                  "default": "",
+                  "description": "Raw SSH private key",
+                  "required": [],
+                  "title": "deployKey",
+                  "type": "string"
+                },
+                "deployKeyBase64": {
+                  "default": "",
+                  "description": "Base64-encoded SSH private key. When both variables are set, the raw SSH key takes precedence.",
+                  "required": [],
+                  "title": "deployKeyBase64",
+                  "type": "string"
+                },
+                "deployKeySecret": {
+                  "default": "",
+                  "description": "Existing secret containing SSH private key\nThe chart expects it to be present under the `id_rsa` key.",
+                  "required": [],
+                  "title": "deployKeySecret",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "git",
+              "type": "object"
+            },
+            "image": {
+              "additionalProperties": true,
+              "properties": {
+                "pullPolicy": {
+                  "default": "IfNotPresent",
+                  "description": "Specify the code-server image pull policy",
+                  "required": [],
+                  "title": "pullPolicy",
+                  "type": "string"
+                },
+                "repository": {
+                  "default": "ghcr.io/coder/code-server",
+                  "description": "Specify the code-server image",
+                  "required": [],
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "4.10.0",
+                  "description": "Specify the code-server image tag",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "image",
+              "type": "object"
+            },
+            "ingress": {
+              "additionalProperties": true,
+              "properties": {
+                "annotations": {
+                  "additionalProperties": true,
+                  "required": [],
+                  "title": "annotations",
+                  "type": "object"
+                },
+                "enabled": {
+                  "default": false,
+                  "description": "Enable an ingress for the code-server add-on.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "hosts": {
+                  "items": {
+                    "additionalProperties": true,
+                    "properties": {
+                      "host": {
+                        "default": "code.chart-example.local",
+                        "required": [],
+                        "title": "host",
+                        "type": "string"
+                      },
+                      "paths": {
+                        "items": {
+                          "additionalProperties": true,
+                          "properties": {
+                            "path": {
+                              "default": "/",
+                              "required": [],
+                              "title": "path",
+                              "type": "string"
+                            },
+                            "pathType": {
+                              "default": "Prefix",
+                              "required": [],
+                              "title": "pathType",
+                              "type": "string"
+                            }
+                          },
+                          "required": [],
+                          "type": "object"
+                        },
+                        "required": [],
+                        "title": "paths",
+                        "type": "array"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  "required": [],
+                  "title": "hosts",
+                  "type": "array"
+                },
+                "ingressClassName": {
+                  "default": "",
+                  "description": "Set the ingressClass that is used for this ingress.",
+                  "required": [],
+                  "title": "ingressClassName",
+                  "type": "null"
+                },
+                "labels": {
+                  "additionalProperties": true,
+                  "required": [],
+                  "title": "labels",
+                  "type": "object"
+                },
+                "tls": {
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "tls",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "ingress",
+              "type": "object"
+            },
+            "securityContext": {
+              "additionalProperties": true,
+              "properties": {
+                "runAsUser": {
+                  "default": 0,
+                  "required": [],
+                  "title": "runAsUser",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "securityContext",
+              "type": "object"
+            },
+            "service": {
+              "additionalProperties": true,
+              "properties": {
+                "annotations": {
+                  "additionalProperties": true,
+                  "required": [],
+                  "title": "annotations",
+                  "type": "object"
+                },
+                "enabled": {
+                  "default": true,
+                  "description": "Enable a service for the code-server add-on.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "labels": {
+                  "additionalProperties": true,
+                  "required": [],
+                  "title": "labels",
+                  "type": "object"
+                },
+                "ports": {
+                  "additionalProperties": true,
+                  "description": "Specify the default port information",
+                  "properties": {
+                    "codeserver": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "enabled": {
+                          "default": true,
+                          "required": [],
+                          "title": "enabled",
+                          "type": "boolean"
+                        },
+                        "port": {
+                          "default": 12321,
+                          "required": [],
+                          "title": "port",
+                          "type": "integer"
+                        },
+                        "protocol": {
+                          "default": "TCP",
+                          "required": [],
+                          "title": "protocol",
+                          "type": "string"
+                        },
+                        "targetPort": {
+                          "default": 12321,
+                          "required": [],
+                          "title": "targetPort",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [],
+                      "title": "codeserver",
+                      "type": "object"
+                    }
+                  },
+                  "required": [],
+                  "title": "ports",
+                  "type": "object"
+                },
+                "type": {
+                  "default": "ClusterIP",
+                  "required": [],
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "service",
+              "type": "object"
+            },
+            "volumeMounts": {
+              "description": "Specify a list of volumes that get mounted in the code-server container.\nAt least 1 volumeMount is required!",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "volumeMounts",
+              "type": "array"
+            },
+            "workingDir": {
+              "default": "",
+              "description": "Specify the working dir that will be opened when code-server starts\nIf not given, the app will default to the mountpah of the first specified volumeMount",
+              "required": [],
+              "title": "workingDir",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "codeserver",
+          "type": "object"
+        },
+        "netshoot": {
+          "additionalProperties": true,
+          "description": "The common library supports adding a netshoot add-on to troubleshoot network issues within a Pod. It can be configured under this key.",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable running a netshoot container in the pod",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "env": {
+              "additionalProperties": true,
+              "description": "Set any environment variables for netshoot here",
+              "required": [],
+              "title": "env",
+              "type": "object"
+            },
+            "image": {
+              "additionalProperties": true,
+              "properties": {
+                "pullPolicy": {
+                  "default": "IfNotPresent",
+                  "description": "Specify the netshoot image pull policy",
+                  "required": [],
+                  "title": "pullPolicy",
+                  "type": "string"
+                },
+                "repository": {
+                  "default": "ghcr.io/nicolaka/netshoot",
+                  "description": "Specify the netshoot image",
+                  "required": [],
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "v0.9",
+                  "description": "Specify the netshoot image tag",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "image",
+              "type": "object"
+            },
+            "securityContext": {
+              "additionalProperties": true,
+              "properties": {
+                "capabilities": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "add": {
+                      "items": {
+                        "required": [],
+                        "type": "string"
+                      },
+                      "required": [],
+                      "title": "add",
+                      "type": "array"
+                    }
+                  },
+                  "required": [],
+                  "title": "capabilities",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "securityContext",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "netshoot",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "addons",
+      "type": "object"
+    },
+    "affinity": {
+      "additionalProperties": true,
+      "description": "Defines affinity constraint rules.\n[[ref]](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity)",
+      "required": [],
+      "title": "affinity",
+      "type": "object"
+    },
+    "args": {
+      "description": "Override the args for the default container",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "args",
+      "type": "array"
+    },
+    "automountServiceAccountToken": {
+      "default": true,
+      "description": "Specifies whether a service account token should be automatically mounted.",
+      "required": [],
+      "title": "automountServiceAccountToken",
+      "type": "boolean"
+    },
+    "command": {
+      "description": "Override the command(s) for the default container",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "command",
+      "type": "array"
+    },
+    "configMaps": {
+      "additionalProperties": true,
+      "description": "Configure configMaps for the chart here.\nAdditional configMaps can be added by adding a dictionary key similar to the 'config' object.",
+      "properties": {
+        "config": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to add to the configMap",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "data": {
+              "additionalProperties": true,
+              "description": "configMap data content. Helm template enabled.",
+              "required": [],
+              "title": "data",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enables or disables the configMap",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels to add to the configMap",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "config",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "configMaps",
+      "type": "object"
+    },
+    "controller": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Set annotations on the deployment/statefulset/daemonset/cronjob",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "cronjob": {
+          "additionalProperties": true,
+          "description": "CronJob configuration. Required only when using `controller.type: cronjob`.",
+          "properties": {
+            "concurrencyPolicy": {
+              "default": "Forbid",
+              "description": "Specifies how to treat concurrent executions of a job that is created by this cron job, valid values are Allow, Forbid or Replace",
+              "required": [],
+              "title": "concurrencyPolicy",
+              "type": "string"
+            },
+            "failedJobsHistory": {
+              "default": 1,
+              "description": "The number of failed Jobs to keep",
+              "required": [],
+              "title": "failedJobsHistory",
+              "type": "integer"
+            },
+            "schedule": {
+              "default": "*/20 * * * *",
+              "description": "Sets the CronJob time when to execute your jobs",
+              "required": [],
+              "title": "schedule",
+              "type": "string"
+            },
+            "startingDeadlineSeconds": {
+              "default": 30,
+              "description": "The deadline in seconds for starting the job if it misses its scheduled time for any reason",
+              "required": [],
+              "title": "startingDeadlineSeconds",
+              "type": "integer"
+            },
+            "successfulJobsHistory": {
+              "default": 1,
+              "description": "The number of succesful Jobs to keep",
+              "required": [],
+              "title": "successfulJobsHistory",
+              "type": "integer"
+            },
+            "ttlSecondsAfterFinished": {
+              "default": "",
+              "description": " If this field is set, ttlSecondsAfterFinished after the Job finishes, it is eligible to be automatically deleted.",
+              "required": [],
+              "title": "ttlSecondsAfterFinished",
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "cronjob",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "description": "enable the controller.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "labels": {
+          "additionalProperties": true,
+          "description": "Set labels on the deployment/statefulset/daemonset/cronjob",
+          "required": [],
+          "title": "labels",
+          "type": "object"
+        },
+        "podManagementPolicy": {
+          "default": "",
+          "description": "Set statefulset podManagementPolicy, valid values are Parallel and OrderedReady (default).",
+          "required": [],
+          "title": "podManagementPolicy",
+          "type": "null"
+        },
+        "replicas": {
+          "default": 1,
+          "description": "Number of desired pods",
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        },
+        "restartPolicy": {
+          "default": "",
+          "description": "Set Container restart policy.",
+          "required": [],
+          "title": "restartPolicy",
+          "type": "null"
+        },
+        "revisionHistoryLimit": {
+          "default": 3,
+          "description": "ReplicaSet revision history limit",
+          "required": [],
+          "title": "revisionHistoryLimit",
+          "type": "integer"
+        },
+        "rollingUpdate": {
+          "additionalProperties": true,
+          "properties": {
+            "partition": {
+              "default": "",
+              "description": "Set statefulset RollingUpdate partition",
+              "required": [],
+              "title": "partition",
+              "type": "null"
+            },
+            "surge": {
+              "default": "",
+              "description": "Set deployment RollingUpdate max surge",
+              "required": [],
+              "title": "surge",
+              "type": "null"
+            },
+            "unavailable": {
+              "default": "",
+              "description": "Set deployment RollingUpdate max unavailable",
+              "required": [],
+              "title": "unavailable",
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "rollingUpdate",
+          "type": "object"
+        },
+        "strategy": {
+          "default": "",
+          "description": "Set the controller upgrade strategy\nFor Deployments, valid values are Recreate (default) and RollingUpdate.\nFor StatefulSets, valid values are OnDelete and RollingUpdate (default).\nDaemonSets/CronJobs ignore this.",
+          "required": [],
+          "title": "strategy",
+          "type": "null"
+        },
+        "type": {
+          "default": "deployment",
+          "description": "Set the controller type.\nValid options are deployment, daemonset, statefulset or cronjob",
+          "required": [],
+          "title": "type",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "controller",
+      "type": "object"
+    },
+    "dnsConfig": {
+      "additionalProperties": true,
+      "description": "Optional DNS settings, configuring the ndots option may resolve nslookup issues on some Kubernetes setups.",
+      "required": [],
+      "title": "dnsConfig",
+      "type": "object"
+    },
+    "dnsPolicy": {
+      "default": "",
+      "description": "Defaults to \"ClusterFirst\" if hostNetwork is false and \"ClusterFirstWithHostNet\" if hostNetwork is true.",
+      "required": [],
+      "title": "dnsPolicy",
+      "type": "null"
+    },
+    "enableServiceLinks": {
+      "default": true,
+      "description": "Enable/disable the generation of environment variables for services.\n[[ref]](https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/#accessing-the-service)",
+      "required": [],
+      "title": "enableServiceLinks",
+      "type": "boolean"
+    },
+    "env": {
+      "default": "",
+      "description": "Main environment variables. Template enabled.\nSyntax options:\nA) TZ: UTC\nB) PASSWD: '{{ .Release.Name }}'\nC) PASSWD:\n     configMapKeyRef:\n       name: config-map-name\n       key: key-name\nD) PASSWD:\n     valueFrom:\n       secretKeyRef:\n         name: secret-name\n         key: key-name\n     ...\nE) - name: TZ\n     value: UTC\nF) - name: TZ\n     value: '{{ .Release.Name }}'",
+      "required": [],
+      "title": "env",
+      "type": "null"
+    },
+    "envFrom": {
+      "description": "Secrets and/or ConfigMaps that will be loaded as environment variables.\n[[ref]](https://unofficial-kubernetes.readthedocs.io/en/latest/tasks/configure-pod-container/configmap/#use-case-consume-configmap-in-environment-variables)",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "envFrom",
+      "type": "array"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Set additional global annotations. Helm templates can be used.",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "fullnameOverride": {
+          "default": "",
+          "description": "Set the entire name definition",
+          "required": [],
+          "title": "fullnameOverride",
+          "type": "null"
+        },
+        "labels": {
+          "additionalProperties": true,
+          "description": "Set additional global labels. Helm templates can be used.",
+          "required": [],
+          "title": "labels",
+          "type": "object"
+        },
+        "nameOverride": {
+          "default": "",
+          "description": "Set an override for the prefix of the fullname",
+          "required": [],
+          "title": "nameOverride",
+          "type": "null"
+        }
+      },
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "hostAliases": {
+      "description": "Use hostAliases to add custom entries to /etc/hosts - mapping IP addresses to hostnames.\n[[ref]](https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/)",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "hostAliases",
+      "type": "array"
+    },
+    "hostNetwork": {
+      "default": false,
+      "description": "When using hostNetwork make sure you set dnsPolicy to `ClusterFirstWithHostNet`",
+      "required": [],
+      "title": "hostNetwork",
+      "type": "boolean"
+    },
+    "hostname": {
+      "default": "",
+      "description": "Allows specifying explicit hostname setting",
+      "required": [],
+      "title": "hostname",
+      "type": "null"
+    },
+    "image": {
+      "additionalProperties": true,
+      "properties": {
+        "pullPolicy": {
+          "default": "IfNotPresent",
+          "description": "image pull policy",
+          "required": [],
+          "title": "pullPolicy",
+          "type": "string"
+        },
+        "repository": {
+          "default": "macropower/osrs_ge_exporter",
+          "description": "https://github.com/MacroPower/osrs_ge_exporter",
+          "required": [],
+          "title": "repository",
+          "type": "string"
+        },
+        "tag": {
+          "default": "v0.3",
+          "description": "image tag",
+          "required": [],
+          "title": "tag",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "image",
+      "type": "object"
+    },
+    "imagePullSecrets": {
+      "description": "Set image pull secrets",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "imagePullSecrets",
+      "type": "array"
+    },
+    "ingress": {
+      "additionalProperties": true,
+      "description": "Configure the ingresses for the chart here.\nAdditional ingresses can be added by adding a dictionary key similar to the 'main' ingress.",
+      "properties": {
+        "main": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Provide additional annotations which may be required.",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enables or disables the ingress",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "hosts": {
+              "description": "# Configure the hosts for the ingress",
+              "items": {
+                "additionalProperties": true,
+                "properties": {
+                  "host": {
+                    "default": "chart-example.local",
+                    "description": "Host address. Helm template can be passed.",
+                    "required": [],
+                    "title": "host",
+                    "type": "string"
+                  },
+                  "paths": {
+                    "description": "# Configure the paths for the host",
+                    "items": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "path": {
+                          "default": "/",
+                          "description": "Path.  Helm template can be passed.",
+                          "required": [],
+                          "title": "path",
+                          "type": "string"
+                        },
+                        "pathType": {
+                          "default": "Prefix",
+                          "required": [],
+                          "title": "pathType",
+                          "type": "string"
+                        },
+                        "service": {
+                          "additionalProperties": true,
+                          "properties": {
+                            "name": {
+                              "default": "",
+                              "description": "Overrides the service name reference for this path",
+                              "required": [],
+                              "title": "name",
+                              "type": "null"
+                            },
+                            "port": {
+                              "default": "",
+                              "description": "Overrides the service port reference for this path",
+                              "required": [],
+                              "title": "port",
+                              "type": "null"
+                            }
+                          },
+                          "required": [],
+                          "title": "service",
+                          "type": "object"
+                        }
+                      },
+                      "required": [],
+                      "type": "object"
+                    },
+                    "required": [],
+                    "title": "paths",
+                    "type": "array"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "title": "hosts",
+              "type": "array"
+            },
+            "ingressClassName": {
+              "default": "",
+              "description": "Set the ingressClass that is used for this ingress.",
+              "required": [],
+              "title": "ingressClassName",
+              "type": "null"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Provide additional labels which may be required.",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "nameOverride": {
+              "default": "",
+              "description": "Override the name suffix that is used for this ingress.",
+              "required": [],
+              "title": "nameOverride",
+              "type": "null"
+            },
+            "primary": {
+              "default": true,
+              "description": "Make this the primary ingress (used in probes, notes, etc...).\nIf there is more than 1 ingress, make sure that only 1 ingress is marked as primary.",
+              "required": [],
+              "title": "primary",
+              "type": "boolean"
+            },
+            "tls": {
+              "description": "Configure TLS for the ingress. Both secretName and hosts can process a Helm template.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "tls",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "main",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "ingress",
+      "type": "object"
+    },
+    "initContainers": {
+      "additionalProperties": true,
+      "description": "Specify any initContainers here as dictionary items. Each initContainer should have its own key.\nThe dictionary item key will determine the order. Helm templates can be used.",
+      "required": [],
+      "title": "initContainers",
+      "type": "object"
+    },
+    "lifecycle": {
+      "additionalProperties": true,
+      "description": "Configure the lifecycle for the main container",
+      "required": [],
+      "title": "lifecycle",
+      "type": "object"
+    },
+    "nodeSelector": {
+      "additionalProperties": true,
+      "description": "Node selection constraint\n[[ref]](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector)",
+      "required": [],
+      "title": "nodeSelector",
+      "type": "object"
+    },
+    "persistence": {
+      "additionalProperties": true,
+      "description": "Configure persistence for the chart here.\nAdditional items can be added by adding a dictionary key similar to the 'config' key.\n[[ref]](https://bjw-s.github.io/helm-charts/docs/common-library/common-library-storage)",
+      "properties": {
+        "config": {
+          "additionalProperties": true,
+          "description": "Default persistence for configuration files.",
+          "properties": {
+            "accessMode": {
+              "default": "ReadWriteOnce",
+              "description": "AccessMode for the persistent volume.\nMake sure to select an access mode that is supported by your storage provider!\n[[ref]](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes)",
+              "required": [],
+              "title": "accessMode",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enables or disables the persistence item",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "existingClaim": {
+              "default": "",
+              "description": "If you want to reuse an existing claim, the name of the existing PVC can be passed here.",
+              "required": [],
+              "title": "existingClaim",
+              "type": "null"
+            },
+            "mountPath": {
+              "default": "",
+              "description": "Where to mount the volume in the main container.\nDefaults to `/\u003cname_of_the_volume\u003e`,\nsetting to '-' creates the volume but disables the volumeMount.",
+              "required": [],
+              "title": "mountPath",
+              "type": "null"
+            },
+            "nameOverride": {
+              "default": "",
+              "description": "Override the name suffix that is used for this volume.",
+              "required": [],
+              "title": "nameOverride",
+              "type": "null"
+            },
+            "readOnly": {
+              "default": false,
+              "description": "Specify if the volume should be mounted read-only.",
+              "required": [],
+              "title": "readOnly",
+              "type": "boolean"
+            },
+            "retain": {
+              "default": false,
+              "description": "Set to true to retain the PVC upon `helm uninstall`",
+              "required": [],
+              "title": "retain",
+              "type": "boolean"
+            },
+            "size": {
+              "default": "1Gi",
+              "description": "The amount of storage that is requested for the persistent volume.",
+              "required": [],
+              "title": "size",
+              "type": "string"
+            },
+            "storageClass": {
+              "default": "",
+              "description": "Storage Class for the config volume.\nIf set to `-`, dynamic provisioning is disabled.\nIf set to something else, the given storageClass is used.\nIf undefined (the default) or set to null, no storageClassName spec is set, choosing the default provisioner.",
+              "required": [],
+              "title": "storageClass",
+              "type": "null"
+            },
+            "subPath": {
+              "default": "",
+              "description": "Used in conjunction with `existingClaim`. Specifies a sub-path inside the referenced volume instead of its root",
+              "required": [],
+              "title": "subPath",
+              "type": "null"
+            },
+            "type": {
+              "default": "pvc",
+              "description": "Sets the persistence type\nValid options are pvc, emptyDir, hostPath, secret, configMap or custom",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "config",
+          "type": "object"
+        },
+        "shared": {
+          "additionalProperties": true,
+          "description": "Create an emptyDir volume to share between all containers\n[[ref]]https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "medium": {
+              "default": "",
+              "description": "Set the medium to \"Memory\" to mount a tmpfs (RAM-backed filesystem) instead\nof the storage medium that backs the node.",
+              "required": [],
+              "title": "medium",
+              "type": "null"
+            },
+            "mountPath": {
+              "default": "/shared",
+              "required": [],
+              "title": "mountPath",
+              "type": "string"
+            },
+            "sizeLimit": {
+              "default": "",
+              "description": "If the `SizeMemoryBackedVolumes` feature gate is enabled, you can\nspecify a size for memory backed volumes.",
+              "required": [],
+              "title": "sizeLimit",
+              "type": "null"
+            },
+            "type": {
+              "default": "emptyDir",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "shared",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "persistence",
+      "type": "object"
+    },
+    "podAnnotations": {
+      "additionalProperties": true,
+      "description": "Set annotations on the pod",
+      "required": [],
+      "title": "podAnnotations",
+      "type": "object"
+    },
+    "podLabels": {
+      "additionalProperties": true,
+      "description": "Set labels on the pod",
+      "required": [],
+      "title": "podLabels",
+      "type": "object"
+    },
+    "podSecurityContext": {
+      "additionalProperties": true,
+      "description": "Configure the Security Context for the Pod",
+      "required": [],
+      "title": "podSecurityContext",
+      "type": "object"
+    },
+    "priorityClassName": {
+      "default": "",
+      "description": "Custom priority class for different treatment by the scheduler",
+      "required": [],
+      "title": "priorityClassName",
+      "type": "null"
+    },
+    "probes": {
+      "additionalProperties": true,
+      "description": "Probe configuration\n[[ref]](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)",
+      "properties": {
+        "liveness": {
+          "additionalProperties": true,
+          "description": "Liveness probe configuration",
+          "properties": {
+            "custom": {
+              "default": false,
+              "description": "Set this to `true` if you wish to specify your own livenessProbe",
+              "required": [],
+              "title": "custom",
+              "type": "boolean"
+            },
+            "enabled": {
+              "default": true,
+              "description": "Enable the liveness probe",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "spec": {
+              "additionalProperties": true,
+              "description": "The spec field contains the values for the default livenessProbe.\nIf you selected `custom: true`, this field holds the definition of the livenessProbe.",
+              "properties": {
+                "failureThreshold": {
+                  "default": 3,
+                  "required": [],
+                  "title": "failureThreshold",
+                  "type": "integer"
+                },
+                "initialDelaySeconds": {
+                  "default": 0,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                },
+                "periodSeconds": {
+                  "default": 10,
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                },
+                "timeoutSeconds": {
+                  "default": 1,
+                  "required": [],
+                  "title": "timeoutSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "spec",
+              "type": "object"
+            },
+            "type": {
+              "default": "TCP",
+              "description": "sets the probe type when not using a custom probe",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "liveness",
+          "type": "object"
+        },
+        "readiness": {
+          "additionalProperties": true,
+          "description": "Redainess probe configuration",
+          "properties": {
+            "custom": {
+              "default": false,
+              "description": "Set this to `true` if you wish to specify your own readinessProbe",
+              "required": [],
+              "title": "custom",
+              "type": "boolean"
+            },
+            "enabled": {
+              "default": true,
+              "description": "Enable the readiness probe",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "spec": {
+              "additionalProperties": true,
+              "description": "The spec field contains the values for the default readinessProbe.\nIf you selected `custom: true`, this field holds the definition of the readinessProbe.",
+              "properties": {
+                "failureThreshold": {
+                  "default": 3,
+                  "required": [],
+                  "title": "failureThreshold",
+                  "type": "integer"
+                },
+                "initialDelaySeconds": {
+                  "default": 0,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                },
+                "periodSeconds": {
+                  "default": 10,
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                },
+                "timeoutSeconds": {
+                  "default": 1,
+                  "required": [],
+                  "title": "timeoutSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "spec",
+              "type": "object"
+            },
+            "type": {
+              "default": "TCP",
+              "description": "sets the probe type when not using a custom probe",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "readiness",
+          "type": "object"
+        },
+        "startup": {
+          "additionalProperties": true,
+          "description": "Startup probe configuration",
+          "properties": {
+            "custom": {
+              "default": false,
+              "description": "Set this to `true` if you wish to specify your own startupProbe",
+              "required": [],
+              "title": "custom",
+              "type": "boolean"
+            },
+            "enabled": {
+              "default": true,
+              "description": "Enable the startup probe",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "spec": {
+              "additionalProperties": true,
+              "description": "The spec field contains the values for the default startupProbe.\nIf you selected `custom: true`, this field holds the definition of the startupProbe.",
+              "properties": {
+                "failureThreshold": {
+                  "default": 30,
+                  "required": [],
+                  "title": "failureThreshold",
+                  "type": "integer"
+                },
+                "initialDelaySeconds": {
+                  "default": 0,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                },
+                "periodSeconds": {
+                  "default": 5,
+                  "description": "# This means it has a maximum of 5*30=150 seconds to start up before it fails",
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                },
+                "timeoutSeconds": {
+                  "default": 1,
+                  "required": [],
+                  "title": "timeoutSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "spec",
+              "type": "object"
+            },
+            "type": {
+              "default": "TCP",
+              "description": "sets the probe type when not using a custom probe",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "startup",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "probes",
+      "type": "object"
+    },
+    "prometheusRule": {
+      "additionalProperties": true,
+      "properties": {
+        "main": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Provide additional annotations which may be required.",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enables or disables the prometheusRule.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "groups": {
+              "description": "Configures the prometheusRule groups.",
+              "items": {
+                "additionalProperties": true,
+                "properties": {
+                  "name": {
+                    "default": "osrs-ge-exporter.rules",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  },
+                  "rules": {
+                    "items": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "expr": {
+                          "default": "sum(\n  (osrs_ge_item_limit * ((osrs_ge_item_high_alch - osrs_ge_item_low_latest) \u003e 1000))\n  and\n  (osrs_ge_item_low_volume_5m \u003e 15)\n)",
+                          "required": [],
+                          "title": "expr",
+                          "type": "string"
+                        },
+                        "record": {
+                          "default": ":osrs_ge_ha_profit:sum",
+                          "required": [],
+                          "title": "record",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "type": "object"
+                    },
+                    "required": [],
+                    "title": "rules",
+                    "type": "array"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "title": "groups",
+              "type": "array"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Provide additional labels which may be required.",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "nameOverride": {
+              "default": "",
+              "description": "Override the name suffix that is used for this prometheusRule.",
+              "required": [],
+              "title": "nameOverride",
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "main",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "prometheusRule",
+      "type": "object"
+    },
+    "resources": {
+      "additionalProperties": true,
+      "description": "Set the resource requests / limits for the main container.",
+      "required": [],
+      "title": "resources",
+      "type": "object"
+    },
+    "route": {
+      "additionalProperties": true,
+      "description": "Configure the gateway routes for the chart here.\nAdditional routes can be added by adding a dictionary key similar to the 'main' route.\n[[ref]](https://gateway-api.sigs.k8s.io/references/spec/#gateway.networking.k8s.io%2fv1alpha2)",
+      "properties": {
+        "main": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Provide additional annotations which may be required.",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enables or disables the route",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "hostnames": {
+              "description": "Host addresses",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "hostnames",
+              "type": "array"
+            },
+            "kind": {
+              "default": "HTTPRoute",
+              "description": "Set the route kind\nValid options are GRPCRoute, HTTPRoute, TCPRoute, TLSRoute, UDPRoute",
+              "required": [],
+              "title": "kind",
+              "type": "string"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Provide additional labels which may be required.",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "nameOverride": {
+              "default": "",
+              "description": "Override the name suffix that is used for this route.",
+              "required": [],
+              "title": "nameOverride",
+              "type": "null"
+            },
+            "parentRefs": {
+              "description": "Configure the resource the route attaches to.",
+              "items": {
+                "additionalProperties": true,
+                "properties": {
+                  "group": {
+                    "default": "gateway.networking.k8s.io",
+                    "description": "Group of the referent resource.",
+                    "required": [],
+                    "title": "group",
+                    "type": "string"
+                  },
+                  "kind": {
+                    "default": "Gateway",
+                    "description": "Kind of the referent resource.",
+                    "required": [],
+                    "title": "kind",
+                    "type": "string"
+                  },
+                  "name": {
+                    "default": "",
+                    "description": "Name of the referent resource",
+                    "required": [],
+                    "title": "name",
+                    "type": "null"
+                  },
+                  "namespace": {
+                    "default": "",
+                    "description": "Namespace of the referent resource",
+                    "required": [],
+                    "title": "namespace",
+                    "type": "null"
+                  },
+                  "sectionName": {
+                    "default": "",
+                    "description": "Name of the section within the target resource.",
+                    "required": [],
+                    "title": "sectionName",
+                    "type": "null"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "title": "parentRefs",
+              "type": "array"
+            },
+            "rules": {
+              "description": "Configure rules for routing. Defaults to the primary service.",
+              "items": {
+                "additionalProperties": true,
+                "properties": {
+                  "backendRefs": {
+                    "description": "Configure backends where matching requests should be sent.",
+                    "items": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "group": {
+                          "default": "",
+                          "required": [],
+                          "title": "group",
+                          "type": "string"
+                        },
+                        "kind": {
+                          "default": "Service",
+                          "required": [],
+                          "title": "kind",
+                          "type": "string"
+                        },
+                        "name": {
+                          "default": "",
+                          "required": [],
+                          "title": "name",
+                          "type": "null"
+                        },
+                        "namespace": {
+                          "default": "",
+                          "required": [],
+                          "title": "namespace",
+                          "type": "null"
+                        },
+                        "port": {
+                          "default": "",
+                          "required": [],
+                          "title": "port",
+                          "type": "null"
+                        },
+                        "weight": {
+                          "default": 1,
+                          "required": [],
+                          "title": "weight",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [],
+                      "type": "object"
+                    },
+                    "required": [],
+                    "title": "backendRefs",
+                    "type": "array"
+                  },
+                  "matches": {
+                    "description": "# Configure conditions used for matching incoming requests. Only for HTTPRoutes",
+                    "items": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "path": {
+                          "additionalProperties": true,
+                          "properties": {
+                            "type": {
+                              "default": "PathPrefix",
+                              "required": [],
+                              "title": "type",
+                              "type": "string"
+                            },
+                            "value": {
+                              "default": "/",
+                              "required": [],
+                              "title": "value",
+                              "type": "string"
+                            }
+                          },
+                          "required": [],
+                          "title": "path",
+                          "type": "object"
+                        }
+                      },
+                      "required": [],
+                      "type": "object"
+                    },
+                    "required": [],
+                    "title": "matches",
+                    "type": "array"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "title": "rules",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "main",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "route",
+      "type": "object"
+    },
+    "runtimeClassName": {
+      "default": "",
+      "description": "Allow specifying a runtimeClassName other than the default one (ie: nvidia)",
+      "required": [],
+      "title": "runtimeClassName",
+      "type": "null"
+    },
+    "schedulerName": {
+      "default": "",
+      "description": "Allows specifying a custom scheduler name",
+      "required": [],
+      "title": "schedulerName",
+      "type": "null"
+    },
+    "secrets": {
+      "additionalProperties": true,
+      "description": "Use this to populate secrets with the values you specify.\nBe aware that these values are not encrypted by default, and could therefore visible\nto anybody with access to the values.yaml file.\nAdditional Secrets can be added by adding a dictionary key similar to the 'secret' object.",
+      "properties": {
+        "secret": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to add to the Secret",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enables or disables the Secret",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels to add to the Secret",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "stringData": {
+              "additionalProperties": true,
+              "description": "Secret stringData content. Helm template enabled.",
+              "required": [],
+              "title": "stringData",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "secret",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "secrets",
+      "type": "object"
+    },
+    "securityContext": {
+      "additionalProperties": true,
+      "description": "Configure the Security Context for the main container",
+      "required": [],
+      "title": "securityContext",
+      "type": "object"
+    },
+    "service": {
+      "additionalProperties": true,
+      "description": "Configure the services for the chart here.\nAdditional services can be added by adding a dictionary key similar to the 'main' service.",
+      "properties": {
+        "main": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Provide additional annotations which may be required.",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": true,
+              "description": "Enables or disables the service",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "externalTrafficPolicy": {
+              "default": "",
+              "description": "Specify the externalTrafficPolicy for the service. Options: Cluster, Local\n[[ref](https://kubernetes.io/docs/tutorials/services/source-ip/)]",
+              "required": [],
+              "title": "externalTrafficPolicy",
+              "type": "null"
+            },
+            "ipFamilies": {
+              "description": "The ip families that should be used. Options: IPv4, IPv6",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "ipFamilies",
+              "type": "array"
+            },
+            "ipFamilyPolicy": {
+              "default": "",
+              "description": "Specify the ip policy. Options: SingleStack, PreferDualStack, RequireDualStack",
+              "required": [],
+              "title": "ipFamilyPolicy",
+              "type": "null"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Provide additional labels which may be required.",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "nameOverride": {
+              "default": "",
+              "description": "Override the name suffix that is used for this service",
+              "required": [],
+              "title": "nameOverride",
+              "type": "null"
+            },
+            "ports": {
+              "additionalProperties": true,
+              "description": "Configure the Service port information here.\nAdditional ports can be added by adding a dictionary key similar to the 'http' service.",
+              "properties": {
+                "http": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "enabled": {
+                      "default": true,
+                      "description": "Enables or disables the port",
+                      "required": [],
+                      "title": "enabled",
+                      "type": "boolean"
+                    },
+                    "extraSelectorLabels": {
+                      "additionalProperties": true,
+                      "description": "Allow adding additional match labels",
+                      "required": [],
+                      "title": "extraSelectorLabels",
+                      "type": "object"
+                    },
+                    "nodePort": {
+                      "default": "",
+                      "description": "Specify the nodePort value for the LoadBalancer and NodePort service types.\n[[ref]](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport)",
+                      "required": [],
+                      "title": "nodePort",
+                      "type": "null"
+                    },
+                    "port": {
+                      "default": 8080,
+                      "description": "The port number",
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    },
+                    "primary": {
+                      "default": true,
+                      "description": "Make this the primary port (used in probes, notes, etc...)\nIf there is more than 1 service, make sure that only 1 port is marked as primary.",
+                      "required": [],
+                      "title": "primary",
+                      "type": "boolean"
+                    },
+                    "protocol": {
+                      "default": "TCP",
+                      "description": "Port protocol.\nSupport values are `HTTP`, `HTTPS`, `TCP` and `UDP`.\nHTTPS and HTTPS spawn a TCP service and get used for internal URL and name generation",
+                      "required": [],
+                      "title": "protocol",
+                      "type": "string"
+                    },
+                    "targetPort": {
+                      "default": "",
+                      "description": "Specify a service targetPort if you wish to differ the service port from the application port.\nIf `targetPort` is specified, this port number is used in the container definition instead of\nthe `port` value. Therefore named ports are not supported for this field.",
+                      "required": [],
+                      "title": "targetPort",
+                      "type": "null"
+                    }
+                  },
+                  "required": [],
+                  "title": "http",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "ports",
+              "type": "object"
+            },
+            "primary": {
+              "default": true,
+              "description": "Make this the primary service (used in probes, notes, etc...).\nIf there is more than 1 service, make sure that only 1 service is marked as primary.",
+              "required": [],
+              "title": "primary",
+              "type": "boolean"
+            },
+            "type": {
+              "default": "ClusterIP",
+              "description": "Set the service type",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "main",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "service",
+      "type": "object"
+    },
+    "serviceAccount": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations to add to the service account",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "create": {
+          "default": false,
+          "description": "Specifies whether a service account should be created",
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "name": {
+          "default": "",
+          "description": "The name of the service account to use.\nIf not set and create is true, a name is generated using the fullname template",
+          "required": [],
+          "title": "name",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "serviceAccount",
+      "type": "object"
+    },
+    "serviceMonitor": {
+      "additionalProperties": true,
+      "description": "Configure the ServiceMonitors for the chart here.\nAdditional ServiceMonitors can be added by adding a dictionary key similar to the 'main' ServiceMonitors.",
+      "properties": {
+        "main": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Provide additional annotations which may be required.",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enables or disables the serviceMonitor.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "endpoints": {
+              "description": "Configures the endpoints for the serviceMonitor.",
+              "items": {
+                "additionalProperties": true,
+                "properties": {
+                  "interval": {
+                    "default": "1m",
+                    "required": [],
+                    "title": "interval",
+                    "type": "string"
+                  },
+                  "path": {
+                    "default": "/metrics",
+                    "required": [],
+                    "title": "path",
+                    "type": "string"
+                  },
+                  "port": {
+                    "default": "http",
+                    "required": [],
+                    "title": "port",
+                    "type": "string"
+                  },
+                  "scheme": {
+                    "default": "http",
+                    "required": [],
+                    "title": "scheme",
+                    "type": "string"
+                  },
+                  "scrapeTimeout": {
+                    "default": "10s",
+                    "required": [],
+                    "title": "scrapeTimeout",
+                    "type": "string"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "title": "endpoints",
+              "type": "array"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Provide additional labels which may be required.",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "nameOverride": {
+              "default": "",
+              "description": "Override the name suffix that is used for this serviceMonitor.",
+              "required": [],
+              "title": "nameOverride",
+              "type": "null"
+            },
+            "selector": {
+              "additionalProperties": true,
+              "description": "Configures a custom selector for the serviceMonitor, this takes precedence over\nspecifying a service name.\nHelm templates can be used.",
+              "required": [],
+              "title": "selector",
+              "type": "object"
+            },
+            "serviceName": {
+              "default": "{{ include \"bjw-s.common.lib.chart.names.fullname\" $ }}",
+              "description": "Configures the target Service for the serviceMonitor. Helm templates can be used.",
+              "required": [],
+              "title": "serviceName",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "main",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "serviceMonitor",
+      "type": "object"
+    },
+    "sidecars": {
+      "additionalProperties": true,
+      "description": "Specify any sidecar containers here as dictionary items. Each sidecar container should have its own key.\nHelm templates can be used.",
+      "required": [],
+      "title": "sidecars",
+      "type": "object"
+    },
+    "termination": {
+      "additionalProperties": true,
+      "properties": {
+        "gracePeriodSeconds": {
+          "default": "",
+          "description": "Duration in seconds the pod needs to terminate gracefully\n[[ref](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#lifecycle)]",
+          "required": [],
+          "title": "gracePeriodSeconds",
+          "type": "null"
+        },
+        "messagePath": {
+          "default": "",
+          "description": "Configure the path at which the file to which the main container's termination message will be written.\n[[ref](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#lifecycle-1)]",
+          "required": [],
+          "title": "messagePath",
+          "type": "null"
+        },
+        "messagePolicy": {
+          "default": "",
+          "description": "Indicate how the main container's termination message should be populated.\nValid options are `File` and `FallbackToLogsOnError`.\n[[ref](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#lifecycle-1)]",
+          "required": [],
+          "title": "messagePolicy",
+          "type": "null"
+        }
+      },
+      "required": [],
+      "title": "termination",
+      "type": "object"
+    },
+    "tolerations": {
+      "description": "Specify taint tolerations\n[[ref]](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "tolerations",
+      "type": "array"
+    },
+    "topologySpreadConstraints": {
+      "description": "Defines topologySpreadConstraint rules.\n[[ref]](https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/)",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "topologySpreadConstraints",
+      "type": "array"
+    },
+    "volumeClaimTemplates": {
+      "description": "Used in conjunction with `controller.type: statefulset` to create individual disks for each instance.",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "volumeClaimTemplates",
+      "type": "array"
+    }
+  },
+  "required": [],
+  "type": "object"
+}

@@ -281,4 +281,10 @@ charts: helm.Charts = {
         targetRevision = "4.2.0"
         schemaGenerator = "AUTO"
     }
+    osrs_ge_exporter: {
+        chart = "osrs-ge-exporter"
+        repoURL = "https://jacobcolvin.com/helm-charts/"
+        targetRevision = "0.4.0"
+        schemaGenerator = "AUTO"
+    }
 }

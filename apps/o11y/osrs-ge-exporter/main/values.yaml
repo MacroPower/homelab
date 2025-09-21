@@ -1,0 +1,3 @@
+# yaml-language-server: $schema=../../../../charts/osrs_ge_exporter/values.schema.json
+
+{}
