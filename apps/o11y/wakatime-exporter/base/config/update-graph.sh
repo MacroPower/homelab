@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd /app/repos
+
 go install github.com/MacroPower/prometheus_ascii@latest
 
 git clone $WAKATIME_GITHUB_REPO_URL
