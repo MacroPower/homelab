@@ -299,4 +299,11 @@ charts: helm.Charts = {
         targetRevision = "4.2.0"
         schemaGenerator = "AUTO"
     }
+    opencloud: {
+        chart = "opencloud"
+        repoURL = "https://jacobcolvin.com/helm-charts"
+        targetRevision = "0.2.3"
+        schemaGenerator = "AUTO"
+        crdGenerator = "NONE"
+    }
 }

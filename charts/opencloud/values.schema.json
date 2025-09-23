@@ -1,0 +1,2347 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "busybox": {
+      "additionalProperties": true,
+      "description": "Busybox image settings (used for init containers)",
+      "properties": {
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "Image pull policy",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "registry": {
+              "default": "docker.io",
+              "description": "Busybox image registry",
+              "required": [],
+              "title": "registry",
+              "type": "string"
+            },
+            "repository": {
+              "default": "library/busybox",
+              "description": "Busybox image repository",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "1.36",
+              "description": "Busybox image tag",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "busybox",
+      "type": "object"
+    },
+    "collabora": {
+      "additionalProperties": true,
+      "description": "=====================================================================\nCOLLABORATION (COLLABORA)\n=====================================================================",
+      "properties": {
+        "admin": {
+          "additionalProperties": true,
+          "properties": {
+            "password": {
+              "default": "admin",
+              "description": "ignored if collabora.existingSecret is set",
+              "required": [],
+              "title": "password",
+              "type": "string"
+            },
+            "username": {
+              "default": "admin",
+              "description": "ignored if collabora.existingSecret is set",
+              "required": [],
+              "title": "username",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "admin",
+          "type": "object"
+        },
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "existingSecret": {
+          "default": "",
+          "description": "Use existing secret for collabora credentials (Note: secretKeyName must be username and password)",
+          "required": [],
+          "title": "existingSecret",
+          "type": "string"
+        },
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "registry": {
+              "default": "docker.io",
+              "required": [],
+              "title": "registry",
+              "type": "string"
+            },
+            "repository": {
+              "default": "collabora/code",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "24.04.13.2.1",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "properties": {
+            "limits": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": 1,
+                  "required": [],
+                  "title": "cpu",
+                  "type": "integer"
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "256Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "ssl": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "verification": {
+              "default": true,
+              "required": [],
+              "title": "verification",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "ssl",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "collabora",
+      "type": "object"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Global settings that apply across components",
+      "properties": {
+        "domain": {
+          "additionalProperties": true,
+          "description": "Domain settings for various services",
+          "properties": {
+            "collabora": {
+              "default": "collabora.opencloud.test",
+              "description": "Domain for Collabora CODE",
+              "required": [],
+              "title": "collabora",
+              "type": "string"
+            },
+            "companion": {
+              "default": "companion.opencloud.test",
+              "description": "Domain for Companion",
+              "required": [],
+              "title": "companion",
+              "type": "string"
+            },
+            "keycloak": {
+              "default": "keycloak.opencloud.test",
+              "description": "Domain for Keycloak",
+              "required": [],
+              "title": "keycloak",
+              "type": "string"
+            },
+            "minio": {
+              "default": "minio.opencloud.test",
+              "description": "Domain for MinIO",
+              "required": [],
+              "title": "minio",
+              "type": "string"
+            },
+            "onlyoffice": {
+              "default": "onlyoffice.opencloud.test",
+              "description": "Domain for OnlyOffice",
+              "required": [],
+              "title": "onlyoffice",
+              "type": "string"
+            },
+            "opencloud": {
+              "default": "cloud.opencloud.test",
+              "description": "Main domain for OpenCloud",
+              "required": [],
+              "title": "opencloud",
+              "type": "string"
+            },
+            "wopi": {
+              "default": "wopiserver.opencloud.test",
+              "description": "Domain for WOPI server",
+              "required": [],
+              "title": "wopi",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "domain",
+          "type": "object"
+        },
+        "image": {
+          "additionalProperties": true,
+          "description": "Global image settings",
+          "properties": {
+            "pullPolicy": {
+              "default": "",
+              "description": "Global pull policy override - if set, it will override all image pull policies\nOptions: Always, IfNotPresent, Never",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "registry": {
+              "default": "",
+              "description": "Global registry override - if set, it will override all image registries\nExample: my-private-registry.com",
+              "required": [],
+              "title": "registry",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "oidc": {
+          "additionalProperties": true,
+          "properties": {
+            "accountUrl": {
+              "default": "",
+              "description": "OIDC account URL for user account management. If set, overrides the default Keycloak internal account URL.\nThis is the URL where users can manage their accounts, typically provided by Keycloak.\nExample: https://keycloak.opencloud.test/realms/openCloud/account",
+              "required": [],
+              "title": "accountUrl",
+              "type": "string"
+            },
+            "clientId": {
+              "default": "web",
+              "description": "OIDC client ID for OpenCloud",
+              "required": [],
+              "title": "clientId",
+              "type": "string"
+            },
+            "issuer": {
+              "default": "",
+              "description": "OpenID Connect issuer URL. If set, overrides the default Keycloak internal issuer URL.\nThis is useful for external OIDC providers or custom Keycloak configurations.\nExample: https://keycloak.opencloud.test/realms/openCloud",
+              "required": [],
+              "title": "issuer",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "oidc",
+          "type": "object"
+        },
+        "storage": {
+          "additionalProperties": true,
+          "description": "Global storage settings",
+          "properties": {
+            "storageClass": {
+              "default": "",
+              "description": "Storage class for persistent volumes",
+              "required": [],
+              "title": "storageClass",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "storage",
+          "type": "object"
+        },
+        "tls": {
+          "additionalProperties": true,
+          "description": "TLS settings for secure connections",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable TLS (set to false when using gateway TLS termination externally)",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "secretName": {
+              "default": "",
+              "description": "secretName for TLS certificate",
+              "required": [],
+              "title": "secretName",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "tls",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "httpRoute": {
+      "additionalProperties": true,
+      "description": "Requires Gateway API resources and suitable controller installed within the cluster\n(see: https://gateway-api.sigs.k8s.io/guides/)",
+      "properties": {
+        "enabled": {
+          "default": false,
+          "description": "Enable HTTPRoute resources (set to true to create Gateway API routes)",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "gateway": {
+          "additionalProperties": true,
+          "description": "Gateway configuration",
+          "properties": {
+            "annotations": {
+              "default": "",
+              "description": "Gateway annotations",
+              "required": [],
+              "title": "annotations",
+              "type": "null"
+            },
+            "className": {
+              "default": "cilium",
+              "description": "Gateway class (defaults to \"cilium\")",
+              "required": [],
+              "title": "className",
+              "type": "string"
+            },
+            "create": {
+              "default": false,
+              "description": "Create the gateway",
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            },
+            "infrastructure": {
+              "additionalProperties": true,
+              "description": "Gateway annotations",
+              "properties": {
+                "annotations": {
+                  "additionalProperties": true,
+                  "required": [],
+                  "title": "annotations",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "infrastructure",
+              "type": "object"
+            },
+            "name": {
+              "default": "opencloud-gateway",
+              "description": "Gateway name",
+              "required": [],
+              "title": "name",
+              "type": "string"
+            },
+            "namespace": {
+              "default": "",
+              "description": "Gateway namespace (defaults to Release.Namespace)",
+              "required": [],
+              "title": "namespace",
+              "type": "string"
+            },
+            "port": {
+              "default": 443,
+              "description": "HTTPS Port to listen to (k3s traefik defaults to 8443)",
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            },
+            "sectionName": {
+              "default": "",
+              "description": "Gateway section name (applies to all routes). If set to a non-empty value, this overrides the default component-specific section names (e.g., opencloud-https, onlyoffice-https) for all routes. If left empty, the defaults are used.",
+              "required": [],
+              "title": "sectionName",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "gateway",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "httpRoute",
+      "type": "object"
+    },
+    "image": {
+      "additionalProperties": true,
+      "description": "Image settings for OpenCloud",
+      "properties": {
+        "pullPolicy": {
+          "default": "IfNotPresent",
+          "description": "Image pull policy",
+          "required": [],
+          "title": "pullPolicy",
+          "type": "string"
+        },
+        "pullSecrets": {
+          "description": "Image pull secrets",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "pullSecrets",
+          "type": "array"
+        },
+        "registry": {
+          "default": "docker.io",
+          "description": "OpenCloud image registry",
+          "required": [],
+          "title": "registry",
+          "type": "string"
+        },
+        "repository": {
+          "default": "opencloudeu/opencloud-rolling",
+          "description": "OpenCloud image repository",
+          "required": [],
+          "title": "repository",
+          "type": "string"
+        },
+        "tag": {
+          "default": "2.1.0",
+          "description": "OpenCloud image tag",
+          "required": [],
+          "title": "tag",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "image",
+      "type": "object"
+    },
+    "ingress": {
+      "additionalProperties": true,
+      "description": "Ingress configuration",
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Custom annotations applied to all ingress resources.\nThese are merged with any annotations from 'annotationsPreset' (if set).",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "annotationsPreset": {
+          "default": "",
+          "description": "Some components (e.g., OnlyOffice) require the X-Forwarded-Proto header to be set.\n\nSet 'annotationsPreset' to inject known ingress-controller-specific annotations\nfor injecting the header. Supported values: nginx, nginx-no-snippets, traefik, haproxy, contour, istio\n\nUse 'nginx-no-snippets' for environments where NGINX configuration snippets are forbidden\n(e.g., Rackspace, security-restricted clusters). This preset uses built-in NGINX features\ninstead of custom configuration snippets.\n\nIf set to \"traefik\" and OnlyOffice is enabled, the chart will create a Middleware\nnamed 'add-x-forwarded-proto-https' for use in both Ingress and Gateway HTTPRoute.\n\nThis is required because Traefik does not allow simple header injection via annotations\nor Gateway filters and instead expects a Middleware to be referenced.\n\nThese annotations are added in addition to any defined in 'annotations'.\nIf there's a conflict, Helm will error. To avoid this, set annotationsPreset: \"\"\nand define all annotations manually (including creating any required Middleware).",
+          "required": [],
+          "title": "annotationsPreset",
+          "type": "string"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Whether to enable ingress resources for components",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "ingressClassName": {
+          "default": "",
+          "description": "The ingress class name to use (e.g., nginx, traefik). Leave empty to use the cluster default.\nNote: This sets the Kubernetes `spec.ingressClassName` field.",
+          "required": [],
+          "title": "ingressClassName",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "ingress",
+      "type": "object"
+    },
+    "keycloak": {
+      "additionalProperties": true,
+      "description": "Keycloak settings for identity and access management\nStructure follows issue #64 - standardized internal/external pattern",
+      "properties": {
+        "internal": {
+          "additionalProperties": true,
+          "description": "Internal Keycloak deployment",
+          "properties": {
+            "adminPassword": {
+              "default": "admin",
+              "description": "Admin password\nignored if keycloak.internal.existingSecret is set",
+              "required": [],
+              "title": "adminPassword",
+              "type": "string"
+            },
+            "adminUser": {
+              "default": "admin",
+              "description": "Admin user\nignored if keycloak.internal.existingSecret is set",
+              "required": [],
+              "title": "adminUser",
+              "type": "string"
+            },
+            "cors": {
+              "additionalProperties": true,
+              "description": "CORS settings for cross-origin requests",
+              "properties": {
+                "allowAllOrigins": {
+                  "default": true,
+                  "description": "Allow all origins",
+                  "required": [],
+                  "title": "allowAllOrigins",
+                  "type": "boolean"
+                },
+                "allowCredentials": {
+                  "default": "true",
+                  "description": "Allow credentials",
+                  "required": [],
+                  "title": "allowCredentials",
+                  "type": "string"
+                },
+                "enabled": {
+                  "default": true,
+                  "description": "Enable CORS",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "exposedHeaders": {
+                  "default": "Access-Control-Allow-Origin,Access-Control-Allow-Credentials",
+                  "description": "Exposed headers",
+                  "required": [],
+                  "title": "exposedHeaders",
+                  "type": "string"
+                },
+                "headers": {
+                  "default": "Origin,Accept,Authorization,Content-Type,Cache-Control",
+                  "description": "Allowed headers",
+                  "required": [],
+                  "title": "headers",
+                  "type": "string"
+                },
+                "maxAge": {
+                  "default": "3600",
+                  "description": "Max age in seconds",
+                  "required": [],
+                  "title": "maxAge",
+                  "type": "string"
+                },
+                "methods": {
+                  "default": "GET,POST,PUT,DELETE,OPTIONS",
+                  "description": "Allowed methods",
+                  "required": [],
+                  "title": "methods",
+                  "type": "string"
+                },
+                "origins": {
+                  "description": "Allowed origins (used if allowAllOrigins is false)",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "origins",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "cors",
+              "type": "object"
+            },
+            "enabled": {
+              "default": true,
+              "description": "Enable internal Keycloak instance",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "existingSecret": {
+              "default": "",
+              "description": "Use existing secret for keycloak credentials (Note: secretKeyName must be adminUser and adminPassword)",
+              "required": [],
+              "title": "existingSecret",
+              "type": "string"
+            },
+            "image": {
+              "additionalProperties": true,
+              "description": "Keycloak image settings",
+              "properties": {
+                "pullPolicy": {
+                  "default": "IfNotPresent",
+                  "description": "Image pull policy",
+                  "required": [],
+                  "title": "pullPolicy",
+                  "type": "string"
+                },
+                "registry": {
+                  "default": "quay.io",
+                  "description": "Keycloak image registry",
+                  "required": [],
+                  "title": "registry",
+                  "type": "string"
+                },
+                "repository": {
+                  "default": "keycloak/keycloak",
+                  "description": "Keycloak image repository",
+                  "required": [],
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "26.1.4",
+                  "description": "Keycloak image tag",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "image",
+              "type": "object"
+            },
+            "realm": {
+              "default": "openCloud",
+              "description": "Keycloak realm",
+              "required": [],
+              "title": "realm",
+              "type": "string"
+            },
+            "replicas": {
+              "default": 1,
+              "description": "Number of Keycloak replicas",
+              "required": [],
+              "title": "replicas",
+              "type": "integer"
+            },
+            "resources": {
+              "additionalProperties": true,
+              "description": "Resources",
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "internal",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "keycloak",
+      "type": "object"
+    },
+    "onlyoffice": {
+      "additionalProperties": true,
+      "description": "OnlyOffice settings for document collaboration",
+      "properties": {
+        "collaboration": {
+          "additionalProperties": true,
+          "description": "Collaboration service settings",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable collaboration service",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "resources": {
+              "additionalProperties": true,
+              "description": "Resources allocation",
+              "properties": {
+                "limits": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "cpu": {
+                      "default": "5000m",
+                      "required": [],
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "10Gi",
+                      "required": [],
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "cpu": {
+                      "default": "100m",
+                      "required": [],
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "256Mi",
+                      "required": [],
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "collaboration",
+          "type": "object"
+        },
+        "config": {
+          "additionalProperties": true,
+          "description": "Configuration for local.json",
+          "properties": {
+            "coAuthoring": {
+              "additionalProperties": true,
+              "description": "CoAuthoring service settings",
+              "properties": {
+                "secret": {
+                  "additionalProperties": true,
+                  "description": "Secret settings",
+                  "properties": {
+                    "existingSecret": {
+                      "default": "",
+                      "description": "Use existing secret for onlyoffice credentials (Note: secretKeyName must be sessionSecret)",
+                      "required": [],
+                      "title": "existingSecret",
+                      "type": "string"
+                    },
+                    "session": {
+                      "additionalProperties": true,
+                      "description": "ignored if onlyoffice.config.coAuthoring.secret.existingSecret is set",
+                      "properties": {
+                        "string": {
+                          "default": "Dd0SXIe1k9oCfdffgrfNmA0TK1bb1B1d38OFSb",
+                          "required": [],
+                          "title": "string",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "title": "session",
+                      "type": "object"
+                    }
+                  },
+                  "required": [],
+                  "title": "secret",
+                  "type": "object"
+                },
+                "sql": {
+                  "additionalProperties": true,
+                  "description": "SQL database settings",
+                  "properties": {
+                    "dbHost": {
+                      "default": "localhost",
+                      "required": [],
+                      "title": "dbHost",
+                      "type": "string"
+                    },
+                    "dbName": {
+                      "default": "onlyoffice",
+                      "required": [],
+                      "title": "dbName",
+                      "type": "string"
+                    },
+                    "dbPort": {
+                      "default": "5432",
+                      "required": [],
+                      "title": "dbPort",
+                      "type": "string"
+                    },
+                    "dbUser": {
+                      "default": "onlyoffice",
+                      "required": [],
+                      "title": "dbUser",
+                      "type": "string"
+                    },
+                    "type": {
+                      "default": "postgres",
+                      "required": [],
+                      "title": "type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "sql",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "coAuthoring",
+              "type": "object"
+            },
+            "fileConverter": {
+              "additionalProperties": true,
+              "description": "File converter settings",
+              "properties": {
+                "converter": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "inputLimits": {
+                      "items": {
+                        "additionalProperties": true,
+                        "properties": {
+                          "type": {
+                            "default": "pptx;ppsx;potx;pptm;ppsm;potm",
+                            "required": [],
+                            "title": "type",
+                            "type": "string"
+                          },
+                          "zip": {
+                            "additionalProperties": true,
+                            "properties": {
+                              "template": {
+                                "default": "*.xml",
+                                "required": [],
+                                "title": "template",
+                                "type": "string"
+                              },
+                              "uncompressed": {
+                                "default": "1GB",
+                                "required": [],
+                                "title": "uncompressed",
+                                "type": "string"
+                              }
+                            },
+                            "required": [],
+                            "title": "zip",
+                            "type": "object"
+                          }
+                        },
+                        "required": [],
+                        "type": "object"
+                      },
+                      "required": [],
+                      "title": "inputLimits",
+                      "type": "array"
+                    }
+                  },
+                  "required": [],
+                  "title": "converter",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "fileConverter",
+              "type": "object"
+            },
+            "rabbitmq": {
+              "additionalProperties": true,
+              "description": "RabbitMQ settings",
+              "properties": {
+                "existingSecret": {
+                  "default": "",
+                  "description": "Use existing secret for onlyoffice rabbitmq credentials (Note: secretKeyName must be url)",
+                  "required": [],
+                  "title": "existingSecret",
+                  "type": "string"
+                },
+                "url": {
+                  "default": "amqp://guest:Dd0SXIe1k9osdfjkmA0TK1bb1B1d38OFSb@localhost",
+                  "description": "ignored if onlyoffice.config.rabbitmq.existingSecret is set",
+                  "required": [],
+                  "title": "url",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "rabbitmq",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "config",
+          "type": "object"
+        },
+        "db": {
+          "additionalProperties": true,
+          "description": "Database configuration",
+          "properties": {
+            "existingSecret": {
+              "default": "",
+              "description": "Use existing secret for database password",
+              "required": [],
+              "title": "existingSecret",
+              "type": "string"
+            },
+            "secretKeyName": {
+              "default": "password",
+              "description": "Key in the existing secret that contains the password",
+              "required": [],
+              "title": "secretKeyName",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "db",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "description": "Enable OnlyOffice",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "image": {
+          "additionalProperties": true,
+          "description": "OnlyOffice image settings",
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "Image pull policy",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "registry": {
+              "default": "docker.io",
+              "description": "OnlyOffice image registry",
+              "required": [],
+              "title": "registry",
+              "type": "string"
+            },
+            "repository": {
+              "default": "onlyoffice/documentserver",
+              "description": "OnlyOffice image repository",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "8.2.2",
+              "description": "OnlyOffice image tag",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "persistence": {
+          "additionalProperties": true,
+          "description": "Persistence configuration",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable persistence",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "existingClaim": {
+              "default": "",
+              "description": "Name of existing PVC to use (overrides all other persistence values)",
+              "required": [],
+              "title": "existingClaim",
+              "type": "string"
+            },
+            "size": {
+              "default": "2Gi",
+              "description": "Size of the persistent volume",
+              "required": [],
+              "title": "size",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "persistence",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resources allocation",
+          "properties": {
+            "limits": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "5000m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "10Gi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "256Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "useUnauthorizedStorage": {
+          "default": true,
+          "description": "Use unauthorized storage (for self-signed certificates)",
+          "required": [],
+          "title": "useUnauthorizedStorage",
+          "type": "boolean"
+        },
+        "wopi": {
+          "additionalProperties": true,
+          "description": "WOPI settings",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable WOPI",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "wopi",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "onlyoffice",
+      "type": "object"
+    },
+    "opencloud": {
+      "additionalProperties": true,
+      "description": "OpenCloud core settings",
+      "properties": {
+        "additionalServices": {
+          "description": "Additional services to start",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "additionalServices",
+          "type": "array"
+        },
+        "adminPassword": {
+          "default": "admin",
+          "description": "Admin password\nignored if opencloud.existingSecret is set",
+          "required": [],
+          "title": "adminPassword",
+          "type": "string"
+        },
+        "config": {
+          "additionalProperties": true,
+          "description": "Configuration files",
+          "properties": {
+            "appRegistry": {
+              "additionalProperties": true,
+              "description": "App registry configuration",
+              "required": [],
+              "title": "appRegistry",
+              "type": "object"
+            },
+            "bannedPasswordList": {
+              "default": "",
+              "description": "Banned password list configuration\nFormat: Multi-line string (not YAML array)\nUse the |- syntax to preserve line breaks\nAdd one password per line - do not use YAML list syntax (no dashes)\nExample:\n  bannedPasswordList: |-\n    password1\n    password2\n    password3\nFor very long lists override the file 'files/opencloud/banned-password-list.txt'",
+              "required": [],
+              "title": "bannedPasswordList",
+              "type": "string"
+            },
+            "csp": {
+              "additionalProperties": true,
+              "description": "CSP configuration",
+              "required": [],
+              "title": "csp",
+              "type": "object"
+            },
+            "theme": {
+              "default": "owncloud",
+              "required": [],
+              "title": "theme",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "config",
+          "type": "object"
+        },
+        "createDemoUsers": {
+          "default": false,
+          "description": "Create demo users",
+          "required": [],
+          "title": "createDemoUsers",
+          "type": "boolean"
+        },
+        "enabled": {
+          "default": true,
+          "description": "Enable OpenCloud",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "env": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "env",
+          "type": "array"
+        },
+        "envFrom": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "envFrom",
+          "type": "array"
+        },
+        "excludeServices": {
+          "description": "Services to exclude from starting",
+          "items": {
+            "required": [],
+            "type": "string"
+          },
+          "required": [],
+          "title": "excludeServices",
+          "type": "array"
+        },
+        "existingSecret": {
+          "default": "",
+          "description": "Use existing secret for opencloud admin credentials (Note: secretKeyName must be adminPassword)",
+          "required": [],
+          "title": "existingSecret",
+          "type": "string"
+        },
+        "insecure": {
+          "default": true,
+          "description": "Insecure mode (for self-signed certificates)",
+          "required": [],
+          "title": "insecure",
+          "type": "boolean"
+        },
+        "logColor": {
+          "default": false,
+          "description": "Log color",
+          "required": [],
+          "title": "logColor",
+          "type": "boolean"
+        },
+        "logLevel": {
+          "default": "info",
+          "description": "Log level",
+          "required": [],
+          "title": "logLevel",
+          "type": "string"
+        },
+        "logPretty": {
+          "default": false,
+          "description": "Log pretty",
+          "required": [],
+          "title": "logPretty",
+          "type": "boolean"
+        },
+        "nats": {
+          "additionalProperties": true,
+          "properties": {
+            "external": {
+              "additionalProperties": true,
+              "properties": {
+                "cluster": {
+                  "default": "opencloud-cluster",
+                  "description": "Cluster name to use with the messaging system.",
+                  "required": [],
+                  "title": "cluster",
+                  "type": "string"
+                },
+                "enabled": {
+                  "default": false,
+                  "description": "Use an external NATS messaging system instead of the internal one.\nRecommended for all production instances.\nNeeds to be used if HighAvailability is needed.\nNeeds to be used if OpenCloud shall be used by more than a 2-digit user count.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "endpoint": {
+                  "default": "nats.opencloud-nats.svc.cluster.local:4222",
+                  "description": "Endpoint of the messaging system.",
+                  "required": [],
+                  "title": "endpoint",
+                  "type": "string"
+                },
+                "tls": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "caSecretName": {
+                      "default": "opencloud-nats-ca",
+                      "description": "Use existing CA secret for nats credentials (Note: secretKeyName must be 'ca.crt' with the root CA certificate for NATS)\nOnly used if certTrusted is false",
+                      "required": [],
+                      "title": "caSecretName",
+                      "type": "string"
+                    },
+                    "certTrusted": {
+                      "default": true,
+                      "description": "Set only to false, if the certificate of your messaging system service is not trusted.\nIf set to false, you need to put the CA cert of the messaging system server into the secret referenced by \"caSecretName\"",
+                      "required": [],
+                      "title": "certTrusted",
+                      "type": "boolean"
+                    },
+                    "enabled": {
+                      "default": false,
+                      "description": "Enables TLS encrypted communication with the messaging system.\nRecommended for production installations.",
+                      "required": [],
+                      "title": "enabled",
+                      "type": "boolean"
+                    },
+                    "insecure": {
+                      "default": false,
+                      "description": "Disables SSL certificate checking for connections to the messaging system server.\nFor self signed certificates, consider to put the CA cert of the messaging system secure server into the secret referenced by \"caSecretName\"\nNot recommended for production installations.",
+                      "required": [],
+                      "title": "insecure",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [],
+                  "title": "tls",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "external",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "nats",
+          "type": "object"
+        },
+        "persistence": {
+          "additionalProperties": true,
+          "description": "Persistence configuration",
+          "properties": {
+            "config": {
+              "additionalProperties": true,
+              "properties": {
+                "accessMode": {
+                  "default": "ReadWriteOnce",
+                  "description": "Access mode (ReadWriteOnce or ReadWriteMany for multiple replicas)",
+                  "required": [],
+                  "title": "accessMode",
+                  "type": "string"
+                },
+                "enabled": {
+                  "default": true,
+                  "description": "Enable persistence",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "existingClaim": {
+                  "default": "",
+                  "description": "Name of existing PVC to use (overrides all other persistence values)",
+                  "required": [],
+                  "title": "existingClaim",
+                  "type": "string"
+                },
+                "size": {
+                  "default": "5Gi",
+                  "description": "Size of the persistent volume for config",
+                  "required": [],
+                  "title": "size",
+                  "type": "string"
+                },
+                "storageClass": {
+                  "default": "",
+                  "description": "Storage class",
+                  "required": [],
+                  "title": "storageClass",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "config",
+              "type": "object"
+            },
+            "data": {
+              "additionalProperties": true,
+              "properties": {
+                "accessMode": {
+                  "default": "ReadWriteOnce",
+                  "description": "Access mode (ReadWriteOnce or ReadWriteMany for multiple replicas)",
+                  "required": [],
+                  "title": "accessMode",
+                  "type": "string"
+                },
+                "enabled": {
+                  "default": true,
+                  "description": "Enable persistence",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "existingClaim": {
+                  "default": "",
+                  "description": "Name of existing PVC to use (overrides all other persistence values)",
+                  "required": [],
+                  "title": "existingClaim",
+                  "type": "string"
+                },
+                "size": {
+                  "default": "30Gi",
+                  "description": "Size of the persistent volume for data",
+                  "required": [],
+                  "title": "size",
+                  "type": "string"
+                },
+                "storageClass": {
+                  "default": "",
+                  "description": "Storage class",
+                  "required": [],
+                  "title": "storageClass",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "data",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "persistence",
+          "type": "object"
+        },
+        "replicas": {
+          "default": 1,
+          "description": "Number of replicas (Note: When using multiple replicas, persistence should be disabled\nor use a storage class that supports ReadWriteMany access mode)",
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resources allocation",
+          "properties": {
+            "limits": {
+              "additionalProperties": true,
+              "properties": {
+                "memory": {
+                  "default": "20Gi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "128m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "128Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "smtp": {
+          "additionalProperties": true,
+          "description": "SMTP settings for email notifications",
+          "properties": {
+            "authentication": {
+              "default": "plain",
+              "description": "SMTP authentication method",
+              "required": [],
+              "title": "authentication",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable SMTP",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "encryption": {
+              "default": "starttls",
+              "description": "SMTP encryption method",
+              "required": [],
+              "title": "encryption",
+              "type": "string"
+            },
+            "existingSecret": {
+              "default": "",
+              "description": "Use existing secret for opencloud smtp credentials (Note: secretKeyName must be smtpUser and smtpPassword)",
+              "required": [],
+              "title": "existingSecret",
+              "type": "string"
+            },
+            "host": {
+              "default": "",
+              "description": "SMTP host",
+              "required": [],
+              "title": "host",
+              "type": "string"
+            },
+            "insecure": {
+              "default": "false",
+              "description": "SMTP insecure (allow self-signed certificates)",
+              "required": [],
+              "title": "insecure",
+              "type": "string"
+            },
+            "password": {
+              "default": "",
+              "description": "SMTP password\nignored if opencloud.smtp.existingSecret is set",
+              "required": [],
+              "title": "password",
+              "type": "string"
+            },
+            "port": {
+              "default": "587",
+              "description": "SMTP port",
+              "required": [],
+              "title": "port",
+              "type": "string"
+            },
+            "sender": {
+              "default": "",
+              "description": "SMTP sender",
+              "required": [],
+              "title": "sender",
+              "type": "string"
+            },
+            "username": {
+              "default": "",
+              "description": "SMTP username\nignored if opencloud.smtp.existingSecret is set",
+              "required": [],
+              "title": "username",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "smtp",
+          "type": "object"
+        },
+        "storage": {
+          "additionalProperties": true,
+          "description": "Storage configuration",
+          "properties": {
+            "mode": {
+              "default": "s3",
+              "description": "Storage mode for user files, can be \"s3\" (default) or \"posixfs\"",
+              "required": [],
+              "title": "mode",
+              "type": "string"
+            },
+            "posixfs": {
+              "additionalProperties": true,
+              "properties": {
+                "idCacheStore": {
+                  "default": "nats-js-kv",
+                  "description": "The type of the cache store, supported values are: 'memory', 'redis-sentinel', 'nats-js-kv' (default), 'noop'",
+                  "required": [],
+                  "title": "idCacheStore",
+                  "type": "string"
+                },
+                "persistence": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "accessMode": {
+                      "default": "ReadWriteMany",
+                      "description": "Access mode (ReadWriteOnce or ReadWriteMany for multiple replicas)",
+                      "required": [],
+                      "title": "accessMode",
+                      "type": "string"
+                    },
+                    "enabled": {
+                      "default": true,
+                      "description": "Enable persistence",
+                      "required": [],
+                      "title": "enabled",
+                      "type": "boolean"
+                    },
+                    "existingClaim": {
+                      "default": "",
+                      "description": "Name of existing PVC to use (overrides all other persistence values)",
+                      "required": [],
+                      "title": "existingClaim",
+                      "type": "string"
+                    },
+                    "size": {
+                      "default": "30Gi",
+                      "description": "Size of the persistent volume for data",
+                      "required": [],
+                      "title": "size",
+                      "type": "string"
+                    },
+                    "storageClass": {
+                      "default": "",
+                      "description": "Storage class",
+                      "required": [],
+                      "title": "storageClass",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "persistence",
+                  "type": "object"
+                },
+                "rootPath": {
+                  "default": "/var/lib/opencloud/storage",
+                  "description": "Path of storage root directory, default is /var/lib/opencloud/storage",
+                  "required": [],
+                  "title": "rootPath",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "posixfs",
+              "type": "object"
+            },
+            "s3": {
+              "additionalProperties": true,
+              "description": "S3 storage configuration",
+              "properties": {
+                "external": {
+                  "additionalProperties": true,
+                  "description": "External S3 (can be S3, Ceph, or external MinIO)",
+                  "properties": {
+                    "accessKey": {
+                      "default": "",
+                      "description": "External S3 access key\nignored if opencloud.storage.s3.external.existingSecret is set",
+                      "required": [],
+                      "title": "accessKey",
+                      "type": "string"
+                    },
+                    "bucket": {
+                      "default": "",
+                      "description": "External S3 bucket",
+                      "required": [],
+                      "title": "bucket",
+                      "type": "string"
+                    },
+                    "createBucket": {
+                      "default": true,
+                      "description": "Create bucket if it doesn't exist",
+                      "required": [],
+                      "title": "createBucket",
+                      "type": "boolean"
+                    },
+                    "enabled": {
+                      "default": false,
+                      "description": "Enable external S3",
+                      "required": [],
+                      "title": "enabled",
+                      "type": "boolean"
+                    },
+                    "endpoint": {
+                      "default": "",
+                      "description": "External S3 endpoint URL",
+                      "required": [],
+                      "title": "endpoint",
+                      "type": "string"
+                    },
+                    "existingSecret": {
+                      "default": "",
+                      "description": "Use existing secret for external s3 credentials (Note: secretKeyName must be accessKey and secretKey)",
+                      "required": [],
+                      "title": "existingSecret",
+                      "type": "string"
+                    },
+                    "region": {
+                      "default": "default",
+                      "description": "External S3 region",
+                      "required": [],
+                      "title": "region",
+                      "type": "string"
+                    },
+                    "secretKey": {
+                      "default": "",
+                      "description": "External S3 secret key\nignored if opencloud.storage.s3.external.existingSecret is set",
+                      "required": [],
+                      "title": "secretKey",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "external",
+                  "type": "object"
+                },
+                "internal": {
+                  "additionalProperties": true,
+                  "description": "Internal MinIO instance",
+                  "properties": {
+                    "bucketName": {
+                      "default": "opencloud-bucket",
+                      "description": "Bucket name",
+                      "required": [],
+                      "title": "bucketName",
+                      "type": "string"
+                    },
+                    "enabled": {
+                      "default": true,
+                      "description": "Enable internal test MinIO instance (default: true)",
+                      "required": [],
+                      "title": "enabled",
+                      "type": "boolean"
+                    },
+                    "existingSecret": {
+                      "default": "",
+                      "description": "Use existing secret for minio credentials (Note: secretKeyName must be rootUser and rootPassword)",
+                      "required": [],
+                      "title": "existingSecret",
+                      "type": "string"
+                    },
+                    "httpRoute": {
+                      "additionalProperties": true,
+                      "description": "httpRoute configuration",
+                      "properties": {
+                        "enabled": {
+                          "default": false,
+                          "description": "Enable HTTPRoute for MinIO (default: false)",
+                          "required": [],
+                          "title": "enabled",
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [],
+                      "title": "httpRoute",
+                      "type": "object"
+                    },
+                    "image": {
+                      "additionalProperties": true,
+                      "description": "MinIO image settings",
+                      "properties": {
+                        "pullPolicy": {
+                          "default": "IfNotPresent",
+                          "description": "Image pull policy",
+                          "required": [],
+                          "title": "pullPolicy",
+                          "type": "string"
+                        },
+                        "registry": {
+                          "default": "docker.io",
+                          "description": "MinIO image registry",
+                          "required": [],
+                          "title": "registry",
+                          "type": "string"
+                        },
+                        "repository": {
+                          "default": "minio/minio",
+                          "description": "MinIO image repository",
+                          "required": [],
+                          "title": "repository",
+                          "type": "string"
+                        },
+                        "tag": {
+                          "default": "latest",
+                          "description": "MinIO image tag",
+                          "required": [],
+                          "title": "tag",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "title": "image",
+                      "type": "object"
+                    },
+                    "persistence": {
+                      "additionalProperties": true,
+                      "description": "Persistence configuration",
+                      "properties": {
+                        "accessMode": {
+                          "default": "ReadWriteOnce",
+                          "description": "Access mode",
+                          "required": [],
+                          "title": "accessMode",
+                          "type": "string"
+                        },
+                        "enabled": {
+                          "default": true,
+                          "required": [],
+                          "title": "enabled",
+                          "type": "boolean"
+                        },
+                        "existingClaim": {
+                          "default": "",
+                          "description": "Name of existing PVC to use (overrides all other persistence values)",
+                          "required": [],
+                          "title": "existingClaim",
+                          "type": "string"
+                        },
+                        "size": {
+                          "default": "30Gi",
+                          "description": "Size of the persistent volume",
+                          "required": [],
+                          "title": "size",
+                          "type": "string"
+                        },
+                        "storageClass": {
+                          "default": "",
+                          "description": "Storage class",
+                          "required": [],
+                          "title": "storageClass",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "title": "persistence",
+                      "type": "object"
+                    },
+                    "region": {
+                      "default": "default",
+                      "description": "Region (optional)",
+                      "required": [],
+                      "title": "region",
+                      "type": "string"
+                    },
+                    "resources": {
+                      "additionalProperties": true,
+                      "description": "Resources allocation",
+                      "properties": {
+                        "limits": {
+                          "additionalProperties": true,
+                          "properties": {
+                            "cpu": {
+                              "default": "1000m",
+                              "required": [],
+                              "title": "cpu",
+                              "type": "string"
+                            },
+                            "memory": {
+                              "default": "2Gi",
+                              "required": [],
+                              "title": "memory",
+                              "type": "string"
+                            }
+                          },
+                          "required": [],
+                          "title": "limits",
+                          "type": "object"
+                        },
+                        "requests": {
+                          "additionalProperties": true,
+                          "properties": {
+                            "cpu": {
+                              "default": "100m",
+                              "required": [],
+                              "title": "cpu",
+                              "type": "string"
+                            },
+                            "memory": {
+                              "default": "256Mi",
+                              "required": [],
+                              "title": "memory",
+                              "type": "string"
+                            }
+                          },
+                          "required": [],
+                          "title": "requests",
+                          "type": "object"
+                        }
+                      },
+                      "required": [],
+                      "title": "resources",
+                      "type": "object"
+                    },
+                    "rootPassword": {
+                      "default": "opencloud-secret-key",
+                      "description": "Minio Root password\nignored if opencloud.storage.s3.internal.existingSecret is set",
+                      "required": [],
+                      "title": "rootPassword",
+                      "type": "string"
+                    },
+                    "rootUser": {
+                      "default": "opencloud",
+                      "description": "Minio Root user\nignored if opencloud.storage.s3.internal.existingSecret is set",
+                      "required": [],
+                      "title": "rootUser",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "internal",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "s3",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "storage",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "opencloud",
+      "type": "object"
+    },
+    "postgres": {
+      "additionalProperties": true,
+      "description": "PostgreSQL settings for Keycloak",
+      "properties": {
+        "database": {
+          "default": "keycloak",
+          "description": "Database name",
+          "required": [],
+          "title": "database",
+          "type": "string"
+        },
+        "enabled": {
+          "default": true,
+          "description": "Enable PostgreSQL",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "existingSecret": {
+          "default": "",
+          "description": "Use existing secret for postgres credentials (Note: secretKeyName must be username and password)",
+          "required": [],
+          "title": "existingSecret",
+          "type": "string"
+        },
+        "image": {
+          "additionalProperties": true,
+          "description": "PostgreSQL image settings",
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "Image pull policy",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "registry": {
+              "default": "docker.io",
+              "description": "PostgreSQL image registry",
+              "required": [],
+              "title": "registry",
+              "type": "string"
+            },
+            "repository": {
+              "default": "postgres",
+              "description": "PostgreSQL image repository",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "alpine",
+              "description": "PostgreSQL image tag",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "password": {
+          "default": "keycloak",
+          "description": "Database password\nignored if postgres.existingSecret is set",
+          "required": [],
+          "title": "password",
+          "type": "string"
+        },
+        "persistence": {
+          "additionalProperties": true,
+          "description": "Persistence configuration",
+          "properties": {
+            "accessMode": {
+              "default": "ReadWriteOnce",
+              "description": "Access mode",
+              "required": [],
+              "title": "accessMode",
+              "type": "string"
+            },
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "existingClaim": {
+              "default": "",
+              "description": "Name of existing PVC to use (overrides all other persistence values)",
+              "required": [],
+              "title": "existingClaim",
+              "type": "string"
+            },
+            "size": {
+              "default": "1Gi",
+              "description": "Size of the persistent volume",
+              "required": [],
+              "title": "size",
+              "type": "string"
+            },
+            "storageClass": {
+              "default": "",
+              "description": "Storage class",
+              "required": [],
+              "title": "storageClass",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "persistence",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resources allocation",
+          "properties": {
+            "limits": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "500m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "512Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "128Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "user": {
+          "default": "keycloak",
+          "description": "Database user\nignored if postgres.existingSecret is set",
+          "required": [],
+          "title": "user",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "postgres",
+      "type": "object"
+    },
+    "tika": {
+      "additionalProperties": true,
+      "description": "Tika settings for full-text search",
+      "properties": {
+        "enabled": {
+          "default": true,
+          "description": "Enable Tika",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "image": {
+          "additionalProperties": true,
+          "description": "Tika image settings",
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "Image pull policy",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "registry": {
+              "default": "docker.io",
+              "description": "Tika image registry",
+              "required": [],
+              "title": "registry",
+              "type": "string"
+            },
+            "repository": {
+              "default": "apache/tika",
+              "description": "Tika image repository",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "2.9.2.1-full",
+              "description": "Tika image tag",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resources allocation",
+          "properties": {
+            "limits": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "1000m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "3Gi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "tika",
+      "type": "object"
+    },
+    "webExtensions": {
+      "additionalProperties": true,
+      "description": "Web Extensions settings",
+      "properties": {
+        "enabled": {
+          "default": true,
+          "description": "Enable web extensions",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extensions": {
+          "additionalProperties": true,
+          "description": "List of extensions to install",
+          "properties": {
+            "drawio": {
+              "additionalProperties": true,
+              "description": "Draw.io extension",
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "tag": {
+                  "default": "draw-io-1.0.0",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "drawio",
+              "type": "object"
+            },
+            "externalsites": {
+              "additionalProperties": true,
+              "description": "External Sites extension",
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "tag": {
+                  "default": "external-sites-1.0.0",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "externalsites",
+              "type": "object"
+            },
+            "importer": {
+              "additionalProperties": true,
+              "description": "Importer extension",
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "tag": {
+                  "default": "importer-1.0.0",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "importer",
+              "type": "object"
+            },
+            "jsonviewer": {
+              "additionalProperties": true,
+              "description": "JSON Viewer extension",
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "tag": {
+                  "default": "json-viewer-1.0.0",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "jsonviewer",
+              "type": "object"
+            },
+            "progressbars": {
+              "additionalProperties": true,
+              "description": "Progress Bars extension",
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "tag": {
+                  "default": "progress-bars-1.0.0",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "progressbars",
+              "type": "object"
+            },
+            "unzip": {
+              "additionalProperties": true,
+              "description": "Unzip extension",
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "tag": {
+                  "default": "unzip-1.0.0",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "unzip",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "extensions",
+          "type": "object"
+        },
+        "image": {
+          "additionalProperties": true,
+          "description": "Common image settings for all extensions",
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "Image pull policy",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "registry": {
+              "default": "docker.io",
+              "description": "Registry for web extensions",
+              "required": [],
+              "title": "registry",
+              "type": "string"
+            },
+            "repository": {
+              "default": "opencloudeu/web-extensions",
+              "description": "Repository for web extensions",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "webExtensions",
+      "type": "object"
+    }
+  },
+  "required": [],
+  "type": "object"
+}

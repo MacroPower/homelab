@@ -1,0 +1,49 @@
+[dependencies]
+  [dependencies.charts]
+    name = "charts"
+    full_name = "charts_0.1.0"
+    version = "0.1.0"
+  [dependencies.filepath]
+    name = "filepath"
+    full_name = "filepath_0.16.1"
+    version = "0.16.1"
+    sum = "tyez8hOEiQVHINnlPZxHthYUpjvNwvYKrqdac3Ktock="
+    reg = "ghcr.io"
+    repo = "macropower/kclipper/filepath"
+    oci_tag = "0.16.1"
+  [dependencies.helm]
+    name = "helm"
+    full_name = "helm_0.16.1"
+    version = "0.16.1"
+    sum = "dqVkYOGIp3IZlx3CcKWqzTnQ27DQllRYoMBFiXT/1Rc="
+    reg = "ghcr.io"
+    repo = "macropower/kclipper/helm"
+    oci_tag = "0.16.1"
+  [dependencies.json_merge_patch]
+    name = "json_merge_patch"
+    full_name = "json_merge_patch_0.1.1"
+    version = "0.1.1"
+    sum = "o1aamShk1L2MGjnN9u3IErRZ3xBNDxgmFxXsGVMt8Wk="
+    reg = "ghcr.io"
+    repo = "kcl-lang/json_merge_patch"
+    oci_tag = "0.1.1"
+  [dependencies.k8s]
+    name = "k8s"
+    full_name = "k8s_1.31.2"
+    version = "1.31.2"
+    sum = "xBZgPsnpVVyWBpahuPQHReeRx28eUHGFoaPeqbct+vs="
+    reg = "ghcr.io"
+    repo = "kcl-lang/k8s"
+    oci_tag = "1.31.2"
+  [dependencies.konfig]
+    name = "konfig"
+    full_name = "konfig_0.0.1"
+    version = "0.0.1"
+  [dependencies.public]
+    name = "public"
+    full_name = "public_0.1.0"
+    version = "0.1.0"
+  [dependencies.public_tenant]
+    name = "public_tenant"
+    full_name = "public_tenant_0.1.0"
+    version = "0.1.0"

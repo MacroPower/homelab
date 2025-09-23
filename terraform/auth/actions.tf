@@ -4,12 +4,11 @@ resource "auth0_action" "add_roles_to_groups_claim" {
   deploy  = true
   code    = <<-EOT
     exports.onExecutePostLogin = async (event, api) => {
-      const namespace = 'https://auth.jacobcolvin.com/';
       if (event.authorization) {
         // Map Auth0 roles to the groups claim
         const roles = event.authorization.roles || [];
-        api.idToken.setCustomClaim(`$${namespace}groups`, roles);
-        api.accessToken.setCustomClaim(`$${namespace}groups`, roles);
+        api.idToken.setCustomClaim(`colvinGroups`, roles);
+        api.accessToken.setCustomClaim(`colvinGroups`, roles);
       }
     };
   EOT

@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=../../../../charts/opencloud/values.schema.json
+
+global:
+  oidc:
+    issuer: https://auth.jacobcolvin.com/
+  domain:
+    keycloak: auth.jacobcolvin.com
+  storage:
+    storageClass: "openebs-hostpath"
+
+onlyoffice:
+  enabled: false
+
+keycloak:
+  internal:
+    enabled: false
+
+postgres:
+  enabled: false
+
+webExtensions:
+  enabled: true
+
+tika:
+  enabled: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 3Gi
+
+opencloud:
+  logLevel: info
+  storage:
+    mode: posixfs
+    posixfs:
+      idCacheStore: nats-js-kv
+      rootPath: /var/lib/opencloud/storage
+      persistence:
+        enabled: true
+        size: 10Gi
+        storageClass: openebs-hostpath
+        accessMode: ReadWriteOnce
+  persistence:
+    config:
+      enabled: true
+      size: "5Gi"
+      storageClass: openebs-hostpath
+      accessMode: ReadWriteOnce
+    data:
+      enabled: true
+      size: "30Gi"
+      storageClass: openebs-hostpath
+      accessMode: ReadWriteOnce

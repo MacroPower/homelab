@@ -26,7 +26,7 @@ configs:
         - openid
         - profile
         - email
-        - https://auth.jacobcolvin.com/groups
+        - colvingroups
 
     resource.exclusions: |
       - apiGroups:
@@ -279,7 +279,7 @@ configs:
     policy.csv: |
       g, argo-cd-admin, role:admin
     policy.default: role:readonly
-    scopes: '[https://auth.jacobcolvin.com/groups, email]'
+    scopes: '[colvingroups, email]'
 
 controller:
   replicas: 3

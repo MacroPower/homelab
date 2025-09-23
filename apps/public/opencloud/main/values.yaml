@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=../../../../charts/opencloud/values.schema.json
+
+global:
+  domain:
+    collabora: collabora.main.cin.macro.network
+    companion: companion.main.cin.macro.network
+    minio: minio.main.cin.macro.network
+    onlyoffice: onlyoffice.main.cin.macro.network
+    opencloud: opencloud.main.cin.macro.network
+    wopi: wopiserver.main.cin.macro.network
