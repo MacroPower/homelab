@@ -10,8 +10,11 @@ import helm
 
 import public
 import charts.opencloud
+import charts.nats
+import charts.nack.api.v1beta2 as nackv1beta2
 
 _values = files.read_yaml(file.current(), "values.yaml")
+_valuesNats = files.read_yaml(file.current(), "values-nats.yaml")
 
 _opencloudCredentials = secret.ExternalSecret {
     name = "opencloud-credentials"
@@ -45,6 +48,8 @@ _envVars = {
     "PROXY_AUTOPROVISION_CLAIM_GROUPS" = "colvinGroups"
 }
 
+_natsCluster = "opencloud-cluster"
+
 app = frontend.App {
     name = "opencloud"
     tenantName = public.tenant.name
@@ -55,10 +60,29 @@ app = frontend.App {
         opencloudOIDCClient = _opencloudOIDCClient
     }
 
+    charts.nats = nats.Chart {
+        values: _valuesNats | nats.Values {
+            fullnameOverride = "opencloud-nats"
+        }
+    }
+
+    extraResources.natsAccount = nackv1beta2.Account {
+        metadata.name = "opencloud-nats"
+        spec: {
+            name = "opencloud-nats"
+            servers = ["opencloud-nats.public-opencloud.svc.cluster.local:4222"]
+        }
+    }
+
     charts.opencloud = opencloud.Chart {
         values: _values | opencloud.Values {
             opencloud: {
                 existingSecret = _opencloudCredentials.name
+                nats.external: {
+                    enabled = True
+                    cluster = _natsCluster
+                    endpoint = "opencloud-nats.public-opencloud.svc.cluster.local:4222"
+                }
             }
         }
 
@@ -85,5 +109,22 @@ app = frontend.App {
             group = "Apps"
             icon = "open-cloud"
         }
+    }
+
+    extraResources: {
+        streamMainQueue = streamMainQueue
+        streamKvCacheUserinfo = streamKvCacheUserinfo
+        streamKvUserlog = streamKvUserlog
+        streamKvActivitylog = streamKvActivitylog
+        streamKvPostprocessing = streamKvPostprocessing
+        streamKvIdsStorageUsers = streamKvIdsStorageUsers
+        streamKvStorageUsers = streamKvStorageUsers
+        streamKvEventhistory = streamKvEventhistory
+        streamKvServiceRegistry = streamKvServiceRegistry
+        streamKvSettingsCache = streamKvSettingsCache
+        streamKvStorageSystem = streamKvStorageSystem
+        streamKvCacheRoles = streamKvCacheRoles
+        streamKvProxy = streamKvProxy
+        streamKvOpencloudPkg = streamKvOpencloudPkg
     }
 }

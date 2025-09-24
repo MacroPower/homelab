@@ -1,0 +1,2158 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "config": {
+      "additionalProperties": true,
+      "description": "###########################################################\nNATS config\n###########################################################",
+      "properties": {
+        "cluster": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "merge": {
+              "additionalProperties": true,
+              "description": "merge or patch the cluster config\nhttps://docs.nats.io/running-a-nats-service/configuration/clustering/cluster_config",
+              "required": [],
+              "title": "merge",
+              "type": "object"
+            },
+            "patch": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "patch",
+              "type": "array"
+            },
+            "port": {
+              "default": 6222,
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            },
+            "replicas": {
+              "default": 3,
+              "description": "must be 2 or higher when jetstream is enabled",
+              "required": [],
+              "title": "replicas",
+              "type": "integer"
+            },
+            "routeURLs": {
+              "additionalProperties": true,
+              "description": "apply to generated route URLs that connect to other pods in the StatefulSet",
+              "properties": {
+                "k8sClusterDomain": {
+                  "default": "cluster.local",
+                  "required": [],
+                  "title": "k8sClusterDomain",
+                  "type": "string"
+                },
+                "password": {
+                  "default": "",
+                  "required": [],
+                  "title": "password",
+                  "type": "null"
+                },
+                "useFQDN": {
+                  "default": false,
+                  "description": "set to true to use FQDN in route URLs",
+                  "required": [],
+                  "title": "useFQDN",
+                  "type": "boolean"
+                },
+                "user": {
+                  "default": "",
+                  "description": "if both user and password are set, they will be added to route URLs\nand the cluster authorization block",
+                  "required": [],
+                  "title": "user",
+                  "type": "null"
+                }
+              },
+              "required": [],
+              "title": "routeURLs",
+              "type": "object"
+            },
+            "tls": {
+              "additionalProperties": true,
+              "properties": {
+                "cert": {
+                  "default": "tls.crt",
+                  "required": [],
+                  "title": "cert",
+                  "type": "string"
+                },
+                "dir": {
+                  "default": "/etc/nats-certs/cluster",
+                  "required": [],
+                  "title": "dir",
+                  "type": "string"
+                },
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "key": {
+                  "default": "tls.key",
+                  "required": [],
+                  "title": "key",
+                  "type": "string"
+                },
+                "merge": {
+                  "additionalProperties": true,
+                  "description": "merge or patch the tls config\nhttps://docs.nats.io/running-a-nats-service/configuration/securing_nats/tls",
+                  "required": [],
+                  "title": "merge",
+                  "type": "object"
+                },
+                "patch": {
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "patch",
+                  "type": "array"
+                },
+                "secretName": {
+                  "default": "",
+                  "description": "set secretName in order to mount an existing secret to dir",
+                  "required": [],
+                  "title": "secretName",
+                  "type": "null"
+                }
+              },
+              "required": [],
+              "title": "tls",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "cluster",
+          "type": "object"
+        },
+        "gateway": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "merge": {
+              "additionalProperties": true,
+              "description": "merge or patch the gateway config\nhttps://docs.nats.io/running-a-nats-service/configuration/gateways/gateway#gateway-configuration-block",
+              "required": [],
+              "title": "merge",
+              "type": "object"
+            },
+            "patch": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "patch",
+              "type": "array"
+            },
+            "port": {
+              "default": 7222,
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            },
+            "tls": {
+              "additionalProperties": true,
+              "properties": {
+                "cert": {
+                  "default": "tls.crt",
+                  "required": [],
+                  "title": "cert",
+                  "type": "string"
+                },
+                "dir": {
+                  "default": "/etc/nats-certs/gateway",
+                  "required": [],
+                  "title": "dir",
+                  "type": "string"
+                },
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "key": {
+                  "default": "tls.key",
+                  "required": [],
+                  "title": "key",
+                  "type": "string"
+                },
+                "merge": {
+                  "additionalProperties": true,
+                  "description": "merge or patch the tls config\nhttps://docs.nats.io/running-a-nats-service/configuration/securing_nats/tls",
+                  "required": [],
+                  "title": "merge",
+                  "type": "object"
+                },
+                "patch": {
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "patch",
+                  "type": "array"
+                },
+                "secretName": {
+                  "default": "",
+                  "description": "set secretName in order to mount an existing secret to dir",
+                  "required": [],
+                  "title": "secretName",
+                  "type": "null"
+                }
+              },
+              "required": [],
+              "title": "tls",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "gateway",
+          "type": "object"
+        },
+        "jetstream": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "fileStore": {
+              "additionalProperties": true,
+              "properties": {
+                "dir": {
+                  "default": "/data",
+                  "required": [],
+                  "title": "dir",
+                  "type": "string"
+                },
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "maxSize": {
+                  "default": "",
+                  "description": "defaults to the PVC size",
+                  "required": [],
+                  "title": "maxSize",
+                  "type": "null"
+                },
+                "pvc": {
+                  "additionalProperties": true,
+                  "description": "###########################################################\nstateful set -\u003e volume claim templates -\u003e jetstream pvc\n###########################################################",
+                  "properties": {
+                    "enabled": {
+                      "default": true,
+                      "required": [],
+                      "title": "enabled",
+                      "type": "boolean"
+                    },
+                    "merge": {
+                      "additionalProperties": true,
+                      "description": "merge or patch the jetstream pvc\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#persistentvolumeclaim-v1-core",
+                      "required": [],
+                      "title": "merge",
+                      "type": "object"
+                    },
+                    "name": {
+                      "default": "",
+                      "description": "defaults to \"{{ include \"nats.fullname\" $ }}-js\"",
+                      "required": [],
+                      "title": "name",
+                      "type": "null"
+                    },
+                    "patch": {
+                      "items": {
+                        "required": []
+                      },
+                      "required": [],
+                      "title": "patch",
+                      "type": "array"
+                    },
+                    "size": {
+                      "default": "10Gi",
+                      "required": [],
+                      "title": "size",
+                      "type": "string"
+                    },
+                    "storageClassName": {
+                      "default": "",
+                      "required": [],
+                      "title": "storageClassName",
+                      "type": "null"
+                    }
+                  },
+                  "required": [],
+                  "title": "pvc",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "fileStore",
+              "type": "object"
+            },
+            "memoryStore": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "maxSize": {
+                  "default": "1Gi",
+                  "description": "ensure that container has a sufficient memory limit greater than maxSize",
+                  "required": [],
+                  "title": "maxSize",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "memoryStore",
+              "type": "object"
+            },
+            "merge": {
+              "additionalProperties": true,
+              "description": "merge or patch the jetstream config\nhttps://docs.nats.io/running-a-nats-service/configuration#jetstream",
+              "required": [],
+              "title": "merge",
+              "type": "object"
+            },
+            "patch": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "patch",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "jetstream",
+          "type": "object"
+        },
+        "leafnodes": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "merge": {
+              "additionalProperties": true,
+              "description": "merge or patch the leafnodes config\nhttps://docs.nats.io/running-a-nats-service/configuration/leafnodes/leafnode_conf",
+              "required": [],
+              "title": "merge",
+              "type": "object"
+            },
+            "patch": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "patch",
+              "type": "array"
+            },
+            "port": {
+              "default": 7422,
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            },
+            "tls": {
+              "additionalProperties": true,
+              "properties": {
+                "cert": {
+                  "default": "tls.crt",
+                  "required": [],
+                  "title": "cert",
+                  "type": "string"
+                },
+                "dir": {
+                  "default": "/etc/nats-certs/leafnodes",
+                  "required": [],
+                  "title": "dir",
+                  "type": "string"
+                },
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "key": {
+                  "default": "tls.key",
+                  "required": [],
+                  "title": "key",
+                  "type": "string"
+                },
+                "merge": {
+                  "additionalProperties": true,
+                  "description": "merge or patch the tls config\nhttps://docs.nats.io/running-a-nats-service/configuration/securing_nats/tls",
+                  "required": [],
+                  "title": "merge",
+                  "type": "object"
+                },
+                "patch": {
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "patch",
+                  "type": "array"
+                },
+                "secretName": {
+                  "default": "",
+                  "description": "set secretName in order to mount an existing secret to dir",
+                  "required": [],
+                  "title": "secretName",
+                  "type": "null"
+                }
+              },
+              "required": [],
+              "title": "tls",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "leafnodes",
+          "type": "object"
+        },
+        "merge": {
+          "additionalProperties": true,
+          "description": "merge or patch the nats config\nhttps://docs.nats.io/running-a-nats-service/configuration\nfollowing special rules apply\n 1. strings that start with \u003c\u003c and end with \u003e\u003e will be unquoted\n    use this for variables and numbers with units\n 2. keys ending in $include will be switched to include directives\n    keys are sorted alphabetically, use prefix before $includes to control includes ordering\n    paths should be relative to /etc/nats-config/nats.conf\nexample:\n\n  merge:\n    $include: ./my-config.conf\n    zzz$include: ./my-config-last.conf\n    server_name: nats\n    authorization:\n      token: \u003c\u003c $TOKEN \u003e\u003e\n    jetstream:\n      max_memory_store: \u003c\u003c 1GB \u003e\u003e\n\nwill yield the config:\n{\n  include ./my-config.conf;\n  \"authorization\": {\n    \"token\": $TOKEN\n  },\n  \"jetstream\": {\n    \"max_memory_store\": 1GB\n  },\n  \"server_name\": \"nats\",\n  include ./my-config-last.conf;\n}",
+          "required": [],
+          "title": "merge",
+          "type": "object"
+        },
+        "monitor": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "port": {
+              "default": 8222,
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            },
+            "tls": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "description": "config.nats.tls must be enabled also\nwhen enabled, monitoring port will use HTTPS with the options from config.nats.tls\nif promExporter is also enabled, consider setting promExporter.monitorDomain",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "tls",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "monitor",
+          "type": "object"
+        },
+        "mqtt": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "merge": {
+              "additionalProperties": true,
+              "description": "merge or patch the mqtt config\nhttps://docs.nats.io/running-a-nats-service/configuration/mqtt/mqtt_config",
+              "required": [],
+              "title": "merge",
+              "type": "object"
+            },
+            "patch": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "patch",
+              "type": "array"
+            },
+            "port": {
+              "default": 1883,
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            },
+            "tls": {
+              "additionalProperties": true,
+              "properties": {
+                "cert": {
+                  "default": "tls.crt",
+                  "required": [],
+                  "title": "cert",
+                  "type": "string"
+                },
+                "dir": {
+                  "default": "/etc/nats-certs/mqtt",
+                  "required": [],
+                  "title": "dir",
+                  "type": "string"
+                },
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "key": {
+                  "default": "tls.key",
+                  "required": [],
+                  "title": "key",
+                  "type": "string"
+                },
+                "merge": {
+                  "additionalProperties": true,
+                  "description": "merge or patch the tls config\nhttps://docs.nats.io/running-a-nats-service/configuration/securing_nats/tls",
+                  "required": [],
+                  "title": "merge",
+                  "type": "object"
+                },
+                "patch": {
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "patch",
+                  "type": "array"
+                },
+                "secretName": {
+                  "default": "",
+                  "description": "set secretName in order to mount an existing secret to dir",
+                  "required": [],
+                  "title": "secretName",
+                  "type": "null"
+                }
+              },
+              "required": [],
+              "title": "tls",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "mqtt",
+          "type": "object"
+        },
+        "nats": {
+          "additionalProperties": true,
+          "properties": {
+            "port": {
+              "default": 4222,
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            },
+            "tls": {
+              "additionalProperties": true,
+              "properties": {
+                "cert": {
+                  "default": "tls.crt",
+                  "required": [],
+                  "title": "cert",
+                  "type": "string"
+                },
+                "dir": {
+                  "default": "/etc/nats-certs/nats",
+                  "required": [],
+                  "title": "dir",
+                  "type": "string"
+                },
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "key": {
+                  "default": "tls.key",
+                  "required": [],
+                  "title": "key",
+                  "type": "string"
+                },
+                "merge": {
+                  "additionalProperties": true,
+                  "description": "merge or patch the tls config\nhttps://docs.nats.io/running-a-nats-service/configuration/securing_nats/tls",
+                  "required": [],
+                  "title": "merge",
+                  "type": "object"
+                },
+                "patch": {
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "patch",
+                  "type": "array"
+                },
+                "secretName": {
+                  "default": "",
+                  "description": "set secretName in order to mount an existing secret to dir",
+                  "required": [],
+                  "title": "secretName",
+                  "type": "null"
+                }
+              },
+              "required": [],
+              "title": "tls",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "nats",
+          "type": "object"
+        },
+        "patch": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "patch",
+          "type": "array"
+        },
+        "profiling": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "port": {
+              "default": 65432,
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "profiling",
+          "type": "object"
+        },
+        "resolver": {
+          "additionalProperties": true,
+          "properties": {
+            "dir": {
+              "default": "/data/resolver",
+              "required": [],
+              "title": "dir",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "merge": {
+              "additionalProperties": true,
+              "description": "merge or patch the resolver\nhttps://docs.nats.io/running-a-nats-service/configuration/securing_nats/auth_intro/jwt/resolver",
+              "required": [],
+              "title": "merge",
+              "type": "object"
+            },
+            "patch": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "patch",
+              "type": "array"
+            },
+            "pvc": {
+              "additionalProperties": true,
+              "description": "###########################################################\nstateful set -\u003e volume claim templates -\u003e resolver pvc\n###########################################################",
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "merge": {
+                  "additionalProperties": true,
+                  "description": "merge or patch the pvc\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#persistentvolumeclaim-v1-core",
+                  "required": [],
+                  "title": "merge",
+                  "type": "object"
+                },
+                "name": {
+                  "default": "",
+                  "description": "defaults to \"{{ include \"nats.fullname\" $ }}-resolver\"",
+                  "required": [],
+                  "title": "name",
+                  "type": "null"
+                },
+                "patch": {
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "patch",
+                  "type": "array"
+                },
+                "size": {
+                  "default": "1Gi",
+                  "required": [],
+                  "title": "size",
+                  "type": "string"
+                },
+                "storageClassName": {
+                  "default": "",
+                  "required": [],
+                  "title": "storageClassName",
+                  "type": "null"
+                }
+              },
+              "required": [],
+              "title": "pvc",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "resolver",
+          "type": "object"
+        },
+        "serverNamePrefix": {
+          "default": "",
+          "description": "adds a prefix to the server name, which defaults to the pod name\nhelpful for ensuring server name is unique in a super cluster",
+          "required": [],
+          "title": "serverNamePrefix",
+          "type": "string"
+        },
+        "websocket": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "ingress": {
+              "additionalProperties": true,
+              "description": "###########################################################\ningress\n###########################################################\nservice must be enabled also",
+              "properties": {
+                "className": {
+                  "default": "",
+                  "description": "sets to the ingress class name",
+                  "required": [],
+                  "title": "className",
+                  "type": "null"
+                },
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "hosts": {
+                  "description": "must contain at least 1 host otherwise ingress will not be created",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "hosts",
+                  "type": "array"
+                },
+                "merge": {
+                  "additionalProperties": true,
+                  "description": "merge or patch the ingress\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#ingress-v1-networking-k8s-io",
+                  "required": [],
+                  "title": "merge",
+                  "type": "object"
+                },
+                "name": {
+                  "default": "",
+                  "description": "defaults to \"{{ include \"nats.fullname\" $ }}-ws\"",
+                  "required": [],
+                  "title": "name",
+                  "type": "null"
+                },
+                "patch": {
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "patch",
+                  "type": "array"
+                },
+                "path": {
+                  "default": "/",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "pathType": {
+                  "default": "Exact",
+                  "required": [],
+                  "title": "pathType",
+                  "type": "string"
+                },
+                "tlsSecretName": {
+                  "default": "",
+                  "description": "set to an existing secret name to enable TLS on the ingress; applies to all hosts",
+                  "required": [],
+                  "title": "tlsSecretName",
+                  "type": "null"
+                }
+              },
+              "required": [],
+              "title": "ingress",
+              "type": "object"
+            },
+            "merge": {
+              "additionalProperties": true,
+              "description": "merge or patch the websocket config\nhttps://docs.nats.io/running-a-nats-service/configuration/websocket/websocket_conf",
+              "required": [],
+              "title": "merge",
+              "type": "object"
+            },
+            "patch": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "patch",
+              "type": "array"
+            },
+            "port": {
+              "default": 8080,
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            },
+            "tls": {
+              "additionalProperties": true,
+              "properties": {
+                "cert": {
+                  "default": "tls.crt",
+                  "required": [],
+                  "title": "cert",
+                  "type": "string"
+                },
+                "dir": {
+                  "default": "/etc/nats-certs/websocket",
+                  "required": [],
+                  "title": "dir",
+                  "type": "string"
+                },
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "key": {
+                  "default": "tls.key",
+                  "required": [],
+                  "title": "key",
+                  "type": "string"
+                },
+                "merge": {
+                  "additionalProperties": true,
+                  "description": "merge or patch the tls config\nhttps://docs.nats.io/running-a-nats-service/configuration/securing_nats/tls",
+                  "required": [],
+                  "title": "merge",
+                  "type": "object"
+                },
+                "patch": {
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "patch",
+                  "type": "array"
+                },
+                "secretName": {
+                  "default": "",
+                  "description": "set secretName in order to mount an existing secret to dir",
+                  "required": [],
+                  "title": "secretName",
+                  "type": "null"
+                }
+              },
+              "required": [],
+              "title": "tls",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "websocket",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "config",
+      "type": "object"
+    },
+    "configMap": {
+      "additionalProperties": true,
+      "description": "config map",
+      "properties": {
+        "merge": {
+          "additionalProperties": true,
+          "description": "merge or patch the config map\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#configmap-v1-core",
+          "required": [],
+          "title": "merge",
+          "type": "object"
+        },
+        "name": {
+          "default": "",
+          "description": "defaults to \"{{ include \"nats.fullname\" $ }}-config\"",
+          "required": [],
+          "title": "name",
+          "type": "null"
+        },
+        "patch": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "patch",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "configMap",
+      "type": "object"
+    },
+    "container": {
+      "additionalProperties": true,
+      "description": "###########################################################\nstateful set -\u003e pod template -\u003e nats container\n###########################################################",
+      "properties": {
+        "env": {
+          "additionalProperties": true,
+          "description": "map with key as env var name, value can be string or map\nexample:\n\n  env:\n    GOMEMLIMIT: 7GiB\n    TOKEN:\n      valueFrom:\n        secretKeyRef:\n          name: nats-auth\n          key: token",
+          "required": [],
+          "title": "env",
+          "type": "object"
+        },
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "digest": {
+              "default": "",
+              "description": "if digest is provided, it overrides tag (example: \"sha256:abcdef1234567890\")",
+              "required": [],
+              "title": "digest",
+              "type": "null"
+            },
+            "fullImageName": {
+              "default": "",
+              "description": "if fullImageName is provided, it overrides registry, repository, tag, and digest",
+              "required": [],
+              "title": "fullImageName",
+              "type": "null"
+            },
+            "pullPolicy": {
+              "default": "",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "null"
+            },
+            "registry": {
+              "default": "",
+              "required": [],
+              "title": "registry",
+              "type": "null"
+            },
+            "repository": {
+              "default": "nats",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "2.11.9-alpine",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "merge": {
+          "additionalProperties": true,
+          "description": "merge or patch the container\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#container-v1-core",
+          "required": [],
+          "title": "merge",
+          "type": "object"
+        },
+        "patch": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "patch",
+          "type": "array"
+        },
+        "ports": {
+          "additionalProperties": true,
+          "description": "container port options\nmust be enabled in the config section also\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#containerport-v1-core",
+          "properties": {
+            "cluster": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "cluster",
+              "type": "object"
+            },
+            "gateway": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "gateway",
+              "type": "object"
+            },
+            "leafnodes": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "leafnodes",
+              "type": "object"
+            },
+            "monitor": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "monitor",
+              "type": "object"
+            },
+            "mqtt": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "mqtt",
+              "type": "object"
+            },
+            "nats": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "nats",
+              "type": "object"
+            },
+            "profiling": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "profiling",
+              "type": "object"
+            },
+            "websocket": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "websocket",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "ports",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "container",
+      "type": "object"
+    },
+    "extraResources": {
+      "description": "###############################################################################\nExtra user-defined resources\n###############################################################################\n\nadd arbitrary user-generated resources\nexample:\n\nconfig:\n  websocket:\n    enabled: true\nextraResources:\n- apiVersion: networking.istio.io/v1beta1\n  kind: VirtualService\n  metadata:\n    name:\n      $tplYaml: \u003e\n        {{ include \"nats.fullname\" $ | quote }}\n    labels:\n      $tplYaml: |\n        {{ include \"nats.labels\" $ }}\n  spec:\n    hosts:\n    - demo.nats.io\n    gateways:\n    - my-gateway\n    http:\n    - name: default\n      match:\n      - name: root\n        uri:\n          exact: /\n      route:\n      - destination:\n          host:\n            $tplYaml: \u003e\n              {{ .Values.service.name | quote }}\n          port:\n            number:\n              $tplYaml: \u003e\n                {{ .Values.config.websocket.port }}\n",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraResources",
+      "type": "array"
+    },
+    "fullnameOverride": {
+      "default": "",
+      "description": "override full name of the chart+release",
+      "required": [],
+      "title": "fullnameOverride",
+      "type": "null"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "###############################################################################\nGlobal options\n###############################################################################",
+      "properties": {
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "pullPolicy": {
+              "default": "",
+              "description": "global image pull policy to use for all container images in the chart\ncan be overridden by individual image pullPolicy",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "null"
+            },
+            "pullSecretNames": {
+              "description": "global list of secret names to use as image pull secrets for all pod specs in the chart\nsecrets must exist in the same namespace\nhttps://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "pullSecretNames",
+              "type": "array"
+            },
+            "registry": {
+              "default": "",
+              "description": "global registry to use for all container images in the chart\ncan be overridden by individual image registry",
+              "required": [],
+              "title": "registry",
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "labels": {
+          "additionalProperties": true,
+          "description": "global labels will be applied to all resources deployed by the chart",
+          "required": [],
+          "title": "labels",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "headlessService": {
+      "additionalProperties": true,
+      "description": "headless service",
+      "properties": {
+        "merge": {
+          "additionalProperties": true,
+          "description": "merge or patch the headless service\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#service-v1-core",
+          "required": [],
+          "title": "merge",
+          "type": "object"
+        },
+        "name": {
+          "default": "",
+          "description": "defaults to \"{{ include \"nats.fullname\" $ }}-headless\"",
+          "required": [],
+          "title": "name",
+          "type": "null"
+        },
+        "patch": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "patch",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "headlessService",
+      "type": "object"
+    },
+    "nameOverride": {
+      "default": "",
+      "description": "###############################################################################\nCommon options\n###############################################################################\noverride name of the chart",
+      "required": [],
+      "title": "nameOverride",
+      "type": "null"
+    },
+    "namespaceOverride": {
+      "default": "",
+      "description": "override the namespace that resources are installed into",
+      "required": [],
+      "title": "namespaceOverride",
+      "type": "null"
+    },
+    "natsBox": {
+      "additionalProperties": true,
+      "description": "###########################################################\nnatsBox\n\nNATS Box Deployment and associated resources\n###########################################################",
+      "properties": {
+        "container": {
+          "additionalProperties": true,
+          "description": "###########################################################\ndeployment -\u003e pod template -\u003e nats-box container\n###########################################################",
+          "properties": {
+            "env": {
+              "additionalProperties": true,
+              "description": "env var map, see nats.env for an example",
+              "required": [],
+              "title": "env",
+              "type": "object"
+            },
+            "image": {
+              "additionalProperties": true,
+              "properties": {
+                "digest": {
+                  "default": "",
+                  "required": [],
+                  "title": "digest",
+                  "type": "null"
+                },
+                "fullImageName": {
+                  "default": "",
+                  "required": [],
+                  "title": "fullImageName",
+                  "type": "null"
+                },
+                "pullPolicy": {
+                  "default": "",
+                  "required": [],
+                  "title": "pullPolicy",
+                  "type": "null"
+                },
+                "registry": {
+                  "default": "",
+                  "required": [],
+                  "title": "registry",
+                  "type": "null"
+                },
+                "repository": {
+                  "default": "natsio/nats-box",
+                  "required": [],
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "0.18.0",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "image",
+              "type": "object"
+            },
+            "merge": {
+              "additionalProperties": true,
+              "description": "merge or patch the container\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#container-v1-core",
+              "required": [],
+              "title": "merge",
+              "type": "object"
+            },
+            "patch": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "patch",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "container",
+          "type": "object"
+        },
+        "contentsSecret": {
+          "additionalProperties": true,
+          "description": "contents secret",
+          "properties": {
+            "merge": {
+              "additionalProperties": true,
+              "description": "merge or patch the contents secret\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#secret-v1-core",
+              "required": [],
+              "title": "merge",
+              "type": "object"
+            },
+            "name": {
+              "default": "",
+              "description": "defaults to \"{{ include \"nats.fullname\" $ }}-box-contents\"",
+              "required": [],
+              "title": "name",
+              "type": "null"
+            },
+            "patch": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "patch",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "contentsSecret",
+          "type": "object"
+        },
+        "contexts": {
+          "additionalProperties": true,
+          "description": "###########################################################\nNATS contexts\n###########################################################",
+          "properties": {
+            "default": {
+              "additionalProperties": true,
+              "properties": {
+                "creds": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "contents": {
+                      "default": "",
+                      "description": "set contents in order to create a secret with the creds file contents",
+                      "required": [],
+                      "title": "contents",
+                      "type": "null"
+                    },
+                    "dir": {
+                      "default": "",
+                      "description": "defaults to /etc/nats-creds/\u003ccontext-name\u003e",
+                      "required": [],
+                      "title": "dir",
+                      "type": "null"
+                    },
+                    "key": {
+                      "default": "nats.creds",
+                      "required": [],
+                      "title": "key",
+                      "type": "string"
+                    },
+                    "secretName": {
+                      "default": "",
+                      "description": "set secretName in order to mount an existing secret to dir",
+                      "required": [],
+                      "title": "secretName",
+                      "type": "null"
+                    }
+                  },
+                  "required": [],
+                  "title": "creds",
+                  "type": "object"
+                },
+                "merge": {
+                  "additionalProperties": true,
+                  "description": "merge or patch the context\nhttps://docs.nats.io/using-nats/nats-tools/nats_cli#nats-contexts",
+                  "required": [],
+                  "title": "merge",
+                  "type": "object"
+                },
+                "nkey": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "contents": {
+                      "default": "",
+                      "description": "set contents in order to create a secret with the nkey file contents",
+                      "required": [],
+                      "title": "contents",
+                      "type": "null"
+                    },
+                    "dir": {
+                      "default": "",
+                      "description": "defaults to /etc/nats-nkeys/\u003ccontext-name\u003e",
+                      "required": [],
+                      "title": "dir",
+                      "type": "null"
+                    },
+                    "key": {
+                      "default": "nats.nk",
+                      "required": [],
+                      "title": "key",
+                      "type": "string"
+                    },
+                    "secretName": {
+                      "default": "",
+                      "description": "set secretName in order to mount an existing secret to dir",
+                      "required": [],
+                      "title": "secretName",
+                      "type": "null"
+                    }
+                  },
+                  "required": [],
+                  "title": "nkey",
+                  "type": "object"
+                },
+                "patch": {
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "patch",
+                  "type": "array"
+                },
+                "tls": {
+                  "additionalProperties": true,
+                  "description": "used to connect with client certificates",
+                  "properties": {
+                    "cert": {
+                      "default": "tls.crt",
+                      "required": [],
+                      "title": "cert",
+                      "type": "string"
+                    },
+                    "dir": {
+                      "default": "",
+                      "description": "defaults to /etc/nats-certs/\u003ccontext-name\u003e",
+                      "required": [],
+                      "title": "dir",
+                      "type": "null"
+                    },
+                    "key": {
+                      "default": "tls.key",
+                      "required": [],
+                      "title": "key",
+                      "type": "string"
+                    },
+                    "secretName": {
+                      "default": "",
+                      "description": "set secretName in order to mount an existing secret to dir",
+                      "required": [],
+                      "title": "secretName",
+                      "type": "null"
+                    }
+                  },
+                  "required": [],
+                  "title": "tls",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "default",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "contexts",
+          "type": "object"
+        },
+        "contextsSecret": {
+          "additionalProperties": true,
+          "description": "contexts secret",
+          "properties": {
+            "merge": {
+              "additionalProperties": true,
+              "description": "merge or patch the context secret\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#secret-v1-core",
+              "required": [],
+              "title": "merge",
+              "type": "object"
+            },
+            "name": {
+              "default": "",
+              "description": "defaults to \"{{ include \"nats.fullname\" $ }}-box-contexts\"",
+              "required": [],
+              "title": "name",
+              "type": "null"
+            },
+            "patch": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "patch",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "contextsSecret",
+          "type": "object"
+        },
+        "defaultContextName": {
+          "default": "default",
+          "description": "name of context to select by default",
+          "required": [],
+          "title": "defaultContextName",
+          "type": "string"
+        },
+        "deployment": {
+          "additionalProperties": true,
+          "description": "deployment",
+          "properties": {
+            "merge": {
+              "additionalProperties": true,
+              "description": "merge or patch the deployment\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#deployment-v1-apps",
+              "required": [],
+              "title": "merge",
+              "type": "object"
+            },
+            "name": {
+              "default": "",
+              "description": "defaults to \"{{ include \"nats.fullname\" $ }}-box\"",
+              "required": [],
+              "title": "name",
+              "type": "null"
+            },
+            "patch": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "patch",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "deployment",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "podTemplate": {
+          "additionalProperties": true,
+          "description": "deployment -\u003e pod template",
+          "properties": {
+            "merge": {
+              "additionalProperties": true,
+              "description": "merge or patch the pod template\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#pod-v1-core",
+              "required": [],
+              "title": "merge",
+              "type": "object"
+            },
+            "patch": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "patch",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "podTemplate",
+          "type": "object"
+        },
+        "serviceAccount": {
+          "additionalProperties": true,
+          "description": "service account",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "merge": {
+              "additionalProperties": true,
+              "description": "merge or patch the service account\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#serviceaccount-v1-core",
+              "required": [],
+              "title": "merge",
+              "type": "object"
+            },
+            "name": {
+              "default": "",
+              "description": "defaults to \"{{ include \"nats.fullname\" $ }}-box\"",
+              "required": [],
+              "title": "name",
+              "type": "null"
+            },
+            "patch": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "patch",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "serviceAccount",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "natsBox",
+      "type": "object"
+    },
+    "podDisruptionBudget": {
+      "additionalProperties": true,
+      "description": "pod disruption budget",
+      "properties": {
+        "enabled": {
+          "default": true,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "merge": {
+          "additionalProperties": true,
+          "description": "merge or patch the pod disruption budget\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#poddisruptionbudget-v1-policy",
+          "required": [],
+          "title": "merge",
+          "type": "object"
+        },
+        "name": {
+          "default": "",
+          "description": "defaults to \"{{ include \"nats.fullname\" $ }}\"",
+          "required": [],
+          "title": "name",
+          "type": "null"
+        },
+        "patch": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "patch",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "podDisruptionBudget",
+      "type": "object"
+    },
+    "podTemplate": {
+      "additionalProperties": true,
+      "description": "stateful set -\u003e pod template",
+      "properties": {
+        "configChecksumAnnotation": {
+          "default": true,
+          "description": "adds a hash of the ConfigMap as a pod annotation\nthis will cause the StatefulSet to roll when the ConfigMap is updated",
+          "required": [],
+          "title": "configChecksumAnnotation",
+          "type": "boolean"
+        },
+        "merge": {
+          "additionalProperties": true,
+          "description": "merge or patch the pod template\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#pod-v1-core",
+          "required": [],
+          "title": "merge",
+          "type": "object"
+        },
+        "patch": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "patch",
+          "type": "array"
+        },
+        "topologySpreadConstraints": {
+          "additionalProperties": true,
+          "description": "map of topologyKey: topologySpreadConstraint\nlabelSelector will be added to match StatefulSet pods\n\ntopologySpreadConstraints:\n  kubernetes.io/hostname:\n    maxSkew: 1\n",
+          "required": [],
+          "title": "topologySpreadConstraints",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "podTemplate",
+      "type": "object"
+    },
+    "promExporter": {
+      "additionalProperties": true,
+      "description": "###########################################################\nstateful set -\u003e pod template -\u003e prom-exporter container\n###########################################################\nconfig.monitor must be enabled",
+      "properties": {
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "env": {
+          "additionalProperties": true,
+          "description": "env var map, see nats.env for an example",
+          "required": [],
+          "title": "env",
+          "type": "object"
+        },
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "digest": {
+              "default": "",
+              "required": [],
+              "title": "digest",
+              "type": "null"
+            },
+            "fullImageName": {
+              "default": "",
+              "required": [],
+              "title": "fullImageName",
+              "type": "null"
+            },
+            "pullPolicy": {
+              "default": "",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "null"
+            },
+            "registry": {
+              "default": "",
+              "required": [],
+              "title": "registry",
+              "type": "null"
+            },
+            "repository": {
+              "default": "natsio/prometheus-nats-exporter",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "0.17.3",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "merge": {
+          "additionalProperties": true,
+          "description": "merge or patch the container\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#container-v1-core",
+          "required": [],
+          "title": "merge",
+          "type": "object"
+        },
+        "monitorDomain": {
+          "default": "localhost",
+          "description": "if config.monitor.tls.enabled is set to true, monitorDomain must be set to the common name\nor a SAN used in the tls certificate",
+          "required": [],
+          "title": "monitorDomain",
+          "type": "string"
+        },
+        "patch": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "patch",
+          "type": "array"
+        },
+        "podMonitor": {
+          "additionalProperties": true,
+          "description": "###########################################################\nprometheus pod monitor\n###########################################################",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "merge": {
+              "additionalProperties": true,
+              "description": "merge or patch the pod monitor\nhttps://prometheus-operator.dev/docs/api-reference/api/#monitoring.coreos.com/v1.PodMonitor",
+              "required": [],
+              "title": "merge",
+              "type": "object"
+            },
+            "name": {
+              "default": "",
+              "description": "defaults to \"{{ include \"nats.fullname\" $ }}\"",
+              "required": [],
+              "title": "name",
+              "type": "null"
+            },
+            "patch": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "patch",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "podMonitor",
+          "type": "object"
+        },
+        "port": {
+          "default": 7777,
+          "required": [],
+          "title": "port",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "promExporter",
+      "type": "object"
+    },
+    "reloader": {
+      "additionalProperties": true,
+      "description": "###########################################################\nstateful set -\u003e pod template -\u003e reloader container\n###########################################################",
+      "properties": {
+        "enabled": {
+          "default": true,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "env": {
+          "additionalProperties": true,
+          "description": "env var map, see nats.env for an example",
+          "required": [],
+          "title": "env",
+          "type": "object"
+        },
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "digest": {
+              "default": "",
+              "required": [],
+              "title": "digest",
+              "type": "null"
+            },
+            "fullImageName": {
+              "default": "",
+              "required": [],
+              "title": "fullImageName",
+              "type": "null"
+            },
+            "pullPolicy": {
+              "default": "",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "null"
+            },
+            "registry": {
+              "default": "",
+              "required": [],
+              "title": "registry",
+              "type": "null"
+            },
+            "repository": {
+              "default": "natsio/nats-server-config-reloader",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "0.19.1",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "merge": {
+          "additionalProperties": true,
+          "description": "merge or patch the container\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#container-v1-core",
+          "required": [],
+          "title": "merge",
+          "type": "object"
+        },
+        "natsVolumeMountPrefixes": {
+          "description": "all nats container volume mounts with the following prefixes\nwill be mounted into the reloader container",
+          "items": {
+            "required": [],
+            "type": "string"
+          },
+          "required": [],
+          "title": "natsVolumeMountPrefixes",
+          "type": "array"
+        },
+        "patch": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "patch",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "reloader",
+      "type": "object"
+    },
+    "service": {
+      "additionalProperties": true,
+      "description": "###########################################################\nservice\n###########################################################",
+      "properties": {
+        "enabled": {
+          "default": true,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "merge": {
+          "additionalProperties": true,
+          "description": "merge or patch the service\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#service-v1-core",
+          "required": [],
+          "title": "merge",
+          "type": "object"
+        },
+        "name": {
+          "default": "",
+          "description": "defaults to \"{{ include \"nats.fullname\" $ }}\"",
+          "required": [],
+          "title": "name",
+          "type": "null"
+        },
+        "patch": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "patch",
+          "type": "array"
+        },
+        "ports": {
+          "additionalProperties": true,
+          "description": "service port options\nadditional boolean field enable to control whether port is exposed in the service\nmust be enabled in the config section also\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#serviceport-v1-core",
+          "properties": {
+            "cluster": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "cluster",
+              "type": "object"
+            },
+            "gateway": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "gateway",
+              "type": "object"
+            },
+            "leafnodes": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "leafnodes",
+              "type": "object"
+            },
+            "monitor": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "monitor",
+              "type": "object"
+            },
+            "mqtt": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "mqtt",
+              "type": "object"
+            },
+            "nats": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "nats",
+              "type": "object"
+            },
+            "profiling": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "profiling",
+              "type": "object"
+            },
+            "websocket": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "websocket",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "ports",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "service",
+      "type": "object"
+    },
+    "serviceAccount": {
+      "additionalProperties": true,
+      "description": "service account",
+      "properties": {
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "merge": {
+          "additionalProperties": true,
+          "description": "merge or patch the service account\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#serviceaccount-v1-core",
+          "required": [],
+          "title": "merge",
+          "type": "object"
+        },
+        "name": {
+          "default": "",
+          "description": "defaults to \"{{ include \"nats.fullname\" $ }}\"",
+          "required": [],
+          "title": "name",
+          "type": "null"
+        },
+        "patch": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "patch",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "serviceAccount",
+      "type": "object"
+    },
+    "statefulSet": {
+      "additionalProperties": true,
+      "description": "stateful set",
+      "properties": {
+        "merge": {
+          "additionalProperties": true,
+          "description": "merge or patch the stateful set\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#statefulset-v1-apps",
+          "required": [],
+          "title": "merge",
+          "type": "object"
+        },
+        "name": {
+          "default": "",
+          "description": "defaults to \"{{ include \"nats.fullname\" $ }}\"",
+          "required": [],
+          "title": "name",
+          "type": "null"
+        },
+        "patch": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "patch",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "statefulSet",
+      "type": "object"
+    },
+    "tlsCA": {
+      "additionalProperties": true,
+      "description": "reference a common CA Certificate or Bundle in all nats config `tls` blocks and nats-box contexts\nnote: `tls.verify` still must be set in the appropriate nats config `tls` blocks to require mTLS",
+      "properties": {
+        "configMapName": {
+          "default": "",
+          "description": "set configMapName in order to mount an existing configMap to dir",
+          "required": [],
+          "title": "configMapName",
+          "type": "null"
+        },
+        "dir": {
+          "default": "/etc/nats-ca-cert",
+          "description": "directory to mount the configMap or secret to",
+          "required": [],
+          "title": "dir",
+          "type": "string"
+        },
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "key": {
+          "default": "ca.crt",
+          "description": "key in the configMap or secret that contains the CA Certificate or Bundle",
+          "required": [],
+          "title": "key",
+          "type": "string"
+        },
+        "secretName": {
+          "default": "",
+          "description": "set secretName in order to mount an existing secretName to dir",
+          "required": [],
+          "title": "secretName",
+          "type": "null"
+        }
+      },
+      "required": [],
+      "title": "tlsCA",
+      "type": "object"
+    }
+  },
+  "required": [],
+  "type": "object"
+}

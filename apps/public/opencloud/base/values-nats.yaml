@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=../../../../charts/nats/values.schema.json
+
+config:
+  cluster:
+    enabled: true
+    replicas: 3
+    name: "opencloud-cluster"
+  jetstream:
+    enabled: true
+    memoryStore:
+      enabled: true
+      maxSize: 2Gi
+    fileStore:
+      dir: /data
+      enabled: true
+      pvc:
+        enabled: true
+        size: "10Gi"
+        storageClassName: "openebs-hostpath"
+  merge:
+    00$include: auth.conf
+
+container:
+  env:
+    # different from k8s units, suffix must be B, KiB, MiB, GiB, or TiB
+    # should be ~90% of memory limit
+    GOMEMLIMIT: 3GiB
+  merge:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 4Gi
+      limits:
+        cpu: 1000m
+        memory: 4Gi
+
+configMap:
+  merge:
+    data:
+      # bcrypted password generated with `nats server passwd`
+      auth.conf: |
+        accounts {
+          $SYS {
+            users = [
+              { user: "nats-sys",
+                pass: "$2a$11$02O0nTwtuoE1sbj2Rt5WfOWHLlne87VH9LP7kXgi/nKyfyfiJ3Kjq"
+              }
+            ]
+          }
+          $OPENCLOUD {
+            jetstream: enabled
+            users = [
+              { user: "opencloud"
+              },
+              { user: "opencloud-admin",
+                pass: "$2a$11$9JB8VueeeryZIh0GPZZwoOa9KiPnGAJKGtTgQrGrqSkV7Im7vBbGy"
+              }
+            ]
+          }
+        }
+        no_auth_user: opencloud

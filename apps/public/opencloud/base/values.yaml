@@ -54,3 +54,8 @@ opencloud:
       size: "30Gi"
       storageClass: openebs-hostpath
       accessMode: ReadWriteOnce
+  nats:
+    external:
+      tls:
+        enabled: false
+        insecure: true
