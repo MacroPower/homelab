@@ -10,6 +10,14 @@
         href: https://unifi.cin.macro.network/
         icon: unifi
         description: Ubiquiti UniFi Console
+    - Auth0:
+        href: https://manage.auth0.com/dashboard/us/colvin/
+        icon: si-auth0
+        description: Authentication & Authorization Platform
+    - CloudFlare:
+        href: https://dash.cloudflare.com/
+        icon: cloudflare
+        description: CDN, DNS, WAF, and more
 - Observability:
     - Grafana:
         href: https://macropower.grafana.net/
