@@ -3,6 +3,7 @@
 global:
   oidc:
     issuer: https://auth.jacobcolvin.com/
+    accountUrl: https://manage.auth0.com/dashboard/us/colvin/users
   domain:
     keycloak: auth.jacobcolvin.com
   storage:
