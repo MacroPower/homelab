@@ -12,6 +12,7 @@ import public
 import charts.opencloud
 import charts.nats
 import charts.nack.api.v1beta2 as nackv1beta2
+import charts.envoy_gateway.api.v1alpha1 as gatewayv1alpha1
 
 _values = files.read_yaml(file.current(), "values.yaml")
 _valuesNats = files.read_yaml(file.current(), "values-nats.yaml")
@@ -31,6 +32,32 @@ _opencloudOIDCClient = secret.ExternalSecret {
         "client-id" = {
             remoteRef.key = "OPENCLOUD_AUTH0_CLIENT_ID"
         }
+    }
+}
+
+_collaboraCredentials = secret.ExternalSecret {
+    name = "collabora-credentials"
+    data: {
+        "username" = {
+            remoteRef.key = "OPENCLOUD_COLLABORA_USERNAME"
+        }
+        "password" = {
+            remoteRef.key = "OPENCLOUD_COLLABORA_PASSWORD"
+        }
+    }
+}
+
+_collaboraWebSocketPolicy = gatewayv1alpha1.BackendTrafficPolicy {
+    metadata.name = "collabora-websocket-policy"
+    spec: {
+        targetRefs = [{
+            group = "gateway.networking.k8s.io"
+            kind = "HTTPRoute"
+            name = "public-collabora"
+        }]
+        httpUpgrade = [{
+            $type = "websocket"
+        }]
     }
 }
 
@@ -58,6 +85,7 @@ app = frontend.App {
     externalSecrets: {
         opencloudCredentials = _opencloudCredentials
         opencloudOIDCClient = _opencloudOIDCClient
+        collaboraCredentials = _collaboraCredentials
     }
 
     charts.nats = nats.Chart {
@@ -83,6 +111,9 @@ app = frontend.App {
                     cluster = _natsCluster
                     endpoint = "opencloud-nats.public-opencloud.svc.cluster.local:4222"
                 }
+            }
+            collabora: {
+                existingSecret = _collaboraCredentials.name
             }
         }
 
@@ -110,8 +141,18 @@ app = frontend.App {
             icon = "open-cloud-dark"
         }
     }
+    routes.collabora = gateway.Route {
+        name = "public-collabora"
+        hostnames = ["collabora"]
+        gatewayRef = public.tenant.gateways.default
+        services.collabora = {
+            name = "opencloud-collabora"
+            port = 9980
+        }
+    }
 
     extraResources: {
+        collaboraWebSocketPolicy = _collaboraWebSocketPolicy
         streamMainQueue = streamMainQueue
         streamKvCacheUserinfo = streamKvCacheUserinfo
         streamKvUserlog = streamKvUserlog

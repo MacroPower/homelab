@@ -22,15 +22,14 @@ postgres:
 webExtensions:
   enabled: true
 
+collabora:
+  enabled: true
+  ssl:
+    enabled: false
+    verification: false
+
 tika:
   enabled: true
-  resources:
-    requests:
-      cpu: 100m
-      memory: 1Gi
-    limits:
-      cpu: 1000m
-      memory: 3Gi
 
 opencloud:
   logLevel: info

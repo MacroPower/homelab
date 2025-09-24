@@ -7,4 +7,22 @@ global:
     minio: minio.main.cin.macro.network
     onlyoffice: onlyoffice.main.cin.macro.network
     opencloud: opencloud.main.cin.macro.network
-    wopi: wopiserver.main.cin.macro.network
+    wopi: wopi.main.cin.macro.network
+
+collabora:
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: 1
+      memory: "1Gi"
+
+tika:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 3Gi
