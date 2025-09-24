@@ -107,7 +107,7 @@ app = frontend.App {
             name = "OpenCloud"
             description = "File Management & Collaboration"
             group = "Apps"
-            icon = "open-cloud"
+            icon = "open-cloud-dark"
         }
     }
 
