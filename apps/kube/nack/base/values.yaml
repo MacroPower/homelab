@@ -1,0 +1,4 @@
+# yaml-language-server: $schema=../../../../charts/nack/values.schema.json
+
+namespaced: false
+readOnly: false

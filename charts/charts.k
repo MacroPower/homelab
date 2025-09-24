@@ -306,4 +306,11 @@ charts: helm.Charts = {
         schemaGenerator = "AUTO"
         crdGenerator = "NONE"
     }
+    nack: {
+        chart = "nack"
+        repoURL = "https://nats-io.github.io/k8s/helm/charts/"
+        targetRevision = "0.29.2"
+        schemaGenerator = "AUTO"
+        crdGenerator = "TEMPLATE"
+    }
 }

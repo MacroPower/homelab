@@ -1,0 +1,263 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "additionalVolumeMounts": {
+      "description": "additionalVolumeMounts are the additional volume mounts to add",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "additionalVolumeMounts",
+      "type": "array"
+    },
+    "additionalVolumes": {
+      "description": "additionalVolumes are the additional volumes to add",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "additionalVolumes",
+      "type": "array"
+    },
+    "affinity": {
+      "additionalProperties": true,
+      "description": "Affinity for pod assignment\nref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity",
+      "required": [],
+      "title": "affinity",
+      "type": "object"
+    },
+    "containerSecurityContext": {
+      "additionalProperties": true,
+      "description": "Configure a container security context\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container",
+      "required": [],
+      "title": "containerSecurityContext",
+      "type": "object"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "imagePullSecrets": {
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "imagePullSecrets",
+      "type": "array"
+    },
+    "jetstream": {
+      "additionalProperties": true,
+      "description": "##############################\n                            #\n NACK JetStream Controller  #\n                            #\n##############################",
+      "properties": {
+        "additionalArgs": {
+          "description": "Additional arguments to pass to the controller process\nEnable controller-runtime backend\nadditionalArgs:\n- --control-loop",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "additionalArgs",
+          "type": "array"
+        },
+        "enabled": {
+          "default": true,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "natsio/jetstream-controller",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "0.19.1",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "nats": {
+          "additionalProperties": true,
+          "description": "NATS URL",
+          "properties": {
+            "url": {
+              "default": "",
+              "required": [],
+              "title": "url",
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "nats",
+          "type": "object"
+        },
+        "tls": {
+          "additionalProperties": true,
+          "description": "TLS\nEnabled must be true, and a secret name specified for this to work",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "secretName": {
+              "default": "",
+              "description": "the secret containing the client ca.crt, tls.crt, and tls.key for NATS",
+              "required": [],
+              "title": "secretName",
+              "type": "null"
+            },
+            "settings": {
+              "additionalProperties": true,
+              "description": "Reference\nhttps://docs.nats.io/nats-streaming-server/configuring/cfgfile#tls-configuration",
+              "properties": {
+                "client_ca": {
+                  "default": "/etc/nats/certs/ca.crt",
+                  "required": [],
+                  "title": "client_ca",
+                  "type": "string"
+                },
+                "client_cert": {
+                  "default": "/etc/nats/certs/tls.crt",
+                  "required": [],
+                  "title": "client_cert",
+                  "type": "string"
+                },
+                "client_key": {
+                  "default": "/etc/nats/certs/tls.key",
+                  "required": [],
+                  "title": "client_key",
+                  "type": "string"
+                },
+                "timeout": {
+                  "default": 3,
+                  "required": [],
+                  "title": "timeout",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "settings",
+              "type": "object"
+            },
+            "tlsFirst": {
+              "default": false,
+              "required": [],
+              "title": "tlsFirst",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "tls",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "jetstream",
+      "type": "object"
+    },
+    "nameOverride": {
+      "default": "",
+      "required": [],
+      "title": "nameOverride",
+      "type": "string"
+    },
+    "namespaceOverride": {
+      "default": "",
+      "required": [],
+      "title": "namespaceOverride",
+      "type": "string"
+    },
+    "namespaced": {
+      "default": false,
+      "description": "restrict the controller to only watch resources in it's current namespace",
+      "required": [],
+      "title": "namespaced",
+      "type": "boolean"
+    },
+    "nodeSelector": {
+      "additionalProperties": true,
+      "description": "Node labels for pod assignment\nRef: https://kubernetes.io/docs/user-guide/node-selection/",
+      "required": [],
+      "title": "nodeSelector",
+      "type": "object"
+    },
+    "podAnnotations": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podAnnotations",
+      "type": "object"
+    },
+    "priorityClassName": {
+      "default": "null",
+      "description": "# Pod priority class name\n# ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass",
+      "required": [],
+      "title": "priorityClassName",
+      "type": "null"
+    },
+    "rbacRules": {
+      "default": "rules:\n- apiGroups:\n  - ''\n  resources:\n  - events\n  verbs:\n  - create\n  - update\n  - patch\n- apiGroups:\n  - ''\n  resources:\n  - secrets\n  verbs:\n  - get\n  - watch\n  - list\n- apiGroups:\n  - jetstream.nats.io\n  resources:\n  - streams\n  - streams/status\n  - objectstores\n  - objectstores/status\n  - keyvalues\n  - keyvalues/status\n  - consumers\n  - consumers/status\n  - streamtemplates\n  - streamtemplates/status\n  - accounts\n  - accounts/status\n  verbs:\n  - create\n  - get\n  - list\n  - watch\n  - patch\n  - update\n  - delete\n",
+      "description": "Rules to be applied to ClusterRole or Role\nSet as a string so that it can be templated to allow further customization",
+      "required": [],
+      "title": "rbacRules",
+      "type": "string"
+    },
+    "readOnly": {
+      "default": false,
+      "description": "Toggle to prevent the controller making changes to NATS streams/consumers.",
+      "required": [],
+      "title": "readOnly",
+      "type": "boolean"
+    },
+    "resources": {
+      "additionalProperties": true,
+      "description": "Resource requests and limits for primary nack container\nref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
+      "required": [],
+      "title": "resources",
+      "type": "object"
+    },
+    "securityContext": {
+      "additionalProperties": true,
+      "description": "Toggle whether to use setup a Pod Security Context\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/",
+      "required": [],
+      "title": "securityContext",
+      "type": "object"
+    },
+    "serviceAccountName": {
+      "default": "",
+      "required": [],
+      "title": "serviceAccountName",
+      "type": "string"
+    },
+    "tolerations": {
+      "description": "Node tolerations for server scheduling to nodes with taints\nRef: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/\n",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "tolerations",
+      "type": "array"
+    }
+  },
+  "required": [],
+  "type": "object"
+}
