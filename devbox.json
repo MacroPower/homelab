@@ -9,7 +9,7 @@
     "cilium-cli": "0.18.0",
     "doppler": "3.72.0",
     "go-task": "3.41.0",
-    "git": "2.48.1",
+    "git": "2.51.0",
     "kubeconform": "0.6.7",
     "kyverno": "1.13.4",
     "nodePackages.prettier": "3.5.2",
