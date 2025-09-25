@@ -1,6 +1,0 @@
-application:
-  source:
-    helm:
-      valueFiles:
-        - values.yaml
-        - home-values.yaml

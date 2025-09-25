@@ -1,4 +1,0 @@
-# Helm charts
-base/**/charts/
-environments/**/charts/
-Chart.lock
