@@ -1,1 +1,0 @@
-import '../transmission/namespace.libsonnet'
