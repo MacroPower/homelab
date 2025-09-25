@@ -279,7 +279,7 @@ configs:
     policy.csv: |
       g, argo-cd-admin, role:admin
     policy.default: role:readonly
-    scopes: '[colvingroups, email]'
+    scopes: '[colvinGroups, email]'
 
 controller:
   replicas: 3
