@@ -5,7 +5,7 @@
     "github:macropower/nur-packages#kat": "",
     "github:macropower/nur-packages#kclipper": "",
     "github:macropower/nur-packages#kcl-lsp": "",
-    "argocd": "2.14.2",
+    "argocd": "3.1.6",
     "cilium-cli": "0.18.0",
     "doppler": "3.72.0",
     "go-task": "3.41.0",
