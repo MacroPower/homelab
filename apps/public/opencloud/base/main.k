@@ -13,6 +13,7 @@ import charts.opencloud
 import charts.nats
 import charts.nack.api.v1beta2 as nackv1beta2
 import charts.envoy_gateway.api.v1alpha1 as gatewayv1alpha1
+import charts.envoy_gateway.api.v1 as gatewayv1
 
 _values = files.read_yaml(file.current(), "values.yaml")
 _valuesNats = files.read_yaml(file.current(), "values-nats.yaml")
@@ -48,16 +49,70 @@ _collaboraCredentials = secret.ExternalSecret {
 }
 
 _collaboraWebSocketPolicy = gatewayv1alpha1.BackendTrafficPolicy {
-    metadata.name = "collabora-websocket-policy"
+    metadata.name = "opencloud-collabora-websocket-policy"
     spec: {
         targetRefs = [{
             group = "gateway.networking.k8s.io"
             kind = "HTTPRoute"
-            name = "public-collabora"
+            name = "opencloud-collabora-websockets"
         }]
         httpUpgrade = [{
             $type = "websocket"
         }]
+    }
+}
+
+_collaboraClientTrafficPolicy = gatewayv1alpha1.ClientTrafficPolicy {
+    metadata.name = "opencloud-collabora-http1-policy"
+    spec: {
+        targetRefs = [{
+            group = "gateway.networking.k8s.io"
+            kind = "HTTPRoute"
+            name = "opencloud-collabora-websockets"
+        }]
+        http1 = {}
+    }
+}
+
+_collaboraWebSocketRoute = gatewayv1.HTTPRoute {
+    metadata = {
+        name = "opencloud-collabora-websockets"
+    }
+    spec = {
+        hostnames = ["collabora.main.cin.macro.network"]
+        parentRefs = [{
+            group = "gateway.networking.k8s.io"
+            kind = "Gateway"
+            name = "cluster-gateway"
+            namespace = "envoy-gateway"
+            sectionName = "https"
+        }]
+        rules = [
+            {
+                matches = [{
+                    path = {
+                        $type = "RegularExpression"
+                        value = "^/cool/.*/ws$"
+                    }
+                }]
+                backendRefs = [{
+                    name = "opencloud-collabora"
+                    port = 9980
+                }]
+            }
+            {
+                matches = [{
+                    path = {
+                        $type = "PathPrefix"
+                        value = "/cool/adminws"
+                    }
+                }]
+                backendRefs = [{
+                    name = "opencloud-collabora"
+                    port = 9980
+                }]
+            }
+        ]
     }
 }
 
@@ -153,6 +208,8 @@ app = frontend.App {
 
     extraResources: {
         collaboraWebSocketPolicy = _collaboraWebSocketPolicy
+        collaboraClientTrafficPolicy = _collaboraClientTrafficPolicy
+        collaboraWebSocketRoute = _collaboraWebSocketRoute
         streamMainQueue = streamMainQueue
         streamKvCacheUserinfo = streamKvCacheUserinfo
         streamKvUserlog = streamKvUserlog
