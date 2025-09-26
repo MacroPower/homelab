@@ -325,4 +325,24 @@ charts: helm.Charts = {
         targetRevision = "4.2.0"
         schemaGenerator = "AUTO"
     }
+    crossplane: {
+        chart = "crossplane"
+        repoURL = "https://charts.crossplane.io/stable"
+        targetRevision = "2.0.2"
+        schemaGenerator = "AUTO"
+        crdGenerator = "PATH"
+        crdPaths = [
+            "https://doc.crds.dev/raw/github.com/crossplane/crossplane@v2.0.2"
+        ]
+    }
+    opentofu: {
+        chart = "app-template"
+        repoURL = "oci://ghcr.io/bjw-s-labs/helm/app-template"
+        targetRevision = "4.2.0"
+        schemaGenerator = "NONE"
+        crdGenerator = "PATH"
+        crdPaths = [
+            "https://doc.crds.dev/raw/github.com/upbound/provider-opentofu@v0.2.7"
+        ]
+    }
 }

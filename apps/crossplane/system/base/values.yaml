@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=../../../../charts/crossplane/values.schema.json
+
+replicas: 2
+
+rbacManager:
+  replicas: 2
+
+customAnnotations:
+  reloader.stakater.com/auto: "true"
+
+metrics:
+  enabled: true
