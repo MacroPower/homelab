@@ -2,87 +2,14 @@
 
 controllers:
   qbittorrent:
-    annotations:
-      reloader.stakater.com/auto: "true"
-    strategy: Recreate
-    pod:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
-        fsGroupChangePolicy: OnRootMismatch
     containers:
       app:
-        image:
-          repository: ghcr.io/home-operations/qbittorrent
-          tag: 5.1.2
         env:
-          QBT_WEBUI_PORT: {value: &port 8080}
           QBT_TORRENTING_PORT: {value: &torrentPort 50481}
-        probes:
-          liveness: &probes
-            enabled: true
-            custom: true
-            spec:
-              httpGet:
-                path: /api/v2/app/version
-                port: *port
-              initialDelaySeconds: 0
-              periodSeconds: 10
-              timeoutSeconds: 1
-              failureThreshold: 3
-          readiness: *probes
-          startup:
-            enabled: true
-            spec:
-              failureThreshold: 30
-              periodSeconds: 10
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop: ["ALL"]
-        resources:
-          requests:
-            cpu: 100m
-          limits:
-            memory: 18Gi
+
 service:
-  web:
-    ports:
-      http:
-        port: *port
   torrent:
     # type: LoadBalancer
     ports:
       torrent-tcp:
         port: *torrentPort
-persistence:
-  config:
-    type: persistentVolumeClaim
-    size: 10Gi
-    accessMode: ReadWriteOnce
-    storageClass: openebs-hostpath
-    globalMounts:
-      - path: /config/qBittorrent
-  cache:
-    type: persistentVolumeClaim
-    size: 10Gi
-    accessMode: ReadWriteOnce
-    storageClass: openebs-hostpath
-    globalMounts:
-      - path: /config/.cache
-  downloads:
-    # TODO: This should be a volsync source.
-    type: emptyDir
-    globalMounts:
-      - path: /downloads
-  logs:
-    type: emptyDir
-    globalMounts:
-      - path: /config/qBittorrent/logs
-  tmp:
-    type: emptyDir
-    globalMounts:
-      - path: /tmp

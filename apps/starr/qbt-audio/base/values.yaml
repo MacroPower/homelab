@@ -5,7 +5,7 @@ controllers:
     containers:
       app:
         env:
-          QBT_TORRENTING_PORT: {value: &torrentPort 50480}
+          QBT_TORRENTING_PORT: {value: &torrentPort 50482}
 
 service:
   torrent:

@@ -3,6 +3,10 @@
     name = "charts"
     full_name = "charts_0.1.0"
     version = "0.1.0"
+  [dependencies.cluster]
+    name = "cluster"
+    full_name = "cluster_main_0.1.0"
+    version = "0.1.0"
   [dependencies.filepath]
     name = "filepath"
     full_name = "filepath_0.16.1"
@@ -46,6 +50,14 @@
   [dependencies.starr]
     name = "starr"
     full_name = "starr_0.1.0"
+    version = "0.1.0"
+  [dependencies.starr_qbt_base]
+    name = "starr_qbt_base"
+    full_name = "starr_qbt_base_0.1.0"
+    version = "0.1.0"
+  [dependencies.starr_qbt_audio_base]
+    name = "starr_qbt_audio_base"
+    full_name = "starr_qbt_audio_base_0.1.0"
     version = "0.1.0"
   [dependencies.starr_tenant]
     name = "starr_tenant"

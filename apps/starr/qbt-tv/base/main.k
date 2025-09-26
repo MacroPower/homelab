@@ -1,26 +1,14 @@
 import file
 
 import konfig.models.frontend
-import konfig.models.frontend.secret
 import konfig.models.frontend.gateway
 import konfig.files
 
 import starr
+import qbt_base
 import charts.qbittorrent as qbt
 
 _values = files.read_yaml(file.current(), "values.yaml")
-
-_qbtOIDCClient = secret.ExternalSecret {
-    name = "qbt-oidc-client"
-    data: {
-        "client-id" = {
-            remoteRef.key = "STARR_AUTH0_CLIENT_ID"
-        }
-        "client-secret" = {
-            remoteRef.key = "STARR_AUTH0_CLIENT_SECRET"
-        }
-    }
-}
 
 app = frontend.App {
     name = "qbt-tv"
@@ -28,11 +16,11 @@ app = frontend.App {
 
     secretStore = starr.shared.secretStores.default.name
     externalSecrets: {
-        qbtOIDCClient = _qbtOIDCClient
+        qbtOIDCClient = qbt_base.oidcClient
     }
 
     charts.qbt = qbt.Chart {
-        values: _values | qbt.Values {
+        values: qbt_base.values | _values | qbt.Values {
             global: {
                 fullnameOverride = name
                 nameOverride = name
@@ -53,7 +41,7 @@ app = frontend.App {
             icon = "qbittorrent"
         }
         security = {
-            oidcClientRef = _qbtOIDCClient.name
+            oidcClientRef = qbt_base.oidcClient.name
             oidcIssuer = starr.tenant.oidcIssuer
         }
     }

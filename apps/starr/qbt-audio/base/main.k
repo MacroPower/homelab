@@ -11,7 +11,7 @@ import charts.qbittorrent as qbt
 _values = files.read_yaml(file.current(), "values.yaml")
 
 app = frontend.App {
-    name = "qbt-movies"
+    name = "qbt-audio"
     tenantName = starr.tenant.name
 
     secretStore = starr.shared.secretStores.default.name
@@ -31,11 +31,11 @@ app = frontend.App {
     routes.qbt = gateway.Route {
         gatewayRef = starr.tenant.gateways.default
         services.qbt = {
-            name = "qbt-movies-web"
+            name = "qbt-audio-web"
             port = 8080
         }
         homepage = {
-            name = "qBittorrent - Movies"
+            name = "qBittorrent - Audio"
             description = "qBittorrent Web UI"
             group = "Media"
             icon = "qbittorrent"

@@ -43,6 +43,10 @@
     name = "konfig"
     full_name = "konfig_0.0.1"
     version = "0.0.1"
+  [dependencies.qbt_base]
+    name = "qbt_base"
+    full_name = "starr_qbt_base_0.1.0"
+    version = "0.1.0"
   [dependencies.starr]
     name = "starr"
     full_name = "starr_0.1.0"
