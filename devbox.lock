@@ -429,51 +429,51 @@
         }
       }
     },
-    "kyverno@1.13.4": {
-      "last_modified": "2025-04-17T05:47:26Z",
-      "resolved": "github:NixOS/nixpkgs/ebe4301cbd8f81c4f8d3244b3632338bbeb6d49c#kyverno",
+    "kyverno@1.15.1": {
+      "last_modified": "2025-09-18T16:33:27Z",
+      "resolved": "github:NixOS/nixpkgs/f4b140d5b253f5e2a1ff4e5506edbf8267724bde#kyverno",
       "source": "devbox-search",
-      "version": "1.13.4",
+      "version": "1.15.1",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/mlyn23j5bf2lnn66d155z6ra91ggvw3d-kyverno-1.13.4",
+              "path": "/nix/store/hm9ysyfyv1bl01nj6rjqy42gpym67qda-kyverno-1.15.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/mlyn23j5bf2lnn66d155z6ra91ggvw3d-kyverno-1.13.4"
+          "store_path": "/nix/store/hm9ysyfyv1bl01nj6rjqy42gpym67qda-kyverno-1.15.1"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/3n6gq1na5lhvzfqlf2dgxxq0hywm1h4j-kyverno-1.13.4",
+              "path": "/nix/store/q39ckaha9fb87w6xrv1byvqcaaz4fp4l-kyverno-1.15.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/3n6gq1na5lhvzfqlf2dgxxq0hywm1h4j-kyverno-1.13.4"
+          "store_path": "/nix/store/q39ckaha9fb87w6xrv1byvqcaaz4fp4l-kyverno-1.15.1"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/2c628gjj14xsl7rbnh89hwvfmylb8mml-kyverno-1.13.4",
+              "path": "/nix/store/hrzb6z4b9hn523sizpvial3g8did5ia0-kyverno-1.15.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/2c628gjj14xsl7rbnh89hwvfmylb8mml-kyverno-1.13.4"
+          "store_path": "/nix/store/hrzb6z4b9hn523sizpvial3g8did5ia0-kyverno-1.15.1"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/4ivg3363xy8npvmqw80rqgvv1ncrk1xk-kyverno-1.13.4",
+              "path": "/nix/store/a2p7d013n4jyximpxwb7lm491cnvaqan-kyverno-1.15.1",
               "default": true
             }
           ],
-          "store_path": "/nix/store/4ivg3363xy8npvmqw80rqgvv1ncrk1xk-kyverno-1.13.4"
+          "store_path": "/nix/store/a2p7d013n4jyximpxwb7lm491cnvaqan-kyverno-1.15.1"
         }
       }
     },

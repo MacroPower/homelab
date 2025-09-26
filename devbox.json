@@ -11,7 +11,7 @@
     "go-task": "3.41.0",
     "git": "2.51.0",
     "kubeconform": "0.7.0",
-    "kyverno": "1.13.4",
+    "kyverno": "1.15.1",
     "nodePackages.prettier": "3.5.3",
     "talosctl": "1.9.4",
     "terraform": "1.13.3",
