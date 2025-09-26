@@ -89,7 +89,7 @@ resource "random_integer" "ssh_port" {
 
 module "kube-hetzner" {
   source  = "kube-hetzner/kube-hetzner/hcloud"
-  version = "1.10.9"
+  version = "2.18.2"
 
   providers = {
     hcloud = hcloud
