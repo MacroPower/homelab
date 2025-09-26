@@ -14,7 +14,7 @@
     "kyverno": "1.13.4",
     "nodePackages.prettier": "3.5.2",
     "talosctl": "1.9.4",
-    "terraform": "1.11.0",
+    "terraform": "1.13.3",
     "natscli": "0.1.6",
     "kubernetes-helm": "3.17.1",
     "auth0-cli": "1.20.0"
