@@ -12,7 +12,7 @@
     "git": "2.51.0",
     "kubeconform": "0.6.7",
     "kyverno": "1.13.4",
-    "nodePackages.prettier": "3.5.2",
+    "nodePackages.prettier": "3.5.3",
     "talosctl": "1.9.4",
     "terraform": "1.11.0",
     "natscli": "0.1.6",
