@@ -8,7 +8,7 @@
   customManagers: [
     {
       customType: "regex",
-      fileMatch: ["(^|/)/charts/charts\\.k$"],
+      fileMatch: ["(^|/)charts/charts\\.k$"],
       matchStrings: [
         ".*\\{(\\n.*?)*[^\\}]*",
         '(.*\\n)*\\s*chart\\s*=\\s*"(?<depName>.+)"(.*\\n)*\\s*repoURL\\s*=\\s*"(?<registryUrl>.+)"(.*\\n)*\\s*targetRevision\\s*=\\s*"(?<currentValue>.+)"',
