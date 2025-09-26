@@ -13,7 +13,7 @@
     "kubeconform": "0.7.0",
     "kyverno": "1.13.4",
     "nodePackages.prettier": "3.5.3",
-    "talosctl": "1.9.4",
+    "talosctl": "1.11.1",
     "terraform": "1.13.3",
     "natscli": "0.2.2",
     "kubernetes-helm": "3.19.0",
