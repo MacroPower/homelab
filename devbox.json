@@ -10,7 +10,7 @@
     "doppler": "3.72.0",
     "go-task": "3.41.0",
     "git": "2.51.0",
-    "kubeconform": "0.6.7",
+    "kubeconform": "0.7.0",
     "kyverno": "1.13.4",
     "nodePackages.prettier": "3.5.2",
     "talosctl": "1.9.4",
