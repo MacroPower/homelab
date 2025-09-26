@@ -411,7 +411,7 @@
                       "description": "init container image of SPIRE agent and server",
                       "properties": {
                         "digest": {
-                          "default": "sha256:f9a104fddb33220ec80fc45a4e606c74aadf1ef7a3832eb0b05be9e90cd61f5f",
+                          "default": "sha256:ab33eacc8251e3807b85bb6dba570e4698c3998eca6f0fc2ccb60575a563ea74",
                           "required": [],
                           "title": "digest",
                           "type": "string"
@@ -840,6 +840,22 @@
           "required": [],
           "title": "enabled",
           "type": "boolean"
+        },
+        "legacyOriginAttribute": {
+          "additionalProperties": true,
+          "description": "Legacy BGP ORIGIN attribute settings (BGPv2 only)",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable/Disable advertising LoadBalancerIP routes with the legacy\nBGP ORIGIN attribute value INCOMPLETE (2) instead of the default IGP (0).\nEnable for compatibility with the legacy behavior of MetalLB integration.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "legacyOriginAttribute",
+          "type": "object"
         },
         "routerIDAllocation": {
           "additionalProperties": true,
@@ -1773,7 +1789,7 @@
               "description": "Clustermesh API server image.",
               "properties": {
                 "digest": {
-                  "default": "sha256:87ab85f33dc7e895ed6257564bf1a255d12399d9e8a075a8fc400910ff94cbeb",
+                  "default": "sha256:cd689a07bfc7622e812fef023cb277fdc695b60a960d36f32f93614177a7a0f6",
                   "description": "clustermesh-apiserver-digest",
                   "required": [],
                   "title": "digest",
@@ -1801,7 +1817,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.18.1",
+                  "default": "v1.18.2",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -3878,7 +3894,7 @@
           "description": "Envoy container image.",
           "properties": {
             "digest": {
-              "default": "sha256:247e908700012f7ef56f75908f8c965215c26a27762f296068645eb55450bda2",
+              "default": "sha256:7932d656b63f6f866b6732099d33355184322123cfe1182e6f05175a3bc2e0e0",
               "required": [],
               "title": "digest",
               "type": "string"
@@ -3905,7 +3921,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.34.4-1754895458-68cffdfa568b6b226d70a7ef81fc65dda3b890bf",
+              "default": "v1.34.7-1757592137-1a52bb680a956879722f48c591a2ca90f7791324",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -5607,7 +5623,7 @@
               "description": "Hubble-relay container image.",
               "properties": {
                 "digest": {
-                  "default": "sha256:7e2fd4877387c7e112689db7c2b153a4d5c77d125b8d50d472dbe81fc1b139b0",
+                  "default": "sha256:6079308ee15e44dff476fb522612732f7c5c4407a1017bc3470916242b0405ac",
                   "description": "hubble-relay-digest",
                   "required": [],
                   "title": "digest",
@@ -5635,7 +5651,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.18.1",
+                  "default": "v1.18.2",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -6380,7 +6396,7 @@
                   "description": "Hubble-ui backend image.",
                   "properties": {
                     "digest": {
-                      "default": "sha256:a034b7e98e6ea796ed26df8f4e71f83fc16465a19d166eff67a03b822c0bfa15",
+                      "default": "sha256:db1454e45dc39ca41fbf7cad31eec95d99e5b9949c39daaad0fa81ef29d56953",
                       "required": [],
                       "title": "digest",
                       "type": "string"
@@ -6407,7 +6423,7 @@
                       "type": "string"
                     },
                     "tag": {
-                      "default": "v0.13.2",
+                      "default": "v0.13.3",
                       "required": [],
                       "title": "tag",
                       "type": "string"
@@ -6529,7 +6545,7 @@
                   "description": "Hubble-ui frontend image.",
                   "properties": {
                     "digest": {
-                      "default": "sha256:9e37c1296b802830834cc87342a9182ccbb71ffebb711971e849221bd9d59392",
+                      "default": "sha256:661d5de7050182d495c6497ff0b007a7a1e379648e60830dd68c4d78ae21761d",
                       "required": [],
                       "title": "digest",
                       "type": "string"
@@ -6556,7 +6572,7 @@
                       "type": "string"
                     },
                     "tag": {
-                      "default": "v0.13.2",
+                      "default": "v0.13.3",
                       "required": [],
                       "title": "tag",
                       "type": "string"
@@ -7000,7 +7016,7 @@
       "description": "Agent container image.",
       "properties": {
         "digest": {
-          "default": "sha256:65ab17c052d8758b2ad157ce766285e04173722df59bdee1ea6d5fda7149f0e9",
+          "default": "sha256:858f807ea4e20e85e3ea3240a762e1f4b29f1cb5bbd0463b8aa77e7b097c0667",
           "description": "cilium-digest",
           "required": [],
           "title": "digest",
@@ -7028,7 +7044,7 @@
           "type": "string"
         },
         "tag": {
-          "default": "v1.18.1",
+          "default": "v1.18.2",
           "required": [],
           "title": "tag",
           "type": "string"
@@ -8111,7 +8127,7 @@
           "description": "node-init image.",
           "properties": {
             "digest": {
-              "default": "sha256:8d7b41c4ca45860254b3c19e20210462ef89479bb6331d6760c4e609d651b29c",
+              "default": "sha256:0c91245afb3a4ff78b5cc8c09226806e94a9a10eb0adb74a85e0eeed2a5cae8c",
               "required": [],
               "title": "digest",
               "type": "string"
@@ -8138,7 +8154,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "c54c7edeab7fde4da68e59acd319ab24af242c3f",
+              "default": "1755531540-60ee83e",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -8584,28 +8600,28 @@
           "description": "cilium-operator image.",
           "properties": {
             "alibabacloudDigest": {
-              "default": "sha256:e2bdc8236acec0d1ef1552c831a7cd2277624031066fbdfac884a31a4126a32a",
+              "default": "sha256:612b1d94c179cd8ae239e571e96ebd95662bb5cccb62aacfdf79355aa9cdddc8",
               "description": "operator-alibabacloud-digest",
               "required": [],
               "title": "alibabacloudDigest",
               "type": "string"
             },
             "awsDigest": {
-              "default": "sha256:de522223ecd73bc06b48042fa59f78f7b3b8f2fff4f8f30a61687516798c5042",
+              "default": "sha256:1cb856fbe265dfbcfe816bd6aa4acaf006ecbb22dcc989116a1a81bb269ea328",
               "description": "operator-aws-digest",
               "required": [],
               "title": "awsDigest",
               "type": "string"
             },
             "azureDigest": {
-              "default": "sha256:682058e6734e397e7939e92bb463da3c1b5d8b7a7ce408c3b7a62aadb9ce4f06",
+              "default": "sha256:9696e9b8219b9a5c16987e072eda2da378d42a32f9305375e56d7380a0c2ba8e",
               "description": "operator-azure-digest",
               "required": [],
               "title": "azureDigest",
               "type": "string"
             },
             "genericDigest": {
-              "default": "sha256:97f4553afa443465bdfbc1cc4927c93f16ac5d78e4dd2706736e7395382201bc",
+              "default": "sha256:cb4e4ffc5789fd5ff6a534e3b1460623df61cba00f5ea1c7b40153b5efb81805",
               "description": "operator-generic-digest",
               "required": [],
               "title": "genericDigest",
@@ -8639,7 +8655,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.18.1",
+              "default": "v1.18.2",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -8988,7 +9004,7 @@
             "additionalProperties": true,
             "properties": {
               "key": {
-                "default": "node.kubernetes.io/not-ready",
+                "default": "node.cloudprovider.kubernetes.io/uninitialized",
                 "required": [],
                 "title": "key",
                 "type": "string"
@@ -9283,7 +9299,7 @@
               "description": "Envoy pre-flight image.",
               "properties": {
                 "digest": {
-                  "default": "sha256:247e908700012f7ef56f75908f8c965215c26a27762f296068645eb55450bda2",
+                  "default": "sha256:7932d656b63f6f866b6732099d33355184322123cfe1182e6f05175a3bc2e0e0",
                   "required": [],
                   "title": "digest",
                   "type": "string"
@@ -9310,7 +9326,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.34.4-1754895458-68cffdfa568b6b226d70a7ef81fc65dda3b890bf",
+                  "default": "v1.34.7-1757592137-1a52bb680a956879722f48c591a2ca90f7791324",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -9363,7 +9379,7 @@
           "description": "Cilium pre-flight image.",
           "properties": {
             "digest": {
-              "default": "sha256:65ab17c052d8758b2ad157ce766285e04173722df59bdee1ea6d5fda7149f0e9",
+              "default": "sha256:858f807ea4e20e85e3ea3240a762e1f4b29f1cb5bbd0463b8aa77e7b097c0667",
               "description": "cilium-digest",
               "required": [],
               "title": "digest",
@@ -9391,7 +9407,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.18.1",
+              "default": "v1.18.2",
               "required": [],
               "title": "tag",
               "type": "string"
