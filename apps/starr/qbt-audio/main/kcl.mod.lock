@@ -51,10 +51,6 @@
     name = "starr"
     full_name = "starr_0.1.0"
     version = "0.1.0"
-  [dependencies.starr_qbt_base]
-    name = "starr_qbt_base"
-    full_name = "starr_qbt_base_0.1.0"
-    version = "0.1.0"
   [dependencies.starr_qbt_audio_base]
     name = "starr_qbt_audio_base"
     full_name = "starr_qbt_audio_base_0.1.0"

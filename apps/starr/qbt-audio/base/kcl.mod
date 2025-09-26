@@ -1,5 +1,5 @@
 [package]
-name = "starr_qbt_movies_base"
+name = "starr_qbt_audio_base"
 version = "0.1.0"
 
 [dependencies]
