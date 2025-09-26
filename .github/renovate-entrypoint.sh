@@ -17,7 +17,7 @@ su ubuntu <<'EOF'
 EOF
 chown -R ubuntu:ubuntu /nix
 
-export DEVBOX_USE_VERSION="0.13.7"
+export DEVBOX_USE_VERSION="0.16.0"
 export DEVBOX_USER="ubuntu"
 export PATH="/home/${DEVBOX_USER}/.nix-profile/bin:$PATH"
 

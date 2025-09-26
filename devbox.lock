@@ -266,12 +266,12 @@
       }
     },
     "github:NixOS/nixpkgs/nixpkgs-unstable": {
-      "last_modified": "2025-08-31T10:29:22Z",
-      "resolved": "github:NixOS/nixpkgs/37ff64b7108517f8b6ba5705ee5085eac636a249?lastModified=1756636162&narHash=sha256-mBecwgUTWRgClJYqcF%2By4O1bY8PQHqeDpB%2BzsAn%2B%2FzA%3D"
+      "last_modified": "2025-09-25T01:21:52Z",
+      "resolved": "github:NixOS/nixpkgs/e57b3b16ad8758fd681511a078f35c416a8cc939?lastModified=1758763312&narHash=sha256-puBMviZhYlqOdUUgEmMVJpXqC%2FToEqSvkyZ30qQ09xM%3D"
     },
-    "github:budimanjojo/talhelper/v3.0.31": {
-      "last_modified": "2025-07-22T03:26:56Z",
-      "resolved": "github:budimanjojo/talhelper/fbf6089203b3556b0a929f742985997630859f47?lastModified=1753154816&narHash=sha256-%2FcUW9TzUCNBa%2FJ5GpadzZr%2BM1K0tIJoYe7g2T3z3kJo%3D"
+    "github:budimanjojo/talhelper/v3.0.35": {
+      "last_modified": "2025-09-12T04:00:22Z",
+      "resolved": "github:budimanjojo/talhelper/fae71b3e5985ff1c43b50d1a9b571f0a946ac3bc?lastModified=1757649622&narHash=sha256-vgNq8XUuDIqJgGxKMFFtVWfVXggRiaVpYwuwtgTc4Ps%3D"
     },
     "github:macropower/nur-packages#kat": {
       "last_modified": "2025-08-31T20:04:57Z",
@@ -426,54 +426,6 @@
             }
           ],
           "store_path": "/nix/store/xhdxsw1rkwpj4j1c020r9bii97n9d624-kubernetes-helm-3.19.0"
-        }
-      }
-    },
-    "kyverno@1.13.4": {
-      "last_modified": "2025-04-17T05:47:26Z",
-      "resolved": "github:NixOS/nixpkgs/ebe4301cbd8f81c4f8d3244b3632338bbeb6d49c#kyverno",
-      "source": "devbox-search",
-      "version": "1.13.4",
-      "systems": {
-        "aarch64-darwin": {
-          "outputs": [
-            {
-              "name": "out",
-              "path": "/nix/store/mlyn23j5bf2lnn66d155z6ra91ggvw3d-kyverno-1.13.4",
-              "default": true
-            }
-          ],
-          "store_path": "/nix/store/mlyn23j5bf2lnn66d155z6ra91ggvw3d-kyverno-1.13.4"
-        },
-        "aarch64-linux": {
-          "outputs": [
-            {
-              "name": "out",
-              "path": "/nix/store/3n6gq1na5lhvzfqlf2dgxxq0hywm1h4j-kyverno-1.13.4",
-              "default": true
-            }
-          ],
-          "store_path": "/nix/store/3n6gq1na5lhvzfqlf2dgxxq0hywm1h4j-kyverno-1.13.4"
-        },
-        "x86_64-darwin": {
-          "outputs": [
-            {
-              "name": "out",
-              "path": "/nix/store/2c628gjj14xsl7rbnh89hwvfmylb8mml-kyverno-1.13.4",
-              "default": true
-            }
-          ],
-          "store_path": "/nix/store/2c628gjj14xsl7rbnh89hwvfmylb8mml-kyverno-1.13.4"
-        },
-        "x86_64-linux": {
-          "outputs": [
-            {
-              "name": "out",
-              "path": "/nix/store/4ivg3363xy8npvmqw80rqgvv1ncrk1xk-kyverno-1.13.4",
-              "default": true
-            }
-          ],
-          "store_path": "/nix/store/4ivg3363xy8npvmqw80rqgvv1ncrk1xk-kyverno-1.13.4"
         }
       }
     },
