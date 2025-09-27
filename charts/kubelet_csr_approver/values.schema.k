@@ -24,7 +24,6 @@ schema Values:
         Include additional objects within the chart
     fullnameOverride : str, optional, default is ""
     global : ValuesGlobal, optional
-        Global values are values that can be accessed from any chart or subchart by exactly the same name.
     ignoreNonSystemNode : bool, optional, default is False
         optional, permits ignoring CSRs with another Username than `system:node:...`
     image : ValuesImage, optional
@@ -105,9 +104,14 @@ schema ValuesDnsConfig:
 
 schema ValuesGlobal:
     r"""
-    Global values are values that can be accessed from any chart or subchart by exactly the same name.
+    ValuesGlobal
+
+    Attributes
+    ----------
+    clusterDomain : str, optional, default is "cluster.local"
     """
     [...str]: any
+    clusterDomain?: str
 
 schema ValuesImage:
     r"""
