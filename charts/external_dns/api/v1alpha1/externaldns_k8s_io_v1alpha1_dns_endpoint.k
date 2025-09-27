@@ -7,7 +7,8 @@ import k8s.apimachinery.pkg.apis.meta.v1
 
 schema DNSEndpoint:
     r"""
-    externaldns k8s io v1alpha1 DNS endpoint
+    DNSEndpoint is a contract that a user-specified CRD must implement to be used as a source for external-dns.
+    The user-specified CRD should also have the status sub-resource.
 
     Attributes
     ----------
