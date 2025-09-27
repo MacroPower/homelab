@@ -67,7 +67,14 @@
     },
     "global": {
       "additionalProperties": true,
-      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "properties": {
+        "clusterDomain": {
+          "default": "cluster.local",
+          "required": [],
+          "title": "clusterDomain",
+          "type": "string"
+        }
+      },
       "required": [],
       "title": "global",
       "type": "object"
