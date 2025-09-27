@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "metrics-server"
     repoURL : str, required, default is "https://kubernetes-sigs.github.io/metrics-server/"
-    targetRevision : str, optional, default is "3.12.2"
+    targetRevision : str, optional, default is "3.13.0"
     """
     values?: Values | any
     chart: str = "metrics-server"
     repoURL: str = "https://kubernetes-sigs.github.io/metrics-server/"
-    targetRevision?: str = "3.12.2"
+    targetRevision?: str = "3.13.0"
 
