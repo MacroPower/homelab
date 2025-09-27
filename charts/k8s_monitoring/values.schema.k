@@ -92,12 +92,8 @@ schema Values:
     commonLabels : ValuesCommonLabels, optional
         # Extra labels to attach to all resources (can be templated)
     config : str | ValuesConfig, optional, default is "collectors:\n  enabled: '[defaults],memory,container'"
-        # More configuration options available at https://grafana.com/docs/beyla/latest/configure/options/
-        # The below default configuration
-        # 1. looks for ALL the services in the host
-        # 2. export metrics as prometheus metrics by default at 9090 port
-        # 3. enables kubernetes attribute
-        # Note: The default configuration is used if config.create=true and config.name=""
+        The configuration for this destination.
+        @ section -- General
     configReloader : ValuesConfigReloader, optional
         Options for the extra controller used for config reloading.
     configmaps : [any], optional
@@ -139,6 +135,10 @@ schema Values:
         # Ref: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
     ebpf : ValuesEbpf, optional
         Settings for gathering profiles using eBPF
+    ecosystem : str, optional
+        The ecosystem for this destination. By setting this ecosystem, matching telemetry data sources might be
+        auto-assigned to this destination. Options: `loki`, `otlp`, `prometheus`, `pyroscope`
+        @ section -- General
     enabled : bool, optional
         Enable this Alloy instance.
     endpoints : [any], optional
@@ -211,6 +211,8 @@ schema Values:
         resource names.
     gatherMethod : str, optional, default is "volumes"
         The method to gather pod logs. Options are "volumes", "filelog" (experimental), "kubernetesApi", "OpenShiftClusterLogForwarder" (experimental).
+        DEPRECATION WARNING: The "kubernetesApi" gather method is deprecated and will be removed in a future release.
+        Please use the podLogsViaKubernetesApi feature instead.
     global : ValuesGlobal, optional
 
         Global settings
@@ -278,7 +280,9 @@ schema Values:
     kubeletResource : ValuesKubeletResource, optional
         Kubelet Resource metrics gather information about resource information on each node.
     labelSelectors : ValuesLabelSelectors, optional
-        Discover Tempo instances based on label selectors.
+        Filter the list of discovered pods by labels.
+        Example: `labelSelectors: { 'app': 'myapp' }` will only discover pods and services with the label `app=myapp`.
+        Example: `labelSelectors: { 'app': ['myapp', 'myotherapp'] }` will only discover pods and services with the label `app=myapp` or `app=myotherapp`.
     labels : ValuesLabels, optional
         Log labels to set with values copied from the Kubernetes Pod labels.
         Format: `<log_label>: <kubernetes_label>`.
@@ -292,6 +296,9 @@ schema Values:
         #
     logFormat : str, optional, default is "logfmt"
         Log format used to forward cluster events. Allowed values: `logfmt` (default), `json`.
+    logProcessingRules : str, optional
+        Rule blocks to be evaluated before printing the log messages to the standard output. See
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/loki/loki.relabel/#rule)) for more information.
     logProcessingStages : str, optional
         Stage blocks to be evaluated before delivering to the Loki destination. See
         ([docs](https://grafana.com/docs/alloy/latest/reference/components/loki/loki.process/#blocks)) for more information.
@@ -396,6 +403,9 @@ schema Values:
     nodeSelector : ValuesNodeSelector, optional
         # Assign a nodeSelector if operating a hybrid cluster
         #
+    nodeSelectors : ValuesNodeSelectors, optional
+        Filter the list of discovered nodes by labels.
+        Example: `nodeSelectors: { 'kubernetes.io/os': 'linux' }`
     openTelemetryConversion : ValuesOpenTelemetryConversion, optional
         Settings for converting OpenTelemetry ecosystem metrics to Prometheus ecosystem metrics.
     opencost : ValuesOpencost, optional
@@ -417,6 +427,10 @@ schema Values:
         Pod logs.
         Requires a destination that supports logs.
         To see the valid options, please see the [Pod Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs).
+    podLogsViaKubernetesApi : ValuesPodLogsViaKubernetesApi, optional
+        Pod logs via Kubernetes API.
+        Requires a destination that supports logs.
+        To see the valid options, please see the [Pod Logs via Kubernetes API feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs-via-kubernetes-api).
     podMonitors : ValuesPodMonitors, optional
         Prometheus Operator PodMonitors
     podSecurityContext : ValuesPodSecurityContext, optional
@@ -440,6 +454,7 @@ schema Values:
         Rule blocks to be added to the pyroscope.relabel component for received profiles.
         These relabeling rules are applied to profiles received by this feature.
         ([docs](https://grafana.com/docs/alloy/latest/reference/components/pyroscope/pyroscope.relabel/#rule))
+    profiles : ValuesProfiles, optional
     profilesReceiver : ValuesProfilesReceiver, optional
         Profiles Receiver enables receiving profiles from applications.
         Requires a destination that supports profiles.
@@ -658,6 +673,7 @@ schema Values:
     dnsConfig?: ValuesDnsConfig
     dnsPolicy?: str
     ebpf?: ValuesEbpf
+    ecosystem?: str
     enabled?: bool
     endpoints?: [any]
     env?: any | ValuesEnv
@@ -726,6 +742,7 @@ schema Values:
     liveDebugging?: ValuesLiveDebugging
     livenessProbe?: ValuesLivenessProbe
     logFormat?: str
+    logProcessingRules?: str
     logProcessingStages?: str
     logging?: ValuesLogging
     loglevel?: str
@@ -760,6 +777,7 @@ schema Values:
     nodeLabels?: ValuesNodeLabels
     nodeLogs?: ValuesNodeLogs
     nodeSelector?: ValuesNodeSelector
+    nodeSelectors?: ValuesNodeSelectors
     openTelemetryConversion?: ValuesOpenTelemetryConversion
     opencost?: ValuesOpencost
     ownNamespaceOnly?: bool
@@ -770,6 +788,7 @@ schema Values:
     podDisruptionBudget?: ValuesPodDisruptionBudget
     podLabels?: ValuesPodLabels
     podLogs?: ValuesPodLogs
+    podLogsViaKubernetesApi?: ValuesPodLogsViaKubernetesApi
     podMonitors?: ValuesPodMonitors
     podSecurityContext?: ValuesPodSecurityContext
     pods?: ValuesPods
@@ -781,6 +800,7 @@ schema Values:
     probes?: ValuesProbes
     processors?: ValuesProcessors
     profileProcessingRules?: str
+    profiles?: ValuesProfiles
     profilesReceiver?: ValuesProfilesReceiver
     profiling?: ValuesProfiling
     prometheus?: ValuesPrometheus
@@ -1045,12 +1065,10 @@ schema ValuesAlloyOperator:
     deploy : bool, optional, default is True
         Deploy the Alloy Operator.
     waitForAlloyRemoval : ValuesAlloyOperatorWaitForAlloyRemoval, optional
-    waitForReadiness : ValuesAlloyOperatorWaitForReadiness, optional
     """
     [...str]: any
     deploy?: bool
     waitForAlloyRemoval?: ValuesAlloyOperatorWaitForAlloyRemoval
-    waitForReadiness?: ValuesAlloyOperatorWaitForReadiness
 
 schema ValuesAlloyOperatorWaitForAlloyRemoval:
     r"""
@@ -1065,6 +1083,12 @@ schema ValuesAlloyOperatorWaitForAlloyRemoval:
         The image to use for the Helm Hook that ensures that Alloy instances are removed during uninstall.
     nodeSelector : ValuesAlloyOperatorWaitForAlloyRemovalNodeSelector, optional
         Node selector to use for the Helm Hook that ensures that Alloy instances are removed during uninstall.
+    podAnnotations : ValuesAlloyOperatorWaitForAlloyRemovalPodAnnotations, optional
+        Annotations to apply to the Pod for the Helm Hook to wait for all Alloy instances to be removed before
+        uninstalling the Alloy Operator
+    podLabels : ValuesAlloyOperatorWaitForAlloyRemovalPodLabels, optional
+        Labels to apply to the Pod for the Helm Hook to wait for all Alloy instances to be removed before uninstalling
+        the Alloy Operator
     tolerations : [any], optional
         Tolerations to apply to the Helm Hook that ensures that Alloy instances are removed during uninstall.
     """
@@ -1072,6 +1096,8 @@ schema ValuesAlloyOperatorWaitForAlloyRemoval:
     enabled?: bool
     image?: ValuesAlloyOperatorWaitForAlloyRemovalImage
     nodeSelector?: ValuesAlloyOperatorWaitForAlloyRemovalNodeSelector
+    podAnnotations?: ValuesAlloyOperatorWaitForAlloyRemovalPodAnnotations
+    podLabels?: ValuesAlloyOperatorWaitForAlloyRemovalPodLabels
     tolerations?: [any]
 
 schema ValuesAlloyOperatorWaitForAlloyRemovalImage:
@@ -1106,59 +1132,26 @@ schema ValuesAlloyOperatorWaitForAlloyRemovalNodeSelector:
     [...str]: any
     "kubernetes.io/os"?: str
 
-schema ValuesAlloyOperatorWaitForReadiness:
+schema ValuesAlloyOperatorWaitForAlloyRemovalPodAnnotations:
     r"""
-    ValuesAlloyOperatorWaitForReadiness
+    Annotations to apply to the Pod for the Helm Hook to wait for all Alloy instances to be removed before
+    uninstalling the Alloy Operator
+    """
+    [...str]: any
+
+schema ValuesAlloyOperatorWaitForAlloyRemovalPodLabels:
+    r"""
+    Labels to apply to the Pod for the Helm Hook to wait for all Alloy instances to be removed before uninstalling
+    the Alloy Operator
 
     Attributes
     ----------
-    enabled : bool, optional, default is True
-        Utilize a Helm Hook to wait for the Alloy Operator to be ready before creating Alloy instances.
-        This prevents timing issues where Alloy custom resources are created before the operator is ready to process them.
-    image : ValuesAlloyOperatorWaitForReadinessImage, optional
-        The image to use for the Helm Hook that ensures the Alloy Operator is ready.
-    nodeSelector : ValuesAlloyOperatorWaitForReadinessNodeSelector, optional
-        Node selector to use for the Helm Hook that ensures the Alloy Operator is ready.
-    tolerations : [any], optional
-        Tolerations to apply to the Helm Hook that ensures the Alloy Operator is ready.
+    "linkerd.io/inject" : str, optional, default is "disabled"
+    "sidecar.istio.io/inject" : str, optional, default is "false"
     """
     [...str]: any
-    enabled?: bool
-    image?: ValuesAlloyOperatorWaitForReadinessImage
-    nodeSelector?: ValuesAlloyOperatorWaitForReadinessNodeSelector
-    tolerations?: [any]
-
-schema ValuesAlloyOperatorWaitForReadinessImage:
-    r"""
-    The image to use for the Helm Hook that ensures the Alloy Operator is ready.
-
-    Attributes
-    ----------
-    digest : str, optional, default is ""
-    pullPolicy : str, optional, default is "IfNotPresent"
-    pullSecrets : [any], optional
-    registry : str, optional, default is "ghcr.io"
-    repository : str, optional, default is "grafana/helm-chart-toolbox-kubectl"
-    tag : str, optional, default is "0.1.1"
-    """
-    [...str]: any
-    digest?: str
-    pullPolicy?: str
-    pullSecrets?: [any]
-    registry?: str
-    repository?: str
-    tag?: str
-
-schema ValuesAlloyOperatorWaitForReadinessNodeSelector:
-    r"""
-    Node selector to use for the Helm Hook that ensures the Alloy Operator is ready.
-
-    Attributes
-    ----------
-    "kubernetes.io/os" : str, optional, default is "linux"
-    """
-    [...str]: any
-    "kubernetes.io/os"?: str
+    "linkerd.io/inject"?: str
+    "sidecar.istio.io/inject"?: str
 
 schema ValuesAlloyProfiles:
     r"""
@@ -1377,6 +1370,8 @@ schema ValuesApiServer:
     scrapeInterval : str, optional, default is ""
         How frequently to scrape metrics from the API Server
         Overrides metrics.scrapeInterval
+    scrapeTimeout : str, optional, default is ""
+        The timeout for scraping API Server metrics.
     """
     [...str]: any
     enabled?: any
@@ -1386,6 +1381,7 @@ schema ValuesApiServer:
     maxCacheSize?: any
     metricsTuning?: ValuesApiServerMetricsTuning
     scrapeInterval?: str
+    scrapeTimeout?: str
 
 schema ValuesApiServerMetricsTuning:
     r"""
@@ -1875,6 +1871,8 @@ schema ValuesCadvisor:
         How to access cAdvisor to get metrics, either "direct" (use node IP) or "proxy" (uses API Server)
     scrapeInterval : str, optional, default is ""
         How frequently to scrape cAdvisor metrics.
+    scrapeTimeout : str, optional, default is ""
+        The timeout for scraping cAdvisor metrics.
     """
     [...str]: any
     enabled?: bool
@@ -1885,6 +1883,7 @@ schema ValuesCadvisor:
     metricsTuning?: ValuesCadvisorMetricsTuning
     nodeAddressFormat?: str
     scrapeInterval?: str
+    scrapeTimeout?: str
 
 schema ValuesCadvisorMetricsTuning:
     r"""
@@ -2040,12 +2039,8 @@ schema ValuesCommonLabels:
 
 schema ValuesConfig:
     r"""
-    # More configuration options available at https://grafana.com/docs/beyla/latest/configure/options/
-    # The below default configuration
-    # 1. looks for ALL the services in the host
-    # 2. export metrics as prometheus metrics by default at 9090 port
-    # 3. enables kubernetes attribute
-    # Note: The default configuration is used if config.create=true and config.name=""
+    The configuration for this destination.
+    @ section -- General
 
     Attributes
     ----------
@@ -2356,6 +2351,8 @@ schema ValuesConnectorsSpanMetrics:
         The Metric namespace.
     skipBeyla : bool, optional, default is True
         Skip Beyla traces when `span.metrics.skip` resource attribute is present.
+    skipInternal : bool, optional, default is True
+        Skip span if span kind is internal.
     transforms : ValuesConnectorsSpanMetricsTransforms, optional
         Apply transformations to span metrics after they are generated.
         ([docs](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.processor.transform/))
@@ -2371,6 +2368,7 @@ schema ValuesConnectorsSpanMetrics:
     histogram?: ValuesConnectorsSpanMetricsHistogram
     namespace?: str
     skipBeyla?: bool
+    skipInternal?: bool
     transforms?: ValuesConnectorsSpanMetricsTransforms
 
 schema ValuesConnectorsSpanMetricsEvents:
@@ -3289,11 +3287,14 @@ schema ValuesExporterDataSource:
         The MySQL host to connect to.
     port : int, optional
         The MySQL port to connect to.
+    $protocol : str, optional
+        The MySQL protocol type.
     """
     [...str]: any
     auth?: ValuesExporterDataSourceAuth
     host?: str
     port?: int
+    $protocol?: str
 
 schema ValuesExporterDataSourceAuth:
     r"""
@@ -3433,7 +3434,7 @@ schema ValuesGlobal:
     scrapeProtocols : [str], optional
         The protocols to negotiate during a Prometheus metrics scrape, in order of preference.
     scrapeTimeout : str, optional, default is "10s"
-        The scrape timeout for discovered pods and services.
+        The timeout for scraping metrics.
     """
     [...str]: any
     image?: ValuesGlobalImage
@@ -3962,6 +3963,8 @@ schema ValuesKepler:
     scrapeInterval : str, optional, default is ""
         How frequently to scrape metrics from Kepler.
         Overrides global.scrapeInterval.
+    scrapeTimeout : str, optional, default is ""
+        The timeout for scraping Kepler metrics.
     """
     [...str]: any
     affinity?: ValuesKeplerAffinity
@@ -3976,6 +3979,7 @@ schema ValuesKepler:
     metricsTuning?: ValuesKeplerMetricsTuning
     podAnnotations?: ValuesKeplerPodAnnotations
     scrapeInterval?: str
+    scrapeTimeout?: str
 
 schema ValuesKeplerAffinity:
     r"""
@@ -4187,6 +4191,8 @@ schema ValuesKubeDns:
     scrapeInterval : str, optional, default is ""
         How frequently to scrape metrics from KubeDNS
         Overrides metrics.scrapeInterval
+    scrapeTimeout : str, optional, default is ""
+        The timeout for scraping KubeDNS metrics.
     """
     [...str]: any
     enabled?: any
@@ -4196,6 +4202,7 @@ schema ValuesKubeDns:
     maxCacheSize?: any
     metricsTuning?: ValuesKubeDnsMetricsTuning
     scrapeInterval?: str
+    scrapeTimeout?: str
 
 schema ValuesKubeDnsMetricsTuning:
     r"""
@@ -4243,6 +4250,8 @@ schema ValuesKubeProxy:
     scrapeInterval : str, optional, default is ""
         How frequently to scrape metrics from the Kube Proxy
         Overrides metrics.scrapeInterval
+    scrapeTimeout : str, optional, default is ""
+        The timeout for scraping Kube Proxy metrics.
     selectorLabel : str, optional, default is "k8s-app=kube-proxy"
         Selector label.
     """
@@ -4255,6 +4264,7 @@ schema ValuesKubeProxy:
     metricsTuning?: ValuesKubeProxyMetricsTuning
     port?: int
     scrapeInterval?: str
+    scrapeTimeout?: str
     selectorLabel?: str
 
 schema ValuesKubeProxyMetricsTuning:
@@ -4379,7 +4389,7 @@ schema ValuesKubeRbacproxyImage:
     registry : str, optional, default is "quay.io"
     repository : str, optional, default is "brancz/kube-rbac-proxy"
     sha : str, optional, default is ""
-    tag : str, optional, default is "v0.19.1"
+    tag : str, optional, default is "v0.20.0"
     """
     [...str]: any
     pullPolicy?: str
@@ -4440,6 +4450,8 @@ schema ValuesKubeScheduler:
     scrapeInterval : str, optional, default is ""
         How frequently to scrape metrics from the Kube Scheduler
         Overrides metrics.scrapeInterval
+    scrapeTimeout : str, optional, default is ""
+        The timeout for scraping Kube Scheduler metrics.
     selectorLabel : str, optional, default is "component=kube-scheduler"
         Selector label.
     """
@@ -4452,6 +4464,7 @@ schema ValuesKubeScheduler:
     metricsTuning?: ValuesKubeSchedulerMetricsTuning
     port?: int
     scrapeInterval?: str
+    scrapeTimeout?: str
     selectorLabel?: str
 
 schema ValuesKubeSchedulerMetricsTuning:
@@ -4525,6 +4538,8 @@ schema ValuesKubeStateMetrics:
     releaseLabel : bool, optional, default is True
     scrapeInterval : str, optional, default is ""
         How frequently to scrape kube-state-metrics metrics.
+    scrapeTimeout : str, optional, default is ""
+        The timeout for scraping kube-state-metrics metrics.
     service : ValuesKubeStateMetricsService, optional
         kube-state-metrics service settings
     updateStrategy : str, optional, default is "Recreate"
@@ -4550,6 +4565,7 @@ schema ValuesKubeStateMetrics:
     prometheusScrape?: bool
     releaseLabel?: bool
     scrapeInterval?: str
+    scrapeTimeout?: str
     service?: ValuesKubeStateMetricsService
     updateStrategy?: str
 
@@ -4674,6 +4690,8 @@ schema ValuesKubelet:
         How to access the Kubelet to get metrics, either "direct" (use node IP) or "proxy" (uses API Server)
     scrapeInterval : str, optional, default is ""
         How frequently to scrape Kubelet metrics.
+    scrapeTimeout : str, optional, default is ""
+        The timeout for scraping Kubelet metrics.
     """
     [...str]: any
     enabled?: bool
@@ -4684,6 +4702,7 @@ schema ValuesKubelet:
     metricsTuning?: ValuesKubeletMetricsTuning
     nodeAddressFormat?: str
     scrapeInterval?: str
+    scrapeTimeout?: str
 
 schema ValuesKubeletMetricsTuning:
     r"""
@@ -4733,6 +4752,8 @@ schema ValuesKubeletProbes:
         How to access the Kubelet to get probe metrics, either "direct" (use node IP) or "proxy" (uses API Server)
     scrapeInterval : str, optional, default is ""
         How frequently to scrape Kubelet probe metrics.
+    scrapeTimeout : str, optional, default is ""
+        The timeout for scraping Kubelet probe metrics.
     """
     [...str]: any
     enabled?: bool
@@ -4743,6 +4764,7 @@ schema ValuesKubeletProbes:
     metricsTuning?: ValuesKubeletProbesMetricsTuning
     nodeAddressFormat?: str
     scrapeInterval?: str
+    scrapeTimeout?: str
 
 schema ValuesKubeletProbesMetricsTuning:
     r"""
@@ -4792,6 +4814,8 @@ schema ValuesKubeletResource:
         How to access the Kubelet to get resource metrics, either "direct" (use node IP) or "proxy" (uses API Server)
     scrapeInterval : str, optional, default is ""
         How frequently to scrape Kubelet resource metrics.
+    scrapeTimeout : str, optional, default is ""
+        The timeout for scraping Kubelet resource metrics.
     """
     [...str]: any
     enabled?: bool
@@ -4802,6 +4826,7 @@ schema ValuesKubeletResource:
     metricsTuning?: ValuesKubeletResourceMetricsTuning
     nodeAddressFormat?: str
     scrapeInterval?: str
+    scrapeTimeout?: str
 
 schema ValuesKubeletResourceMetricsTuning:
     r"""
@@ -4823,7 +4848,9 @@ schema ValuesKubeletResourceMetricsTuning:
 
 schema ValuesLabelSelectors:
     r"""
-    Discover Tempo instances based on label selectors.
+    Filter the list of discovered pods by labels.
+    Example: `labelSelectors: { 'app': 'myapp' }` will only discover pods and services with the label `app=myapp`.
+    Example: `labelSelectors: { 'app': ['myapp', 'myotherapp'] }` will only discover pods and services with the label `app=myapp` or `app=myotherapp`.
 
     Attributes
     ----------
@@ -4939,6 +4966,9 @@ schema ValuesLogs:
     namespaces : [any], optional
         The namespaces to look for MySQL instances in.
         Will automatically look for MySQL instances in all namespaces unless specified here
+    target : str, optional
+        The Alloy component reference for sending logs.
+        @ section -- Logs
     transforms : ValuesLogsTransforms, optional
         Apply a transformation to logs received via the OTLP or OTLP HTTP receivers.
         ([docs](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.processor.transform/))
@@ -4950,6 +4980,7 @@ schema ValuesLogs:
     filters?: ValuesLogsFilters
     labelSelectors?: ValuesLogsLabelSelectors
     namespaces?: [any]
+    target?: str
     transforms?: ValuesLogsTransforms
     tuning?: ValuesLogsTuning
 
@@ -5043,6 +5074,10 @@ schema ValuesMetrics:
     ----------
     enabled : bool, optional, default is True
         Whether to send metrics to the OTLP destination.
+    extraMetricProcessingRules : str, optional
+        Rule blocks to be added to the prometheus.relabel component for MySQL metrics.
+        These relabeling rules are applied post-scrape against the metrics returned from the scraped target, no `__meta*` labels are present.
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#rule-block))
     filters : ValuesMetricsFilters, optional
         Apply a filter to metrics received via the OTLP or OTLP HTTP receivers.
         ([docs](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.processor.filter/))
@@ -5058,6 +5093,11 @@ schema ValuesMetrics:
         Name of the port to scrape metrics from.
     scrapeInterval : any, optional
         How frequently to scrape metrics from Tempo.
+    scrapeTimeout : str, optional
+        The timeout for scraping metrics from Tempo.
+    target : str, optional
+        The Alloy component reference for sending metrics.
+        @ section -- Metrics
     transforms : ValuesMetricsTransforms, optional
         Apply a transformation to metrics received via the OTLP or OTLP HTTP receivers.
         ([docs](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.processor.transform/))
@@ -5066,11 +5106,14 @@ schema ValuesMetrics:
     """
     [...str]: any
     enabled?: bool
+    extraMetricProcessingRules?: str
     filters?: ValuesMetricsFilters
     maxCacheSize?: any
     port?: int
     portName?: str
     scrapeInterval?: any
+    scrapeTimeout?: str
+    target?: str
     transforms?: ValuesMetricsTransforms
     tuning?: ValuesMetricsTuning
 
@@ -5480,6 +5523,8 @@ schema ValuesNodeExporter:
     releaseLabel : bool, optional, default is True
     scrapeInterval : str, optional, default is ""
         How frequently to scrape Node Exporter metrics.
+    scrapeTimeout : str, optional, default is ""
+        The timeout for scraping Node Exporter metrics.
     service : ValuesNodeExporterService, optional
         Node Exporter service settings
     """
@@ -5500,6 +5545,7 @@ schema ValuesNodeExporter:
     podAnnotations?: ValuesNodeExporterPodAnnotations
     releaseLabel?: bool
     scrapeInterval?: str
+    scrapeTimeout?: str
     service?: ValuesNodeExporterService
 
 schema ValuesNodeExporterAffinity:
@@ -5711,6 +5757,13 @@ schema ValuesNodeSelector:
     [...str]: any
     "kubernetes.io/os"?: str
 
+schema ValuesNodeSelectors:
+    r"""
+    Filter the list of discovered nodes by labels.
+    Example: `nodeSelectors: { 'kubernetes.io/os': 'linux' }`
+    """
+    [...str]: any
+
 schema ValuesOpenTelemetryConversion:
     r"""
     Settings for converting OpenTelemetry ecosystem metrics to Prometheus ecosystem metrics.
@@ -5740,7 +5793,6 @@ schema ValuesOpencost:
         <SECRET_NAME> for the secret containing the Cloud Costs cloud-integration.json https://www.opencost.io/docs/configuration/#cloud-costs
         kubectl create secret generic <SECRET_NAME> --from-file=cloud-integration.json -n opencost
     customPricing : ValuesOpencostCustomPricing, optional
-    dataRetention : ValuesOpencostDataRetention, optional
     enabled : bool, optional, default is False
         Deploy and scrape OpenCost.
     exporter : ValuesOpencostExporter, optional
@@ -5774,9 +5826,13 @@ schema ValuesOpencost:
     opencost : ValuesOpencostOpencost, optional
     platforms : ValuesOpencostPlatforms, optional
     prometheus : ValuesOpencostPrometheus, optional
+    retention1d : int, optional, default is 15
+    retention1h : int, optional, default is 49
     scrapeInterval : str, optional, default is ""
         How frequently to scrape metrics from Kepler.
         Overrides global.scrapeInterval.
+    scrapeTimeout : str, optional, default is ""
+        The timeout for scraping OpenCost metrics.
     sigV4Proxy : ValuesOpencostSigV4Proxy, optional
     tolerations : [any], optional
         Toleration labels for pod assignment
@@ -5790,7 +5846,6 @@ schema ValuesOpencost:
     cloudCost?: ValuesOpencostCloudCost
     cloudIntegrationSecret?: str
     customPricing?: ValuesOpencostCustomPricing
-    dataRetention?: ValuesOpencostDataRetention
     enabled?: bool
     exporter?: ValuesOpencostExporter
     extraContainers?: [any]
@@ -5806,7 +5861,10 @@ schema ValuesOpencost:
     opencost?: ValuesOpencostOpencost
     platforms?: ValuesOpencostPlatforms
     prometheus?: ValuesOpencostPrometheus
+    retention1d?: int
+    retention1h?: int
     scrapeInterval?: str
+    scrapeTimeout?: str
     sigV4Proxy?: ValuesOpencostSigV4Proxy
     tolerations?: [any]
     topologySpreadConstraints?: [any]
@@ -5909,17 +5967,6 @@ schema ValuesOpencostCustomPricingCostModel:
     spotRAM?: float
     storage?: float
     zoneNetworkEgress?: float
-
-schema ValuesOpencostDataRetention:
-    r"""
-    ValuesOpencostDataRetention
-
-    Attributes
-    ----------
-    dailyResolutionDays : int, optional, default is 15
-    """
-    [...str]: any
-    dailyResolutionDays?: int
 
 schema ValuesOpencostExporter:
     r"""
@@ -6083,11 +6130,11 @@ schema ValuesOpencostExporterCollectorDataSource:
     enabled : bool, optional, default is False
     networkPort : int, optional, default is 3001
         The port at which network pods are open to egress
-    retentionResolution10m : int, optional, default is 36
+    retention10m : int, optional, default is 36
         The number of 10m intervals the Collector DataSource should maintain
-    retentionResolution1d : int, optional, default is 15
+    retention1d : int, optional, default is 15
         The number of 1d intervals the Collector DataSource should maintain
-    retentionResolution1h : int, optional, default is 49
+    retention1h : int, optional, default is 49
         The number of 1h intervals the Collector DataSource should maintain
     scrapeInterval : str, optional, default is "30s"
         define the interval at which the collector scrapes for data points (10s, 15s, 1m)
@@ -6095,9 +6142,9 @@ schema ValuesOpencostExporterCollectorDataSource:
     [...str]: any
     enabled?: bool
     networkPort?: int
-    retentionResolution10m?: int
-    retentionResolution1d?: int
-    retentionResolution1h?: int
+    retention10m?: int
+    retention1d?: int
+    retention1h?: int
     scrapeInterval?: str
 
 schema ValuesOpencostExporterExtraEnv:
@@ -6120,7 +6167,7 @@ schema ValuesOpencostExporterImage:
         Exporter container image registry
     repository : str, optional, default is "opencost/opencost"
         Exporter container image name
-    tag : str, optional, default is "1.117.1@sha256:875bfc5f976ef866ceb69b50ec26884a4c86f6a858ff1ab379bedac336233e72"
+    tag : str, optional, default is "1.117.3@sha256:09fae89c4544ec2a891e2902e88ce3137d7032c6edbe0fd97441aaee7bdbea54"
         Exporter container image tag
     """
     [...str]: any
@@ -6752,6 +6799,8 @@ schema ValuesOpencostPrometheusInternal:
         Use in-cluster Prometheus
     namespaceName : str, optional, default is "prometheus-system"
         Namespace of in-cluster Prometheus
+    path : str, optional, default is ""
+        Path to access the Prometheus API, this is neccesary if the Prometheus server is behind a reverse proxy(mimir) or has a different path.
     port : int, optional, default is 80
         Service port of in-cluster Prometheus
     scheme : str, optional, default is "http"
@@ -6762,6 +6811,7 @@ schema ValuesOpencostPrometheusInternal:
     [...str]: any
     enabled?: bool
     namespaceName?: str
+    path?: str
     port?: int
     scheme?: str
     serviceName?: str
@@ -6899,6 +6949,9 @@ schema ValuesOpencostUi:
     route : ValuesOpencostUiRoute, optional
     securityContext : ValuesOpencostUiSecurityContext, optional
         The security options the container should be run with
+    uiPath : str, optional, default is "/"
+        Base path for serving the UI.
+        Requires building a custom image using the build argument "ui_path".
     uiPort : int, optional, default is 9090
         used in the default.nginx.conf if you want to switch for using with Docker
         apiServer: 0.0.0.0
@@ -6918,6 +6971,7 @@ schema ValuesOpencostUi:
     resources?: ValuesOpencostUiResources
     route?: ValuesOpencostUiRoute
     securityContext?: ValuesOpencostUiSecurityContext
+    uiPath?: str
     uiPort?: int
     useDefaultFqdn?: bool
     useIPv6?: bool
@@ -6936,7 +6990,7 @@ schema ValuesOpencostUiImage:
         UI container image registry
     repository : str, optional, default is "opencost/opencost-ui"
         UI container image name
-    tag : str, optional, default is "1.117.1@sha256:83fbb29fb3332791ed357c0eea010c556fd3ec670b64465a5b4a13dae2c410ce"
+    tag : str, optional, default is "1.117.3@sha256:727b95405e8c749ddbaa3bd97b93d9c0e246faeb9be9d370dd93ae6b31cdb0c2"
         UI container image tag
     """
     [...str]: any
@@ -7244,6 +7298,26 @@ schema ValuesPodLogs:
     Pod logs.
     Requires a destination that supports logs.
     To see the valid options, please see the [Pod Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs).
+
+    Attributes
+    ----------
+    collector : str, optional, default is "alloy-logs"
+        Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.
+    destinations : [any], optional
+        The destinations where logs will be sent. If empty, all logs-capable destinations will be used.
+    enabled : bool, optional, default is False
+        Enable gathering Kubernetes Pod logs.
+    """
+    [...str]: any
+    collector?: str
+    destinations?: [any]
+    enabled?: bool
+
+schema ValuesPodLogsViaKubernetesApi:
+    r"""
+    Pod logs via Kubernetes API.
+    Requires a destination that supports logs.
+    To see the valid options, please see the [Pod Logs via Kubernetes API feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs-via-kubernetes-api).
 
     Attributes
     ----------
@@ -7619,6 +7693,7 @@ schema ValuesProcessors:
     interval : ValuesProcessorsInterval, optional
     k8sattributes : ValuesProcessorsK8Sattributes, optional
     memoryLimiter : ValuesProcessorsMemoryLimiter, optional
+    resourceAttributes : ValuesProcessorsResourceAttributes, optional
     resourceDetection : ValuesProcessorsResourceDetection, optional
         Capture Resource attributes from various sources. You can add more than is listed here. For example:
         resourceDetection:
@@ -7641,6 +7716,7 @@ schema ValuesProcessors:
     interval?: ValuesProcessorsInterval
     k8sattributes?: ValuesProcessorsK8Sattributes
     memoryLimiter?: ValuesProcessorsMemoryLimiter
+    resourceAttributes?: ValuesProcessorsResourceAttributes
     resourceDetection?: ValuesProcessorsResourceDetection
     serviceGraphMetrics?: ValuesProcessorsServiceGraphMetrics
     tailSampling?: ValuesProcessorsTailSampling
@@ -7800,19 +7876,41 @@ schema ValuesProcessorsK8Sattributes:
     Attributes
     ----------
     annotations : [any], optional
-        Kubernetes annotations to extract and add to the attributes of the received telemetry data.
+        Kubernetes annotations to extract and add to the attributes of the received telemetry data in the form of a
+        list of otelcol.processor.k8sattributes extract > annotation blocks. See the
+        [Alloy documentation](https://grafana.com/docs/agent/latest/flow/reference/components/otelcol.processor.k8sattributes/#annotation-block)
+        for details on how to configure annotation blocks.
     labels : [any], optional
-        Kubernetes labels to extract and add to the attributes of the received telemetry data.
+        Kubernetes labels to extract and add to the attributes of the received telemetry data in the form of a list of
+        otelcol.processor.k8sattributes extract > label blocks. See the
+        [Alloy documentation](https://grafana.com/docs/agent/latest/flow/reference/components/otelcol.processor.k8sattributes/#extract-label-block)
+        for details on how to configure label blocks.
     metadata : [str], optional
         Kubernetes metadata to extract and add to the attributes of the received telemetry data.
     passthrough : bool, optional, default is False
         Pass through signals as-is, only adding a `k8s.pod.ip` resource attribute.
+    podAssociation : [ValuesProcessorsK8SattributesPodAssociationItems0], optional
+        Defines the rules on how to associate logs/traces/metrics to Pods.
     """
     [...str]: any
     annotations?: [any]
     labels?: [any]
     metadata?: [str]
     passthrough?: bool
+    podAssociation?: [ValuesProcessorsK8SattributesPodAssociationItems0]
+
+schema ValuesProcessorsK8SattributesPodAssociationItems0:
+    r"""
+    ValuesProcessorsK8SattributesPodAssociationItems0
+
+    Attributes
+    ----------
+    from : str, optional, default is "connection"
+    name : str, optional, default is "k8s.pod.uid"
+    """
+    [...str]: any
+    from?: str
+    name?: str
 
 schema ValuesProcessorsMemoryLimiter:
     r"""
@@ -7831,6 +7929,22 @@ schema ValuesProcessorsMemoryLimiter:
     checkInterval?: str
     enabled?: bool
     limit?: str
+
+schema ValuesProcessorsResourceAttributes:
+    r"""
+    ValuesProcessorsResourceAttributes
+
+    Attributes
+    ----------
+    removeList : [any], optional
+        List of additional resource attribute names to remove from OTEL signals
+        These attributes will be deleted from the resource context for all signal types (metrics, logs, traces)
+    useDefaultRemoveList : bool, optional
+        Whether to use the default remove list for resource attributes
+    """
+    [...str]: any
+    removeList?: [any]
+    useDefaultRemoveList?: bool
 
 schema ValuesProcessorsResourceDetection:
     r"""
@@ -7895,7 +8009,8 @@ schema ValuesProcessorsResourceDetectionSystem:
     enabled : bool, optional, default is True
         Enable getting resource attributes from the host machine.
     hostnameSources : [str], optional
-        The priority list of sources from which the hostname will be determined. Options: ["dns", "os", "cname", "lookup"].
+        The priority list of sources from which the hostname will be determined.
+        Options: ["dns", "os", "cname", "lookup"].
     resourceAttributes : ValuesProcessorsResourceDetectionSystemResourceAttributes, optional
         The list of resource attributes to add for system resource detection. See the
         [Alloy documentation](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.processor.resourcedetection/#system--resource_attributes)
@@ -8307,6 +8422,23 @@ schema ValuesProcessorsTransformTraces:
     spanFrom?: [any]
     spanevent?: [any]
     spaneventFrom?: [any]
+
+schema ValuesProfiles:
+    r"""
+    ValuesProfiles
+
+    Attributes
+    ----------
+    enabled : bool, optional
+        Enable sending profiles to this destination.
+        @ section -- Profiles
+    target : str, optional
+        The Alloy component reference for sending profiles.
+        @ section -- Profiles
+    """
+    [...str]: any
+    enabled?: bool
+    target?: str
 
 schema ValuesProfilesReceiver:
     r"""
@@ -9293,6 +9425,7 @@ schema ValuesRemoteConfig:
     proxyURL : str, optional
         The proxy URL to use of the remote config server.
     secret : ValuesRemoteConfigSecret, optional
+    tls : ValuesRemoteConfigTls, optional
     url : str, optional
         The URL of the remote config server.
     urlFrom : str, optional
@@ -9309,6 +9442,7 @@ schema ValuesRemoteConfig:
     proxyFromEnvironment?: bool
     proxyURL?: str
     secret?: ValuesRemoteConfigSecret
+    tls?: ValuesRemoteConfigTls
     url?: str
     urlFrom?: str
 
@@ -9374,6 +9508,45 @@ schema ValuesRemoteConfigSecret:
     embed?: bool
     name?: str
     namespace?: str
+
+schema ValuesRemoteConfigTls:
+    r"""
+    ValuesRemoteConfigTls
+
+    Attributes
+    ----------
+    ca : str, optional
+        The CA certificate for the server (as a string).
+    caFile : str, optional
+        The CA certificate for the server (as a path to a file).
+    caFrom : str, optional
+        Raw config for accessing the server CA certificate.
+    cert : str, optional
+        The client certificate for the server (as a string).
+    certFile : str, optional
+        The client certificate for the server (as a path to a file).
+    certFrom : str, optional
+        Raw config for accessing the client certificate.
+    insecureSkipVerify : bool, optional
+        Disables validation of the server certificate.
+    key : str, optional
+        The client key for the server (as a string).
+    keyFile : str, optional
+        The client key for the server (as a path to a file).
+    keyFrom : str, optional
+        Raw config for accessing the client key.
+    """
+    [...str]: any
+    ca?: str
+    caFile?: str
+    caFrom?: str
+    cert?: str
+    certFile?: str
+    certFrom?: str
+    insecureSkipVerify?: bool
+    key?: str
+    keyFile?: str
+    keyFrom?: str
 
 schema ValuesResources:
     r"""
@@ -10299,6 +10472,9 @@ schema ValuesTraces:
     filters : ValuesTracesFilters, optional
         Apply a filter to traces received via the OTLP or OTLP HTTP receivers.
         ([docs](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.processor.filter/))
+    target : str, optional
+        The Alloy component reference for sending traces.
+        @ section -- Traces
     transforms : ValuesTracesTransforms, optional
         Apply a transformation to traces received via the OTLP or OTLP HTTP receivers.
         ([docs](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.processor.transform/))
@@ -10306,6 +10482,7 @@ schema ValuesTraces:
     [...str]: any
     enabled?: bool
     filters?: ValuesTracesFilters
+    target?: str
     transforms?: ValuesTracesTransforms
 
 schema ValuesTracesFilters:
@@ -10452,6 +10629,8 @@ schema ValuesWindowsExporter:
     releaseLabel : bool, optional, default is True
     scrapeInterval : str, optional, default is ""
         How frequently to scrape metrics from Windows Exporter.
+    scrapeTimeout : str, optional, default is ""
+        The timeout for scraping Windows Exporter metrics.
     service : ValuesWindowsExporterService, optional
         Windows Exporter service settings
     """
@@ -10469,6 +10648,7 @@ schema ValuesWindowsExporter:
     podAnnotations?: ValuesWindowsExporterPodAnnotations
     releaseLabel?: bool
     scrapeInterval?: str
+    scrapeTimeout?: str
     service?: ValuesWindowsExporterService
 
 schema ValuesWindowsExporterLabelMatchers:
