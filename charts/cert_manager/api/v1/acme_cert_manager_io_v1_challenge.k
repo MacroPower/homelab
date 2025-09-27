@@ -45,9 +45,9 @@ schema AcmeCertManagerIoV1ChallengeSpec:
         The URL to the ACME Authorization resource that this
         challenge is a part of.
     dnsName : str, default is Undefined, required
-        dnsName is the identifier that this challenge is for, e.g. example.com.
+        dnsName is the identifier that this challenge is for, e.g., example.com.
         If the requested DNSName is a 'wildcard', this field MUST be set to the
-        non-wildcard domain, e.g. for `*.example.com`, it must be `example.com`.
+        non-wildcard domain, e.g., for `*.example.com`, it must be `example.com`.
     issuerRef : AcmeCertManagerIoV1ChallengeSpecIssuerRef, default is Undefined, required
         issuer ref
     key : str, default is Undefined, required
@@ -347,12 +347,12 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverDns01AzureDNSManagedIdentity:
     Attributes
     ----------
     clientID : str, default is Undefined, optional
-        client ID of the managed identity, can not be used at the same time as resourceID
+        client ID of the managed identity, cannot be used at the same time as resourceID
     resourceID : str, default is Undefined, optional
-        resource ID of the managed identity, can not be used at the same time as clientID
+        resource ID of the managed identity, cannot be used at the same time as clientID
         Cannot be used for Azure Managed Service Identity
     tenantID : str, default is Undefined, optional
-        tenant ID of the managed identity, can not be used at the same time as resourceID
+        tenant ID of the managed identity, cannot be used at the same time as resourceID
     """
     clientID?: str
     resourceID?: str
@@ -676,7 +676,7 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverDns01Webhook:
         when challenges are processed.
         This can contain arbitrary JSON data.
         Secret values should not be specified in this stanza.
-        If secret values are needed (e.g. credentials for a DNS service), you
+        If secret values are needed (e.g., credentials for a DNS service), you
         should use a SecretKeySelector to reference a Secret resource.
         For details on the schema of this field, consult the webhook provider
         implementation's documentation.
@@ -688,7 +688,7 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverDns01Webhook:
     solverName : str, default is Undefined, required
         The name of the solver to use, as defined in the webhook provider
         implementation.
-        This will typically be the name of the provider, e.g. 'cloudflare'.
+        This will typically be the name of the provider, e.g., 'cloudflare'.
     """
     config?: any
     groupName: str
@@ -700,7 +700,7 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01:
     Configures cert-manager to attempt to complete authorizations by
     performing the HTTP01 challenge flow.
     It is not possible to obtain certificates for wildcard domain names
-    (e.g. `*.example.com`) using the HTTP01 challenge mechanism.
+    (e.g., `*.example.com`) using the HTTP01 challenge mechanism.
 
     Attributes
     ----------

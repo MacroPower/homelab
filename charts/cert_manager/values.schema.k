@@ -29,7 +29,7 @@ schema Values:
         referencing these signer names will be auto-approved by cert-manager. Defaults to just
         approving the cert-manager.io Issuer and ClusterIssuer issuers. When set to an empty
         array, ALL issuers will be auto-approved by cert-manager. To disable the auto-approval,
-        because eg. you are using approver-policy, you can enable 'disableAutoApproval'.
+        because, e.g., you are using approver-policy, you can enable 'disableAutoApproval'.
         ref: https://cert-manager.io/docs/concepts/certificaterequest/#approval
         +docs:property
     cainjector : ValuesCainjector, optional
@@ -59,10 +59,10 @@ schema Values:
            kubernetesAPIBurst: 9000
            numberOfConcurrentWorkers: 200
            enableGatewayAPI: true
-           # Feature gates as of v1.17.0. Listed with their default values.
+           # Feature gates as of v1.18.1. Listed with their default values.
            # See https://cert-manager.io/docs/cli/controller/
            featureGates:
-             AdditionalCertificateOutputFormats: true # BETA - default=true
+             AdditionalCertificateOutputFormats: true # GA - default=true
              AllAlpha: false # ALPHA - default=false
              AllBeta: false # BETA - default=false
              ExperimentalCertificateSigningRequestControllers: false # ALPHA - default=false
@@ -74,8 +74,10 @@ schema Values:
              ServerSideApply: false # ALPHA - default=false
              StableCertificateRequestName: true # BETA - default=true
              UseCertificateRequestBasicConstraints: false # ALPHA - default=false
-             UseDomainQualifiedFinalizer: true # BETA - default=false
+             UseDomainQualifiedFinalizer: true # GA - default=true
              ValidateCAA: false # ALPHA - default=false
+             DefaultPrivateKeyRotationPolicyAlways: true # BETA - default=true
+             ACMEHTTP01IngressPathTypeExact: true # BETA - default=true
            # Configure the metrics server for TLS
            # See https://cert-manager.io/docs/devops-tips/prometheus-metrics/#tls
            metricsTLSConfig:
@@ -212,7 +214,7 @@ schema Values:
         Override the "cert-manager.name" value, which is used to annotate some of
         the resources that are created by this Chart (using "app.kubernetes.io/name").
         NOTE: There are some inconsistencies in the Helm chart when it comes to
-        these annotations (some resources use eg. "cainjector.name" which resolves
+        these annotations (some resources use, e.g., "cainjector.name" which resolves
         to the value "cainjector").
         +docs:property
         nameOverride: "my-cert-manager"
@@ -739,10 +741,10 @@ schema ValuesConfig:
        kubernetesAPIBurst: 9000
        numberOfConcurrentWorkers: 200
        enableGatewayAPI: true
-       # Feature gates as of v1.17.0. Listed with their default values.
+       # Feature gates as of v1.18.1. Listed with their default values.
        # See https://cert-manager.io/docs/cli/controller/
        featureGates:
-         AdditionalCertificateOutputFormats: true # BETA - default=true
+         AdditionalCertificateOutputFormats: true # GA - default=true
          AllAlpha: false # ALPHA - default=false
          AllBeta: false # BETA - default=false
          ExperimentalCertificateSigningRequestControllers: false # ALPHA - default=false
@@ -754,8 +756,10 @@ schema ValuesConfig:
          ServerSideApply: false # ALPHA - default=false
          StableCertificateRequestName: true # BETA - default=true
          UseCertificateRequestBasicConstraints: false # ALPHA - default=false
-         UseDomainQualifiedFinalizer: true # BETA - default=false
+         UseDomainQualifiedFinalizer: true # GA - default=true
          ValidateCAA: false # ALPHA - default=false
+         DefaultPrivateKeyRotationPolicyAlways: true # BETA - default=true
+         ACMEHTTP01IngressPathTypeExact: true # BETA - default=true
        # Configure the metrics server for TLS
        # See https://cert-manager.io/docs/devops-tips/prometheus-metrics/#tls
        metricsTLSConfig:
@@ -1014,10 +1018,10 @@ schema ValuesPrometheus:
         ServiceMonitor resource.
         Otherwise, 'prometheus.io' annotations are added to the cert-manager and
         cert-manager-webhook Deployments.
-        Note that you can not enable both PodMonitor and ServiceMonitor as they are
+        Note that you cannot enable both PodMonitor and ServiceMonitor as they are
         mutually exclusive. Enabling both will result in an error.
     podmonitor : ValuesPrometheusPodmonitor, optional
-        Note that you can not enable both PodMonitor and ServiceMonitor as they are mutually exclusive. Enabling both will result in an error.
+        Note that you cannot enable both PodMonitor and ServiceMonitor as they are mutually exclusive. Enabling both will result in an error.
     servicemonitor : ValuesPrometheusServicemonitor, optional
     """
     [...str]: any
@@ -1027,7 +1031,7 @@ schema ValuesPrometheus:
 
 schema ValuesPrometheusPodmonitor:
     r"""
-    Note that you can not enable both PodMonitor and ServiceMonitor as they are mutually exclusive. Enabling both will result in an error.
+    Note that you cannot enable both PodMonitor and ServiceMonitor as they are mutually exclusive. Enabling both will result in an error.
 
     Attributes
     ----------
@@ -1158,9 +1162,10 @@ schema ValuesPrometheusServicemonitor:
         different ServiceMonitors.
     scrapeTimeout : str, optional, default is "30s"
         The timeout before a metrics scrape fails.
-    targetPort : int, optional, default is 9402
+    targetPort : str, optional, default is "http-metrics"
         The target port to set on the ServiceMonitor. This must match the port that the
         cert-manager controller is listening on for metrics.
+        +docs:type=string,integer
     """
     [...str]: any
     annotations?: ValuesPrometheusServicemonitorAnnotations
@@ -1172,7 +1177,7 @@ schema ValuesPrometheusServicemonitor:
     path?: str
     prometheusInstance?: str
     scrapeTimeout?: str
-    targetPort?: int
+    targetPort?: str
 
 schema ValuesPrometheusServicemonitorAnnotations:
     r"""
@@ -1247,7 +1252,7 @@ schema ValuesServiceAccount:
     Override the "cert-manager.name" value, which is used to annotate some of
     the resources that are created by this Chart (using "app.kubernetes.io/name").
     NOTE: There are some inconsistencies in the Helm chart when it comes to
-    these annotations (some resources use eg. "cainjector.name" which resolves
+    these annotations (some resources use, e.g., "cainjector.name" which resolves
     to the value "cainjector").
     +docs:property
     nameOverride: "my-cert-manager"
