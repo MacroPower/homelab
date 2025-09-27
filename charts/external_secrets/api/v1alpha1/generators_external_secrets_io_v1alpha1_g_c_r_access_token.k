@@ -56,9 +56,12 @@ schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuth:
         secret ref
     workloadIdentity : GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentity, default is Undefined, optional
         workload identity
+    workloadIdentityFederation : GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederation, default is Undefined, optional
+        workload identity federation
     """
     secretRef?: GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthSecretRef
     workloadIdentity?: GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentity
+    workloadIdentityFederation?: GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederation
 
 schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthSecretRef:
     r"""
@@ -122,6 +125,143 @@ schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentity
 
     clusterProjectID?: str
     serviceAccountRef: GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityServiceAccountRef
+
+schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederation:
+    r"""
+    GCPWorkloadIdentityFederation holds the configurations required for generating federated access tokens.
+
+    Attributes
+    ----------
+    audience : str, default is Undefined, optional
+        audience is the Secure Token Service (STS) audience which contains the resource name for the workload identity pool and the provider identifier in that pool.
+        If specified, Audience found in the external account credential config will be overridden with the configured value.
+        audience must be provided when serviceAccountRef or awsSecurityCredentials is configured.
+    awsSecurityCredentials : GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederationAwsSecurityCredentials, default is Undefined, optional
+        aws security credentials
+    credConfig : GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederationCredConfig, default is Undefined, optional
+        cred config
+    externalTokenEndpoint : str, default is Undefined, optional
+        externalTokenEndpoint is the endpoint explicitly set up to provide tokens, which will be matched against the
+        credential_source.url in the provided credConfig. This field is merely to double-check the external token source
+        URL is having the expected value.
+    serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederationServiceAccountRef, default is Undefined, optional
+        service account ref
+    """
+    audience?: str
+    awsSecurityCredentials?: GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederationAwsSecurityCredentials
+    credConfig?: GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederationCredConfig
+    externalTokenEndpoint?: str
+    serviceAccountRef?: GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederationServiceAccountRef
+
+schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederationAwsSecurityCredentials:
+    r"""
+    awsSecurityCredentials is for configuring AWS region and credentials to use for obtaining the access token,
+    when using the AWS metadata server is not an option.
+
+    Attributes
+    ----------
+    awsCredentialsSecretRef : GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederationAwsSecurityCredentialsAwsCredentialsSecretRef, default is Undefined, required
+        aws credentials secret ref
+    region : str, default is Undefined, required
+        region is for configuring the AWS region to be used.
+    """
+    awsCredentialsSecretRef: GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederationAwsSecurityCredentialsAwsCredentialsSecretRef
+
+    region: str
+
+    check:
+        len(region) <= 50
+        len(region) >= 1
+        _regex_match(str(region), r"^[a-z0-9-]+$")
+
+schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederationAwsSecurityCredentialsAwsCredentialsSecretRef:
+    r"""
+    awsCredentialsSecretRef is the reference to the secret which holds the AWS credentials.
+    Secret should be created with below names for keys
+    - aws_access_key_id: Access Key ID, which is the unique identifier for the AWS account or the IAM user.
+    - aws_secret_access_key: Secret Access Key, which is used to authenticate requests made to AWS services.
+    - aws_session_token: Session Token, is the short-lived token to authenticate requests made to AWS services.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        name of the secret.
+    namespace : str, default is Undefined, optional
+        namespace in which the secret exists. If empty, secret will looked up in local namespace.
+    """
+    name: str
+
+    namespace?: str
+
+    check:
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederationCredConfig:
+    r"""
+    credConfig holds the configmap reference containing the GCP external account credential configuration in JSON format and the key name containing the json data.
+    For using Kubernetes cluster as the identity provider, use serviceAccountRef instead. Operators mounted serviceaccount token cannot be used as the token source, instead
+    serviceAccountRef must be used by providing operators service account details.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key name holding the external account credential config.
+    name : str, default is Undefined, required
+        name of the configmap.
+    namespace : str, default is Undefined, optional
+        namespace in which the configmap exists. If empty, configmap will looked up in local namespace.
+    """
+    key: str
+
+    name: str
+
+    namespace?: str
+
+    check:
+        len(key) <= 253
+        len(key) >= 1
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$")
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederationServiceAccountRef:
+    r"""
+    serviceAccountRef is the reference to the kubernetes ServiceAccount to be used for obtaining the tokens,
+    when Kubernetes is configured as provider in workload identity pool.
+
+    Attributes
+    ----------
+    audiences : [str], default is Undefined, optional
+        Audience specifies the `aud` claim for the service account token
+        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+        then this audiences will be appended to the list
+    name : str, default is Undefined, required
+        The name of the ServiceAccount resource being referred to.
+    namespace : str, default is Undefined, optional
+        Namespace of the resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    audiences?: [str]
+    name: str
+
+    namespace?: str
+
+    check:
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
 schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityServiceAccountRef:
     r"""
