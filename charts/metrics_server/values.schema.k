@@ -47,6 +47,11 @@ schema Values:
     service : ValuesService, optional
     serviceAccount : ValuesServiceAccount, optional
     serviceMonitor : ValuesServiceMonitor, optional
+    tls : ValuesTls, optional
+        # Set via GH action (step "Prepare existing secret test scenario")
+        apiService:
+          insecureSkipTLSVerify: false
+          caBundle: |
     tmpVolume : ValuesTmpVolume, optional
     tolerations : [any], optional
     topologySpreadConstraints : [any], optional
@@ -88,6 +93,7 @@ schema Values:
     service?: ValuesService
     serviceAccount?: ValuesServiceAccount
     serviceMonitor?: ValuesServiceMonitor
+    tls?: ValuesTls
     tmpVolume?: ValuesTmpVolume
     tolerations?: [any]
     topologySpreadConstraints?: [any]
@@ -119,7 +125,7 @@ schema ValuesAddonResizerImage:
     Attributes
     ----------
     repository : str, optional, default is "registry.k8s.io/autoscaling/addon-resizer"
-    tag : str, optional, default is "1.8.21"
+    tag : str, optional, default is "1.8.23"
     """
     [...str]: any
     repository?: str
@@ -388,11 +394,13 @@ schema ValuesPodDisruptionBudget:
         https://kubernetes.io/docs/tasks/run-application/configure-pdb/
     maxUnavailable : any, optional, default is ""
     minAvailable : any, optional, default is ""
+    unhealthyPodEvictionPolicy : any, optional, default is ""
     """
     [...str]: any
     enabled?: bool
     maxUnavailable?: any
     minAvailable?: any
+    unhealthyPodEvictionPolicy?: any
 
 schema ValuesPodLabels:
     r"""
@@ -604,6 +612,123 @@ schema ValuesServiceMonitorAdditionalLabels:
     ValuesServiceMonitorAdditionalLabels
     """
     [...str]: any
+
+schema ValuesTls:
+    r"""
+    # Set via GH action (step "Prepare existing secret test scenario")
+    apiService:
+      insecureSkipTLSVerify: false
+      caBundle: |
+
+    Attributes
+    ----------
+    certManager : ValuesTlsCertManager, optional
+    clusterDomain : str, optional, default is "cluster.local"
+        Kubernetes cluster domain. Used to configure Subject Alt Names for the certificate
+    existingSecret : ValuesTlsExistingSecret, optional
+    helm : ValuesTlsHelm, optional
+    $type : str, optional, default is "metrics-server"
+        Set the TLS method to use. Supported values:
+        - `metrics-server` : Metrics-server will generate a self-signed certificate
+        - `helm`           : Helm will generate a self-signed certificate
+        - `cert-manager`   : Use cert-manager.io to create and maintain the certificate
+        - `existingSecret` : Reuse an existing secret. No new secret will be created
+    """
+    [...str]: any
+    certManager?: ValuesTlsCertManager
+    clusterDomain?: str
+    existingSecret?: ValuesTlsExistingSecret
+    helm?: ValuesTlsHelm
+    $type?: str
+
+schema ValuesTlsCertManager:
+    r"""
+    ValuesTlsCertManager
+
+    Attributes
+    ----------
+    addInjectorAnnotations : bool, optional, default is True
+        Automatically add the cert-manager.io/inject-ca-from annotation to the APIService resource.
+        See https://cert-manager.io/docs/concepts/ca-injector
+    annotations : ValuesTlsCertManagerAnnotations, optional
+        Add extra annotations to the Certificate resource
+    duration : str, optional, default is ""
+        Set the requested duration (i.e. lifetime) of the Certificate.
+        See https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec
+    existingIssuer : ValuesTlsCertManagerExistingIssuer, optional
+    labels : ValuesTlsCertManagerLabels, optional
+        Add extra labels to the Certificate resource
+    renewBefore : str, optional, default is ""
+        How long before the currently issued certificate’s expiry cert-manager should renew the certificate.
+        See https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec
+    """
+    [...str]: any
+    addInjectorAnnotations?: bool
+    annotations?: ValuesTlsCertManagerAnnotations
+    duration?: str
+    existingIssuer?: ValuesTlsCertManagerExistingIssuer
+    labels?: ValuesTlsCertManagerLabels
+    renewBefore?: str
+
+schema ValuesTlsCertManagerAnnotations:
+    r"""
+    Add extra annotations to the Certificate resource
+    """
+    [...str]: any
+
+schema ValuesTlsCertManagerExistingIssuer:
+    r"""
+    ValuesTlsCertManagerExistingIssuer
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Use an existing cert-manager issuer
+    kind : str, optional, default is "Issuer"
+        Kind of the existing cert-manager issuer
+    name : str, optional, default is "my-issuer"
+        Name of the existing cert-manager issuer
+    """
+    [...str]: any
+    enabled?: bool
+    kind?: str
+    name?: str
+
+schema ValuesTlsCertManagerLabels:
+    r"""
+    Add extra labels to the Certificate resource
+    """
+    [...str]: any
+
+schema ValuesTlsExistingSecret:
+    r"""
+    ValuesTlsExistingSecret
+
+    Attributes
+    ----------
+    lookup : bool, optional, default is True
+        Use helm lookup function to provision `apiService.caBundle`
+    name : str, optional, default is ""
+        Name of the existing Secret to use for TLS
+    """
+    [...str]: any
+    lookup?: bool
+    name?: str
+
+schema ValuesTlsHelm:
+    r"""
+    ValuesTlsHelm
+
+    Attributes
+    ----------
+    certDurationDays : int, optional, default is 365
+        Cert validity duration in days
+    lookup : bool, optional, default is True
+        Use helm lookup function to reuse Secret created in previous helm install
+    """
+    [...str]: any
+    certDurationDays?: int
+    lookup?: bool
 
 schema ValuesTmpVolume:
     r"""
