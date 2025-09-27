@@ -51,7 +51,7 @@ schema ValuesImage:
     pullPolicy : str, optional, default is "IfNotPresent"
         digest: sha256:1234567
     repository : str, optional, default is "ghcr.io/stakater/reloader"
-    tag : str, optional, default is "v1.4.6"
+    tag : str, optional, default is "v1.4.8"
     """
     [...str]: any
     name?: str
@@ -92,7 +92,11 @@ schema ValuesReloader:
         Set to true to enable pprof for profiling
     ignoreConfigMaps : bool, optional, default is False
     ignoreCronJobs : bool, optional, default is False
+        Set to true to exclude CronJob workloads from automatic reload monitoring
+        Useful when you don't want CronJobs to be restarted when their referenced ConfigMaps/Secrets change
     ignoreJobs : bool, optional, default is False
+        Set to true to exclude Job workloads from automatic reload monitoring
+        Useful when you don't want Jobs to be restarted when their referenced ConfigMaps/Secrets change
     ignoreNamespaces : str, optional, default is ""
     ignoreSecrets : bool, optional, default is False
     isArgoRollouts : bool, optional, default is False
@@ -124,8 +128,6 @@ schema ValuesReloader:
     syncAfterRestart : bool, optional, default is False
     verticalPodAutoscaler : ValuesReloaderVerticalPodAutoscaler, optional
         Enable vertical pod autoscaler
-    volumeMounts : [any], optional
-    volumes : [any], optional
     watchGlobally : bool, optional, default is True
     webhookUrl : str, optional, default is ""
     """
@@ -163,8 +165,6 @@ schema ValuesReloader:
     serviceMonitor?: ValuesReloaderServiceMonitor
     syncAfterRestart?: bool
     verticalPodAutoscaler?: ValuesReloaderVerticalPodAutoscaler
-    volumeMounts?: [any]
-    volumes?: [any]
     watchGlobally?: bool
     webhookUrl?: str
 
@@ -196,6 +196,8 @@ schema ValuesReloaderDeployment:
                     operator: "Exists"
     annotations : ValuesReloaderDeploymentAnnotations, optional
     containerSecurityContext : ValuesReloaderDeploymentContainerSecurityContext, optional
+    dnsConfig : ValuesReloaderDeploymentDnsConfig, optional
+        Specifies the deployment DNS configuration.
     env : ValuesReloaderDeploymentEnv, optional
         Support for extra environment variables.
     gomaxprocsOverride : str, optional, default is ""
@@ -245,11 +247,14 @@ schema ValuesReloaderDeployment:
             labelSelector:
               matchLabels:
                 app.kubernetes.io/instance: my-app
+    volumeMounts : [any], optional
+    volumes : [any], optional
     """
     [...str]: any
     affinity?: ValuesReloaderDeploymentAffinity
     annotations?: ValuesReloaderDeploymentAnnotations
     containerSecurityContext?: ValuesReloaderDeploymentContainerSecurityContext
+    dnsConfig?: ValuesReloaderDeploymentDnsConfig
     env?: ValuesReloaderDeploymentEnv
     gomaxprocsOverride?: str
     gomemlimitOverride?: str
@@ -265,6 +270,8 @@ schema ValuesReloaderDeployment:
     securityContext?: ValuesReloaderDeploymentSecurityContext
     tolerations?: [any]
     topologySpreadConstraints?: [any]
+    volumeMounts?: [any]
+    volumes?: [any]
 
 schema ValuesReloaderDeploymentAffinity:
     r"""
@@ -289,6 +296,12 @@ schema ValuesReloaderDeploymentAnnotations:
 schema ValuesReloaderDeploymentContainerSecurityContext:
     r"""
     ValuesReloaderDeploymentContainerSecurityContext
+    """
+    [...str]: any
+
+schema ValuesReloaderDeploymentDnsConfig:
+    r"""
+    Specifies the deployment DNS configuration.
     """
     [...str]: any
 
@@ -327,7 +340,7 @@ schema ValuesReloaderDeploymentLabels:
     ----------
     group : str, optional, default is "com.stakater.platform"
     provider : str, optional, default is "stakater"
-    version : str, optional, default is "v1.4.6"
+    version : str, optional, default is "v1.4.8"
     """
     [...str]: any
     group?: str
