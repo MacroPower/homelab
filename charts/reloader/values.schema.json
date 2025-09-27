@@ -55,7 +55,7 @@
           "type": "string"
         },
         "tag": {
-          "default": "v1.4.6",
+          "default": "v1.4.8",
           "required": [],
           "title": "tag",
           "type": "string"
@@ -121,6 +121,13 @@
               "additionalProperties": true,
               "required": [],
               "title": "containerSecurityContext",
+              "type": "object"
+            },
+            "dnsConfig": {
+              "additionalProperties": true,
+              "description": "Specifies the deployment DNS configuration.",
+              "required": [],
+              "title": "dnsConfig",
               "type": "object"
             },
             "env": {
@@ -189,7 +196,7 @@
                   "type": "string"
                 },
                 "version": {
-                  "default": "v1.4.6",
+                  "default": "v1.4.8",
                   "required": [],
                   "title": "version",
                   "type": "string"
@@ -310,6 +317,22 @@
               "required": [],
               "title": "topologySpreadConstraints",
               "type": "array"
+            },
+            "volumeMounts": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "volumeMounts",
+              "type": "array"
+            },
+            "volumes": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "volumes",
+              "type": "array"
             }
           },
           "required": [],
@@ -345,12 +368,14 @@
         },
         "ignoreCronJobs": {
           "default": false,
+          "description": "Set to true to exclude CronJob workloads from automatic reload monitoring\nUseful when you don't want CronJobs to be restarted when their referenced ConfigMaps/Secrets change",
           "required": [],
           "title": "ignoreCronJobs",
           "type": "boolean"
         },
         "ignoreJobs": {
           "default": false,
+          "description": "Set to true to exclude Job workloads from automatic reload monitoring\nUseful when you don't want Jobs to be restarted when their referenced ConfigMaps/Secrets change",
           "required": [],
           "title": "ignoreJobs",
           "type": "boolean"
@@ -743,22 +768,6 @@
           "required": [],
           "title": "verticalPodAutoscaler",
           "type": "object"
-        },
-        "volumeMounts": {
-          "items": {
-            "required": []
-          },
-          "required": [],
-          "title": "volumeMounts",
-          "type": "array"
-        },
-        "volumes": {
-          "items": {
-            "required": []
-          },
-          "required": [],
-          "title": "volumes",
-          "type": "array"
         },
         "watchGlobally": {
           "default": true,
