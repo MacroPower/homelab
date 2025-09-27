@@ -55,6 +55,9 @@ schema AcmeCertManagerIoV1OrderSpec:
         This field must match the corresponding field on the DER encoded CSR.
     issuerRef : AcmeCertManagerIoV1OrderSpecIssuerRef, default is Undefined, required
         issuer ref
+    profile : str, default is Undefined, optional
+        Profile allows requesting a certificate profile from the ACME server.
+        Supported profiles are listed by the server's ACME directory URL.
     request : str, default is Undefined, required
         Certificate signing request bytes in DER encoding.
         This will be used when finalizing the order.
@@ -66,6 +69,7 @@ schema AcmeCertManagerIoV1OrderSpec:
     ipAddresses?: [str]
     issuerRef: AcmeCertManagerIoV1OrderSpecIssuerRef
 
+    profile?: str
     request: str
 
 schema AcmeCertManagerIoV1OrderSpecIssuerRef:
@@ -182,7 +186,7 @@ schema AcmeCertManagerIoV1OrderStatusAuthorizationsItems0ChallengesItems0:
         Token is the token that must be presented for this challenge.
         This is used to compute the 'key' that must also be presented.
     $type : str, default is Undefined, required
-        Type is the type of challenge being offered, e.g. 'http-01', 'dns-01',
+        Type is the type of challenge being offered, e.g., 'http-01', 'dns-01',
         'tls-sni-01', etc.
         This is the raw value retrieved from the ACME server.
         Only 'http-01' and 'dns-01' are supported by cert-manager, other values
