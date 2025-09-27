@@ -2343,9 +2343,12 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitFilesItems0:
 
     Attributes
     ----------
+    exclude : bool, default is Undefined, optional
+        exclude
     path : str, default is Undefined, required
         path
     """
+    exclude?: bool
     path: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplate:
@@ -6717,9 +6720,12 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
 
     Attributes
     ----------
+    exclude : bool, default is Undefined, optional
+        exclude
     path : str, default is Undefined, required
         path
     """
+    exclude?: bool
     path: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplate:
@@ -10172,6 +10178,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
         api
     insecure : bool, default is Undefined, optional
         insecure
+    labels : [str], default is Undefined, optional
+        labels
     owner : str, default is Undefined, required
         owner
     repo : str, default is Undefined, required
@@ -10182,6 +10190,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     api: str
 
     insecure?: bool
+    labels?: [str]
     owner: str
 
     repo: str
@@ -16153,9 +16162,12 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
 
     Attributes
     ----------
+    exclude : bool, default is Undefined, optional
+        exclude
     path : str, default is Undefined, required
         path
     """
+    exclude?: bool
     path: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplate:
@@ -19608,6 +19620,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
         api
     insecure : bool, default is Undefined, optional
         insecure
+    labels : [str], default is Undefined, optional
+        labels
     owner : str, default is Undefined, required
         owner
     repo : str, default is Undefined, required
@@ -19618,6 +19632,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     api: str
 
     insecure?: bool
+    labels?: [str]
     owner: str
 
     repo: str
@@ -24666,6 +24681,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGitea:
         api
     insecure : bool, default is Undefined, optional
         insecure
+    labels : [str], default is Undefined, optional
+        labels
     owner : str, default is Undefined, required
         owner
     repo : str, default is Undefined, required
@@ -24676,6 +24693,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestGitea:
     api: str
 
     insecure?: bool
+    labels?: [str]
     owner: str
 
     repo: str
