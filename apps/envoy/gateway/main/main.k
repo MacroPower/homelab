@@ -25,7 +25,7 @@ app = envoy_gateway_base.app | {
             secretName = "cluster-wildcard"
             issuerRef: {
                 kind = "ClusterIssuer"
-                name = "cloudflare-issuer"
+                name = "cloudflare-macro-network-issuer"
             }
         }
     }

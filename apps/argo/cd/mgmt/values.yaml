@@ -15,7 +15,7 @@ configs:
     resource.compareoptions: |
       ignoreDifferencesOnResourceUpdates: true
 
-    url: https://argo-cd.mgmt.cin.macro.network
+    url: https://argo-cd.jacobcolvin.com
     oidc.config: |
       name: Auth0
       issuer: https://auth.jacobcolvin.com/

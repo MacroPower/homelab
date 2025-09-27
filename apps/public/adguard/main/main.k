@@ -32,6 +32,7 @@ app = public_adguard_base.app | {
                 dns.upstream_dns = [
                     "https://dns.mullvad.net/dns-query"
                     "[/macro.network/]tcp://10.10.0.1"
+                    "[/jacobcolvin.com/]tcp://10.10.0.1"
                     "[/raw.githubusercontent.com/]tcp://10.10.0.1"
                 ]
                 dns.bootstrap_dns = ["10.10.0.1"]

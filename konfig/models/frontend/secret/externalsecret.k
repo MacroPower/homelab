@@ -26,7 +26,7 @@ schema ExternalSecret(common.Metadata):
     data?: {str:ExternalSecretData}
     target?: externalsecretsv1beta1.ExternalSecretsIoV1beta1ExternalSecretSpecTarget
 
-    getSecretKeyRef: (str) -> common.SecretKeyReference = lambda dataKey: str -> common.SecretKeyReference {
+    getSecretKeyRef: (str) -> {str:} = lambda dataKey: str -> {str:} {
         assert data[dataKey], "referenced data does not exist"
         {
             name = name

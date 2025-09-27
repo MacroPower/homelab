@@ -24,9 +24,11 @@ mixin RouteMixin for protocol.AppProtocol:
                 } | _route)
                 spec: {
                     if _route?.hostnames:
+                        hostnames = _route.hostnames
+                    elif _route?.names:
                         hostnames = [
                             _domainNameBuilder(config | {host.name = _hostname})
-                            for _, _hostname in _route.hostnames
+                            for _, _hostname in _route.names
                         ]
                     else:
                         hostnames = [_domainNameBuilder(config | {host.name = config.name})]

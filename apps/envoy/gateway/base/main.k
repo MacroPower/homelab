@@ -7,6 +7,7 @@ import envoy
 import charts.envoy_gateway
 import charts.envoy_gateway.api.v1 as gatewayv1
 import charts.envoy_gateway.api.v1alpha1 as gatewayv1alpha1
+import charts.cert_manager.api.v1 as certmanagerv1
 
 _values = files.read_yaml(file.current(), "values.yaml")
 
@@ -81,6 +82,40 @@ _clusterGateway = gatewayv1.Gateway {
     }
 }
 
+_publicGateway = gatewayv1.Gateway {
+    metadata.name = "public-gateway"
+    spec: {
+        gatewayClassName = "envoy-gateway"
+        infrastructure = {
+            parametersRef = {
+                group = "gateway.envoyproxy.io"
+                kind = "EnvoyProxy"
+                name = "envoy-proxy"
+            }
+        }
+        listeners = [
+            {
+                name = "http"
+                protocol = "HTTP"
+                port = 80
+                allowedRoutes.namespaces.from = "Same"
+            }
+            {
+                name = "https"
+                protocol = "HTTPS"
+                port = 443
+                allowedRoutes.namespaces.from = "All"
+                tls.certificateRefs = [
+                    {
+                        kind = "Secret"
+                        name = "public-wildcard"
+                    }
+                ]
+            }
+        ]
+    }
+}
+
 app = frontend.App {
     name = "gateway"
     tenantName = envoy.tenant.name
@@ -93,5 +128,21 @@ app = frontend.App {
         proxy = _gp
         gatewayClass = _gwc
         clusterGateway = _clusterGateway
+        publicGateway = _publicGateway
+    }
+
+    extraResources.envoyPublicGatewayCertificate = certmanagerv1.Certificate {
+        metadata.name = "public-wildcard"
+        spec: {
+            dnsNames = [
+                "jacobcolvin.com"
+                "*.jacobcolvin.com"
+            ]
+            secretName = "public-wildcard"
+            issuerRef: {
+                kind = "ClusterIssuer"
+                name = "cloudflare-jacobcolvin-com-issuer"
+            }
+        }
     }
 }

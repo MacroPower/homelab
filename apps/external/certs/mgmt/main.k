@@ -17,7 +17,7 @@ app = external_certs_base.app | {
             secretName = "cluster-ingress"
             issuerRef: {
                 kind = "ClusterIssuer"
-                name = "cloudflare-issuer"
+                name = "cloudflare-macro-network-issuer"
             }
         }
     }

@@ -2,7 +2,7 @@ import file
 import json
 
 import konfig.models.frontend.secret
-import konfig.models.frontend.ingress
+import konfig.models.frontend.gateway
 import konfig.files
 import konfig.objects
 
@@ -120,13 +120,15 @@ app = argo_cd_base.app | {
     extraResources: {
         redis = _dragonfly
     }
-    ingresses.main = ingress.Ingress {
-        className = "cilium"
-        rules.main = {
-            httpPaths.main.backend.service = {
-                name = "argo-cd-server"
-                port.name = "http"
-            }
+    routes.argoCD = gateway.Route {
+        hostnames = ["argo-cd.jacobcolvin.com"]
+        gatewayRef = {
+            name = "public-gateway"
+            namespace = "envoy-gateway"
+        }
+        services.server = {
+            name = "argo-cd-server"
+            port = 80
         }
     }
 }

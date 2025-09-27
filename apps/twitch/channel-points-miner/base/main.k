@@ -70,7 +70,7 @@ app = frontend.App {
     }
 
     routes.tcpm = gateway.Route {
-        hostnames = ["tcpm"]
+        names = ["tcpm"]
         gatewayRef = twitch.tenant.gateways.default
         services.tcpm = {
             name = "twitch-channel-points-miner"

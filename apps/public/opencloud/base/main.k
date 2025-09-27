@@ -128,7 +128,7 @@ app = frontend.App {
     }
     routes.collabora = gateway.Route {
         name = "public-collabora"
-        hostnames = ["collabora"]
+        names = ["collabora"]
         gatewayRef = public.tenant.gateways.default
         services.collabora = {
             name = "opencloud-collabora"

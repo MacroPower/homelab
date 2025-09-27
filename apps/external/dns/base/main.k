@@ -15,7 +15,9 @@ cloudflareCreds = secret.ExternalSecret {
     name = "cloudflare-credentials"
     data = {
         CLOUDFLARE_API_EMAIL = {}
-        CLOUDFLARE_API_TOKEN = {}
+        CLOUDFLARE_API_TOKEN = {
+            remoteRef.key = "CLOUDFLARE_MACRO_NETWORK_API_TOKEN"
+        }
     }
 }
 

@@ -10,14 +10,10 @@
         href: https://unifi.cin.macro.network/
         icon: unifi
         description: Ubiquiti UniFi Console
-    - Auth0:
-        href: https://manage.auth0.com/dashboard/us/colvin/
-        icon: si-auth0
-        description: Authentication & Authorization Platform
-    - CloudFlare:
-        href: https://dash.cloudflare.com/
-        icon: cloudflare
-        description: CDN, DNS, WAF, and more
+    - Home Assistant:
+        href: https://hass.cin.macro.network/
+        icon: home-assistant
+        description: Home Automation Platform
 - Observability:
     - Grafana:
         href: https://macropower.grafana.net/
@@ -27,3 +23,20 @@
         href: https://platform.robusta.dev/
         icon: https://raw.githubusercontent.com/robusta-dev/robusta/72edd297ac8c219cbfa901bbdfe6cf3f53c7f145/logos/logo-only.png
         description: Unified Alerting, Notifications & Remediation
+- Cluster Management:
+    - Argo CD:
+        href: https://argo-cd.jacobcolvin.com/
+        icon: argo-cd
+        description: Declarative GitOps CD
+    - Auth0:
+        href: https://manage.auth0.com/dashboard/us/colvin/
+        icon: si-auth0
+        description: Authentication & Authorization Platform
+    - CloudFlare:
+        href: https://dash.cloudflare.com/
+        icon: cloudflare
+        description: CDN, DNS, WAF, and more
+    - Doppler:
+        href: https://dashboard.doppler.com/
+        icon: doppler
+        description: Secrets Management

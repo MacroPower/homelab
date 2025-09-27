@@ -3,8 +3,8 @@ resource "auth0_client" "argo_cd_client" {
   name                = "Argo CD"
   description         = "Argo CD"
   app_type            = "spa"
-  initiate_login_uri = "https://argo-cd.mgmt.cin.macro.network/login"
-  callbacks           = ["https://argo-cd.mgmt.cin.macro.network/auth/callback"]
+  initiate_login_uri = "https://argo-cd.jacobcolvin.com/login"
+  callbacks           = ["https://argo-cd.jacobcolvin.com/auth/callback"]
 
   jwt_configuration {
     alg = "RS256" # Argo supports "PS256" but free auth0 doesn't.
