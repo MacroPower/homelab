@@ -17,9 +17,6 @@ schema Values:
     cronJobApiVersion : str, optional, default is "batch/v1"
     deschedulerPolicy : ValuesDeschedulerPolicy, optional
         deschedulerPolicy contains the policies the descheduler will execute.
-        To use policies stored in an existing configMap use:
-        NOTE: The name of the cm should comply to {{ template "descheduler.fullname" . }}
-        deschedulerPolicy: {}
     deschedulerPolicyAPIVersion : str, optional, default is "descheduler/v1alpha2"
         Recommended to use the latest Policy API version supported by the Descheduler app version
     deschedulingInterval : str, optional, default is "5m"
@@ -38,11 +35,14 @@ schema Values:
         NOTE: Leader election can't be activated if DryRun enabled
     livenessProbe : ValuesLivenessProbe, optional
     nameOverride : str, optional, default is ""
+    namespaceOverride : str, optional, default is ""
+        Override the deployment namespace; defaults to .Release.Namespace
     nodeSelector : ValuesNodeSelector, optional
     podAnnotations : ValuesPodAnnotations, optional
     podLabels : ValuesPodLabels, optional
     podSecurityContext : ValuesPodSecurityContext, optional
         podSecurityContext -- [Security context for pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
+    ports : [ValuesPortsItems0], optional
     priorityClassName : str, optional, default is "system-cluster-critical"
     rbac : ValuesRbac, optional
     replicas : int, optional, default is 1
@@ -103,10 +103,12 @@ schema Values:
     leaderElection?: ValuesLeaderElection
     livenessProbe?: ValuesLivenessProbe
     nameOverride?: str
+    namespaceOverride?: str
     nodeSelector?: ValuesNodeSelector
     podAnnotations?: ValuesPodAnnotations
     podLabels?: ValuesPodLabels
     podSecurityContext?: ValuesPodSecurityContext
+    ports?: [ValuesPortsItems0]
     priorityClassName?: str
     rbac?: ValuesRbac
     replicas?: int
@@ -146,9 +148,6 @@ schema ValuesCommonLabels:
 schema ValuesDeschedulerPolicy:
     r"""
     deschedulerPolicy contains the policies the descheduler will execute.
-    To use policies stored in an existing configMap use:
-    NOTE: The name of the cm should comply to {{ template "descheduler.fullname" . }}
-    deschedulerPolicy: {}
 
     Attributes
     ----------
@@ -156,9 +155,8 @@ schema ValuesDeschedulerPolicy:
         nodeSelector: "key1=value1,key2=value2"
         maxNoOfPodsToEvictPerNode: 10
         maxNoOfPodsToEvictPerNamespace: 10
-        ignorePvcPods: true
-        evictLocalStoragePods: true
-        evictDaemonSetPods: true
+        metricsProviders:
+        - source: KubernetesMetrics
         tracing:
           collectorEndpoint: otel-collector.observability.svc.cluster.local:4317
           transportCert: ""
@@ -378,6 +376,19 @@ schema ValuesPodSecurityContext:
     """
     [...str]: any
 
+schema ValuesPortsItems0:
+    r"""
+    ValuesPortsItems0
+
+    Attributes
+    ----------
+    containerPort : int, optional, default is 10258
+    $protocol : str, optional, default is "TCP"
+    """
+    [...str]: any
+    containerPort?: int
+    $protocol?: str
+
 schema ValuesRbac:
     r"""
     ValuesRbac
@@ -396,10 +407,25 @@ schema ValuesResources:
 
     Attributes
     ----------
+    limits : ValuesResourcesLimits, optional
     requests : ValuesResourcesRequests, optional
     """
     [...str]: any
+    limits?: ValuesResourcesLimits
     requests?: ValuesResourcesRequests
+
+schema ValuesResourcesLimits:
+    r"""
+    ValuesResourcesLimits
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "500m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
 
 schema ValuesResourcesRequests:
     r"""

@@ -62,7 +62,7 @@ charts: helm.Charts = {
     descheduler: {
         chart = "descheduler"
         repoURL = "https://kubernetes-sigs.github.io/descheduler/"
-        targetRevision = "0.30.1"
+        targetRevision = "0.33.0"
         schemaGenerator = "AUTO"
     }
     metrics_server: {
