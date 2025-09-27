@@ -14,12 +14,12 @@ schema Chart(helm.Chart):
     values : Values | any, optional, default is {clusterName = "kcl", sinksConfig = [{robusta_sink = {name = "robusta_ui_sink"}}]}
     chart : str, required, default is "robusta"
     repoURL : str, required, default is "https://robusta-charts.storage.googleapis.com"
-    targetRevision : str, optional, default is "0.28.0"
+    targetRevision : str, optional, default is "0.28.1"
     """
     values?: Values | any = {clusterName = "kcl", sinksConfig = [{
         robusta_sink = {name = "robusta_ui_sink"}
     }]}
     chart: str = "robusta"
     repoURL: str = "https://robusta-charts.storage.googleapis.com"
-    targetRevision?: str = "0.28.0"
+    targetRevision?: str = "0.28.1"
 
