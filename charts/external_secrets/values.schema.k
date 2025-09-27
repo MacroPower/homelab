@@ -20,25 +20,30 @@ schema Values:
     deploymentAnnotations : ValuesDeploymentAnnotations, optional
     dnsConfig : ValuesDnsConfig, optional
     dnsPolicy : str, optional
+    enableHTTP2 : bool, optional
     extendedMetricLabels : bool, optional
     extraArgs : ValuesExtraArgs, optional
     extraContainers : any, optional
     extraEnv : any, optional
+    extraInitContainers : any, optional
     extraObjects : any, optional
     extraVolumeMounts : any, optional
     extraVolumes : any, optional
     fullnameOverride : str, optional
     global : ValuesGlobal, optional
+    grafanaDashboard : ValuesGrafanaDashboard, optional
     hostNetwork : bool, optional
     image : ValuesImage, optional
     imagePullSecrets : any, optional
     installCRDs : bool, optional
     leaderElect : bool, optional
+    livenessProbe : ValuesLivenessProbe, optional
     log : ValuesLog, optional
     metrics : ValuesMetrics, optional
     nameOverride : str, optional
     namespaceOverride : str, optional
     nodeSelector : ValuesNodeSelector, optional
+    openshiftFinalizers : bool, optional
     podAnnotations : ValuesPodAnnotations, optional
     podDisruptionBudget : ValuesPodDisruptionBudget, optional
     podLabels : ValuesPodLabels, optional
@@ -46,6 +51,8 @@ schema Values:
     podSpecExtra : ValuesPodSpecExtra, optional
     priorityClassName : str, optional
     processClusterExternalSecret : bool, optional
+    processClusterGenerator : bool, optional
+    processClusterPushSecret : bool, optional
     processClusterStore : bool, optional
     processPushSecret : bool, optional
     rbac : ValuesRbac, optional
@@ -58,6 +65,8 @@ schema Values:
     service : ValuesService, optional
     serviceAccount : ValuesServiceAccount, optional
     serviceMonitor : ValuesServiceMonitor, optional
+    strategy : ValuesStrategy, optional
+    systemAuthDelegator : bool, optional
     tolerations : any, optional
     topologySpreadConstraints : any, optional
     webhook : ValuesWebhook, optional
@@ -73,25 +82,30 @@ schema Values:
     deploymentAnnotations?: ValuesDeploymentAnnotations
     dnsConfig?: ValuesDnsConfig
     dnsPolicy?: str
+    enableHTTP2?: bool
     extendedMetricLabels?: bool
     extraArgs?: ValuesExtraArgs
     extraContainers?: any
     extraEnv?: any
+    extraInitContainers?: any
     extraObjects?: any
     extraVolumeMounts?: any
     extraVolumes?: any
     fullnameOverride?: str
     global?: ValuesGlobal
+    grafanaDashboard?: ValuesGrafanaDashboard
     hostNetwork?: bool
     image?: ValuesImage
     imagePullSecrets?: any
     installCRDs?: bool
     leaderElect?: bool
+    livenessProbe?: ValuesLivenessProbe
     log?: ValuesLog
     metrics?: ValuesMetrics
     nameOverride?: str
     namespaceOverride?: str
     nodeSelector?: ValuesNodeSelector
+    openshiftFinalizers?: bool
     podAnnotations?: ValuesPodAnnotations
     podDisruptionBudget?: ValuesPodDisruptionBudget
     podLabels?: ValuesPodLabels
@@ -99,6 +113,8 @@ schema Values:
     podSpecExtra?: ValuesPodSpecExtra
     priorityClassName?: str
     processClusterExternalSecret?: bool
+    processClusterGenerator?: bool
+    processClusterPushSecret?: bool
     processClusterStore?: bool
     processPushSecret?: bool
     rbac?: ValuesRbac
@@ -111,6 +127,8 @@ schema Values:
     service?: ValuesService
     serviceAccount?: ValuesServiceAccount
     serviceMonitor?: ValuesServiceMonitor
+    strategy?: ValuesStrategy
+    systemAuthDelegator?: bool
     tolerations?: any
     topologySpreadConstraints?: any
     webhook?: ValuesWebhook
@@ -128,8 +146,10 @@ schema ValuesBitwardenSdkServer:
     Attributes
     ----------
     enabled : bool, optional
+    namespaceOverride : str, optional
     """
     enabled?: bool
+    namespaceOverride?: str
 
 schema ValuesCertController:
     r"""
@@ -142,6 +162,7 @@ schema ValuesCertController:
     deploymentAnnotations : ValuesCertControllerDeploymentAnnotations, optional
     extraArgs : ValuesCertControllerExtraArgs, optional
     extraEnv : any, optional
+    extraInitContainers : any, optional
     extraVolumeMounts : any, optional
     extraVolumes : any, optional
     fullnameOverride : str, optional
@@ -165,6 +186,7 @@ schema ValuesCertController:
     revisionHistoryLimit : int, optional
     securityContext : ValuesCertControllerSecurityContext, optional
     serviceAccount : ValuesCertControllerServiceAccount, optional
+    strategy : ValuesCertControllerStrategy, optional
     tolerations : any, optional
     topologySpreadConstraints : any, optional
     """
@@ -173,6 +195,7 @@ schema ValuesCertController:
     deploymentAnnotations?: ValuesCertControllerDeploymentAnnotations
     extraArgs?: ValuesCertControllerExtraArgs
     extraEnv?: any
+    extraInitContainers?: any
     extraVolumeMounts?: any
     extraVolumes?: any
     fullnameOverride?: str
@@ -196,6 +219,7 @@ schema ValuesCertController:
     revisionHistoryLimit?: int
     securityContext?: ValuesCertControllerSecurityContext
     serviceAccount?: ValuesCertControllerServiceAccount
+    strategy?: ValuesCertControllerStrategy
     tolerations?: any
     topologySpreadConstraints?: any
 
@@ -306,10 +330,12 @@ schema ValuesCertControllerPodDisruptionBudget:
     Attributes
     ----------
     enabled : bool, optional
-    minAvailable : int, optional
+    minAvailable : int | str, optional
+    nameOverride : str, optional
     """
     enabled?: bool
-    minAvailable?: int
+    minAvailable?: int | str
+    nameOverride?: str
 
 schema ValuesCertControllerPodLabels:
     r"""
@@ -427,6 +453,12 @@ schema ValuesCertControllerServiceAccountExtraLabels:
     """
     [...str]: any
 
+schema ValuesCertControllerStrategy:
+    r"""
+    ValuesCertControllerStrategy
+    """
+    [...str]: any
+
 schema ValuesCommonLabels:
     r"""
     ValuesCommonLabels
@@ -443,6 +475,7 @@ schema ValuesCrds:
     conversion : ValuesCrdsConversion, optional
     createClusterExternalSecret : bool, optional
     createClusterGenerator : bool, optional
+    createClusterPushSecret : bool, optional
     createClusterSecretStore : bool, optional
     createPushSecret : bool, optional
     """
@@ -450,6 +483,7 @@ schema ValuesCrds:
     conversion?: ValuesCrdsConversion
     createClusterExternalSecret?: bool
     createClusterGenerator?: bool
+    createClusterPushSecret?: bool
     createClusterSecretStore?: bool
     createPushSecret?: bool
 
@@ -537,6 +571,36 @@ schema ValuesGlobalNodeSelector:
     """
     [...str]: any
 
+schema ValuesGrafanaDashboard:
+    r"""
+    ValuesGrafanaDashboard
+
+    Attributes
+    ----------
+    annotations : ValuesGrafanaDashboardAnnotations, optional
+    enabled : bool, optional
+    extraLabels : ValuesGrafanaDashboardExtraLabels, optional
+    sidecarLabel : str, optional
+    sidecarLabelValue : str, optional
+    """
+    annotations?: ValuesGrafanaDashboardAnnotations
+    enabled?: bool
+    extraLabels?: ValuesGrafanaDashboardExtraLabels
+    sidecarLabel?: str
+    sidecarLabelValue?: str
+
+schema ValuesGrafanaDashboardAnnotations:
+    r"""
+    ValuesGrafanaDashboardAnnotations
+    """
+    [...str]: any
+
+schema ValuesGrafanaDashboardExtraLabels:
+    r"""
+    ValuesGrafanaDashboardExtraLabels
+    """
+    [...str]: any
+
 schema ValuesImage:
     r"""
     ValuesImage
@@ -552,6 +616,42 @@ schema ValuesImage:
     pullPolicy?: str
     repository?: str
     tag?: str
+
+schema ValuesLivenessProbe:
+    r"""
+    ValuesLivenessProbe
+
+    Attributes
+    ----------
+    address : str, optional
+    enabled : bool, optional
+    failureThreshold : int, optional
+    httpGet : ValuesLivenessProbeHttpGet, optional
+    initialDelaySeconds : int, optional
+    periodSeconds : int, optional
+    successThreshold : int, optional
+    timeoutSeconds : int, optional
+    """
+    address?: str
+    enabled?: bool
+    failureThreshold?: int
+    httpGet?: ValuesLivenessProbeHttpGet
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+
+schema ValuesLivenessProbeHttpGet:
+    r"""
+    ValuesLivenessProbeHttpGet
+
+    Attributes
+    ----------
+    path : str, optional
+    port : str, optional
+    """
+    path?: str
+    port?: str
 
 schema ValuesLog:
     r"""
@@ -584,8 +684,26 @@ schema ValuesMetricsListen:
     Attributes
     ----------
     port : int, optional
+    secure : ValuesMetricsListenSecure, optional
     """
     port?: int
+    secure?: ValuesMetricsListenSecure
+
+schema ValuesMetricsListenSecure:
+    r"""
+    ValuesMetricsListenSecure
+
+    Attributes
+    ----------
+    certDir : str, optional
+    certFile : str, optional
+    enabled : bool, optional
+    keyFile : str, optional
+    """
+    certDir?: str
+    certFile?: str
+    enabled?: bool
+    keyFile?: str
 
 schema ValuesMetricsService:
     r"""
@@ -626,10 +744,12 @@ schema ValuesPodDisruptionBudget:
     Attributes
     ----------
     enabled : bool, optional
-    minAvailable : int, optional
+    minAvailable : int | str, optional
+    nameOverride : str, optional
     """
     enabled?: bool
-    minAvailable?: int
+    minAvailable?: int | str
+    nameOverride?: str
 
 schema ValuesPodLabels:
     r"""
@@ -659,9 +779,13 @@ schema ValuesRbac:
 
     Attributes
     ----------
+    aggregateToEdit : bool, optional
+    aggregateToView : bool, optional
     create : bool, optional
     servicebindings : ValuesRbacServicebindings, optional
     """
+    aggregateToEdit?: bool
+    aggregateToView?: bool
     create?: bool
     servicebindings?: ValuesRbacServicebindings
 
@@ -778,6 +902,7 @@ schema ValuesServiceMonitor:
     metricRelabelings : any, optional
     namespace : str, optional
     relabelings : any, optional
+    renderMode : "skipIfMissing" | "failIfMissing" | "alwaysRender", optional
     scrapeTimeout : str, optional
     """
     additionalLabels?: ValuesServiceMonitorAdditionalLabels
@@ -787,11 +912,18 @@ schema ValuesServiceMonitor:
     metricRelabelings?: any
     namespace?: str
     relabelings?: any
+    renderMode?: "skipIfMissing" | "failIfMissing" | "alwaysRender"
     scrapeTimeout?: str
 
 schema ValuesServiceMonitorAdditionalLabels:
     r"""
     ValuesServiceMonitorAdditionalLabels
+    """
+    [...str]: any
+
+schema ValuesStrategy:
+    r"""
+    ValuesStrategy
     """
     [...str]: any
 
@@ -802,6 +934,7 @@ schema ValuesWebhook:
     Attributes
     ----------
     affinity : ValuesWebhookAffinity, optional
+    annotations : ValuesWebhookAnnotations, optional
     certCheckInterval : str, optional
     certDir : str, optional
     certManager : ValuesWebhookCertManager, optional
@@ -809,6 +942,7 @@ schema ValuesWebhook:
     deploymentAnnotations : ValuesWebhookDeploymentAnnotations, optional
     extraArgs : ValuesWebhookExtraArgs, optional
     extraEnv : any, optional
+    extraInitContainers : any, optional
     extraVolumeMounts : any, optional
     extraVolumes : any, optional
     failurePolicy : str, optional
@@ -836,10 +970,12 @@ schema ValuesWebhook:
     securityContext : ValuesWebhookSecurityContext, optional
     service : ValuesWebhookService, optional
     serviceAccount : ValuesWebhookServiceAccount, optional
+    strategy : ValuesWebhookStrategy, optional
     tolerations : any, optional
     topologySpreadConstraints : any, optional
     """
     affinity?: ValuesWebhookAffinity
+    annotations?: ValuesWebhookAnnotations
     certCheckInterval?: str
     certDir?: str
     certManager?: ValuesWebhookCertManager
@@ -847,6 +983,7 @@ schema ValuesWebhook:
     deploymentAnnotations?: ValuesWebhookDeploymentAnnotations
     extraArgs?: ValuesWebhookExtraArgs
     extraEnv?: any
+    extraInitContainers?: any
     extraVolumeMounts?: any
     extraVolumes?: any
     failurePolicy?: str
@@ -874,12 +1011,19 @@ schema ValuesWebhook:
     securityContext?: ValuesWebhookSecurityContext
     service?: ValuesWebhookService
     serviceAccount?: ValuesWebhookServiceAccount
+    strategy?: ValuesWebhookStrategy
     tolerations?: any
     topologySpreadConstraints?: any
 
 schema ValuesWebhookAffinity:
     r"""
     ValuesWebhookAffinity
+    """
+    [...str]: any
+
+schema ValuesWebhookAnnotations:
+    r"""
+    ValuesWebhookAnnotations
     """
     [...str]: any
 
@@ -908,14 +1052,14 @@ schema ValuesWebhookCertManagerCert:
     duration : str, optional
     issuerRef : ValuesWebhookCertManagerCertIssuerRef, optional
     renewBefore : str, optional
-    revisionHistoryLimit : str, optional
+    revisionHistoryLimit : int, optional
     """
     annotations?: ValuesWebhookCertManagerCertAnnotations
     create?: bool
     duration?: str
     issuerRef?: ValuesWebhookCertManagerCertIssuerRef
     renewBefore?: str
-    revisionHistoryLimit?: str
+    revisionHistoryLimit?: int
 
 schema ValuesWebhookCertManagerCertAnnotations:
     r"""
@@ -1038,10 +1182,12 @@ schema ValuesWebhookPodDisruptionBudget:
     Attributes
     ----------
     enabled : bool, optional
-    minAvailable : int, optional
+    minAvailable : int | str, optional
+    nameOverride : str, optional
     """
     enabled?: bool
-    minAvailable?: int
+    minAvailable?: int | str
+    nameOverride?: str
 
 schema ValuesWebhookPodLabels:
     r"""
@@ -1192,6 +1338,12 @@ schema ValuesWebhookServiceAnnotations:
 schema ValuesWebhookServiceLabels:
     r"""
     ValuesWebhookServiceLabels
+    """
+    [...str]: any
+
+schema ValuesWebhookStrategy:
+    r"""
+    ValuesWebhookStrategy
     """
     [...str]: any
 

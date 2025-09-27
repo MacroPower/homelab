@@ -10,6 +10,10 @@
         "enabled": {
           "required": [],
           "type": "boolean"
+        },
+        "namespaceOverride": {
+          "required": [],
+          "type": "string"
         }
       },
       "required": [],
@@ -34,6 +38,10 @@
           "type": "object"
         },
         "extraEnv": {
+          "required": [],
+          "type": "array"
+        },
+        "extraInitContainers": {
           "required": [],
           "type": "array"
         },
@@ -147,7 +155,14 @@
             },
             "minAvailable": {
               "required": [],
-              "type": "integer"
+              "type": [
+                "integer",
+                "string"
+              ]
+            },
+            "nameOverride": {
+              "required": [],
+              "type": "string"
             }
           },
           "required": [],
@@ -287,6 +302,10 @@
           "required": [],
           "type": "object"
         },
+        "strategy": {
+          "required": [],
+          "type": "object"
+        },
         "tolerations": {
           "required": [],
           "type": "array"
@@ -335,6 +354,10 @@
           "required": [],
           "type": "boolean"
         },
+        "createClusterPushSecret": {
+          "required": [],
+          "type": "boolean"
+        },
         "createClusterSecretStore": {
           "required": [],
           "type": "boolean"
@@ -363,6 +386,10 @@
       "required": [],
       "type": "string"
     },
+    "enableHTTP2": {
+      "required": [],
+      "type": "boolean"
+    },
     "extendedMetricLabels": {
       "required": [],
       "type": "boolean"
@@ -376,6 +403,10 @@
       "type": "array"
     },
     "extraEnv": {
+      "required": [],
+      "type": "array"
+    },
+    "extraInitContainers": {
       "required": [],
       "type": "array"
     },
@@ -433,6 +464,32 @@
       "required": [],
       "type": "object"
     },
+    "grafanaDashboard": {
+      "properties": {
+        "annotations": {
+          "required": [],
+          "type": "object"
+        },
+        "enabled": {
+          "required": [],
+          "type": "boolean"
+        },
+        "extraLabels": {
+          "required": [],
+          "type": "object"
+        },
+        "sidecarLabel": {
+          "required": [],
+          "type": "string"
+        },
+        "sidecarLabelValue": {
+          "required": [],
+          "type": "string"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
     "hostNetwork": {
       "required": [],
       "type": "boolean"
@@ -471,6 +528,54 @@
       "required": [],
       "type": "boolean"
     },
+    "livenessProbe": {
+      "properties": {
+        "address": {
+          "required": [],
+          "type": "string"
+        },
+        "enabled": {
+          "required": [],
+          "type": "boolean"
+        },
+        "failureThreshold": {
+          "required": [],
+          "type": "integer"
+        },
+        "httpGet": {
+          "properties": {
+            "path": {
+              "required": [],
+              "type": "string"
+            },
+            "port": {
+              "required": [],
+              "type": "string"
+            }
+          },
+          "required": [],
+          "type": "object"
+        },
+        "initialDelaySeconds": {
+          "required": [],
+          "type": "integer"
+        },
+        "periodSeconds": {
+          "required": [],
+          "type": "integer"
+        },
+        "successThreshold": {
+          "required": [],
+          "type": "integer"
+        },
+        "timeoutSeconds": {
+          "required": [],
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
     "log": {
       "properties": {
         "level": {
@@ -492,6 +597,28 @@
             "port": {
               "required": [],
               "type": "integer"
+            },
+            "secure": {
+              "properties": {
+                "certDir": {
+                  "required": [],
+                  "type": "string"
+                },
+                "certFile": {
+                  "required": [],
+                  "type": "string"
+                },
+                "enabled": {
+                  "required": [],
+                  "type": "boolean"
+                },
+                "keyFile": {
+                  "required": [],
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
             }
           },
           "required": [],
@@ -531,6 +658,10 @@
       "required": [],
       "type": "object"
     },
+    "openshiftFinalizers": {
+      "required": [],
+      "type": "boolean"
+    },
     "podAnnotations": {
       "required": [],
       "type": "object"
@@ -543,7 +674,14 @@
         },
         "minAvailable": {
           "required": [],
-          "type": "integer"
+          "type": [
+            "integer",
+            "string"
+          ]
+        },
+        "nameOverride": {
+          "required": [],
+          "type": "string"
         }
       },
       "required": [],
@@ -575,6 +713,14 @@
       "required": [],
       "type": "boolean"
     },
+    "processClusterGenerator": {
+      "required": [],
+      "type": "boolean"
+    },
+    "processClusterPushSecret": {
+      "required": [],
+      "type": "boolean"
+    },
     "processClusterStore": {
       "required": [],
       "type": "boolean"
@@ -585,6 +731,14 @@
     },
     "rbac": {
       "properties": {
+        "aggregateToEdit": {
+          "required": [],
+          "type": "boolean"
+        },
+        "aggregateToView": {
+          "required": [],
+          "type": "boolean"
+        },
         "create": {
           "required": [],
           "type": "boolean"
@@ -743,6 +897,15 @@
           "required": [],
           "type": "array"
         },
+        "renderMode": {
+          "enum": [
+            "skipIfMissing",
+            "failIfMissing",
+            "alwaysRender"
+          ],
+          "required": [],
+          "type": "string"
+        },
         "scrapeTimeout": {
           "required": [],
           "type": "string"
@@ -750,6 +913,14 @@
       },
       "required": [],
       "type": "object"
+    },
+    "strategy": {
+      "required": [],
+      "type": "object"
+    },
+    "systemAuthDelegator": {
+      "required": [],
+      "type": "boolean"
     },
     "tolerations": {
       "required": [],
@@ -762,6 +933,10 @@
     "webhook": {
       "properties": {
         "affinity": {
+          "required": [],
+          "type": "object"
+        },
+        "annotations": {
           "required": [],
           "type": "object"
         },
@@ -817,7 +992,7 @@
                 },
                 "revisionHistoryLimit": {
                   "required": [],
-                  "type": "string"
+                  "type": "integer"
                 }
               },
               "required": [],
@@ -844,6 +1019,10 @@
           "type": "object"
         },
         "extraEnv": {
+          "required": [],
+          "type": "array"
+        },
+        "extraInitContainers": {
           "required": [],
           "type": "array"
         },
@@ -965,7 +1144,14 @@
             },
             "minAvailable": {
               "required": [],
-              "type": "integer"
+              "type": [
+                "integer",
+                "string"
+              ]
+            },
+            "nameOverride": {
+              "required": [],
+              "type": "string"
             }
           },
           "required": [],
@@ -1132,6 +1318,10 @@
               "type": "string"
             }
           },
+          "required": [],
+          "type": "object"
+        },
+        "strategy": {
           "required": [],
           "type": "object"
         },

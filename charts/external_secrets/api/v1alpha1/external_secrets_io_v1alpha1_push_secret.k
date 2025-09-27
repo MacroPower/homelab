@@ -202,7 +202,7 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecSelectorGeneratorRef:
         Specify the name of the generator resource
     """
     apiVersion?: str = "generators.external-secrets.io/v1alpha1"
-    kind: "ACRAccessToken" | "ClusterGenerator" | "ECRAuthorizationToken" | "Fake" | "GCRAccessToken" | "GithubAccessToken" | "QuayAccessToken" | "Password" | "STSSessionToken" | "UUID" | "VaultDynamicSecret" | "Webhook" | "Grafana"
+    kind: "ACRAccessToken" | "ClusterGenerator" | "CloudsmithAccessToken" | "ECRAuthorizationToken" | "Fake" | "GCRAccessToken" | "GithubAccessToken" | "QuayAccessToken" | "Password" | "SSHKey" | "STSSessionToken" | "UUID" | "VaultDynamicSecret" | "Webhook" | "Grafana" | "MFA"
 
     name: str
 
@@ -217,16 +217,59 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecSelectorSecret:
 
     Attributes
     ----------
-    name : str, default is Undefined, required
+    name : str, default is Undefined, optional
         Name of the Secret.
         The Secret must exist in the same namespace as the PushSecret manifest.
+    selector : ExternalSecretsIoV1alpha1PushSecretSpecSelectorSecretSelector, default is Undefined, optional
+        selector
     """
-    name: str
+    name?: str
+    selector?: ExternalSecretsIoV1alpha1PushSecretSpecSelectorSecretSelector
 
     check:
-        len(name) <= 253
-        len(name) >= 1
-        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+
+schema ExternalSecretsIoV1alpha1PushSecretSpecSelectorSecretSelector:
+    r"""
+    Selector chooses secrets using a labelSelector.
+
+    Attributes
+    ----------
+    matchExpressions : [ExternalSecretsIoV1alpha1PushSecretSpecSelectorSecretSelectorMatchExpressionsItems0], default is Undefined, optional
+        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+    matchLabels : {str:str}, default is Undefined, optional
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
+    """
+    matchExpressions?: [ExternalSecretsIoV1alpha1PushSecretSpecSelectorSecretSelectorMatchExpressionsItems0]
+    matchLabels?: {str:str}
+
+schema ExternalSecretsIoV1alpha1PushSecretSpecSelectorSecretSelectorMatchExpressionsItems0:
+    r"""
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the label key that the selector applies to.
+    operator : str, default is Undefined, required
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
+    values : [str], default is Undefined, optional
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
+    """
+    key: str
+
+    operator: str
+
+    values?: [str]
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecTemplate:
     r"""
@@ -250,7 +293,7 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecTemplate:
         type
     """
     data?: {str:str}
-    engineVersion?: "v1" | "v2" = "v2"
+    engineVersion?: "v2" = "v2"
     mergePolicy?: "Replace" | "Merge" = "Replace"
     metadata?: ExternalSecretsIoV1alpha1PushSecretSpecTemplateMetadata
     templateFrom?: [ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0]
@@ -264,10 +307,13 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateMetadata:
     ----------
     annotations : {str:str}, default is Undefined, optional
         annotations
+    finalizers : [str], default is Undefined, optional
+        finalizers
     labels : {str:str}, default is Undefined, optional
         labels
     """
     annotations?: {str:str}
+    finalizers?: [str]
     labels?: {str:str}
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0:

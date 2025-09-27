@@ -10,7 +10,7 @@ _regex_match = regex.match
 
 schema ACRAccessToken:
     r"""
-    ACRAccessToken returns a Azure Container Registry token
+    ACRAccessToken returns an Azure Container Registry token
     that can be used for pushing/pulling images.
     Note: by default it will return an ACR Refresh Token with full access
     (depending on the identity).
@@ -70,7 +70,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpec:
     """
     auth: GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuth
 
-    environmentType?: "PublicCloud" | "USGovernmentCloud" | "ChinaCloud" | "GermanCloud" = "PublicCloud"
+    environmentType?: "PublicCloud" | "USGovernmentCloud" | "ChinaCloud" | "GermanCloud" | "AzureStackCloud" = "PublicCloud"
     registry: str
 
     scope?: str
