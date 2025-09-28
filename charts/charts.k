@@ -93,7 +93,7 @@ charts: helm.Charts = {
     external_dns: {
         chart = "external-dns"
         repoURL = "https://kubernetes-sigs.github.io/external-dns/"
-        targetRevision = "1.16.0"
+        targetRevision = "1.19.0"
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
     }

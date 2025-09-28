@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "external-dns"
     repoURL : str, required, default is "https://kubernetes-sigs.github.io/external-dns/"
-    targetRevision : str, optional, default is "1.16.0"
+    targetRevision : str, optional, default is "1.19.0"
     """
     values?: Values | any
     chart: str = "external-dns"
     repoURL: str = "https://kubernetes-sigs.github.io/external-dns/"
-    targetRevision?: str = "1.16.0"
+    targetRevision?: str = "1.19.0"
 
