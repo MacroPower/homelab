@@ -41,7 +41,7 @@
       "type": "object"
     },
     "approveSignerNames": {
-      "description": "List of signer names that cert-manager will approve by default. CertificateRequests\nreferencing these signer names will be auto-approved by cert-manager. Defaults to just\napproving the cert-manager.io Issuer and ClusterIssuer issuers. When set to an empty\narray, ALL issuers will be auto-approved by cert-manager. To disable the auto-approval,\nbecause eg. you are using approver-policy, you can enable 'disableAutoApproval'.\nref: https://cert-manager.io/docs/concepts/certificaterequest/#approval\n+docs:property",
+      "description": "List of signer names that cert-manager will approve by default. CertificateRequests\nreferencing these signer names will be auto-approved by cert-manager. Defaults to just\napproving the cert-manager.io Issuer and ClusterIssuer issuers. When set to an empty\narray, ALL issuers will be auto-approved by cert-manager. To disable the auto-approval,\nbecause, e.g., you are using approver-policy, you can enable 'disableAutoApproval'.\nref: https://cert-manager.io/docs/concepts/certificaterequest/#approval\n+docs:property",
       "items": {
         "required": [],
         "type": "string"
@@ -333,7 +333,7 @@
     },
     "config": {
       "additionalProperties": true,
-      "description": "This property is used to configure options for the controller pod.\nThis allows setting options that would usually be provided using flags.\n\nIf `apiVersion` and `kind` are unspecified they default to the current latest\nversion (currently `controller.config.cert-manager.io/v1alpha1`). You can pin\nthe version by specifying the `apiVersion` yourself.\n\nFor example:\n config:\n   apiVersion: controller.config.cert-manager.io/v1alpha1\n   kind: ControllerConfiguration\n   logging:\n     verbosity: 2\n     format: text\n   leaderElectionConfig:\n     namespace: kube-system\n   kubernetesAPIQPS: 9000\n   kubernetesAPIBurst: 9000\n   numberOfConcurrentWorkers: 200\n   enableGatewayAPI: true\n   # Feature gates as of v1.17.0. Listed with their default values.\n   # See https://cert-manager.io/docs/cli/controller/\n   featureGates:\n     AdditionalCertificateOutputFormats: true # BETA - default=true\n     AllAlpha: false # ALPHA - default=false\n     AllBeta: false # BETA - default=false\n     ExperimentalCertificateSigningRequestControllers: false # ALPHA - default=false\n     ExperimentalGatewayAPISupport: true # BETA - default=true\n     LiteralCertificateSubject: true # BETA - default=true\n     NameConstraints: true # BETA - default=true\n     OtherNames: false # ALPHA - default=false\n     SecretsFilteredCaching: true # BETA - default=true\n     ServerSideApply: false # ALPHA - default=false\n     StableCertificateRequestName: true # BETA - default=true\n     UseCertificateRequestBasicConstraints: false # ALPHA - default=false\n     UseDomainQualifiedFinalizer: true # BETA - default=false\n     ValidateCAA: false # ALPHA - default=false\n   # Configure the metrics server for TLS\n   # See https://cert-manager.io/docs/devops-tips/prometheus-metrics/#tls\n   metricsTLSConfig:\n     dynamic:\n       secretNamespace: \"cert-manager\"\n       secretName: \"cert-manager-metrics-ca\"\n       dnsNames:\n       - cert-manager-metrics",
+      "description": "This property is used to configure options for the controller pod.\nThis allows setting options that would usually be provided using flags.\n\nIf `apiVersion` and `kind` are unspecified they default to the current latest\nversion (currently `controller.config.cert-manager.io/v1alpha1`). You can pin\nthe version by specifying the `apiVersion` yourself.\n\nFor example:\n config:\n   apiVersion: controller.config.cert-manager.io/v1alpha1\n   kind: ControllerConfiguration\n   logging:\n     verbosity: 2\n     format: text\n   leaderElectionConfig:\n     namespace: kube-system\n   kubernetesAPIQPS: 9000\n   kubernetesAPIBurst: 9000\n   numberOfConcurrentWorkers: 200\n   enableGatewayAPI: true\n   # Feature gates as of v1.18.1. Listed with their default values.\n   # See https://cert-manager.io/docs/cli/controller/\n   featureGates:\n     AdditionalCertificateOutputFormats: true # GA - default=true\n     AllAlpha: false # ALPHA - default=false\n     AllBeta: false # BETA - default=false\n     ExperimentalCertificateSigningRequestControllers: false # ALPHA - default=false\n     ExperimentalGatewayAPISupport: true # BETA - default=true\n     LiteralCertificateSubject: true # BETA - default=true\n     NameConstraints: true # BETA - default=true\n     OtherNames: false # ALPHA - default=false\n     SecretsFilteredCaching: true # BETA - default=true\n     ServerSideApply: false # ALPHA - default=false\n     StableCertificateRequestName: true # BETA - default=true\n     UseCertificateRequestBasicConstraints: false # ALPHA - default=false\n     UseDomainQualifiedFinalizer: true # GA - default=true\n     ValidateCAA: false # ALPHA - default=false\n     DefaultPrivateKeyRotationPolicyAlways: true # BETA - default=true\n     ACMEHTTP01IngressPathTypeExact: true # BETA - default=true\n   # Configure the metrics server for TLS\n   # See https://cert-manager.io/docs/devops-tips/prometheus-metrics/#tls\n   metricsTLSConfig:\n     dynamic:\n       secretNamespace: \"cert-manager\"\n       secretName: \"cert-manager-metrics-ca\"\n       dnsNames:\n       - cert-manager-metrics",
       "required": [],
       "title": "config",
       "type": "object"
@@ -726,14 +726,14 @@
       "properties": {
         "enabled": {
           "default": true,
-          "description": "Enable Prometheus monitoring for the cert-manager controller and webhook.\nIf you use the Prometheus Operator, set prometheus.podmonitor.enabled or\nprometheus.servicemonitor.enabled, to create a PodMonitor or a\nServiceMonitor resource.\nOtherwise, 'prometheus.io' annotations are added to the cert-manager and\ncert-manager-webhook Deployments.\nNote that you can not enable both PodMonitor and ServiceMonitor as they are\nmutually exclusive. Enabling both will result in an error.",
+          "description": "Enable Prometheus monitoring for the cert-manager controller and webhook.\nIf you use the Prometheus Operator, set prometheus.podmonitor.enabled or\nprometheus.servicemonitor.enabled, to create a PodMonitor or a\nServiceMonitor resource.\nOtherwise, 'prometheus.io' annotations are added to the cert-manager and\ncert-manager-webhook Deployments.\nNote that you cannot enable both PodMonitor and ServiceMonitor as they are\nmutually exclusive. Enabling both will result in an error.",
           "required": [],
           "title": "enabled",
           "type": "boolean"
         },
         "podmonitor": {
           "additionalProperties": true,
-          "description": "Note that you can not enable both PodMonitor and ServiceMonitor as they are mutually exclusive. Enabling both will result in an error.",
+          "description": "Note that you cannot enable both PodMonitor and ServiceMonitor as they are mutually exclusive. Enabling both will result in an error.",
           "properties": {
             "annotations": {
               "additionalProperties": true,
@@ -870,11 +870,11 @@
               "type": "string"
             },
             "targetPort": {
-              "default": 9402,
-              "description": "The target port to set on the ServiceMonitor. This must match the port that the\ncert-manager controller is listening on for metrics.",
+              "default": "http-metrics",
+              "description": "The target port to set on the ServiceMonitor. This must match the port that the\ncert-manager controller is listening on for metrics.\n+docs:type=string,integer",
               "required": [],
               "title": "targetPort",
-              "type": "integer"
+              "type": "string"
             }
           },
           "required": [],
@@ -931,7 +931,7 @@
     },
     "serviceAccount": {
       "additionalProperties": true,
-      "description": "Override the \"cert-manager.name\" value, which is used to annotate some of\nthe resources that are created by this Chart (using \"app.kubernetes.io/name\").\nNOTE: There are some inconsistencies in the Helm chart when it comes to\nthese annotations (some resources use eg. \"cainjector.name\" which resolves\nto the value \"cainjector\").\n+docs:property\nnameOverride: \"my-cert-manager\"",
+      "description": "Override the \"cert-manager.name\" value, which is used to annotate some of\nthe resources that are created by this Chart (using \"app.kubernetes.io/name\").\nNOTE: There are some inconsistencies in the Helm chart when it comes to\nthese annotations (some resources use, e.g., \"cainjector.name\" which resolves\nto the value \"cainjector\").\n+docs:property\nnameOverride: \"my-cert-manager\"",
       "properties": {
         "automountServiceAccountToken": {
           "default": true,
