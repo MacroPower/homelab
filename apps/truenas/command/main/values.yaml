@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=../../../../charts/truecommand/values.schema.json
+
+controllers:
+  truecommand:
+    containers:
+      app:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 2Gi
+          limits:
+            memory: 4Gi

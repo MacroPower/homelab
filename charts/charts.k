@@ -345,4 +345,10 @@ charts: helm.Charts = {
             "https://doc.crds.dev/raw/github.com/upbound/provider-opentofu@v0.2.7"
         ]
     }
+    truecommand: {
+        chart = "app-template"
+        repoURL = "oci://ghcr.io/bjw-s-labs/helm/app-template"
+        targetRevision = "4.2.0"
+        schemaGenerator = "AUTO"
+    }
 }

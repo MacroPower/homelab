@@ -1,0 +1,118 @@
+# yaml-language-server: $schema=../../../../charts/truecommand/values.schema.json
+
+global:
+  nameOverride: truecommand
+  fullnameOverride: truecommand
+
+controllers:
+  truecommand:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    strategy: Recreate
+    pod:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+      nodeSelector:
+        kubernetes.io/os: linux
+        kubernetes.io/arch: amd64
+    containers:
+      app:
+        image:
+          repository: ixsystems/truecommand
+          tag: 3.1.0
+        env:
+          TC_CONFIG_FILE_PATH: {value: /config/config.yaml}
+        ports:
+          - containerPort: 80
+            name: http
+            protocol: TCP
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet: &httpGet
+                path: /api/v1/health
+                port: http
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 2
+              failureThreshold: 5
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet: *httpGet
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet: *httpGet
+              failureThreshold: 30
+              periodSeconds: 10
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+
+service:
+  app:
+    ports:
+      http:
+        port: 80
+        targetPort: http
+
+configMaps:
+  config:
+    forceRename: truecommand-config
+    data:
+      # https://www.truenas.com/docs/truecommand/3.0/recommendations/tcmiddlewareconfguration/
+      config.yaml: |
+        ldap:
+            krb_config_path: ""
+        logger:
+            console:
+                enabled: true
+            file:
+                enabled: true
+                path: /data/log
+                rotation:
+                    enabled: true
+                    max_age: 10
+                    max_backups: 10
+                    max_size: 100
+            log_level: info
+            remote:
+                enabled: false
+                host: 127.0.0.1
+                identifier: TrueCommand
+                log_level: error
+                port: "6514"
+                protocol: tcp
+        sys:
+            alert_email_threshold: 48h0m0s
+        tc:
+            type: site
+
+persistence:
+  data:
+    type: persistentVolumeClaim
+    size: 50Gi
+    storageClass: openebs-hostpath
+    accessMode: ReadWriteOnce
+    globalMounts:
+      - path: /data
+  config:
+    type: configMap
+    name: truecommand-config
+    globalMounts:
+      - path: /config
