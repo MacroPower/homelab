@@ -46,7 +46,8 @@ schema DragonflydbIoV1alpha1DragonflySpec:
     annotations : {str:str}, default is Undefined, optional
         (Optional) Annotations to add to the Dragonfly pods.
     args : [str], default is Undefined, optional
-        (Optional) Dragonfly container args to pass to the container Refer to the Dragonfly documentation for the list of supported args
+        (Optional) Dragonfly container args to pass to the container
+        Refer to the Dragonfly documentation for the list of supported args
     authentication : DragonflydbIoV1alpha1DragonflySpecAuthentication, default is Undefined, optional
         authentication
     containerSecurityContext : DragonflydbIoV1alpha1DragonflySpecContainerSecurityContext, default is Undefined, optional
@@ -55,6 +56,12 @@ schema DragonflydbIoV1alpha1DragonflySpec:
         (Optional) Env variables to add to the Dragonfly pods.
     image : str, default is Undefined, optional
         Image is the Dragonfly image to use
+    imagePullPolicy : str, default is "Always", optional
+        (Optional) imagePullPolicy to set to Dragonfly, default is Always
+    imagePullSecrets : [DragonflydbIoV1alpha1DragonflySpecImagePullSecretsItems0], default is Undefined, optional
+        (Optional) imagePullSecrets to set to Dragonfly
+    initContainers : [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0], default is Undefined, optional
+        (Optional) Dragonfly pod init containers
     labels : {str:str}, default is Undefined, optional
         (Optional) Labels to add to the Dragonfly pods.
     memcachedPort : int, default is Undefined, optional
@@ -92,6 +99,9 @@ schema DragonflydbIoV1alpha1DragonflySpec:
     containerSecurityContext?: DragonflydbIoV1alpha1DragonflySpecContainerSecurityContext
     env?: [DragonflydbIoV1alpha1DragonflySpecEnvItems0]
     image?: str
+    imagePullPolicy?: str = "Always"
+    imagePullSecrets?: [DragonflydbIoV1alpha1DragonflySpecImagePullSecretsItems0]
+    initContainers?: [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0]
     labels?: {str:str}
     memcachedPort?: int
     nodeSelector?: {str:str}
@@ -116,13 +126,19 @@ schema DragonflydbIoV1alpha1DragonflySpecACLFromSecret:
     key : str, default is Undefined, required
         The key of the secret to select from.  Must be a valid secret key.
     name : str, default is Undefined, optional
-        Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        TODO: Add other useful fields. apiVersion, kind, uid?
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
     optional : bool, default is Undefined, optional
         Specify whether the Secret or its key must be defined
     """
     key: str
 
-    name?: str
+    name?: str = ""
     optional?: bool
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinity:
@@ -149,7 +165,15 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityNodeAffinity:
     Attributes
     ----------
     preferredDuringSchedulingIgnoredDuringExecution : [DragonflydbIoV1alpha1DragonflySpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
-        The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node matches the corresponding matchExpressions; the node(s) with the highest sum are the most preferred.
+        The scheduler will prefer to schedule pods to nodes that satisfy
+        the affinity expressions specified by this field, but it may choose
+        a node that violates one or more of the expressions. The node that is
+        most preferred is the one with the greatest sum of weights, i.e.
+        for each node that meets all of the scheduling requirements (resource
+        request, requiredDuringScheduling affinity expressions, etc.),
+        compute a sum by iterating through the elements of this field and adding
+        "weight" to the sum if the node matches the corresponding matchExpressions; the
+        node(s) with the highest sum are the most preferred.
     requiredDuringSchedulingIgnoredDuringExecution : DragonflydbIoV1alpha1DragonflySpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecution, default is Undefined, optional
         required during scheduling ignored during execution
     """
@@ -158,7 +182,8 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityNodeAffinity:
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0:
     r"""
-    An empty preferred scheduling term matches all objects with implicit weight 0 (i.e. it's a no-op). A null preferred scheduling term matches no objects (i.e. is also a no-op).
+    An empty preferred scheduling term matches all objects with implicit weight 0
+    (i.e. it's a no-op). A null preferred scheduling term matches no objects (i.e. is also a no-op).
 
     Attributes
     ----------
@@ -187,16 +212,22 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityNodeAffinityPreferredDuringSche
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PreferenceMatchExpressionsItems0:
     r"""
-    A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+    A node selector requirement is a selector that contains values, a key, and an operator
+    that relates the key and values.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         The label key that the selector applies to.
     operator : str, default is Undefined, required
-        Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+        Represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
     values : [str], default is Undefined, optional
-        An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.
+        An array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. If the operator is Gt or Lt, the values
+        array must have a single element, which will be interpreted as an integer.
+        This array is replaced during a strategic merge patch.
     """
     key: str
 
@@ -206,16 +237,22 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityNodeAffinityPreferredDuringSche
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PreferenceMatchFieldsItems0:
     r"""
-    A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+    A node selector requirement is a selector that contains values, a key, and an operator
+    that relates the key and values.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         The label key that the selector applies to.
     operator : str, default is Undefined, required
-        Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+        Represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
     values : [str], default is Undefined, optional
-        An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.
+        An array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. If the operator is Gt or Lt, the values
+        array must have a single element, which will be interpreted as an integer.
+        This array is replaced during a strategic merge patch.
     """
     key: str
 
@@ -225,7 +262,11 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityNodeAffinityPreferredDuringSche
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecution:
     r"""
-    If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to an update), the system may or may not try to eventually evict the pod from its node.
+    If the affinity requirements specified by this field are not met at
+    scheduling time, the pod will not be scheduled onto the node.
+    If the affinity requirements specified by this field cease to be met
+    at some point during pod execution (e.g. due to an update), the system
+    may or may not try to eventually evict the pod from its node.
 
     Attributes
     ----------
@@ -236,7 +277,9 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityNodeAffinityRequiredDuringSched
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0:
     r"""
-    A null or empty node selector term matches no objects. The requirements of them are ANDed. The TopologySelectorTerm type implements a subset of the NodeSelectorTerm.
+    A null or empty node selector term matches no objects. The requirements of
+    them are ANDed.
+    The TopologySelectorTerm type implements a subset of the NodeSelectorTerm.
 
     Attributes
     ----------
@@ -250,16 +293,22 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityNodeAffinityRequiredDuringSched
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchExpressionsItems0:
     r"""
-    A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+    A node selector requirement is a selector that contains values, a key, and an operator
+    that relates the key and values.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         The label key that the selector applies to.
     operator : str, default is Undefined, required
-        Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+        Represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
     values : [str], default is Undefined, optional
-        An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.
+        An array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. If the operator is Gt or Lt, the values
+        array must have a single element, which will be interpreted as an integer.
+        This array is replaced during a strategic merge patch.
     """
     key: str
 
@@ -269,16 +318,22 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityNodeAffinityRequiredDuringSched
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchFieldsItems0:
     r"""
-    A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+    A node selector requirement is a selector that contains values, a key, and an operator
+    that relates the key and values.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         The label key that the selector applies to.
     operator : str, default is Undefined, required
-        Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+        Represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
     values : [str], default is Undefined, optional
-        An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.
+        An array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. If the operator is Gt or Lt, the values
+        array must have a single element, which will be interpreted as an integer.
+        This array is replaced during a strategic merge patch.
     """
     key: str
 
@@ -293,9 +348,23 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinity:
     Attributes
     ----------
     preferredDuringSchedulingIgnoredDuringExecution : [DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
-        The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred.
+        The scheduler will prefer to schedule pods to nodes that satisfy
+        the affinity expressions specified by this field, but it may choose
+        a node that violates one or more of the expressions. The node that is
+        most preferred is the one with the greatest sum of weights, i.e.
+        for each node that meets all of the scheduling requirements (resource
+        request, requiredDuringScheduling affinity expressions, etc.),
+        compute a sum by iterating through the elements of this field and adding
+        "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the
+        node(s) with the highest sum are the most preferred.
     requiredDuringSchedulingIgnoredDuringExecution : [DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
-        If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied.
+        If the affinity requirements specified by this field are not met at
+        scheduling time, the pod will not be scheduled onto the node.
+        If the affinity requirements specified by this field cease to be met
+        at some point during pod execution (e.g. due to a pod label update), the
+        system may or may not try to eventually evict the pod from its node.
+        When there are multiple elements, the lists of nodes corresponding to each
+        podAffinityTerm are intersected, i.e. all terms must be satisfied.
     """
     preferredDuringSchedulingIgnoredDuringExecution?: [DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0]
     requiredDuringSchedulingIgnoredDuringExecution?: [DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0]
@@ -309,7 +378,8 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSched
     podAffinityTerm : DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTerm, default is Undefined, required
         pod affinity term
     weight : int, default is Undefined, required
-        weight associated with matching the corresponding podAffinityTerm, in the range 1-100.
+        weight associated with matching the corresponding podAffinityTerm,
+        in the range 1-100.
     """
     podAffinityTerm: DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTerm
 
@@ -323,14 +393,43 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSched
     ----------
     labelSelector : DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelector, default is Undefined, optional
         label selector
+    matchLabelKeys : [str], default is Undefined, optional
+        MatchLabelKeys is a set of pod label keys to select which pods will
+        be taken into consideration. The keys are used to lookup values from the
+        incoming pod labels, those key-value labels are merged with `labelSelector` as `key in (value)`
+        to select the group of existing pods which pods will be taken into consideration
+        for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+        pod labels will be ignored. The default value is empty.
+        The same key is forbidden to exist in both matchLabelKeys and labelSelector.
+        Also, matchLabelKeys cannot be set when labelSelector isn't set.
+        This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+    mismatchLabelKeys : [str], default is Undefined, optional
+        MismatchLabelKeys is a set of pod label keys to select which pods will
+        be taken into consideration. The keys are used to lookup values from the
+        incoming pod labels, those key-value labels are merged with `labelSelector` as `key notin (value)`
+        to select the group of existing pods which pods will be taken into consideration
+        for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+        pod labels will be ignored. The default value is empty.
+        The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
+        Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
+        This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
     namespaceSelector : DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
-        namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".
+        namespaces specifies a static list of namespace names that the term applies to.
+        The term is applied to the union of the namespaces listed in this field
+        and the ones selected by namespaceSelector.
+        null or empty namespaces list and null namespaceSelector means "this pod's namespace".
     topologyKey : str, default is Undefined, required
-        This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
+        This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching
+        the labelSelector in the specified namespaces, where co-located is defined as running on a node
+        whose value of the label with key topologyKey matches that of any node on which any of the
+        selected pods is running.
+        Empty topologyKey is not allowed.
     """
     labelSelector?: DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelector
+    matchLabelKeys?: [str]
+    mismatchLabelKeys?: [str]
     namespaceSelector?: DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector
     namespaces?: [str]
     topologyKey: str
@@ -338,29 +437,37 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSched
 schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelector:
     r"""
     A label query over a set of resources, in this case pods.
+    If it's null, this PodAffinityTerm matches with no Pods.
 
     Attributes
     ----------
     matchExpressions : [DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelectorMatchExpressionsItems0], default is Undefined, optional
         matchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
     matchExpressions?: [DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         key is the label key that the selector applies to.
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
     """
     key: str
 
@@ -370,30 +477,41 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSched
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector:
     r"""
-    A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
+    A label query over the set of namespaces that the term applies to.
+    The term is applied to the union of the namespaces selected by this field
+    and the ones listed in the namespaces field.
+    null selector and null or empty namespaces list means "this pod's namespace".
+    An empty selector ({}) matches all namespaces.
 
     Attributes
     ----------
     matchExpressions : [DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelectorMatchExpressionsItems0], default is Undefined, optional
         matchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
     matchExpressions?: [DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         key is the label key that the selector applies to.
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
     """
     key: str
 
@@ -403,20 +521,54 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSched
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0:
     r"""
-    Defines a set of pods (namely those matching the labelSelector relative to the given namespace(s)) that this pod should be co-located (affinity) or not co-located (anti-affinity) with, where co-located is defined as running on a node whose value of the label with key <topologyKey> matches that of any node on which a pod of the set of pods is running
+    Defines a set of pods (namely those matching the labelSelector
+    relative to the given namespace(s)) that this pod should be
+    co-located (affinity) or not co-located (anti-affinity) with,
+    where co-located is defined as running on a node whose value of
+    the label with key <topologyKey> matches that of any node on which
+    a pod of the set of pods is running
 
     Attributes
     ----------
     labelSelector : DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelector, default is Undefined, optional
         label selector
+    matchLabelKeys : [str], default is Undefined, optional
+        MatchLabelKeys is a set of pod label keys to select which pods will
+        be taken into consideration. The keys are used to lookup values from the
+        incoming pod labels, those key-value labels are merged with `labelSelector` as `key in (value)`
+        to select the group of existing pods which pods will be taken into consideration
+        for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+        pod labels will be ignored. The default value is empty.
+        The same key is forbidden to exist in both matchLabelKeys and labelSelector.
+        Also, matchLabelKeys cannot be set when labelSelector isn't set.
+        This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+    mismatchLabelKeys : [str], default is Undefined, optional
+        MismatchLabelKeys is a set of pod label keys to select which pods will
+        be taken into consideration. The keys are used to lookup values from the
+        incoming pod labels, those key-value labels are merged with `labelSelector` as `key notin (value)`
+        to select the group of existing pods which pods will be taken into consideration
+        for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+        pod labels will be ignored. The default value is empty.
+        The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
+        Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
+        This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
     namespaceSelector : DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
-        namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".
+        namespaces specifies a static list of namespace names that the term applies to.
+        The term is applied to the union of the namespaces listed in this field
+        and the ones selected by namespaceSelector.
+        null or empty namespaces list and null namespaceSelector means "this pod's namespace".
     topologyKey : str, default is Undefined, required
-        This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
+        This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching
+        the labelSelector in the specified namespaces, where co-located is defined as running on a node
+        whose value of the label with key topologyKey matches that of any node on which any of the
+        selected pods is running.
+        Empty topologyKey is not allowed.
     """
     labelSelector?: DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelector
+    matchLabelKeys?: [str]
+    mismatchLabelKeys?: [str]
     namespaceSelector?: DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector
     namespaces?: [str]
     topologyKey: str
@@ -424,29 +576,37 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedu
 schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelector:
     r"""
     A label query over a set of resources, in this case pods.
+    If it's null, this PodAffinityTerm matches with no Pods.
 
     Attributes
     ----------
     matchExpressions : [DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelectorMatchExpressionsItems0], default is Undefined, optional
         matchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
     matchExpressions?: [DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         key is the label key that the selector applies to.
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
     """
     key: str
 
@@ -456,30 +616,41 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedu
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector:
     r"""
-    A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
+    A label query over the set of namespaces that the term applies to.
+    The term is applied to the union of the namespaces selected by this field
+    and the ones listed in the namespaces field.
+    null selector and null or empty namespaces list means "this pod's namespace".
+    An empty selector ({}) matches all namespaces.
 
     Attributes
     ----------
     matchExpressions : [DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelectorMatchExpressionsItems0], default is Undefined, optional
         matchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
     matchExpressions?: [DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         key is the label key that the selector applies to.
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
     """
     key: str
 
@@ -494,9 +665,23 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinity:
     Attributes
     ----------
     preferredDuringSchedulingIgnoredDuringExecution : [DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
-        The scheduler will prefer to schedule pods to nodes that satisfy the anti-affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling anti-affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred.
+        The scheduler will prefer to schedule pods to nodes that satisfy
+        the anti-affinity expressions specified by this field, but it may choose
+        a node that violates one or more of the expressions. The node that is
+        most preferred is the one with the greatest sum of weights, i.e.
+        for each node that meets all of the scheduling requirements (resource
+        request, requiredDuringScheduling anti-affinity expressions, etc.),
+        compute a sum by iterating through the elements of this field and adding
+        "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the
+        node(s) with the highest sum are the most preferred.
     requiredDuringSchedulingIgnoredDuringExecution : [DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
-        If the anti-affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the anti-affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied.
+        If the anti-affinity requirements specified by this field are not met at
+        scheduling time, the pod will not be scheduled onto the node.
+        If the anti-affinity requirements specified by this field cease to be met
+        at some point during pod execution (e.g. due to a pod label update), the
+        system may or may not try to eventually evict the pod from its node.
+        When there are multiple elements, the lists of nodes corresponding to each
+        podAffinityTerm are intersected, i.e. all terms must be satisfied.
     """
     preferredDuringSchedulingIgnoredDuringExecution?: [DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0]
     requiredDuringSchedulingIgnoredDuringExecution?: [DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0]
@@ -510,7 +695,8 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringS
     podAffinityTerm : DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTerm, default is Undefined, required
         pod affinity term
     weight : int, default is Undefined, required
-        weight associated with matching the corresponding podAffinityTerm, in the range 1-100.
+        weight associated with matching the corresponding podAffinityTerm,
+        in the range 1-100.
     """
     podAffinityTerm: DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTerm
 
@@ -524,14 +710,43 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringS
     ----------
     labelSelector : DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelector, default is Undefined, optional
         label selector
+    matchLabelKeys : [str], default is Undefined, optional
+        MatchLabelKeys is a set of pod label keys to select which pods will
+        be taken into consideration. The keys are used to lookup values from the
+        incoming pod labels, those key-value labels are merged with `labelSelector` as `key in (value)`
+        to select the group of existing pods which pods will be taken into consideration
+        for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+        pod labels will be ignored. The default value is empty.
+        The same key is forbidden to exist in both matchLabelKeys and labelSelector.
+        Also, matchLabelKeys cannot be set when labelSelector isn't set.
+        This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+    mismatchLabelKeys : [str], default is Undefined, optional
+        MismatchLabelKeys is a set of pod label keys to select which pods will
+        be taken into consideration. The keys are used to lookup values from the
+        incoming pod labels, those key-value labels are merged with `labelSelector` as `key notin (value)`
+        to select the group of existing pods which pods will be taken into consideration
+        for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+        pod labels will be ignored. The default value is empty.
+        The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
+        Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
+        This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
     namespaceSelector : DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
-        namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".
+        namespaces specifies a static list of namespace names that the term applies to.
+        The term is applied to the union of the namespaces listed in this field
+        and the ones selected by namespaceSelector.
+        null or empty namespaces list and null namespaceSelector means "this pod's namespace".
     topologyKey : str, default is Undefined, required
-        This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
+        This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching
+        the labelSelector in the specified namespaces, where co-located is defined as running on a node
+        whose value of the label with key topologyKey matches that of any node on which any of the
+        selected pods is running.
+        Empty topologyKey is not allowed.
     """
     labelSelector?: DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelector
+    matchLabelKeys?: [str]
+    mismatchLabelKeys?: [str]
     namespaceSelector?: DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector
     namespaces?: [str]
     topologyKey: str
@@ -539,29 +754,37 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringS
 schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelector:
     r"""
     A label query over a set of resources, in this case pods.
+    If it's null, this PodAffinityTerm matches with no Pods.
 
     Attributes
     ----------
     matchExpressions : [DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelectorMatchExpressionsItems0], default is Undefined, optional
         matchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
     matchExpressions?: [DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         key is the label key that the selector applies to.
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
     """
     key: str
 
@@ -571,30 +794,41 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringS
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector:
     r"""
-    A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
+    A label query over the set of namespaces that the term applies to.
+    The term is applied to the union of the namespaces selected by this field
+    and the ones listed in the namespaces field.
+    null selector and null or empty namespaces list means "this pod's namespace".
+    An empty selector ({}) matches all namespaces.
 
     Attributes
     ----------
     matchExpressions : [DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelectorMatchExpressionsItems0], default is Undefined, optional
         matchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
     matchExpressions?: [DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         key is the label key that the selector applies to.
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
     """
     key: str
 
@@ -604,20 +838,54 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringS
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0:
     r"""
-    Defines a set of pods (namely those matching the labelSelector relative to the given namespace(s)) that this pod should be co-located (affinity) or not co-located (anti-affinity) with, where co-located is defined as running on a node whose value of the label with key <topologyKey> matches that of any node on which a pod of the set of pods is running
+    Defines a set of pods (namely those matching the labelSelector
+    relative to the given namespace(s)) that this pod should be
+    co-located (affinity) or not co-located (anti-affinity) with,
+    where co-located is defined as running on a node whose value of
+    the label with key <topologyKey> matches that of any node on which
+    a pod of the set of pods is running
 
     Attributes
     ----------
     labelSelector : DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelector, default is Undefined, optional
         label selector
+    matchLabelKeys : [str], default is Undefined, optional
+        MatchLabelKeys is a set of pod label keys to select which pods will
+        be taken into consideration. The keys are used to lookup values from the
+        incoming pod labels, those key-value labels are merged with `labelSelector` as `key in (value)`
+        to select the group of existing pods which pods will be taken into consideration
+        for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+        pod labels will be ignored. The default value is empty.
+        The same key is forbidden to exist in both matchLabelKeys and labelSelector.
+        Also, matchLabelKeys cannot be set when labelSelector isn't set.
+        This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
+    mismatchLabelKeys : [str], default is Undefined, optional
+        MismatchLabelKeys is a set of pod label keys to select which pods will
+        be taken into consideration. The keys are used to lookup values from the
+        incoming pod labels, those key-value labels are merged with `labelSelector` as `key notin (value)`
+        to select the group of existing pods which pods will be taken into consideration
+        for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
+        pod labels will be ignored. The default value is empty.
+        The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
+        Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
+        This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate.
     namespaceSelector : DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
-        namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means "this pod's namespace".
+        namespaces specifies a static list of namespace names that the term applies to.
+        The term is applied to the union of the namespaces listed in this field
+        and the ones selected by namespaceSelector.
+        null or empty namespaces list and null namespaceSelector means "this pod's namespace".
     topologyKey : str, default is Undefined, required
-        This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.
+        This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching
+        the labelSelector in the specified namespaces, where co-located is defined as running on a node
+        whose value of the label with key topologyKey matches that of any node on which any of the
+        selected pods is running.
+        Empty topologyKey is not allowed.
     """
     labelSelector?: DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelector
+    matchLabelKeys?: [str]
+    mismatchLabelKeys?: [str]
     namespaceSelector?: DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector
     namespaces?: [str]
     topologyKey: str
@@ -625,29 +893,37 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSc
 schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelector:
     r"""
     A label query over a set of resources, in this case pods.
+    If it's null, this PodAffinityTerm matches with no Pods.
 
     Attributes
     ----------
     matchExpressions : [DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelectorMatchExpressionsItems0], default is Undefined, optional
         matchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
     matchExpressions?: [DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         key is the label key that the selector applies to.
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
     """
     key: str
 
@@ -657,30 +933,41 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSc
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector:
     r"""
-    A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces.
+    A label query over the set of namespaces that the term applies to.
+    The term is applied to the union of the namespaces selected by this field
+    and the ones listed in the namespaces field.
+    null selector and null or empty namespaces list means "this pod's namespace".
+    An empty selector ({}) matches all namespaces.
 
     Attributes
     ----------
     matchExpressions : [DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelectorMatchExpressionsItems0], default is Undefined, optional
         matchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
     matchExpressions?: [DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         key is the label key that the selector applies to.
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
     """
     key: str
 
@@ -704,20 +991,27 @@ schema DragonflydbIoV1alpha1DragonflySpecAuthentication:
 
 schema DragonflydbIoV1alpha1DragonflySpecAuthenticationClientCaCertSecret:
     r"""
-    (Optional) If specified, the Dragonfly instance will check if the client certificate is signed by this CA. Server TLS must be enabled for this.
+    (Optional) If specified, the Dragonfly instance will check if the
+    client certificate is signed by this CA. Server TLS must be enabled for this.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         The key of the secret to select from.  Must be a valid secret key.
     name : str, default is Undefined, optional
-        Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        TODO: Add other useful fields. apiVersion, kind, uid?
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
     optional : bool, default is Undefined, optional
         Specify whether the Secret or its key must be defined
     """
     key: str
 
-    name?: str
+    name?: str = ""
     optional?: bool
 
 schema DragonflydbIoV1alpha1DragonflySpecAuthenticationPasswordFromSecret:
@@ -729,13 +1023,19 @@ schema DragonflydbIoV1alpha1DragonflySpecAuthenticationPasswordFromSecret:
     key : str, default is Undefined, required
         The key of the secret to select from.  Must be a valid secret key.
     name : str, default is Undefined, optional
-        Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        TODO: Add other useful fields. apiVersion, kind, uid?
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
     optional : bool, default is Undefined, optional
         Specify whether the Secret or its key must be defined
     """
     key: str
 
-    name?: str
+    name?: str = ""
     optional?: bool
 
 schema DragonflydbIoV1alpha1DragonflySpecContainerSecurityContext:
@@ -939,7 +1239,15 @@ schema DragonflydbIoV1alpha1DragonflySpecEnvItems0:
     name : str, default is Undefined, required
         Name of the environment variable. Must be a C_IDENTIFIER.
     value : str, default is Undefined, optional
-        Variable references $(VAR_NAME) are expanded using the previously defined environment variables in the container and any service environment variables. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless of whether the variable exists or not. Defaults to "".
+        Variable references $(VAR_NAME) are expanded
+        using the previously defined environment variables in the container and
+        any service environment variables. If a variable cannot be resolved,
+        the reference in the input string will be unchanged. Double $$ are reduced
+        to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e.
+        "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)".
+        Escaped references will never be expanded, regardless of whether the variable
+        exists or not.
+        Defaults to "".
     valueFrom : DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFrom, default is Undefined, optional
         value from
     """
@@ -977,18 +1285,25 @@ schema DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFromConfigMapKeyRef:
     key : str, default is Undefined, required
         The key to select.
     name : str, default is Undefined, optional
-        Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        TODO: Add other useful fields. apiVersion, kind, uid?
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
     optional : bool, default is Undefined, optional
         Specify whether the ConfigMap or its key must be defined
     """
     key: str
 
-    name?: str
+    name?: str = ""
     optional?: bool
 
 schema DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFromFieldRef:
     r"""
-    Selects a field of the pod: supports metadata.name, metadata.namespace, `metadata.labels['<KEY>']`, `metadata.annotations['<KEY>']`, spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs.
+    Selects a field of the pod: supports metadata.name, metadata.namespace, `metadata.labels['<KEY>']`, `metadata.annotations['<KEY>']`,
+    spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs.
 
     Attributes
     ----------
@@ -1002,7 +1317,8 @@ schema DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFromFieldRef:
 
 schema DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFromResourceFieldRef:
     r"""
-    Selects a resource of the container: only resources limits and requests (limits.cpu, limits.memory, limits.ephemeral-storage, requests.cpu, requests.memory and requests.ephemeral-storage) are currently supported.
+    Selects a resource of the container: only resources limits and requests
+    (limits.cpu, limits.memory, limits.ephemeral-storage, requests.cpu, requests.memory and requests.ephemeral-storage) are currently supported.
 
     Attributes
     ----------
@@ -1029,14 +1345,1441 @@ schema DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFromSecretKeyRef:
     key : str, default is Undefined, required
         The key of the secret to select from.  Must be a valid secret key.
     name : str, default is Undefined, optional
-        Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        TODO: Add other useful fields. apiVersion, kind, uid?
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
     optional : bool, default is Undefined, optional
         Specify whether the Secret or its key must be defined
     """
     key: str
 
-    name?: str
+    name?: str = ""
     optional?: bool
+
+schema DragonflydbIoV1alpha1DragonflySpecImagePullSecretsItems0:
+    r"""
+    LocalObjectReference contains enough information to let you locate the
+    referenced object inside the same namespace.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        TODO: Add other useful fields. apiVersion, kind, uid?
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+    """
+    name?: str = ""
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0:
+    r"""
+    A single application container that you want to run within a pod.
+
+    Attributes
+    ----------
+    args : [str], default is Undefined, optional
+        Arguments to the entrypoint.
+        The container image's CMD is used if this is not provided.
+        Variable references $(VAR_NAME) are expanded using the container's environment. If a variable
+        cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced
+        to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will
+        produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless
+        of whether the variable exists or not. Cannot be updated.
+        More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell
+    command : [str], default is Undefined, optional
+        Entrypoint array. Not executed within a shell.
+        The container image's ENTRYPOINT is used if this is not provided.
+        Variable references $(VAR_NAME) are expanded using the container's environment. If a variable
+        cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced
+        to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will
+        produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless
+        of whether the variable exists or not. Cannot be updated.
+        More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell
+    env : [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0], default is Undefined, optional
+        List of environment variables to set in the container.
+        Cannot be updated.
+    envFrom : [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvFromItems0], default is Undefined, optional
+        List of sources to populate environment variables in the container.
+        The keys defined within a source must be a C_IDENTIFIER. All invalid keys
+        will be reported as an event when the container is starting. When a key exists in multiple
+        sources, the value associated with the last source will take precedence.
+        Values defined by an Env with a duplicate key will take precedence.
+        Cannot be updated.
+    image : str, default is Undefined, optional
+        Container image name.
+        More info: https://kubernetes.io/docs/concepts/containers/images
+        This field is optional to allow higher level config management to default or override
+        container images in workload controllers like Deployments and StatefulSets.
+    imagePullPolicy : str, default is Undefined, optional
+        Image pull policy.
+        One of Always, Never, IfNotPresent.
+        Defaults to Always if :latest tag is specified, or IfNotPresent otherwise.
+        Cannot be updated.
+        More info: https://kubernetes.io/docs/concepts/containers/images#updating-images
+    lifecycle : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0Lifecycle, default is Undefined, optional
+        lifecycle
+    livenessProbe : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LivenessProbe, default is Undefined, optional
+        liveness probe
+    name : str, default is Undefined, required
+        Name of the container specified as a DNS_LABEL.
+        Each container in a pod must have a unique name (DNS_LABEL).
+        Cannot be updated.
+    ports : [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0PortsItems0], default is Undefined, optional
+        List of ports to expose from the container. Not specifying a port here
+        DOES NOT prevent that port from being exposed. Any port which is
+        listening on the default "0.0.0.0" address inside a container will be
+        accessible from the network.
+        Modifying this array with strategic merge patch may corrupt the data.
+        For more information See https://github.com/kubernetes/kubernetes/issues/108255.
+        Cannot be updated.
+    readinessProbe : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ReadinessProbe, default is Undefined, optional
+        readiness probe
+    resizePolicy : [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ResizePolicyItems0], default is Undefined, optional
+        Resources resize policy for the container.
+    resources : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0Resources, default is Undefined, optional
+        resources
+    restartPolicy : str, default is Undefined, optional
+        RestartPolicy defines the restart behavior of individual containers in a pod.
+        This field may only be set for init containers, and the only allowed value is "Always".
+        For non-init containers or when this field is not specified,
+        the restart behavior is defined by the Pod's restart policy and the container type.
+        Setting the RestartPolicy as "Always" for the init container will have the following effect:
+        this init container will be continually restarted on
+        exit until all regular containers have terminated. Once all regular
+        containers have completed, all init containers with restartPolicy "Always"
+        will be shut down. This lifecycle differs from normal init containers and
+        is often referred to as a "sidecar" container. Although this init
+        container still starts in the init container sequence, it does not wait
+        for the container to complete before proceeding to the next init
+        container. Instead, the next init container starts immediately after this
+        init container is started, or after any startupProbe has successfully
+        completed.
+    securityContext : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContext, default is Undefined, optional
+        security context
+    startupProbe : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbe, default is Undefined, optional
+        startup probe
+    stdin : bool, default is Undefined, optional
+        Whether this container should allocate a buffer for stdin in the container runtime. If this
+        is not set, reads from stdin in the container will always result in EOF.
+        Default is false.
+    stdinOnce : bool, default is Undefined, optional
+        Whether the container runtime should close the stdin channel after it has been opened by
+        a single attach. When stdin is true the stdin stream will remain open across multiple attach
+        sessions. If stdinOnce is set to true, stdin is opened on container start, is empty until the
+        first client attaches to stdin, and then remains open and accepts data until the client disconnects,
+        at which time stdin is closed and remains closed until the container is restarted. If this
+        flag is false, a container processes that reads from stdin will never receive an EOF.
+        Default is false
+    terminationMessagePath : str, default is Undefined, optional
+        Optional: Path at which the file to which the container's termination message
+        will be written is mounted into the container's filesystem.
+        Message written is intended to be brief final status, such as an assertion failure message.
+        Will be truncated by the node if greater than 4096 bytes. The total message length across
+        all containers will be limited to 12kb.
+        Defaults to /dev/termination-log.
+        Cannot be updated.
+    terminationMessagePolicy : str, default is Undefined, optional
+        Indicate how the termination message should be populated. File will use the contents of
+        terminationMessagePath to populate the container status message on both success and failure.
+        FallbackToLogsOnError will use the last chunk of container log output if the termination
+        message file is empty and the container exited with an error.
+        The log output is limited to 2048 bytes or 80 lines, whichever is smaller.
+        Defaults to File.
+        Cannot be updated.
+    tty : bool, default is Undefined, optional
+        Whether this container should allocate a TTY for itself, also requires 'stdin' to be true.
+        Default is false.
+    volumeDevices : [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0VolumeDevicesItems0], default is Undefined, optional
+        volumeDevices is the list of block devices to be used by the container.
+    volumeMounts : [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0VolumeMountsItems0], default is Undefined, optional
+        Pod volumes to mount into the container's filesystem.
+        Cannot be updated.
+    workingDir : str, default is Undefined, optional
+        Container's working directory.
+        If not specified, the container runtime's default will be used, which
+        might be configured in the container image.
+        Cannot be updated.
+    """
+    args?: [str]
+    command?: [str]
+    env?: [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0]
+    envFrom?: [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvFromItems0]
+    image?: str
+    imagePullPolicy?: str
+    lifecycle?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0Lifecycle
+    livenessProbe?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LivenessProbe
+    name: str
+
+    ports?: [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0PortsItems0]
+    readinessProbe?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ReadinessProbe
+    resizePolicy?: [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ResizePolicyItems0]
+    resources?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0Resources
+    restartPolicy?: str
+    securityContext?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContext
+    startupProbe?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbe
+    stdin?: bool
+    stdinOnce?: bool
+    terminationMessagePath?: str
+    terminationMessagePolicy?: str
+    tty?: bool
+    volumeDevices?: [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0VolumeDevicesItems0]
+    volumeMounts?: [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0VolumeMountsItems0]
+    workingDir?: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvFromItems0:
+    r"""
+    EnvFromSource represents the source of a set of ConfigMaps
+
+    Attributes
+    ----------
+    configMapRef : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvFromItems0ConfigMapRef, default is Undefined, optional
+        config map ref
+    prefix : str, default is Undefined, optional
+        An optional identifier to prepend to each key in the ConfigMap. Must be a C_IDENTIFIER.
+    secretRef : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvFromItems0SecretRef, default is Undefined, optional
+        secret ref
+    """
+    configMapRef?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvFromItems0ConfigMapRef
+    prefix?: str
+    secretRef?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvFromItems0SecretRef
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvFromItems0ConfigMapRef:
+    r"""
+    The ConfigMap to select from
+
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        TODO: Add other useful fields. apiVersion, kind, uid?
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+    optional : bool, default is Undefined, optional
+        Specify whether the ConfigMap must be defined
+    """
+    name?: str = ""
+    optional?: bool
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvFromItems0SecretRef:
+    r"""
+    The Secret to select from
+
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        TODO: Add other useful fields. apiVersion, kind, uid?
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+    optional : bool, default is Undefined, optional
+        Specify whether the Secret must be defined
+    """
+    name?: str = ""
+    optional?: bool
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0:
+    r"""
+    EnvVar represents an environment variable present in a Container.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the environment variable. Must be a C_IDENTIFIER.
+    value : str, default is Undefined, optional
+        Variable references $(VAR_NAME) are expanded
+        using the previously defined environment variables in the container and
+        any service environment variables. If a variable cannot be resolved,
+        the reference in the input string will be unchanged. Double $$ are reduced
+        to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e.
+        "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)".
+        Escaped references will never be expanded, regardless of whether the variable
+        exists or not.
+        Defaults to "".
+    valueFrom : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFrom, default is Undefined, optional
+        value from
+    """
+    name: str
+
+    value?: str
+    valueFrom?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFrom
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFrom:
+    r"""
+    Source for the environment variable's value. Cannot be used if value is not empty.
+
+    Attributes
+    ----------
+    configMapKeyRef : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromConfigMapKeyRef, default is Undefined, optional
+        config map key ref
+    fieldRef : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromFieldRef, default is Undefined, optional
+        field ref
+    resourceFieldRef : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromResourceFieldRef, default is Undefined, optional
+        resource field ref
+    secretKeyRef : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromSecretKeyRef, default is Undefined, optional
+        secret key ref
+    """
+    configMapKeyRef?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromConfigMapKeyRef
+    fieldRef?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromFieldRef
+    resourceFieldRef?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromResourceFieldRef
+    secretKeyRef?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromSecretKeyRef
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromConfigMapKeyRef:
+    r"""
+    Selects a key of a ConfigMap.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        The key to select.
+    name : str, default is Undefined, optional
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        TODO: Add other useful fields. apiVersion, kind, uid?
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+    optional : bool, default is Undefined, optional
+        Specify whether the ConfigMap or its key must be defined
+    """
+    key: str
+
+    name?: str = ""
+    optional?: bool
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromFieldRef:
+    r"""
+    Selects a field of the pod: supports metadata.name, metadata.namespace, `metadata.labels['<KEY>']`, `metadata.annotations['<KEY>']`,
+    spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs.
+
+    Attributes
+    ----------
+    apiVersion : str, default is Undefined, optional
+        Version of the schema the FieldPath is written in terms of, defaults to "v1".
+    fieldPath : str, default is Undefined, required
+        Path of the field to select in the specified API version.
+    """
+    apiVersion?: str
+    fieldPath: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromResourceFieldRef:
+    r"""
+    Selects a resource of the container: only resources limits and requests
+    (limits.cpu, limits.memory, limits.ephemeral-storage, requests.cpu, requests.memory and requests.ephemeral-storage) are currently supported.
+
+    Attributes
+    ----------
+    containerName : str, default is Undefined, optional
+        Container name: required for volumes, optional for env vars
+    divisor : int | str, default is Undefined, optional
+        Specifies the output format of the exposed resources, defaults to "1"
+    resource : str, default is Undefined, required
+        Required: resource to select
+    """
+    containerName?: str
+    divisor?: int | str
+    resource: str
+
+    check:
+        _regex_match(str(divisor), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if divisor
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromSecretKeyRef:
+    r"""
+    Selects a key of a secret in the pod's namespace
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        The key of the secret to select from.  Must be a valid secret key.
+    name : str, default is Undefined, optional
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        TODO: Add other useful fields. apiVersion, kind, uid?
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        TODO: Drop `kubebuilder:default` when controller-gen doesn't need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.
+    optional : bool, default is Undefined, optional
+        Specify whether the Secret or its key must be defined
+    """
+    key: str
+
+    name?: str = ""
+    optional?: bool
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0Lifecycle:
+    r"""
+    Actions that the management system should take in response to container lifecycle events.
+    Cannot be updated.
+
+    Attributes
+    ----------
+    postStart : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStart, default is Undefined, optional
+        post start
+    preStop : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStop, default is Undefined, optional
+        pre stop
+    """
+    postStart?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStart
+    preStop?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStop
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStart:
+    r"""
+    PostStart is called immediately after a container is created. If the handler fails,
+    the container is terminated and restarted according to its restart policy.
+    Other management of the container blocks until the hook completes.
+    More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks
+
+    Attributes
+    ----------
+    exec : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStartExec, default is Undefined, optional
+        exec
+    httpGet : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStartHTTPGet, default is Undefined, optional
+        http get
+    sleep : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStartSleep, default is Undefined, optional
+        sleep
+    tcpSocket : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStartTCPSocket, default is Undefined, optional
+        tcp socket
+    """
+    exec?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStartExec
+    httpGet?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStartHTTPGet
+    sleep?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStartSleep
+    tcpSocket?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStartTCPSocket
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStartExec:
+    r"""
+    Exec specifies the action to take.
+
+    Attributes
+    ----------
+    command : [str], default is Undefined, optional
+        Command is the command line to execute inside the container, the working directory for the
+        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
+        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
+        a shell, you need to explicitly call out to that shell.
+        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+    """
+    command?: [str]
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStartHTTPGet:
+    r"""
+    HTTPGet specifies the http request to perform.
+
+    Attributes
+    ----------
+    host : str, default is Undefined, optional
+        Host name to connect to, defaults to the pod IP. You probably want to set
+        "Host" in httpHeaders instead.
+    httpHeaders : [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0], default is Undefined, optional
+        Custom headers to set in the request. HTTP allows repeated headers.
+    path : str, default is Undefined, optional
+        Path to access on the HTTP server.
+    port : int | str, default is Undefined, required
+        Name or number of the port to access on the container.
+        Number must be in the range 1 to 65535.
+        Name must be an IANA_SVC_NAME.
+    scheme : str, default is Undefined, optional
+        Scheme to use for connecting to the host.
+        Defaults to HTTP.
+    """
+    host?: str
+    httpHeaders?: [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0]
+    path?: str
+    port: int | str
+
+    scheme?: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0:
+    r"""
+    HTTPHeader describes a custom header to be used in HTTP probes
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        The header field name.
+        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+    value : str, default is Undefined, required
+        The header field value
+    """
+    name: str
+
+    value: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStartSleep:
+    r"""
+    Sleep represents the duration that the container should sleep before being terminated.
+
+    Attributes
+    ----------
+    seconds : int, default is Undefined, required
+        Seconds is the number of seconds to sleep.
+    """
+    seconds: int
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStartTCPSocket:
+    r"""
+    Deprecated. TCPSocket is NOT supported as a LifecycleHandler and kept
+    for the backward compatibility. There are no validation of this field and
+    lifecycle hooks will fail in runtime when tcp handler is specified.
+
+    Attributes
+    ----------
+    host : str, default is Undefined, optional
+        Optional: Host name to connect to, defaults to the pod IP.
+    port : int | str, default is Undefined, required
+        Number or name of the port to access on the container.
+        Number must be in the range 1 to 65535.
+        Name must be an IANA_SVC_NAME.
+    """
+    host?: str
+    port: int | str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStop:
+    r"""
+    PreStop is called immediately before a container is terminated due to an
+    API request or management event such as liveness/startup probe failure,
+    preemption, resource contention, etc. The handler is not called if the
+    container crashes or exits. The Pod's termination grace period countdown begins before the
+    PreStop hook is executed. Regardless of the outcome of the handler, the
+    container will eventually terminate within the Pod's termination grace
+    period (unless delayed by finalizers). Other management of the container blocks until the hook completes
+    or until the termination grace period is reached.
+    More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks
+
+    Attributes
+    ----------
+    exec : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStopExec, default is Undefined, optional
+        exec
+    httpGet : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStopHTTPGet, default is Undefined, optional
+        http get
+    sleep : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStopSleep, default is Undefined, optional
+        sleep
+    tcpSocket : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStopTCPSocket, default is Undefined, optional
+        tcp socket
+    """
+    exec?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStopExec
+    httpGet?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStopHTTPGet
+    sleep?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStopSleep
+    tcpSocket?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStopTCPSocket
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStopExec:
+    r"""
+    Exec specifies the action to take.
+
+    Attributes
+    ----------
+    command : [str], default is Undefined, optional
+        Command is the command line to execute inside the container, the working directory for the
+        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
+        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
+        a shell, you need to explicitly call out to that shell.
+        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+    """
+    command?: [str]
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStopHTTPGet:
+    r"""
+    HTTPGet specifies the http request to perform.
+
+    Attributes
+    ----------
+    host : str, default is Undefined, optional
+        Host name to connect to, defaults to the pod IP. You probably want to set
+        "Host" in httpHeaders instead.
+    httpHeaders : [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0], default is Undefined, optional
+        Custom headers to set in the request. HTTP allows repeated headers.
+    path : str, default is Undefined, optional
+        Path to access on the HTTP server.
+    port : int | str, default is Undefined, required
+        Name or number of the port to access on the container.
+        Number must be in the range 1 to 65535.
+        Name must be an IANA_SVC_NAME.
+    scheme : str, default is Undefined, optional
+        Scheme to use for connecting to the host.
+        Defaults to HTTP.
+    """
+    host?: str
+    httpHeaders?: [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0]
+    path?: str
+    port: int | str
+
+    scheme?: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0:
+    r"""
+    HTTPHeader describes a custom header to be used in HTTP probes
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        The header field name.
+        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+    value : str, default is Undefined, required
+        The header field value
+    """
+    name: str
+
+    value: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStopSleep:
+    r"""
+    Sleep represents the duration that the container should sleep before being terminated.
+
+    Attributes
+    ----------
+    seconds : int, default is Undefined, required
+        Seconds is the number of seconds to sleep.
+    """
+    seconds: int
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStopTCPSocket:
+    r"""
+    Deprecated. TCPSocket is NOT supported as a LifecycleHandler and kept
+    for the backward compatibility. There are no validation of this field and
+    lifecycle hooks will fail in runtime when tcp handler is specified.
+
+    Attributes
+    ----------
+    host : str, default is Undefined, optional
+        Optional: Host name to connect to, defaults to the pod IP.
+    port : int | str, default is Undefined, required
+        Number or name of the port to access on the container.
+        Number must be in the range 1 to 65535.
+        Name must be an IANA_SVC_NAME.
+    """
+    host?: str
+    port: int | str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LivenessProbe:
+    r"""
+    Periodic probe of container liveness.
+    Container will be restarted if the probe fails.
+    Cannot be updated.
+    More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+
+    Attributes
+    ----------
+    exec : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LivenessProbeExec, default is Undefined, optional
+        exec
+    failureThreshold : int, default is Undefined, optional
+        Minimum consecutive failures for the probe to be considered failed after having succeeded.
+        Defaults to 3. Minimum value is 1.
+    grpc : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LivenessProbeGrpc, default is Undefined, optional
+        grpc
+    httpGet : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LivenessProbeHTTPGet, default is Undefined, optional
+        http get
+    initialDelaySeconds : int, default is Undefined, optional
+        Number of seconds after the container has started before liveness probes are initiated.
+        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+    periodSeconds : int, default is Undefined, optional
+        How often (in seconds) to perform the probe.
+        Default to 10 seconds. Minimum value is 1.
+    successThreshold : int, default is Undefined, optional
+        Minimum consecutive successes for the probe to be considered successful after having failed.
+        Defaults to 1. Must be 1 for liveness and startup. Minimum value is 1.
+    tcpSocket : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LivenessProbeTCPSocket, default is Undefined, optional
+        tcp socket
+    terminationGracePeriodSeconds : int, default is Undefined, optional
+        Optional duration in seconds the pod needs to terminate gracefully upon probe failure.
+        The grace period is the duration in seconds after the processes running in the pod are sent
+        a termination signal and the time when the processes are forcibly halted with a kill signal.
+        Set this value longer than the expected cleanup time for your process.
+        If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this
+        value overrides the value provided by the pod spec.
+        Value must be non-negative integer. The value zero indicates stop immediately via
+        the kill signal (no opportunity to shut down).
+        This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate.
+        Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.
+    timeoutSeconds : int, default is Undefined, optional
+        Number of seconds after which the probe times out.
+        Defaults to 1 second. Minimum value is 1.
+        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+    """
+    exec?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LivenessProbeExec
+    failureThreshold?: int
+    grpc?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LivenessProbeGrpc
+    httpGet?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LivenessProbeHTTPGet
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    tcpSocket?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LivenessProbeTCPSocket
+    terminationGracePeriodSeconds?: int
+    timeoutSeconds?: int
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LivenessProbeExec:
+    r"""
+    Exec specifies the action to take.
+
+    Attributes
+    ----------
+    command : [str], default is Undefined, optional
+        Command is the command line to execute inside the container, the working directory for the
+        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
+        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
+        a shell, you need to explicitly call out to that shell.
+        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+    """
+    command?: [str]
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LivenessProbeGrpc:
+    r"""
+    GRPC specifies an action involving a GRPC port.
+
+    Attributes
+    ----------
+    port : int, default is Undefined, required
+        Port number of the gRPC service. Number must be in the range 1 to 65535.
+    service : str, default is Undefined, optional
+        Service is the name of the service to place in the gRPC HealthCheckRequest
+        (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
+
+
+        If this is not specified, the default behavior is defined by gRPC.
+    """
+    port: int
+
+    service?: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LivenessProbeHTTPGet:
+    r"""
+    HTTPGet specifies the http request to perform.
+
+    Attributes
+    ----------
+    host : str, default is Undefined, optional
+        Host name to connect to, defaults to the pod IP. You probably want to set
+        "Host" in httpHeaders instead.
+    httpHeaders : [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0], default is Undefined, optional
+        Custom headers to set in the request. HTTP allows repeated headers.
+    path : str, default is Undefined, optional
+        Path to access on the HTTP server.
+    port : int | str, default is Undefined, required
+        Name or number of the port to access on the container.
+        Number must be in the range 1 to 65535.
+        Name must be an IANA_SVC_NAME.
+    scheme : str, default is Undefined, optional
+        Scheme to use for connecting to the host.
+        Defaults to HTTP.
+    """
+    host?: str
+    httpHeaders?: [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0]
+    path?: str
+    port: int | str
+
+    scheme?: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0:
+    r"""
+    HTTPHeader describes a custom header to be used in HTTP probes
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        The header field name.
+        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+    value : str, default is Undefined, required
+        The header field value
+    """
+    name: str
+
+    value: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LivenessProbeTCPSocket:
+    r"""
+    TCPSocket specifies an action involving a TCP port.
+
+    Attributes
+    ----------
+    host : str, default is Undefined, optional
+        Optional: Host name to connect to, defaults to the pod IP.
+    port : int | str, default is Undefined, required
+        Number or name of the port to access on the container.
+        Number must be in the range 1 to 65535.
+        Name must be an IANA_SVC_NAME.
+    """
+    host?: str
+    port: int | str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0PortsItems0:
+    r"""
+    ContainerPort represents a network port in a single container.
+
+    Attributes
+    ----------
+    containerPort : int, default is Undefined, required
+        Number of port to expose on the pod's IP address.
+        This must be a valid port number, 0 < x < 65536.
+    hostIP : str, default is Undefined, optional
+        What host IP to bind the external port to.
+    hostPort : int, default is Undefined, optional
+        Number of port to expose on the host.
+        If specified, this must be a valid port number, 0 < x < 65536.
+        If HostNetwork is specified, this must match ContainerPort.
+        Most containers do not need this.
+    name : str, default is Undefined, optional
+        If specified, this must be an IANA_SVC_NAME and unique within the pod. Each
+        named port in a pod must have a unique name. Name for the port that can be
+        referred to by services.
+    $protocol : str, default is "TCP", optional
+        Protocol for port. Must be UDP, TCP, or SCTP.
+        Defaults to "TCP".
+    """
+    containerPort: int
+
+    hostIP?: str
+    hostPort?: int
+    name?: str
+    $protocol?: str = "TCP"
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ReadinessProbe:
+    r"""
+    Periodic probe of container service readiness.
+    Container will be removed from service endpoints if the probe fails.
+    Cannot be updated.
+    More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+
+    Attributes
+    ----------
+    exec : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ReadinessProbeExec, default is Undefined, optional
+        exec
+    failureThreshold : int, default is Undefined, optional
+        Minimum consecutive failures for the probe to be considered failed after having succeeded.
+        Defaults to 3. Minimum value is 1.
+    grpc : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ReadinessProbeGrpc, default is Undefined, optional
+        grpc
+    httpGet : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ReadinessProbeHTTPGet, default is Undefined, optional
+        http get
+    initialDelaySeconds : int, default is Undefined, optional
+        Number of seconds after the container has started before liveness probes are initiated.
+        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+    periodSeconds : int, default is Undefined, optional
+        How often (in seconds) to perform the probe.
+        Default to 10 seconds. Minimum value is 1.
+    successThreshold : int, default is Undefined, optional
+        Minimum consecutive successes for the probe to be considered successful after having failed.
+        Defaults to 1. Must be 1 for liveness and startup. Minimum value is 1.
+    tcpSocket : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ReadinessProbeTCPSocket, default is Undefined, optional
+        tcp socket
+    terminationGracePeriodSeconds : int, default is Undefined, optional
+        Optional duration in seconds the pod needs to terminate gracefully upon probe failure.
+        The grace period is the duration in seconds after the processes running in the pod are sent
+        a termination signal and the time when the processes are forcibly halted with a kill signal.
+        Set this value longer than the expected cleanup time for your process.
+        If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this
+        value overrides the value provided by the pod spec.
+        Value must be non-negative integer. The value zero indicates stop immediately via
+        the kill signal (no opportunity to shut down).
+        This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate.
+        Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.
+    timeoutSeconds : int, default is Undefined, optional
+        Number of seconds after which the probe times out.
+        Defaults to 1 second. Minimum value is 1.
+        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+    """
+    exec?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ReadinessProbeExec
+    failureThreshold?: int
+    grpc?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ReadinessProbeGrpc
+    httpGet?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ReadinessProbeHTTPGet
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    tcpSocket?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ReadinessProbeTCPSocket
+    terminationGracePeriodSeconds?: int
+    timeoutSeconds?: int
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ReadinessProbeExec:
+    r"""
+    Exec specifies the action to take.
+
+    Attributes
+    ----------
+    command : [str], default is Undefined, optional
+        Command is the command line to execute inside the container, the working directory for the
+        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
+        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
+        a shell, you need to explicitly call out to that shell.
+        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+    """
+    command?: [str]
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ReadinessProbeGrpc:
+    r"""
+    GRPC specifies an action involving a GRPC port.
+
+    Attributes
+    ----------
+    port : int, default is Undefined, required
+        Port number of the gRPC service. Number must be in the range 1 to 65535.
+    service : str, default is Undefined, optional
+        Service is the name of the service to place in the gRPC HealthCheckRequest
+        (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
+
+
+        If this is not specified, the default behavior is defined by gRPC.
+    """
+    port: int
+
+    service?: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ReadinessProbeHTTPGet:
+    r"""
+    HTTPGet specifies the http request to perform.
+
+    Attributes
+    ----------
+    host : str, default is Undefined, optional
+        Host name to connect to, defaults to the pod IP. You probably want to set
+        "Host" in httpHeaders instead.
+    httpHeaders : [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0], default is Undefined, optional
+        Custom headers to set in the request. HTTP allows repeated headers.
+    path : str, default is Undefined, optional
+        Path to access on the HTTP server.
+    port : int | str, default is Undefined, required
+        Name or number of the port to access on the container.
+        Number must be in the range 1 to 65535.
+        Name must be an IANA_SVC_NAME.
+    scheme : str, default is Undefined, optional
+        Scheme to use for connecting to the host.
+        Defaults to HTTP.
+    """
+    host?: str
+    httpHeaders?: [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0]
+    path?: str
+    port: int | str
+
+    scheme?: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0:
+    r"""
+    HTTPHeader describes a custom header to be used in HTTP probes
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        The header field name.
+        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+    value : str, default is Undefined, required
+        The header field value
+    """
+    name: str
+
+    value: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ReadinessProbeTCPSocket:
+    r"""
+    TCPSocket specifies an action involving a TCP port.
+
+    Attributes
+    ----------
+    host : str, default is Undefined, optional
+        Optional: Host name to connect to, defaults to the pod IP.
+    port : int | str, default is Undefined, required
+        Number or name of the port to access on the container.
+        Number must be in the range 1 to 65535.
+        Name must be an IANA_SVC_NAME.
+    """
+    host?: str
+    port: int | str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ResizePolicyItems0:
+    r"""
+    ContainerResizePolicy represents resource resize policy for the container.
+
+    Attributes
+    ----------
+    resourceName : str, default is Undefined, required
+        Name of the resource to which this resource resize policy applies.
+        Supported values: cpu, memory.
+    restartPolicy : str, default is Undefined, required
+        Restart policy to apply when specified resource is resized.
+        If not specified, it defaults to NotRequired.
+    """
+    resourceName: str
+
+    restartPolicy: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0Resources:
+    r"""
+    Compute Resources required by this container.
+    Cannot be updated.
+    More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+
+    Attributes
+    ----------
+    claims : [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ResourcesClaimsItems0], default is Undefined, optional
+        Claims lists the names of resources, defined in spec.resourceClaims,
+        that are used by this container.
+
+
+        This is an alpha field and requires enabling the
+        DynamicResourceAllocation feature gate.
+
+
+        This field is immutable. It can only be set for containers.
+    limits : {str:int | str}, default is Undefined, optional
+        Limits describes the maximum amount of compute resources allowed.
+        More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+    requests : {str:int | str}, default is Undefined, optional
+        Requests describes the minimum amount of compute resources required.
+        If Requests is omitted for a container, it defaults to Limits if that is explicitly specified,
+        otherwise to an implementation-defined value. Requests cannot exceed Limits.
+        More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+    """
+    claims?: [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ResourcesClaimsItems0]
+    limits?: {str:int | str}
+    requests?: {str:int | str}
+
+    check:
+        all _, limits in limits {_regex_match(str(limits), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if limits} if limits
+        all _, requests in requests {_regex_match(str(requests), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if requests} if requests
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ResourcesClaimsItems0:
+    r"""
+    ResourceClaim references one entry in PodSpec.ResourceClaims.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name must match the name of one entry in pod.spec.resourceClaims of
+        the Pod where this field is used. It makes that resource available
+        inside a container.
+    """
+    name: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContext:
+    r"""
+    SecurityContext defines the security options the container should be run with.
+    If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext.
+    More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+
+    Attributes
+    ----------
+    allowPrivilegeEscalation : bool, default is Undefined, optional
+        AllowPrivilegeEscalation controls whether a process can gain more
+        privileges than its parent process. This bool directly controls if
+        the no_new_privs flag will be set on the container process.
+        AllowPrivilegeEscalation is true always when the container is:
+        1) run as Privileged
+        2) has CAP_SYS_ADMIN
+        Note that this field cannot be set when spec.os.name is windows.
+    appArmorProfile : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContextAppArmorProfile, default is Undefined, optional
+        app armor profile
+    capabilities : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContextCapabilities, default is Undefined, optional
+        capabilities
+    privileged : bool, default is Undefined, optional
+        Run container in privileged mode.
+        Processes in privileged containers are essentially equivalent to root on the host.
+        Defaults to false.
+        Note that this field cannot be set when spec.os.name is windows.
+    procMount : str, default is Undefined, optional
+        procMount denotes the type of proc mount to use for the containers.
+        The default is DefaultProcMount which uses the container runtime defaults for
+        readonly paths and masked paths.
+        This requires the ProcMountType feature flag to be enabled.
+        Note that this field cannot be set when spec.os.name is windows.
+    readOnlyRootFilesystem : bool, default is Undefined, optional
+        Whether this container has a read-only root filesystem.
+        Default is false.
+        Note that this field cannot be set when spec.os.name is windows.
+    runAsGroup : int, default is Undefined, optional
+        The GID to run the entrypoint of the container process.
+        Uses runtime default if unset.
+        May also be set in PodSecurityContext.  If set in both SecurityContext and
+        PodSecurityContext, the value specified in SecurityContext takes precedence.
+        Note that this field cannot be set when spec.os.name is windows.
+    runAsNonRoot : bool, default is Undefined, optional
+        Indicates that the container must run as a non-root user.
+        If true, the Kubelet will validate the image at runtime to ensure that it
+        does not run as UID 0 (root) and fail to start the container if it does.
+        If unset or false, no such validation will be performed.
+        May also be set in PodSecurityContext.  If set in both SecurityContext and
+        PodSecurityContext, the value specified in SecurityContext takes precedence.
+    runAsUser : int, default is Undefined, optional
+        The UID to run the entrypoint of the container process.
+        Defaults to user specified in image metadata if unspecified.
+        May also be set in PodSecurityContext.  If set in both SecurityContext and
+        PodSecurityContext, the value specified in SecurityContext takes precedence.
+        Note that this field cannot be set when spec.os.name is windows.
+    seLinuxOptions : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContextSeLinuxOptions, default is Undefined, optional
+        se linux options
+    seccompProfile : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContextSeccompProfile, default is Undefined, optional
+        seccomp profile
+    windowsOptions : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContextWindowsOptions, default is Undefined, optional
+        windows options
+    """
+    allowPrivilegeEscalation?: bool
+    appArmorProfile?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContextAppArmorProfile
+    capabilities?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContextCapabilities
+    privileged?: bool
+    procMount?: str
+    readOnlyRootFilesystem?: bool
+    runAsGroup?: int
+    runAsNonRoot?: bool
+    runAsUser?: int
+    seLinuxOptions?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContextSeLinuxOptions
+    seccompProfile?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContextSeccompProfile
+    windowsOptions?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContextWindowsOptions
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContextAppArmorProfile:
+    r"""
+    appArmorProfile is the AppArmor options to use by this container. If set, this profile
+    overrides the pod's appArmorProfile.
+    Note that this field cannot be set when spec.os.name is windows.
+
+    Attributes
+    ----------
+    localhostProfile : str, default is Undefined, optional
+        localhostProfile indicates a profile loaded on the node that should be used.
+        The profile must be preconfigured on the node to work.
+        Must match the loaded name of the profile.
+        Must be set if and only if type is "Localhost".
+    $type : str, default is Undefined, required
+        type indicates which kind of AppArmor profile will be applied.
+        Valid options are:
+          Localhost - a profile pre-loaded on the node.
+          RuntimeDefault - the container runtime's default profile.
+          Unconfined - no AppArmor enforcement.
+    """
+    localhostProfile?: str
+    $type: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContextCapabilities:
+    r"""
+    The capabilities to add/drop when running containers.
+    Defaults to the default set of capabilities granted by the container runtime.
+    Note that this field cannot be set when spec.os.name is windows.
+
+    Attributes
+    ----------
+    add : [str], default is Undefined, optional
+        Added capabilities
+    drop : [str], default is Undefined, optional
+        Removed capabilities
+    """
+    add?: [str]
+    drop?: [str]
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContextSeLinuxOptions:
+    r"""
+    The SELinux context to be applied to the container.
+    If unspecified, the container runtime will allocate a random SELinux context for each
+    container.  May also be set in PodSecurityContext.  If set in both SecurityContext and
+    PodSecurityContext, the value specified in SecurityContext takes precedence.
+    Note that this field cannot be set when spec.os.name is windows.
+
+    Attributes
+    ----------
+    level : str, default is Undefined, optional
+        Level is SELinux level label that applies to the container.
+    role : str, default is Undefined, optional
+        Role is a SELinux role label that applies to the container.
+    $type : str, default is Undefined, optional
+        Type is a SELinux type label that applies to the container.
+    user : str, default is Undefined, optional
+        User is a SELinux user label that applies to the container.
+    """
+    level?: str
+    role?: str
+    $type?: str
+    user?: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContextSeccompProfile:
+    r"""
+    The seccomp options to use by this container. If seccomp options are
+    provided at both the pod & container level, the container options
+    override the pod options.
+    Note that this field cannot be set when spec.os.name is windows.
+
+    Attributes
+    ----------
+    localhostProfile : str, default is Undefined, optional
+        localhostProfile indicates a profile defined in a file on the node should be used.
+        The profile must be preconfigured on the node to work.
+        Must be a descending path, relative to the kubelet's configured seccomp profile location.
+        Must be set if type is "Localhost". Must NOT be set for any other type.
+    $type : str, default is Undefined, required
+        type indicates which kind of seccomp profile will be applied.
+        Valid options are:
+
+
+        Localhost - a profile defined in a file on the node should be used.
+        RuntimeDefault - the container runtime default profile should be used.
+        Unconfined - no profile should be applied.
+    """
+    localhostProfile?: str
+    $type: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContextWindowsOptions:
+    r"""
+    The Windows specific settings applied to all containers.
+    If unspecified, the options from the PodSecurityContext will be used.
+    If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.
+    Note that this field cannot be set when spec.os.name is linux.
+
+    Attributes
+    ----------
+    gmsaCredentialSpec : str, default is Undefined, optional
+        GMSACredentialSpec is where the GMSA admission webhook
+        (https://github.com/kubernetes-sigs/windows-gmsa) inlines the contents of the
+        GMSA credential spec named by the GMSACredentialSpecName field.
+    gmsaCredentialSpecName : str, default is Undefined, optional
+        GMSACredentialSpecName is the name of the GMSA credential spec to use.
+    hostProcess : bool, default is Undefined, optional
+        HostProcess determines if a container should be run as a 'Host Process' container.
+        All of a Pod's containers must have the same effective HostProcess value
+        (it is not allowed to have a mix of HostProcess containers and non-HostProcess containers).
+        In addition, if HostProcess is true then HostNetwork must also be set to true.
+    runAsUserName : str, default is Undefined, optional
+        The UserName in Windows to run the entrypoint of the container process.
+        Defaults to the user specified in image metadata if unspecified.
+        May also be set in PodSecurityContext. If set in both SecurityContext and
+        PodSecurityContext, the value specified in SecurityContext takes precedence.
+    """
+    gmsaCredentialSpec?: str
+    gmsaCredentialSpecName?: str
+    hostProcess?: bool
+    runAsUserName?: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbe:
+    r"""
+    StartupProbe indicates that the Pod has successfully initialized.
+    If specified, no other probes are executed until this completes successfully.
+    If this probe fails, the Pod will be restarted, just as if the livenessProbe failed.
+    This can be used to provide different probe parameters at the beginning of a Pod's lifecycle,
+    when it might take a long time to load data or warm a cache, than during steady-state operation.
+    This cannot be updated.
+    More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+
+    Attributes
+    ----------
+    exec : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbeExec, default is Undefined, optional
+        exec
+    failureThreshold : int, default is Undefined, optional
+        Minimum consecutive failures for the probe to be considered failed after having succeeded.
+        Defaults to 3. Minimum value is 1.
+    grpc : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbeGrpc, default is Undefined, optional
+        grpc
+    httpGet : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbeHTTPGet, default is Undefined, optional
+        http get
+    initialDelaySeconds : int, default is Undefined, optional
+        Number of seconds after the container has started before liveness probes are initiated.
+        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+    periodSeconds : int, default is Undefined, optional
+        How often (in seconds) to perform the probe.
+        Default to 10 seconds. Minimum value is 1.
+    successThreshold : int, default is Undefined, optional
+        Minimum consecutive successes for the probe to be considered successful after having failed.
+        Defaults to 1. Must be 1 for liveness and startup. Minimum value is 1.
+    tcpSocket : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbeTCPSocket, default is Undefined, optional
+        tcp socket
+    terminationGracePeriodSeconds : int, default is Undefined, optional
+        Optional duration in seconds the pod needs to terminate gracefully upon probe failure.
+        The grace period is the duration in seconds after the processes running in the pod are sent
+        a termination signal and the time when the processes are forcibly halted with a kill signal.
+        Set this value longer than the expected cleanup time for your process.
+        If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this
+        value overrides the value provided by the pod spec.
+        Value must be non-negative integer. The value zero indicates stop immediately via
+        the kill signal (no opportunity to shut down).
+        This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate.
+        Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.
+    timeoutSeconds : int, default is Undefined, optional
+        Number of seconds after which the probe times out.
+        Defaults to 1 second. Minimum value is 1.
+        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+    """
+    exec?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbeExec
+    failureThreshold?: int
+    grpc?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbeGrpc
+    httpGet?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbeHTTPGet
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    tcpSocket?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbeTCPSocket
+    terminationGracePeriodSeconds?: int
+    timeoutSeconds?: int
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbeExec:
+    r"""
+    Exec specifies the action to take.
+
+    Attributes
+    ----------
+    command : [str], default is Undefined, optional
+        Command is the command line to execute inside the container, the working directory for the
+        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
+        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
+        a shell, you need to explicitly call out to that shell.
+        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+    """
+    command?: [str]
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbeGrpc:
+    r"""
+    GRPC specifies an action involving a GRPC port.
+
+    Attributes
+    ----------
+    port : int, default is Undefined, required
+        Port number of the gRPC service. Number must be in the range 1 to 65535.
+    service : str, default is Undefined, optional
+        Service is the name of the service to place in the gRPC HealthCheckRequest
+        (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
+
+
+        If this is not specified, the default behavior is defined by gRPC.
+    """
+    port: int
+
+    service?: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbeHTTPGet:
+    r"""
+    HTTPGet specifies the http request to perform.
+
+    Attributes
+    ----------
+    host : str, default is Undefined, optional
+        Host name to connect to, defaults to the pod IP. You probably want to set
+        "Host" in httpHeaders instead.
+    httpHeaders : [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbeHTTPGetHTTPHeadersItems0], default is Undefined, optional
+        Custom headers to set in the request. HTTP allows repeated headers.
+    path : str, default is Undefined, optional
+        Path to access on the HTTP server.
+    port : int | str, default is Undefined, required
+        Name or number of the port to access on the container.
+        Number must be in the range 1 to 65535.
+        Name must be an IANA_SVC_NAME.
+    scheme : str, default is Undefined, optional
+        Scheme to use for connecting to the host.
+        Defaults to HTTP.
+    """
+    host?: str
+    httpHeaders?: [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbeHTTPGetHTTPHeadersItems0]
+    path?: str
+    port: int | str
+
+    scheme?: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbeHTTPGetHTTPHeadersItems0:
+    r"""
+    HTTPHeader describes a custom header to be used in HTTP probes
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        The header field name.
+        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+    value : str, default is Undefined, required
+        The header field value
+    """
+    name: str
+
+    value: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbeTCPSocket:
+    r"""
+    TCPSocket specifies an action involving a TCP port.
+
+    Attributes
+    ----------
+    host : str, default is Undefined, optional
+        Optional: Host name to connect to, defaults to the pod IP.
+    port : int | str, default is Undefined, required
+        Number or name of the port to access on the container.
+        Number must be in the range 1 to 65535.
+        Name must be an IANA_SVC_NAME.
+    """
+    host?: str
+    port: int | str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0VolumeDevicesItems0:
+    r"""
+    volumeDevice describes a mapping of a raw block device within a container.
+
+    Attributes
+    ----------
+    devicePath : str, default is Undefined, required
+        devicePath is the path inside of the container that the device will be mapped to.
+    name : str, default is Undefined, required
+        name must match the name of a persistentVolumeClaim in the pod
+    """
+    devicePath: str
+
+    name: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0VolumeMountsItems0:
+    r"""
+    VolumeMount describes a mounting of a Volume within a container.
+
+    Attributes
+    ----------
+    mountPath : str, default is Undefined, required
+        Path within the container at which the volume should be mounted.  Must
+        not contain ':'.
+    mountPropagation : str, default is Undefined, optional
+        mountPropagation determines how mounts are propagated from the host
+        to container and the other way around.
+        When not set, MountPropagationNone is used.
+        This field is beta in 1.10.
+        When RecursiveReadOnly is set to IfPossible or to Enabled, MountPropagation must be None or unspecified
+        (which defaults to None).
+    name : str, default is Undefined, required
+        This must match the Name of a Volume.
+    readOnly : bool, default is Undefined, optional
+        Mounted read-only if true, read-write otherwise (false or unspecified).
+        Defaults to false.
+    recursiveReadOnly : str, default is Undefined, optional
+        RecursiveReadOnly specifies whether read-only mounts should be handled
+        recursively.
+
+
+        If ReadOnly is false, this field has no meaning and must be unspecified.
+
+
+        If ReadOnly is true, and this field is set to Disabled, the mount is not made
+        recursively read-only.  If this field is set to IfPossible, the mount is made
+        recursively read-only, if it is supported by the container runtime.  If this
+        field is set to Enabled, the mount is made recursively read-only if it is
+        supported by the container runtime, otherwise the pod will not be started and
+        an error will be generated to indicate the reason.
+
+
+        If this field is set to IfPossible or Enabled, MountPropagation must be set to
+        None (or be unspecified, which defaults to None).
+
+
+        If this field is not specified, it is treated as an equivalent of Disabled.
+    subPath : str, default is Undefined, optional
+        Path within the volume from which the container's volume should be mounted.
+        Defaults to "" (volume's root).
+    subPathExpr : str, default is Undefined, optional
+        Expanded path within the volume from which the container's volume should be mounted.
+        Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment.
+        Defaults to "" (volume's root).
+        SubPathExpr and SubPath are mutually exclusive.
+    """
+    mountPath: str
+
+    mountPropagation?: str
+    name: str
+
+    readOnly?: bool
+    recursiveReadOnly?: str
+    subPath?: str
+    subPathExpr?: str
 
 schema DragonflydbIoV1alpha1DragonflySpecPodSecurityContext:
     r"""
@@ -1238,18 +2981,29 @@ schema DragonflydbIoV1alpha1DragonflySpecPodSecurityContextWindowsOptions:
 
 schema DragonflydbIoV1alpha1DragonflySpecResources:
     r"""
-    (Optional) Dragonfly container resource limits. Any container limits can be specified.
+    (Optional) Dragonfly container resource limits. Any container limits
+    can be specified.
 
     Attributes
     ----------
     claims : [DragonflydbIoV1alpha1DragonflySpecResourcesClaimsItems0], default is Undefined, optional
-        Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container. 
-         This is an alpha field and requires enabling the DynamicResourceAllocation feature gate. 
-         This field is immutable. It can only be set for containers.
+        Claims lists the names of resources, defined in spec.resourceClaims,
+        that are used by this container.
+
+
+        This is an alpha field and requires enabling the
+        DynamicResourceAllocation feature gate.
+
+
+        This field is immutable. It can only be set for containers.
     limits : {str:int | str}, default is Undefined, optional
-        Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+        Limits describes the maximum amount of compute resources allowed.
+        More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
     requests : {str:int | str}, default is Undefined, optional
-        Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+        Requests describes the minimum amount of compute resources required.
+        If Requests is omitted for a container, it defaults to Limits if that is explicitly specified,
+        otherwise to an implementation-defined value. Requests cannot exceed Limits.
+        More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
     """
     claims?: [DragonflydbIoV1alpha1DragonflySpecResourcesClaimsItems0]
     limits?: {str:int | str}
@@ -1266,7 +3020,9 @@ schema DragonflydbIoV1alpha1DragonflySpecResourcesClaimsItems0:
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+        Name must match the name of one entry in pod.spec.resourceClaims of
+        the Pod where this field is used. It makes that resource available
+        inside a container.
     """
     name: str
 
@@ -1278,10 +3034,19 @@ schema DragonflydbIoV1alpha1DragonflySpecServiceSpec:
     ----------
     annotations : {str:str}, default is Undefined, optional
         (Optional) Dragonfly Service Annotations
+    labels : {str:str}, default is Undefined, optional
+        (Optional) Dragonfly Service Labels
+    name : str, default is Undefined, optional
+        (Optional) Dragonfly Service name
+    nodePort : int, default is Undefined, optional
+        (Optional) Dragonfly Service nodePort
     $type : str, default is Undefined, optional
         (Optional) Dragonfly Service type
     """
     annotations?: {str:str}
+    labels?: {str:str}
+    name?: str
+    nodePort?: int
     $type?: str
 
 schema DragonflydbIoV1alpha1DragonflySpecSnapshot:
@@ -1293,7 +3058,9 @@ schema DragonflydbIoV1alpha1DragonflySpecSnapshot:
     cron : str, default is Undefined, optional
         (Optional) Dragonfly snapshot schedule
     dir : str, default is Undefined, optional
-        (Optional) The path to the snapshot directory This can also be an S3 URI with the prefix `s3://` when using S3 as the snapshot backend
+        (Optional) The path to the snapshot directory
+        This can also be an S3 URI with the prefix `s3://` when
+        using S3 as the snapshot backend
     persistentVolumeClaimSpec : DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpec, default is Undefined, optional
         persistent volume claim spec
     """
@@ -1308,7 +3075,8 @@ schema DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpec:
     Attributes
     ----------
     accessModes : [str], default is Undefined, optional
-        accessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1
+        accessModes contains the desired access modes the volume should have.
+        More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1
     dataSource : DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecDataSource, default is Undefined, optional
         data source
     dataSourceRef : DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecDataSourceRef, default is Undefined, optional
@@ -1318,9 +3086,24 @@ schema DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpec:
     selector : DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecSelector, default is Undefined, optional
         selector
     storageClassName : str, default is Undefined, optional
-        storageClassName is the name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1
+        storageClassName is the name of the StorageClass required by the claim.
+        More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1
+    volumeAttributesClassName : str, default is Undefined, optional
+        volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim.
+        If specified, the CSI driver will create or update the volume with the attributes defined
+        in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName,
+        it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass
+        will be applied to the claim but it's not allowed to reset this field to empty string once it is set.
+        If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass
+        will be set by the persistentvolume controller if it exists.
+        If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be
+        set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource
+        exists.
+        More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/
+        (Alpha) Using this field requires the VolumeAttributesClass feature gate to be enabled.
     volumeMode : str, default is Undefined, optional
-        volumeMode defines what type of volume is required by the claim. Value of Filesystem is implied when not included in claim spec.
+        volumeMode defines what type of volume is required by the claim.
+        Value of Filesystem is implied when not included in claim spec.
     volumeName : str, default is Undefined, optional
         volumeName is the binding reference to the PersistentVolume backing this claim.
     """
@@ -1330,17 +3113,27 @@ schema DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpec:
     resources?: DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecResources
     selector?: DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecSelector
     storageClassName?: str
+    volumeAttributesClassName?: str
     volumeMode?: str
     volumeName?: str
 
 schema DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecDataSource:
     r"""
-    dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. When the AnyVolumeDataSource feature gate is enabled, dataSource contents will be copied to dataSourceRef, and dataSourceRef contents will be copied to dataSource when dataSourceRef.namespace is not specified. If the namespace is specified, then dataSourceRef will not be copied to dataSource.
+    dataSource field can be used to specify either:
+    * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot)
+    * An existing PVC (PersistentVolumeClaim)
+    If the provisioner or an external controller can support the specified data source,
+    it will create a new volume based on the contents of the specified data source.
+    When the AnyVolumeDataSource feature gate is enabled, dataSource contents will be copied to dataSourceRef,
+    and dataSourceRef contents will be copied to dataSource when dataSourceRef.namespace is not specified.
+    If the namespace is specified, then dataSourceRef will not be copied to dataSource.
 
     Attributes
     ----------
     apiGroup : str, default is Undefined, optional
-        APIGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required.
+        APIGroup is the group for the resource being referenced.
+        If APIGroup is not specified, the specified Kind must be in the core API group.
+        For any other third-party types, APIGroup is required.
     kind : str, default is Undefined, required
         Kind is the type of resource being referenced
     name : str, default is Undefined, required
@@ -1353,18 +3146,44 @@ schema DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecDataSo
 
 schema DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecDataSourceRef:
     r"""
-    dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the dataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, when namespace isn't specified in dataSourceRef, both fields (dataSource and dataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. When namespace is specified in dataSourceRef, dataSource isn't set to the same value and must be empty. There are three important differences between dataSource and dataSourceRef: * While dataSource only allows two specific types of objects, dataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects. * While dataSource ignores disallowed values (dropping them), dataSourceRef preserves all values, and generates an error if a disallowed value is specified. * While dataSource only allows local objects, dataSourceRef allows objects in any namespaces. (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled. (Alpha) Using the namespace field of dataSourceRef requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
+    dataSourceRef specifies the object from which to populate the volume with data, if a non-empty
+    volume is desired. This may be any object from a non-empty API group (non
+    core object) or a PersistentVolumeClaim object.
+    When this field is specified, volume binding will only succeed if the type of
+    the specified object matches some installed volume populator or dynamic
+    provisioner.
+    This field will replace the functionality of the dataSource field and as such
+    if both fields are non-empty, they must have the same value. For backwards
+    compatibility, when namespace isn't specified in dataSourceRef,
+    both fields (dataSource and dataSourceRef) will be set to the same
+    value automatically if one of them is empty and the other is non-empty.
+    When namespace is specified in dataSourceRef,
+    dataSource isn't set to the same value and must be empty.
+    There are three important differences between dataSource and dataSourceRef:
+    * While dataSource only allows two specific types of objects, dataSourceRef
+      allows any non-core object, as well as PersistentVolumeClaim objects.
+    * While dataSource ignores disallowed values (dropping them), dataSourceRef
+      preserves all values, and generates an error if a disallowed value is
+      specified.
+    * While dataSource only allows local objects, dataSourceRef allows objects
+      in any namespaces.
+    (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
+    (Alpha) Using the namespace field of dataSourceRef requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
 
     Attributes
     ----------
     apiGroup : str, default is Undefined, optional
-        APIGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required.
+        APIGroup is the group for the resource being referenced.
+        If APIGroup is not specified, the specified Kind must be in the core API group.
+        For any other third-party types, APIGroup is required.
     kind : str, default is Undefined, required
         Kind is the type of resource being referenced
     name : str, default is Undefined, required
         Name is the name of resource being referenced
     namespace : str, default is Undefined, optional
-        Namespace is the namespace of resource being referenced Note that when a namespace is specified, a gateway.networking.k8s.io/ReferenceGrant object is required in the referent namespace to allow that namespace's owner to accept the reference. See the ReferenceGrant documentation for details. (Alpha) This field requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
+        Namespace is the namespace of resource being referenced
+        Note that when a namespace is specified, a gateway.networking.k8s.io/ReferenceGrant object is required in the referent namespace to allow that namespace's owner to accept the reference. See the ReferenceGrant documentation for details.
+        (Alpha) This field requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
     """
     apiGroup?: str
     kind: str
@@ -1375,37 +3194,29 @@ schema DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecDataSo
 
 schema DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecResources:
     r"""
-    resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
+    resources represents the minimum resources the volume should have.
+    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    that are lower than previous value but must still be higher than capacity recorded in the
+    status field of the claim.
+    More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
 
     Attributes
     ----------
-    claims : [DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecResourcesClaimsItems0], default is Undefined, optional
-        Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container. 
-         This is an alpha field and requires enabling the DynamicResourceAllocation feature gate. 
-         This field is immutable. It can only be set for containers.
     limits : {str:int | str}, default is Undefined, optional
-        Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+        Limits describes the maximum amount of compute resources allowed.
+        More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
     requests : {str:int | str}, default is Undefined, optional
-        Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+        Requests describes the minimum amount of compute resources required.
+        If Requests is omitted for a container, it defaults to Limits if that is explicitly specified,
+        otherwise to an implementation-defined value. Requests cannot exceed Limits.
+        More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
     """
-    claims?: [DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecResourcesClaimsItems0]
     limits?: {str:int | str}
     requests?: {str:int | str}
 
     check:
         all _, limits in limits {_regex_match(str(limits), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if limits} if limits
         all _, requests in requests {_regex_match(str(requests), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if requests} if requests
-
-schema DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecResourcesClaimsItems0:
-    r"""
-    ResourceClaim references one entry in PodSpec.ResourceClaims.
-
-    Attributes
-    ----------
-    name : str, default is Undefined, required
-        Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
-    """
-    name: str
 
 schema DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecSelector:
     r"""
@@ -1416,23 +3227,30 @@ schema DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecSelect
     matchExpressions : [DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecSelectorMatchExpressionsItems0], default is Undefined, optional
         matchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
     matchExpressions?: [DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         key is the label key that the selector applies to.
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
     """
     key: str
 
@@ -1442,7 +3260,9 @@ schema DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecSelect
 
 schema DragonflydbIoV1alpha1DragonflySpecTLSSecretRef:
     r"""
-    (Optional) Dragonfly TLS secret to used for TLS Connections to Dragonfly. Dragonfly instance  must have access to this secret and be in the same namespace
+    (Optional) Dragonfly TLS secret to used for TLS
+    Connections to Dragonfly. Dragonfly instance  must
+    have access to this secret and be in the same namespace
 
     Attributes
     ----------
@@ -1456,20 +3276,30 @@ schema DragonflydbIoV1alpha1DragonflySpecTLSSecretRef:
 
 schema DragonflydbIoV1alpha1DragonflySpecTolerationsItems0:
     r"""
-    The pod this Toleration is attached to tolerates any taint that matches the triple <key,value,effect> using the matching operator <operator>.
+    The pod this Toleration is attached to tolerates any taint that matches
+    the triple <key,value,effect> using the matching operator <operator>.
 
     Attributes
     ----------
     effect : str, default is Undefined, optional
-        Effect indicates the taint effect to match. Empty means match all taint effects. When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
+        Effect indicates the taint effect to match. Empty means match all taint effects.
+        When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
     key : str, default is Undefined, optional
-        Key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys.
+        Key is the taint key that the toleration applies to. Empty means match all taint keys.
+        If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
-        Operator represents a key's relationship to the value. Valid operators are Exists and Equal. Defaults to Equal. Exists is equivalent to wildcard for value, so that a pod can tolerate all taints of a particular category.
+        Operator represents a key's relationship to the value.
+        Valid operators are Exists and Equal. Defaults to Equal.
+        Exists is equivalent to wildcard for value, so that a pod can
+        tolerate all taints of a particular category.
     tolerationSeconds : int, default is Undefined, optional
-        TolerationSeconds represents the period of time the toleration (which must be of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default, it is not set, which means tolerate the taint forever (do not evict). Zero and negative values will be treated as 0 (evict immediately) by the system.
+        TolerationSeconds represents the period of time the toleration (which must be
+        of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
+        it is not set, which means tolerate the taint forever (do not evict). Zero and
+        negative values will be treated as 0 (evict immediately) by the system.
     value : str, default is Undefined, optional
-        Value is the taint value the toleration matches to. If the operator is Exists, the value should be empty, otherwise just a regular string.
+        Value is the taint value the toleration matches to.
+        If the operator is Exists, the value should be empty, otherwise just a regular string.
     """
     effect?: str
     key?: str
@@ -1486,23 +3316,105 @@ schema DragonflydbIoV1alpha1DragonflySpecTopologySpreadConstraintsItems0:
     labelSelector : DragonflydbIoV1alpha1DragonflySpecTopologySpreadConstraintsItems0LabelSelector, default is Undefined, optional
         label selector
     matchLabelKeys : [str], default is Undefined, optional
-        MatchLabelKeys is a set of pod label keys to select the pods over which spreading will be calculated. The keys are used to lookup values from the incoming pod labels, those key-value labels are ANDed with labelSelector to select the group of existing pods over which spreading will be calculated for the incoming pod. Keys that don't exist in the incoming pod labels will be ignored. A null or empty list means only match against labelSelector.
+        MatchLabelKeys is a set of pod label keys to select the pods over which
+        spreading will be calculated. The keys are used to lookup values from the
+        incoming pod labels, those key-value labels are ANDed with labelSelector
+        to select the group of existing pods over which spreading will be calculated
+        for the incoming pod. The same key is forbidden to exist in both MatchLabelKeys and LabelSelector.
+        MatchLabelKeys cannot be set when LabelSelector isn't set.
+        Keys that don't exist in the incoming pod labels will
+        be ignored. A null or empty list means only match against labelSelector.
+
+
+        This is a beta field and requires the MatchLabelKeysInPodTopologySpread feature gate to be enabled (enabled by default).
     maxSkew : int, default is Undefined, required
-        MaxSkew describes the degree to which pods may be unevenly distributed. When `whenUnsatisfiable=DoNotSchedule`, it is the maximum permitted difference between the number of matching pods in the target topology and the global minimum. The global minimum is the minimum number of matching pods in an eligible domain or zero if the number of eligible domains is less than MinDomains. For example, in a 3-zone cluster, MaxSkew is set to 1, and pods with the same labelSelector spread as 2/2/1: In this case, the global minimum is 1. | zone1 | zone2 | zone3 | |  P P  |  P P  |   P   | - if MaxSkew is 1, incoming pod can only be scheduled to zone3 to become 2/2/2; scheduling it onto zone1(zone2) would make the ActualSkew(3-1) on zone1(zone2) violate MaxSkew(1). - if MaxSkew is 2, incoming pod can be scheduled onto any zone. When `whenUnsatisfiable=ScheduleAnyway`, it is used to give higher precedence to topologies that satisfy it. It's a required field. Default value is 1 and 0 is not allowed.
+        MaxSkew describes the degree to which pods may be unevenly distributed.
+        When `whenUnsatisfiable=DoNotSchedule`, it is the maximum permitted difference
+        between the number of matching pods in the target topology and the global minimum.
+        The global minimum is the minimum number of matching pods in an eligible domain
+        or zero if the number of eligible domains is less than MinDomains.
+        For example, in a 3-zone cluster, MaxSkew is set to 1, and pods with the same
+        labelSelector spread as 2/2/1:
+        In this case, the global minimum is 1.
+        | zone1 | zone2 | zone3 |
+        |  P P  |  P P  |   P   |
+        - if MaxSkew is 1, incoming pod can only be scheduled to zone3 to become 2/2/2;
+        scheduling it onto zone1(zone2) would make the ActualSkew(3-1) on zone1(zone2)
+        violate MaxSkew(1).
+        - if MaxSkew is 2, incoming pod can be scheduled onto any zone.
+        When `whenUnsatisfiable=ScheduleAnyway`, it is used to give higher precedence
+        to topologies that satisfy it.
+        It's a required field. Default value is 1 and 0 is not allowed.
     minDomains : int, default is Undefined, optional
-        MinDomains indicates a minimum number of eligible domains. When the number of eligible domains with matching topology keys is less than minDomains, Pod Topology Spread treats "global minimum" as 0, and then the calculation of Skew is performed. And when the number of eligible domains with matching topology keys equals or greater than minDomains, this value has no effect on scheduling. As a result, when the number of eligible domains is less than minDomains, scheduler won't schedule more than maxSkew Pods to those domains. If value is nil, the constraint behaves as if MinDomains is equal to 1. Valid values are integers greater than 0. When value is not nil, WhenUnsatisfiable must be DoNotSchedule. 
-         For example, in a 3-zone cluster, MaxSkew is set to 2, MinDomains is set to 5 and pods with the same labelSelector spread as 2/2/2: | zone1 | zone2 | zone3 | |  P P  |  P P  |  P P  | The number of domains is less than 5(MinDomains), so "global minimum" is treated as 0. In this situation, new pod with the same labelSelector cannot be scheduled, because computed skew will be 3(3 - 0) if new Pod is scheduled to any of the three zones, it will violate MaxSkew. 
-         This is a beta field and requires the MinDomainsInPodTopologySpread feature gate to be enabled (enabled by default).
+        MinDomains indicates a minimum number of eligible domains.
+        When the number of eligible domains with matching topology keys is less than minDomains,
+        Pod Topology Spread treats "global minimum" as 0, and then the calculation of Skew is performed.
+        And when the number of eligible domains with matching topology keys equals or greater than minDomains,
+        this value has no effect on scheduling.
+        As a result, when the number of eligible domains is less than minDomains,
+        scheduler won't schedule more than maxSkew Pods to those domains.
+        If value is nil, the constraint behaves as if MinDomains is equal to 1.
+        Valid values are integers greater than 0.
+        When value is not nil, WhenUnsatisfiable must be DoNotSchedule.
+
+
+        For example, in a 3-zone cluster, MaxSkew is set to 2, MinDomains is set to 5 and pods with the same
+        labelSelector spread as 2/2/2:
+        | zone1 | zone2 | zone3 |
+        |  P P  |  P P  |  P P  |
+        The number of domains is less than 5(MinDomains), so "global minimum" is treated as 0.
+        In this situation, new pod with the same labelSelector cannot be scheduled,
+        because computed skew will be 3(3 - 0) if new Pod is scheduled to any of the three zones,
+        it will violate MaxSkew.
     nodeAffinityPolicy : str, default is Undefined, optional
-        NodeAffinityPolicy indicates how we will treat Pod's nodeAffinity/nodeSelector when calculating pod topology spread skew. Options are: - Honor: only nodes matching nodeAffinity/nodeSelector are included in the calculations. - Ignore: nodeAffinity/nodeSelector are ignored. All nodes are included in the calculations. 
-         If this value is nil, the behavior is equivalent to the Honor policy. This is a beta-level feature default enabled by the NodeInclusionPolicyInPodTopologySpread feature flag.
+        NodeAffinityPolicy indicates how we will treat Pod's nodeAffinity/nodeSelector
+        when calculating pod topology spread skew. Options are:
+        - Honor: only nodes matching nodeAffinity/nodeSelector are included in the calculations.
+        - Ignore: nodeAffinity/nodeSelector are ignored. All nodes are included in the calculations.
+
+
+        If this value is nil, the behavior is equivalent to the Honor policy.
+        This is a beta-level feature default enabled by the NodeInclusionPolicyInPodTopologySpread feature flag.
     nodeTaintsPolicy : str, default is Undefined, optional
-        NodeTaintsPolicy indicates how we will treat node taints when calculating pod topology spread skew. Options are: - Honor: nodes without taints, along with tainted nodes for which the incoming pod has a toleration, are included. - Ignore: node taints are ignored. All nodes are included. 
-         If this value is nil, the behavior is equivalent to the Ignore policy. This is a beta-level feature default enabled by the NodeInclusionPolicyInPodTopologySpread feature flag.
+        NodeTaintsPolicy indicates how we will treat node taints when calculating
+        pod topology spread skew. Options are:
+        - Honor: nodes without taints, along with tainted nodes for which the incoming pod
+        has a toleration, are included.
+        - Ignore: node taints are ignored. All nodes are included.
+
+
+        If this value is nil, the behavior is equivalent to the Ignore policy.
+        This is a beta-level feature default enabled by the NodeInclusionPolicyInPodTopologySpread feature flag.
     topologyKey : str, default is Undefined, required
-        TopologyKey is the key of node labels. Nodes that have a label with this key and identical values are considered to be in the same topology. We consider each <key, value> as a "bucket", and try to put balanced number of pods into each bucket. We define a domain as a particular instance of a topology. Also, we define an eligible domain as a domain whose nodes meet the requirements of nodeAffinityPolicy and nodeTaintsPolicy. e.g. If TopologyKey is "kubernetes.io/hostname", each Node is a domain of that topology. And, if TopologyKey is "topology.kubernetes.io/zone", each zone is a domain of that topology. It's a required field.
+        TopologyKey is the key of node labels. Nodes that have a label with this key
+        and identical values are considered to be in the same topology.
+        We consider each <key, value> as a "bucket", and try to put balanced number
+        of pods into each bucket.
+        We define a domain as a particular instance of a topology.
+        Also, we define an eligible domain as a domain whose nodes meet the requirements of
+        nodeAffinityPolicy and nodeTaintsPolicy.
+        e.g. If TopologyKey is "kubernetes.io/hostname", each Node is a domain of that topology.
+        And, if TopologyKey is "topology.kubernetes.io/zone", each zone is a domain of that topology.
+        It's a required field.
     whenUnsatisfiable : str, default is Undefined, required
-        WhenUnsatisfiable indicates how to deal with a pod if it doesn't satisfy the spread constraint. - DoNotSchedule (default) tells the scheduler not to schedule it. - ScheduleAnyway tells the scheduler to schedule the pod in any location, but giving higher precedence to topologies that would help reduce the skew. A constraint is considered "Unsatisfiable" for an incoming pod if and only if every possible node assignment for that pod would violate "MaxSkew" on some topology. For example, in a 3-zone cluster, MaxSkew is set to 1, and pods with the same labelSelector spread as 3/1/1: | zone1 | zone2 | zone3 | | P P P |   P   |   P   | If WhenUnsatisfiable is set to DoNotSchedule, incoming pod can only be scheduled to zone2(zone3) to become 3/2/1(3/1/2) as ActualSkew(2-1) on zone2(zone3) satisfies MaxSkew(1). In other words, the cluster can still be imbalanced, but scheduler won't make it *more* imbalanced. It's a required field.
+        WhenUnsatisfiable indicates how to deal with a pod if it doesn't satisfy
+        the spread constraint.
+        - DoNotSchedule (default) tells the scheduler not to schedule it.
+        - ScheduleAnyway tells the scheduler to schedule the pod in any location,
+          but giving higher precedence to topologies that would help reduce the
+          skew.
+        A constraint is considered "Unsatisfiable" for an incoming pod
+        if and only if every possible node assignment for that pod would violate
+        "MaxSkew" on some topology.
+        For example, in a 3-zone cluster, MaxSkew is set to 1, and pods with the same
+        labelSelector spread as 3/1/1:
+        | zone1 | zone2 | zone3 |
+        | P P P |   P   |   P   |
+        If WhenUnsatisfiable is set to DoNotSchedule, incoming pod can only be scheduled
+        to zone2(zone3) to become 3/2/1(3/1/2) as ActualSkew(2-1) on zone2(zone3) satisfies
+        MaxSkew(1). In other words, the cluster can still be imbalanced, but scheduler
+        won't make it *more* imbalanced.
+        It's a required field.
     """
     labelSelector?: DragonflydbIoV1alpha1DragonflySpecTopologySpreadConstraintsItems0LabelSelector
     matchLabelKeys?: [str]
@@ -1517,30 +3429,39 @@ schema DragonflydbIoV1alpha1DragonflySpecTopologySpreadConstraintsItems0:
 
 schema DragonflydbIoV1alpha1DragonflySpecTopologySpreadConstraintsItems0LabelSelector:
     r"""
-    LabelSelector is used to find matching pods. Pods that match this label selector are counted to determine the number of pods in their corresponding topology domain.
+    LabelSelector is used to find matching pods.
+    Pods that match this label selector are counted to determine the number of pods
+    in their corresponding topology domain.
 
     Attributes
     ----------
     matchExpressions : [DragonflydbIoV1alpha1DragonflySpecTopologySpreadConstraintsItems0LabelSelectorMatchExpressionsItems0], default is Undefined, optional
         matchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
     matchExpressions?: [DragonflydbIoV1alpha1DragonflySpecTopologySpreadConstraintsItems0LabelSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema DragonflydbIoV1alpha1DragonflySpecTopologySpreadConstraintsItems0LabelSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         key is the label key that the selector applies to.
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
     """
     key: str
 
@@ -1557,7 +3478,11 @@ schema DragonflydbIoV1alpha1DragonflyStatus:
     isRollingUpdate : bool, default is Undefined, optional
         IsRollingUpdate is true if the Dragonfly instance is being updated
     phase : str, default is Undefined, optional
-        Status of the Dragonfly Instance It can be one of the following: - "ready": The Dragonfly instance is ready to serve requests - "configuring-replication": The controller is updating the master of the Dragonfly instance - "resources-created": The Dragonfly instance resources were created but not yet configured
+        Status of the Dragonfly Instance
+        It can be one of the following:
+        - "ready": The Dragonfly instance is ready to serve requests
+        - "configuring-replication": The controller is updating the master of the Dragonfly instance
+        - "resources-created": The Dragonfly instance resources were created but not yet configured
     """
     isRollingUpdate?: bool
     phase?: str

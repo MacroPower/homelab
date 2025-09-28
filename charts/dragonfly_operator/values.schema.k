@@ -154,9 +154,12 @@ schema ValuesManager:
         - maxSkew: 1
           topologyKey: topology.kubernetes.io/zone
           whenUnsatisfiable: DoNotSchedule
+    extraArgs : ValuesManagerExtraArgs, optional
     image : ValuesManagerImage, optional
     livenessProbe : ValuesManagerLivenessProbe, optional
     nodeSelector : ValuesManagerNodeSelector, optional
+    priorityClassName : str, optional, default is ""
+        Priority class name for the operator pod
     readinessProbe : ValuesManagerReadinessProbe, optional
     resources : ValuesManagerResources, optional
     securityContext : ValuesManagerSecurityContext, optional
@@ -168,9 +171,11 @@ schema ValuesManager:
     """
     [...str]: any
     affinity?: ValuesManagerAffinity
+    extraArgs?: ValuesManagerExtraArgs
     image?: ValuesManagerImage
     livenessProbe?: ValuesManagerLivenessProbe
     nodeSelector?: ValuesManagerNodeSelector
+    priorityClassName?: str
     readinessProbe?: ValuesManagerReadinessProbe
     resources?: ValuesManagerResources
     securityContext?: ValuesManagerSecurityContext
@@ -182,6 +187,12 @@ schema ValuesManagerAffinity:
     - maxSkew: 1
       topologyKey: topology.kubernetes.io/zone
       whenUnsatisfiable: DoNotSchedule
+    """
+    [...str]: any
+
+schema ValuesManagerExtraArgs:
+    r"""
+    ValuesManagerExtraArgs
     """
     [...str]: any
 
@@ -327,14 +338,24 @@ schema ValuesRbacProxy:
 
     Attributes
     ----------
+    enabled : bool, optional, default is True
+    extraArgs : ValuesRbacProxyExtraArgs, optional
     image : ValuesRbacProxyImage, optional
     resources : ValuesRbacProxyResources, optional
     securityContext : ValuesRbacProxySecurityContext, optional
     """
     [...str]: any
+    enabled?: bool
+    extraArgs?: ValuesRbacProxyExtraArgs
     image?: ValuesRbacProxyImage
     resources?: ValuesRbacProxyResources
     securityContext?: ValuesRbacProxySecurityContext
+
+schema ValuesRbacProxyExtraArgs:
+    r"""
+    ValuesRbacProxyExtraArgs
+    """
+    [...str]: any
 
 schema ValuesRbacProxyImage:
     r"""
