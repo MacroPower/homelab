@@ -964,7 +964,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHe
     path: str
 
     check:
-        all expectedStatuses in expectedStatuses {expectedStatuses < 600 if expectedStatuses not in [None, Undefined]} if expectedStatuses
+        all expectedStatuses in expectedStatuses {expectedStatuses <= 599 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         all expectedStatuses in expectedStatuses {expectedStatuses >= 100 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         len(hostname) <= 253 if hostname
         len(hostname) >= 1 if hostname
@@ -1386,7 +1386,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsRe
     triggers?: [str]
 
     check:
-        all httpStatusCodes in httpStatusCodes {httpStatusCodes < 600 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
+        all httpStatusCodes in httpStatusCodes {httpStatusCodes <= 599 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
         all httpStatusCodes in httpStatusCodes {httpStatusCodes >= 100 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsTCPKeepalive:
@@ -1905,7 +1905,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHe
     path: str
 
     check:
-        all expectedStatuses in expectedStatuses {expectedStatuses < 600 if expectedStatuses not in [None, Undefined]} if expectedStatuses
+        all expectedStatuses in expectedStatuses {expectedStatuses <= 599 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         all expectedStatuses in expectedStatuses {expectedStatuses >= 100 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         len(hostname) <= 253 if hostname
         len(hostname) >= 1 if hostname
@@ -2327,7 +2327,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsRe
     triggers?: [str]
 
     check:
-        all httpStatusCodes in httpStatusCodes {httpStatusCodes < 600 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
+        all httpStatusCodes in httpStatusCodes {httpStatusCodes <= 599 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
         all httpStatusCodes in httpStatusCodes {httpStatusCodes >= 100 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsTCPKeepalive:
@@ -3010,7 +3010,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     path: str
 
     check:
-        all expectedStatuses in expectedStatuses {expectedStatuses < 600 if expectedStatuses not in [None, Undefined]} if expectedStatuses
+        all expectedStatuses in expectedStatuses {expectedStatuses <= 599 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         all expectedStatuses in expectedStatuses {expectedStatuses >= 100 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         len(hostname) <= 253 if hostname
         len(hostname) >= 1 if hostname
@@ -3432,7 +3432,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     triggers?: [str]
 
     check:
-        all httpStatusCodes in httpStatusCodes {httpStatusCodes < 600 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
+        all httpStatusCodes in httpStatusCodes {httpStatusCodes <= 599 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
         all httpStatusCodes in httpStatusCodes {httpStatusCodes >= 100 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsTCPKeepalive:
@@ -3722,10 +3722,10 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcCookieConfig:
 
     Attributes
     ----------
-    sameSite : str, default is "Strict", optional
+    sameSite : str, default is Undefined, optional
         same site
     """
-    sameSite?: "Lax" | "Strict" | "None" = "Strict"
+    sameSite?: "Lax" | "Strict" | "None"
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcCookieNames:
     r"""
@@ -4224,7 +4224,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsH
     path: str
 
     check:
-        all expectedStatuses in expectedStatuses {expectedStatuses < 600 if expectedStatuses not in [None, Undefined]} if expectedStatuses
+        all expectedStatuses in expectedStatuses {expectedStatuses <= 599 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         all expectedStatuses in expectedStatuses {expectedStatuses >= 100 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         len(hostname) <= 253 if hostname
         len(hostname) >= 1 if hostname
@@ -4646,7 +4646,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsR
     triggers?: [str]
 
     check:
-        all httpStatusCodes in httpStatusCodes {httpStatusCodes < 600 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
+        all httpStatusCodes in httpStatusCodes {httpStatusCodes <= 599 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
         all httpStatusCodes in httpStatusCodes {httpStatusCodes >= 100 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsTCPKeepalive:

@@ -507,7 +507,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
     path: str
 
     check:
-        all expectedStatuses in expectedStatuses {expectedStatuses < 600 if expectedStatuses not in [None, Undefined]} if expectedStatuses
+        all expectedStatuses in expectedStatuses {expectedStatuses <= 599 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         all expectedStatuses in expectedStatuses {expectedStatuses >= 100 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         len(hostname) <= 253 if hostname
         len(hostname) >= 1 if hostname
@@ -929,7 +929,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
     triggers?: [str]
 
     check:
-        all httpStatusCodes in httpStatusCodes {httpStatusCodes < 600 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
+        all httpStatusCodes in httpStatusCodes {httpStatusCodes <= 599 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
         all httpStatusCodes in httpStatusCodes {httpStatusCodes >= 100 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsTCPKeepalive:

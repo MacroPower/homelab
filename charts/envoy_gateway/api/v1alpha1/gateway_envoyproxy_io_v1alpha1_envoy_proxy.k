@@ -10418,7 +10418,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
     path: str
 
     check:
-        all expectedStatuses in expectedStatuses {expectedStatuses < 600 if expectedStatuses not in [None, Undefined]} if expectedStatuses
+        all expectedStatuses in expectedStatuses {expectedStatuses <= 599 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         all expectedStatuses in expectedStatuses {expectedStatuses >= 100 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         len(hostname) <= 253 if hostname
         len(hostname) >= 1 if hostname
@@ -10840,7 +10840,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
     triggers?: [str]
 
     check:
-        all httpStatusCodes in httpStatusCodes {httpStatusCodes < 600 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
+        all httpStatusCodes in httpStatusCodes {httpStatusCodes <= 599 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
         all httpStatusCodes in httpStatusCodes {httpStatusCodes >= 100 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsTCPKeepalive:
@@ -11384,7 +11384,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
     path: str
 
     check:
-        all expectedStatuses in expectedStatuses {expectedStatuses < 600 if expectedStatuses not in [None, Undefined]} if expectedStatuses
+        all expectedStatuses in expectedStatuses {expectedStatuses <= 599 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         all expectedStatuses in expectedStatuses {expectedStatuses >= 100 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         len(hostname) <= 253 if hostname
         len(hostname) >= 1 if hostname
@@ -11806,7 +11806,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
     triggers?: [str]
 
     check:
-        all httpStatusCodes in httpStatusCodes {httpStatusCodes < 600 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
+        all httpStatusCodes in httpStatusCodes {httpStatusCodes <= 599 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
         all httpStatusCodes in httpStatusCodes {httpStatusCodes >= 100 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsTCPKeepalive:
@@ -12433,7 +12433,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
     path: str
 
     check:
-        all expectedStatuses in expectedStatuses {expectedStatuses < 600 if expectedStatuses not in [None, Undefined]} if expectedStatuses
+        all expectedStatuses in expectedStatuses {expectedStatuses <= 599 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         all expectedStatuses in expectedStatuses {expectedStatuses >= 100 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         len(hostname) <= 253 if hostname
         len(hostname) >= 1 if hostname
@@ -12855,7 +12855,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
     triggers?: [str]
 
     check:
-        all httpStatusCodes in httpStatusCodes {httpStatusCodes < 600 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
+        all httpStatusCodes in httpStatusCodes {httpStatusCodes <= 599 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
         all httpStatusCodes in httpStatusCodes {httpStatusCodes >= 100 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsTCPKeepalive:
@@ -13473,7 +13473,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendS
     path: str
 
     check:
-        all expectedStatuses in expectedStatuses {expectedStatuses < 600 if expectedStatuses not in [None, Undefined]} if expectedStatuses
+        all expectedStatuses in expectedStatuses {expectedStatuses <= 599 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         all expectedStatuses in expectedStatuses {expectedStatuses >= 100 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         len(hostname) <= 253 if hostname
         len(hostname) >= 1 if hostname
@@ -13895,7 +13895,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendS
     triggers?: [str]
 
     check:
-        all httpStatusCodes in httpStatusCodes {httpStatusCodes < 600 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
+        all httpStatusCodes in httpStatusCodes {httpStatusCodes <= 599 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
         all httpStatusCodes in httpStatusCodes {httpStatusCodes >= 100 if httpStatusCodes not in [None, Undefined]} if httpStatusCodes
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsTCPKeepalive:
