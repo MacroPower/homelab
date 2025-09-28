@@ -20,7 +20,7 @@ schema GrafanaDatasource:
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, optional
         metadata
-    spec : GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpec, default is Undefined, optional
+    spec : GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpec, default is Undefined, required
         spec
     status : GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceStatus, default is Undefined, optional
         status
@@ -30,7 +30,8 @@ schema GrafanaDatasource:
     kind: "GrafanaDatasource" = "GrafanaDatasource"
 
     metadata?: v1.ObjectMeta
-    spec?: GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpec
+    spec: GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpec
+
     status?: GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceStatus
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpec:
@@ -49,8 +50,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpec:
         plugins
     resyncPeriod : str, default is "10m0s", optional
         How often the resource is synced, defaults to 10m0s if not set
+    suspend : bool, default is Undefined, optional
+        Suspend pauses synchronizing attempts and tells the operator to ignore changes
     uid : str, default is Undefined, optional
-        The UID, for the datasource, fallback to the deprecated spec.datasource.uid and metadata.uid
+        The UID, for the datasource, fallback to the deprecated spec.datasource.uid
+        and metadata.uid. Can be any string consisting of alphanumeric characters,
+        - and _ with a maximum length of 40 +optional
     valuesFrom : [GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0], default is Undefined, optional
         environments variables from secrets or config maps
     """
@@ -61,10 +66,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpec:
 
     plugins?: [GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecPluginsItems0]
     resyncPeriod?: str = "10m0s"
+    suspend?: bool
     uid?: str
     valuesFrom?: [GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0]
 
     check:
+        _regex_match(str(resyncPeriod), r"^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$") if resyncPeriod
+        len(uid) <= 40 if uid
+        _regex_match(str(uid), r"^[a-zA-Z0-9-_]+$") if uid
         len(valuesFrom) <= 99 if valuesFrom
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecDatasource:
@@ -258,7 +267,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceStatus:
     hash : str, default is Undefined, optional
         hash
     lastMessage : str, default is Undefined, optional
-        last message
+        Deprecated: Check status.conditions or operator logs
     lastResync : str, default is Undefined, optional
         Last time the resource was synchronized with Grafana instances
     uid : str, default is Undefined, optional

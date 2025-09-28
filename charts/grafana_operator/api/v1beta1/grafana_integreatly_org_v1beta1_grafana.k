@@ -20,7 +20,7 @@ schema Grafana:
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, optional
         metadata
-    spec : GrafanaIntegreatlyOrgV1beta1GrafanaSpec, default is Undefined, optional
+    spec : GrafanaIntegreatlyOrgV1beta1GrafanaSpec, default is Undefined, required
         spec
     status : GrafanaIntegreatlyOrgV1beta1GrafanaStatus, default is Undefined, optional
         status
@@ -30,7 +30,8 @@ schema Grafana:
     kind: "Grafana" = "Grafana"
 
     metadata?: v1.ObjectMeta
-    spec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpec
+    spec: GrafanaIntegreatlyOrgV1beta1GrafanaSpec
+
     status?: GrafanaIntegreatlyOrgV1beta1GrafanaStatus
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpec:
@@ -45,6 +46,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpec:
         Config defines how your grafana ini file should looks like.
     deployment : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeployment, default is Undefined, optional
         deployment
+    disableDefaultAdminSecret : bool, default is Undefined, optional
+        DisableDefaultAdminSecret prevents operator from creating default admin-credentials secret
+    disableDefaultSecurityContext : str, default is Undefined, optional
+        DisableDefaultSecurityContext prevents the operator from populating securityContext on deployments
     external : GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternal, default is Undefined, optional
         external
     ingress : GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngress, default is Undefined, optional
@@ -61,12 +66,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpec:
         service
     serviceAccount : GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceAccount, default is Undefined, optional
         service account
+    suspend : bool, default is Undefined, optional
+        Suspend pauses reconciliation of owned resources like deployments, Services, Etc. upon changes
     version : str, default is Undefined, optional
         Version specifies the version of Grafana to use for this deployment. It follows the same format as the docker.io/grafana/grafana tags
     """
     client?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecClient
     config?: {str:{str:str}}
     deployment?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeployment
+    disableDefaultAdminSecret?: bool
+    disableDefaultSecurityContext?: "Pod" | "Container" | "All"
     external?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecExternal
     ingress?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecIngress
     jsonnet?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecJsonnet
@@ -75,6 +84,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpec:
     route?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecRoute
     service?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecService
     serviceAccount?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceAccount
+    suspend?: bool
     version?: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecClient:
@@ -141,7 +151,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeployment:
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentMetadata:
     r"""
-    ObjectMeta contains only a [subset of the fields included in k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta).
+    grafana integreatly org v1beta1 grafana spec deployment metadata
 
     Attributes
     ----------
@@ -187,39 +197,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpec:
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecSelector:
     r"""
-    A label selector is a label query over a set of resources. The result of matchLabels and
-    matchExpressions are ANDed. An empty label selector matches all objects. A null
-    label selector matches no objects.
+    grafana integreatly org v1beta1 grafana spec deployment spec selector
 
     Attributes
     ----------
     matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecSelectorMatchExpressionsItems0], default is Undefined, optional
-        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+        match expressions
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
-        map is equivalent to an element of matchExpressions, whose key field is "key", the
-        operator is "In", and the values array contains only "value". The requirements are ANDed.
+        match labels
     """
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that
-    relates the key and values.
+    grafana integreatly org v1beta1 grafana spec deployment spec selector match expressions items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        key is the label key that the selector applies to.
+        key
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values.
-        Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn,
-        the values array must be non-empty. If the operator is Exists or DoesNotExist,
-        the values array must be empty. This array is replaced during a strategic
-        merge patch.
+        values
     """
     key: str
 
@@ -229,48 +230,28 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecSelectorMatchExpress
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecStrategy:
     r"""
-    DeploymentStrategy describes how to replace existing pods with new ones.
+    grafana integreatly org v1beta1 grafana spec deployment spec strategy
 
     Attributes
     ----------
     rollingUpdate : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecStrategyRollingUpdate, default is Undefined, optional
         rolling update
     $type : str, default is Undefined, optional
-        Type of deployment. Can be "Recreate" or "RollingUpdate". Default is RollingUpdate.
+        type
     """
     rollingUpdate?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecStrategyRollingUpdate
     $type?: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecStrategyRollingUpdate:
     r"""
-    Rolling update config params. Present only if DeploymentStrategyType =
-    RollingUpdate.
+    grafana integreatly org v1beta1 grafana spec deployment spec strategy rolling update
 
     Attributes
     ----------
     maxSurge : int | str, default is Undefined, optional
-        The maximum number of pods that can be scheduled above the desired number of
-        pods.
-        Value can be an absolute number (ex: 5) or a percentage of desired pods (ex: 10%).
-        This can not be 0 if MaxUnavailable is 0.
-        Absolute number is calculated from percentage by rounding up.
-        Defaults to 25%.
-        Example: when this is set to 30%, the new ReplicaSet can be scaled up immediately when
-        the rolling update starts, such that the total number of old and new pods do not exceed
-        130% of desired pods. Once old pods have been killed,
-        new ReplicaSet can be scaled up further, ensuring that total number of pods running
-        at any time during the update is at most 130% of desired pods.
+        max surge
     maxUnavailable : int | str, default is Undefined, optional
-        The maximum number of pods that can be unavailable during the update.
-        Value can be an absolute number (ex: 5) or a percentage of desired pods (ex: 10%).
-        Absolute number is calculated from percentage by rounding down.
-        This can not be 0 if MaxSurge is 0.
-        Defaults to 25%.
-        Example: when this is set to 30%, the old ReplicaSet can be scaled down to 70% of desired pods
-        immediately when the rolling update starts. Once new pods are ready, old ReplicaSet
-        can be scaled down further, followed by scaling up the new ReplicaSet, ensuring
-        that the total number of pods available at all times during the update is at
-        least 70% of desired pods.
+        max unavailable
     """
     maxSurge?: int | str
     maxUnavailable?: int | str
@@ -291,8 +272,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplate:
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateMetadata:
     r"""
-    Standard object's metadata.
-    More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+    grafana integreatly org v1beta1 grafana spec deployment spec template metadata
 
     Attributes
     ----------
@@ -306,8 +286,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateMetadata:
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpec:
     r"""
-    Specification of the desired behavior of the pod.
-    More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec
 
     Attributes
     ----------
@@ -316,136 +295,73 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpec:
     affinity : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity, default is Undefined, optional
         affinity
     automountServiceAccountToken : bool, default is Undefined, optional
-        AutomountServiceAccountToken indicates whether a service account token should be automatically mounted.
+        automount service account token
     containers : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0], default is Undefined, optional
         containers
     dnsConfig : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecDNSConfig, default is Undefined, optional
         dns config
     dnsPolicy : str, default is Undefined, optional
-        DNSPolicy defines how a pod's DNS will be configured.
+        dns policy
     enableServiceLinks : bool, default is Undefined, optional
-        EnableServiceLinks indicates whether information about services should be injected into pod's
-        environment variables, matching the syntax of Docker links.
-        Optional: Defaults to true.
+        enable service links
     ephemeralContainers : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0], default is Undefined, optional
         ephemeral containers
     hostAliases : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecHostAliasesItems0], default is Undefined, optional
-        HostAliases is an optional list of hosts and IPs that will be injected into the pod's hosts
-        file if specified. This is only valid for non-hostNetwork pods.
+        host aliases
     hostIPC : bool, default is Undefined, optional
-        Use the host's ipc namespace.
-        Optional: Default to false.
+        host IP c
     hostNetwork : bool, default is Undefined, optional
-        Host networking requested for this pod. Use the host's network namespace.
-        If this option is set, the ports that will be used must be specified.
-        Default to false.
+        host network
     hostPID : bool, default is Undefined, optional
-        Use the host's pid namespace.
-        Optional: Default to false.
+        host p ID
     hostUsers : bool, default is Undefined, optional
-        Use the host's user namespace.
-        Optional: Default to true.
-        If set to true or not present, the pod will be run in the host user namespace, useful
-        for when the pod needs a feature only available to the host user namespace, such as
-        loading a kernel module with CAP_SYS_MODULE.
-        When set to false, a new userns is created for the pod. Setting false is useful for
-        mitigating container breakout vulnerabilities even allowing users to run their
-        containers as root without actually having root privileges on the host.
-        This field is alpha-level and is only honored by servers that enable the UserNamespacesSupport feature.
+        host users
     hostname : str, default is Undefined, optional
-        Specifies the hostname of the Pod
-        If not specified, the pod's hostname will be set to a system-defined value.
+        hostname
     imagePullSecrets : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecImagePullSecretsItems0], default is Undefined, optional
-        ImagePullSecrets is an optional list of references to secrets in the same namespace to use for pulling any of the images used by this PodSpec.
-        If specified, these secrets will be passed to individual puller implementations for them to use.
-        More info: https://kubernetes.io/docs/concepts/containers/images#specifying-imagepullsecrets-on-a-pod
+        image pull secrets
     initContainers : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0], default is Undefined, optional
         init containers
     nodeName : str, default is Undefined, optional
-        NodeName is a request to schedule this pod onto a specific node. If it is non-empty,
-        the scheduler simply schedules this pod onto that node, assuming that it fits resource
-        requirements.
+        node name
     nodeSelector : {str:str}, default is Undefined, optional
-        NodeSelector is a selector which must be true for the pod to fit on a node.
-        Selector which must match a node's labels for the pod to be scheduled on that node.
-        More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+        node selector
     os : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecOs, default is Undefined, optional
         os
     overhead : {str:int | str}, default is Undefined, optional
-        Overhead represents the resource overhead associated with running a pod for a given RuntimeClass.
-        This field will be autopopulated at admission time by the RuntimeClass admission controller. If
-        the RuntimeClass admission controller is enabled, overhead must not be set in Pod create requests.
-        The RuntimeClass admission controller will reject Pod create requests which have the overhead already
-        set. If RuntimeClass is configured and selected in the PodSpec, Overhead will be set to the value
-        defined in the corresponding RuntimeClass, otherwise it will remain unset and treated as zero.
-        More info: https://git.k8s.io/enhancements/keps/sig-node/688-pod-overhead/README.md
+        overhead
     preemptionPolicy : str, default is Undefined, optional
-        PreemptionPolicy is the Policy for preempting pods with lower priority.
-        One of Never, PreemptLowerPriority.
-        Defaults to PreemptLowerPriority if unset.
+        preemption policy
     priority : int, default is Undefined, optional
-        The priority value. Various system components use this field to find the
-        priority of the pod. When Priority Admission Controller is enabled, it
-        prevents users from setting this field. The admission controller populates
-        this field from PriorityClassName.
-        The higher the value, the higher the priority.
+        priority
     priorityClassName : str, default is Undefined, optional
-        If specified, indicates the pod's priority. "system-node-critical" and
-        "system-cluster-critical" are two special keywords which indicate the
-        highest priorities with the former being the highest priority. Any other
-        name must be defined by creating a PriorityClass object with that name.
-        If not specified, the pod priority will be default or zero if there is no
-        default.
+        priority class name
     readinessGates : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecReadinessGatesItems0], default is Undefined, optional
-        If specified, all readiness gates will be evaluated for pod readiness.
-        A pod is ready when all its containers are ready AND
-        all conditions specified in the readiness gates have status equal to "True"
-        More info: https://git.k8s.io/enhancements/keps/sig-network/580-pod-readiness-gates
+        readiness gates
     restartPolicy : str, default is Undefined, optional
-        RestartPolicy describes how the container should be restarted.
-        Only one of the following restart policies may be specified.
-        If none of the following policies is specified, the default one
-        is RestartPolicyAlways.
+        restart policy
     runtimeClassName : str, default is Undefined, optional
-        RuntimeClassName refers to a RuntimeClass object in the node.k8s.io group, which should be used
-        to run this pod.  If no RuntimeClass resource matches the named class, the pod will not be run.
-        If unset or empty, the "legacy" RuntimeClass will be used, which is an implicit class with an
-        empty definition that uses the default runtime handler.
-        More info: https://git.k8s.io/enhancements/keps/sig-node/585-runtime-class
+        runtime class name
     schedulerName : str, default is Undefined, optional
-        If specified, the pod will be dispatched by specified scheduler.
-        If not specified, the pod will be dispatched by default scheduler.
+        scheduler name
     securityContext : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContext, default is Undefined, optional
         security context
     serviceAccount : str, default is Undefined, optional
-        DeprecatedServiceAccount is a depreciated alias for ServiceAccountName.
-        Deprecated: Use serviceAccountName instead.
+        service account
     serviceAccountName : str, default is Undefined, optional
-        ServiceAccountName is the name of the ServiceAccount to use to run this pod.
-        More info: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+        service account name
     setHostnameAsFQDN : bool, default is Undefined, optional
-        If true the pod's hostname will be configured as the pod's FQDN, rather than the leaf name (the default).
-        In Linux containers, this means setting the FQDN in the hostname field of the kernel (the nodename field of struct utsname).
-        In Windows containers, this means setting the registry value of hostname for the registry key HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters to FQDN.
-        If a pod does not have FQDN, this has no effect.
-        Default to false.
+        set hostname as f q d n
     shareProcessNamespace : bool, default is Undefined, optional
-        Share a single process namespace between all of the containers in a pod.
-        When this is set containers will be able to view and signal processes from other containers
-        in the same pod, and the first process in each container will not be assigned PID 1.
-        HostPID and ShareProcessNamespace cannot both be set.
-        Optional: Default to false.
+        share process namespace
     subdomain : str, default is Undefined, optional
-        If specified, the fully qualified Pod hostname will be "<hostname>.<subdomain>.<pod namespace>.svc.<cluster domain>".
-        If not specified, the pod will not have a domainname at all.
+        subdomain
     terminationGracePeriodSeconds : int, default is Undefined, optional
         termination grace period seconds
     tolerations : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTolerationsItems0], default is Undefined, optional
-        If specified, the pod's tolerations.
+        tolerations
     topologySpreadConstraints : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopologySpreadConstraintsItems0], default is Undefined, optional
-        TopologySpreadConstraints describes how a group of pods ought to spread across topology
-        domains. Scheduler will schedule pods in a way which abides by the constraints.
-        All topologySpreadConstraints are ANDed.
+        topology spread constraints
     volumes : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0], default is Undefined, optional
         volumes
     """
@@ -492,7 +408,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpec:
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity:
     r"""
-    If specified, the pod's scheduling constraints
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity
 
     Attributes
     ----------
@@ -509,20 +425,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinity:
     r"""
-    Describes node affinity scheduling rules for the pod.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity node affinity
 
     Attributes
     ----------
     preferredDuringSchedulingIgnoredDuringExecution : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
-        The scheduler will prefer to schedule pods to nodes that satisfy
-        the affinity expressions specified by this field, but it may choose
-        a node that violates one or more of the expressions. The node that is
-        most preferred is the one with the greatest sum of weights, i.e.
-        for each node that meets all of the scheduling requirements (resource
-        request, requiredDuringScheduling affinity expressions, etc.),
-        compute a sum by iterating through the elements of this field and adding
-        "weight" to the sum if the node matches the corresponding matchExpressions; the
-        node(s) with the highest sum are the most preferred.
+        preferred during scheduling ignored during execution
     requiredDuringSchedulingIgnoredDuringExecution : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecution, default is Undefined, optional
         required during scheduling ignored during execution
     """
@@ -531,15 +439,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0:
     r"""
-    An empty preferred scheduling term matches all objects with implicit weight 0
-    (i.e. it's a no-op). A null preferred scheduling term matches no objects (i.e. is also a no-op).
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity node affinity preferred during scheduling ignored during execution items0
 
     Attributes
     ----------
     preference : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0Preference, default is Undefined, required
         preference
     weight : int, default is Undefined, required
-        Weight associated with matching the corresponding nodeSelectorTerm, in the range 1-100.
+        weight
     """
     preference: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0Preference
 
@@ -547,36 +454,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0Preference:
     r"""
-    A node selector term, associated with the corresponding weight.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity node affinity preferred during scheduling ignored during execution items0 preference
 
     Attributes
     ----------
     matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PreferenceMatchExpressionsItems0], default is Undefined, optional
-        A list of node selector requirements by node's labels.
+        match expressions
     matchFields : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PreferenceMatchFieldsItems0], default is Undefined, optional
-        A list of node selector requirements by node's fields.
+        match fields
     """
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PreferenceMatchExpressionsItems0]
     matchFields?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PreferenceMatchFieldsItems0]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PreferenceMatchExpressionsItems0:
     r"""
-    A node selector requirement is a selector that contains values, a key, and an operator
-    that relates the key and values.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity node affinity preferred during scheduling ignored during execution items0 preference match expressions items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        The label key that the selector applies to.
+        key
     operator : str, default is Undefined, required
-        Represents a key's relationship to a set of values.
-        Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+        operator
     values : [str], default is Undefined, optional
-        An array of string values. If the operator is In or NotIn,
-        the values array must be non-empty. If the operator is Exists or DoesNotExist,
-        the values array must be empty. If the operator is Gt or Lt, the values
-        array must have a single element, which will be interpreted as an integer.
-        This array is replaced during a strategic merge patch.
+        values
     """
     key: str
 
@@ -586,22 +487,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PreferenceMatchFieldsItems0:
     r"""
-    A node selector requirement is a selector that contains values, a key, and an operator
-    that relates the key and values.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity node affinity preferred during scheduling ignored during execution items0 preference match fields items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        The label key that the selector applies to.
+        key
     operator : str, default is Undefined, required
-        Represents a key's relationship to a set of values.
-        Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+        operator
     values : [str], default is Undefined, optional
-        An array of string values. If the operator is In or NotIn,
-        the values array must be non-empty. If the operator is Exists or DoesNotExist,
-        the values array must be empty. If the operator is Gt or Lt, the values
-        array must have a single element, which will be interpreted as an integer.
-        This array is replaced during a strategic merge patch.
+        values
     """
     key: str
 
@@ -611,53 +506,41 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecution:
     r"""
-    If the affinity requirements specified by this field are not met at
-    scheduling time, the pod will not be scheduled onto the node.
-    If the affinity requirements specified by this field cease to be met
-    at some point during pod execution (e.g. due to an update), the system
-    may or may not try to eventually evict the pod from its node.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity node affinity required during scheduling ignored during execution
 
     Attributes
     ----------
     nodeSelectorTerms : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0], default is Undefined, required
-        Required. A list of node selector terms. The terms are ORed.
+        node selector terms
     """
     nodeSelectorTerms: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0:
     r"""
-    A null or empty node selector term matches no objects. The requirements of
-    them are ANDed.
-    The TopologySelectorTerm type implements a subset of the NodeSelectorTerm.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity node affinity required during scheduling ignored during execution node selector terms items0
 
     Attributes
     ----------
     matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchExpressionsItems0], default is Undefined, optional
-        A list of node selector requirements by node's labels.
+        match expressions
     matchFields : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchFieldsItems0], default is Undefined, optional
-        A list of node selector requirements by node's fields.
+        match fields
     """
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchExpressionsItems0]
     matchFields?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchFieldsItems0]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchExpressionsItems0:
     r"""
-    A node selector requirement is a selector that contains values, a key, and an operator
-    that relates the key and values.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity node affinity required during scheduling ignored during execution node selector terms items0 match expressions items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        The label key that the selector applies to.
+        key
     operator : str, default is Undefined, required
-        Represents a key's relationship to a set of values.
-        Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+        operator
     values : [str], default is Undefined, optional
-        An array of string values. If the operator is In or NotIn,
-        the values array must be non-empty. If the operator is Exists or DoesNotExist,
-        the values array must be empty. If the operator is Gt or Lt, the values
-        array must have a single element, which will be interpreted as an integer.
-        This array is replaced during a strategic merge patch.
+        values
     """
     key: str
 
@@ -667,22 +550,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchFieldsItems0:
     r"""
-    A node selector requirement is a selector that contains values, a key, and an operator
-    that relates the key and values.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity node affinity required during scheduling ignored during execution node selector terms items0 match fields items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        The label key that the selector applies to.
+        key
     operator : str, default is Undefined, required
-        Represents a key's relationship to a set of values.
-        Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.
+        operator
     values : [str], default is Undefined, optional
-        An array of string values. If the operator is In or NotIn,
-        the values array must be non-empty. If the operator is Exists or DoesNotExist,
-        the values array must be empty. If the operator is Gt or Lt, the values
-        array must have a single element, which will be interpreted as an integer.
-        This array is replaced during a strategic merge patch.
+        values
     """
     key: str
 
@@ -692,43 +569,28 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinity:
     r"""
-    Describes pod affinity scheduling rules (e.g. co-locate this pod in the same node, zone, etc. as some other pod(s)).
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod affinity
 
     Attributes
     ----------
     preferredDuringSchedulingIgnoredDuringExecution : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
-        The scheduler will prefer to schedule pods to nodes that satisfy
-        the affinity expressions specified by this field, but it may choose
-        a node that violates one or more of the expressions. The node that is
-        most preferred is the one with the greatest sum of weights, i.e.
-        for each node that meets all of the scheduling requirements (resource
-        request, requiredDuringScheduling affinity expressions, etc.),
-        compute a sum by iterating through the elements of this field and adding
-        "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the
-        node(s) with the highest sum are the most preferred.
+        preferred during scheduling ignored during execution
     requiredDuringSchedulingIgnoredDuringExecution : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
-        If the affinity requirements specified by this field are not met at
-        scheduling time, the pod will not be scheduled onto the node.
-        If the affinity requirements specified by this field cease to be met
-        at some point during pod execution (e.g. due to a pod label update), the
-        system may or may not try to eventually evict the pod from its node.
-        When there are multiple elements, the lists of nodes corresponding to each
-        podAffinityTerm are intersected, i.e. all terms must be satisfied.
+        required during scheduling ignored during execution
     """
     preferredDuringSchedulingIgnoredDuringExecution?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0]
     requiredDuringSchedulingIgnoredDuringExecution?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0:
     r"""
-    The weights of all of the matched WeightedPodAffinityTerm fields are added per-node to find the most preferred node(s)
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod affinity preferred during scheduling ignored during execution items0
 
     Attributes
     ----------
     podAffinityTerm : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTerm, default is Undefined, required
         pod affinity term
     weight : int, default is Undefined, required
-        weight associated with matching the corresponding podAffinityTerm,
-        in the range 1-100.
+        weight
     """
     podAffinityTerm: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTerm
 
@@ -736,45 +598,22 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTerm:
     r"""
-    Required. A pod affinity term, associated with the corresponding weight.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod affinity preferred during scheduling ignored during execution items0 pod affinity term
 
     Attributes
     ----------
     labelSelector : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelector, default is Undefined, optional
         label selector
     matchLabelKeys : [str], default is Undefined, optional
-        MatchLabelKeys is a set of pod label keys to select which pods will
-        be taken into consideration. The keys are used to lookup values from the
-        incoming pod labels, those key-value labels are merged with `labelSelector` as `key in (value)`
-        to select the group of existing pods which pods will be taken into consideration
-        for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
-        pod labels will be ignored. The default value is empty.
-        The same key is forbidden to exist in both matchLabelKeys and labelSelector.
-        Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
+        match label keys
     mismatchLabelKeys : [str], default is Undefined, optional
-        MismatchLabelKeys is a set of pod label keys to select which pods will
-        be taken into consideration. The keys are used to lookup values from the
-        incoming pod labels, those key-value labels are merged with `labelSelector` as `key notin (value)`
-        to select the group of existing pods which pods will be taken into consideration
-        for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
-        pod labels will be ignored. The default value is empty.
-        The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
-        Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
+        mismatch label keys
     namespaceSelector : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
-        namespaces specifies a static list of namespace names that the term applies to.
-        The term is applied to the union of the namespaces listed in this field
-        and the ones selected by namespaceSelector.
-        null or empty namespaces list and null namespaceSelector means "this pod's namespace".
+        namespaces
     topologyKey : str, default is Undefined, required
-        This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching
-        the labelSelector in the specified namespaces, where co-located is defined as running on a node
-        whose value of the label with key topologyKey matches that of any node on which any of the
-        selected pods is running.
-        Empty topologyKey is not allowed.
+        topology key
     """
     labelSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelector
     matchLabelKeys?: [str]
@@ -785,38 +624,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelector:
     r"""
-    A label query over a set of resources, in this case pods.
-    If it's null, this PodAffinityTerm matches with no Pods.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod affinity preferred during scheduling ignored during execution items0 pod affinity term label selector
 
     Attributes
     ----------
     matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelectorMatchExpressionsItems0], default is Undefined, optional
-        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+        match expressions
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
-        map is equivalent to an element of matchExpressions, whose key field is "key", the
-        operator is "In", and the values array contains only "value". The requirements are ANDed.
+        match labels
     """
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that
-    relates the key and values.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod affinity preferred during scheduling ignored during execution items0 pod affinity term label selector match expressions items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        key is the label key that the selector applies to.
+        key
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values.
-        Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn,
-        the values array must be non-empty. If the operator is Exists or DoesNotExist,
-        the values array must be empty. This array is replaced during a strategic
-        merge patch.
+        values
     """
     key: str
 
@@ -826,41 +657,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector:
     r"""
-    A label query over the set of namespaces that the term applies to.
-    The term is applied to the union of the namespaces selected by this field
-    and the ones listed in the namespaces field.
-    null selector and null or empty namespaces list means "this pod's namespace".
-    An empty selector ({}) matches all namespaces.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod affinity preferred during scheduling ignored during execution items0 pod affinity term namespace selector
 
     Attributes
     ----------
     matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelectorMatchExpressionsItems0], default is Undefined, optional
-        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+        match expressions
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
-        map is equivalent to an element of matchExpressions, whose key field is "key", the
-        operator is "In", and the values array contains only "value". The requirements are ANDed.
+        match labels
     """
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that
-    relates the key and values.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod affinity preferred during scheduling ignored during execution items0 pod affinity term namespace selector match expressions items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        key is the label key that the selector applies to.
+        key
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values.
-        Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn,
-        the values array must be non-empty. If the operator is Exists or DoesNotExist,
-        the values array must be empty. This array is replaced during a strategic
-        merge patch.
+        values
     """
     key: str
 
@@ -870,50 +690,22 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0:
     r"""
-    Defines a set of pods (namely those matching the labelSelector
-    relative to the given namespace(s)) that this pod should be
-    co-located (affinity) or not co-located (anti-affinity) with,
-    where co-located is defined as running on a node whose value of
-    the label with key <topologyKey> matches that of any node on which
-    a pod of the set of pods is running
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod affinity required during scheduling ignored during execution items0
 
     Attributes
     ----------
     labelSelector : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelector, default is Undefined, optional
         label selector
     matchLabelKeys : [str], default is Undefined, optional
-        MatchLabelKeys is a set of pod label keys to select which pods will
-        be taken into consideration. The keys are used to lookup values from the
-        incoming pod labels, those key-value labels are merged with `labelSelector` as `key in (value)`
-        to select the group of existing pods which pods will be taken into consideration
-        for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
-        pod labels will be ignored. The default value is empty.
-        The same key is forbidden to exist in both matchLabelKeys and labelSelector.
-        Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
+        match label keys
     mismatchLabelKeys : [str], default is Undefined, optional
-        MismatchLabelKeys is a set of pod label keys to select which pods will
-        be taken into consideration. The keys are used to lookup values from the
-        incoming pod labels, those key-value labels are merged with `labelSelector` as `key notin (value)`
-        to select the group of existing pods which pods will be taken into consideration
-        for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
-        pod labels will be ignored. The default value is empty.
-        The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
-        Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
+        mismatch label keys
     namespaceSelector : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
-        namespaces specifies a static list of namespace names that the term applies to.
-        The term is applied to the union of the namespaces listed in this field
-        and the ones selected by namespaceSelector.
-        null or empty namespaces list and null namespaceSelector means "this pod's namespace".
+        namespaces
     topologyKey : str, default is Undefined, required
-        This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching
-        the labelSelector in the specified namespaces, where co-located is defined as running on a node
-        whose value of the label with key topologyKey matches that of any node on which any of the
-        selected pods is running.
-        Empty topologyKey is not allowed.
+        topology key
     """
     labelSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelector
     matchLabelKeys?: [str]
@@ -924,38 +716,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelector:
     r"""
-    A label query over a set of resources, in this case pods.
-    If it's null, this PodAffinityTerm matches with no Pods.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod affinity required during scheduling ignored during execution items0 label selector
 
     Attributes
     ----------
     matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelectorMatchExpressionsItems0], default is Undefined, optional
-        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+        match expressions
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
-        map is equivalent to an element of matchExpressions, whose key field is "key", the
-        operator is "In", and the values array contains only "value". The requirements are ANDed.
+        match labels
     """
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that
-    relates the key and values.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod affinity required during scheduling ignored during execution items0 label selector match expressions items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        key is the label key that the selector applies to.
+        key
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values.
-        Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn,
-        the values array must be non-empty. If the operator is Exists or DoesNotExist,
-        the values array must be empty. This array is replaced during a strategic
-        merge patch.
+        values
     """
     key: str
 
@@ -965,41 +749,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector:
     r"""
-    A label query over the set of namespaces that the term applies to.
-    The term is applied to the union of the namespaces selected by this field
-    and the ones listed in the namespaces field.
-    null selector and null or empty namespaces list means "this pod's namespace".
-    An empty selector ({}) matches all namespaces.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod affinity required during scheduling ignored during execution items0 namespace selector
 
     Attributes
     ----------
     matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelectorMatchExpressionsItems0], default is Undefined, optional
-        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+        match expressions
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
-        map is equivalent to an element of matchExpressions, whose key field is "key", the
-        operator is "In", and the values array contains only "value". The requirements are ANDed.
+        match labels
     """
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that
-    relates the key and values.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod affinity required during scheduling ignored during execution items0 namespace selector match expressions items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        key is the label key that the selector applies to.
+        key
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values.
-        Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn,
-        the values array must be non-empty. If the operator is Exists or DoesNotExist,
-        the values array must be empty. This array is replaced during a strategic
-        merge patch.
+        values
     """
     key: str
 
@@ -1009,43 +782,28 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinity:
     r"""
-    Describes pod anti-affinity scheduling rules (e.g. avoid putting this pod in the same node, zone, etc. as some other pod(s)).
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod anti affinity
 
     Attributes
     ----------
     preferredDuringSchedulingIgnoredDuringExecution : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
-        The scheduler will prefer to schedule pods to nodes that satisfy
-        the anti-affinity expressions specified by this field, but it may choose
-        a node that violates one or more of the expressions. The node that is
-        most preferred is the one with the greatest sum of weights, i.e.
-        for each node that meets all of the scheduling requirements (resource
-        request, requiredDuringScheduling anti-affinity expressions, etc.),
-        compute a sum by iterating through the elements of this field and adding
-        "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the
-        node(s) with the highest sum are the most preferred.
+        preferred during scheduling ignored during execution
     requiredDuringSchedulingIgnoredDuringExecution : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
-        If the anti-affinity requirements specified by this field are not met at
-        scheduling time, the pod will not be scheduled onto the node.
-        If the anti-affinity requirements specified by this field cease to be met
-        at some point during pod execution (e.g. due to a pod label update), the
-        system may or may not try to eventually evict the pod from its node.
-        When there are multiple elements, the lists of nodes corresponding to each
-        podAffinityTerm are intersected, i.e. all terms must be satisfied.
+        required during scheduling ignored during execution
     """
     preferredDuringSchedulingIgnoredDuringExecution?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0]
     requiredDuringSchedulingIgnoredDuringExecution?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0:
     r"""
-    The weights of all of the matched WeightedPodAffinityTerm fields are added per-node to find the most preferred node(s)
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod anti affinity preferred during scheduling ignored during execution items0
 
     Attributes
     ----------
     podAffinityTerm : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTerm, default is Undefined, required
         pod affinity term
     weight : int, default is Undefined, required
-        weight associated with matching the corresponding podAffinityTerm,
-        in the range 1-100.
+        weight
     """
     podAffinityTerm: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTerm
 
@@ -1053,45 +811,22 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTerm:
     r"""
-    Required. A pod affinity term, associated with the corresponding weight.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod anti affinity preferred during scheduling ignored during execution items0 pod affinity term
 
     Attributes
     ----------
     labelSelector : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelector, default is Undefined, optional
         label selector
     matchLabelKeys : [str], default is Undefined, optional
-        MatchLabelKeys is a set of pod label keys to select which pods will
-        be taken into consideration. The keys are used to lookup values from the
-        incoming pod labels, those key-value labels are merged with `labelSelector` as `key in (value)`
-        to select the group of existing pods which pods will be taken into consideration
-        for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
-        pod labels will be ignored. The default value is empty.
-        The same key is forbidden to exist in both matchLabelKeys and labelSelector.
-        Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
+        match label keys
     mismatchLabelKeys : [str], default is Undefined, optional
-        MismatchLabelKeys is a set of pod label keys to select which pods will
-        be taken into consideration. The keys are used to lookup values from the
-        incoming pod labels, those key-value labels are merged with `labelSelector` as `key notin (value)`
-        to select the group of existing pods which pods will be taken into consideration
-        for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
-        pod labels will be ignored. The default value is empty.
-        The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
-        Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
+        mismatch label keys
     namespaceSelector : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
-        namespaces specifies a static list of namespace names that the term applies to.
-        The term is applied to the union of the namespaces listed in this field
-        and the ones selected by namespaceSelector.
-        null or empty namespaces list and null namespaceSelector means "this pod's namespace".
+        namespaces
     topologyKey : str, default is Undefined, required
-        This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching
-        the labelSelector in the specified namespaces, where co-located is defined as running on a node
-        whose value of the label with key topologyKey matches that of any node on which any of the
-        selected pods is running.
-        Empty topologyKey is not allowed.
+        topology key
     """
     labelSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelector
     matchLabelKeys?: [str]
@@ -1102,38 +837,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelector:
     r"""
-    A label query over a set of resources, in this case pods.
-    If it's null, this PodAffinityTerm matches with no Pods.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod anti affinity preferred during scheduling ignored during execution items0 pod affinity term label selector
 
     Attributes
     ----------
     matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelectorMatchExpressionsItems0], default is Undefined, optional
-        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+        match expressions
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
-        map is equivalent to an element of matchExpressions, whose key field is "key", the
-        operator is "In", and the values array contains only "value". The requirements are ANDed.
+        match labels
     """
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermLabelSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that
-    relates the key and values.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod anti affinity preferred during scheduling ignored during execution items0 pod affinity term label selector match expressions items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        key is the label key that the selector applies to.
+        key
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values.
-        Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn,
-        the values array must be non-empty. If the operator is Exists or DoesNotExist,
-        the values array must be empty. This array is replaced during a strategic
-        merge patch.
+        values
     """
     key: str
 
@@ -1143,41 +870,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector:
     r"""
-    A label query over the set of namespaces that the term applies to.
-    The term is applied to the union of the namespaces selected by this field
-    and the ones listed in the namespaces field.
-    null selector and null or empty namespaces list means "this pod's namespace".
-    An empty selector ({}) matches all namespaces.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod anti affinity preferred during scheduling ignored during execution items0 pod affinity term namespace selector
 
     Attributes
     ----------
     matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelectorMatchExpressionsItems0], default is Undefined, optional
-        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+        match expressions
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
-        map is equivalent to an element of matchExpressions, whose key field is "key", the
-        operator is "In", and the values array contains only "value". The requirements are ANDed.
+        match labels
     """
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that
-    relates the key and values.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod anti affinity preferred during scheduling ignored during execution items0 pod affinity term namespace selector match expressions items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        key is the label key that the selector applies to.
+        key
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values.
-        Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn,
-        the values array must be non-empty. If the operator is Exists or DoesNotExist,
-        the values array must be empty. This array is replaced during a strategic
-        merge patch.
+        values
     """
     key: str
 
@@ -1187,50 +903,22 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0:
     r"""
-    Defines a set of pods (namely those matching the labelSelector
-    relative to the given namespace(s)) that this pod should be
-    co-located (affinity) or not co-located (anti-affinity) with,
-    where co-located is defined as running on a node whose value of
-    the label with key <topologyKey> matches that of any node on which
-    a pod of the set of pods is running
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod anti affinity required during scheduling ignored during execution items0
 
     Attributes
     ----------
     labelSelector : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelector, default is Undefined, optional
         label selector
     matchLabelKeys : [str], default is Undefined, optional
-        MatchLabelKeys is a set of pod label keys to select which pods will
-        be taken into consideration. The keys are used to lookup values from the
-        incoming pod labels, those key-value labels are merged with `labelSelector` as `key in (value)`
-        to select the group of existing pods which pods will be taken into consideration
-        for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
-        pod labels will be ignored. The default value is empty.
-        The same key is forbidden to exist in both matchLabelKeys and labelSelector.
-        Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
+        match label keys
     mismatchLabelKeys : [str], default is Undefined, optional
-        MismatchLabelKeys is a set of pod label keys to select which pods will
-        be taken into consideration. The keys are used to lookup values from the
-        incoming pod labels, those key-value labels are merged with `labelSelector` as `key notin (value)`
-        to select the group of existing pods which pods will be taken into consideration
-        for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming
-        pod labels will be ignored. The default value is empty.
-        The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
-        Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
+        mismatch label keys
     namespaceSelector : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
-        namespaces specifies a static list of namespace names that the term applies to.
-        The term is applied to the union of the namespaces listed in this field
-        and the ones selected by namespaceSelector.
-        null or empty namespaces list and null namespaceSelector means "this pod's namespace".
+        namespaces
     topologyKey : str, default is Undefined, required
-        This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching
-        the labelSelector in the specified namespaces, where co-located is defined as running on a node
-        whose value of the label with key topologyKey matches that of any node on which any of the
-        selected pods is running.
-        Empty topologyKey is not allowed.
+        topology key
     """
     labelSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelector
     matchLabelKeys?: [str]
@@ -1241,38 +929,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelector:
     r"""
-    A label query over a set of resources, in this case pods.
-    If it's null, this PodAffinityTerm matches with no Pods.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod anti affinity required during scheduling ignored during execution items0 label selector
 
     Attributes
     ----------
     matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelectorMatchExpressionsItems0], default is Undefined, optional
-        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+        match expressions
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
-        map is equivalent to an element of matchExpressions, whose key field is "key", the
-        operator is "In", and the values array contains only "value". The requirements are ANDed.
+        match labels
     """
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0LabelSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that
-    relates the key and values.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod anti affinity required during scheduling ignored during execution items0 label selector match expressions items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        key is the label key that the selector applies to.
+        key
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values.
-        Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn,
-        the values array must be non-empty. If the operator is Exists or DoesNotExist,
-        the values array must be empty. This array is replaced during a strategic
-        merge patch.
+        values
     """
     key: str
 
@@ -1282,41 +962,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector:
     r"""
-    A label query over the set of namespaces that the term applies to.
-    The term is applied to the union of the namespaces selected by this field
-    and the ones listed in the namespaces field.
-    null selector and null or empty namespaces list means "this pod's namespace".
-    An empty selector ({}) matches all namespaces.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod anti affinity required during scheduling ignored during execution items0 namespace selector
 
     Attributes
     ----------
     matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelectorMatchExpressionsItems0], default is Undefined, optional
-        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+        match expressions
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
-        map is equivalent to an element of matchExpressions, whose key field is "key", the
-        operator is "In", and the values array contains only "value". The requirements are ANDed.
+        match labels
     """
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that
-    relates the key and values.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec affinity pod anti affinity required during scheduling ignored during execution items0 namespace selector match expressions items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        key is the label key that the selector applies to.
+        key
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values.
-        Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn,
-        the values array must be non-empty. If the operator is Exists or DoesNotExist,
-        the values array must be empty. This array is replaced during a strategic
-        merge patch.
+        values
     """
     key: str
 
@@ -1326,132 +995,58 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecAffinity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0:
     r"""
-    A single application container that you want to run within a pod.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0
 
     Attributes
     ----------
     args : [str], default is Undefined, optional
-        Arguments to the entrypoint.
-        The container image's CMD is used if this is not provided.
-        Variable references $(VAR_NAME) are expanded using the container's environment. If a variable
-        cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced
-        to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will
-        produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless
-        of whether the variable exists or not. Cannot be updated.
-        More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell
+        args
     command : [str], default is Undefined, optional
-        Entrypoint array. Not executed within a shell.
-        The container image's ENTRYPOINT is used if this is not provided.
-        Variable references $(VAR_NAME) are expanded using the container's environment. If a variable
-        cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced
-        to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will
-        produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless
-        of whether the variable exists or not. Cannot be updated.
-        More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell
+        command
     env : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0], default is Undefined, optional
-        List of environment variables to set in the container.
-        Cannot be updated.
+        env
     envFrom : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvFromItems0], default is Undefined, optional
-        List of sources to populate environment variables in the container.
-        The keys defined within a source must be a C_IDENTIFIER. All invalid keys
-        will be reported as an event when the container is starting. When a key exists in multiple
-        sources, the value associated with the last source will take precedence.
-        Values defined by an Env with a duplicate key will take precedence.
-        Cannot be updated.
+        env from
     image : str, default is Undefined, optional
-        Container image name.
-        More info: https://kubernetes.io/docs/concepts/containers/images
-        This field is optional to allow higher level config management to default or override
-        container images in workload controllers like Deployments and StatefulSets.
+        image
     imagePullPolicy : str, default is Undefined, optional
-        Image pull policy.
-        One of Always, Never, IfNotPresent.
-        Defaults to Always if :latest tag is specified, or IfNotPresent otherwise.
-        Cannot be updated.
-        More info: https://kubernetes.io/docs/concepts/containers/images#updating-images
+        image pull policy
     lifecycle : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0Lifecycle, default is Undefined, optional
         lifecycle
     livenessProbe : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbe, default is Undefined, optional
         liveness probe
     name : str, default is Undefined, required
-        Name of the container specified as a DNS_LABEL.
-        Each container in a pod must have a unique name (DNS_LABEL).
-        Cannot be updated.
+        name
     ports : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0PortsItems0], default is Undefined, optional
-        List of ports to expose from the container. Not specifying a port here
-        DOES NOT prevent that port from being exposed. Any port which is
-        listening on the default "0.0.0.0" address inside a container will be
-        accessible from the network.
-        Modifying this array with strategic merge patch may corrupt the data.
-        For more information See https://github.com/kubernetes/kubernetes/issues/108255.
-        Cannot be updated.
+        ports
     readinessProbe : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbe, default is Undefined, optional
         readiness probe
     resizePolicy : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ResizePolicyItems0], default is Undefined, optional
-        Resources resize policy for the container.
+        resize policy
     resources : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
-        RestartPolicy defines the restart behavior of individual containers in a pod.
-        This field may only be set for init containers, and the only allowed value is "Always".
-        For non-init containers or when this field is not specified,
-        the restart behavior is defined by the Pod's restart policy and the container type.
-        Setting the RestartPolicy as "Always" for the init container will have the following effect:
-        this init container will be continually restarted on
-        exit until all regular containers have terminated. Once all regular
-        containers have completed, all init containers with restartPolicy "Always"
-        will be shut down. This lifecycle differs from normal init containers and
-        is often referred to as a "sidecar" container. Although this init
-        container still starts in the init container sequence, it does not wait
-        for the container to complete before proceeding to the next init
-        container. Instead, the next init container starts immediately after this
-        init container is started, or after any startupProbe has successfully
-        completed.
+        restart policy
     securityContext : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContext, default is Undefined, optional
         security context
     startupProbe : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbe, default is Undefined, optional
         startup probe
     stdin : bool, default is Undefined, optional
-        Whether this container should allocate a buffer for stdin in the container runtime. If this
-        is not set, reads from stdin in the container will always result in EOF.
-        Default is false.
+        stdin
     stdinOnce : bool, default is Undefined, optional
-        Whether the container runtime should close the stdin channel after it has been opened by
-        a single attach. When stdin is true the stdin stream will remain open across multiple attach
-        sessions. If stdinOnce is set to true, stdin is opened on container start, is empty until the
-        first client attaches to stdin, and then remains open and accepts data until the client disconnects,
-        at which time stdin is closed and remains closed until the container is restarted. If this
-        flag is false, a container processes that reads from stdin will never receive an EOF.
-        Default is false
+        stdin once
     terminationMessagePath : str, default is Undefined, optional
-        Optional: Path at which the file to which the container's termination message
-        will be written is mounted into the container's filesystem.
-        Message written is intended to be brief final status, such as an assertion failure message.
-        Will be truncated by the node if greater than 4096 bytes. The total message length across
-        all containers will be limited to 12kb.
-        Defaults to /dev/termination-log.
-        Cannot be updated.
+        termination message path
     terminationMessagePolicy : str, default is Undefined, optional
-        Indicate how the termination message should be populated. File will use the contents of
-        terminationMessagePath to populate the container status message on both success and failure.
-        FallbackToLogsOnError will use the last chunk of container log output if the termination
-        message file is empty and the container exited with an error.
-        The log output is limited to 2048 bytes or 80 lines, whichever is smaller.
-        Defaults to File.
-        Cannot be updated.
+        termination message policy
     tty : bool, default is Undefined, optional
-        Whether this container should allocate a TTY for itself, also requires 'stdin' to be true.
-        Default is false.
+        tty
     volumeDevices : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0VolumeDevicesItems0], default is Undefined, optional
-        volumeDevices is the list of block devices to be used by the container.
+        volume devices
     volumeMounts : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0VolumeMountsItems0], default is Undefined, optional
-        Pod volumes to mount into the container's filesystem.
-        Cannot be updated.
+        volume mounts
     workingDir : str, default is Undefined, optional
-        Container's working directory.
-        If not specified, the container runtime's default will be used, which
-        might be configured in the container image.
-        Cannot be updated.
+        working dir
     """
     args?: [str]
     command?: [str]
@@ -1481,14 +1076,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvFromItems0:
     r"""
-    EnvFromSource represents the source of a set of ConfigMaps
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 env from items0
 
     Attributes
     ----------
     configMapRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvFromItems0ConfigMapRef, default is Undefined, optional
         config map ref
     prefix : str, default is Undefined, optional
-        An optional identifier to prepend to each key in the ConfigMap. Must be a C_IDENTIFIER.
+        prefix
     secretRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvFromItems0SecretRef, default is Undefined, optional
         secret ref
     """
@@ -1498,58 +1093,42 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvFromItems0ConfigMapRef:
     r"""
-    The ConfigMap to select from
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 env from items0 config map ref
 
     Attributes
     ----------
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     optional : bool, default is Undefined, optional
-        Specify whether the ConfigMap must be defined
+        optional
     """
     name?: str = ""
     optional?: bool
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvFromItems0SecretRef:
     r"""
-    The Secret to select from
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 env from items0 secret ref
 
     Attributes
     ----------
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     optional : bool, default is Undefined, optional
-        Specify whether the Secret must be defined
+        optional
     """
     name?: str = ""
     optional?: bool
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0:
     r"""
-    EnvVar represents an environment variable present in a Container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 env items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the environment variable. Must be a C_IDENTIFIER.
+        name
     value : str, default is Undefined, optional
-        Variable references $(VAR_NAME) are expanded
-        using the previously defined environment variables in the container and
-        any service environment variables. If a variable cannot be resolved,
-        the reference in the input string will be unchanged. Double $$ are reduced
-        to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e.
-        "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)".
-        Escaped references will never be expanded, regardless of whether the variable
-        exists or not.
-        Defaults to "".
+        value
     valueFrom : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFrom, default is Undefined, optional
         value from
     """
@@ -1560,7 +1139,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFrom:
     r"""
-    Source for the environment variable's value. Cannot be used if value is not empty.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 env items0 value from
 
     Attributes
     ----------
@@ -1580,20 +1159,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromConfigMapKeyRef:
     r"""
-    Selects a key of a ConfigMap.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 env items0 value from config map key ref
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key to select.
+        key
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     optional : bool, default is Undefined, optional
-        Specify whether the ConfigMap or its key must be defined
+        optional
     """
     key: str
 
@@ -1602,32 +1177,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromFieldRef:
     r"""
-    Selects a field of the pod: supports metadata.name, metadata.namespace, `metadata.labels['<KEY>']`, `metadata.annotations['<KEY>']`,
-    spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 env items0 value from field ref
 
     Attributes
     ----------
     apiVersion : str, default is Undefined, optional
-        Version of the schema the FieldPath is written in terms of, defaults to "v1".
+        api version
     fieldPath : str, default is Undefined, required
-        Path of the field to select in the specified API version.
+        field path
     """
     apiVersion?: str
     fieldPath: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromResourceFieldRef:
     r"""
-    Selects a resource of the container: only resources limits and requests
-    (limits.cpu, limits.memory, limits.ephemeral-storage, requests.cpu, requests.memory and requests.ephemeral-storage) are currently supported.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 env items0 value from resource field ref
 
     Attributes
     ----------
     containerName : str, default is Undefined, optional
-        Container name: required for volumes, optional for env vars
+        container name
     divisor : int | str, default is Undefined, optional
-        Specifies the output format of the exposed resources, defaults to "1"
+        divisor
     resource : str, default is Undefined, required
-        Required: resource to select
+        resource
     """
     containerName?: str
     divisor?: int | str
@@ -1638,20 +1211,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromSecretKeyRef:
     r"""
-    Selects a key of a secret in the pod's namespace
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 env items0 value from secret key ref
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key of the secret to select from.  Must be a valid secret key.
+        key
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     optional : bool, default is Undefined, optional
-        Specify whether the Secret or its key must be defined
+        optional
     """
     key: str
 
@@ -1660,8 +1229,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0Lifecycle:
     r"""
-    Actions that the management system should take in response to container lifecycle events.
-    Cannot be updated.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 lifecycle
 
     Attributes
     ----------
@@ -1669,16 +1237,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         post start
     preStop : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStop, default is Undefined, optional
         pre stop
+    stopSignal : str, default is Undefined, optional
+        stop signal
     """
     postStart?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStart
     preStop?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStop
+    stopSignal?: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStart:
     r"""
-    PostStart is called immediately after a container is created. If the handler fails,
-    the container is terminated and restarted according to its restart policy.
-    Other management of the container blocks until the hook completes.
-    More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 lifecycle post start
 
     Attributes
     ----------
@@ -1698,39 +1266,31 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStartExec:
     r"""
-    Exec specifies a command to execute in the container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 lifecycle post start exec
 
     Attributes
     ----------
     command : [str], default is Undefined, optional
-        Command is the command line to execute inside the container, the working directory for the
-        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
-        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
-        a shell, you need to explicitly call out to that shell.
-        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+        command
     """
     command?: [str]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStartHTTPGet:
     r"""
-    HTTPGet specifies an HTTP GET request to perform.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 lifecycle post start HTTP get
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Host name to connect to, defaults to the pod IP. You probably want to set
-        "Host" in httpHeaders instead.
+        host
     httpHeaders : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0], default is Undefined, optional
-        Custom headers to set in the request. HTTP allows repeated headers.
+        http headers
     path : str, default is Undefined, optional
-        Path to access on the HTTP server.
+        path
     port : int | str, default is Undefined, required
-        Name or number of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     scheme : str, default is Undefined, optional
-        Scheme to use for connecting to the host.
-        Defaults to HTTP.
+        scheme
     """
     host?: str
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0]
@@ -1741,15 +1301,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0:
     r"""
-    HTTPHeader describes a custom header to be used in HTTP probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 lifecycle post start HTTP get HTTP headers items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        The header field name.
-        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+        name
     value : str, default is Undefined, required
-        The header field value
+        value
     """
     name: str
 
@@ -1757,44 +1316,32 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStartSleep:
     r"""
-    Sleep represents a duration that the container should sleep.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 lifecycle post start sleep
 
     Attributes
     ----------
     seconds : int, default is Undefined, required
-        Seconds is the number of seconds to sleep.
+        seconds
     """
     seconds: int
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePostStartTCPSocket:
     r"""
-    Deprecated. TCPSocket is NOT supported as a LifecycleHandler and kept
-    for backward compatibility. There is no validation of this field and
-    lifecycle hooks will fail at runtime when it is specified.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 lifecycle post start TCP socket
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Optional: Host name to connect to, defaults to the pod IP.
+        host
     port : int | str, default is Undefined, required
-        Number or name of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     """
     host?: str
     port: int | str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStop:
     r"""
-    PreStop is called immediately before a container is terminated due to an
-    API request or management event such as liveness/startup probe failure,
-    preemption, resource contention, etc. The handler is not called if the
-    container crashes or exits. The Pod's termination grace period countdown begins before the
-    PreStop hook is executed. Regardless of the outcome of the handler, the
-    container will eventually terminate within the Pod's termination grace
-    period (unless delayed by finalizers). Other management of the container blocks until the hook completes
-    or until the termination grace period is reached.
-    More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 lifecycle pre stop
 
     Attributes
     ----------
@@ -1814,39 +1361,31 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStopExec:
     r"""
-    Exec specifies a command to execute in the container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 lifecycle pre stop exec
 
     Attributes
     ----------
     command : [str], default is Undefined, optional
-        Command is the command line to execute inside the container, the working directory for the
-        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
-        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
-        a shell, you need to explicitly call out to that shell.
-        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+        command
     """
     command?: [str]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStopHTTPGet:
     r"""
-    HTTPGet specifies an HTTP GET request to perform.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 lifecycle pre stop HTTP get
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Host name to connect to, defaults to the pod IP. You probably want to set
-        "Host" in httpHeaders instead.
+        host
     httpHeaders : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0], default is Undefined, optional
-        Custom headers to set in the request. HTTP allows repeated headers.
+        http headers
     path : str, default is Undefined, optional
-        Path to access on the HTTP server.
+        path
     port : int | str, default is Undefined, required
-        Name or number of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     scheme : str, default is Undefined, optional
-        Scheme to use for connecting to the host.
-        Defaults to HTTP.
+        scheme
     """
     host?: str
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0]
@@ -1857,15 +1396,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0:
     r"""
-    HTTPHeader describes a custom header to be used in HTTP probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 lifecycle pre stop HTTP get HTTP headers items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        The header field name.
-        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+        name
     value : str, default is Undefined, required
-        The header field value
+        value
     """
     name: str
 
@@ -1873,77 +1411,55 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStopSleep:
     r"""
-    Sleep represents a duration that the container should sleep.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 lifecycle pre stop sleep
 
     Attributes
     ----------
     seconds : int, default is Undefined, required
-        Seconds is the number of seconds to sleep.
+        seconds
     """
     seconds: int
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LifecyclePreStopTCPSocket:
     r"""
-    Deprecated. TCPSocket is NOT supported as a LifecycleHandler and kept
-    for backward compatibility. There is no validation of this field and
-    lifecycle hooks will fail at runtime when it is specified.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 lifecycle pre stop TCP socket
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Optional: Host name to connect to, defaults to the pod IP.
+        host
     port : int | str, default is Undefined, required
-        Number or name of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     """
     host?: str
     port: int | str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbe:
     r"""
-    Periodic probe of container liveness.
-    Container will be restarted if the probe fails.
-    Cannot be updated.
-    More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 liveness probe
 
     Attributes
     ----------
     exec : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeExec, default is Undefined, optional
         exec
     failureThreshold : int, default is Undefined, optional
-        Minimum consecutive failures for the probe to be considered failed after having succeeded.
-        Defaults to 3. Minimum value is 1.
+        failure threshold
     grpc : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeGrpc, default is Undefined, optional
         grpc
     httpGet : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeHTTPGet, default is Undefined, optional
         http get
     initialDelaySeconds : int, default is Undefined, optional
-        Number of seconds after the container has started before liveness probes are initiated.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        initial delay seconds
     periodSeconds : int, default is Undefined, optional
-        How often (in seconds) to perform the probe.
-        Default to 10 seconds. Minimum value is 1.
+        period seconds
     successThreshold : int, default is Undefined, optional
-        Minimum consecutive successes for the probe to be considered successful after having failed.
-        Defaults to 1. Must be 1 for liveness and startup. Minimum value is 1.
+        success threshold
     tcpSocket : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeTCPSocket, default is Undefined, optional
         tcp socket
     terminationGracePeriodSeconds : int, default is Undefined, optional
-        Optional duration in seconds the pod needs to terminate gracefully upon probe failure.
-        The grace period is the duration in seconds after the processes running in the pod are sent
-        a termination signal and the time when the processes are forcibly halted with a kill signal.
-        Set this value longer than the expected cleanup time for your process.
-        If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this
-        value overrides the value provided by the pod spec.
-        Value must be non-negative integer. The value zero indicates stop immediately via
-        the kill signal (no opportunity to shut down).
-        This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate.
-        Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.
+        termination grace period seconds
     timeoutSeconds : int, default is Undefined, optional
-        Number of seconds after which the probe times out.
-        Defaults to 1 second. Minimum value is 1.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        timeout seconds
     """
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeExec
     failureThreshold?: int
@@ -1958,32 +1474,25 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeExec:
     r"""
-    Exec specifies a command to execute in the container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 liveness probe exec
 
     Attributes
     ----------
     command : [str], default is Undefined, optional
-        Command is the command line to execute inside the container, the working directory for the
-        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
-        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
-        a shell, you need to explicitly call out to that shell.
-        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+        command
     """
     command?: [str]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeGrpc:
     r"""
-    GRPC specifies a GRPC HealthCheckRequest.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 liveness probe grpc
 
     Attributes
     ----------
     port : int, default is Undefined, required
-        Port number of the gRPC service. Number must be in the range 1 to 65535.
+        port
     service : str, default is Undefined, optional
-        Service is the name of the service to place in the gRPC HealthCheckRequest
-        (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
-
-        If this is not specified, the default behavior is defined by gRPC.
+        service
     """
     port: int
 
@@ -1991,24 +1500,20 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeHTTPGet:
     r"""
-    HTTPGet specifies an HTTP GET request to perform.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 liveness probe HTTP get
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Host name to connect to, defaults to the pod IP. You probably want to set
-        "Host" in httpHeaders instead.
+        host
     httpHeaders : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0], default is Undefined, optional
-        Custom headers to set in the request. HTTP allows repeated headers.
+        http headers
     path : str, default is Undefined, optional
-        Path to access on the HTTP server.
+        path
     port : int | str, default is Undefined, required
-        Name or number of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     scheme : str, default is Undefined, optional
-        Scheme to use for connecting to the host.
-        Defaults to HTTP.
+        scheme
     """
     host?: str
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0]
@@ -2019,15 +1524,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0:
     r"""
-    HTTPHeader describes a custom header to be used in HTTP probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 liveness probe HTTP get HTTP headers items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        The header field name.
-        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+        name
     value : str, default is Undefined, required
-        The header field value
+        value
     """
     name: str
 
@@ -2035,43 +1539,34 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0LivenessProbeTCPSocket:
     r"""
-    TCPSocket specifies a connection to a TCP port.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 liveness probe TCP socket
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Optional: Host name to connect to, defaults to the pod IP.
+        host
     port : int | str, default is Undefined, required
-        Number or name of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     """
     host?: str
     port: int | str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0PortsItems0:
     r"""
-    ContainerPort represents a network port in a single container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 ports items0
 
     Attributes
     ----------
     containerPort : int, default is Undefined, required
-        Number of port to expose on the pod's IP address.
-        This must be a valid port number, 0 < x < 65536.
+        container port
     hostIP : str, default is Undefined, optional
-        What host IP to bind the external port to.
+        host IP
     hostPort : int, default is Undefined, optional
-        Number of port to expose on the host.
-        If specified, this must be a valid port number, 0 < x < 65536.
-        If HostNetwork is specified, this must match ContainerPort.
-        Most containers do not need this.
+        host port
     name : str, default is Undefined, optional
-        If specified, this must be an IANA_SVC_NAME and unique within the pod. Each
-        named port in a pod must have a unique name. Name for the port that can be
-        referred to by services.
+        name
     $protocol : str, default is "TCP", optional
-        Protocol for port. Must be UDP, TCP, or SCTP.
-        Defaults to "TCP".
+        protocol
     """
     containerPort: int
 
@@ -2082,48 +1577,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbe:
     r"""
-    Periodic probe of container service readiness.
-    Container will be removed from service endpoints if the probe fails.
-    Cannot be updated.
-    More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 readiness probe
 
     Attributes
     ----------
     exec : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeExec, default is Undefined, optional
         exec
     failureThreshold : int, default is Undefined, optional
-        Minimum consecutive failures for the probe to be considered failed after having succeeded.
-        Defaults to 3. Minimum value is 1.
+        failure threshold
     grpc : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeGrpc, default is Undefined, optional
         grpc
     httpGet : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeHTTPGet, default is Undefined, optional
         http get
     initialDelaySeconds : int, default is Undefined, optional
-        Number of seconds after the container has started before liveness probes are initiated.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        initial delay seconds
     periodSeconds : int, default is Undefined, optional
-        How often (in seconds) to perform the probe.
-        Default to 10 seconds. Minimum value is 1.
+        period seconds
     successThreshold : int, default is Undefined, optional
-        Minimum consecutive successes for the probe to be considered successful after having failed.
-        Defaults to 1. Must be 1 for liveness and startup. Minimum value is 1.
+        success threshold
     tcpSocket : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeTCPSocket, default is Undefined, optional
         tcp socket
     terminationGracePeriodSeconds : int, default is Undefined, optional
-        Optional duration in seconds the pod needs to terminate gracefully upon probe failure.
-        The grace period is the duration in seconds after the processes running in the pod are sent
-        a termination signal and the time when the processes are forcibly halted with a kill signal.
-        Set this value longer than the expected cleanup time for your process.
-        If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this
-        value overrides the value provided by the pod spec.
-        Value must be non-negative integer. The value zero indicates stop immediately via
-        the kill signal (no opportunity to shut down).
-        This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate.
-        Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.
+        termination grace period seconds
     timeoutSeconds : int, default is Undefined, optional
-        Number of seconds after which the probe times out.
-        Defaults to 1 second. Minimum value is 1.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        timeout seconds
     """
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeExec
     failureThreshold?: int
@@ -2138,32 +1615,25 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeExec:
     r"""
-    Exec specifies a command to execute in the container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 readiness probe exec
 
     Attributes
     ----------
     command : [str], default is Undefined, optional
-        Command is the command line to execute inside the container, the working directory for the
-        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
-        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
-        a shell, you need to explicitly call out to that shell.
-        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+        command
     """
     command?: [str]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeGrpc:
     r"""
-    GRPC specifies a GRPC HealthCheckRequest.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 readiness probe grpc
 
     Attributes
     ----------
     port : int, default is Undefined, required
-        Port number of the gRPC service. Number must be in the range 1 to 65535.
+        port
     service : str, default is Undefined, optional
-        Service is the name of the service to place in the gRPC HealthCheckRequest
-        (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
-
-        If this is not specified, the default behavior is defined by gRPC.
+        service
     """
     port: int
 
@@ -2171,24 +1641,20 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeHTTPGet:
     r"""
-    HTTPGet specifies an HTTP GET request to perform.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 readiness probe HTTP get
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Host name to connect to, defaults to the pod IP. You probably want to set
-        "Host" in httpHeaders instead.
+        host
     httpHeaders : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0], default is Undefined, optional
-        Custom headers to set in the request. HTTP allows repeated headers.
+        http headers
     path : str, default is Undefined, optional
-        Path to access on the HTTP server.
+        path
     port : int | str, default is Undefined, required
-        Name or number of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     scheme : str, default is Undefined, optional
-        Scheme to use for connecting to the host.
-        Defaults to HTTP.
+        scheme
     """
     host?: str
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0]
@@ -2199,15 +1665,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0:
     r"""
-    HTTPHeader describes a custom header to be used in HTTP probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 readiness probe HTTP get HTTP headers items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        The header field name.
-        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+        name
     value : str, default is Undefined, required
-        The header field value
+        value
     """
     name: str
 
@@ -2215,32 +1680,28 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ReadinessProbeTCPSocket:
     r"""
-    TCPSocket specifies a connection to a TCP port.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 readiness probe TCP socket
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Optional: Host name to connect to, defaults to the pod IP.
+        host
     port : int | str, default is Undefined, required
-        Number or name of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     """
     host?: str
     port: int | str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ResizePolicyItems0:
     r"""
-    ContainerResizePolicy represents resource resize policy for the container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 resize policy items0
 
     Attributes
     ----------
     resourceName : str, default is Undefined, required
-        Name of the resource to which this resource resize policy applies.
-        Supported values: cpu, memory.
+        resource name
     restartPolicy : str, default is Undefined, required
-        Restart policy to apply when specified resource is resized.
-        If not specified, it defaults to NotRequired.
+        restart policy
     """
     resourceName: str
 
@@ -2248,28 +1709,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0Resources:
     r"""
-    Compute Resources required by this container.
-    Cannot be updated.
-    More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 resources
 
     Attributes
     ----------
     claims : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ResourcesClaimsItems0], default is Undefined, optional
-        Claims lists the names of resources, defined in spec.resourceClaims,
-        that are used by this container.
-
-        This is an alpha field and requires enabling the
-        DynamicResourceAllocation feature gate.
-
-        This field is immutable. It can only be set for containers.
+        claims
     limits : {str:int | str}, default is Undefined, optional
-        Limits describes the maximum amount of compute resources allowed.
-        More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+        limits
     requests : {str:int | str}, default is Undefined, optional
-        Requests describes the minimum amount of compute resources required.
-        If Requests is omitted for a container, it defaults to Limits if that is explicitly specified,
-        otherwise to an implementation-defined value. Requests cannot exceed Limits.
-        More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+        requests
     """
     claims?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ResourcesClaimsItems0]
     limits?: {str:int | str}
@@ -2281,18 +1730,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ResourcesClaimsItems0:
     r"""
-    ResourceClaim references one entry in PodSpec.ResourceClaims.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 resources claims items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name must match the name of one entry in pod.spec.resourceClaims of
-        the Pod where this field is used. It makes that resource available
-        inside a container.
+        name
     request : str, default is Undefined, optional
-        Request is the name chosen for a request in the referenced claim.
-        If empty, everything from the claim is made available, otherwise
-        only the result of this request.
+        request
     """
     name: str
 
@@ -2300,58 +1745,28 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContext:
     r"""
-    SecurityContext defines the security options the container should be run with.
-    If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext.
-    More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 security context
 
     Attributes
     ----------
     allowPrivilegeEscalation : bool, default is Undefined, optional
-        AllowPrivilegeEscalation controls whether a process can gain more
-        privileges than its parent process. This bool directly controls if
-        the no_new_privs flag will be set on the container process.
-        AllowPrivilegeEscalation is true always when the container is:
-        1) run as Privileged
-        2) has CAP_SYS_ADMIN
-        Note that this field cannot be set when spec.os.name is windows.
+        allow privilege escalation
     appArmorProfile : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextAppArmorProfile, default is Undefined, optional
         app armor profile
     capabilities : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextCapabilities, default is Undefined, optional
         capabilities
     privileged : bool, default is Undefined, optional
-        Run container in privileged mode.
-        Processes in privileged containers are essentially equivalent to root on the host.
-        Defaults to false.
-        Note that this field cannot be set when spec.os.name is windows.
+        privileged
     procMount : str, default is Undefined, optional
-        procMount denotes the type of proc mount to use for the containers.
-        The default value is Default which uses the container runtime defaults for
-        readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
-        Note that this field cannot be set when spec.os.name is windows.
+        proc mount
     readOnlyRootFilesystem : bool, default is Undefined, optional
-        Whether this container has a read-only root filesystem.
-        Default is false.
-        Note that this field cannot be set when spec.os.name is windows.
+        read only root filesystem
     runAsGroup : int, default is Undefined, optional
-        The GID to run the entrypoint of the container process.
-        Uses runtime default if unset.
-        May also be set in PodSecurityContext.  If set in both SecurityContext and
-        PodSecurityContext, the value specified in SecurityContext takes precedence.
-        Note that this field cannot be set when spec.os.name is windows.
+        run as group
     runAsNonRoot : bool, default is Undefined, optional
-        Indicates that the container must run as a non-root user.
-        If true, the Kubelet will validate the image at runtime to ensure that it
-        does not run as UID 0 (root) and fail to start the container if it does.
-        If unset or false, no such validation will be performed.
-        May also be set in PodSecurityContext.  If set in both SecurityContext and
-        PodSecurityContext, the value specified in SecurityContext takes precedence.
+        run as non root
     runAsUser : int, default is Undefined, optional
-        The UID to run the entrypoint of the container process.
-        Defaults to user specified in image metadata if unspecified.
-        May also be set in PodSecurityContext.  If set in both SecurityContext and
-        PodSecurityContext, the value specified in SecurityContext takes precedence.
-        Note that this field cannot be set when spec.os.name is windows.
+        run as user
     seLinuxOptions : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextSeLinuxOptions, default is Undefined, optional
         se linux options
     seccompProfile : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextSeccompProfile, default is Undefined, optional
@@ -2374,61 +1789,46 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextAppArmorProfile:
     r"""
-    appArmorProfile is the AppArmor options to use by this container. If set, this profile
-    overrides the pod's appArmorProfile.
-    Note that this field cannot be set when spec.os.name is windows.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 security context app armor profile
 
     Attributes
     ----------
     localhostProfile : str, default is Undefined, optional
-        localhostProfile indicates a profile loaded on the node that should be used.
-        The profile must be preconfigured on the node to work.
-        Must match the loaded name of the profile.
-        Must be set if and only if type is "Localhost".
+        localhost profile
     $type : str, default is Undefined, required
-        type indicates which kind of AppArmor profile will be applied.
-        Valid options are:
-          Localhost - a profile pre-loaded on the node.
-          RuntimeDefault - the container runtime's default profile.
-          Unconfined - no AppArmor enforcement.
+        type
     """
     localhostProfile?: str
     $type: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextCapabilities:
     r"""
-    The capabilities to add/drop when running containers.
-    Defaults to the default set of capabilities granted by the container runtime.
-    Note that this field cannot be set when spec.os.name is windows.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 security context capabilities
 
     Attributes
     ----------
     add : [str], default is Undefined, optional
-        Added capabilities
+        add
     drop : [str], default is Undefined, optional
-        Removed capabilities
+        drop
     """
     add?: [str]
     drop?: [str]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextSeLinuxOptions:
     r"""
-    The SELinux context to be applied to the container.
-    If unspecified, the container runtime will allocate a random SELinux context for each
-    container.  May also be set in PodSecurityContext.  If set in both SecurityContext and
-    PodSecurityContext, the value specified in SecurityContext takes precedence.
-    Note that this field cannot be set when spec.os.name is windows.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 security context se linux options
 
     Attributes
     ----------
     level : str, default is Undefined, optional
-        Level is SELinux level label that applies to the container.
+        level
     role : str, default is Undefined, optional
-        Role is a SELinux role label that applies to the container.
+        role
     $type : str, default is Undefined, optional
-        Type is a SELinux type label that applies to the container.
+        type
     user : str, default is Undefined, optional
-        User is a SELinux user label that applies to the container.
+        user
     """
     level?: str
     role?: str
@@ -2437,54 +1837,32 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextSeccompProfile:
     r"""
-    The seccomp options to use by this container. If seccomp options are
-    provided at both the pod & container level, the container options
-    override the pod options.
-    Note that this field cannot be set when spec.os.name is windows.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 security context seccomp profile
 
     Attributes
     ----------
     localhostProfile : str, default is Undefined, optional
-        localhostProfile indicates a profile defined in a file on the node should be used.
-        The profile must be preconfigured on the node to work.
-        Must be a descending path, relative to the kubelet's configured seccomp profile location.
-        Must be set if type is "Localhost". Must NOT be set for any other type.
+        localhost profile
     $type : str, default is Undefined, required
-        type indicates which kind of seccomp profile will be applied.
-        Valid options are:
-
-        Localhost - a profile defined in a file on the node should be used.
-        RuntimeDefault - the container runtime default profile should be used.
-        Unconfined - no profile should be applied.
+        type
     """
     localhostProfile?: str
     $type: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContextWindowsOptions:
     r"""
-    The Windows specific settings applied to all containers.
-    If unspecified, the options from the PodSecurityContext will be used.
-    If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.
-    Note that this field cannot be set when spec.os.name is linux.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 security context windows options
 
     Attributes
     ----------
     gmsaCredentialSpec : str, default is Undefined, optional
-        GMSACredentialSpec is where the GMSA admission webhook
-        (https://github.com/kubernetes-sigs/windows-gmsa) inlines the contents of the
-        GMSA credential spec named by the GMSACredentialSpecName field.
+        gmsa credential spec
     gmsaCredentialSpecName : str, default is Undefined, optional
-        GMSACredentialSpecName is the name of the GMSA credential spec to use.
+        gmsa credential spec name
     hostProcess : bool, default is Undefined, optional
-        HostProcess determines if a container should be run as a 'Host Process' container.
-        All of a Pod's containers must have the same effective HostProcess value
-        (it is not allowed to have a mix of HostProcess containers and non-HostProcess containers).
-        In addition, if HostProcess is true then HostNetwork must also be set to true.
+        host process
     runAsUserName : str, default is Undefined, optional
-        The UserName in Windows to run the entrypoint of the container process.
-        Defaults to the user specified in image metadata if unspecified.
-        May also be set in PodSecurityContext. If set in both SecurityContext and
-        PodSecurityContext, the value specified in SecurityContext takes precedence.
+        run as user name
     """
     gmsaCredentialSpec?: str
     gmsaCredentialSpecName?: str
@@ -2493,51 +1871,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbe:
     r"""
-    StartupProbe indicates that the Pod has successfully initialized.
-    If specified, no other probes are executed until this completes successfully.
-    If this probe fails, the Pod will be restarted, just as if the livenessProbe failed.
-    This can be used to provide different probe parameters at the beginning of a Pod's lifecycle,
-    when it might take a long time to load data or warm a cache, than during steady-state operation.
-    This cannot be updated.
-    More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 startup probe
 
     Attributes
     ----------
     exec : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeExec, default is Undefined, optional
         exec
     failureThreshold : int, default is Undefined, optional
-        Minimum consecutive failures for the probe to be considered failed after having succeeded.
-        Defaults to 3. Minimum value is 1.
+        failure threshold
     grpc : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeGrpc, default is Undefined, optional
         grpc
     httpGet : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeHTTPGet, default is Undefined, optional
         http get
     initialDelaySeconds : int, default is Undefined, optional
-        Number of seconds after the container has started before liveness probes are initiated.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        initial delay seconds
     periodSeconds : int, default is Undefined, optional
-        How often (in seconds) to perform the probe.
-        Default to 10 seconds. Minimum value is 1.
+        period seconds
     successThreshold : int, default is Undefined, optional
-        Minimum consecutive successes for the probe to be considered successful after having failed.
-        Defaults to 1. Must be 1 for liveness and startup. Minimum value is 1.
+        success threshold
     tcpSocket : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeTCPSocket, default is Undefined, optional
         tcp socket
     terminationGracePeriodSeconds : int, default is Undefined, optional
-        Optional duration in seconds the pod needs to terminate gracefully upon probe failure.
-        The grace period is the duration in seconds after the processes running in the pod are sent
-        a termination signal and the time when the processes are forcibly halted with a kill signal.
-        Set this value longer than the expected cleanup time for your process.
-        If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this
-        value overrides the value provided by the pod spec.
-        Value must be non-negative integer. The value zero indicates stop immediately via
-        the kill signal (no opportunity to shut down).
-        This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate.
-        Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.
+        termination grace period seconds
     timeoutSeconds : int, default is Undefined, optional
-        Number of seconds after which the probe times out.
-        Defaults to 1 second. Minimum value is 1.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        timeout seconds
     """
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeExec
     failureThreshold?: int
@@ -2552,32 +1909,25 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeExec:
     r"""
-    Exec specifies a command to execute in the container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 startup probe exec
 
     Attributes
     ----------
     command : [str], default is Undefined, optional
-        Command is the command line to execute inside the container, the working directory for the
-        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
-        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
-        a shell, you need to explicitly call out to that shell.
-        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+        command
     """
     command?: [str]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeGrpc:
     r"""
-    GRPC specifies a GRPC HealthCheckRequest.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 startup probe grpc
 
     Attributes
     ----------
     port : int, default is Undefined, required
-        Port number of the gRPC service. Number must be in the range 1 to 65535.
+        port
     service : str, default is Undefined, optional
-        Service is the name of the service to place in the gRPC HealthCheckRequest
-        (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
-
-        If this is not specified, the default behavior is defined by gRPC.
+        service
     """
     port: int
 
@@ -2585,24 +1935,20 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeHTTPGet:
     r"""
-    HTTPGet specifies an HTTP GET request to perform.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 startup probe HTTP get
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Host name to connect to, defaults to the pod IP. You probably want to set
-        "Host" in httpHeaders instead.
+        host
     httpHeaders : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeHTTPGetHTTPHeadersItems0], default is Undefined, optional
-        Custom headers to set in the request. HTTP allows repeated headers.
+        http headers
     path : str, default is Undefined, optional
-        Path to access on the HTTP server.
+        path
     port : int | str, default is Undefined, required
-        Name or number of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     scheme : str, default is Undefined, optional
-        Scheme to use for connecting to the host.
-        Defaults to HTTP.
+        scheme
     """
     host?: str
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeHTTPGetHTTPHeadersItems0]
@@ -2613,15 +1959,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeHTTPGetHTTPHeadersItems0:
     r"""
-    HTTPHeader describes a custom header to be used in HTTP probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 startup probe HTTP get HTTP headers items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        The header field name.
-        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+        name
     value : str, default is Undefined, required
-        The header field value
+        value
     """
     name: str
 
@@ -2629,30 +1974,28 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbeTCPSocket:
     r"""
-    TCPSocket specifies a connection to a TCP port.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 startup probe TCP socket
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Optional: Host name to connect to, defaults to the pod IP.
+        host
     port : int | str, default is Undefined, required
-        Number or name of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     """
     host?: str
     port: int | str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0VolumeDevicesItems0:
     r"""
-    volumeDevice describes a mapping of a raw block device within a container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 volume devices items0
 
     Attributes
     ----------
     devicePath : str, default is Undefined, required
-        devicePath is the path inside of the container that the device will be mapped to.
+        device path
     name : str, default is Undefined, required
-        name must match the name of a persistentVolumeClaim in the pod
+        name
     """
     devicePath: str
 
@@ -2660,50 +2003,24 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0VolumeMountsItems0:
     r"""
-    VolumeMount describes a mounting of a Volume within a container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 volume mounts items0
 
     Attributes
     ----------
     mountPath : str, default is Undefined, required
-        Path within the container at which the volume should be mounted.  Must
-        not contain ':'.
+        mount path
     mountPropagation : str, default is Undefined, optional
-        mountPropagation determines how mounts are propagated from the host
-        to container and the other way around.
-        When not set, MountPropagationNone is used.
-        This field is beta in 1.10.
-        When RecursiveReadOnly is set to IfPossible or to Enabled, MountPropagation must be None or unspecified
-        (which defaults to None).
+        mount propagation
     name : str, default is Undefined, required
-        This must match the Name of a Volume.
+        name
     readOnly : bool, default is Undefined, optional
-        Mounted read-only if true, read-write otherwise (false or unspecified).
-        Defaults to false.
+        read only
     recursiveReadOnly : str, default is Undefined, optional
-        RecursiveReadOnly specifies whether read-only mounts should be handled
-        recursively.
-
-        If ReadOnly is false, this field has no meaning and must be unspecified.
-
-        If ReadOnly is true, and this field is set to Disabled, the mount is not made
-        recursively read-only.  If this field is set to IfPossible, the mount is made
-        recursively read-only, if it is supported by the container runtime.  If this
-        field is set to Enabled, the mount is made recursively read-only if it is
-        supported by the container runtime, otherwise the pod will not be started and
-        an error will be generated to indicate the reason.
-
-        If this field is set to IfPossible or Enabled, MountPropagation must be set to
-        None (or be unspecified, which defaults to None).
-
-        If this field is not specified, it is treated as an equivalent of Disabled.
+        recursive read only
     subPath : str, default is Undefined, optional
-        Path within the volume from which the container's volume should be mounted.
-        Defaults to "" (volume's root).
+        sub path
     subPathExpr : str, default is Undefined, optional
-        Expanded path within the volume from which the container's volume should be mounted.
-        Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment.
-        Defaults to "" (volume's root).
-        SubPathExpr and SubPath are mutually exclusive.
+        sub path expr
     """
     mountPath: str
 
@@ -2717,25 +2034,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecDNSConfig:
     r"""
-    Specifies the DNS parameters of a pod.
-    Parameters specified here will be merged to the generated DNS
-    configuration based on DNSPolicy.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec DNS config
 
     Attributes
     ----------
     nameservers : [str], default is Undefined, optional
-        A list of DNS name server IP addresses.
-        This will be appended to the base nameservers generated from DNSPolicy.
-        Duplicated nameservers will be removed.
+        nameservers
     options : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecDNSConfigOptionsItems0], default is Undefined, optional
-        A list of DNS resolver options.
-        This will be merged with the base options generated from DNSPolicy.
-        Duplicated entries will be removed. Resolution options given in Options
-        will override those that appear in the base DNSPolicy.
+        options
     searches : [str], default is Undefined, optional
-        A list of DNS search domains for host-name lookup.
-        This will be appended to the base search paths generated from DNSPolicy.
-        Duplicated search paths will be removed.
+        searches
     """
     nameservers?: [str]
     options?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecDNSConfigOptionsItems0]
@@ -2743,141 +2051,74 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecDNSConfi
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecDNSConfigOptionsItems0:
     r"""
-    PodDNSConfigOption defines DNS resolver options of a pod.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec DNS config options items0
 
     Attributes
     ----------
     name : str, default is Undefined, optional
-        Name is this DNS resolver option's name.
-        Required.
+        name
     value : str, default is Undefined, optional
-        Value is this DNS resolver option's value.
+        value
     """
     name?: str
     value?: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0:
     r"""
-    An EphemeralContainer is a temporary container that you may add to an existing Pod for
-    user-initiated activities such as debugging. Ephemeral containers have no resource or
-    scheduling guarantees, and they will not be restarted when they exit or when a Pod is
-    removed or restarted. The kubelet may evict a Pod if an ephemeral container causes the
-    Pod to exceed its resource allocation.
-
-    To add an ephemeral container, use the ephemeralcontainers subresource of an existing
-    Pod. Ephemeral containers may not be removed or restarted.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0
 
     Attributes
     ----------
     args : [str], default is Undefined, optional
-        Arguments to the entrypoint.
-        The image's CMD is used if this is not provided.
-        Variable references $(VAR_NAME) are expanded using the container's environment. If a variable
-        cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced
-        to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will
-        produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless
-        of whether the variable exists or not. Cannot be updated.
-        More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell
+        args
     command : [str], default is Undefined, optional
-        Entrypoint array. Not executed within a shell.
-        The image's ENTRYPOINT is used if this is not provided.
-        Variable references $(VAR_NAME) are expanded using the container's environment. If a variable
-        cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced
-        to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will
-        produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless
-        of whether the variable exists or not. Cannot be updated.
-        More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell
+        command
     env : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0], default is Undefined, optional
-        List of environment variables to set in the container.
-        Cannot be updated.
+        env
     envFrom : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvFromItems0], default is Undefined, optional
-        List of sources to populate environment variables in the container.
-        The keys defined within a source must be a C_IDENTIFIER. All invalid keys
-        will be reported as an event when the container is starting. When a key exists in multiple
-        sources, the value associated with the last source will take precedence.
-        Values defined by an Env with a duplicate key will take precedence.
-        Cannot be updated.
+        env from
     image : str, default is Undefined, optional
-        Container image name.
-        More info: https://kubernetes.io/docs/concepts/containers/images
+        image
     imagePullPolicy : str, default is Undefined, optional
-        Image pull policy.
-        One of Always, Never, IfNotPresent.
-        Defaults to Always if :latest tag is specified, or IfNotPresent otherwise.
-        Cannot be updated.
-        More info: https://kubernetes.io/docs/concepts/containers/images#updating-images
+        image pull policy
     lifecycle : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0Lifecycle, default is Undefined, optional
         lifecycle
     livenessProbe : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbe, default is Undefined, optional
         liveness probe
     name : str, default is Undefined, required
-        Name of the ephemeral container specified as a DNS_LABEL.
-        This name must be unique among all containers, init containers and ephemeral containers.
+        name
     ports : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0PortsItems0], default is Undefined, optional
-        Ports are not allowed for ephemeral containers.
+        ports
     readinessProbe : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbe, default is Undefined, optional
         readiness probe
     resizePolicy : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ResizePolicyItems0], default is Undefined, optional
-        Resources resize policy for the container.
+        resize policy
     resources : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
-        Restart policy for the container to manage the restart behavior of each
-        container within a pod.
-        This may only be set for init containers. You cannot set this field on
-        ephemeral containers.
+        restart policy
     securityContext : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContext, default is Undefined, optional
         security context
     startupProbe : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbe, default is Undefined, optional
         startup probe
     stdin : bool, default is Undefined, optional
-        Whether this container should allocate a buffer for stdin in the container runtime. If this
-        is not set, reads from stdin in the container will always result in EOF.
-        Default is false.
+        stdin
     stdinOnce : bool, default is Undefined, optional
-        Whether the container runtime should close the stdin channel after it has been opened by
-        a single attach. When stdin is true the stdin stream will remain open across multiple attach
-        sessions. If stdinOnce is set to true, stdin is opened on container start, is empty until the
-        first client attaches to stdin, and then remains open and accepts data until the client disconnects,
-        at which time stdin is closed and remains closed until the container is restarted. If this
-        flag is false, a container processes that reads from stdin will never receive an EOF.
-        Default is false
+        stdin once
     targetContainerName : str, default is Undefined, optional
-        If set, the name of the container from PodSpec that this ephemeral container targets.
-        The ephemeral container will be run in the namespaces (IPC, PID, etc) of this container.
-        If not set then the ephemeral container uses the namespaces configured in the Pod spec.
-
-        The container runtime must implement support for this feature. If the runtime does not
-        support namespace targeting then the result of setting this field is undefined.
+        target container name
     terminationMessagePath : str, default is Undefined, optional
-        Optional: Path at which the file to which the container's termination message
-        will be written is mounted into the container's filesystem.
-        Message written is intended to be brief final status, such as an assertion failure message.
-        Will be truncated by the node if greater than 4096 bytes. The total message length across
-        all containers will be limited to 12kb.
-        Defaults to /dev/termination-log.
-        Cannot be updated.
+        termination message path
     terminationMessagePolicy : str, default is Undefined, optional
-        Indicate how the termination message should be populated. File will use the contents of
-        terminationMessagePath to populate the container status message on both success and failure.
-        FallbackToLogsOnError will use the last chunk of container log output if the termination
-        message file is empty and the container exited with an error.
-        The log output is limited to 2048 bytes or 80 lines, whichever is smaller.
-        Defaults to File.
-        Cannot be updated.
+        termination message policy
     tty : bool, default is Undefined, optional
-        Whether this container should allocate a TTY for itself, also requires 'stdin' to be true.
-        Default is false.
+        tty
     volumeDevices : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0VolumeDevicesItems0], default is Undefined, optional
-        volumeDevices is the list of block devices to be used by the container.
+        volume devices
     volumeMounts : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0VolumeMountsItems0], default is Undefined, optional
-        Pod volumes to mount into the container's filesystem. Subpath mounts are not allowed for ephemeral containers.
-        Cannot be updated.
+        volume mounts
     workingDir : str, default is Undefined, optional
-        Container's working directory.
-        If not specified, the container runtime's default will be used, which
-        might be configured in the container image.
-        Cannot be updated.
+        working dir
     """
     args?: [str]
     command?: [str]
@@ -2908,14 +2149,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvFromItems0:
     r"""
-    EnvFromSource represents the source of a set of ConfigMaps
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 env from items0
 
     Attributes
     ----------
     configMapRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvFromItems0ConfigMapRef, default is Undefined, optional
         config map ref
     prefix : str, default is Undefined, optional
-        An optional identifier to prepend to each key in the ConfigMap. Must be a C_IDENTIFIER.
+        prefix
     secretRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvFromItems0SecretRef, default is Undefined, optional
         secret ref
     """
@@ -2925,58 +2166,42 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvFromItems0ConfigMapRef:
     r"""
-    The ConfigMap to select from
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 env from items0 config map ref
 
     Attributes
     ----------
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     optional : bool, default is Undefined, optional
-        Specify whether the ConfigMap must be defined
+        optional
     """
     name?: str = ""
     optional?: bool
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvFromItems0SecretRef:
     r"""
-    The Secret to select from
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 env from items0 secret ref
 
     Attributes
     ----------
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     optional : bool, default is Undefined, optional
-        Specify whether the Secret must be defined
+        optional
     """
     name?: str = ""
     optional?: bool
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0:
     r"""
-    EnvVar represents an environment variable present in a Container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 env items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the environment variable. Must be a C_IDENTIFIER.
+        name
     value : str, default is Undefined, optional
-        Variable references $(VAR_NAME) are expanded
-        using the previously defined environment variables in the container and
-        any service environment variables. If a variable cannot be resolved,
-        the reference in the input string will be unchanged. Double $$ are reduced
-        to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e.
-        "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)".
-        Escaped references will never be expanded, regardless of whether the variable
-        exists or not.
-        Defaults to "".
+        value
     valueFrom : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFrom, default is Undefined, optional
         value from
     """
@@ -2987,7 +2212,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFrom:
     r"""
-    Source for the environment variable's value. Cannot be used if value is not empty.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 env items0 value from
 
     Attributes
     ----------
@@ -3007,20 +2232,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromConfigMapKeyRef:
     r"""
-    Selects a key of a ConfigMap.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 env items0 value from config map key ref
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key to select.
+        key
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     optional : bool, default is Undefined, optional
-        Specify whether the ConfigMap or its key must be defined
+        optional
     """
     key: str
 
@@ -3029,32 +2250,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromFieldRef:
     r"""
-    Selects a field of the pod: supports metadata.name, metadata.namespace, `metadata.labels['<KEY>']`, `metadata.annotations['<KEY>']`,
-    spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 env items0 value from field ref
 
     Attributes
     ----------
     apiVersion : str, default is Undefined, optional
-        Version of the schema the FieldPath is written in terms of, defaults to "v1".
+        api version
     fieldPath : str, default is Undefined, required
-        Path of the field to select in the specified API version.
+        field path
     """
     apiVersion?: str
     fieldPath: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromResourceFieldRef:
     r"""
-    Selects a resource of the container: only resources limits and requests
-    (limits.cpu, limits.memory, limits.ephemeral-storage, requests.cpu, requests.memory and requests.ephemeral-storage) are currently supported.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 env items0 value from resource field ref
 
     Attributes
     ----------
     containerName : str, default is Undefined, optional
-        Container name: required for volumes, optional for env vars
+        container name
     divisor : int | str, default is Undefined, optional
-        Specifies the output format of the exposed resources, defaults to "1"
+        divisor
     resource : str, default is Undefined, required
-        Required: resource to select
+        resource
     """
     containerName?: str
     divisor?: int | str
@@ -3065,20 +2284,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromSecretKeyRef:
     r"""
-    Selects a key of a secret in the pod's namespace
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 env items0 value from secret key ref
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key of the secret to select from.  Must be a valid secret key.
+        key
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     optional : bool, default is Undefined, optional
-        Specify whether the Secret or its key must be defined
+        optional
     """
     key: str
 
@@ -3087,7 +2302,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0Lifecycle:
     r"""
-    Lifecycle is not allowed for ephemeral containers.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 lifecycle
 
     Attributes
     ----------
@@ -3095,16 +2310,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         post start
     preStop : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStop, default is Undefined, optional
         pre stop
+    stopSignal : str, default is Undefined, optional
+        stop signal
     """
     postStart?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStart
     preStop?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStop
+    stopSignal?: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStart:
     r"""
-    PostStart is called immediately after a container is created. If the handler fails,
-    the container is terminated and restarted according to its restart policy.
-    Other management of the container blocks until the hook completes.
-    More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 lifecycle post start
 
     Attributes
     ----------
@@ -3124,39 +2339,31 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartExec:
     r"""
-    Exec specifies a command to execute in the container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 lifecycle post start exec
 
     Attributes
     ----------
     command : [str], default is Undefined, optional
-        Command is the command line to execute inside the container, the working directory for the
-        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
-        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
-        a shell, you need to explicitly call out to that shell.
-        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+        command
     """
     command?: [str]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartHTTPGet:
     r"""
-    HTTPGet specifies an HTTP GET request to perform.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 lifecycle post start HTTP get
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Host name to connect to, defaults to the pod IP. You probably want to set
-        "Host" in httpHeaders instead.
+        host
     httpHeaders : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0], default is Undefined, optional
-        Custom headers to set in the request. HTTP allows repeated headers.
+        http headers
     path : str, default is Undefined, optional
-        Path to access on the HTTP server.
+        path
     port : int | str, default is Undefined, required
-        Name or number of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     scheme : str, default is Undefined, optional
-        Scheme to use for connecting to the host.
-        Defaults to HTTP.
+        scheme
     """
     host?: str
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0]
@@ -3167,15 +2374,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0:
     r"""
-    HTTPHeader describes a custom header to be used in HTTP probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 lifecycle post start HTTP get HTTP headers items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        The header field name.
-        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+        name
     value : str, default is Undefined, required
-        The header field value
+        value
     """
     name: str
 
@@ -3183,44 +2389,32 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartSleep:
     r"""
-    Sleep represents a duration that the container should sleep.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 lifecycle post start sleep
 
     Attributes
     ----------
     seconds : int, default is Undefined, required
-        Seconds is the number of seconds to sleep.
+        seconds
     """
     seconds: int
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartTCPSocket:
     r"""
-    Deprecated. TCPSocket is NOT supported as a LifecycleHandler and kept
-    for backward compatibility. There is no validation of this field and
-    lifecycle hooks will fail at runtime when it is specified.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 lifecycle post start TCP socket
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Optional: Host name to connect to, defaults to the pod IP.
+        host
     port : int | str, default is Undefined, required
-        Number or name of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     """
     host?: str
     port: int | str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStop:
     r"""
-    PreStop is called immediately before a container is terminated due to an
-    API request or management event such as liveness/startup probe failure,
-    preemption, resource contention, etc. The handler is not called if the
-    container crashes or exits. The Pod's termination grace period countdown begins before the
-    PreStop hook is executed. Regardless of the outcome of the handler, the
-    container will eventually terminate within the Pod's termination grace
-    period (unless delayed by finalizers). Other management of the container blocks until the hook completes
-    or until the termination grace period is reached.
-    More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 lifecycle pre stop
 
     Attributes
     ----------
@@ -3240,39 +2434,31 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopExec:
     r"""
-    Exec specifies a command to execute in the container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 lifecycle pre stop exec
 
     Attributes
     ----------
     command : [str], default is Undefined, optional
-        Command is the command line to execute inside the container, the working directory for the
-        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
-        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
-        a shell, you need to explicitly call out to that shell.
-        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+        command
     """
     command?: [str]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopHTTPGet:
     r"""
-    HTTPGet specifies an HTTP GET request to perform.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 lifecycle pre stop HTTP get
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Host name to connect to, defaults to the pod IP. You probably want to set
-        "Host" in httpHeaders instead.
+        host
     httpHeaders : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0], default is Undefined, optional
-        Custom headers to set in the request. HTTP allows repeated headers.
+        http headers
     path : str, default is Undefined, optional
-        Path to access on the HTTP server.
+        path
     port : int | str, default is Undefined, required
-        Name or number of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     scheme : str, default is Undefined, optional
-        Scheme to use for connecting to the host.
-        Defaults to HTTP.
+        scheme
     """
     host?: str
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0]
@@ -3283,15 +2469,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0:
     r"""
-    HTTPHeader describes a custom header to be used in HTTP probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 lifecycle pre stop HTTP get HTTP headers items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        The header field name.
-        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+        name
     value : str, default is Undefined, required
-        The header field value
+        value
     """
     name: str
 
@@ -3299,74 +2484,55 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopSleep:
     r"""
-    Sleep represents a duration that the container should sleep.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 lifecycle pre stop sleep
 
     Attributes
     ----------
     seconds : int, default is Undefined, required
-        Seconds is the number of seconds to sleep.
+        seconds
     """
     seconds: int
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopTCPSocket:
     r"""
-    Deprecated. TCPSocket is NOT supported as a LifecycleHandler and kept
-    for backward compatibility. There is no validation of this field and
-    lifecycle hooks will fail at runtime when it is specified.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 lifecycle pre stop TCP socket
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Optional: Host name to connect to, defaults to the pod IP.
+        host
     port : int | str, default is Undefined, required
-        Number or name of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     """
     host?: str
     port: int | str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbe:
     r"""
-    Probes are not allowed for ephemeral containers.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 liveness probe
 
     Attributes
     ----------
     exec : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeExec, default is Undefined, optional
         exec
     failureThreshold : int, default is Undefined, optional
-        Minimum consecutive failures for the probe to be considered failed after having succeeded.
-        Defaults to 3. Minimum value is 1.
+        failure threshold
     grpc : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeGrpc, default is Undefined, optional
         grpc
     httpGet : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeHTTPGet, default is Undefined, optional
         http get
     initialDelaySeconds : int, default is Undefined, optional
-        Number of seconds after the container has started before liveness probes are initiated.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        initial delay seconds
     periodSeconds : int, default is Undefined, optional
-        How often (in seconds) to perform the probe.
-        Default to 10 seconds. Minimum value is 1.
+        period seconds
     successThreshold : int, default is Undefined, optional
-        Minimum consecutive successes for the probe to be considered successful after having failed.
-        Defaults to 1. Must be 1 for liveness and startup. Minimum value is 1.
+        success threshold
     tcpSocket : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeTCPSocket, default is Undefined, optional
         tcp socket
     terminationGracePeriodSeconds : int, default is Undefined, optional
-        Optional duration in seconds the pod needs to terminate gracefully upon probe failure.
-        The grace period is the duration in seconds after the processes running in the pod are sent
-        a termination signal and the time when the processes are forcibly halted with a kill signal.
-        Set this value longer than the expected cleanup time for your process.
-        If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this
-        value overrides the value provided by the pod spec.
-        Value must be non-negative integer. The value zero indicates stop immediately via
-        the kill signal (no opportunity to shut down).
-        This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate.
-        Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.
+        termination grace period seconds
     timeoutSeconds : int, default is Undefined, optional
-        Number of seconds after which the probe times out.
-        Defaults to 1 second. Minimum value is 1.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        timeout seconds
     """
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeExec
     failureThreshold?: int
@@ -3381,32 +2547,25 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeExec:
     r"""
-    Exec specifies a command to execute in the container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 liveness probe exec
 
     Attributes
     ----------
     command : [str], default is Undefined, optional
-        Command is the command line to execute inside the container, the working directory for the
-        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
-        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
-        a shell, you need to explicitly call out to that shell.
-        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+        command
     """
     command?: [str]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeGrpc:
     r"""
-    GRPC specifies a GRPC HealthCheckRequest.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 liveness probe grpc
 
     Attributes
     ----------
     port : int, default is Undefined, required
-        Port number of the gRPC service. Number must be in the range 1 to 65535.
+        port
     service : str, default is Undefined, optional
-        Service is the name of the service to place in the gRPC HealthCheckRequest
-        (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
-
-        If this is not specified, the default behavior is defined by gRPC.
+        service
     """
     port: int
 
@@ -3414,24 +2573,20 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeHTTPGet:
     r"""
-    HTTPGet specifies an HTTP GET request to perform.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 liveness probe HTTP get
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Host name to connect to, defaults to the pod IP. You probably want to set
-        "Host" in httpHeaders instead.
+        host
     httpHeaders : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0], default is Undefined, optional
-        Custom headers to set in the request. HTTP allows repeated headers.
+        http headers
     path : str, default is Undefined, optional
-        Path to access on the HTTP server.
+        path
     port : int | str, default is Undefined, required
-        Name or number of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     scheme : str, default is Undefined, optional
-        Scheme to use for connecting to the host.
-        Defaults to HTTP.
+        scheme
     """
     host?: str
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0]
@@ -3442,15 +2597,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0:
     r"""
-    HTTPHeader describes a custom header to be used in HTTP probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 liveness probe HTTP get HTTP headers items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        The header field name.
-        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+        name
     value : str, default is Undefined, required
-        The header field value
+        value
     """
     name: str
 
@@ -3458,43 +2612,34 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0LivenessProbeTCPSocket:
     r"""
-    TCPSocket specifies a connection to a TCP port.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 liveness probe TCP socket
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Optional: Host name to connect to, defaults to the pod IP.
+        host
     port : int | str, default is Undefined, required
-        Number or name of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     """
     host?: str
     port: int | str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0PortsItems0:
     r"""
-    ContainerPort represents a network port in a single container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 ports items0
 
     Attributes
     ----------
     containerPort : int, default is Undefined, required
-        Number of port to expose on the pod's IP address.
-        This must be a valid port number, 0 < x < 65536.
+        container port
     hostIP : str, default is Undefined, optional
-        What host IP to bind the external port to.
+        host IP
     hostPort : int, default is Undefined, optional
-        Number of port to expose on the host.
-        If specified, this must be a valid port number, 0 < x < 65536.
-        If HostNetwork is specified, this must match ContainerPort.
-        Most containers do not need this.
+        host port
     name : str, default is Undefined, optional
-        If specified, this must be an IANA_SVC_NAME and unique within the pod. Each
-        named port in a pod must have a unique name. Name for the port that can be
-        referred to by services.
+        name
     $protocol : str, default is "TCP", optional
-        Protocol for port. Must be UDP, TCP, or SCTP.
-        Defaults to "TCP".
+        protocol
     """
     containerPort: int
 
@@ -3505,45 +2650,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbe:
     r"""
-    Probes are not allowed for ephemeral containers.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 readiness probe
 
     Attributes
     ----------
     exec : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeExec, default is Undefined, optional
         exec
     failureThreshold : int, default is Undefined, optional
-        Minimum consecutive failures for the probe to be considered failed after having succeeded.
-        Defaults to 3. Minimum value is 1.
+        failure threshold
     grpc : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeGrpc, default is Undefined, optional
         grpc
     httpGet : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeHTTPGet, default is Undefined, optional
         http get
     initialDelaySeconds : int, default is Undefined, optional
-        Number of seconds after the container has started before liveness probes are initiated.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        initial delay seconds
     periodSeconds : int, default is Undefined, optional
-        How often (in seconds) to perform the probe.
-        Default to 10 seconds. Minimum value is 1.
+        period seconds
     successThreshold : int, default is Undefined, optional
-        Minimum consecutive successes for the probe to be considered successful after having failed.
-        Defaults to 1. Must be 1 for liveness and startup. Minimum value is 1.
+        success threshold
     tcpSocket : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeTCPSocket, default is Undefined, optional
         tcp socket
     terminationGracePeriodSeconds : int, default is Undefined, optional
-        Optional duration in seconds the pod needs to terminate gracefully upon probe failure.
-        The grace period is the duration in seconds after the processes running in the pod are sent
-        a termination signal and the time when the processes are forcibly halted with a kill signal.
-        Set this value longer than the expected cleanup time for your process.
-        If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this
-        value overrides the value provided by the pod spec.
-        Value must be non-negative integer. The value zero indicates stop immediately via
-        the kill signal (no opportunity to shut down).
-        This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate.
-        Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.
+        termination grace period seconds
     timeoutSeconds : int, default is Undefined, optional
-        Number of seconds after which the probe times out.
-        Defaults to 1 second. Minimum value is 1.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        timeout seconds
     """
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeExec
     failureThreshold?: int
@@ -3558,32 +2688,25 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeExec:
     r"""
-    Exec specifies a command to execute in the container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 readiness probe exec
 
     Attributes
     ----------
     command : [str], default is Undefined, optional
-        Command is the command line to execute inside the container, the working directory for the
-        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
-        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
-        a shell, you need to explicitly call out to that shell.
-        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+        command
     """
     command?: [str]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeGrpc:
     r"""
-    GRPC specifies a GRPC HealthCheckRequest.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 readiness probe grpc
 
     Attributes
     ----------
     port : int, default is Undefined, required
-        Port number of the gRPC service. Number must be in the range 1 to 65535.
+        port
     service : str, default is Undefined, optional
-        Service is the name of the service to place in the gRPC HealthCheckRequest
-        (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
-
-        If this is not specified, the default behavior is defined by gRPC.
+        service
     """
     port: int
 
@@ -3591,24 +2714,20 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeHTTPGet:
     r"""
-    HTTPGet specifies an HTTP GET request to perform.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 readiness probe HTTP get
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Host name to connect to, defaults to the pod IP. You probably want to set
-        "Host" in httpHeaders instead.
+        host
     httpHeaders : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0], default is Undefined, optional
-        Custom headers to set in the request. HTTP allows repeated headers.
+        http headers
     path : str, default is Undefined, optional
-        Path to access on the HTTP server.
+        path
     port : int | str, default is Undefined, required
-        Name or number of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     scheme : str, default is Undefined, optional
-        Scheme to use for connecting to the host.
-        Defaults to HTTP.
+        scheme
     """
     host?: str
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0]
@@ -3619,15 +2738,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0:
     r"""
-    HTTPHeader describes a custom header to be used in HTTP probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 readiness probe HTTP get HTTP headers items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        The header field name.
-        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+        name
     value : str, default is Undefined, required
-        The header field value
+        value
     """
     name: str
 
@@ -3635,32 +2753,28 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ReadinessProbeTCPSocket:
     r"""
-    TCPSocket specifies a connection to a TCP port.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 readiness probe TCP socket
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Optional: Host name to connect to, defaults to the pod IP.
+        host
     port : int | str, default is Undefined, required
-        Number or name of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     """
     host?: str
     port: int | str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ResizePolicyItems0:
     r"""
-    ContainerResizePolicy represents resource resize policy for the container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 resize policy items0
 
     Attributes
     ----------
     resourceName : str, default is Undefined, required
-        Name of the resource to which this resource resize policy applies.
-        Supported values: cpu, memory.
+        resource name
     restartPolicy : str, default is Undefined, required
-        Restart policy to apply when specified resource is resized.
-        If not specified, it defaults to NotRequired.
+        restart policy
     """
     resourceName: str
 
@@ -3668,27 +2782,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0Resources:
     r"""
-    Resources are not allowed for ephemeral containers. Ephemeral containers use spare resources
-    already allocated to the pod.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 resources
 
     Attributes
     ----------
     claims : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ResourcesClaimsItems0], default is Undefined, optional
-        Claims lists the names of resources, defined in spec.resourceClaims,
-        that are used by this container.
-
-        This is an alpha field and requires enabling the
-        DynamicResourceAllocation feature gate.
-
-        This field is immutable. It can only be set for containers.
+        claims
     limits : {str:int | str}, default is Undefined, optional
-        Limits describes the maximum amount of compute resources allowed.
-        More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+        limits
     requests : {str:int | str}, default is Undefined, optional
-        Requests describes the minimum amount of compute resources required.
-        If Requests is omitted for a container, it defaults to Limits if that is explicitly specified,
-        otherwise to an implementation-defined value. Requests cannot exceed Limits.
-        More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+        requests
     """
     claims?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ResourcesClaimsItems0]
     limits?: {str:int | str}
@@ -3700,18 +2803,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ResourcesClaimsItems0:
     r"""
-    ResourceClaim references one entry in PodSpec.ResourceClaims.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 resources claims items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name must match the name of one entry in pod.spec.resourceClaims of
-        the Pod where this field is used. It makes that resource available
-        inside a container.
+        name
     request : str, default is Undefined, optional
-        Request is the name chosen for a request in the referenced claim.
-        If empty, everything from the claim is made available, otherwise
-        only the result of this request.
+        request
     """
     name: str
 
@@ -3719,57 +2818,28 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContext:
     r"""
-    Optional: SecurityContext defines the security options the ephemeral container should be run with.
-    If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 security context
 
     Attributes
     ----------
     allowPrivilegeEscalation : bool, default is Undefined, optional
-        AllowPrivilegeEscalation controls whether a process can gain more
-        privileges than its parent process. This bool directly controls if
-        the no_new_privs flag will be set on the container process.
-        AllowPrivilegeEscalation is true always when the container is:
-        1) run as Privileged
-        2) has CAP_SYS_ADMIN
-        Note that this field cannot be set when spec.os.name is windows.
+        allow privilege escalation
     appArmorProfile : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextAppArmorProfile, default is Undefined, optional
         app armor profile
     capabilities : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextCapabilities, default is Undefined, optional
         capabilities
     privileged : bool, default is Undefined, optional
-        Run container in privileged mode.
-        Processes in privileged containers are essentially equivalent to root on the host.
-        Defaults to false.
-        Note that this field cannot be set when spec.os.name is windows.
+        privileged
     procMount : str, default is Undefined, optional
-        procMount denotes the type of proc mount to use for the containers.
-        The default value is Default which uses the container runtime defaults for
-        readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
-        Note that this field cannot be set when spec.os.name is windows.
+        proc mount
     readOnlyRootFilesystem : bool, default is Undefined, optional
-        Whether this container has a read-only root filesystem.
-        Default is false.
-        Note that this field cannot be set when spec.os.name is windows.
+        read only root filesystem
     runAsGroup : int, default is Undefined, optional
-        The GID to run the entrypoint of the container process.
-        Uses runtime default if unset.
-        May also be set in PodSecurityContext.  If set in both SecurityContext and
-        PodSecurityContext, the value specified in SecurityContext takes precedence.
-        Note that this field cannot be set when spec.os.name is windows.
+        run as group
     runAsNonRoot : bool, default is Undefined, optional
-        Indicates that the container must run as a non-root user.
-        If true, the Kubelet will validate the image at runtime to ensure that it
-        does not run as UID 0 (root) and fail to start the container if it does.
-        If unset or false, no such validation will be performed.
-        May also be set in PodSecurityContext.  If set in both SecurityContext and
-        PodSecurityContext, the value specified in SecurityContext takes precedence.
+        run as non root
     runAsUser : int, default is Undefined, optional
-        The UID to run the entrypoint of the container process.
-        Defaults to user specified in image metadata if unspecified.
-        May also be set in PodSecurityContext.  If set in both SecurityContext and
-        PodSecurityContext, the value specified in SecurityContext takes precedence.
-        Note that this field cannot be set when spec.os.name is windows.
+        run as user
     seLinuxOptions : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextSeLinuxOptions, default is Undefined, optional
         se linux options
     seccompProfile : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextSeccompProfile, default is Undefined, optional
@@ -3792,61 +2862,46 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextAppArmorProfile:
     r"""
-    appArmorProfile is the AppArmor options to use by this container. If set, this profile
-    overrides the pod's appArmorProfile.
-    Note that this field cannot be set when spec.os.name is windows.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 security context app armor profile
 
     Attributes
     ----------
     localhostProfile : str, default is Undefined, optional
-        localhostProfile indicates a profile loaded on the node that should be used.
-        The profile must be preconfigured on the node to work.
-        Must match the loaded name of the profile.
-        Must be set if and only if type is "Localhost".
+        localhost profile
     $type : str, default is Undefined, required
-        type indicates which kind of AppArmor profile will be applied.
-        Valid options are:
-          Localhost - a profile pre-loaded on the node.
-          RuntimeDefault - the container runtime's default profile.
-          Unconfined - no AppArmor enforcement.
+        type
     """
     localhostProfile?: str
     $type: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextCapabilities:
     r"""
-    The capabilities to add/drop when running containers.
-    Defaults to the default set of capabilities granted by the container runtime.
-    Note that this field cannot be set when spec.os.name is windows.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 security context capabilities
 
     Attributes
     ----------
     add : [str], default is Undefined, optional
-        Added capabilities
+        add
     drop : [str], default is Undefined, optional
-        Removed capabilities
+        drop
     """
     add?: [str]
     drop?: [str]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextSeLinuxOptions:
     r"""
-    The SELinux context to be applied to the container.
-    If unspecified, the container runtime will allocate a random SELinux context for each
-    container.  May also be set in PodSecurityContext.  If set in both SecurityContext and
-    PodSecurityContext, the value specified in SecurityContext takes precedence.
-    Note that this field cannot be set when spec.os.name is windows.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 security context se linux options
 
     Attributes
     ----------
     level : str, default is Undefined, optional
-        Level is SELinux level label that applies to the container.
+        level
     role : str, default is Undefined, optional
-        Role is a SELinux role label that applies to the container.
+        role
     $type : str, default is Undefined, optional
-        Type is a SELinux type label that applies to the container.
+        type
     user : str, default is Undefined, optional
-        User is a SELinux user label that applies to the container.
+        user
     """
     level?: str
     role?: str
@@ -3855,54 +2910,32 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextSeccompProfile:
     r"""
-    The seccomp options to use by this container. If seccomp options are
-    provided at both the pod & container level, the container options
-    override the pod options.
-    Note that this field cannot be set when spec.os.name is windows.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 security context seccomp profile
 
     Attributes
     ----------
     localhostProfile : str, default is Undefined, optional
-        localhostProfile indicates a profile defined in a file on the node should be used.
-        The profile must be preconfigured on the node to work.
-        Must be a descending path, relative to the kubelet's configured seccomp profile location.
-        Must be set if type is "Localhost". Must NOT be set for any other type.
+        localhost profile
     $type : str, default is Undefined, required
-        type indicates which kind of seccomp profile will be applied.
-        Valid options are:
-
-        Localhost - a profile defined in a file on the node should be used.
-        RuntimeDefault - the container runtime default profile should be used.
-        Unconfined - no profile should be applied.
+        type
     """
     localhostProfile?: str
     $type: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContextWindowsOptions:
     r"""
-    The Windows specific settings applied to all containers.
-    If unspecified, the options from the PodSecurityContext will be used.
-    If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.
-    Note that this field cannot be set when spec.os.name is linux.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 security context windows options
 
     Attributes
     ----------
     gmsaCredentialSpec : str, default is Undefined, optional
-        GMSACredentialSpec is where the GMSA admission webhook
-        (https://github.com/kubernetes-sigs/windows-gmsa) inlines the contents of the
-        GMSA credential spec named by the GMSACredentialSpecName field.
+        gmsa credential spec
     gmsaCredentialSpecName : str, default is Undefined, optional
-        GMSACredentialSpecName is the name of the GMSA credential spec to use.
+        gmsa credential spec name
     hostProcess : bool, default is Undefined, optional
-        HostProcess determines if a container should be run as a 'Host Process' container.
-        All of a Pod's containers must have the same effective HostProcess value
-        (it is not allowed to have a mix of HostProcess containers and non-HostProcess containers).
-        In addition, if HostProcess is true then HostNetwork must also be set to true.
+        host process
     runAsUserName : str, default is Undefined, optional
-        The UserName in Windows to run the entrypoint of the container process.
-        Defaults to the user specified in image metadata if unspecified.
-        May also be set in PodSecurityContext. If set in both SecurityContext and
-        PodSecurityContext, the value specified in SecurityContext takes precedence.
+        run as user name
     """
     gmsaCredentialSpec?: str
     gmsaCredentialSpecName?: str
@@ -3911,45 +2944,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbe:
     r"""
-    Probes are not allowed for ephemeral containers.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 startup probe
 
     Attributes
     ----------
     exec : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeExec, default is Undefined, optional
         exec
     failureThreshold : int, default is Undefined, optional
-        Minimum consecutive failures for the probe to be considered failed after having succeeded.
-        Defaults to 3. Minimum value is 1.
+        failure threshold
     grpc : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeGrpc, default is Undefined, optional
         grpc
     httpGet : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeHTTPGet, default is Undefined, optional
         http get
     initialDelaySeconds : int, default is Undefined, optional
-        Number of seconds after the container has started before liveness probes are initiated.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        initial delay seconds
     periodSeconds : int, default is Undefined, optional
-        How often (in seconds) to perform the probe.
-        Default to 10 seconds. Minimum value is 1.
+        period seconds
     successThreshold : int, default is Undefined, optional
-        Minimum consecutive successes for the probe to be considered successful after having failed.
-        Defaults to 1. Must be 1 for liveness and startup. Minimum value is 1.
+        success threshold
     tcpSocket : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeTCPSocket, default is Undefined, optional
         tcp socket
     terminationGracePeriodSeconds : int, default is Undefined, optional
-        Optional duration in seconds the pod needs to terminate gracefully upon probe failure.
-        The grace period is the duration in seconds after the processes running in the pod are sent
-        a termination signal and the time when the processes are forcibly halted with a kill signal.
-        Set this value longer than the expected cleanup time for your process.
-        If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this
-        value overrides the value provided by the pod spec.
-        Value must be non-negative integer. The value zero indicates stop immediately via
-        the kill signal (no opportunity to shut down).
-        This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate.
-        Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.
+        termination grace period seconds
     timeoutSeconds : int, default is Undefined, optional
-        Number of seconds after which the probe times out.
-        Defaults to 1 second. Minimum value is 1.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        timeout seconds
     """
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeExec
     failureThreshold?: int
@@ -3964,32 +2982,25 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeExec:
     r"""
-    Exec specifies a command to execute in the container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 startup probe exec
 
     Attributes
     ----------
     command : [str], default is Undefined, optional
-        Command is the command line to execute inside the container, the working directory for the
-        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
-        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
-        a shell, you need to explicitly call out to that shell.
-        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+        command
     """
     command?: [str]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeGrpc:
     r"""
-    GRPC specifies a GRPC HealthCheckRequest.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 startup probe grpc
 
     Attributes
     ----------
     port : int, default is Undefined, required
-        Port number of the gRPC service. Number must be in the range 1 to 65535.
+        port
     service : str, default is Undefined, optional
-        Service is the name of the service to place in the gRPC HealthCheckRequest
-        (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
-
-        If this is not specified, the default behavior is defined by gRPC.
+        service
     """
     port: int
 
@@ -3997,24 +3008,20 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeHTTPGet:
     r"""
-    HTTPGet specifies an HTTP GET request to perform.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 startup probe HTTP get
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Host name to connect to, defaults to the pod IP. You probably want to set
-        "Host" in httpHeaders instead.
+        host
     httpHeaders : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeHTTPGetHTTPHeadersItems0], default is Undefined, optional
-        Custom headers to set in the request. HTTP allows repeated headers.
+        http headers
     path : str, default is Undefined, optional
-        Path to access on the HTTP server.
+        path
     port : int | str, default is Undefined, required
-        Name or number of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     scheme : str, default is Undefined, optional
-        Scheme to use for connecting to the host.
-        Defaults to HTTP.
+        scheme
     """
     host?: str
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeHTTPGetHTTPHeadersItems0]
@@ -4025,15 +3032,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeHTTPGetHTTPHeadersItems0:
     r"""
-    HTTPHeader describes a custom header to be used in HTTP probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 startup probe HTTP get HTTP headers items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        The header field name.
-        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+        name
     value : str, default is Undefined, required
-        The header field value
+        value
     """
     name: str
 
@@ -4041,30 +3047,28 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbeTCPSocket:
     r"""
-    TCPSocket specifies a connection to a TCP port.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 startup probe TCP socket
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Optional: Host name to connect to, defaults to the pod IP.
+        host
     port : int | str, default is Undefined, required
-        Number or name of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     """
     host?: str
     port: int | str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0VolumeDevicesItems0:
     r"""
-    volumeDevice describes a mapping of a raw block device within a container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 volume devices items0
 
     Attributes
     ----------
     devicePath : str, default is Undefined, required
-        devicePath is the path inside of the container that the device will be mapped to.
+        device path
     name : str, default is Undefined, required
-        name must match the name of a persistentVolumeClaim in the pod
+        name
     """
     devicePath: str
 
@@ -4072,50 +3076,24 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0VolumeMountsItems0:
     r"""
-    VolumeMount describes a mounting of a Volume within a container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 volume mounts items0
 
     Attributes
     ----------
     mountPath : str, default is Undefined, required
-        Path within the container at which the volume should be mounted.  Must
-        not contain ':'.
+        mount path
     mountPropagation : str, default is Undefined, optional
-        mountPropagation determines how mounts are propagated from the host
-        to container and the other way around.
-        When not set, MountPropagationNone is used.
-        This field is beta in 1.10.
-        When RecursiveReadOnly is set to IfPossible or to Enabled, MountPropagation must be None or unspecified
-        (which defaults to None).
+        mount propagation
     name : str, default is Undefined, required
-        This must match the Name of a Volume.
+        name
     readOnly : bool, default is Undefined, optional
-        Mounted read-only if true, read-write otherwise (false or unspecified).
-        Defaults to false.
+        read only
     recursiveReadOnly : str, default is Undefined, optional
-        RecursiveReadOnly specifies whether read-only mounts should be handled
-        recursively.
-
-        If ReadOnly is false, this field has no meaning and must be unspecified.
-
-        If ReadOnly is true, and this field is set to Disabled, the mount is not made
-        recursively read-only.  If this field is set to IfPossible, the mount is made
-        recursively read-only, if it is supported by the container runtime.  If this
-        field is set to Enabled, the mount is made recursively read-only if it is
-        supported by the container runtime, otherwise the pod will not be started and
-        an error will be generated to indicate the reason.
-
-        If this field is set to IfPossible or Enabled, MountPropagation must be set to
-        None (or be unspecified, which defaults to None).
-
-        If this field is not specified, it is treated as an equivalent of Disabled.
+        recursive read only
     subPath : str, default is Undefined, optional
-        Path within the volume from which the container's volume should be mounted.
-        Defaults to "" (volume's root).
+        sub path
     subPathExpr : str, default is Undefined, optional
-        Expanded path within the volume from which the container's volume should be mounted.
-        Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment.
-        Defaults to "" (volume's root).
-        SubPathExpr and SubPath are mutually exclusive.
+        sub path expr
     """
     mountPath: str
 
@@ -4129,163 +3107,83 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecHostAliasesItems0:
     r"""
-    HostAlias holds the mapping between IP and hostnames that will be injected as an entry in the
-    pod's hosts file.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec host aliases items0
 
     Attributes
     ----------
     hostnames : [str], default is Undefined, optional
-        Hostnames for the above IP address.
+        hostnames
     ip : str, default is Undefined, required
-        IP address of the host file entry.
+        ip
     """
     hostnames?: [str]
     ip: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecImagePullSecretsItems0:
     r"""
-    LocalObjectReference contains enough information to let you locate the
-    referenced object inside the same namespace.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec image pull secrets items0
 
     Attributes
     ----------
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     """
     name?: str = ""
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0:
     r"""
-    A single application container that you want to run within a pod.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0
 
     Attributes
     ----------
     args : [str], default is Undefined, optional
-        Arguments to the entrypoint.
-        The container image's CMD is used if this is not provided.
-        Variable references $(VAR_NAME) are expanded using the container's environment. If a variable
-        cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced
-        to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will
-        produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless
-        of whether the variable exists or not. Cannot be updated.
-        More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell
+        args
     command : [str], default is Undefined, optional
-        Entrypoint array. Not executed within a shell.
-        The container image's ENTRYPOINT is used if this is not provided.
-        Variable references $(VAR_NAME) are expanded using the container's environment. If a variable
-        cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced
-        to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will
-        produce the string literal "$(VAR_NAME)". Escaped references will never be expanded, regardless
-        of whether the variable exists or not. Cannot be updated.
-        More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell
+        command
     env : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0], default is Undefined, optional
-        List of environment variables to set in the container.
-        Cannot be updated.
+        env
     envFrom : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvFromItems0], default is Undefined, optional
-        List of sources to populate environment variables in the container.
-        The keys defined within a source must be a C_IDENTIFIER. All invalid keys
-        will be reported as an event when the container is starting. When a key exists in multiple
-        sources, the value associated with the last source will take precedence.
-        Values defined by an Env with a duplicate key will take precedence.
-        Cannot be updated.
+        env from
     image : str, default is Undefined, optional
-        Container image name.
-        More info: https://kubernetes.io/docs/concepts/containers/images
-        This field is optional to allow higher level config management to default or override
-        container images in workload controllers like Deployments and StatefulSets.
+        image
     imagePullPolicy : str, default is Undefined, optional
-        Image pull policy.
-        One of Always, Never, IfNotPresent.
-        Defaults to Always if :latest tag is specified, or IfNotPresent otherwise.
-        Cannot be updated.
-        More info: https://kubernetes.io/docs/concepts/containers/images#updating-images
+        image pull policy
     lifecycle : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0Lifecycle, default is Undefined, optional
         lifecycle
     livenessProbe : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbe, default is Undefined, optional
         liveness probe
     name : str, default is Undefined, required
-        Name of the container specified as a DNS_LABEL.
-        Each container in a pod must have a unique name (DNS_LABEL).
-        Cannot be updated.
+        name
     ports : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0PortsItems0], default is Undefined, optional
-        List of ports to expose from the container. Not specifying a port here
-        DOES NOT prevent that port from being exposed. Any port which is
-        listening on the default "0.0.0.0" address inside a container will be
-        accessible from the network.
-        Modifying this array with strategic merge patch may corrupt the data.
-        For more information See https://github.com/kubernetes/kubernetes/issues/108255.
-        Cannot be updated.
+        ports
     readinessProbe : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbe, default is Undefined, optional
         readiness probe
     resizePolicy : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ResizePolicyItems0], default is Undefined, optional
-        Resources resize policy for the container.
+        resize policy
     resources : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
-        RestartPolicy defines the restart behavior of individual containers in a pod.
-        This field may only be set for init containers, and the only allowed value is "Always".
-        For non-init containers or when this field is not specified,
-        the restart behavior is defined by the Pod's restart policy and the container type.
-        Setting the RestartPolicy as "Always" for the init container will have the following effect:
-        this init container will be continually restarted on
-        exit until all regular containers have terminated. Once all regular
-        containers have completed, all init containers with restartPolicy "Always"
-        will be shut down. This lifecycle differs from normal init containers and
-        is often referred to as a "sidecar" container. Although this init
-        container still starts in the init container sequence, it does not wait
-        for the container to complete before proceeding to the next init
-        container. Instead, the next init container starts immediately after this
-        init container is started, or after any startupProbe has successfully
-        completed.
+        restart policy
     securityContext : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContext, default is Undefined, optional
         security context
     startupProbe : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbe, default is Undefined, optional
         startup probe
     stdin : bool, default is Undefined, optional
-        Whether this container should allocate a buffer for stdin in the container runtime. If this
-        is not set, reads from stdin in the container will always result in EOF.
-        Default is false.
+        stdin
     stdinOnce : bool, default is Undefined, optional
-        Whether the container runtime should close the stdin channel after it has been opened by
-        a single attach. When stdin is true the stdin stream will remain open across multiple attach
-        sessions. If stdinOnce is set to true, stdin is opened on container start, is empty until the
-        first client attaches to stdin, and then remains open and accepts data until the client disconnects,
-        at which time stdin is closed and remains closed until the container is restarted. If this
-        flag is false, a container processes that reads from stdin will never receive an EOF.
-        Default is false
+        stdin once
     terminationMessagePath : str, default is Undefined, optional
-        Optional: Path at which the file to which the container's termination message
-        will be written is mounted into the container's filesystem.
-        Message written is intended to be brief final status, such as an assertion failure message.
-        Will be truncated by the node if greater than 4096 bytes. The total message length across
-        all containers will be limited to 12kb.
-        Defaults to /dev/termination-log.
-        Cannot be updated.
+        termination message path
     terminationMessagePolicy : str, default is Undefined, optional
-        Indicate how the termination message should be populated. File will use the contents of
-        terminationMessagePath to populate the container status message on both success and failure.
-        FallbackToLogsOnError will use the last chunk of container log output if the termination
-        message file is empty and the container exited with an error.
-        The log output is limited to 2048 bytes or 80 lines, whichever is smaller.
-        Defaults to File.
-        Cannot be updated.
+        termination message policy
     tty : bool, default is Undefined, optional
-        Whether this container should allocate a TTY for itself, also requires 'stdin' to be true.
-        Default is false.
+        tty
     volumeDevices : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0VolumeDevicesItems0], default is Undefined, optional
-        volumeDevices is the list of block devices to be used by the container.
+        volume devices
     volumeMounts : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0VolumeMountsItems0], default is Undefined, optional
-        Pod volumes to mount into the container's filesystem.
-        Cannot be updated.
+        volume mounts
     workingDir : str, default is Undefined, optional
-        Container's working directory.
-        If not specified, the container runtime's default will be used, which
-        might be configured in the container image.
-        Cannot be updated.
+        working dir
     """
     args?: [str]
     command?: [str]
@@ -4315,14 +3213,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvFromItems0:
     r"""
-    EnvFromSource represents the source of a set of ConfigMaps
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 env from items0
 
     Attributes
     ----------
     configMapRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvFromItems0ConfigMapRef, default is Undefined, optional
         config map ref
     prefix : str, default is Undefined, optional
-        An optional identifier to prepend to each key in the ConfigMap. Must be a C_IDENTIFIER.
+        prefix
     secretRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvFromItems0SecretRef, default is Undefined, optional
         secret ref
     """
@@ -4332,58 +3230,42 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvFromItems0ConfigMapRef:
     r"""
-    The ConfigMap to select from
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 env from items0 config map ref
 
     Attributes
     ----------
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     optional : bool, default is Undefined, optional
-        Specify whether the ConfigMap must be defined
+        optional
     """
     name?: str = ""
     optional?: bool
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvFromItems0SecretRef:
     r"""
-    The Secret to select from
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 env from items0 secret ref
 
     Attributes
     ----------
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     optional : bool, default is Undefined, optional
-        Specify whether the Secret must be defined
+        optional
     """
     name?: str = ""
     optional?: bool
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0:
     r"""
-    EnvVar represents an environment variable present in a Container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 env items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the environment variable. Must be a C_IDENTIFIER.
+        name
     value : str, default is Undefined, optional
-        Variable references $(VAR_NAME) are expanded
-        using the previously defined environment variables in the container and
-        any service environment variables. If a variable cannot be resolved,
-        the reference in the input string will be unchanged. Double $$ are reduced
-        to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e.
-        "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)".
-        Escaped references will never be expanded, regardless of whether the variable
-        exists or not.
-        Defaults to "".
+        value
     valueFrom : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFrom, default is Undefined, optional
         value from
     """
@@ -4394,7 +3276,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFrom:
     r"""
-    Source for the environment variable's value. Cannot be used if value is not empty.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 env items0 value from
 
     Attributes
     ----------
@@ -4414,20 +3296,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromConfigMapKeyRef:
     r"""
-    Selects a key of a ConfigMap.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 env items0 value from config map key ref
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key to select.
+        key
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     optional : bool, default is Undefined, optional
-        Specify whether the ConfigMap or its key must be defined
+        optional
     """
     key: str
 
@@ -4436,32 +3314,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromFieldRef:
     r"""
-    Selects a field of the pod: supports metadata.name, metadata.namespace, `metadata.labels['<KEY>']`, `metadata.annotations['<KEY>']`,
-    spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 env items0 value from field ref
 
     Attributes
     ----------
     apiVersion : str, default is Undefined, optional
-        Version of the schema the FieldPath is written in terms of, defaults to "v1".
+        api version
     fieldPath : str, default is Undefined, required
-        Path of the field to select in the specified API version.
+        field path
     """
     apiVersion?: str
     fieldPath: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromResourceFieldRef:
     r"""
-    Selects a resource of the container: only resources limits and requests
-    (limits.cpu, limits.memory, limits.ephemeral-storage, requests.cpu, requests.memory and requests.ephemeral-storage) are currently supported.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 env items0 value from resource field ref
 
     Attributes
     ----------
     containerName : str, default is Undefined, optional
-        Container name: required for volumes, optional for env vars
+        container name
     divisor : int | str, default is Undefined, optional
-        Specifies the output format of the exposed resources, defaults to "1"
+        divisor
     resource : str, default is Undefined, required
-        Required: resource to select
+        resource
     """
     containerName?: str
     divisor?: int | str
@@ -4472,20 +3348,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromSecretKeyRef:
     r"""
-    Selects a key of a secret in the pod's namespace
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 env items0 value from secret key ref
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key of the secret to select from.  Must be a valid secret key.
+        key
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     optional : bool, default is Undefined, optional
-        Specify whether the Secret or its key must be defined
+        optional
     """
     key: str
 
@@ -4494,8 +3366,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0Lifecycle:
     r"""
-    Actions that the management system should take in response to container lifecycle events.
-    Cannot be updated.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 lifecycle
 
     Attributes
     ----------
@@ -4503,16 +3374,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         post start
     preStop : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStop, default is Undefined, optional
         pre stop
+    stopSignal : str, default is Undefined, optional
+        stop signal
     """
     postStart?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStart
     preStop?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStop
+    stopSignal?: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStart:
     r"""
-    PostStart is called immediately after a container is created. If the handler fails,
-    the container is terminated and restarted according to its restart policy.
-    Other management of the container blocks until the hook completes.
-    More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 lifecycle post start
 
     Attributes
     ----------
@@ -4532,39 +3403,31 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStartExec:
     r"""
-    Exec specifies a command to execute in the container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 lifecycle post start exec
 
     Attributes
     ----------
     command : [str], default is Undefined, optional
-        Command is the command line to execute inside the container, the working directory for the
-        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
-        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
-        a shell, you need to explicitly call out to that shell.
-        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+        command
     """
     command?: [str]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStartHTTPGet:
     r"""
-    HTTPGet specifies an HTTP GET request to perform.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 lifecycle post start HTTP get
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Host name to connect to, defaults to the pod IP. You probably want to set
-        "Host" in httpHeaders instead.
+        host
     httpHeaders : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0], default is Undefined, optional
-        Custom headers to set in the request. HTTP allows repeated headers.
+        http headers
     path : str, default is Undefined, optional
-        Path to access on the HTTP server.
+        path
     port : int | str, default is Undefined, required
-        Name or number of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     scheme : str, default is Undefined, optional
-        Scheme to use for connecting to the host.
-        Defaults to HTTP.
+        scheme
     """
     host?: str
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0]
@@ -4575,15 +3438,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0:
     r"""
-    HTTPHeader describes a custom header to be used in HTTP probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 lifecycle post start HTTP get HTTP headers items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        The header field name.
-        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+        name
     value : str, default is Undefined, required
-        The header field value
+        value
     """
     name: str
 
@@ -4591,44 +3453,32 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStartSleep:
     r"""
-    Sleep represents a duration that the container should sleep.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 lifecycle post start sleep
 
     Attributes
     ----------
     seconds : int, default is Undefined, required
-        Seconds is the number of seconds to sleep.
+        seconds
     """
     seconds: int
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePostStartTCPSocket:
     r"""
-    Deprecated. TCPSocket is NOT supported as a LifecycleHandler and kept
-    for backward compatibility. There is no validation of this field and
-    lifecycle hooks will fail at runtime when it is specified.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 lifecycle post start TCP socket
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Optional: Host name to connect to, defaults to the pod IP.
+        host
     port : int | str, default is Undefined, required
-        Number or name of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     """
     host?: str
     port: int | str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStop:
     r"""
-    PreStop is called immediately before a container is terminated due to an
-    API request or management event such as liveness/startup probe failure,
-    preemption, resource contention, etc. The handler is not called if the
-    container crashes or exits. The Pod's termination grace period countdown begins before the
-    PreStop hook is executed. Regardless of the outcome of the handler, the
-    container will eventually terminate within the Pod's termination grace
-    period (unless delayed by finalizers). Other management of the container blocks until the hook completes
-    or until the termination grace period is reached.
-    More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 lifecycle pre stop
 
     Attributes
     ----------
@@ -4648,39 +3498,31 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStopExec:
     r"""
-    Exec specifies a command to execute in the container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 lifecycle pre stop exec
 
     Attributes
     ----------
     command : [str], default is Undefined, optional
-        Command is the command line to execute inside the container, the working directory for the
-        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
-        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
-        a shell, you need to explicitly call out to that shell.
-        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+        command
     """
     command?: [str]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStopHTTPGet:
     r"""
-    HTTPGet specifies an HTTP GET request to perform.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 lifecycle pre stop HTTP get
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Host name to connect to, defaults to the pod IP. You probably want to set
-        "Host" in httpHeaders instead.
+        host
     httpHeaders : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0], default is Undefined, optional
-        Custom headers to set in the request. HTTP allows repeated headers.
+        http headers
     path : str, default is Undefined, optional
-        Path to access on the HTTP server.
+        path
     port : int | str, default is Undefined, required
-        Name or number of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     scheme : str, default is Undefined, optional
-        Scheme to use for connecting to the host.
-        Defaults to HTTP.
+        scheme
     """
     host?: str
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0]
@@ -4691,15 +3533,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0:
     r"""
-    HTTPHeader describes a custom header to be used in HTTP probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 lifecycle pre stop HTTP get HTTP headers items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        The header field name.
-        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+        name
     value : str, default is Undefined, required
-        The header field value
+        value
     """
     name: str
 
@@ -4707,77 +3548,55 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStopSleep:
     r"""
-    Sleep represents a duration that the container should sleep.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 lifecycle pre stop sleep
 
     Attributes
     ----------
     seconds : int, default is Undefined, required
-        Seconds is the number of seconds to sleep.
+        seconds
     """
     seconds: int
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LifecyclePreStopTCPSocket:
     r"""
-    Deprecated. TCPSocket is NOT supported as a LifecycleHandler and kept
-    for backward compatibility. There is no validation of this field and
-    lifecycle hooks will fail at runtime when it is specified.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 lifecycle pre stop TCP socket
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Optional: Host name to connect to, defaults to the pod IP.
+        host
     port : int | str, default is Undefined, required
-        Number or name of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     """
     host?: str
     port: int | str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbe:
     r"""
-    Periodic probe of container liveness.
-    Container will be restarted if the probe fails.
-    Cannot be updated.
-    More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 liveness probe
 
     Attributes
     ----------
     exec : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeExec, default is Undefined, optional
         exec
     failureThreshold : int, default is Undefined, optional
-        Minimum consecutive failures for the probe to be considered failed after having succeeded.
-        Defaults to 3. Minimum value is 1.
+        failure threshold
     grpc : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeGrpc, default is Undefined, optional
         grpc
     httpGet : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeHTTPGet, default is Undefined, optional
         http get
     initialDelaySeconds : int, default is Undefined, optional
-        Number of seconds after the container has started before liveness probes are initiated.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        initial delay seconds
     periodSeconds : int, default is Undefined, optional
-        How often (in seconds) to perform the probe.
-        Default to 10 seconds. Minimum value is 1.
+        period seconds
     successThreshold : int, default is Undefined, optional
-        Minimum consecutive successes for the probe to be considered successful after having failed.
-        Defaults to 1. Must be 1 for liveness and startup. Minimum value is 1.
+        success threshold
     tcpSocket : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeTCPSocket, default is Undefined, optional
         tcp socket
     terminationGracePeriodSeconds : int, default is Undefined, optional
-        Optional duration in seconds the pod needs to terminate gracefully upon probe failure.
-        The grace period is the duration in seconds after the processes running in the pod are sent
-        a termination signal and the time when the processes are forcibly halted with a kill signal.
-        Set this value longer than the expected cleanup time for your process.
-        If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this
-        value overrides the value provided by the pod spec.
-        Value must be non-negative integer. The value zero indicates stop immediately via
-        the kill signal (no opportunity to shut down).
-        This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate.
-        Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.
+        termination grace period seconds
     timeoutSeconds : int, default is Undefined, optional
-        Number of seconds after which the probe times out.
-        Defaults to 1 second. Minimum value is 1.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        timeout seconds
     """
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeExec
     failureThreshold?: int
@@ -4792,32 +3611,25 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeExec:
     r"""
-    Exec specifies a command to execute in the container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 liveness probe exec
 
     Attributes
     ----------
     command : [str], default is Undefined, optional
-        Command is the command line to execute inside the container, the working directory for the
-        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
-        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
-        a shell, you need to explicitly call out to that shell.
-        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+        command
     """
     command?: [str]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeGrpc:
     r"""
-    GRPC specifies a GRPC HealthCheckRequest.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 liveness probe grpc
 
     Attributes
     ----------
     port : int, default is Undefined, required
-        Port number of the gRPC service. Number must be in the range 1 to 65535.
+        port
     service : str, default is Undefined, optional
-        Service is the name of the service to place in the gRPC HealthCheckRequest
-        (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
-
-        If this is not specified, the default behavior is defined by gRPC.
+        service
     """
     port: int
 
@@ -4825,24 +3637,20 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeHTTPGet:
     r"""
-    HTTPGet specifies an HTTP GET request to perform.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 liveness probe HTTP get
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Host name to connect to, defaults to the pod IP. You probably want to set
-        "Host" in httpHeaders instead.
+        host
     httpHeaders : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0], default is Undefined, optional
-        Custom headers to set in the request. HTTP allows repeated headers.
+        http headers
     path : str, default is Undefined, optional
-        Path to access on the HTTP server.
+        path
     port : int | str, default is Undefined, required
-        Name or number of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     scheme : str, default is Undefined, optional
-        Scheme to use for connecting to the host.
-        Defaults to HTTP.
+        scheme
     """
     host?: str
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0]
@@ -4853,15 +3661,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0:
     r"""
-    HTTPHeader describes a custom header to be used in HTTP probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 liveness probe HTTP get HTTP headers items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        The header field name.
-        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+        name
     value : str, default is Undefined, required
-        The header field value
+        value
     """
     name: str
 
@@ -4869,43 +3676,34 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0LivenessProbeTCPSocket:
     r"""
-    TCPSocket specifies a connection to a TCP port.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 liveness probe TCP socket
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Optional: Host name to connect to, defaults to the pod IP.
+        host
     port : int | str, default is Undefined, required
-        Number or name of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     """
     host?: str
     port: int | str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0PortsItems0:
     r"""
-    ContainerPort represents a network port in a single container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 ports items0
 
     Attributes
     ----------
     containerPort : int, default is Undefined, required
-        Number of port to expose on the pod's IP address.
-        This must be a valid port number, 0 < x < 65536.
+        container port
     hostIP : str, default is Undefined, optional
-        What host IP to bind the external port to.
+        host IP
     hostPort : int, default is Undefined, optional
-        Number of port to expose on the host.
-        If specified, this must be a valid port number, 0 < x < 65536.
-        If HostNetwork is specified, this must match ContainerPort.
-        Most containers do not need this.
+        host port
     name : str, default is Undefined, optional
-        If specified, this must be an IANA_SVC_NAME and unique within the pod. Each
-        named port in a pod must have a unique name. Name for the port that can be
-        referred to by services.
+        name
     $protocol : str, default is "TCP", optional
-        Protocol for port. Must be UDP, TCP, or SCTP.
-        Defaults to "TCP".
+        protocol
     """
     containerPort: int
 
@@ -4916,48 +3714,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbe:
     r"""
-    Periodic probe of container service readiness.
-    Container will be removed from service endpoints if the probe fails.
-    Cannot be updated.
-    More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 readiness probe
 
     Attributes
     ----------
     exec : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeExec, default is Undefined, optional
         exec
     failureThreshold : int, default is Undefined, optional
-        Minimum consecutive failures for the probe to be considered failed after having succeeded.
-        Defaults to 3. Minimum value is 1.
+        failure threshold
     grpc : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeGrpc, default is Undefined, optional
         grpc
     httpGet : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeHTTPGet, default is Undefined, optional
         http get
     initialDelaySeconds : int, default is Undefined, optional
-        Number of seconds after the container has started before liveness probes are initiated.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        initial delay seconds
     periodSeconds : int, default is Undefined, optional
-        How often (in seconds) to perform the probe.
-        Default to 10 seconds. Minimum value is 1.
+        period seconds
     successThreshold : int, default is Undefined, optional
-        Minimum consecutive successes for the probe to be considered successful after having failed.
-        Defaults to 1. Must be 1 for liveness and startup. Minimum value is 1.
+        success threshold
     tcpSocket : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeTCPSocket, default is Undefined, optional
         tcp socket
     terminationGracePeriodSeconds : int, default is Undefined, optional
-        Optional duration in seconds the pod needs to terminate gracefully upon probe failure.
-        The grace period is the duration in seconds after the processes running in the pod are sent
-        a termination signal and the time when the processes are forcibly halted with a kill signal.
-        Set this value longer than the expected cleanup time for your process.
-        If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this
-        value overrides the value provided by the pod spec.
-        Value must be non-negative integer. The value zero indicates stop immediately via
-        the kill signal (no opportunity to shut down).
-        This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate.
-        Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.
+        termination grace period seconds
     timeoutSeconds : int, default is Undefined, optional
-        Number of seconds after which the probe times out.
-        Defaults to 1 second. Minimum value is 1.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        timeout seconds
     """
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeExec
     failureThreshold?: int
@@ -4972,32 +3752,25 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeExec:
     r"""
-    Exec specifies a command to execute in the container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 readiness probe exec
 
     Attributes
     ----------
     command : [str], default is Undefined, optional
-        Command is the command line to execute inside the container, the working directory for the
-        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
-        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
-        a shell, you need to explicitly call out to that shell.
-        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+        command
     """
     command?: [str]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeGrpc:
     r"""
-    GRPC specifies a GRPC HealthCheckRequest.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 readiness probe grpc
 
     Attributes
     ----------
     port : int, default is Undefined, required
-        Port number of the gRPC service. Number must be in the range 1 to 65535.
+        port
     service : str, default is Undefined, optional
-        Service is the name of the service to place in the gRPC HealthCheckRequest
-        (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
-
-        If this is not specified, the default behavior is defined by gRPC.
+        service
     """
     port: int
 
@@ -5005,24 +3778,20 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeHTTPGet:
     r"""
-    HTTPGet specifies an HTTP GET request to perform.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 readiness probe HTTP get
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Host name to connect to, defaults to the pod IP. You probably want to set
-        "Host" in httpHeaders instead.
+        host
     httpHeaders : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0], default is Undefined, optional
-        Custom headers to set in the request. HTTP allows repeated headers.
+        http headers
     path : str, default is Undefined, optional
-        Path to access on the HTTP server.
+        path
     port : int | str, default is Undefined, required
-        Name or number of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     scheme : str, default is Undefined, optional
-        Scheme to use for connecting to the host.
-        Defaults to HTTP.
+        scheme
     """
     host?: str
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0]
@@ -5033,15 +3802,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0:
     r"""
-    HTTPHeader describes a custom header to be used in HTTP probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 readiness probe HTTP get HTTP headers items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        The header field name.
-        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+        name
     value : str, default is Undefined, required
-        The header field value
+        value
     """
     name: str
 
@@ -5049,32 +3817,28 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ReadinessProbeTCPSocket:
     r"""
-    TCPSocket specifies a connection to a TCP port.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 readiness probe TCP socket
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Optional: Host name to connect to, defaults to the pod IP.
+        host
     port : int | str, default is Undefined, required
-        Number or name of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     """
     host?: str
     port: int | str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ResizePolicyItems0:
     r"""
-    ContainerResizePolicy represents resource resize policy for the container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 resize policy items0
 
     Attributes
     ----------
     resourceName : str, default is Undefined, required
-        Name of the resource to which this resource resize policy applies.
-        Supported values: cpu, memory.
+        resource name
     restartPolicy : str, default is Undefined, required
-        Restart policy to apply when specified resource is resized.
-        If not specified, it defaults to NotRequired.
+        restart policy
     """
     resourceName: str
 
@@ -5082,28 +3846,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0Resources:
     r"""
-    Compute Resources required by this container.
-    Cannot be updated.
-    More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 resources
 
     Attributes
     ----------
     claims : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ResourcesClaimsItems0], default is Undefined, optional
-        Claims lists the names of resources, defined in spec.resourceClaims,
-        that are used by this container.
-
-        This is an alpha field and requires enabling the
-        DynamicResourceAllocation feature gate.
-
-        This field is immutable. It can only be set for containers.
+        claims
     limits : {str:int | str}, default is Undefined, optional
-        Limits describes the maximum amount of compute resources allowed.
-        More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+        limits
     requests : {str:int | str}, default is Undefined, optional
-        Requests describes the minimum amount of compute resources required.
-        If Requests is omitted for a container, it defaults to Limits if that is explicitly specified,
-        otherwise to an implementation-defined value. Requests cannot exceed Limits.
-        More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+        requests
     """
     claims?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ResourcesClaimsItems0]
     limits?: {str:int | str}
@@ -5115,18 +3867,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ResourcesClaimsItems0:
     r"""
-    ResourceClaim references one entry in PodSpec.ResourceClaims.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 resources claims items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name must match the name of one entry in pod.spec.resourceClaims of
-        the Pod where this field is used. It makes that resource available
-        inside a container.
+        name
     request : str, default is Undefined, optional
-        Request is the name chosen for a request in the referenced claim.
-        If empty, everything from the claim is made available, otherwise
-        only the result of this request.
+        request
     """
     name: str
 
@@ -5134,58 +3882,28 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContext:
     r"""
-    SecurityContext defines the security options the container should be run with.
-    If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext.
-    More info: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 security context
 
     Attributes
     ----------
     allowPrivilegeEscalation : bool, default is Undefined, optional
-        AllowPrivilegeEscalation controls whether a process can gain more
-        privileges than its parent process. This bool directly controls if
-        the no_new_privs flag will be set on the container process.
-        AllowPrivilegeEscalation is true always when the container is:
-        1) run as Privileged
-        2) has CAP_SYS_ADMIN
-        Note that this field cannot be set when spec.os.name is windows.
+        allow privilege escalation
     appArmorProfile : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextAppArmorProfile, default is Undefined, optional
         app armor profile
     capabilities : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextCapabilities, default is Undefined, optional
         capabilities
     privileged : bool, default is Undefined, optional
-        Run container in privileged mode.
-        Processes in privileged containers are essentially equivalent to root on the host.
-        Defaults to false.
-        Note that this field cannot be set when spec.os.name is windows.
+        privileged
     procMount : str, default is Undefined, optional
-        procMount denotes the type of proc mount to use for the containers.
-        The default value is Default which uses the container runtime defaults for
-        readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
-        Note that this field cannot be set when spec.os.name is windows.
+        proc mount
     readOnlyRootFilesystem : bool, default is Undefined, optional
-        Whether this container has a read-only root filesystem.
-        Default is false.
-        Note that this field cannot be set when spec.os.name is windows.
+        read only root filesystem
     runAsGroup : int, default is Undefined, optional
-        The GID to run the entrypoint of the container process.
-        Uses runtime default if unset.
-        May also be set in PodSecurityContext.  If set in both SecurityContext and
-        PodSecurityContext, the value specified in SecurityContext takes precedence.
-        Note that this field cannot be set when spec.os.name is windows.
+        run as group
     runAsNonRoot : bool, default is Undefined, optional
-        Indicates that the container must run as a non-root user.
-        If true, the Kubelet will validate the image at runtime to ensure that it
-        does not run as UID 0 (root) and fail to start the container if it does.
-        If unset or false, no such validation will be performed.
-        May also be set in PodSecurityContext.  If set in both SecurityContext and
-        PodSecurityContext, the value specified in SecurityContext takes precedence.
+        run as non root
     runAsUser : int, default is Undefined, optional
-        The UID to run the entrypoint of the container process.
-        Defaults to user specified in image metadata if unspecified.
-        May also be set in PodSecurityContext.  If set in both SecurityContext and
-        PodSecurityContext, the value specified in SecurityContext takes precedence.
-        Note that this field cannot be set when spec.os.name is windows.
+        run as user
     seLinuxOptions : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextSeLinuxOptions, default is Undefined, optional
         se linux options
     seccompProfile : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextSeccompProfile, default is Undefined, optional
@@ -5208,61 +3926,46 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextAppArmorProfile:
     r"""
-    appArmorProfile is the AppArmor options to use by this container. If set, this profile
-    overrides the pod's appArmorProfile.
-    Note that this field cannot be set when spec.os.name is windows.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 security context app armor profile
 
     Attributes
     ----------
     localhostProfile : str, default is Undefined, optional
-        localhostProfile indicates a profile loaded on the node that should be used.
-        The profile must be preconfigured on the node to work.
-        Must match the loaded name of the profile.
-        Must be set if and only if type is "Localhost".
+        localhost profile
     $type : str, default is Undefined, required
-        type indicates which kind of AppArmor profile will be applied.
-        Valid options are:
-          Localhost - a profile pre-loaded on the node.
-          RuntimeDefault - the container runtime's default profile.
-          Unconfined - no AppArmor enforcement.
+        type
     """
     localhostProfile?: str
     $type: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextCapabilities:
     r"""
-    The capabilities to add/drop when running containers.
-    Defaults to the default set of capabilities granted by the container runtime.
-    Note that this field cannot be set when spec.os.name is windows.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 security context capabilities
 
     Attributes
     ----------
     add : [str], default is Undefined, optional
-        Added capabilities
+        add
     drop : [str], default is Undefined, optional
-        Removed capabilities
+        drop
     """
     add?: [str]
     drop?: [str]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextSeLinuxOptions:
     r"""
-    The SELinux context to be applied to the container.
-    If unspecified, the container runtime will allocate a random SELinux context for each
-    container.  May also be set in PodSecurityContext.  If set in both SecurityContext and
-    PodSecurityContext, the value specified in SecurityContext takes precedence.
-    Note that this field cannot be set when spec.os.name is windows.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 security context se linux options
 
     Attributes
     ----------
     level : str, default is Undefined, optional
-        Level is SELinux level label that applies to the container.
+        level
     role : str, default is Undefined, optional
-        Role is a SELinux role label that applies to the container.
+        role
     $type : str, default is Undefined, optional
-        Type is a SELinux type label that applies to the container.
+        type
     user : str, default is Undefined, optional
-        User is a SELinux user label that applies to the container.
+        user
     """
     level?: str
     role?: str
@@ -5271,54 +3974,32 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextSeccompProfile:
     r"""
-    The seccomp options to use by this container. If seccomp options are
-    provided at both the pod & container level, the container options
-    override the pod options.
-    Note that this field cannot be set when spec.os.name is windows.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 security context seccomp profile
 
     Attributes
     ----------
     localhostProfile : str, default is Undefined, optional
-        localhostProfile indicates a profile defined in a file on the node should be used.
-        The profile must be preconfigured on the node to work.
-        Must be a descending path, relative to the kubelet's configured seccomp profile location.
-        Must be set if type is "Localhost". Must NOT be set for any other type.
+        localhost profile
     $type : str, default is Undefined, required
-        type indicates which kind of seccomp profile will be applied.
-        Valid options are:
-
-        Localhost - a profile defined in a file on the node should be used.
-        RuntimeDefault - the container runtime default profile should be used.
-        Unconfined - no profile should be applied.
+        type
     """
     localhostProfile?: str
     $type: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContextWindowsOptions:
     r"""
-    The Windows specific settings applied to all containers.
-    If unspecified, the options from the PodSecurityContext will be used.
-    If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.
-    Note that this field cannot be set when spec.os.name is linux.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 security context windows options
 
     Attributes
     ----------
     gmsaCredentialSpec : str, default is Undefined, optional
-        GMSACredentialSpec is where the GMSA admission webhook
-        (https://github.com/kubernetes-sigs/windows-gmsa) inlines the contents of the
-        GMSA credential spec named by the GMSACredentialSpecName field.
+        gmsa credential spec
     gmsaCredentialSpecName : str, default is Undefined, optional
-        GMSACredentialSpecName is the name of the GMSA credential spec to use.
+        gmsa credential spec name
     hostProcess : bool, default is Undefined, optional
-        HostProcess determines if a container should be run as a 'Host Process' container.
-        All of a Pod's containers must have the same effective HostProcess value
-        (it is not allowed to have a mix of HostProcess containers and non-HostProcess containers).
-        In addition, if HostProcess is true then HostNetwork must also be set to true.
+        host process
     runAsUserName : str, default is Undefined, optional
-        The UserName in Windows to run the entrypoint of the container process.
-        Defaults to the user specified in image metadata if unspecified.
-        May also be set in PodSecurityContext. If set in both SecurityContext and
-        PodSecurityContext, the value specified in SecurityContext takes precedence.
+        run as user name
     """
     gmsaCredentialSpec?: str
     gmsaCredentialSpecName?: str
@@ -5327,51 +4008,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbe:
     r"""
-    StartupProbe indicates that the Pod has successfully initialized.
-    If specified, no other probes are executed until this completes successfully.
-    If this probe fails, the Pod will be restarted, just as if the livenessProbe failed.
-    This can be used to provide different probe parameters at the beginning of a Pod's lifecycle,
-    when it might take a long time to load data or warm a cache, than during steady-state operation.
-    This cannot be updated.
-    More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 startup probe
 
     Attributes
     ----------
     exec : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeExec, default is Undefined, optional
         exec
     failureThreshold : int, default is Undefined, optional
-        Minimum consecutive failures for the probe to be considered failed after having succeeded.
-        Defaults to 3. Minimum value is 1.
+        failure threshold
     grpc : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeGrpc, default is Undefined, optional
         grpc
     httpGet : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeHTTPGet, default is Undefined, optional
         http get
     initialDelaySeconds : int, default is Undefined, optional
-        Number of seconds after the container has started before liveness probes are initiated.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        initial delay seconds
     periodSeconds : int, default is Undefined, optional
-        How often (in seconds) to perform the probe.
-        Default to 10 seconds. Minimum value is 1.
+        period seconds
     successThreshold : int, default is Undefined, optional
-        Minimum consecutive successes for the probe to be considered successful after having failed.
-        Defaults to 1. Must be 1 for liveness and startup. Minimum value is 1.
+        success threshold
     tcpSocket : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeTCPSocket, default is Undefined, optional
         tcp socket
     terminationGracePeriodSeconds : int, default is Undefined, optional
-        Optional duration in seconds the pod needs to terminate gracefully upon probe failure.
-        The grace period is the duration in seconds after the processes running in the pod are sent
-        a termination signal and the time when the processes are forcibly halted with a kill signal.
-        Set this value longer than the expected cleanup time for your process.
-        If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this
-        value overrides the value provided by the pod spec.
-        Value must be non-negative integer. The value zero indicates stop immediately via
-        the kill signal (no opportunity to shut down).
-        This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate.
-        Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset.
+        termination grace period seconds
     timeoutSeconds : int, default is Undefined, optional
-        Number of seconds after which the probe times out.
-        Defaults to 1 second. Minimum value is 1.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+        timeout seconds
     """
     exec?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeExec
     failureThreshold?: int
@@ -5386,32 +4046,25 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeExec:
     r"""
-    Exec specifies a command to execute in the container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 startup probe exec
 
     Attributes
     ----------
     command : [str], default is Undefined, optional
-        Command is the command line to execute inside the container, the working directory for the
-        command  is root ('/') in the container's filesystem. The command is simply exec'd, it is
-        not run inside a shell, so traditional shell instructions ('|', etc) won't work. To use
-        a shell, you need to explicitly call out to that shell.
-        Exit status of 0 is treated as live/healthy and non-zero is unhealthy.
+        command
     """
     command?: [str]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeGrpc:
     r"""
-    GRPC specifies a GRPC HealthCheckRequest.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 startup probe grpc
 
     Attributes
     ----------
     port : int, default is Undefined, required
-        Port number of the gRPC service. Number must be in the range 1 to 65535.
+        port
     service : str, default is Undefined, optional
-        Service is the name of the service to place in the gRPC HealthCheckRequest
-        (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
-
-        If this is not specified, the default behavior is defined by gRPC.
+        service
     """
     port: int
 
@@ -5419,24 +4072,20 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeHTTPGet:
     r"""
-    HTTPGet specifies an HTTP GET request to perform.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 startup probe HTTP get
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Host name to connect to, defaults to the pod IP. You probably want to set
-        "Host" in httpHeaders instead.
+        host
     httpHeaders : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeHTTPGetHTTPHeadersItems0], default is Undefined, optional
-        Custom headers to set in the request. HTTP allows repeated headers.
+        http headers
     path : str, default is Undefined, optional
-        Path to access on the HTTP server.
+        path
     port : int | str, default is Undefined, required
-        Name or number of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     scheme : str, default is Undefined, optional
-        Scheme to use for connecting to the host.
-        Defaults to HTTP.
+        scheme
     """
     host?: str
     httpHeaders?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeHTTPGetHTTPHeadersItems0]
@@ -5447,15 +4096,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeHTTPGetHTTPHeadersItems0:
     r"""
-    HTTPHeader describes a custom header to be used in HTTP probes
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 startup probe HTTP get HTTP headers items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        The header field name.
-        This will be canonicalized upon output, so case-variant names will be understood as the same header.
+        name
     value : str, default is Undefined, required
-        The header field value
+        value
     """
     name: str
 
@@ -5463,30 +4111,28 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbeTCPSocket:
     r"""
-    TCPSocket specifies a connection to a TCP port.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 startup probe TCP socket
 
     Attributes
     ----------
     host : str, default is Undefined, optional
-        Optional: Host name to connect to, defaults to the pod IP.
+        host
     port : int | str, default is Undefined, required
-        Number or name of the port to access on the container.
-        Number must be in the range 1 to 65535.
-        Name must be an IANA_SVC_NAME.
+        port
     """
     host?: str
     port: int | str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0VolumeDevicesItems0:
     r"""
-    volumeDevice describes a mapping of a raw block device within a container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 volume devices items0
 
     Attributes
     ----------
     devicePath : str, default is Undefined, required
-        devicePath is the path inside of the container that the device will be mapped to.
+        device path
     name : str, default is Undefined, required
-        name must match the name of a persistentVolumeClaim in the pod
+        name
     """
     devicePath: str
 
@@ -5494,50 +4140,24 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0VolumeMountsItems0:
     r"""
-    VolumeMount describes a mounting of a Volume within a container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 volume mounts items0
 
     Attributes
     ----------
     mountPath : str, default is Undefined, required
-        Path within the container at which the volume should be mounted.  Must
-        not contain ':'.
+        mount path
     mountPropagation : str, default is Undefined, optional
-        mountPropagation determines how mounts are propagated from the host
-        to container and the other way around.
-        When not set, MountPropagationNone is used.
-        This field is beta in 1.10.
-        When RecursiveReadOnly is set to IfPossible or to Enabled, MountPropagation must be None or unspecified
-        (which defaults to None).
+        mount propagation
     name : str, default is Undefined, required
-        This must match the Name of a Volume.
+        name
     readOnly : bool, default is Undefined, optional
-        Mounted read-only if true, read-write otherwise (false or unspecified).
-        Defaults to false.
+        read only
     recursiveReadOnly : str, default is Undefined, optional
-        RecursiveReadOnly specifies whether read-only mounts should be handled
-        recursively.
-
-        If ReadOnly is false, this field has no meaning and must be unspecified.
-
-        If ReadOnly is true, and this field is set to Disabled, the mount is not made
-        recursively read-only.  If this field is set to IfPossible, the mount is made
-        recursively read-only, if it is supported by the container runtime.  If this
-        field is set to Enabled, the mount is made recursively read-only if it is
-        supported by the container runtime, otherwise the pod will not be started and
-        an error will be generated to indicate the reason.
-
-        If this field is set to IfPossible or Enabled, MountPropagation must be set to
-        None (or be unspecified, which defaults to None).
-
-        If this field is not specified, it is treated as an equivalent of Disabled.
+        recursive read only
     subPath : str, default is Undefined, optional
-        Path within the volume from which the container's volume should be mounted.
-        Defaults to "" (volume's root).
+        sub path
     subPathExpr : str, default is Undefined, optional
-        Expanded path within the volume from which the container's volume should be mounted.
-        Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment.
-        Defaults to "" (volume's root).
-        SubPathExpr and SubPath are mutually exclusive.
+        sub path expr
     """
     mountPath: str
 
@@ -5551,153 +4171,56 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecOs:
     r"""
-    Specifies the OS of the containers in the pod.
-    Some pod and container fields are restricted if this is set.
-
-    If the OS field is set to linux, the following fields must be unset:
-    -securityContext.windowsOptions
-
-    If the OS field is set to windows, following fields must be unset:
-    - spec.hostPID
-    - spec.hostIPC
-    - spec.hostUsers
-    - spec.securityContext.seLinuxOptions
-    - spec.securityContext.seccompProfile
-    - spec.securityContext.fsGroup
-    - spec.securityContext.fsGroupChangePolicy
-    - spec.securityContext.sysctls
-    - spec.shareProcessNamespace
-    - spec.securityContext.runAsUser
-    - spec.securityContext.runAsGroup
-    - spec.securityContext.supplementalGroups
-    - spec.containers[*].securityContext.seLinuxOptions
-    - spec.containers[*].securityContext.seccompProfile
-    - spec.containers[*].securityContext.capabilities
-    - spec.containers[*].securityContext.readOnlyRootFilesystem
-    - spec.containers[*].securityContext.privileged
-    - spec.containers[*].securityContext.allowPrivilegeEscalation
-    - spec.containers[*].securityContext.procMount
-    - spec.containers[*].securityContext.runAsUser
-    - spec.containers[*].securityContext.runAsGroup
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec os
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name is the name of the operating system. The currently supported values are linux and windows.
-        Additional value may be defined in future and can be one of:
-        https://github.com/opencontainers/runtime-spec/blob/master/config.md#platform-specific-configuration
-        Clients should expect to handle additional values and treat unrecognized values in this field as os: null
+        name
     """
     name: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecReadinessGatesItems0:
     r"""
-    PodReadinessGate contains the reference to a pod condition
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec readiness gates items0
 
     Attributes
     ----------
     conditionType : str, default is Undefined, required
-        ConditionType refers to a condition in the pod's condition list with matching type.
+        condition type
     """
     conditionType: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContext:
     r"""
-    SecurityContext holds pod-level security attributes and common container settings.
-    Optional: Defaults to empty.  See type description for default values of each field.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec security context
 
     Attributes
     ----------
     appArmorProfile : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextAppArmorProfile, default is Undefined, optional
         app armor profile
     fsGroup : int, default is Undefined, optional
-        A special supplemental group that applies to all containers in a pod.
-        Some volume types allow the Kubelet to change the ownership of that volume
-        to be owned by the pod:
-
-        1. The owning GID will be the FSGroup
-        2. The setgid bit is set (new files created in the volume will be owned by FSGroup)
-        3. The permission bits are OR'd with rw-rw----
-
-        If unset, the Kubelet will not modify the ownership and permissions of any volume.
-        Note that this field cannot be set when spec.os.name is windows.
+        fs group
     fsGroupChangePolicy : str, default is Undefined, optional
-        fsGroupChangePolicy defines behavior of changing ownership and permission of the volume
-        before being exposed inside Pod. This field will only apply to
-        volume types which support fsGroup based ownership(and permissions).
-        It will have no effect on ephemeral volume types such as: secret, configmaps
-        and emptydir.
-        Valid values are "OnRootMismatch" and "Always". If not specified, "Always" is used.
-        Note that this field cannot be set when spec.os.name is windows.
+        fs group change policy
     runAsGroup : int, default is Undefined, optional
-        The GID to run the entrypoint of the container process.
-        Uses runtime default if unset.
-        May also be set in SecurityContext.  If set in both SecurityContext and
-        PodSecurityContext, the value specified in SecurityContext takes precedence
-        for that container.
-        Note that this field cannot be set when spec.os.name is windows.
+        run as group
     runAsNonRoot : bool, default is Undefined, optional
-        Indicates that the container must run as a non-root user.
-        If true, the Kubelet will validate the image at runtime to ensure that it
-        does not run as UID 0 (root) and fail to start the container if it does.
-        If unset or false, no such validation will be performed.
-        May also be set in SecurityContext.  If set in both SecurityContext and
-        PodSecurityContext, the value specified in SecurityContext takes precedence.
+        run as non root
     runAsUser : int, default is Undefined, optional
-        The UID to run the entrypoint of the container process.
-        Defaults to user specified in image metadata if unspecified.
-        May also be set in SecurityContext.  If set in both SecurityContext and
-        PodSecurityContext, the value specified in SecurityContext takes precedence
-        for that container.
-        Note that this field cannot be set when spec.os.name is windows.
+        run as user
     seLinuxChangePolicy : str, default is Undefined, optional
-        seLinuxChangePolicy defines how the container's SELinux label is applied to all volumes used by the Pod.
-        It has no effect on nodes that do not support SELinux or to volumes does not support SELinux.
-        Valid values are "MountOption" and "Recursive".
-
-        "Recursive" means relabeling of all files on all Pod volumes by the container runtime.
-        This may be slow for large volumes, but allows mixing privileged and unprivileged Pods sharing the same volume on the same node.
-
-        "MountOption" mounts all eligible Pod volumes with `-o context` mount option.
-        This requires all Pods that share the same volume to use the same SELinux label.
-        It is not possible to share the same volume among privileged and unprivileged Pods.
-        Eligible volumes are in-tree FibreChannel and iSCSI volumes, and all CSI volumes
-        whose CSI driver announces SELinux support by setting spec.seLinuxMount: true in their
-        CSIDriver instance. Other volumes are always re-labelled recursively.
-        "MountOption" value is allowed only when SELinuxMount feature gate is enabled.
-
-        If not specified and SELinuxMount feature gate is enabled, "MountOption" is used.
-        If not specified and SELinuxMount feature gate is disabled, "MountOption" is used for ReadWriteOncePod volumes
-        and "Recursive" for all other volumes.
-
-        This field affects only Pods that have SELinux label set, either in PodSecurityContext or in SecurityContext of all containers.
-
-        All Pods that use the same volume should use the same seLinuxChangePolicy, otherwise some pods can get stuck in ContainerCreating state.
-        Note that this field cannot be set when spec.os.name is windows.
+        se linux change policy
     seLinuxOptions : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextSeLinuxOptions, default is Undefined, optional
         se linux options
     seccompProfile : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextSeccompProfile, default is Undefined, optional
         seccomp profile
     supplementalGroups : [int], default is Undefined, optional
-        A list of groups applied to the first process run in each container, in
-        addition to the container's primary GID and fsGroup (if specified).  If
-        the SupplementalGroupsPolicy feature is enabled, the
-        supplementalGroupsPolicy field determines whether these are in addition
-        to or instead of any group memberships defined in the container image.
-        If unspecified, no additional groups are added, though group memberships
-        defined in the container image may still be used, depending on the
-        supplementalGroupsPolicy field.
-        Note that this field cannot be set when spec.os.name is windows.
+        supplemental groups
     supplementalGroupsPolicy : str, default is Undefined, optional
-        Defines how supplemental groups of the first container processes are calculated.
-        Valid values are "Merge" and "Strict". If not specified, "Merge" is used.
-        (Alpha) Using the field requires the SupplementalGroupsPolicy feature gate to be enabled
-        and the container runtime must implement support for this feature.
-        Note that this field cannot be set when spec.os.name is windows.
+        supplemental groups policy
     sysctls : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextSysctlsItems0], default is Undefined, optional
-        Sysctls hold a list of namespaced sysctls used for the pod. Pods with unsupported
-        sysctls (by the container runtime) might fail to launch.
-        Note that this field cannot be set when spec.os.name is windows.
+        sysctls
     windowsOptions : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextWindowsOptions, default is Undefined, optional
         windows options
     """
@@ -5717,45 +4240,32 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextAppArmorProfile:
     r"""
-    appArmorProfile is the AppArmor options to use by the containers in this pod.
-    Note that this field cannot be set when spec.os.name is windows.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec security context app armor profile
 
     Attributes
     ----------
     localhostProfile : str, default is Undefined, optional
-        localhostProfile indicates a profile loaded on the node that should be used.
-        The profile must be preconfigured on the node to work.
-        Must match the loaded name of the profile.
-        Must be set if and only if type is "Localhost".
+        localhost profile
     $type : str, default is Undefined, required
-        type indicates which kind of AppArmor profile will be applied.
-        Valid options are:
-          Localhost - a profile pre-loaded on the node.
-          RuntimeDefault - the container runtime's default profile.
-          Unconfined - no AppArmor enforcement.
+        type
     """
     localhostProfile?: str
     $type: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextSeLinuxOptions:
     r"""
-    The SELinux context to be applied to all containers.
-    If unspecified, the container runtime will allocate a random SELinux context for each
-    container.  May also be set in SecurityContext.  If set in
-    both SecurityContext and PodSecurityContext, the value specified in SecurityContext
-    takes precedence for that container.
-    Note that this field cannot be set when spec.os.name is windows.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec security context se linux options
 
     Attributes
     ----------
     level : str, default is Undefined, optional
-        Level is SELinux level label that applies to the container.
+        level
     role : str, default is Undefined, optional
-        Role is a SELinux role label that applies to the container.
+        role
     $type : str, default is Undefined, optional
-        Type is a SELinux type label that applies to the container.
+        type
     user : str, default is Undefined, optional
-        User is a SELinux user label that applies to the container.
+        user
     """
     level?: str
     role?: str
@@ -5764,37 +4274,28 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextSeccompProfile:
     r"""
-    The seccomp options to use by the containers in this pod.
-    Note that this field cannot be set when spec.os.name is windows.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec security context seccomp profile
 
     Attributes
     ----------
     localhostProfile : str, default is Undefined, optional
-        localhostProfile indicates a profile defined in a file on the node should be used.
-        The profile must be preconfigured on the node to work.
-        Must be a descending path, relative to the kubelet's configured seccomp profile location.
-        Must be set if type is "Localhost". Must NOT be set for any other type.
+        localhost profile
     $type : str, default is Undefined, required
-        type indicates which kind of seccomp profile will be applied.
-        Valid options are:
-
-        Localhost - a profile defined in a file on the node should be used.
-        RuntimeDefault - the container runtime default profile should be used.
-        Unconfined - no profile should be applied.
+        type
     """
     localhostProfile?: str
     $type: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextSysctlsItems0:
     r"""
-    Sysctl defines a kernel parameter to be set
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec security context sysctls items0
 
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of a property to set
+        name
     value : str, default is Undefined, required
-        Value of a property to set
+        value
     """
     name: str
 
@@ -5802,29 +4303,18 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurityContextWindowsOptions:
     r"""
-    The Windows specific settings applied to all containers.
-    If unspecified, the options within a container's SecurityContext will be used.
-    If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.
-    Note that this field cannot be set when spec.os.name is linux.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec security context windows options
 
     Attributes
     ----------
     gmsaCredentialSpec : str, default is Undefined, optional
-        GMSACredentialSpec is where the GMSA admission webhook
-        (https://github.com/kubernetes-sigs/windows-gmsa) inlines the contents of the
-        GMSA credential spec named by the GMSACredentialSpecName field.
+        gmsa credential spec
     gmsaCredentialSpecName : str, default is Undefined, optional
-        GMSACredentialSpecName is the name of the GMSA credential spec to use.
+        gmsa credential spec name
     hostProcess : bool, default is Undefined, optional
-        HostProcess determines if a container should be run as a 'Host Process' container.
-        All of a Pod's containers must have the same effective HostProcess value
-        (it is not allowed to have a mix of HostProcess containers and non-HostProcess containers).
-        In addition, if HostProcess is true then HostNetwork must also be set to true.
+        host process
     runAsUserName : str, default is Undefined, optional
-        The UserName in Windows to run the entrypoint of the container process.
-        Defaults to the user specified in image metadata if unspecified.
-        May also be set in PodSecurityContext. If set in both SecurityContext and
-        PodSecurityContext, the value specified in SecurityContext takes precedence.
+        run as user name
     """
     gmsaCredentialSpec?: str
     gmsaCredentialSpecName?: str
@@ -5833,30 +4323,20 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecSecurity
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTolerationsItems0:
     r"""
-    The pod this Toleration is attached to tolerates any taint that matches
-    the triple <key,value,effect> using the matching operator <operator>.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec tolerations items0
 
     Attributes
     ----------
     effect : str, default is Undefined, optional
-        Effect indicates the taint effect to match. Empty means match all taint effects.
-        When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
+        effect
     key : str, default is Undefined, optional
-        Key is the taint key that the toleration applies to. Empty means match all taint keys.
-        If the key is empty, operator must be Exists; this combination means to match all values and all keys.
+        key
     operator : str, default is Undefined, optional
-        Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
-        Exists is equivalent to wildcard for value, so that a pod can
-        tolerate all taints of a particular category.
+        operator
     tolerationSeconds : int, default is Undefined, optional
-        TolerationSeconds represents the period of time the toleration (which must be
-        of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
-        it is not set, which means tolerate the taint forever (do not evict). Zero and
-        negative values will be treated as 0 (evict immediately) by the system.
+        toleration seconds
     value : str, default is Undefined, optional
-        Value is the taint value the toleration matches to.
-        If the operator is Exists, the value should be empty, otherwise just a regular string.
+        value
     """
     effect?: str
     key?: str
@@ -5866,108 +4346,26 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTolerati
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopologySpreadConstraintsItems0:
     r"""
-    TopologySpreadConstraint specifies how to spread matching pods among the given topology.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec topology spread constraints items0
 
     Attributes
     ----------
     labelSelector : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopologySpreadConstraintsItems0LabelSelector, default is Undefined, optional
         label selector
     matchLabelKeys : [str], default is Undefined, optional
-        MatchLabelKeys is a set of pod label keys to select the pods over which
-        spreading will be calculated. The keys are used to lookup values from the
-        incoming pod labels, those key-value labels are ANDed with labelSelector
-        to select the group of existing pods over which spreading will be calculated
-        for the incoming pod. The same key is forbidden to exist in both MatchLabelKeys and LabelSelector.
-        MatchLabelKeys cannot be set when LabelSelector isn't set.
-        Keys that don't exist in the incoming pod labels will
-        be ignored. A null or empty list means only match against labelSelector.
-
-        This is a beta field and requires the MatchLabelKeysInPodTopologySpread feature gate to be enabled (enabled by default).
+        match label keys
     maxSkew : int, default is Undefined, required
-        MaxSkew describes the degree to which pods may be unevenly distributed.
-        When `whenUnsatisfiable=DoNotSchedule`, it is the maximum permitted difference
-        between the number of matching pods in the target topology and the global minimum.
-        The global minimum is the minimum number of matching pods in an eligible domain
-        or zero if the number of eligible domains is less than MinDomains.
-        For example, in a 3-zone cluster, MaxSkew is set to 1, and pods with the same
-        labelSelector spread as 2/2/1:
-        In this case, the global minimum is 1.
-        | zone1 | zone2 | zone3 |
-        |  P P  |  P P  |   P   |
-        - if MaxSkew is 1, incoming pod can only be scheduled to zone3 to become 2/2/2;
-        scheduling it onto zone1(zone2) would make the ActualSkew(3-1) on zone1(zone2)
-        violate MaxSkew(1).
-        - if MaxSkew is 2, incoming pod can be scheduled onto any zone.
-        When `whenUnsatisfiable=ScheduleAnyway`, it is used to give higher precedence
-        to topologies that satisfy it.
-        It's a required field. Default value is 1 and 0 is not allowed.
+        max skew
     minDomains : int, default is Undefined, optional
-        MinDomains indicates a minimum number of eligible domains.
-        When the number of eligible domains with matching topology keys is less than minDomains,
-        Pod Topology Spread treats "global minimum" as 0, and then the calculation of Skew is performed.
-        And when the number of eligible domains with matching topology keys equals or greater than minDomains,
-        this value has no effect on scheduling.
-        As a result, when the number of eligible domains is less than minDomains,
-        scheduler won't schedule more than maxSkew Pods to those domains.
-        If value is nil, the constraint behaves as if MinDomains is equal to 1.
-        Valid values are integers greater than 0.
-        When value is not nil, WhenUnsatisfiable must be DoNotSchedule.
-
-        For example, in a 3-zone cluster, MaxSkew is set to 2, MinDomains is set to 5 and pods with the same
-        labelSelector spread as 2/2/2:
-        | zone1 | zone2 | zone3 |
-        |  P P  |  P P  |  P P  |
-        The number of domains is less than 5(MinDomains), so "global minimum" is treated as 0.
-        In this situation, new pod with the same labelSelector cannot be scheduled,
-        because computed skew will be 3(3 - 0) if new Pod is scheduled to any of the three zones,
-        it will violate MaxSkew.
+        min domains
     nodeAffinityPolicy : str, default is Undefined, optional
-        NodeAffinityPolicy indicates how we will treat Pod's nodeAffinity/nodeSelector
-        when calculating pod topology spread skew. Options are:
-        - Honor: only nodes matching nodeAffinity/nodeSelector are included in the calculations.
-        - Ignore: nodeAffinity/nodeSelector are ignored. All nodes are included in the calculations.
-
-        If this value is nil, the behavior is equivalent to the Honor policy.
-        This is a beta-level feature default enabled by the NodeInclusionPolicyInPodTopologySpread feature flag.
+        node affinity policy
     nodeTaintsPolicy : str, default is Undefined, optional
-        NodeTaintsPolicy indicates how we will treat node taints when calculating
-        pod topology spread skew. Options are:
-        - Honor: nodes without taints, along with tainted nodes for which the incoming pod
-        has a toleration, are included.
-        - Ignore: node taints are ignored. All nodes are included.
-
-        If this value is nil, the behavior is equivalent to the Ignore policy.
-        This is a beta-level feature default enabled by the NodeInclusionPolicyInPodTopologySpread feature flag.
+        node taints policy
     topologyKey : str, default is Undefined, required
-        TopologyKey is the key of node labels. Nodes that have a label with this key
-        and identical values are considered to be in the same topology.
-        We consider each <key, value> as a "bucket", and try to put balanced number
-        of pods into each bucket.
-        We define a domain as a particular instance of a topology.
-        Also, we define an eligible domain as a domain whose nodes meet the requirements of
-        nodeAffinityPolicy and nodeTaintsPolicy.
-        e.g. If TopologyKey is "kubernetes.io/hostname", each Node is a domain of that topology.
-        And, if TopologyKey is "topology.kubernetes.io/zone", each zone is a domain of that topology.
-        It's a required field.
+        topology key
     whenUnsatisfiable : str, default is Undefined, required
-        WhenUnsatisfiable indicates how to deal with a pod if it doesn't satisfy
-        the spread constraint.
-        - DoNotSchedule (default) tells the scheduler not to schedule it.
-        - ScheduleAnyway tells the scheduler to schedule the pod in any location,
-          but giving higher precedence to topologies that would help reduce the
-          skew.
-        A constraint is considered "Unsatisfiable" for an incoming pod
-        if and only if every possible node assignment for that pod would violate
-        "MaxSkew" on some topology.
-        For example, in a 3-zone cluster, MaxSkew is set to 1, and pods with the same
-        labelSelector spread as 3/1/1:
-        | zone1 | zone2 | zone3 |
-        | P P P |   P   |   P   |
-        If WhenUnsatisfiable is set to DoNotSchedule, incoming pod can only be scheduled
-        to zone2(zone3) to become 3/2/1(3/1/2) as ActualSkew(2-1) on zone2(zone3) satisfies
-        MaxSkew(1). In other words, the cluster can still be imbalanced, but scheduler
-        won't make it *more* imbalanced.
-        It's a required field.
+        when unsatisfiable
     """
     labelSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopologySpreadConstraintsItems0LabelSelector
     matchLabelKeys?: [str]
@@ -5982,39 +4380,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopology
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopologySpreadConstraintsItems0LabelSelector:
     r"""
-    LabelSelector is used to find matching pods.
-    Pods that match this label selector are counted to determine the number of pods
-    in their corresponding topology domain.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec topology spread constraints items0 label selector
 
     Attributes
     ----------
     matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopologySpreadConstraintsItems0LabelSelectorMatchExpressionsItems0], default is Undefined, optional
-        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+        match expressions
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
-        map is equivalent to an element of matchExpressions, whose key field is "key", the
-        operator is "In", and the values array contains only "value". The requirements are ANDed.
+        match labels
     """
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopologySpreadConstraintsItems0LabelSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopologySpreadConstraintsItems0LabelSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that
-    relates the key and values.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec topology spread constraints items0 label selector match expressions items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        key is the label key that the selector applies to.
+        key
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values.
-        Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn,
-        the values array must be non-empty. If the operator is Exists or DoesNotExist,
-        the values array must be empty. This array is replaced during a strategic
-        merge patch.
+        values
     """
     key: str
 
@@ -6024,7 +4413,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecTopology
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0:
     r"""
-    Volume represents a named volume in a pod that may be accessed by any container in the pod.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0
 
     Attributes
     ----------
@@ -6067,9 +4456,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     iscsi : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Iscsi, default is Undefined, optional
         iscsi
     name : str, default is Undefined, required
-        name of the volume.
-        Must be a DNS_LABEL and unique within the pod.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     nfs : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Nfs, default is Undefined, optional
         nfs
     persistentVolumeClaim : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0PersistentVolumeClaim, default is Undefined, optional
@@ -6128,30 +4515,18 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0AwsElasticBlockStore:
     r"""
-    awsElasticBlockStore represents an AWS Disk resource that is attached to a
-    kubelet's host machine and then exposed to the pod.
-    Deprecated: AWSElasticBlockStore is deprecated. All operations for the in-tree
-    awsElasticBlockStore type are redirected to the ebs.csi.aws.com CSI driver.
-    More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 aws elastic block store
 
     Attributes
     ----------
     fsType : str, default is Undefined, optional
-        fsType is the filesystem type of the volume that you want to mount.
-        Tip: Ensure that the filesystem type is supported by the host operating system.
-        Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
-        More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
+        fs type
     partition : int, default is Undefined, optional
-        partition is the partition in the volume that you want to mount.
-        If omitted, the default is to mount by volume name.
-        Examples: For volume /dev/sda1, you specify the partition as "1".
-        Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty).
+        partition
     readOnly : bool, default is Undefined, optional
-        readOnly value true will force the readOnly setting in VolumeMounts.
-        More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
+        read only
     volumeID : str, default is Undefined, required
-        volumeID is unique ID of the persistent disk resource in AWS (Amazon EBS volume).
-        More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore
+        volume ID
     """
     fsType?: str
     partition?: int
@@ -6160,27 +4535,22 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0AzureDisk:
     r"""
-    azureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.
-    Deprecated: AzureDisk is deprecated. All operations for the in-tree azureDisk type
-    are redirected to the disk.csi.azure.com CSI driver.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 azure disk
 
     Attributes
     ----------
     cachingMode : str, default is Undefined, optional
-        cachingMode is the Host Caching mode: None, Read Only, Read Write.
+        caching mode
     diskName : str, default is Undefined, required
-        diskName is the Name of the data disk in the blob storage
+        disk name
     diskURI : str, default is Undefined, required
-        diskURI is the URI of data disk in the blob storage
+        disk URI
     fsType : str, default is "ext4", optional
-        fsType is Filesystem type to mount.
-        Must be a filesystem type supported by the host operating system.
-        Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+        fs type
     kind : str, default is Undefined, optional
-        kind expected values are Shared: multiple blob disks per storage account  Dedicated: single blob disk per storage account  Managed: azure managed data disk (only in managed availability set). defaults to shared
+        kind
     readOnly : bool, default is Undefined, optional
-        readOnly Defaults to false (read/write). ReadOnly here will force
-        the ReadOnly setting in VolumeMounts.
+        read only
     """
     cachingMode?: str
     diskName: str
@@ -6193,19 +4563,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0AzureFile:
     r"""
-    azureFile represents an Azure File Service mount on the host and bind mount to the pod.
-    Deprecated: AzureFile is deprecated. All operations for the in-tree azureFile type
-    are redirected to the file.csi.azure.com CSI driver.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 azure file
 
     Attributes
     ----------
     readOnly : bool, default is Undefined, optional
-        readOnly defaults to false (read/write). ReadOnly here will force
-        the ReadOnly setting in VolumeMounts.
+        read only
     secretName : str, default is Undefined, required
-        secretName is the  name of secret that contains Azure Storage Account Name and Key
+        secret name
     shareName : str, default is Undefined, required
-        shareName is the azure share Name
+        share name
     """
     readOnly?: bool
     secretName: str
@@ -6214,28 +4581,22 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Cephfs:
     r"""
-    cephFS represents a Ceph FS mount on the host that shares a pod's lifetime.
-    Deprecated: CephFS is deprecated and the in-tree cephfs type is no longer supported.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 cephfs
 
     Attributes
     ----------
     monitors : [str], default is Undefined, required
-        monitors is Required: Monitors is a collection of Ceph monitors
-        More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+        monitors
     path : str, default is Undefined, optional
-        path is Optional: Used as the mounted root, rather than the full Ceph tree, default is /
+        path
     readOnly : bool, default is Undefined, optional
-        readOnly is Optional: Defaults to false (read/write). ReadOnly here will force
-        the ReadOnly setting in VolumeMounts.
-        More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+        read only
     secretFile : str, default is Undefined, optional
-        secretFile is Optional: SecretFile is the path to key ring for User, default is /etc/ceph/user.secret
-        More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+        secret file
     secretRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0CephfsSecretRef, default is Undefined, optional
         secret ref
     user : str, default is Undefined, optional
-        user is optional: User is the rados user name, default is admin
-        More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+        user
     """
     monitors: [str]
 
@@ -6247,43 +4608,29 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0CephfsSecretRef:
     r"""
-    secretRef is Optional: SecretRef is reference to the authentication secret for User, default is empty.
-    More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 cephfs secret ref
 
     Attributes
     ----------
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     """
     name?: str = ""
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Cinder:
     r"""
-    cinder represents a cinder volume attached and mounted on kubelets host machine.
-    Deprecated: Cinder is deprecated. All operations for the in-tree cinder type
-    are redirected to the cinder.csi.openstack.org CSI driver.
-    More info: https://examples.k8s.io/mysql-cinder-pd/README.md
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 cinder
 
     Attributes
     ----------
     fsType : str, default is Undefined, optional
-        fsType is the filesystem type to mount.
-        Must be a filesystem type supported by the host operating system.
-        Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
-        More info: https://examples.k8s.io/mysql-cinder-pd/README.md
+        fs type
     readOnly : bool, default is Undefined, optional
-        readOnly defaults to false (read/write). ReadOnly here will force
-        the ReadOnly setting in VolumeMounts.
-        More info: https://examples.k8s.io/mysql-cinder-pd/README.md
+        read only
     secretRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0CinderSecretRef, default is Undefined, optional
         secret ref
     volumeID : str, default is Undefined, required
-        volumeID used to identify the volume in cinder.
-        More info: https://examples.k8s.io/mysql-cinder-pd/README.md
+        volume ID
     """
     fsType?: str
     readOnly?: bool
@@ -6292,50 +4639,29 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0CinderSecretRef:
     r"""
-    secretRef is optional: points to a secret object containing parameters used to connect
-    to OpenStack.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 cinder secret ref
 
     Attributes
     ----------
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     """
     name?: str = ""
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ConfigMap:
     r"""
-    configMap represents a configMap that should populate this volume
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 config map
 
     Attributes
     ----------
     defaultMode : int, default is Undefined, optional
-        defaultMode is optional: mode bits used to set permissions on created files by default.
-        Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
-        YAML accepts both octal and decimal values, JSON requires decimal values for mode bits.
-        Defaults to 0644.
-        Directories within the path are not affected by this setting.
-        This might be in conflict with other options that affect the file
-        mode, like fsGroup, and the result can be other mode bits set.
+        default mode
     items : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ConfigMapItemsItems0], default is Undefined, optional
-        items if unspecified, each key-value pair in the Data field of the referenced
-        ConfigMap will be projected into the volume as a file whose name is the
-        key and content is the value. If specified, the listed keys will be
-        projected into the specified paths, and unlisted keys will not be
-        present. If a key is specified which is not present in the ConfigMap,
-        the volume setup will error unless it is marked optional. Paths must be
-        relative and may not contain the '..' path or start with '..'.
+        items
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     optional : bool, default is Undefined, optional
-        optional specify whether the ConfigMap or its keys must be defined
+        optional
     """
     defaultMode?: int
     items?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ConfigMapItemsItems0]
@@ -6344,24 +4670,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ConfigMapItemsItems0:
     r"""
-    Maps a string key to a path within a volume.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 config map items items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        key is the key to project.
+        key
     mode : int, default is Undefined, optional
-        mode is Optional: mode bits used to set permissions on this file.
-        Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
-        YAML accepts both octal and decimal values, JSON requires decimal values for mode bits.
-        If not specified, the volume defaultMode will be used.
-        This might be in conflict with other options that affect the file
-        mode, like fsGroup, and the result can be other mode bits set.
+        mode
     path : str, default is Undefined, required
-        path is the relative path of the file to map the key to.
-        May not be an absolute path.
-        May not contain the path element '..'.
-        May not start with the string '..'.
+        path
     """
     key: str
 
@@ -6370,25 +4688,20 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Csi:
     r"""
-    csi (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 csi
 
     Attributes
     ----------
     driver : str, default is Undefined, required
-        driver is the name of the CSI driver that handles this volume.
-        Consult with your admin for the correct name as registered in the cluster.
+        driver
     fsType : str, default is Undefined, optional
-        fsType to mount. Ex. "ext4", "xfs", "ntfs".
-        If not provided, the empty value is passed to the associated CSI driver
-        which will determine the default filesystem to apply.
+        fs type
     nodePublishSecretRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0CsiNodePublishSecretRef, default is Undefined, optional
         node publish secret ref
     readOnly : bool, default is Undefined, optional
-        readOnly specifies a read-only configuration for the volume.
-        Defaults to false (read/write).
+        read only
     volumeAttributes : {str:str}, default is Undefined, optional
-        volumeAttributes stores driver-specific properties that are passed to the CSI
-        driver. Consult your driver's documentation for supported values.
+        volume attributes
     """
     driver: str
 
@@ -6399,61 +4712,41 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0CsiNodePublishSecretRef:
     r"""
-    nodePublishSecretRef is a reference to the secret object containing
-    sensitive information to pass to the CSI driver to complete the CSI
-    NodePublishVolume and NodeUnpublishVolume calls.
-    This field is optional, and  may be empty if no secret is required. If the
-    secret object contains more than one secret, all secret references are passed.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 csi node publish secret ref
 
     Attributes
     ----------
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     """
     name?: str = ""
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0DownwardAPI:
     r"""
-    downwardAPI represents downward API about the pod that should populate this volume
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 downward API
 
     Attributes
     ----------
     defaultMode : int, default is Undefined, optional
-        Optional: mode bits to use on created files by default. Must be a
-        Optional: mode bits used to set permissions on created files by default.
-        Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
-        YAML accepts both octal and decimal values, JSON requires decimal values for mode bits.
-        Defaults to 0644.
-        Directories within the path are not affected by this setting.
-        This might be in conflict with other options that affect the file
-        mode, like fsGroup, and the result can be other mode bits set.
+        default mode
     items : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0], default is Undefined, optional
-        Items is a list of downward API volume file
+        items
     """
     defaultMode?: int
     items?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0:
     r"""
-    DownwardAPIVolumeFile represents information to create the file containing the pod field
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 downward API items items0
 
     Attributes
     ----------
     fieldRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0FieldRef, default is Undefined, optional
         field ref
     mode : int, default is Undefined, optional
-        Optional: mode bits used to set permissions on this file, must be an octal value
-        between 0000 and 0777 or a decimal value between 0 and 511.
-        YAML accepts both octal and decimal values, JSON requires decimal values for mode bits.
-        If not specified, the volume defaultMode will be used.
-        This might be in conflict with other options that affect the file
-        mode, like fsGroup, and the result can be other mode bits set.
+        mode
     path : str, default is Undefined, required
-        Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..'
+        path
     resourceFieldRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0ResourceFieldRef, default is Undefined, optional
         resource field ref
     """
@@ -6465,31 +4758,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0FieldRef:
     r"""
-    Required: Selects a field of the pod: only annotations, labels, name, namespace and uid are supported.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 downward API items items0 field ref
 
     Attributes
     ----------
     apiVersion : str, default is Undefined, optional
-        Version of the schema the FieldPath is written in terms of, defaults to "v1".
+        api version
     fieldPath : str, default is Undefined, required
-        Path of the field to select in the specified API version.
+        field path
     """
     apiVersion?: str
     fieldPath: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0ResourceFieldRef:
     r"""
-    Selects a resource of the container: only resources limits and requests
-    (limits.cpu, limits.memory, requests.cpu and requests.memory) are currently supported.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 downward API items items0 resource field ref
 
     Attributes
     ----------
     containerName : str, default is Undefined, optional
-        Container name: required for volumes, optional for env vars
+        container name
     divisor : int | str, default is Undefined, optional
-        Specifies the output format of the exposed resources, defaults to "1"
+        divisor
     resource : str, default is Undefined, required
-        Required: resource to select
+        resource
     """
     containerName?: str
     divisor?: int | str
@@ -6500,23 +4792,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EmptyDir:
     r"""
-    emptyDir represents a temporary directory that shares a pod's lifetime.
-    More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 empty dir
 
     Attributes
     ----------
     medium : str, default is Undefined, optional
-        medium represents what type of storage medium should back this directory.
-        The default is "" which means to use the node's default medium.
-        Must be an empty string (default) or Memory.
-        More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
+        medium
     sizeLimit : int | str, default is Undefined, optional
-        sizeLimit is the total amount of local storage required for this EmptyDir volume.
-        The size limit is also applicable for memory medium.
-        The maximum usage on memory medium EmptyDir would be the minimum value between
-        the SizeLimit specified here and the sum of memory limits of all containers in a pod.
-        The default is nil which means that the limit is undefined.
-        More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
+        size limit
     """
     medium?: str
     sizeLimit?: int | str
@@ -6526,30 +4809,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Ephemeral:
     r"""
-    ephemeral represents a volume that is handled by a cluster storage driver.
-    The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts,
-    and deleted when the pod is removed.
-
-    Use this if:
-    a) the volume is only needed while the pod runs,
-    b) features of normal volumes like restoring from snapshot or capacity
-       tracking are needed,
-    c) the storage driver is specified through a storage class, and
-    d) the storage driver supports dynamic volume provisioning through
-       a PersistentVolumeClaim (see EphemeralVolumeSource for more
-       information on the connection between this volume type
-       and PersistentVolumeClaim).
-
-    Use PersistentVolumeClaim or one of the vendor-specific
-    APIs for volumes that persist for longer than the lifecycle
-    of an individual pod.
-
-    Use CSI for light-weight local ephemeral volumes if the CSI driver is meant to
-    be used that way - see the documentation of the driver for
-    more information.
-
-    A pod can use both types of ephemeral volumes and
-    persistent volumes at the same time.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 ephemeral
 
     Attributes
     ----------
@@ -6560,34 +4820,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplate:
     r"""
-    Will be used to create a stand-alone PVC to provision the volume.
-    The pod in which this EphemeralVolumeSource is embedded will be the
-    owner of the PVC, i.e. the PVC will be deleted together with the
-    pod.  The name of the PVC will be `<pod name>-<volume name>` where
-    `<volume name>` is the name from the `PodSpec.Volumes` array
-    entry. Pod validation will reject the pod if the concatenated name
-    is not valid for a PVC (for example, too long).
-
-    An existing PVC with that name that is not owned by the pod
-    will *not* be used for the pod to avoid using an unrelated
-    volume by mistake. Starting the pod is then blocked until
-    the unrelated PVC is removed. If such a pre-created PVC is
-    meant to be used by the pod, the PVC has to updated with an
-    owner reference to the pod once the pod exists. Normally
-    this should not be necessary, but it may be useful when
-    manually reconstructing a broken cluster.
-
-    This field is read-only and no changes will be made by Kubernetes
-    to the PVC after it has been created.
-
-    Required, must not be nil.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 ephemeral volume claim template
 
     Attributes
     ----------
     metadata : any, default is Undefined, optional
-        May contain labels and annotations that will be copied into the PVC
-        when creating it. No other fields are allowed and will be rejected during
-        validation.
+        metadata
     spec : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpec, default is Undefined, required
         spec
     """
@@ -6596,16 +4834,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpec:
     r"""
-    The specification for the PersistentVolumeClaim. The entire content is
-    copied unchanged into the PVC that gets created from this
-    template. The same fields as in a PersistentVolumeClaim
-    are also valid here.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 ephemeral volume claim template spec
 
     Attributes
     ----------
     accessModes : [str], default is Undefined, optional
-        accessModes contains the desired access modes the volume should have.
-        More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1
+        access modes
     dataSource : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecDataSource, default is Undefined, optional
         data source
     dataSourceRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecDataSourceRef, default is Undefined, optional
@@ -6615,26 +4849,13 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     selector : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecSelector, default is Undefined, optional
         selector
     storageClassName : str, default is Undefined, optional
-        storageClassName is the name of the StorageClass required by the claim.
-        More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1
+        storage class name
     volumeAttributesClassName : str, default is Undefined, optional
-        volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim.
-        If specified, the CSI driver will create or update the volume with the attributes defined
-        in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName,
-        it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass
-        will be applied to the claim but it's not allowed to reset this field to empty string once it is set.
-        If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass
-        will be set by the persistentvolume controller if it exists.
-        If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be
-        set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource
-        exists.
-        More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/
-        (Beta) Using this field requires the VolumeAttributesClass feature gate to be enabled (off by default).
+        volume attributes class name
     volumeMode : str, default is Undefined, optional
-        volumeMode defines what type of volume is required by the claim.
-        Value of Filesystem is implied when not included in claim spec.
+        volume mode
     volumeName : str, default is Undefined, optional
-        volumeName is the binding reference to the PersistentVolume backing this claim.
+        volume name
     """
     accessModes?: [str]
     dataSource?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecDataSource
@@ -6648,25 +4869,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecDataSource:
     r"""
-    dataSource field can be used to specify either:
-    * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot)
-    * An existing PVC (PersistentVolumeClaim)
-    If the provisioner or an external controller can support the specified data source,
-    it will create a new volume based on the contents of the specified data source.
-    When the AnyVolumeDataSource feature gate is enabled, dataSource contents will be copied to dataSourceRef,
-    and dataSourceRef contents will be copied to dataSource when dataSourceRef.namespace is not specified.
-    If the namespace is specified, then dataSourceRef will not be copied to dataSource.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 ephemeral volume claim template spec data source
 
     Attributes
     ----------
     apiGroup : str, default is Undefined, optional
-        APIGroup is the group for the resource being referenced.
-        If APIGroup is not specified, the specified Kind must be in the core API group.
-        For any other third-party types, APIGroup is required.
+        api group
     kind : str, default is Undefined, required
-        Kind is the type of resource being referenced
+        kind
     name : str, default is Undefined, required
-        Name is the name of resource being referenced
+        name
     """
     apiGroup?: str
     kind: str
@@ -6675,44 +4887,18 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecDataSourceRef:
     r"""
-    dataSourceRef specifies the object from which to populate the volume with data, if a non-empty
-    volume is desired. This may be any object from a non-empty API group (non
-    core object) or a PersistentVolumeClaim object.
-    When this field is specified, volume binding will only succeed if the type of
-    the specified object matches some installed volume populator or dynamic
-    provisioner.
-    This field will replace the functionality of the dataSource field and as such
-    if both fields are non-empty, they must have the same value. For backwards
-    compatibility, when namespace isn't specified in dataSourceRef,
-    both fields (dataSource and dataSourceRef) will be set to the same
-    value automatically if one of them is empty and the other is non-empty.
-    When namespace is specified in dataSourceRef,
-    dataSource isn't set to the same value and must be empty.
-    There are three important differences between dataSource and dataSourceRef:
-    * While dataSource only allows two specific types of objects, dataSourceRef
-      allows any non-core object, as well as PersistentVolumeClaim objects.
-    * While dataSource ignores disallowed values (dropping them), dataSourceRef
-      preserves all values, and generates an error if a disallowed value is
-      specified.
-    * While dataSource only allows local objects, dataSourceRef allows objects
-      in any namespaces.
-    (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
-    (Alpha) Using the namespace field of dataSourceRef requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 ephemeral volume claim template spec data source ref
 
     Attributes
     ----------
     apiGroup : str, default is Undefined, optional
-        APIGroup is the group for the resource being referenced.
-        If APIGroup is not specified, the specified Kind must be in the core API group.
-        For any other third-party types, APIGroup is required.
+        api group
     kind : str, default is Undefined, required
-        Kind is the type of resource being referenced
+        kind
     name : str, default is Undefined, required
-        Name is the name of resource being referenced
+        name
     namespace : str, default is Undefined, optional
-        Namespace is the namespace of resource being referenced
-        Note that when a namespace is specified, a gateway.networking.k8s.io/ReferenceGrant object is required in the referent namespace to allow that namespace's owner to accept the reference. See the ReferenceGrant documentation for details.
-        (Alpha) This field requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
+        namespace
     """
     apiGroup?: str
     kind: str
@@ -6723,22 +4909,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecResources:
     r"""
-    resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
-    that are lower than previous value but must still be higher than capacity recorded in the
-    status field of the claim.
-    More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 ephemeral volume claim template spec resources
 
     Attributes
     ----------
     limits : {str:int | str}, default is Undefined, optional
-        Limits describes the maximum amount of compute resources allowed.
-        More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+        limits
     requests : {str:int | str}, default is Undefined, optional
-        Requests describes the minimum amount of compute resources required.
-        If Requests is omitted for a container, it defaults to Limits if that is explicitly specified,
-        otherwise to an implementation-defined value. Requests cannot exceed Limits.
-        More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+        requests
     """
     limits?: {str:int | str}
     requests?: {str:int | str}
@@ -6749,37 +4927,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecSelector:
     r"""
-    selector is a label query over volumes to consider for binding.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 ephemeral volume claim template spec selector
 
     Attributes
     ----------
     matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecSelectorMatchExpressionsItems0], default is Undefined, optional
-        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+        match expressions
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
-        map is equivalent to an element of matchExpressions, whose key field is "key", the
-        operator is "In", and the values array contains only "value". The requirements are ANDed.
+        match labels
     """
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that
-    relates the key and values.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 ephemeral volume claim template spec selector match expressions items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        key is the label key that the selector applies to.
+        key
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values.
-        Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn,
-        the values array must be non-empty. If the operator is Exists or DoesNotExist,
-        the values array must be empty. This array is replaced during a strategic
-        merge patch.
+        values
     """
     key: str
 
@@ -6789,24 +4960,20 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Fc:
     r"""
-    fc represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 fc
 
     Attributes
     ----------
     fsType : str, default is Undefined, optional
-        fsType is the filesystem type to mount.
-        Must be a filesystem type supported by the host operating system.
-        Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+        fs type
     lun : int, default is Undefined, optional
-        lun is Optional: FC target lun number
+        lun
     readOnly : bool, default is Undefined, optional
-        readOnly is Optional: Defaults to false (read/write). ReadOnly here will force
-        the ReadOnly setting in VolumeMounts.
+        read only
     targetWWNs : [str], default is Undefined, optional
-        targetWWNs is Optional: FC target worldwide names (WWNs)
+        target w w ns
     wwids : [str], default is Undefined, optional
-        wwids Optional: FC volume world wide identifiers (wwids)
-        Either wwids or combination of targetWWNs and lun must be set, but not both simultaneously.
+        wwids
     """
     fsType?: str
     lun?: int
@@ -6816,23 +4983,18 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0FlexVolume:
     r"""
-    flexVolume represents a generic volume resource that is
-    provisioned/attached using an exec based plugin.
-    Deprecated: FlexVolume is deprecated. Consider using a CSIDriver instead.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 flex volume
 
     Attributes
     ----------
     driver : str, default is Undefined, required
-        driver is the name of the driver to use for this volume.
+        driver
     fsType : str, default is Undefined, optional
-        fsType is the filesystem type to mount.
-        Must be a filesystem type supported by the host operating system.
-        Ex. "ext4", "xfs", "ntfs". The default filesystem depends on FlexVolume script.
+        fs type
     options : {str:str}, default is Undefined, optional
-        options is Optional: this field holds extra command options if any.
+        options
     readOnly : bool, default is Undefined, optional
-        readOnly is Optional: defaults to false (read/write). ReadOnly here will force
-        the ReadOnly setting in VolumeMounts.
+        read only
     secretRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0FlexVolumeSecretRef, default is Undefined, optional
         secret ref
     """
@@ -6845,67 +5007,43 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0FlexVolumeSecretRef:
     r"""
-    secretRef is Optional: secretRef is reference to the secret object containing
-    sensitive information to pass to the plugin scripts. This may be
-    empty if no secret object is specified. If the secret object
-    contains more than one secret, all secrets are passed to the plugin
-    scripts.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 flex volume secret ref
 
     Attributes
     ----------
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     """
     name?: str = ""
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Flocker:
     r"""
-    flocker represents a Flocker volume attached to a kubelet's host machine. This depends on the Flocker control service being running.
-    Deprecated: Flocker is deprecated and the in-tree flocker type is no longer supported.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 flocker
 
     Attributes
     ----------
     datasetName : str, default is Undefined, optional
-        datasetName is Name of the dataset stored as metadata -> name on the dataset for Flocker
-        should be considered as deprecated
+        dataset name
     datasetUUID : str, default is Undefined, optional
-        datasetUUID is the UUID of the dataset. This is unique identifier of a Flocker dataset
+        dataset UUID
     """
     datasetName?: str
     datasetUUID?: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0GcePersistentDisk:
     r"""
-    gcePersistentDisk represents a GCE Disk resource that is attached to a
-    kubelet's host machine and then exposed to the pod.
-    Deprecated: GCEPersistentDisk is deprecated. All operations for the in-tree
-    gcePersistentDisk type are redirected to the pd.csi.storage.gke.io CSI driver.
-    More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 gce persistent disk
 
     Attributes
     ----------
     fsType : str, default is Undefined, optional
-        fsType is filesystem type of the volume that you want to mount.
-        Tip: Ensure that the filesystem type is supported by the host operating system.
-        Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
-        More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+        fs type
     partition : int, default is Undefined, optional
-        partition is the partition in the volume that you want to mount.
-        If omitted, the default is to mount by volume name.
-        Examples: For volume /dev/sda1, you specify the partition as "1".
-        Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty).
-        More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+        partition
     pdName : str, default is Undefined, required
-        pdName is unique name of the PD resource in GCE. Used to identify the disk in GCE.
-        More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+        pd name
     readOnly : bool, default is Undefined, optional
-        readOnly here will force the ReadOnly setting in VolumeMounts.
-        Defaults to false.
-        More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
+        read only
     """
     fsType?: str
     partition?: int
@@ -6915,22 +5053,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0GitRepo:
     r"""
-    gitRepo represents a git repository at a particular revision.
-    Deprecated: GitRepo is deprecated. To provision a container with a git repo, mount an
-    EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir
-    into the Pod's container.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 git repo
 
     Attributes
     ----------
     directory : str, default is Undefined, optional
-        directory is the target directory name.
-        Must not contain or start with '..'.  If '.' is supplied, the volume directory will be the
-        git repository.  Otherwise, if specified, the volume will contain the git repository in
-        the subdirectory with the given name.
+        directory
     repository : str, default is Undefined, required
-        repository is the URL
+        repository
     revision : str, default is Undefined, optional
-        revision is the commit hash for the specified revision.
+        revision
     """
     directory?: str
     repository: str
@@ -6939,22 +5071,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Glusterfs:
     r"""
-    glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime.
-    Deprecated: Glusterfs is deprecated and the in-tree glusterfs type is no longer supported.
-    More info: https://examples.k8s.io/volumes/glusterfs/README.md
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 glusterfs
 
     Attributes
     ----------
     endpoints : str, default is Undefined, required
-        endpoints is the endpoint name that details Glusterfs topology.
-        More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
+        endpoints
     path : str, default is Undefined, required
-        path is the Glusterfs volume path.
-        More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
+        path
     readOnly : bool, default is Undefined, optional
-        readOnly here will force the Glusterfs volume to be mounted with read-only permissions.
-        Defaults to false.
-        More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
+        read only
     """
     endpoints: str
 
@@ -6964,22 +5090,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0HostPath:
     r"""
-    hostPath represents a pre-existing file or directory on the host
-    machine that is directly exposed to the container. This is generally
-    used for system agents or other privileged things that are allowed
-    to see the host machine. Most containers will NOT need this.
-    More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 host path
 
     Attributes
     ----------
     path : str, default is Undefined, required
-        path of the directory on the host.
-        If the path is a symlink, it will follow the link to the real path.
-        More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath
+        path
     $type : str, default is Undefined, optional
-        type for HostPath Volume
-        Defaults to ""
-        More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath
+        type
     """
     path: str
 
@@ -6987,79 +5105,46 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Image:
     r"""
-    image represents an OCI object (a container image or artifact) pulled and mounted on the kubelet's host machine.
-    The volume is resolved at pod startup depending on which PullPolicy value is provided:
-
-    - Always: the kubelet always attempts to pull the reference. Container creation will fail If the pull fails.
-    - Never: the kubelet never pulls the reference and only uses a local image or artifact. Container creation will fail if the reference isn't present.
-    - IfNotPresent: the kubelet pulls if the reference isn't already present on disk. Container creation will fail if the reference isn't present and the pull fails.
-
-    The volume gets re-resolved if the pod gets deleted and recreated, which means that new remote content will become available on pod recreation.
-    A failure to resolve or pull the image during pod startup will block containers from starting and may add significant latency. Failures will be retried using normal volume backoff and will be reported on the pod reason and message.
-    The types of objects that may be mounted by this volume are defined by the container runtime implementation on a host machine and at minimum must include all valid types supported by the container image field.
-    The OCI object gets mounted in a single directory (spec.containers[*].volumeMounts.mountPath) by merging the manifest layers in the same way as for container images.
-    The volume will be mounted read-only (ro) and non-executable files (noexec).
-    Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath).
-    The field spec.securityContext.fsGroupChangePolicy has no effect on this volume type.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 image
 
     Attributes
     ----------
     pullPolicy : str, default is Undefined, optional
-        Policy for pulling OCI objects. Possible values are:
-        Always: the kubelet always attempts to pull the reference. Container creation will fail If the pull fails.
-        Never: the kubelet never pulls the reference and only uses a local image or artifact. Container creation will fail if the reference isn't present.
-        IfNotPresent: the kubelet pulls if the reference isn't already present on disk. Container creation will fail if the reference isn't present and the pull fails.
-        Defaults to Always if :latest tag is specified, or IfNotPresent otherwise.
+        pull policy
     reference : str, default is Undefined, optional
-        Required: Image or artifact reference to be used.
-        Behaves in the same way as pod.spec.containers[*].image.
-        Pull secrets will be assembled in the same way as for the container image by looking up node credentials, SA image pull secrets, and pod spec image pull secrets.
-        More info: https://kubernetes.io/docs/concepts/containers/images
-        This field is optional to allow higher level config management to default or override
-        container images in workload controllers like Deployments and StatefulSets.
+        reference
     """
     pullPolicy?: str
     reference?: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Iscsi:
     r"""
-    iscsi represents an ISCSI Disk resource that is attached to a
-    kubelet's host machine and then exposed to the pod.
-    More info: https://examples.k8s.io/volumes/iscsi/README.md
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 iscsi
 
     Attributes
     ----------
     chapAuthDiscovery : bool, default is Undefined, optional
-        chapAuthDiscovery defines whether support iSCSI Discovery CHAP authentication
+        chap auth discovery
     chapAuthSession : bool, default is Undefined, optional
-        chapAuthSession defines whether support iSCSI Session CHAP authentication
+        chap auth session
     fsType : str, default is Undefined, optional
-        fsType is the filesystem type of the volume that you want to mount.
-        Tip: Ensure that the filesystem type is supported by the host operating system.
-        Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
-        More info: https://kubernetes.io/docs/concepts/storage/volumes#iscsi
+        fs type
     initiatorName : str, default is Undefined, optional
-        initiatorName is the custom iSCSI Initiator Name.
-        If initiatorName is specified with iscsiInterface simultaneously, new iSCSI interface
-        <target portal>:<volume name> will be created for the connection.
+        initiator name
     iqn : str, default is Undefined, required
-        iqn is the target iSCSI Qualified Name.
+        iqn
     iscsiInterface : str, default is "default", optional
-        iscsiInterface is the interface Name that uses an iSCSI transport.
-        Defaults to 'default' (tcp).
+        iscsi interface
     lun : int, default is Undefined, required
-        lun represents iSCSI Target Lun number.
+        lun
     portals : [str], default is Undefined, optional
-        portals is the iSCSI Target Portal List. The portal is either an IP or ip_addr:port if the port
-        is other than default (typically TCP ports 860 and 3260).
+        portals
     readOnly : bool, default is Undefined, optional
-        readOnly here will force the ReadOnly setting in VolumeMounts.
-        Defaults to false.
+        read only
     secretRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0IscsiSecretRef, default is Undefined, optional
         secret ref
     targetPortal : str, default is Undefined, required
-        targetPortal is iSCSI Target Portal. The Portal is either an IP or ip_addr:port if the port
-        is other than default (typically TCP ports 860 and 3260).
+        target portal
     """
     chapAuthDiscovery?: bool
     chapAuthSession?: bool
@@ -7077,36 +5162,27 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0IscsiSecretRef:
     r"""
-    secretRef is the CHAP Secret for iSCSI target and initiator authentication
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 iscsi secret ref
 
     Attributes
     ----------
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     """
     name?: str = ""
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Nfs:
     r"""
-    nfs represents an NFS mount on the host that shares a pod's lifetime
-    More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 nfs
 
     Attributes
     ----------
     path : str, default is Undefined, required
-        path that is exported by the NFS server.
-        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+        path
     readOnly : bool, default is Undefined, optional
-        readOnly here will force the NFS export to be mounted with read-only permissions.
-        Defaults to false.
-        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+        read only
     server : str, default is Undefined, required
-        server is the hostname or IP address of the NFS server.
-        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+        server
     """
     path: str
 
@@ -7115,18 +5191,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0PersistentVolumeClaim:
     r"""
-    persistentVolumeClaimVolumeSource represents a reference to a
-    PersistentVolumeClaim in the same namespace.
-    More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 persistent volume claim
 
     Attributes
     ----------
     claimName : str, default is Undefined, required
-        claimName is the name of a PersistentVolumeClaim in the same namespace as the pod using this volume.
-        More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
+        claim name
     readOnly : bool, default is Undefined, optional
-        readOnly Will force the ReadOnly setting in VolumeMounts.
-        Default false.
+        read only
     """
     claimName: str
 
@@ -7134,39 +5206,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0PhotonPersistentDisk:
     r"""
-    photonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine.
-    Deprecated: PhotonPersistentDisk is deprecated and the in-tree photonPersistentDisk type is no longer supported.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 photon persistent disk
 
     Attributes
     ----------
     fsType : str, default is Undefined, optional
-        fsType is the filesystem type to mount.
-        Must be a filesystem type supported by the host operating system.
-        Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+        fs type
     pdID : str, default is Undefined, required
-        pdID is the ID that identifies Photon Controller persistent disk
+        pd ID
     """
     fsType?: str
     pdID: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0PortworxVolume:
     r"""
-    portworxVolume represents a portworx volume attached and mounted on kubelets host machine.
-    Deprecated: PortworxVolume is deprecated. All operations for the in-tree portworxVolume type
-    are redirected to the pxd.portworx.com CSI driver when the CSIMigrationPortworx feature-gate
-    is on.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 portworx volume
 
     Attributes
     ----------
     fsType : str, default is Undefined, optional
-        fSType represents the filesystem type to mount
-        Must be a filesystem type supported by the host operating system.
-        Ex. "ext4", "xfs". Implicitly inferred to be "ext4" if unspecified.
+        fs type
     readOnly : bool, default is Undefined, optional
-        readOnly defaults to false (read/write). ReadOnly here will force
-        the ReadOnly setting in VolumeMounts.
+        read only
     volumeID : str, default is Undefined, required
-        volumeID uniquely identifies a Portworx volume
+        volume ID
     """
     fsType?: str
     readOnly?: bool
@@ -7174,28 +5237,21 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Projected:
     r"""
-    projected items for all in one resources secrets, configmaps, and downward API
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 projected
 
     Attributes
     ----------
     defaultMode : int, default is Undefined, optional
-        defaultMode are the mode bits used to set permissions on created files by default.
-        Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
-        YAML accepts both octal and decimal values, JSON requires decimal values for mode bits.
-        Directories within the path are not affected by this setting.
-        This might be in conflict with other options that affect the file
-        mode, like fsGroup, and the result can be other mode bits set.
+        default mode
     sources : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0], default is Undefined, optional
-        sources is the list of volume projections. Each entry in this list
-        handles one source.
+        sources
     """
     defaultMode?: int
     sources?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0:
     r"""
-    Projection that may be projected along with other supported volume types.
-    Exactly one of these fields must be set.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 projected sources items0
 
     Attributes
     ----------
@@ -7218,39 +5274,20 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundle:
     r"""
-    ClusterTrustBundle allows a pod to access the `.spec.trustBundle` field
-    of ClusterTrustBundle objects in an auto-updating file.
-
-    Alpha, gated by the ClusterTrustBundleProjection feature gate.
-
-    ClusterTrustBundle objects can either be selected by name, or by the
-    combination of signer name and a label selector.
-
-    Kubelet performs aggressive normalization of the PEM contents written
-    into the pod filesystem.  Esoteric PEM features such as inter-block
-    comments and block headers are stripped.  Certificates are deduplicated.
-    The ordering of certificates within the file is arbitrary, and Kubelet
-    may change the order over time.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 projected sources items0 cluster trust bundle
 
     Attributes
     ----------
     labelSelector : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelector, default is Undefined, optional
         label selector
     name : str, default is Undefined, optional
-        Select a single ClusterTrustBundle by object name.  Mutually-exclusive
-        with signerName and labelSelector.
+        name
     optional : bool, default is Undefined, optional
-        If true, don't block pod startup if the referenced ClusterTrustBundle(s)
-        aren't available.  If using name, then the named ClusterTrustBundle is
-        allowed not to exist.  If using signerName, then the combination of
-        signerName and labelSelector is allowed to match zero
-        ClusterTrustBundles.
+        optional
     path : str, default is Undefined, required
-        Relative path from the volume root to write the bundle.
+        path
     signerName : str, default is Undefined, optional
-        Select all ClusterTrustBundles that match this signer name.
-        Mutually-exclusive with name.  The contents of all selected
-        ClusterTrustBundles will be unified and deduplicated.
+        signer name
     """
     labelSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelector
     name?: str
@@ -7261,40 +5298,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelector:
     r"""
-    Select all ClusterTrustBundles that match this label selector.  Only has
-    effect if signerName is set.  Mutually-exclusive with name.  If unset,
-    interpreted as "match nothing".  If set but empty, interpreted as "match
-    everything".
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 projected sources items0 cluster trust bundle label selector
 
     Attributes
     ----------
     matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelectorMatchExpressionsItems0], default is Undefined, optional
-        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+        match expressions
     matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
-        map is equivalent to an element of matchExpressions, whose key field is "key", the
-        operator is "In", and the values array contains only "value". The requirements are ANDed.
+        match labels
     """
     matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelectorMatchExpressionsItems0:
     r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that
-    relates the key and values.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 projected sources items0 cluster trust bundle label selector match expressions items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        key is the label key that the selector applies to.
+        key
     operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values.
-        Valid operators are In, NotIn, Exists and DoesNotExist.
+        operator
     values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn,
-        the values array must be non-empty. If the operator is Exists or DoesNotExist,
-        the values array must be empty. This array is replaced during a strategic
-        merge patch.
+        values
     """
     key: str
 
@@ -7304,26 +5331,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ConfigMap:
     r"""
-    configMap information about the configMap data to project
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 projected sources items0 config map
 
     Attributes
     ----------
     items : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ConfigMapItemsItems0], default is Undefined, optional
-        items if unspecified, each key-value pair in the Data field of the referenced
-        ConfigMap will be projected into the volume as a file whose name is the
-        key and content is the value. If specified, the listed keys will be
-        projected into the specified paths, and unlisted keys will not be
-        present. If a key is specified which is not present in the ConfigMap,
-        the volume setup will error unless it is marked optional. Paths must be
-        relative and may not contain the '..' path or start with '..'.
+        items
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     optional : bool, default is Undefined, optional
-        optional specify whether the ConfigMap or its keys must be defined
+        optional
     """
     items?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ConfigMapItemsItems0]
     name?: str = ""
@@ -7331,24 +5348,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ConfigMapItemsItems0:
     r"""
-    Maps a string key to a path within a volume.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 projected sources items0 config map items items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        key is the key to project.
+        key
     mode : int, default is Undefined, optional
-        mode is Optional: mode bits used to set permissions on this file.
-        Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
-        YAML accepts both octal and decimal values, JSON requires decimal values for mode bits.
-        If not specified, the volume defaultMode will be used.
-        This might be in conflict with other options that affect the file
-        mode, like fsGroup, and the result can be other mode bits set.
+        mode
     path : str, default is Undefined, required
-        path is the relative path of the file to map the key to.
-        May not be an absolute path.
-        May not contain the path element '..'.
-        May not start with the string '..'.
+        path
     """
     key: str
 
@@ -7357,32 +5366,27 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPI:
     r"""
-    downwardAPI information about the downwardAPI data to project
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 projected sources items0 downward API
 
     Attributes
     ----------
     items : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0], default is Undefined, optional
-        Items is a list of DownwardAPIVolume file
+        items
     """
     items?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0:
     r"""
-    DownwardAPIVolumeFile represents information to create the file containing the pod field
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 projected sources items0 downward API items items0
 
     Attributes
     ----------
     fieldRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0FieldRef, default is Undefined, optional
         field ref
     mode : int, default is Undefined, optional
-        Optional: mode bits used to set permissions on this file, must be an octal value
-        between 0000 and 0777 or a decimal value between 0 and 511.
-        YAML accepts both octal and decimal values, JSON requires decimal values for mode bits.
-        If not specified, the volume defaultMode will be used.
-        This might be in conflict with other options that affect the file
-        mode, like fsGroup, and the result can be other mode bits set.
+        mode
     path : str, default is Undefined, required
-        Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..'
+        path
     resourceFieldRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0ResourceFieldRef, default is Undefined, optional
         resource field ref
     """
@@ -7394,31 +5398,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0FieldRef:
     r"""
-    Required: Selects a field of the pod: only annotations, labels, name, namespace and uid are supported.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 projected sources items0 downward API items items0 field ref
 
     Attributes
     ----------
     apiVersion : str, default is Undefined, optional
-        Version of the schema the FieldPath is written in terms of, defaults to "v1".
+        api version
     fieldPath : str, default is Undefined, required
-        Path of the field to select in the specified API version.
+        field path
     """
     apiVersion?: str
     fieldPath: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0ResourceFieldRef:
     r"""
-    Selects a resource of the container: only resources limits and requests
-    (limits.cpu, limits.memory, requests.cpu and requests.memory) are currently supported.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 projected sources items0 downward API items items0 resource field ref
 
     Attributes
     ----------
     containerName : str, default is Undefined, optional
-        Container name: required for volumes, optional for env vars
+        container name
     divisor : int | str, default is Undefined, optional
-        Specifies the output format of the exposed resources, defaults to "1"
+        divisor
     resource : str, default is Undefined, required
-        Required: resource to select
+        resource
     """
     containerName?: str
     divisor?: int | str
@@ -7429,26 +5432,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0Secret:
     r"""
-    secret information about the secret data to project
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 projected sources items0 secret
 
     Attributes
     ----------
     items : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0SecretItemsItems0], default is Undefined, optional
-        items if unspecified, each key-value pair in the Data field of the referenced
-        Secret will be projected into the volume as a file whose name is the
-        key and content is the value. If specified, the listed keys will be
-        projected into the specified paths, and unlisted keys will not be
-        present. If a key is specified which is not present in the Secret,
-        the volume setup will error unless it is marked optional. Paths must be
-        relative and may not contain the '..' path or start with '..'.
+        items
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     optional : bool, default is Undefined, optional
-        optional field specify whether the Secret or its key must be defined
+        optional
     """
     items?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0SecretItemsItems0]
     name?: str = ""
@@ -7456,24 +5449,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0SecretItemsItems0:
     r"""
-    Maps a string key to a path within a volume.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 projected sources items0 secret items items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        key is the key to project.
+        key
     mode : int, default is Undefined, optional
-        mode is Optional: mode bits used to set permissions on this file.
-        Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
-        YAML accepts both octal and decimal values, JSON requires decimal values for mode bits.
-        If not specified, the volume defaultMode will be used.
-        This might be in conflict with other options that affect the file
-        mode, like fsGroup, and the result can be other mode bits set.
+        mode
     path : str, default is Undefined, required
-        path is the relative path of the file to map the key to.
-        May not be an absolute path.
-        May not contain the path element '..'.
-        May not start with the string '..'.
+        path
     """
     key: str
 
@@ -7482,25 +5467,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken:
     r"""
-    serviceAccountToken is information about the serviceAccountToken data to project
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 projected sources items0 service account token
 
     Attributes
     ----------
     audience : str, default is Undefined, optional
-        audience is the intended audience of the token. A recipient of a token
-        must identify itself with an identifier specified in the audience of the
-        token, and otherwise should reject the token. The audience defaults to the
-        identifier of the apiserver.
+        audience
     expirationSeconds : int, default is Undefined, optional
-        expirationSeconds is the requested duration of validity of the service
-        account token. As the token approaches expiration, the kubelet volume
-        plugin will proactively rotate the service account token. The kubelet will
-        start trying to rotate the token if the token is older than 80 percent of
-        its time to live or if the token is older than 24 hours.Defaults to 1 hour
-        and must be at least 10 minutes.
+        expiration seconds
     path : str, default is Undefined, required
-        path is the path relative to the mount point of the file to project the
-        token into.
+        path
     """
     audience?: str
     expirationSeconds?: int
@@ -7508,29 +5484,22 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Quobyte:
     r"""
-    quobyte represents a Quobyte mount on the host that shares a pod's lifetime.
-    Deprecated: Quobyte is deprecated and the in-tree quobyte type is no longer supported.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 quobyte
 
     Attributes
     ----------
     group : str, default is Undefined, optional
-        group to map volume access to
-        Default is no group
+        group
     readOnly : bool, default is Undefined, optional
-        readOnly here will force the Quobyte volume to be mounted with read-only permissions.
-        Defaults to false.
+        read only
     registry : str, default is Undefined, required
-        registry represents a single or multiple Quobyte Registry services
-        specified as a string as host:port pair (multiple entries are separated with commas)
-        which acts as the central registry for volumes
+        registry
     tenant : str, default is Undefined, optional
-        tenant owning the given Quobyte volume in the Backend
-        Used with dynamically provisioned Quobyte volumes, value is set by the plugin
+        tenant
     user : str, default is Undefined, optional
-        user to map volume access to
-        Defaults to serivceaccount user
+        user
     volume : str, default is Undefined, required
-        volume is a string that references an already created Quobyte volume by name.
+        volume
     """
     group?: str
     readOnly?: bool
@@ -7542,41 +5511,26 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Rbd:
     r"""
-    rbd represents a Rados Block Device mount on the host that shares a pod's lifetime.
-    Deprecated: RBD is deprecated and the in-tree rbd type is no longer supported.
-    More info: https://examples.k8s.io/volumes/rbd/README.md
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 rbd
 
     Attributes
     ----------
     fsType : str, default is Undefined, optional
-        fsType is the filesystem type of the volume that you want to mount.
-        Tip: Ensure that the filesystem type is supported by the host operating system.
-        Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
-        More info: https://kubernetes.io/docs/concepts/storage/volumes#rbd
+        fs type
     image : str, default is Undefined, required
-        image is the rados image name.
-        More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+        image
     keyring : str, default is "/etc/ceph/keyring", optional
-        keyring is the path to key ring for RBDUser.
-        Default is /etc/ceph/keyring.
-        More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+        keyring
     monitors : [str], default is Undefined, required
-        monitors is a collection of Ceph monitors.
-        More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+        monitors
     pool : str, default is "rbd", optional
-        pool is the rados pool name.
-        Default is rbd.
-        More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+        pool
     readOnly : bool, default is Undefined, optional
-        readOnly here will force the ReadOnly setting in VolumeMounts.
-        Defaults to false.
-        More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+        read only
     secretRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0RbdSecretRef, default is Undefined, optional
         secret ref
     user : str, default is "admin", optional
-        user is the rados user name.
-        Default is admin.
-        More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+        user
     """
     fsType?: str
     image: str
@@ -7591,55 +5545,41 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0RbdSecretRef:
     r"""
-    secretRef is name of the authentication secret for RBDUser. If provided
-    overrides keyring.
-    Default is nil.
-    More info: https://examples.k8s.io/volumes/rbd/README.md#how-to-use-it
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 rbd secret ref
 
     Attributes
     ----------
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     """
     name?: str = ""
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ScaleIO:
     r"""
-    scaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes.
-    Deprecated: ScaleIO is deprecated and the in-tree scaleIO type is no longer supported.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 scale i o
 
     Attributes
     ----------
     fsType : str, default is "xfs", optional
-        fsType is the filesystem type to mount.
-        Must be a filesystem type supported by the host operating system.
-        Ex. "ext4", "xfs", "ntfs".
-        Default is "xfs".
+        fs type
     gateway : str, default is Undefined, required
-        gateway is the host address of the ScaleIO API Gateway.
+        gateway
     protectionDomain : str, default is Undefined, optional
-        protectionDomain is the name of the ScaleIO Protection Domain for the configured storage.
+        protection domain
     readOnly : bool, default is Undefined, optional
-        readOnly Defaults to false (read/write). ReadOnly here will force
-        the ReadOnly setting in VolumeMounts.
+        read only
     secretRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ScaleIOSecretRef, default is Undefined, required
         secret ref
     sslEnabled : bool, default is Undefined, optional
-        sslEnabled Flag enable/disable SSL communication with Gateway, default false
+        ssl enabled
     storageMode : str, default is "ThinProvisioned", optional
-        storageMode indicates whether the storage for a volume should be ThickProvisioned or ThinProvisioned.
-        Default is ThinProvisioned.
+        storage mode
     storagePool : str, default is Undefined, optional
-        storagePool is the ScaleIO Storage Pool associated with the protection domain.
+        storage pool
     system : str, default is Undefined, required
-        system is the name of the storage system as configured in ScaleIO.
+        system
     volumeName : str, default is Undefined, optional
-        volumeName is the name of a volume already created in the ScaleIO system
-        that is associated with this volume source.
+        volume name
     """
     fsType?: str = "xfs"
     gateway: str
@@ -7657,48 +5597,29 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ScaleIOSecretRef:
     r"""
-    secretRef references to the secret for ScaleIO user and other
-    sensitive information. If this is not provided, Login operation will fail.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 scale i o secret ref
 
     Attributes
     ----------
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     """
     name?: str = ""
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Secret:
     r"""
-    secret represents a secret that should populate this volume.
-    More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 secret
 
     Attributes
     ----------
     defaultMode : int, default is Undefined, optional
-        defaultMode is Optional: mode bits used to set permissions on created files by default.
-        Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
-        YAML accepts both octal and decimal values, JSON requires decimal values
-        for mode bits. Defaults to 0644.
-        Directories within the path are not affected by this setting.
-        This might be in conflict with other options that affect the file
-        mode, like fsGroup, and the result can be other mode bits set.
+        default mode
     items : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0SecretItemsItems0], default is Undefined, optional
-        items If unspecified, each key-value pair in the Data field of the referenced
-        Secret will be projected into the volume as a file whose name is the
-        key and content is the value. If specified, the listed keys will be
-        projected into the specified paths, and unlisted keys will not be
-        present. If a key is specified which is not present in the Secret,
-        the volume setup will error unless it is marked optional. Paths must be
-        relative and may not contain the '..' path or start with '..'.
+        items
     optional : bool, default is Undefined, optional
-        optional field specify whether the Secret or its keys must be defined
+        optional
     secretName : str, default is Undefined, optional
-        secretName is the name of the secret in the pod's namespace to use.
-        More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
+        secret name
     """
     defaultMode?: int
     items?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0SecretItemsItems0]
@@ -7707,24 +5628,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0SecretItemsItems0:
     r"""
-    Maps a string key to a path within a volume.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 secret items items0
 
     Attributes
     ----------
     key : str, default is Undefined, required
-        key is the key to project.
+        key
     mode : int, default is Undefined, optional
-        mode is Optional: mode bits used to set permissions on this file.
-        Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
-        YAML accepts both octal and decimal values, JSON requires decimal values for mode bits.
-        If not specified, the volume defaultMode will be used.
-        This might be in conflict with other options that affect the file
-        mode, like fsGroup, and the result can be other mode bits set.
+        mode
     path : str, default is Undefined, required
-        path is the relative path of the file to map the key to.
-        May not be an absolute path.
-        May not contain the path element '..'.
-        May not start with the string '..'.
+        path
     """
     key: str
 
@@ -7733,30 +5646,20 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0Storageos:
     r"""
-    storageOS represents a StorageOS volume attached and mounted on Kubernetes nodes.
-    Deprecated: StorageOS is deprecated and the in-tree storageos type is no longer supported.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 storageos
 
     Attributes
     ----------
     fsType : str, default is Undefined, optional
-        fsType is the filesystem type to mount.
-        Must be a filesystem type supported by the host operating system.
-        Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+        fs type
     readOnly : bool, default is Undefined, optional
-        readOnly defaults to false (read/write). ReadOnly here will force
-        the ReadOnly setting in VolumeMounts.
+        read only
     secretRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0StorageosSecretRef, default is Undefined, optional
         secret ref
     volumeName : str, default is Undefined, optional
-        volumeName is the human-readable name of the StorageOS volume.  Volume
-        names are only unique within a namespace.
+        volume name
     volumeNamespace : str, default is Undefined, optional
-        volumeNamespace specifies the scope of the volume within StorageOS.  If no
-        namespace is specified then the Pod's namespace will be used.  This allows the
-        Kubernetes name scoping to be mirrored within StorageOS for tighter integration.
-        Set VolumeName to any name to override the default behaviour.
-        Set to "default" if you are not using namespaces within StorageOS.
-        Namespaces that do not pre-exist within StorageOS will be created.
+        volume namespace
     """
     fsType?: str
     readOnly?: bool
@@ -7766,38 +5669,29 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0StorageosSecretRef:
     r"""
-    secretRef specifies the secret to use for obtaining the StorageOS API
-    credentials.  If not specified, default values will be attempted.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 storageos secret ref
 
     Attributes
     ----------
     name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+        name
     """
     name?: str = ""
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0VsphereVolume:
     r"""
-    vsphereVolume represents a vSphere volume attached and mounted on kubelets host machine.
-    Deprecated: VsphereVolume is deprecated. All operations for the in-tree vsphereVolume type
-    are redirected to the csi.vsphere.vmware.com CSI driver.
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 vsphere volume
 
     Attributes
     ----------
     fsType : str, default is Undefined, optional
-        fsType is filesystem type to mount.
-        Must be a filesystem type supported by the host operating system.
-        Ex. "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
+        fs type
     storagePolicyID : str, default is Undefined, optional
-        storagePolicyID is the storage Policy Based Management (SPBM) profile ID associated with the StoragePolicyName.
+        storage policy ID
     storagePolicyName : str, default is Undefined, optional
-        storagePolicyName is the storage Policy Based Management (SPBM) profile name.
+        storage policy name
     volumePath : str, default is Undefined, required
-        volumePath is the path that identifies vSphere volume vmdk
+        volume path
     """
     fsType?: str
     storagePolicyID?: str
@@ -8537,6 +6431,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpec:
         path
     port : GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecPort, default is Undefined, optional
         port
+    subdomain : str, default is Undefined, optional
+        subdomain
     tls : GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecTLS, default is Undefined, optional
         tls
     to : GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecTo, default is Undefined, optional
@@ -8548,6 +6444,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpec:
     host?: str
     path?: str
     port?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecPort
+    subdomain?: str
     tls?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecTLS
     to?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecTo
     wildcardPolicy?: str
@@ -8559,19 +6456,24 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecAlternateBackendsItems0:
 
     Attributes
     ----------
-    kind : str, default is Undefined, required
+    kind : str, default is "Service", required
         The kind of target that the route is referring to. Currently, only 'Service' is allowed
     name : str, default is Undefined, required
         name of the service/target that is being referred to. e.g. name of the service
-    weight : int, default is Undefined, required
+    weight : int, default is 100, optional
         weight as an integer between 0 and 256, default 100, that specifies the target's relative weight
         against other target reference objects. 0 suppresses requests to this backend.
     """
-    kind: str
+    kind: "Service" | "" = "Service"
 
     name: str
 
-    weight: int
+    weight?: int = 100
+
+    check:
+        len(name) >= 1
+        weight <= 256 if weight not in [None, Undefined]
+        weight >= 0 if weight not in [None, Undefined]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecPort:
     r"""
@@ -8595,31 +6497,63 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecTLS:
     caCertificate : str, default is Undefined, optional
         caCertificate provides the cert authority certificate contents
     certificate : str, default is Undefined, optional
-        certificate provides certificate contents
+        certificate provides certificate contents. This should be a single serving certificate, not a certificate
+        chain. Do not include a CA certificate.
     destinationCACertificate : str, default is Undefined, optional
         destinationCACertificate provides the contents of the ca certificate of the final destination.  When using reencrypt
         termination this file should be provided in order to have routers use it for health checks on the secure connection.
         If this field is not specified, the router may provide its own destination CA and perform hostname validation using
         the short service name (service.namespace.svc), which allows infrastructure generated certificates to automatically
         verify.
+    externalCertificate : GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecTLSExternalCertificate, default is Undefined, optional
+        external certificate
     insecureEdgeTerminationPolicy : str, default is Undefined, optional
         insecureEdgeTerminationPolicy indicates the desired behavior for insecure connections to a route. While
         each router may make its own decisions on which ports to expose, this is normally port 80.
 
-        * Allow - traffic is sent to the server on the insecure port (default)
-        * Disable - no traffic is allowed on the insecure port.
+        If a route does not specify insecureEdgeTerminationPolicy, then the default behavior is "None".
+
+        * Allow - traffic is sent to the server on the insecure port (edge/reencrypt terminations only).
+
+        * None - no traffic is allowed on the insecure port (default).
+
         * Redirect - clients are redirected to the secure port.
     key : str, default is Undefined, optional
         key provides key file contents
     termination : str, default is Undefined, required
         termination indicates termination type.
+
+        * edge - TLS termination is done by the router and http is used to communicate with the backend (default)
+        * passthrough - Traffic is sent straight to the destination without the router providing TLS termination
+        * reencrypt - TLS termination is done by the router and https is used to communicate with the backend
+
+        Note: passthrough termination is incompatible with httpHeader actions
     """
     caCertificate?: str
     certificate?: str
     destinationCACertificate?: str
-    insecureEdgeTerminationPolicy?: str
+    externalCertificate?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecTLSExternalCertificate
+    insecureEdgeTerminationPolicy?: "Allow" | "None" | "Redirect" | ""
     key?: str
-    termination: str
+    termination: "edge" | "reencrypt" | "passthrough"
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecTLSExternalCertificate:
+    r"""
+    externalCertificate provides certificate contents as a secret reference.
+    This should be a single serving certificate, not a certificate
+    chain. Do not include a CA certificate. The secret referenced should
+    be present in the same namespace as that of the Route.
+    Forbidden when `certificate` is set.
+    The router service account needs to be granted with read-only access to this secret,
+    please refer to openshift docs for additional details.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        name of the referent.
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+    """
+    name?: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecTo:
     r"""
@@ -8628,19 +6562,24 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecRouteSpecTo:
 
     Attributes
     ----------
-    kind : str, default is Undefined, required
+    kind : str, default is "Service", required
         The kind of target that the route is referring to. Currently, only 'Service' is allowed
     name : str, default is Undefined, required
         name of the service/target that is being referred to. e.g. name of the service
-    weight : int, default is Undefined, required
+    weight : int, default is 100, optional
         weight as an integer between 0 and 256, default 100, that specifies the target's relative weight
         against other target reference objects. 0 suppresses requests to this backend.
     """
-    kind: str
+    kind: "Service" | "" = "Service"
 
     name: str
 
-    weight: int
+    weight?: int = 100
+
+    check:
+        len(name) >= 1
+        weight <= 256 if weight not in [None, Undefined]
+        weight >= 0 if weight not in [None, Undefined]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecService:
     r"""
@@ -8935,13 +6874,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceSpec:
     sessionAffinityConfig : GrafanaIntegreatlyOrgV1beta1GrafanaSpecServiceSpecSessionAffinityConfig, default is Undefined, optional
         session affinity config
     trafficDistribution : str, default is Undefined, optional
-        TrafficDistribution offers a way to express preferences for how traffic is
-        distributed to Service endpoints. Implementations can use this field as a
-        hint, but are not required to guarantee strict adherence. If the field is
-        not set, the implementation will apply its default routing strategy. If set
-        to "PreferClose", implementations should prioritize endpoints that are
-        topologically close (e.g., same zone).
-        This is a beta field and requires enabling ServiceTrafficDistribution feature.
+        TrafficDistribution offers a way to express preferences for how traffic
+        is distributed to Service endpoints. Implementations can use this field
+        as a hint, but are not required to guarantee strict adherence. If the
+        field is not set, the implementation will apply its default routing
+        strategy. If set to "PreferClose", implementations should prioritize
+        endpoints that are in the same zone.
     $type : str, default is Undefined, optional
         type determines how the Service is exposed. Defaults to ClusterIP. Valid
         options are ExternalName, ClusterIP, NodePort, and LoadBalancer.
@@ -9074,6 +7012,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaStatus:
     ----------
     adminUrl : str, default is Undefined, optional
         admin Url
+    alertRuleGroups : [str], default is Undefined, optional
+        alert rule groups
+    conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaStatusConditionsItems0], default is Undefined, optional
+        conditions
+    contactPoints : [str], default is Undefined, optional
+        contact points
     dashboards : [str], default is Undefined, optional
         dashboards
     datasources : [str], default is Undefined, optional
@@ -9082,6 +7026,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaStatus:
         folders
     lastMessage : str, default is Undefined, optional
         last message
+    libraryPanels : [str], default is Undefined, optional
+        library panels
+    muteTimings : [str], default is Undefined, optional
+        mute timings
+    notificationTemplates : [str], default is Undefined, optional
+        notification templates
     stage : str, default is Undefined, optional
         stage
     stageStatus : str, default is Undefined, optional
@@ -9090,11 +7040,64 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaStatus:
         version
     """
     adminUrl?: str
+    alertRuleGroups?: [str]
+    conditions?: [GrafanaIntegreatlyOrgV1beta1GrafanaStatusConditionsItems0]
+    contactPoints?: [str]
     dashboards?: [str]
     datasources?: [str]
     folders?: [str]
     lastMessage?: str
+    libraryPanels?: [str]
+    muteTimings?: [str]
+    notificationTemplates?: [str]
     stage?: str
     stageStatus?: str
     version?: str
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaStatusConditionsItems0:
+    r"""
+    Condition contains details for one aspect of the current state of this API Resource.
+
+    Attributes
+    ----------
+    lastTransitionTime : str, default is Undefined, required
+        lastTransitionTime is the last time the condition transitioned from one status to another.
+        This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+    message : str, default is Undefined, required
+        message is a human readable message indicating details about the transition.
+        This may be an empty string.
+    observedGeneration : int, default is Undefined, optional
+        observedGeneration represents the .metadata.generation that the condition was set based upon.
+        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+        with respect to the current state of the instance.
+    reason : str, default is Undefined, required
+        reason contains a programmatic identifier indicating the reason for the condition's last transition.
+        Producers of specific condition types may define expected values and meanings for this field,
+        and whether the values are considered a guaranteed API.
+        The value should be a CamelCase string.
+        This field may not be empty.
+    status : str, default is Undefined, required
+        status of the condition, one of True, False, Unknown.
+    $type : str, default is Undefined, required
+        type of condition in CamelCase or in foo.example.com/CamelCase.
+    """
+    lastTransitionTime: str
+
+    message: str
+
+    observedGeneration?: int
+    reason: str
+
+    status: "True" | "False" | "Unknown"
+
+    $type: str
+
+    check:
+        len(message) <= 32768
+        observedGeneration >= 0 if observedGeneration not in [None, Undefined]
+        len(reason) <= 1024
+        len(reason) >= 1
+        _regex_match(str(reason), r"^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$")
+        len($type) <= 316
+        _regex_match(str($type), r"^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$")
 
