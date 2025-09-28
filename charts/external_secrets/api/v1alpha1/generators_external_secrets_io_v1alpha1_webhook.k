@@ -39,6 +39,8 @@ schema GeneratorsExternalSecretsIoV1alpha1WebhookSpec:
 
     Attributes
     ----------
+    auth : GeneratorsExternalSecretsIoV1alpha1WebhookSpecAuth, default is Undefined, optional
+        auth
     body : str, default is Undefined, optional
         Body
     caBundle : str, default is Undefined, optional
@@ -62,6 +64,7 @@ schema GeneratorsExternalSecretsIoV1alpha1WebhookSpec:
     url : str, default is Undefined, required
         Webhook url to call
     """
+    auth?: GeneratorsExternalSecretsIoV1alpha1WebhookSpecAuth
     body?: str
     caBundle?: str
     caProvider?: GeneratorsExternalSecretsIoV1alpha1WebhookSpecCaProvider
@@ -72,6 +75,94 @@ schema GeneratorsExternalSecretsIoV1alpha1WebhookSpec:
     secrets?: [GeneratorsExternalSecretsIoV1alpha1WebhookSpecSecretsItems0]
     timeout?: str
     url: str
+
+schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecAuth:
+    r"""
+    Auth specifies a authorization protocol. Only one protocol may be set.
+
+    Attributes
+    ----------
+    ntlm : GeneratorsExternalSecretsIoV1alpha1WebhookSpecAuthNtlm, default is Undefined, optional
+        ntlm
+    """
+    ntlm?: GeneratorsExternalSecretsIoV1alpha1WebhookSpecAuthNtlm
+
+schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecAuthNtlm:
+    r"""
+    NTLMProtocol configures the store to use NTLM for auth
+
+    Attributes
+    ----------
+    passwordSecret : GeneratorsExternalSecretsIoV1alpha1WebhookSpecAuthNtlmPasswordSecret, default is Undefined, required
+        password secret
+    usernameSecret : GeneratorsExternalSecretsIoV1alpha1WebhookSpecAuthNtlmUsernameSecret, default is Undefined, required
+        username secret
+    """
+    passwordSecret: GeneratorsExternalSecretsIoV1alpha1WebhookSpecAuthNtlmPasswordSecret
+
+    usernameSecret: GeneratorsExternalSecretsIoV1alpha1WebhookSpecAuthNtlmUsernameSecret
+
+schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecAuthNtlmPasswordSecret:
+    r"""
+    A reference to a specific 'key' within a Secret resource.
+    In some instances, `key` is a required field.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecAuthNtlmUsernameSecret:
+    r"""
+    A reference to a specific 'key' within a Secret resource.
+    In some instances, `key` is a required field.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
 schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecCaProvider:
     r"""

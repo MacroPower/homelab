@@ -14,34 +14,34 @@ schema ExternalSecret:
 
     Attributes
     ----------
-    apiVersion : str, default is "external-secrets.io/v1beta1", required
+    apiVersion : str, default is "external-secrets.io/v1", required
         APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
     kind : str, default is "ExternalSecret", required
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, optional
         metadata
-    spec : ExternalSecretsIoV1beta1ExternalSecretSpec, default is Undefined, optional
+    spec : ExternalSecretsIoV1ExternalSecretSpec, default is Undefined, optional
         spec
-    status : ExternalSecretsIoV1beta1ExternalSecretStatus, default is Undefined, optional
+    status : ExternalSecretsIoV1ExternalSecretStatus, default is Undefined, optional
         status
     """
-    apiVersion: "external-secrets.io/v1beta1" = "external-secrets.io/v1beta1"
+    apiVersion: "external-secrets.io/v1" = "external-secrets.io/v1"
 
     kind: "ExternalSecret" = "ExternalSecret"
 
     metadata?: v1.ObjectMeta
-    spec?: ExternalSecretsIoV1beta1ExternalSecretSpec
-    status?: ExternalSecretsIoV1beta1ExternalSecretStatus
+    spec?: ExternalSecretsIoV1ExternalSecretSpec
+    status?: ExternalSecretsIoV1ExternalSecretStatus
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpec:
+schema ExternalSecretsIoV1ExternalSecretSpec:
     r"""
     ExternalSecretSpec defines the desired state of ExternalSecret.
 
     Attributes
     ----------
-    data : [ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0], default is Undefined, optional
+    data : [ExternalSecretsIoV1ExternalSecretSpecDataItems0], default is Undefined, optional
         Data defines the connection between the Kubernetes Secret keys and the Provider data
-    dataFrom : [ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0], default is Undefined, optional
+    dataFrom : [ExternalSecretsIoV1ExternalSecretSpecDataFromItems0], default is Undefined, optional
         DataFrom is used to fetch all properties from a specific Provider data
         If multiple entries are specified, the Secret keys are merged in the specified order
     refreshInterval : str, default is "1h", optional
@@ -56,40 +56,40 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpec:
         - Periodic: Synchronizes the Secret from the external source at regular intervals specified by refreshInterval.
           No periodic updates occur if refreshInterval is 0.
         - OnChange: Only synchronizes the Secret when the ExternalSecret's metadata or specification changes
-    secretStoreRef : ExternalSecretsIoV1beta1ExternalSecretSpecSecretStoreRef, default is Undefined, optional
+    secretStoreRef : ExternalSecretsIoV1ExternalSecretSpecSecretStoreRef, default is Undefined, optional
         secret store ref
-    target : ExternalSecretsIoV1beta1ExternalSecretSpecTarget, default is Undefined, optional
+    target : ExternalSecretsIoV1ExternalSecretSpecTarget, default is Undefined, optional
         target
     """
-    data?: [ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0]
-    dataFrom?: [ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0]
+    data?: [ExternalSecretsIoV1ExternalSecretSpecDataItems0]
+    dataFrom?: [ExternalSecretsIoV1ExternalSecretSpecDataFromItems0]
     refreshInterval?: str = "1h"
     refreshPolicy?: "CreatedOnce" | "Periodic" | "OnChange"
-    secretStoreRef?: ExternalSecretsIoV1beta1ExternalSecretSpecSecretStoreRef
-    target?: ExternalSecretsIoV1beta1ExternalSecretSpecTarget
+    secretStoreRef?: ExternalSecretsIoV1ExternalSecretSpecSecretStoreRef
+    target?: ExternalSecretsIoV1ExternalSecretSpecTarget
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0:
+schema ExternalSecretsIoV1ExternalSecretSpecDataFromItems0:
     r"""
-    external secrets io v1beta1 external secret spec data from items0
+    external secrets io v1 external secret spec data from items0
 
     Attributes
     ----------
-    extract : ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0Extract, default is Undefined, optional
+    extract : ExternalSecretsIoV1ExternalSecretSpecDataFromItems0Extract, default is Undefined, optional
         extract
-    find : ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0Find, default is Undefined, optional
+    find : ExternalSecretsIoV1ExternalSecretSpecDataFromItems0Find, default is Undefined, optional
         find
-    rewrite : [ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0], default is Undefined, optional
+    rewrite : [ExternalSecretsIoV1ExternalSecretSpecDataFromItems0RewriteItems0], default is Undefined, optional
         Used to rewrite secret Keys after getting them from the secret Provider
         Multiple Rewrite operations can be provided. They are applied in a layered order (first to last)
-    sourceRef : ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRef, default is Undefined, optional
+    sourceRef : ExternalSecretsIoV1ExternalSecretSpecDataFromItems0SourceRef, default is Undefined, optional
         source ref
     """
-    extract?: ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0Extract
-    find?: ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0Find
-    rewrite?: [ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0]
-    sourceRef?: ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRef
+    extract?: ExternalSecretsIoV1ExternalSecretSpecDataFromItems0Extract
+    find?: ExternalSecretsIoV1ExternalSecretSpecDataFromItems0Find
+    rewrite?: [ExternalSecretsIoV1ExternalSecretSpecDataFromItems0RewriteItems0]
+    sourceRef?: ExternalSecretsIoV1ExternalSecretSpecDataFromItems0SourceRef
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0Extract:
+schema ExternalSecretsIoV1ExternalSecretSpecDataFromItems0Extract:
     r"""
     Used to extract multiple key/value pairs from one secret
     Note: Extract does not support sourceRef.Generator or sourceRef.GeneratorRef.
@@ -117,7 +117,7 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0Extract:
     property?: str
     version?: str
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0Find:
+schema ExternalSecretsIoV1ExternalSecretSpecDataFromItems0Find:
     r"""
     Used to find secrets based on tags or regular expressions
     Note: Find does not support sourceRef.Generator or sourceRef.GeneratorRef.
@@ -128,7 +128,7 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0Find:
         Used to define a conversion Strategy
     decodingStrategy : str, default is "None", optional
         Used to define a decoding Strategy
-    name : ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0FindName, default is Undefined, optional
+    name : ExternalSecretsIoV1ExternalSecretSpecDataFromItems0FindName, default is Undefined, optional
         name
     path : str, default is Undefined, optional
         A root path to start the find operations.
@@ -137,11 +137,11 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0Find:
     """
     conversionStrategy?: "Default" | "Unicode" = "Default"
     decodingStrategy?: "Auto" | "Base64" | "Base64URL" | "None" = "None"
-    name?: ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0FindName
+    name?: ExternalSecretsIoV1ExternalSecretSpecDataFromItems0FindName
     path?: str
     tags?: {str:str}
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0FindName:
+schema ExternalSecretsIoV1ExternalSecretSpecDataFromItems0FindName:
     r"""
     Finds secrets based on the name.
 
@@ -152,21 +152,46 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0FindName:
     """
     regexp?: str
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0:
+schema ExternalSecretsIoV1ExternalSecretSpecDataFromItems0RewriteItems0:
     r"""
-    external secrets io v1beta1 external secret spec data from items0 rewrite items0
+    external secrets io v1 external secret spec data from items0 rewrite items0
 
     Attributes
     ----------
-    regexp : ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0Regexp, default is Undefined, optional
+    merge : ExternalSecretsIoV1ExternalSecretSpecDataFromItems0RewriteItems0Merge, default is Undefined, optional
+        merge
+    regexp : ExternalSecretsIoV1ExternalSecretSpecDataFromItems0RewriteItems0Regexp, default is Undefined, optional
         regexp
-    transform : ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0Transform, default is Undefined, optional
+    transform : ExternalSecretsIoV1ExternalSecretSpecDataFromItems0RewriteItems0Transform, default is Undefined, optional
         transform
     """
-    regexp?: ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0Regexp
-    transform?: ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0Transform
+    merge?: ExternalSecretsIoV1ExternalSecretSpecDataFromItems0RewriteItems0Merge
+    regexp?: ExternalSecretsIoV1ExternalSecretSpecDataFromItems0RewriteItems0Regexp
+    transform?: ExternalSecretsIoV1ExternalSecretSpecDataFromItems0RewriteItems0Transform
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0Regexp:
+schema ExternalSecretsIoV1ExternalSecretSpecDataFromItems0RewriteItems0Merge:
+    r"""
+    Used to merge key/values in one single Secret
+    The resulting key will contain all values from the specified secrets
+
+    Attributes
+    ----------
+    conflictPolicy : str, default is "Error", optional
+        Used to define the policy to use in conflict resolution.
+    into : str, default is Undefined, optional
+        Used to define the target key of the merge operation.
+        Required if strategy is JSON. Ignored otherwise.
+    priority : [str], default is Undefined, optional
+        Used to define key priority in conflict resolution.
+    strategy : str, default is "Extract", optional
+        Used to define the strategy to use in the merge operation.
+    """
+    conflictPolicy?: str = "Error"
+    into?: str = ""
+    priority?: [str]
+    strategy?: str = "Extract"
+
+schema ExternalSecretsIoV1ExternalSecretSpecDataFromItems0RewriteItems0Regexp:
     r"""
     Used to rewrite with regular expressions.
     The resulting key will be the output of a regexp.ReplaceAll operation.
@@ -182,7 +207,7 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0Rege
 
     target: str
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0Transform:
+schema ExternalSecretsIoV1ExternalSecretSpecDataFromItems0RewriteItems0Transform:
     r"""
     Used to apply string transformation on the secrets.
     The resulting key will be the output of the template applied by the operation.
@@ -195,7 +220,7 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0RewriteItems0Tran
     """
     template: str
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRef:
+schema ExternalSecretsIoV1ExternalSecretSpecDataFromItems0SourceRef:
     r"""
     SourceRef points to a store or generator
     which contains secret values ready to use.
@@ -206,15 +231,15 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRef:
 
     Attributes
     ----------
-    generatorRef : ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRefGeneratorRef, default is Undefined, optional
+    generatorRef : ExternalSecretsIoV1ExternalSecretSpecDataFromItems0SourceRefGeneratorRef, default is Undefined, optional
         generator ref
-    storeRef : ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRefStoreRef, default is Undefined, optional
+    storeRef : ExternalSecretsIoV1ExternalSecretSpecDataFromItems0SourceRefStoreRef, default is Undefined, optional
         store ref
     """
-    generatorRef?: ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRefGeneratorRef
-    storeRef?: ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRefStoreRef
+    generatorRef?: ExternalSecretsIoV1ExternalSecretSpecDataFromItems0SourceRefGeneratorRef
+    storeRef?: ExternalSecretsIoV1ExternalSecretSpecDataFromItems0SourceRefStoreRef
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRefGeneratorRef:
+schema ExternalSecretsIoV1ExternalSecretSpecDataFromItems0SourceRefGeneratorRef:
     r"""
     GeneratorRef points to a generator custom resource.
 
@@ -228,7 +253,7 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRefGenerato
         Specify the name of the generator resource
     """
     apiVersion?: str = "generators.external-secrets.io/v1alpha1"
-    kind: "ACRAccessToken" | "ClusterGenerator" | "ECRAuthorizationToken" | "Fake" | "GCRAccessToken" | "GithubAccessToken" | "QuayAccessToken" | "Password" | "SSHKey" | "STSSessionToken" | "UUID" | "VaultDynamicSecret" | "Webhook" | "Grafana"
+    kind: "ACRAccessToken" | "ClusterGenerator" | "CloudsmithAccessToken" | "ECRAuthorizationToken" | "Fake" | "GCRAccessToken" | "GithubAccessToken" | "QuayAccessToken" | "Password" | "SSHKey" | "STSSessionToken" | "UUID" | "VaultDynamicSecret" | "Webhook" | "Grafana" | "MFA"
 
     name: str
 
@@ -237,7 +262,7 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRefGenerato
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRefStoreRef:
+schema ExternalSecretsIoV1ExternalSecretSpecDataFromItems0SourceRefStoreRef:
     r"""
     SecretStoreRef defines which SecretStore to fetch the ExternalSecret data.
 
@@ -257,31 +282,31 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataFromItems0SourceRefStoreRef
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0:
+schema ExternalSecretsIoV1ExternalSecretSpecDataItems0:
     r"""
     ExternalSecretData defines the connection between the Kubernetes Secret key (spec.data.<key>) and the Provider data.
 
     Attributes
     ----------
-    remoteRef : ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0RemoteRef, default is Undefined, required
+    remoteRef : ExternalSecretsIoV1ExternalSecretSpecDataItems0RemoteRef, default is Undefined, required
         remote ref
     secretKey : str, default is Undefined, required
         The key in the Kubernetes Secret to store the value.
-    sourceRef : ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRef, default is Undefined, optional
+    sourceRef : ExternalSecretsIoV1ExternalSecretSpecDataItems0SourceRef, default is Undefined, optional
         source ref
     """
-    remoteRef: ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0RemoteRef
+    remoteRef: ExternalSecretsIoV1ExternalSecretSpecDataItems0RemoteRef
 
     secretKey: str
 
-    sourceRef?: ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRef
+    sourceRef?: ExternalSecretsIoV1ExternalSecretSpecDataItems0SourceRef
 
     check:
         len(secretKey) <= 253
         len(secretKey) >= 1
         _regex_match(str(secretKey), r"^[-._a-zA-Z0-9]+$")
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0RemoteRef:
+schema ExternalSecretsIoV1ExternalSecretSpecDataItems0RemoteRef:
     r"""
     RemoteRef points to the remote secret and defines
     which secret (version/property/..) to fetch.
@@ -309,22 +334,22 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0RemoteRef:
     property?: str
     version?: str
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRef:
+schema ExternalSecretsIoV1ExternalSecretSpecDataItems0SourceRef:
     r"""
     SourceRef allows you to override the source
     from which the value will be pulled.
 
     Attributes
     ----------
-    generatorRef : ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefGeneratorRef, default is Undefined, optional
+    generatorRef : ExternalSecretsIoV1ExternalSecretSpecDataItems0SourceRefGeneratorRef, default is Undefined, optional
         generator ref
-    storeRef : ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefStoreRef, default is Undefined, optional
+    storeRef : ExternalSecretsIoV1ExternalSecretSpecDataItems0SourceRefStoreRef, default is Undefined, optional
         store ref
     """
-    generatorRef?: ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefGeneratorRef
-    storeRef?: ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefStoreRef
+    generatorRef?: ExternalSecretsIoV1ExternalSecretSpecDataItems0SourceRefGeneratorRef
+    storeRef?: ExternalSecretsIoV1ExternalSecretSpecDataItems0SourceRefStoreRef
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefGeneratorRef:
+schema ExternalSecretsIoV1ExternalSecretSpecDataItems0SourceRefGeneratorRef:
     r"""
     GeneratorRef points to a generator custom resource.
 
@@ -341,7 +366,7 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefGeneratorRef
         Specify the name of the generator resource
     """
     apiVersion?: str = "generators.external-secrets.io/v1alpha1"
-    kind: "ACRAccessToken" | "ClusterGenerator" | "ECRAuthorizationToken" | "Fake" | "GCRAccessToken" | "GithubAccessToken" | "QuayAccessToken" | "Password" | "SSHKey" | "STSSessionToken" | "UUID" | "VaultDynamicSecret" | "Webhook" | "Grafana"
+    kind: "ACRAccessToken" | "ClusterGenerator" | "CloudsmithAccessToken" | "ECRAuthorizationToken" | "Fake" | "GCRAccessToken" | "GithubAccessToken" | "QuayAccessToken" | "Password" | "SSHKey" | "STSSessionToken" | "UUID" | "VaultDynamicSecret" | "Webhook" | "Grafana" | "MFA"
 
     name: str
 
@@ -350,7 +375,7 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefGeneratorRef
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefStoreRef:
+schema ExternalSecretsIoV1ExternalSecretSpecDataItems0SourceRefStoreRef:
     r"""
     SecretStoreRef defines which SecretStore to fetch the ExternalSecret data.
 
@@ -370,7 +395,7 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefStoreRef:
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecSecretStoreRef:
+schema ExternalSecretsIoV1ExternalSecretSpecSecretStoreRef:
     r"""
     SecretStoreRef defines which SecretStore to fetch the ExternalSecret data.
 
@@ -390,7 +415,7 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecSecretStoreRef:
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecTarget:
+schema ExternalSecretsIoV1ExternalSecretSpecTarget:
     r"""
     ExternalSecretTarget defines the Kubernetes Secret to be created
     There can be only one target per ExternalSecret.
@@ -408,21 +433,21 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecTarget:
     name : str, default is Undefined, optional
         The name of the Secret resource to be managed.
         Defaults to the .metadata.name of the ExternalSecret resource
-    template : ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplate, default is Undefined, optional
+    template : ExternalSecretsIoV1ExternalSecretSpecTargetTemplate, default is Undefined, optional
         template
     """
     creationPolicy?: "Owner" | "Orphan" | "Merge" | "None" = "Owner"
     deletionPolicy?: "Delete" | "Merge" | "Retain" = "Retain"
     immutable?: bool
     name?: str
-    template?: ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplate
+    template?: ExternalSecretsIoV1ExternalSecretSpecTargetTemplate
 
     check:
         len(name) <= 253 if name
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplate:
+schema ExternalSecretsIoV1ExternalSecretSpecTargetTemplate:
     r"""
     Template defines a blueprint for the created Secret resource.
 
@@ -436,9 +461,9 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplate:
         template specified in .data and .templateFrom[].
     mergePolicy : str, default is "Replace", optional
         merge policy
-    metadata : ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateMetadata, default is Undefined, optional
+    metadata : ExternalSecretsIoV1ExternalSecretSpecTargetTemplateMetadata, default is Undefined, optional
         metadata
-    templateFrom : [ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0], default is Undefined, optional
+    templateFrom : [ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0], default is Undefined, optional
         template from
     $type : str, default is Undefined, optional
         type
@@ -446,11 +471,11 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplate:
     data?: {str:str}
     engineVersion?: "v2" = "v2"
     mergePolicy?: "Replace" | "Merge" = "Replace"
-    metadata?: ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateMetadata
-    templateFrom?: [ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0]
+    metadata?: ExternalSecretsIoV1ExternalSecretSpecTargetTemplateMetadata
+    templateFrom?: [ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0]
     $type?: str
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateMetadata:
+schema ExternalSecretsIoV1ExternalSecretSpecTargetTemplateMetadata:
     r"""
     ExternalSecretTemplateMetadata defines metadata fields for the Secret blueprint.
 
@@ -458,44 +483,47 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateMetadata:
     ----------
     annotations : {str:str}, default is Undefined, optional
         annotations
+    finalizers : [str], default is Undefined, optional
+        finalizers
     labels : {str:str}, default is Undefined, optional
         labels
     """
     annotations?: {str:str}
+    finalizers?: [str]
     labels?: {str:str}
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0:
+schema ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0:
     r"""
-    external secrets io v1beta1 external secret spec target template template from items0
+    external secrets io v1 external secret spec target template template from items0
 
     Attributes
     ----------
-    configMap : ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMap, default is Undefined, optional
+    configMap : ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMap, default is Undefined, optional
         config map
     literal : str, default is Undefined, optional
         literal
-    secret : ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0Secret, default is Undefined, optional
+    secret : ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0Secret, default is Undefined, optional
         secret
     target : str, default is "Data", optional
         target
     """
-    configMap?: ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMap
+    configMap?: ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMap
     literal?: str
-    secret?: ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0Secret
+    secret?: ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0Secret
     target?: "Data" | "Annotations" | "Labels" = "Data"
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMap:
+schema ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMap:
     r"""
-    external secrets io v1beta1 external secret spec target template template from items0 config map
+    external secrets io v1 external secret spec target template template from items0 config map
 
     Attributes
     ----------
-    items : [ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMapItemsItems0], default is Undefined, required
+    items : [ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMapItemsItems0], default is Undefined, required
         A list of keys in the ConfigMap/Secret to use as templates for Secret data
     name : str, default is Undefined, required
         The name of the ConfigMap/Secret resource
     """
-    items: [ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMapItemsItems0]
+    items: [ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMapItemsItems0]
 
     name: str
 
@@ -504,9 +532,9 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMapItemsItems0:
+schema ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMapItemsItems0:
     r"""
-    external secrets io v1beta1 external secret spec target template template from items0 config map items items0
+    external secrets io v1 external secret spec target template template from items0 config map items items0
 
     Attributes
     ----------
@@ -524,18 +552,18 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems
         len(key) >= 1
         _regex_match(str(key), r"^[-._a-zA-Z0-9]+$")
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0Secret:
+schema ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0Secret:
     r"""
-    external secrets io v1beta1 external secret spec target template template from items0 secret
+    external secrets io v1 external secret spec target template template from items0 secret
 
     Attributes
     ----------
-    items : [ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0SecretItemsItems0], default is Undefined, required
+    items : [ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0SecretItemsItems0], default is Undefined, required
         A list of keys in the ConfigMap/Secret to use as templates for Secret data
     name : str, default is Undefined, required
         The name of the ConfigMap/Secret resource
     """
-    items: [ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0SecretItemsItems0]
+    items: [ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0SecretItemsItems0]
 
     name: str
 
@@ -544,9 +572,9 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems0SecretItemsItems0:
+schema ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0SecretItemsItems0:
     r"""
-    external secrets io v1beta1 external secret spec target template template from items0 secret items items0
+    external secrets io v1 external secret spec target template template from items0 secret items items0
 
     Attributes
     ----------
@@ -564,15 +592,15 @@ schema ExternalSecretsIoV1beta1ExternalSecretSpecTargetTemplateTemplateFromItems
         len(key) >= 1
         _regex_match(str(key), r"^[-._a-zA-Z0-9]+$")
 
-schema ExternalSecretsIoV1beta1ExternalSecretStatus:
+schema ExternalSecretsIoV1ExternalSecretStatus:
     r"""
-    external secrets io v1beta1 external secret status
+    external secrets io v1 external secret status
 
     Attributes
     ----------
-    binding : ExternalSecretsIoV1beta1ExternalSecretStatusBinding, default is Undefined, optional
+    binding : ExternalSecretsIoV1ExternalSecretStatusBinding, default is Undefined, optional
         binding
-    conditions : [ExternalSecretsIoV1beta1ExternalSecretStatusConditionsItems0], default is Undefined, optional
+    conditions : [ExternalSecretsIoV1ExternalSecretStatusConditionsItems0], default is Undefined, optional
         conditions
     refreshTime : str, default is Undefined, optional
         refreshTime is the time and date the external secret was fetched and
@@ -580,12 +608,12 @@ schema ExternalSecretsIoV1beta1ExternalSecretStatus:
     syncedResourceVersion : str, default is Undefined, optional
         SyncedResourceVersion keeps track of the last synced version
     """
-    binding?: ExternalSecretsIoV1beta1ExternalSecretStatusBinding
-    conditions?: [ExternalSecretsIoV1beta1ExternalSecretStatusConditionsItems0]
+    binding?: ExternalSecretsIoV1ExternalSecretStatusBinding
+    conditions?: [ExternalSecretsIoV1ExternalSecretStatusConditionsItems0]
     refreshTime?: str
     syncedResourceVersion?: str
 
-schema ExternalSecretsIoV1beta1ExternalSecretStatusBinding:
+schema ExternalSecretsIoV1ExternalSecretStatusBinding:
     r"""
     Binding represents a servicebinding.io Provisioned Service reference to the secret
 
@@ -600,9 +628,9 @@ schema ExternalSecretsIoV1beta1ExternalSecretStatusBinding:
     """
     name?: str = ""
 
-schema ExternalSecretsIoV1beta1ExternalSecretStatusConditionsItems0:
+schema ExternalSecretsIoV1ExternalSecretStatusConditionsItems0:
     r"""
-    external secrets io v1beta1 external secret status conditions items0
+    external secrets io v1 external secret status conditions items0
 
     Attributes
     ----------

@@ -1,4 +1,4 @@
-import charts.external_secrets.api.v1beta1 as externalsecretsv1beta1
+import charts.external_secrets.api.v1 as externalsecretsv1
 import models.frontend.common
 
 schema ExternalSecret(common.Metadata):
@@ -7,7 +7,7 @@ schema ExternalSecret(common.Metadata):
 
     Attributes
     ----------
-    secretStoreRef: ExternalSecretsIoV1beta1ExternalSecretSpecSecretStoreRef, default is Undefined, optional
+    secretStoreRef: ExternalSecretsIoV1ExternalSecretSpecSecretStoreRef, default is Undefined, optional
         secret store ref
     refreshInterval: str, default is "1h", optional
         RefreshInterval is the amount of time before the values are read again from the SecretStore provider
@@ -15,16 +15,16 @@ schema ExternalSecret(common.Metadata):
         May be set to zero to fetch and create it once. Defaults to 1h.
     data: {str:ExternalSecretData}, default is Undefined, optional
         Data defines the connection between the Kubernetes Secret keys and the Provider data
-    target: ExternalSecretsIoV1beta1ExternalSecretSpecTarget, default is Undefined, optional
+    target: ExternalSecretsIoV1ExternalSecretSpecTarget, default is Undefined, optional
         target
     getSecretKeyRef: (str) -> {str:}
         Returns the `secretKeyRef` for the given `data` key.
         If the `data` key does not exist, it returns an error.
     """
-    secretStoreRef?: externalsecretsv1beta1.ExternalSecretsIoV1beta1ExternalSecretSpecSecretStoreRef
+    secretStoreRef?: externalsecretsv1.ExternalSecretsIoV1ExternalSecretSpecSecretStoreRef
     refreshInterval?: str = "1h"
     data?: {str:ExternalSecretData}
-    target?: externalsecretsv1beta1.ExternalSecretsIoV1beta1ExternalSecretSpecTarget
+    target?: externalsecretsv1.ExternalSecretsIoV1ExternalSecretSpecTarget
 
     getSecretKeyRef: (str) -> {str:} = lambda dataKey: str -> {str:} {
         assert data[dataKey], "referenced data does not exist"
@@ -48,30 +48,30 @@ schema ExternalSecretData:
     ----------
     secretKey: str, default is Undefined, required
         SecretKey defines the key in which the controller stores the value. This is the key in the Kind=Secret
-    remoteRef: ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0RemoteRef, default is Undefined, required
+    remoteRef: ExternalSecretsIoV1ExternalSecretSpecDataItems0RemoteRef, default is Undefined, required
         remote ref
-    sourceRef: ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRef, default is Undefined, optional
+    sourceRef: ExternalSecretsIoV1ExternalSecretSpecDataItems0SourceRef, default is Undefined, optional
         source ref
     """
     secretKey?: str
-    remoteRef?: externalsecretsv1beta1.ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0RemoteRef
-    sourceRef?: ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRef
+    remoteRef?: externalsecretsv1.ExternalSecretsIoV1ExternalSecretSpecDataItems0RemoteRef
+    sourceRef?: ExternalSecretsIoV1ExternalSecretSpecDataItems0SourceRef
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRef:
+schema ExternalSecretsIoV1ExternalSecretSpecDataItems0SourceRef:
     """
     SourceRef allows you to override the source
     from which the value will be pulled.
 
     Attributes
     ----------
-    generatorRef : ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefGeneratorRef, default is Undefined, optional
+    generatorRef : ExternalSecretsIoV1ExternalSecretSpecDataItems0SourceRefGeneratorRef, default is Undefined, optional
         generator ref
-    storeRef : ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefStoreRef, default is Undefined, optional
+    storeRef : ExternalSecretsIoV1ExternalSecretSpecDataItems0SourceRefStoreRef, default is Undefined, optional
         store ref
     """
-    generatorRef?: ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefGeneratorRef
+    generatorRef?: ExternalSecretsIoV1ExternalSecretSpecDataItems0SourceRefGeneratorRef
 
-schema ExternalSecretsIoV1beta1ExternalSecretSpecDataItems0SourceRefGeneratorRef:
+schema ExternalSecretsIoV1ExternalSecretSpecDataItems0SourceRefGeneratorRef:
     """
     GeneratorRef points to a generator custom resource.
 

@@ -1,223 +1,401 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
   "properties": {
     "affinity": {
+      "additionalProperties": true,
       "required": [],
+      "title": "affinity",
       "type": "object"
     },
-    "bitwarden-sdk-server": {
+    "autoscaling": {
+      "additionalProperties": true,
       "properties": {
         "enabled": {
+          "default": false,
           "required": [],
+          "title": "enabled",
           "type": "boolean"
+        },
+        "maxReplicas": {
+          "default": 100,
+          "required": [],
+          "title": "maxReplicas",
+          "type": "integer"
+        },
+        "minReplicas": {
+          "default": 1,
+          "required": [],
+          "title": "minReplicas",
+          "type": "integer"
+        },
+        "targetCPUUtilizationPercentage": {
+          "default": 80,
+          "required": [],
+          "title": "targetCPUUtilizationPercentage",
+          "type": "integer"
         }
       },
       "required": [],
+      "title": "autoscaling",
+      "type": "object"
+    },
+    "bitwarden-sdk-server": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "namespaceOverride": {
+          "default": "",
+          "required": [],
+          "title": "namespaceOverride",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "bitwarden-sdk-server",
       "type": "object"
     },
     "certController": {
+      "additionalProperties": true,
       "properties": {
         "affinity": {
+          "additionalProperties": true,
           "required": [],
+          "title": "affinity",
           "type": "object"
         },
         "create": {
+          "default": true,
+          "description": "Specifies whether a certificate controller deployment be created.",
           "required": [],
+          "title": "create",
           "type": "boolean"
         },
         "deploymentAnnotations": {
+          "additionalProperties": true,
+          "description": "Annotations to add to Deployment",
           "required": [],
+          "title": "deploymentAnnotations",
           "type": "object"
         },
         "extraArgs": {
+          "additionalProperties": true,
+          "description": "# -- Map of extra arguments to pass to container.",
           "required": [],
+          "title": "extraArgs",
           "type": "object"
         },
         "extraEnv": {
+          "items": {
+            "required": []
+          },
           "required": [],
+          "title": "extraEnv",
+          "type": "array"
+        },
+        "extraInitContainers": {
+          "description": "# -- Extra init containers to add to the pod.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraInitContainers",
           "type": "array"
         },
         "extraVolumeMounts": {
+          "description": "# -- Extra volumes to mount to the container.",
+          "items": {
+            "required": []
+          },
           "required": [],
+          "title": "extraVolumeMounts",
           "type": "array"
         },
         "extraVolumes": {
+          "description": "# -- Extra volumes to pass to pod.",
+          "items": {
+            "required": []
+          },
           "required": [],
+          "title": "extraVolumes",
           "type": "array"
         },
         "fullnameOverride": {
+          "default": "",
           "required": [],
+          "title": "fullnameOverride",
           "type": "string"
         },
         "hostNetwork": {
+          "default": false,
+          "description": "Run the certController on the host network",
           "required": [],
+          "title": "hostNetwork",
           "type": "boolean"
         },
         "image": {
+          "additionalProperties": true,
           "properties": {
             "flavour": {
+              "default": "",
               "required": [],
+              "title": "flavour",
               "type": "string"
             },
             "pullPolicy": {
+              "default": "IfNotPresent",
               "required": [],
+              "title": "pullPolicy",
               "type": "string"
             },
             "repository": {
+              "default": "oci.external-secrets.io/external-secrets/external-secrets",
               "required": [],
+              "title": "repository",
               "type": "string"
             },
             "tag": {
+              "default": "",
               "required": [],
+              "title": "tag",
               "type": "string"
             }
           },
           "required": [],
+          "title": "image",
           "type": "object"
         },
         "imagePullSecrets": {
+          "items": {
+            "required": []
+          },
           "required": [],
+          "title": "imagePullSecrets",
           "type": "array"
         },
         "log": {
+          "additionalProperties": true,
+          "description": "Specifies Log Params to the Certificate Controller",
           "properties": {
             "level": {
+              "default": "info",
               "required": [],
+              "title": "level",
               "type": "string"
             },
             "timeEncoding": {
+              "default": "epoch",
               "required": [],
+              "title": "timeEncoding",
               "type": "string"
             }
           },
           "required": [],
+          "title": "log",
           "type": "object"
         },
         "metrics": {
+          "additionalProperties": true,
           "properties": {
             "listen": {
+              "additionalProperties": true,
               "properties": {
                 "port": {
+                  "default": 8080,
                   "required": [],
+                  "title": "port",
                   "type": "integer"
                 }
               },
               "required": [],
+              "title": "listen",
               "type": "object"
             },
             "service": {
+              "additionalProperties": true,
               "properties": {
                 "annotations": {
+                  "additionalProperties": true,
+                  "description": "Additional service annotations",
                   "required": [],
+                  "title": "annotations",
                   "type": "object"
                 },
                 "enabled": {
+                  "default": false,
+                  "description": "Enable if you use another monitoring tool than Prometheus to scrape the metrics",
                   "required": [],
+                  "title": "enabled",
                   "type": "boolean"
                 },
                 "port": {
+                  "default": 8080,
+                  "description": "Metrics service port to scrape",
                   "required": [],
+                  "title": "port",
                   "type": "integer"
                 }
               },
               "required": [],
+              "title": "service",
               "type": "object"
             }
           },
           "required": [],
+          "title": "metrics",
           "type": "object"
         },
         "nameOverride": {
+          "default": "",
           "required": [],
+          "title": "nameOverride",
           "type": "string"
         },
         "nodeSelector": {
+          "additionalProperties": true,
           "required": [],
+          "title": "nodeSelector",
           "type": "object"
         },
         "podAnnotations": {
+          "additionalProperties": true,
+          "description": "Annotations to add to Pod",
           "required": [],
+          "title": "podAnnotations",
           "type": "object"
         },
         "podDisruptionBudget": {
+          "additionalProperties": true,
+          "description": "Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/",
           "properties": {
             "enabled": {
+              "default": false,
               "required": [],
+              "title": "enabled",
               "type": "boolean"
             },
             "minAvailable": {
+              "default": 1,
               "required": [],
+              "title": "minAvailable",
               "type": "integer"
+            },
+            "nameOverride": {
+              "default": "",
+              "required": [],
+              "title": "nameOverride",
+              "type": "string"
             }
           },
           "required": [],
+          "title": "podDisruptionBudget",
           "type": "object"
         },
         "podLabels": {
+          "additionalProperties": true,
           "required": [],
+          "title": "podLabels",
           "type": "object"
         },
         "podSecurityContext": {
+          "additionalProperties": true,
           "properties": {
             "enabled": {
+              "default": true,
               "required": [],
+              "title": "enabled",
               "type": "boolean"
             }
           },
           "required": [],
+          "title": "podSecurityContext",
           "type": "object"
         },
         "priorityClassName": {
+          "default": "",
+          "description": "Pod priority class name.",
           "required": [],
+          "title": "priorityClassName",
           "type": "string"
         },
         "rbac": {
+          "additionalProperties": true,
           "properties": {
             "create": {
+              "default": true,
+              "description": "Specifies whether role and rolebinding resources should be created.",
               "required": [],
+              "title": "create",
               "type": "boolean"
             }
           },
           "required": [],
+          "title": "rbac",
           "type": "object"
         },
         "readinessProbe": {
+          "additionalProperties": true,
           "properties": {
             "address": {
+              "default": "",
+              "description": "Address for readiness probe",
               "required": [],
+              "title": "address",
               "type": "string"
             },
             "port": {
+              "default": 8081,
+              "description": "ReadinessProbe port for kubelet",
               "required": [],
+              "title": "port",
               "type": "integer"
             }
           },
           "required": [],
+          "title": "readinessProbe",
           "type": "object"
         },
         "replicaCount": {
+          "default": 1,
           "required": [],
+          "title": "replicaCount",
           "type": "integer"
         },
         "requeueInterval": {
+          "default": "5m",
           "required": [],
+          "title": "requeueInterval",
           "type": "string"
         },
         "resources": {
+          "additionalProperties": true,
           "required": [],
+          "title": "resources",
           "type": "object"
         },
         "revisionHistoryLimit": {
+          "default": 10,
+          "description": "Specifies the amount of historic ReplicaSets k8s should keep (see https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#clean-up-policy)",
           "required": [],
+          "title": "revisionHistoryLimit",
           "type": "integer"
         },
         "securityContext": {
+          "additionalProperties": true,
           "properties": {
             "allowPrivilegeEscalation": {
+              "default": false,
               "required": [],
+              "title": "allowPrivilegeEscalation",
               "type": "boolean"
             },
             "capabilities": {
+              "additionalProperties": true,
               "properties": {
                 "drop": {
                   "items": {
@@ -225,411 +403,1074 @@
                     "type": "string"
                   },
                   "required": [],
+                  "title": "drop",
                   "type": "array"
                 }
               },
               "required": [],
+              "title": "capabilities",
               "type": "object"
             },
             "enabled": {
+              "default": true,
               "required": [],
+              "title": "enabled",
               "type": "boolean"
             },
             "readOnlyRootFilesystem": {
+              "default": true,
               "required": [],
+              "title": "readOnlyRootFilesystem",
               "type": "boolean"
             },
             "runAsNonRoot": {
+              "default": true,
               "required": [],
+              "title": "runAsNonRoot",
               "type": "boolean"
             },
             "runAsUser": {
+              "default": 1000,
               "required": [],
+              "title": "runAsUser",
               "type": "integer"
             },
             "seccompProfile": {
+              "additionalProperties": true,
               "properties": {
                 "type": {
+                  "default": "RuntimeDefault",
                   "required": [],
+                  "title": "type",
                   "type": "string"
                 }
               },
               "required": [],
+              "title": "seccompProfile",
               "type": "object"
             }
           },
           "required": [],
+          "title": "securityContext",
           "type": "object"
         },
         "serviceAccount": {
+          "additionalProperties": true,
           "properties": {
             "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to add to the service account.",
               "required": [],
+              "title": "annotations",
               "type": "object"
             },
             "automount": {
+              "default": true,
+              "description": "Automounts the service account token in all containers of the pod",
               "required": [],
+              "title": "automount",
               "type": "boolean"
             },
             "create": {
+              "default": true,
+              "description": "Specifies whether a service account should be created.",
               "required": [],
+              "title": "create",
               "type": "boolean"
             },
             "extraLabels": {
+              "additionalProperties": true,
+              "description": "Extra Labels to add to the service account.",
               "required": [],
+              "title": "extraLabels",
               "type": "object"
             },
             "name": {
+              "default": "",
+              "description": "The name of the service account to use.\nIf not set and create is true, a name is generated using the fullname template.",
               "required": [],
+              "title": "name",
               "type": "string"
             }
           },
           "required": [],
+          "title": "serviceAccount",
+          "type": "object"
+        },
+        "strategy": {
+          "additionalProperties": true,
+          "description": "Set deployment strategy",
+          "required": [],
+          "title": "strategy",
           "type": "object"
         },
         "tolerations": {
+          "items": {
+            "required": []
+          },
           "required": [],
+          "title": "tolerations",
           "type": "array"
         },
         "topologySpreadConstraints": {
+          "items": {
+            "required": []
+          },
           "required": [],
+          "title": "topologySpreadConstraints",
           "type": "array"
         }
       },
       "required": [],
+      "title": "certController",
       "type": "object"
     },
     "commonLabels": {
+      "additionalProperties": true,
+      "description": "Additional labels added to all helm chart resources.",
       "required": [],
+      "title": "commonLabels",
       "type": "object"
     },
     "concurrent": {
+      "default": 1,
+      "description": "Specifies the number of concurrent ExternalSecret Reconciles external-secret executes at\na time.",
       "required": [],
+      "title": "concurrent",
       "type": "integer"
     },
     "controllerClass": {
+      "default": "",
+      "description": "If set external secrets will filter matching\nSecret Stores with the appropriate controller values.",
       "required": [],
+      "title": "controllerClass",
       "type": "string"
     },
     "crds": {
+      "additionalProperties": true,
       "properties": {
         "annotations": {
+          "additionalProperties": true,
           "required": [],
+          "title": "annotations",
           "type": "object"
         },
         "conversion": {
+          "additionalProperties": true,
           "properties": {
             "enabled": {
+              "default": false,
+              "description": "Conversion is disabled by default as we stopped supporting v1alpha1.",
               "required": [],
+              "title": "enabled",
               "type": "boolean"
             }
           },
           "required": [],
+          "title": "conversion",
           "type": "object"
         },
         "createClusterExternalSecret": {
+          "default": true,
+          "description": "If true, create CRDs for Cluster External Secret.",
           "required": [],
+          "title": "createClusterExternalSecret",
           "type": "boolean"
         },
         "createClusterGenerator": {
+          "default": true,
+          "description": "If true, create CRDs for Cluster Generator.",
           "required": [],
+          "title": "createClusterGenerator",
+          "type": "boolean"
+        },
+        "createClusterPushSecret": {
+          "default": true,
+          "description": "If true, create CRDs for Cluster Push Secret.",
+          "required": [],
+          "title": "createClusterPushSecret",
           "type": "boolean"
         },
         "createClusterSecretStore": {
+          "default": true,
+          "description": "If true, create CRDs for Cluster Secret Store.",
           "required": [],
+          "title": "createClusterSecretStore",
           "type": "boolean"
         },
         "createPushSecret": {
+          "default": true,
+          "description": "If true, create CRDs for Push Secret.",
           "required": [],
+          "title": "createPushSecret",
           "type": "boolean"
         }
       },
       "required": [],
+      "title": "crds",
       "type": "object"
     },
     "createOperator": {
+      "default": true,
+      "description": "Specifies whether an external secret operator deployment be created.",
       "required": [],
+      "title": "createOperator",
       "type": "boolean"
     },
     "deploymentAnnotations": {
+      "additionalProperties": true,
+      "description": "Annotations to add to Deployment",
       "required": [],
+      "title": "deploymentAnnotations",
       "type": "object"
     },
     "dnsConfig": {
+      "additionalProperties": true,
+      "description": "Specifies `dnsOptions` to deployment",
       "required": [],
+      "title": "dnsConfig",
       "type": "object"
     },
     "dnsPolicy": {
+      "default": "ClusterFirst",
+      "description": "Specifies `dnsPolicy` to deployment",
       "required": [],
+      "title": "dnsPolicy",
       "type": "string"
     },
-    "extendedMetricLabels": {
+    "enableHTTP2": {
+      "default": false,
+      "description": "if true, HTTP2 will be enabled for the services created by all controllers, curently metrics and webhook.",
       "required": [],
+      "title": "enableHTTP2",
+      "type": "boolean"
+    },
+    "extendedMetricLabels": {
+      "default": false,
+      "description": "If true external secrets will use recommended kubernetes\nannotations as prometheus metric labels.",
+      "required": [],
+      "title": "extendedMetricLabels",
       "type": "boolean"
     },
     "extraArgs": {
+      "additionalProperties": true,
+      "description": "# -- Map of extra arguments to pass to container.",
       "required": [],
+      "title": "extraArgs",
       "type": "object"
     },
     "extraContainers": {
+      "description": "# -- Extra containers to add to the pod.",
+      "items": {
+        "required": []
+      },
       "required": [],
+      "title": "extraContainers",
       "type": "array"
     },
     "extraEnv": {
+      "additionalProperties": true,
+      "description": "# -- Extra environment variables to add to container.",
+      "items": {
+        "required": []
+      },
       "required": [],
+      "title": "extraEnv",
+      "type": "array"
+    },
+    "extraInitContainers": {
+      "description": "# -- Extra init containers to add to the pod.",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraInitContainers",
       "type": "array"
     },
     "extraObjects": {
+      "description": "# -- Extra Kubernetes objects to deploy with the helm chart",
+      "items": {
+        "required": []
+      },
       "required": [],
+      "title": "extraObjects",
       "type": "array"
     },
     "extraVolumeMounts": {
+      "description": "# -- Extra volumes to mount to the container.",
+      "items": {
+        "required": []
+      },
       "required": [],
+      "title": "extraVolumeMounts",
       "type": "array"
     },
     "extraVolumes": {
+      "description": "# -- Extra volumes to pass to pod.",
+      "items": {
+        "required": []
+      },
       "required": [],
+      "title": "extraVolumes",
       "type": "array"
     },
     "fullnameOverride": {
+      "default": "",
       "required": [],
+      "title": "fullnameOverride",
       "type": "string"
     },
     "global": {
+      "additionalProperties": true,
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
       "properties": {
         "affinity": {
+          "additionalProperties": true,
           "required": [],
+          "title": "affinity",
           "type": "object"
         },
         "compatibility": {
+          "additionalProperties": true,
           "properties": {
             "openshift": {
+              "additionalProperties": true,
               "properties": {
                 "adaptSecurityContext": {
+                  "default": "auto",
+                  "description": "Manages the securityContext properties to make them compatible with OpenShift.\nPossible values:\nauto - Apply configurations if it is detected that OpenShift is the target platform.\nforce - Always apply configurations.\ndisabled - No modification applied.",
                   "required": [],
+                  "title": "adaptSecurityContext",
                   "type": "string"
                 }
               },
               "required": [],
+              "title": "openshift",
               "type": "object"
             }
           },
           "required": [],
+          "title": "compatibility",
           "type": "object"
         },
         "nodeSelector": {
+          "additionalProperties": true,
           "required": [],
+          "title": "nodeSelector",
           "type": "object"
         },
         "tolerations": {
+          "items": {
+            "required": []
+          },
           "required": [],
+          "title": "tolerations",
           "type": "array"
         },
         "topologySpreadConstraints": {
+          "items": {
+            "required": []
+          },
           "required": [],
+          "title": "topologySpreadConstraints",
           "type": "array"
         }
       },
       "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "grafanaDashboard": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations that ConfigMaps can have to get configured in Grafana,\nSee: sidecar.dashboards.folderAnnotation for specifying the dashboard folder.\nhttps://github.com/grafana/helm-charts/tree/main/charts/grafana",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "enabled": {
+          "default": false,
+          "description": "If true creates a Grafana dashboard.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraLabels": {
+          "additionalProperties": true,
+          "description": "Extra labels to add to the Grafana dashboard ConfigMap.",
+          "required": [],
+          "title": "extraLabels",
+          "type": "object"
+        },
+        "sidecarLabel": {
+          "default": "grafana_dashboard",
+          "description": "Label that ConfigMaps should have to be loaded as dashboards.",
+          "required": [],
+          "title": "sidecarLabel",
+          "type": "string"
+        },
+        "sidecarLabelValue": {
+          "default": "1",
+          "description": "Label value that ConfigMaps should have to be loaded as dashboards.",
+          "required": [],
+          "title": "sidecarLabelValue",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "grafanaDashboard",
       "type": "object"
     },
     "hostNetwork": {
+      "default": false,
+      "description": "Run the controller on the host network",
       "required": [],
+      "title": "hostNetwork",
       "type": "boolean"
     },
     "image": {
+      "additionalProperties": true,
       "properties": {
         "flavour": {
+          "default": "",
+          "description": "The flavour of tag you want to use\nThere are different image flavours available, like distroless and ubi.\nPlease see GitHub release notes for image tags for these flavors.\nBy default, the distroless image is used.",
           "required": [],
+          "title": "flavour",
           "type": "string"
         },
         "pullPolicy": {
+          "default": "IfNotPresent",
           "required": [],
+          "title": "pullPolicy",
           "type": "string"
         },
         "repository": {
+          "default": "oci.external-secrets.io/external-secrets/external-secrets",
           "required": [],
+          "title": "repository",
           "type": "string"
         },
         "tag": {
+          "default": "",
+          "description": "The image tag to use. The default is the chart appVersion.",
           "required": [],
+          "title": "tag",
           "type": "string"
+        },
+        "tls": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "volumeMounts": {
+              "items": {
+                "additionalProperties": true,
+                "properties": {
+                  "mountPath": {
+                    "default": "/certs",
+                    "required": [],
+                    "title": "mountPath",
+                    "type": "string"
+                  },
+                  "name": {
+                    "default": "bitwarden-tls-certs",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "title": "volumeMounts",
+              "type": "array"
+            },
+            "volumes": {
+              "items": {
+                "additionalProperties": true,
+                "properties": {
+                  "name": {
+                    "default": "bitwarden-tls-certs",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  },
+                  "secret": {
+                    "additionalProperties": true,
+                    "properties": {
+                      "items": {
+                        "items": {
+                          "additionalProperties": true,
+                          "properties": {
+                            "key": {
+                              "default": "ca.crt",
+                              "required": [],
+                              "title": "key",
+                              "type": "string"
+                            },
+                            "path": {
+                              "default": "ca.pem",
+                              "required": [],
+                              "title": "path",
+                              "type": "string"
+                            }
+                          },
+                          "required": [],
+                          "type": "object"
+                        },
+                        "required": [],
+                        "title": "items",
+                        "type": "array"
+                      },
+                      "secretName": {
+                        "default": "bitwarden-tls-certs",
+                        "required": [],
+                        "title": "secretName",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "title": "secret",
+                    "type": "object"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "title": "volumes",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "tls",
+          "type": "object"
         }
       },
       "required": [],
+      "title": "image",
       "type": "object"
     },
     "imagePullSecrets": {
+      "items": {
+        "required": []
+      },
       "required": [],
+      "title": "imagePullSecrets",
       "type": "array"
     },
-    "installCRDs": {
+    "ingress": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "className": {
+          "default": "",
+          "required": [],
+          "title": "className",
+          "type": "string"
+        },
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "hosts": {
+          "description": "kubernetes.io/ingress.class: nginx\nkubernetes.io/tls-acme: \"true\"",
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "host": {
+                "default": "chart-example.local",
+                "required": [],
+                "title": "host",
+                "type": "string"
+              },
+              "paths": {
+                "items": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "path": {
+                      "default": "/",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "pathType": {
+                      "default": "ImplementationSpecific",
+                      "required": [],
+                      "title": "pathType",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
+                "required": [],
+                "title": "paths",
+                "type": "array"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "required": [],
+          "title": "hosts",
+          "type": "array"
+        },
+        "tls": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tls",
+          "type": "array"
+        }
+      },
       "required": [],
+      "title": "ingress",
+      "type": "object"
+    },
+    "installCRDs": {
+      "default": true,
+      "description": "If set, install and upgrade CRDs through helm chart.",
+      "required": [],
+      "title": "installCRDs",
       "type": "boolean"
     },
     "leaderElect": {
+      "default": false,
+      "description": "If true, external-secrets will perform leader election between instances to ensure no more\nthan one instance of external-secrets operates at a time.",
       "required": [],
+      "title": "leaderElect",
       "type": "boolean"
     },
-    "log": {
+    "livenessProbe": {
+      "additionalProperties": true,
       "properties": {
-        "level": {
+        "address": {
+          "default": "",
+          "description": "Address for liveness probe.",
           "required": [],
+          "title": "address",
           "type": "string"
         },
-        "timeEncoding": {
-          "required": [],
-          "type": "string"
-        }
-      },
-      "required": [],
-      "type": "object"
-    },
-    "metrics": {
-      "properties": {
-        "listen": {
-          "properties": {
-            "port": {
-              "required": [],
-              "type": "integer"
-            }
-          },
-          "required": [],
-          "type": "object"
-        },
-        "service": {
-          "properties": {
-            "annotations": {
-              "required": [],
-              "type": "object"
-            },
-            "enabled": {
-              "required": [],
-              "type": "boolean"
-            },
-            "port": {
-              "required": [],
-              "type": "integer"
-            }
-          },
-          "required": [],
-          "type": "object"
-        }
-      },
-      "required": [],
-      "type": "object"
-    },
-    "nameOverride": {
-      "required": [],
-      "type": "string"
-    },
-    "namespaceOverride": {
-      "required": [],
-      "type": "string"
-    },
-    "nodeSelector": {
-      "required": [],
-      "type": "object"
-    },
-    "podAnnotations": {
-      "required": [],
-      "type": "object"
-    },
-    "podDisruptionBudget": {
-      "properties": {
         "enabled": {
+          "default": false,
+          "description": "Enabled determines if the liveness probe should be used or not. By default it's disabled.",
           "required": [],
+          "title": "enabled",
           "type": "boolean"
         },
-        "minAvailable": {
+        "failureThreshold": {
+          "default": 5,
+          "description": "Number of consecutive probe failures that should occur before considering the probe as failed.",
           "required": [],
+          "title": "failureThreshold",
+          "type": "integer"
+        },
+        "httpGet": {
+          "additionalProperties": true,
+          "description": "Handler for liveness probe.",
+          "properties": {
+            "path": {
+              "default": "/healthz",
+              "required": [],
+              "title": "path",
+              "type": "string"
+            },
+            "port": {
+              "default": "8082",
+              "description": "Set this value to 8082 to active liveness probes.",
+              "required": [],
+              "title": "port",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "httpGet",
+          "type": "object"
+        },
+        "initialDelaySeconds": {
+          "default": 10,
+          "description": "Delay in seconds for the container to start before performing the initial probe.",
+          "required": [],
+          "title": "initialDelaySeconds",
+          "type": "integer"
+        },
+        "periodSeconds": {
+          "default": 10,
+          "description": "Period in seconds for K8s to start performing probes.",
+          "required": [],
+          "title": "periodSeconds",
+          "type": "integer"
+        },
+        "successThreshold": {
+          "default": 1,
+          "description": "Number of successful probes to mark probe successful.",
+          "required": [],
+          "title": "successThreshold",
+          "type": "integer"
+        },
+        "timeoutSeconds": {
+          "default": 5,
+          "description": "Specify the maximum amount of time to wait for a probe to respond before considering it fails.",
+          "required": [],
+          "title": "timeoutSeconds",
           "type": "integer"
         }
       },
       "required": [],
+      "title": "livenessProbe",
       "type": "object"
     },
-    "podLabels": {
-      "required": [],
-      "type": "object"
-    },
-    "podSecurityContext": {
+    "log": {
+      "additionalProperties": true,
+      "description": "Specifies Log Params to the External Secrets Operator",
       "properties": {
-        "enabled": {
+        "level": {
+          "default": "info",
           "required": [],
-          "type": "boolean"
+          "title": "level",
+          "type": "string"
+        },
+        "timeEncoding": {
+          "default": "epoch",
+          "required": [],
+          "title": "timeEncoding",
+          "type": "string"
         }
       },
       "required": [],
+      "title": "log",
       "type": "object"
     },
-    "podSpecExtra": {
-      "required": [],
-      "type": "object"
-    },
-    "priorityClassName": {
-      "required": [],
-      "type": "string"
-    },
-    "processClusterExternalSecret": {
-      "required": [],
-      "type": "boolean"
-    },
-    "processClusterStore": {
-      "required": [],
-      "type": "boolean"
-    },
-    "processPushSecret": {
-      "required": [],
-      "type": "boolean"
-    },
-    "rbac": {
+    "metrics": {
+      "additionalProperties": true,
       "properties": {
-        "create": {
-          "required": [],
-          "type": "boolean"
-        },
-        "servicebindings": {
+        "listen": {
+          "additionalProperties": true,
           "properties": {
-            "create": {
+            "port": {
+              "default": 8080,
               "required": [],
-              "type": "boolean"
+              "title": "port",
+              "type": "integer"
+            },
+            "secure": {
+              "additionalProperties": true,
+              "properties": {
+                "certDir": {
+                  "default": "/etc/tls",
+                  "description": "if those are not set or invalid, self-signed certs will be generated\nTLS cert directory path",
+                  "required": [],
+                  "title": "certDir",
+                  "type": "string"
+                },
+                "certFile": {
+                  "default": "/etc/tls/tls.crt",
+                  "description": "TLS cert file path",
+                  "required": [],
+                  "title": "certFile",
+                  "type": "string"
+                },
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "keyFile": {
+                  "default": "/etc/tls/tls.key",
+                  "description": "TLS key file path",
+                  "required": [],
+                  "title": "keyFile",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "secure",
+              "type": "object"
             }
           },
           "required": [],
+          "title": "listen",
+          "type": "object"
+        },
+        "service": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Additional service annotations",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable if you use another monitoring tool than Prometheus to scrape the metrics",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "port": {
+              "default": 8080,
+              "description": "Metrics service port to scrape",
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "service",
           "type": "object"
         }
       },
       "required": [],
+      "title": "metrics",
+      "type": "object"
+    },
+    "nameOverride": {
+      "default": "",
+      "required": [],
+      "title": "nameOverride",
+      "type": "string"
+    },
+    "namespaceOverride": {
+      "default": "",
+      "required": [],
+      "title": "namespaceOverride",
+      "type": "string"
+    },
+    "nodeSelector": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "nodeSelector",
+      "type": "object"
+    },
+    "openshiftFinalizers": {
+      "default": true,
+      "description": "If true the OpenShift finalizer permissions will be added to RBAC",
+      "required": [],
+      "title": "openshiftFinalizers",
+      "type": "boolean"
+    },
+    "podAnnotations": {
+      "additionalProperties": true,
+      "description": "Annotations to add to Pod",
+      "required": [],
+      "title": "podAnnotations",
+      "type": "object"
+    },
+    "podDisruptionBudget": {
+      "additionalProperties": true,
+      "description": "Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/",
+      "properties": {
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "minAvailable": {
+          "default": 1,
+          "required": [],
+          "title": "minAvailable",
+          "type": "integer"
+        },
+        "nameOverride": {
+          "default": "",
+          "required": [],
+          "title": "nameOverride",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "podDisruptionBudget",
+      "type": "object"
+    },
+    "podDnsConfig": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podDnsConfig",
+      "type": "object"
+    },
+    "podDnsPolicy": {
+      "default": "",
+      "required": [],
+      "title": "podDnsPolicy",
+      "type": "string"
+    },
+    "podLabels": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podLabels",
+      "type": "object"
+    },
+    "podSecurityContext": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "default": true,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "podSecurityContext",
+      "type": "object"
+    },
+    "podSpecExtra": {
+      "additionalProperties": true,
+      "description": "Any extra pod spec on the deployment",
+      "required": [],
+      "title": "podSpecExtra",
+      "type": "object"
+    },
+    "priorityClassName": {
+      "default": "",
+      "description": "Pod priority class name.",
+      "required": [],
+      "title": "priorityClassName",
+      "type": "string"
+    },
+    "processClusterExternalSecret": {
+      "default": true,
+      "description": "if true, the operator will process cluster external secret. Else, it will ignore them.\nWhen enabled, this adds update/patch permissions on namespaces to handle finalizers for proper\ncleanup during namespace deletion, preventing race conditions with ExternalSecrets.",
+      "required": [],
+      "title": "processClusterExternalSecret",
+      "type": "boolean"
+    },
+    "processClusterGenerator": {
+      "default": true,
+      "description": "if true, the operator will process cluster generator. Else, it will ignore them.",
+      "required": [],
+      "title": "processClusterGenerator",
+      "type": "boolean"
+    },
+    "processClusterPushSecret": {
+      "default": true,
+      "description": "if true, the operator will process cluster push secret. Else, it will ignore them.",
+      "required": [],
+      "title": "processClusterPushSecret",
+      "type": "boolean"
+    },
+    "processClusterStore": {
+      "default": true,
+      "description": "if true, the operator will process cluster store. Else, it will ignore them.",
+      "required": [],
+      "title": "processClusterStore",
+      "type": "boolean"
+    },
+    "processPushSecret": {
+      "default": true,
+      "description": "if true, the operator will process push secret. Else, it will ignore them.",
+      "required": [],
+      "title": "processPushSecret",
+      "type": "boolean"
+    },
+    "rbac": {
+      "additionalProperties": true,
+      "properties": {
+        "aggregateToEdit": {
+          "default": true,
+          "description": "Specifies whether permissions are aggregated to the edit ClusterRole",
+          "required": [],
+          "title": "aggregateToEdit",
+          "type": "boolean"
+        },
+        "aggregateToView": {
+          "default": true,
+          "description": "Specifies whether permissions are aggregated to the view ClusterRole",
+          "required": [],
+          "title": "aggregateToView",
+          "type": "boolean"
+        },
+        "create": {
+          "default": true,
+          "description": "Specifies whether role and rolebinding resources should be created.",
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "servicebindings": {
+          "additionalProperties": true,
+          "properties": {
+            "create": {
+              "default": true,
+              "description": "Specifies whether a clusterrole to give servicebindings read access should be created.",
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "servicebindings",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "rbac",
       "type": "object"
     },
     "replicaCount": {
+      "default": 1,
       "required": [],
+      "title": "replicaCount",
       "type": "integer"
     },
     "resources": {
+      "additionalProperties": true,
       "required": [],
+      "title": "resources",
       "type": "object"
     },
     "revisionHistoryLimit": {
+      "default": 10,
+      "description": "Specifies the amount of historic ReplicaSets k8s should keep (see https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#clean-up-policy)",
       "required": [],
+      "title": "revisionHistoryLimit",
       "type": "integer"
     },
     "scopedNamespace": {
+      "default": "",
+      "description": "If set external secrets are only reconciled in the\nprovided namespace",
       "required": [],
+      "title": "scopedNamespace",
       "type": "string"
     },
     "scopedRBAC": {
+      "default": false,
+      "description": "Must be used with scopedNamespace. If true, create scoped RBAC roles under the scoped namespace\nand implicitly disable cluster stores and cluster external secrets",
       "required": [],
+      "title": "scopedRBAC",
       "type": "boolean"
     },
     "securityContext": {
+      "additionalProperties": true,
       "properties": {
         "allowPrivilegeEscalation": {
+          "default": false,
           "required": [],
+          "title": "allowPrivilegeEscalation",
           "type": "boolean"
         },
         "capabilities": {
+          "additionalProperties": true,
           "properties": {
             "drop": {
               "items": {
@@ -637,409 +1478,716 @@
                 "type": "string"
               },
               "required": [],
+              "title": "drop",
               "type": "array"
             }
           },
           "required": [],
+          "title": "capabilities",
           "type": "object"
         },
         "enabled": {
+          "default": true,
           "required": [],
+          "title": "enabled",
           "type": "boolean"
         },
         "readOnlyRootFilesystem": {
+          "default": true,
           "required": [],
+          "title": "readOnlyRootFilesystem",
           "type": "boolean"
         },
         "runAsNonRoot": {
+          "default": true,
           "required": [],
+          "title": "runAsNonRoot",
           "type": "boolean"
         },
         "runAsUser": {
+          "default": 1000,
           "required": [],
+          "title": "runAsUser",
           "type": "integer"
         },
         "seccompProfile": {
+          "additionalProperties": true,
           "properties": {
             "type": {
+              "default": "RuntimeDefault",
               "required": [],
+              "title": "type",
               "type": "string"
             }
           },
           "required": [],
+          "title": "seccompProfile",
           "type": "object"
         }
       },
       "required": [],
+      "title": "securityContext",
       "type": "object"
     },
     "service": {
+      "additionalProperties": true,
       "properties": {
         "ipFamilies": {
+          "description": "Sets the families that should be supported and the order in which they should be applied to ClusterIP as well. Can be IPv4 and/or IPv6.",
+          "items": {
+            "required": []
+          },
           "required": [],
+          "title": "ipFamilies",
           "type": "array"
         },
         "ipFamilyPolicy": {
+          "default": "",
+          "description": "Set the ip family policy to configure dual-stack see [Configure dual-stack](https://kubernetes.io/docs/concepts/services-networking/dual-stack/#services)",
           "required": [],
+          "title": "ipFamilyPolicy",
+          "type": "string"
+        },
+        "port": {
+          "default": 9998,
+          "required": [],
+          "title": "port",
+          "type": "integer"
+        },
+        "type": {
+          "default": "ClusterIP",
+          "required": [],
+          "title": "type",
           "type": "string"
         }
       },
       "required": [],
+      "title": "service",
       "type": "object"
     },
     "serviceAccount": {
+      "additionalProperties": true,
       "properties": {
         "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations to add to the service account.",
           "required": [],
+          "title": "annotations",
           "type": "object"
         },
         "automount": {
+          "default": true,
+          "description": "Automounts the service account token in all containers of the pod",
           "required": [],
+          "title": "automount",
           "type": "boolean"
         },
         "create": {
+          "default": true,
+          "description": "Specifies whether a service account should be created.",
           "required": [],
+          "title": "create",
           "type": "boolean"
         },
         "extraLabels": {
+          "additionalProperties": true,
+          "description": "Extra Labels to add to the service account.",
           "required": [],
+          "title": "extraLabels",
           "type": "object"
         },
         "name": {
+          "default": "",
+          "description": "The name of the service account to use.\nIf not set and create is true, a name is generated using the fullname template.",
           "required": [],
+          "title": "name",
           "type": "string"
         }
       },
       "required": [],
+      "title": "serviceAccount",
       "type": "object"
     },
     "serviceMonitor": {
+      "additionalProperties": true,
       "properties": {
         "additionalLabels": {
+          "additionalProperties": true,
+          "description": "Additional labels",
           "required": [],
+          "title": "additionalLabels",
           "type": "object"
         },
         "enabled": {
+          "default": false,
+          "description": "Specifies whether to create a ServiceMonitor resource for collecting Prometheus metrics",
           "required": [],
+          "title": "enabled",
           "type": "boolean"
         },
         "honorLabels": {
+          "default": false,
+          "description": "Let prometheus add an exported_ prefix to conflicting labels",
           "required": [],
+          "title": "honorLabels",
           "type": "boolean"
         },
         "interval": {
+          "default": "30s",
+          "description": " Interval to scrape metrics",
           "required": [],
+          "title": "interval",
           "type": "string"
         },
         "metricRelabelings": {
+          "description": "Metric relabel configs to apply to samples before ingestion. [Metric Relabeling](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#metric_relabel_configs)",
+          "items": {
+            "required": []
+          },
           "required": [],
+          "title": "metricRelabelings",
           "type": "array"
         },
         "namespace": {
+          "default": "",
+          "description": "namespace where you want to install ServiceMonitors",
           "required": [],
+          "title": "namespace",
           "type": "string"
         },
         "relabelings": {
+          "description": "Relabel configs to apply to samples before ingestion. [Relabeling](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config)",
+          "items": {
+            "required": []
+          },
           "required": [],
+          "title": "relabelings",
           "type": "array"
         },
-        "scrapeTimeout": {
+        "renderMode": {
+          "default": "skipIfMissing",
+          "enum": [
+            "skipIfMissing",
+            "failIfMissing",
+            "alwaysRender"
+          ],
           "required": [],
+          "title": "renderMode"
+        },
+        "scrapeTimeout": {
+          "default": "25s",
+          "description": "Timeout if metrics can't be retrieved in given time interval",
+          "required": [],
+          "title": "scrapeTimeout",
           "type": "string"
         }
       },
       "required": [],
+      "title": "serviceMonitor",
       "type": "object"
     },
-    "tolerations": {
+    "strategy": {
+      "additionalProperties": true,
+      "description": "Set deployment strategy",
       "required": [],
+      "title": "strategy",
+      "type": "object"
+    },
+    "systemAuthDelegator": {
+      "default": false,
+      "description": "If true the system:auth-delegator ClusterRole will be added to RBAC",
+      "required": [],
+      "title": "systemAuthDelegator",
+      "type": "boolean"
+    },
+    "tolerations": {
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "tolerations",
       "type": "array"
     },
     "topologySpreadConstraints": {
+      "items": {
+        "required": []
+      },
       "required": [],
+      "title": "topologySpreadConstraints",
       "type": "array"
     },
     "webhook": {
+      "additionalProperties": true,
       "properties": {
         "affinity": {
+          "additionalProperties": true,
           "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations to place on validating webhook configuration.",
+          "required": [],
+          "title": "annotations",
           "type": "object"
         },
         "certCheckInterval": {
+          "default": "5m",
+          "description": "Specifies the time to check if the cert is valid",
           "required": [],
+          "title": "certCheckInterval",
           "type": "string"
         },
         "certDir": {
+          "default": "/tmp/certs",
           "required": [],
+          "title": "certDir",
           "type": "string"
         },
         "certManager": {
+          "additionalProperties": true,
           "properties": {
             "addInjectorAnnotations": {
+              "default": true,
+              "description": "Automatically add the cert-manager.io/inject-ca-from annotation to the\nwebhooks and CRDs. As long as you have the cert-manager CA Injector\nenabled, this will automatically setup your webhook's CA to the one used\nby cert-manager. See https://cert-manager.io/docs/concepts/ca-injector",
               "required": [],
+              "title": "addInjectorAnnotations",
               "type": "boolean"
             },
             "cert": {
+              "additionalProperties": true,
               "properties": {
                 "annotations": {
+                  "additionalProperties": true,
+                  "description": "Add extra annotations to the Certificate resource.",
                   "required": [],
+                  "title": "annotations",
                   "type": "object"
                 },
                 "create": {
+                  "default": true,
+                  "description": "Create a certificate resource within this chart. See\nhttps://cert-manager.io/docs/usage/certificate/",
                   "required": [],
+                  "title": "create",
                   "type": "boolean"
                 },
                 "duration": {
+                  "default": "8760h",
+                  "description": "Set the requested duration (i.e. lifetime) of the Certificate. See\nhttps://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec\nOne year by default.",
                   "required": [],
+                  "title": "duration",
                   "type": "string"
                 },
                 "issuerRef": {
+                  "additionalProperties": true,
+                  "description": "For the Certificate created by this chart, setup the issuer. See\nhttps://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.IssuerSpec",
                   "properties": {
                     "group": {
+                      "default": "cert-manager.io",
                       "required": [],
+                      "title": "group",
                       "type": "string"
                     },
                     "kind": {
+                      "default": "Issuer",
                       "required": [],
+                      "title": "kind",
                       "type": "string"
                     },
                     "name": {
+                      "default": "my-issuer",
                       "required": [],
+                      "title": "name",
                       "type": "string"
                     }
                   },
                   "required": [],
+                  "title": "issuerRef",
                   "type": "object"
                 },
                 "renewBefore": {
+                  "default": "",
+                  "description": "How long before the currently issued certificate’s expiry\ncert-manager should renew the certificate. See\nhttps://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec\nNote that renewBefore should be greater than .webhook.lookaheadInterval\nsince the webhook will check this far in advance that the certificate is\nvalid.",
                   "required": [],
+                  "title": "renewBefore",
                   "type": "string"
                 },
                 "revisionHistoryLimit": {
+                  "default": 0,
+                  "description": "Set the revisionHistoryLimit on the Certificate. See\nhttps://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec\nDefaults to 0 (ignored).",
                   "required": [],
-                  "type": "string"
+                  "title": "revisionHistoryLimit",
+                  "type": "integer"
                 }
               },
               "required": [],
+              "title": "cert",
               "type": "object"
             },
             "enabled": {
+              "default": false,
+              "description": "Enabling cert-manager support will disable the built in secret and\nswitch to using cert-manager (installed separately) to automatically issue\nand renew the webhook certificate. This chart does not install\ncert-manager for you, See https://cert-manager.io/docs/",
               "required": [],
+              "title": "enabled",
               "type": "boolean"
             }
           },
           "required": [],
+          "title": "certManager",
           "type": "object"
         },
         "create": {
+          "default": true,
+          "description": "Specifies whether a webhook deployment be created. If set to false, crds.conversion.enabled should also be set to false otherwise the kubeapi will be hammered because the conversion is looking for a webhook endpoint.",
           "required": [],
+          "title": "create",
           "type": "boolean"
         },
         "deploymentAnnotations": {
+          "additionalProperties": true,
+          "description": "Annotations to add to Deployment",
           "required": [],
+          "title": "deploymentAnnotations",
           "type": "object"
         },
         "extraArgs": {
+          "additionalProperties": true,
+          "description": "# -- Map of extra arguments to pass to container.",
           "required": [],
+          "title": "extraArgs",
           "type": "object"
         },
         "extraEnv": {
+          "items": {
+            "required": []
+          },
           "required": [],
+          "title": "extraEnv",
+          "type": "array"
+        },
+        "extraInitContainers": {
+          "description": "# -- Extra init containers to add to the pod.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraInitContainers",
           "type": "array"
         },
         "extraVolumeMounts": {
+          "description": "# -- Extra volumes to mount to the container.",
+          "items": {
+            "required": []
+          },
           "required": [],
+          "title": "extraVolumeMounts",
           "type": "array"
         },
         "extraVolumes": {
+          "description": "# -- Extra volumes to pass to pod.",
+          "items": {
+            "required": []
+          },
           "required": [],
+          "title": "extraVolumes",
           "type": "array"
         },
         "failurePolicy": {
+          "default": "Fail",
+          "description": "Specifies whether validating webhooks should be created with failurePolicy: Fail or Ignore",
           "required": [],
+          "title": "failurePolicy",
           "type": "string"
         },
         "fullnameOverride": {
+          "default": "",
           "required": [],
+          "title": "fullnameOverride",
           "type": "string"
         },
         "hostNetwork": {
+          "default": false,
+          "description": "Specifies if webhook pod should use hostNetwork or not.",
           "required": [],
+          "title": "hostNetwork",
           "type": "boolean"
         },
         "image": {
+          "additionalProperties": true,
           "properties": {
             "flavour": {
+              "default": "",
+              "description": "The flavour of tag you want to use",
               "required": [],
+              "title": "flavour",
               "type": "string"
             },
             "pullPolicy": {
+              "default": "IfNotPresent",
               "required": [],
+              "title": "pullPolicy",
               "type": "string"
             },
             "repository": {
+              "default": "oci.external-secrets.io/external-secrets/external-secrets",
               "required": [],
+              "title": "repository",
               "type": "string"
             },
             "tag": {
+              "default": "",
+              "description": "The image tag to use. The default is the chart appVersion.",
               "required": [],
+              "title": "tag",
               "type": "string"
             }
           },
           "required": [],
+          "title": "image",
           "type": "object"
         },
         "imagePullSecrets": {
+          "items": {
+            "required": []
+          },
           "required": [],
+          "title": "imagePullSecrets",
           "type": "array"
         },
         "log": {
+          "additionalProperties": true,
+          "description": "Specifies Log Params to the Webhook",
           "properties": {
             "level": {
+              "default": "info",
               "required": [],
+              "title": "level",
               "type": "string"
             },
             "timeEncoding": {
+              "default": "epoch",
               "required": [],
+              "title": "timeEncoding",
               "type": "string"
             }
           },
           "required": [],
+          "title": "log",
           "type": "object"
         },
         "lookaheadInterval": {
+          "default": "",
+          "description": "Specifies the lookaheadInterval for certificate validity",
           "required": [],
+          "title": "lookaheadInterval",
           "type": "string"
         },
         "metrics": {
+          "additionalProperties": true,
           "properties": {
             "listen": {
+              "additionalProperties": true,
               "properties": {
                 "port": {
+                  "default": 8080,
                   "required": [],
+                  "title": "port",
                   "type": "integer"
                 }
               },
               "required": [],
+              "title": "listen",
               "type": "object"
             },
             "service": {
+              "additionalProperties": true,
               "properties": {
                 "annotations": {
+                  "additionalProperties": true,
+                  "description": "Additional service annotations",
                   "required": [],
+                  "title": "annotations",
                   "type": "object"
                 },
                 "enabled": {
+                  "default": false,
+                  "description": "Enable if you use another monitoring tool than Prometheus to scrape the metrics",
                   "required": [],
+                  "title": "enabled",
                   "type": "boolean"
                 },
                 "port": {
+                  "default": 8080,
+                  "description": "Metrics service port to scrape",
                   "required": [],
+                  "title": "port",
                   "type": "integer"
                 }
               },
               "required": [],
+              "title": "service",
               "type": "object"
             }
           },
           "required": [],
+          "title": "metrics",
           "type": "object"
         },
         "nameOverride": {
+          "default": "",
           "required": [],
+          "title": "nameOverride",
           "type": "string"
         },
         "nodeSelector": {
+          "additionalProperties": true,
           "required": [],
+          "title": "nodeSelector",
           "type": "object"
         },
         "podAnnotations": {
+          "additionalProperties": true,
+          "description": "Annotations to add to Pod",
           "required": [],
+          "title": "podAnnotations",
           "type": "object"
         },
         "podDisruptionBudget": {
+          "additionalProperties": true,
+          "description": "Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/",
           "properties": {
             "enabled": {
+              "default": false,
               "required": [],
+              "title": "enabled",
               "type": "boolean"
             },
             "minAvailable": {
+              "default": 1,
               "required": [],
+              "title": "minAvailable",
               "type": "integer"
+            },
+            "nameOverride": {
+              "default": "",
+              "required": [],
+              "title": "nameOverride",
+              "type": "string"
             }
           },
           "required": [],
+          "title": "podDisruptionBudget",
           "type": "object"
         },
         "podLabels": {
+          "additionalProperties": true,
           "required": [],
+          "title": "podLabels",
           "type": "object"
         },
         "podSecurityContext": {
+          "additionalProperties": true,
           "properties": {
             "enabled": {
+              "default": true,
               "required": [],
+              "title": "enabled",
               "type": "boolean"
             }
           },
           "required": [],
+          "title": "podSecurityContext",
           "type": "object"
         },
         "port": {
+          "default": 10250,
+          "description": "The port the webhook will listen to",
           "required": [],
+          "title": "port",
           "type": "integer"
         },
         "priorityClassName": {
+          "default": "",
+          "description": "Pod priority class name.",
           "required": [],
+          "title": "priorityClassName",
           "type": "string"
         },
         "rbac": {
+          "additionalProperties": true,
           "properties": {
             "create": {
+              "default": true,
+              "description": "Specifies whether role and rolebinding resources should be created.",
               "required": [],
+              "title": "create",
               "type": "boolean"
             }
           },
           "required": [],
+          "title": "rbac",
           "type": "object"
         },
         "readinessProbe": {
+          "additionalProperties": true,
           "properties": {
             "address": {
+              "default": "",
+              "description": "Address for readiness probe",
               "required": [],
+              "title": "address",
               "type": "string"
             },
             "port": {
+              "default": 8081,
+              "description": "ReadinessProbe port for kubelet",
               "required": [],
+              "title": "port",
               "type": "integer"
             }
           },
           "required": [],
+          "title": "readinessProbe",
           "type": "object"
         },
         "replicaCount": {
+          "default": 1,
           "required": [],
+          "title": "replicaCount",
           "type": "integer"
         },
         "resources": {
+          "additionalProperties": true,
           "required": [],
+          "title": "resources",
           "type": "object"
         },
         "revisionHistoryLimit": {
+          "default": 10,
+          "description": "Specifies the amount of historic ReplicaSets k8s should keep (see https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#clean-up-policy)",
           "required": [],
+          "title": "revisionHistoryLimit",
           "type": "integer"
         },
         "secretAnnotations": {
+          "additionalProperties": true,
+          "description": "Annotations to add to Secret",
           "required": [],
+          "title": "secretAnnotations",
           "type": "object"
         },
         "securityContext": {
+          "additionalProperties": true,
           "properties": {
             "allowPrivilegeEscalation": {
+              "default": false,
               "required": [],
+              "title": "allowPrivilegeEscalation",
               "type": "boolean"
             },
             "capabilities": {
+              "additionalProperties": true,
               "properties": {
                 "drop": {
                   "items": {
@@ -1047,104 +2195,170 @@
                     "type": "string"
                   },
                   "required": [],
+                  "title": "drop",
                   "type": "array"
                 }
               },
               "required": [],
+              "title": "capabilities",
               "type": "object"
             },
             "enabled": {
+              "default": true,
               "required": [],
+              "title": "enabled",
               "type": "boolean"
             },
             "readOnlyRootFilesystem": {
+              "default": true,
               "required": [],
+              "title": "readOnlyRootFilesystem",
               "type": "boolean"
             },
             "runAsNonRoot": {
+              "default": true,
               "required": [],
+              "title": "runAsNonRoot",
               "type": "boolean"
             },
             "runAsUser": {
+              "default": 1000,
               "required": [],
+              "title": "runAsUser",
               "type": "integer"
             },
             "seccompProfile": {
+              "additionalProperties": true,
               "properties": {
                 "type": {
+                  "default": "RuntimeDefault",
                   "required": [],
+                  "title": "type",
                   "type": "string"
                 }
               },
               "required": [],
+              "title": "seccompProfile",
               "type": "object"
             }
           },
           "required": [],
+          "title": "securityContext",
           "type": "object"
         },
         "service": {
+          "additionalProperties": true,
+          "description": "Manage the service through which the webhook is reached.",
           "properties": {
             "annotations": {
+              "additionalProperties": true,
+              "description": "Custom annotations for the webhook service.",
               "required": [],
+              "title": "annotations",
               "type": "object"
             },
             "enabled": {
+              "default": true,
+              "description": "Whether the service object should be enabled or not (it is expected to exist).",
               "required": [],
+              "title": "enabled",
               "type": "boolean"
             },
             "labels": {
+              "additionalProperties": true,
+              "description": "Custom labels for the webhook service.",
               "required": [],
+              "title": "labels",
               "type": "object"
             },
             "loadBalancerIP": {
+              "default": "",
+              "description": "If the webhook service type is LoadBalancer, you can assign a specific load balancer IP here.\nCheck the documentation of your load balancer provider to see if/how this should be used.",
               "required": [],
+              "title": "loadBalancerIP",
               "type": "string"
             },
             "type": {
+              "default": "ClusterIP",
+              "description": "The service type of the webhook service.",
               "required": [],
+              "title": "type",
               "type": "string"
             }
           },
           "required": [],
+          "title": "service",
           "type": "object"
         },
         "serviceAccount": {
+          "additionalProperties": true,
           "properties": {
             "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to add to the service account.",
               "required": [],
+              "title": "annotations",
               "type": "object"
             },
             "automount": {
+              "default": true,
+              "description": "Automounts the service account token in all containers of the pod",
               "required": [],
+              "title": "automount",
               "type": "boolean"
             },
             "create": {
+              "default": true,
+              "description": "Specifies whether a service account should be created.",
               "required": [],
+              "title": "create",
               "type": "boolean"
             },
             "extraLabels": {
+              "additionalProperties": true,
+              "description": "Extra Labels to add to the service account.",
               "required": [],
+              "title": "extraLabels",
               "type": "object"
             },
             "name": {
+              "default": "",
+              "description": "The name of the service account to use.\nIf not set and create is true, a name is generated using the fullname template.",
               "required": [],
+              "title": "name",
               "type": "string"
             }
           },
           "required": [],
+          "title": "serviceAccount",
+          "type": "object"
+        },
+        "strategy": {
+          "additionalProperties": true,
+          "description": "Set deployment strategy",
+          "required": [],
+          "title": "strategy",
           "type": "object"
         },
         "tolerations": {
+          "items": {
+            "required": []
+          },
           "required": [],
+          "title": "tolerations",
           "type": "array"
         },
         "topologySpreadConstraints": {
+          "items": {
+            "required": []
+          },
           "required": [],
+          "title": "topologySpreadConstraints",
           "type": "array"
         }
       },
       "required": [],
+      "title": "webhook",
       "type": "object"
     }
   },

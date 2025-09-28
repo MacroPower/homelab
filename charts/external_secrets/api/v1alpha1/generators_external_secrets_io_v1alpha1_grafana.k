@@ -56,10 +56,53 @@ schema GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuth:
 
     Attributes
     ----------
-    token : GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuthToken, default is Undefined, required
+    basic : GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuthBasic, default is Undefined, optional
+        basic
+    token : GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuthToken, default is Undefined, optional
         token
     """
-    token: GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuthToken
+    basic?: GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuthBasic
+    token?: GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuthToken
+
+schema GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuthBasic:
+    r"""
+    Basic auth credentials used to authenticate against the Grafana instance.
+    Note: you need a token which has elevated permissions to create service accounts.
+    See here for the documentation on basic roles offered by Grafana:
+    https://grafana.com/docs/grafana/latest/administration/roles-and-permissions/access-control/rbac-fixed-basic-role-definitions/
+
+    Attributes
+    ----------
+    password : GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuthBasicPassword, default is Undefined, required
+        password
+    username : str, default is Undefined, required
+        A basic auth username used to authenticate against the Grafana instance.
+    """
+    password: GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuthBasicPassword
+
+    username: str
+
+schema GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuthBasicPassword:
+    r"""
+    A basic auth password used to authenticate against the Grafana instance.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        The key where the token is found.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    """
+    key?: str
+    name?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
 
 schema GeneratorsExternalSecretsIoV1alpha1GrafanaSpecAuthToken:
     r"""

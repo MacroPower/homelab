@@ -231,9 +231,7 @@ schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecRequestParameters:
         Possible values: hardware device (such as GAHT12345678) or an Amazon Resource Name (ARN) for a virtual device
         (such as arn:aws:iam::123456789012:mfa/user)
     sessionDuration : int, default is Undefined, optional
-        SessionDuration The duration, in seconds, that the credentials should remain valid. Acceptable durations for
-        IAM user sessions range from 900 seconds (15 minutes) to 129,600 seconds (36 hours), with 43,200 seconds
-        (12 hours) as the default.
+        session duration
     tokenCode : str, default is Undefined, optional
         TokenCode is the value provided by the MFA device, if MFA is required.
     """

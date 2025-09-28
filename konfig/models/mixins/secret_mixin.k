@@ -1,4 +1,4 @@
-import charts.external_secrets.api.v1beta1 as externalsecretsv1beta1
+import charts.external_secrets.api.v1 as externalsecretsv1
 import k8s.api.core.v1
 import models.protocol
 import models.resource
@@ -18,7 +18,7 @@ mixin SecretMixin for protocol.AppProtocol:
 mixin SecretStoreMixin for protocol.AppProtocol:
     if config.secretStores:
         kubernetes: resource.ResourceMapping {
-            SecretStore = [externalsecretsv1beta1.SecretStore {
+            SecretStore = [externalsecretsv1.SecretStore {
                 metadata = utils.MetadataBuilder(config | _c)
                 spec.provider = _c.provider
             } for _i, _c in config.secretStores]
@@ -27,7 +27,7 @@ mixin SecretStoreMixin for protocol.AppProtocol:
 mixin ClusterSecretStoreMixin for protocol.TenantProtocol:
     if config.secretStores:
         kubernetes: resource.ResourceMapping {
-            ClusterSecretStore = [externalsecretsv1beta1.ClusterSecretStore {
+            ClusterSecretStore = [externalsecretsv1.ClusterSecretStore {
                 metadata = utils.MetadataBuilder(config | _c)
                 spec.conditions = [{
                     namespaceRegexes = ["{}-.+".format(_c.name)]
@@ -39,7 +39,7 @@ mixin ClusterSecretStoreMixin for protocol.TenantProtocol:
 mixin ExternalSecretMixin for protocol.AppProtocol:
     if config.externalSecrets:
         kubernetes: resource.ResourceMapping {
-            ExternalSecret = [externalsecretsv1beta1.ExternalSecret {
+            ExternalSecret = [externalsecretsv1.ExternalSecret {
                 metadata: utils.MetadataBuilder(config | _c)
                 spec: {
                     if _c.secretStoreRef:
@@ -87,7 +87,7 @@ mixin NamespaceSecretStoreMixin for protocol.AppProtocol:
             NamespaceSecretStoreServiceAccounts = [v1.ServiceAccount {
                 metadata: utils.MetadataBuilder(config | _c)
             } for _i, _c in config.namespaceSecretStores]
-            NamespaceSecretStores = [externalsecretsv1beta1.SecretStore {
+            NamespaceSecretStores = [externalsecretsv1.SecretStore {
                 metadata: utils.MetadataBuilder(config | _c)
                 spec.provider.kubernetes: {
                     remoteNamespace = _c.remoteNamespace

@@ -76,7 +76,7 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProvider:
 
     Attributes
     ----------
-    auth : GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuth, default is Undefined, required
+    auth : GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuth, default is Undefined, optional
         auth
     caBundle : str, default is Undefined, optional
         PEM encoded CA bundle used to validate Vault server certificate. Only used
@@ -85,6 +85,8 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProvider:
         are used to validate the TLS connection.
     caProvider : GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderCaProvider, default is Undefined, optional
         ca provider
+    checkAndSet : GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderCheckAndSet, default is Undefined, optional
+        check and set
     forwardInconsistent : bool, default is Undefined, optional
         ForwardInconsistent tells Vault to forward read-after-write requests to the Vault
         leader instead of simply retrying within a loop. This can increase performance if
@@ -114,10 +116,10 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProvider:
         Version is the Vault KV secret engine version. This can be either "v1" or
         "v2". Version defaults to "v2".
     """
-    auth: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuth
-
+    auth?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuth
     caBundle?: str
     caProvider?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderCaProvider
+    checkAndSet?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderCheckAndSet
     forwardInconsistent?: bool
     headers?: {str:str}
     namespace?: str
@@ -882,6 +884,20 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderCaProvid
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderCheckAndSet:
+    r"""
+    CheckAndSet defines the Check-And-Set (CAS) settings for PushSecret operations.
+    Only applies to Vault KV v2 stores. When enabled, write operations must include
+    the current version of the secret to prevent unintentional overwrites.
+
+    Attributes
+    ----------
+    required : bool, default is Undefined, optional
+        Required when true, all write operations must include a check-and-set parameter.
+        This helps prevent unintentional overwrites of secrets.
+    """
+    required?: bool
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderTLS:
     r"""

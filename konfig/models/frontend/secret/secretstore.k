@@ -1,12 +1,12 @@
-import charts.external_secrets.api.v1beta1 as externalsecretsv1beta1
+import charts.external_secrets.api.v1 as externalsecretsv1
 import models.frontend.common
 
 schema ClusterSecretStore(common.Metadata):
-    provider?: externalsecretsv1beta1.ExternalSecretsIoV1beta1ClusterSecretStoreSpecProvider
+    provider?: externalsecretsv1.ExternalSecretsIoV1ClusterSecretStoreSpecProvider
 
 schema SecretStore(common.Metadata):
-    provider?: externalsecretsv1beta1.ExternalSecretsIoV1beta1SecretStoreSpecProvider
-    getRef: () -> externalsecretsv1beta1.ExternalSecretsIoV1beta1ExternalSecretSpecSecretStoreRef = lambda -> externalsecretsv1beta1.ExternalSecretsIoV1beta1ExternalSecretSpecSecretStoreRef {
+    provider?: externalsecretsv1.ExternalSecretsIoV1SecretStoreSpecProvider
+    getRef: () -> externalsecretsv1.ExternalSecretsIoV1ExternalSecretSpecSecretStoreRef = lambda -> externalsecretsv1.ExternalSecretsIoV1ExternalSecretSpecSecretStoreRef {
         {
             kind = "SecretStore"
             name = name
@@ -17,7 +17,7 @@ schema NamespaceSecretStore(common.Metadata):
     remoteNamespace: str
     name?: str = "{}-namespace".format(remoteNamespace)
     serviceAccountName?: str = name
-    getRef: () -> externalsecretsv1beta1.ExternalSecretsIoV1beta1ExternalSecretSpecSecretStoreRef = lambda -> externalsecretsv1beta1.ExternalSecretsIoV1beta1ExternalSecretSpecSecretStoreRef {
+    getRef: () -> externalsecretsv1.ExternalSecretsIoV1ExternalSecretSpecSecretStoreRef = lambda -> externalsecretsv1.ExternalSecretsIoV1ExternalSecretSpecSecretStoreRef {
         {
             kind = "SecretStore"
             name = name
