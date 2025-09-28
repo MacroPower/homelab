@@ -2959,6 +2959,15 @@
           "title": "revisionHistoryLimit",
           "type": "integer"
         },
+        "roleRules": {
+          "description": "# Enable this and set the rules: to whatever custom rules you want for the Role resource.\n# Defaults to off\nList of custom rules for the application controller's Role resource",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "roleRules",
+          "type": "array"
+        },
         "runtimeClassName": {
           "default": "",
           "description": "Runtime class name for the application controller",
@@ -3058,6 +3067,50 @@
           "required": [],
           "title": "volumes",
           "type": "array"
+        },
+        "vpa": {
+          "additionalProperties": true,
+          "description": "# Application controller Vertical Pod Autoscaler\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to be added to application controller vpa",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "containerPolicy": {
+              "additionalProperties": true,
+              "description": "Controls how VPA computes the recommended resources for application controller container\n# Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml",
+              "required": [],
+              "title": "containerPolicy",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the application controller",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels to be added to application controller vpa",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "updateMode": {
+              "default": "Initial",
+              "description": "One of the VPA operation modes\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically\n# Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden",
+              "required": [],
+              "title": "updateMode",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "vpa",
+          "type": "object"
         }
       },
       "required": [],
@@ -3385,7 +3438,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v2.43.1",
+              "default": "v2.44.0",
               "description": "Dex image tag",
               "required": [],
               "title": "tag",
@@ -6828,7 +6881,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.74.0",
+                  "default": "v1.77.0",
                   "description": "Tag to use for the redis-exporter",
                   "required": [],
                   "title": "tag",
@@ -7742,7 +7795,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.69.0",
+              "default": "v1.75.0",
               "description": "Tag to use for the redis-exporter",
               "required": [],
               "title": "tag",
@@ -8453,6 +8506,21 @@
           },
           "required": [],
           "title": "containerSecurityContext",
+          "type": "object"
+        },
+        "copyutil": {
+          "additionalProperties": true,
+          "properties": {
+            "resources": {
+              "additionalProperties": true,
+              "description": "Resource limits and requests for the repo server copyutil initContainer",
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "copyutil",
           "type": "object"
         },
         "deploymentAnnotations": {

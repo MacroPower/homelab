@@ -87,6 +87,9 @@ schema ArgoprojIoV1alpha1AppProjectSpec:
     sourceRepos?: [str]
     syncWindows?: [ArgoprojIoV1alpha1AppProjectSpecSyncWindowsItems0]
 
+    check:
+        len(description) <= 255 if description
+
 schema ArgoprojIoV1alpha1AppProjectSpecClusterResourceBlacklistItems0:
     r"""
     GroupKind specifies a Group and a Kind, but does not force a version.  This is useful for identifying
@@ -283,6 +286,8 @@ schema ArgoprojIoV1alpha1AppProjectSpecSyncWindowsItems0:
         Applications contains a list of applications that the window will apply to
     clusters : [str], default is Undefined, optional
         Clusters contains a list of clusters that the window will apply to
+    description : str, default is Undefined, optional
+        Description of the sync that will be applied to the schedule, can be used to add any information such as a ticket number for example
     duration : str, default is Undefined, optional
         Duration is the amount of time the sync window will be open
     kind : str, default is Undefined, optional
@@ -299,6 +304,7 @@ schema ArgoprojIoV1alpha1AppProjectSpecSyncWindowsItems0:
     andOperator?: bool
     applications?: [str]
     clusters?: [str]
+    description?: str
     duration?: str
     kind?: str
     manualSync?: bool

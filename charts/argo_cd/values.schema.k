@@ -2096,6 +2096,10 @@ schema ValuesController:
         Resource limits and requests for the application controller pods
     revisionHistoryLimit : int, optional, default is 5
         Maximum number of controller revisions that will be maintained in StatefulSet history
+    roleRules : [any], optional
+        # Enable this and set the rules: to whatever custom rules you want for the Role resource.
+        # Defaults to off
+        List of custom rules for the application controller's Role resource
     runtimeClassName : str, optional, default is ""
         Runtime class name for the application controller
     serviceAccount : ValuesControllerServiceAccount, optional
@@ -2113,6 +2117,9 @@ schema ValuesController:
         Additional volumeMounts to the application controller main container
     volumes : [any], optional
         Additional volumes to the application controller pod
+    vpa : ValuesControllerVpa, optional
+        # Application controller Vertical Pod Autoscaler
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
     """
     [...str]: any
     affinity?: ValuesControllerAffinity
@@ -2147,6 +2154,7 @@ schema ValuesController:
     replicas?: int
     resources?: ValuesControllerResources
     revisionHistoryLimit?: int
+    roleRules?: [any]
     runtimeClassName?: str
     serviceAccount?: ValuesControllerServiceAccount
     statefulsetAnnotations?: ValuesControllerStatefulsetAnnotations
@@ -2155,6 +2163,7 @@ schema ValuesController:
     topologySpreadConstraints?: [any]
     volumeMounts?: [any]
     volumes?: [any]
+    vpa?: ValuesControllerVpa
 
 schema ValuesControllerAffinity:
     r"""
@@ -2608,6 +2617,53 @@ schema ValuesControllerStatefulsetAnnotations:
     """
     [...str]: any
 
+schema ValuesControllerVpa:
+    r"""
+    # Application controller Vertical Pod Autoscaler
+    # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
+
+    Attributes
+    ----------
+    annotations : ValuesControllerVpaAnnotations, optional
+        Annotations to be added to application controller vpa
+    containerPolicy : ValuesControllerVpaContainerPolicy, optional
+        Controls how VPA computes the recommended resources for application controller container
+        # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    enabled : bool, optional, default is False
+        Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the application controller
+    labels : ValuesControllerVpaLabels, optional
+        Labels to be added to application controller vpa
+    updateMode : str, optional, default is "Initial"
+        One of the VPA operation modes
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically
+        # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden
+    """
+    [...str]: any
+    annotations?: ValuesControllerVpaAnnotations
+    containerPolicy?: ValuesControllerVpaContainerPolicy
+    enabled?: bool
+    labels?: ValuesControllerVpaLabels
+    updateMode?: str
+
+schema ValuesControllerVpaAnnotations:
+    r"""
+    Annotations to be added to application controller vpa
+    """
+    [...str]: any
+
+schema ValuesControllerVpaContainerPolicy:
+    r"""
+    Controls how VPA computes the recommended resources for application controller container
+    # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    """
+    [...str]: any
+
+schema ValuesControllerVpaLabels:
+    r"""
+    Labels to be added to application controller vpa
+    """
+    [...str]: any
+
 schema ValuesCrds:
     r"""
     # Custom resource configuration
@@ -2938,7 +2994,7 @@ schema ValuesDexImage:
         Dex imagePullPolicy
     repository : str, optional, default is "ghcr.io/dexidp/dex"
         Dex image repository
-    tag : str, optional, default is "v2.43.1"
+    tag : str, optional, default is "v2.44.0"
         Dex image tag
     """
     [...str]: any
@@ -5557,7 +5613,7 @@ schema ValuesRedisExporterImage:
         Image pull policy for the redis-exporter
     repository : str, optional, default is "ghcr.io/oliver006/redis_exporter"
         Repository to use for the redis-exporter
-    tag : str, optional, default is "v1.74.0"
+    tag : str, optional, default is "v1.77.0"
         Tag to use for the redis-exporter
     """
     [...str]: any
@@ -5706,7 +5762,7 @@ schema ValuesRedisHaExporter:
         Enable Prometheus redis-exporter sidecar
     image : str, optional, default is "ghcr.io/oliver006/redis_exporter"
         Repository to use for the redis-exporter
-    tag : str, optional, default is "v1.69.0"
+    tag : str, optional, default is "v1.75.0"
         Tag to use for the redis-exporter
     """
     [...str]: any
@@ -6504,6 +6560,7 @@ schema ValuesRepoServer:
         Repo server container ports
     containerSecurityContext : ValuesRepoServerContainerSecurityContext, optional
         Repo server container-level security context
+    copyutil : ValuesRepoServerCopyutil, optional
     deploymentAnnotations : ValuesRepoServerDeploymentAnnotations, optional
         Annotations to be added to repo server Deployment
     deploymentLabels : ValuesRepoServerDeploymentLabels, optional
@@ -6595,6 +6652,7 @@ schema ValuesRepoServer:
     clusterRoleRules?: ValuesRepoServerClusterRoleRules
     containerPorts?: ValuesRepoServerContainerPorts
     containerSecurityContext?: ValuesRepoServerContainerSecurityContext
+    copyutil?: ValuesRepoServerCopyutil
     deploymentAnnotations?: ValuesRepoServerDeploymentAnnotations
     deploymentLabels?: ValuesRepoServerDeploymentLabels
     deploymentStrategy?: ValuesRepoServerDeploymentStrategy
@@ -6802,6 +6860,24 @@ schema ValuesRepoServerContainerSecurityContextSeccompProfile:
     """
     [...str]: any
     $type?: str
+
+schema ValuesRepoServerCopyutil:
+    r"""
+    ValuesRepoServerCopyutil
+
+    Attributes
+    ----------
+    resources : ValuesRepoServerCopyutilResources, optional
+        Resource limits and requests for the repo server copyutil initContainer
+    """
+    [...str]: any
+    resources?: ValuesRepoServerCopyutilResources
+
+schema ValuesRepoServerCopyutilResources:
+    r"""
+    Resource limits and requests for the repo server copyutil initContainer
+    """
+    [...str]: any
 
 schema ValuesRepoServerDeploymentAnnotations:
     r"""
