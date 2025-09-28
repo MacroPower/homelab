@@ -11,27 +11,27 @@ schema ProviderConfig:
 
     Attributes
     ----------
-    apiVersion : str, default is "opentofu.upbound.io/v1beta1", required
+    apiVersion : str, default is "opentofu.m.upbound.io/v1beta1", required
         APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
     kind : str, default is "ProviderConfig", required
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, optional
         metadata
-    spec : OpentofuUpboundIoV1beta1ProviderConfigSpec, default is Undefined, required
+    spec : OpentofumUpboundIoV1beta1ProviderConfigSpec, default is Undefined, required
         spec
-    status : OpentofuUpboundIoV1beta1ProviderConfigStatus, default is Undefined, optional
+    status : OpentofumUpboundIoV1beta1ProviderConfigStatus, default is Undefined, optional
         status
     """
-    apiVersion: "opentofu.upbound.io/v1beta1" = "opentofu.upbound.io/v1beta1"
+    apiVersion: "opentofu.m.upbound.io/v1beta1" = "opentofu.m.upbound.io/v1beta1"
 
     kind: "ProviderConfig" = "ProviderConfig"
 
     metadata?: v1.ObjectMeta
-    spec: OpentofuUpboundIoV1beta1ProviderConfigSpec
+    spec: OpentofumUpboundIoV1beta1ProviderConfigSpec
 
-    status?: OpentofuUpboundIoV1beta1ProviderConfigStatus
+    status?: OpentofumUpboundIoV1beta1ProviderConfigStatus
 
-schema OpentofuUpboundIoV1beta1ProviderConfigSpec:
+schema OpentofumUpboundIoV1beta1ProviderConfigSpec:
     r"""
     A ProviderConfigSpec defines the desired state of a ProviderConfig.
 
@@ -46,7 +46,7 @@ schema OpentofuUpboundIoV1beta1ProviderConfigSpec:
         Configuration that should be injected into all workspaces that use
         this provider config, expressed as inline HCL. This can be used to
         automatically inject Terraform provider configuration blocks.
-    credentials : [OpentofuUpboundIoV1beta1ProviderConfigSpecCredentialsItems0], default is Undefined, optional
+    credentials : [OpentofumUpboundIoV1beta1ProviderConfigSpecCredentialsItems0], default is Undefined, optional
         Credentials required to authenticate to this provider.
     pluginCache : bool, default is True, optional
         PluginCache enables tofu provider plugin caching mechanism
@@ -54,35 +54,35 @@ schema OpentofuUpboundIoV1beta1ProviderConfigSpec:
     """
     backendFile?: str
     configuration?: str
-    credentials?: [OpentofuUpboundIoV1beta1ProviderConfigSpecCredentialsItems0]
+    credentials?: [OpentofumUpboundIoV1beta1ProviderConfigSpecCredentialsItems0]
     pluginCache?: bool = True
 
-schema OpentofuUpboundIoV1beta1ProviderConfigSpecCredentialsItems0:
+schema OpentofumUpboundIoV1beta1ProviderConfigSpecCredentialsItems0:
     r"""
     ProviderCredentials required to authenticate.
 
     Attributes
     ----------
-    env : OpentofuUpboundIoV1beta1ProviderConfigSpecCredentialsItems0Env, default is Undefined, optional
+    env : OpentofumUpboundIoV1beta1ProviderConfigSpecCredentialsItems0Env, default is Undefined, optional
         env
     filename : str, default is Undefined, required
         Filename (relative to main.tf) to which these provider credentials
         should be written.
-    fs : OpentofuUpboundIoV1beta1ProviderConfigSpecCredentialsItems0Fs, default is Undefined, optional
+    fs : OpentofumUpboundIoV1beta1ProviderConfigSpecCredentialsItems0Fs, default is Undefined, optional
         fs
-    secretRef : OpentofuUpboundIoV1beta1ProviderConfigSpecCredentialsItems0SecretRef, default is Undefined, optional
+    secretRef : OpentofumUpboundIoV1beta1ProviderConfigSpecCredentialsItems0SecretRef, default is Undefined, optional
         secret ref
     source : str, default is Undefined, required
         Source of the provider credentials.
     """
-    env?: OpentofuUpboundIoV1beta1ProviderConfigSpecCredentialsItems0Env
+    env?: OpentofumUpboundIoV1beta1ProviderConfigSpecCredentialsItems0Env
     filename: str
 
-    fs?: OpentofuUpboundIoV1beta1ProviderConfigSpecCredentialsItems0Fs
-    secretRef?: OpentofuUpboundIoV1beta1ProviderConfigSpecCredentialsItems0SecretRef
+    fs?: OpentofumUpboundIoV1beta1ProviderConfigSpecCredentialsItems0Fs
+    secretRef?: OpentofumUpboundIoV1beta1ProviderConfigSpecCredentialsItems0SecretRef
     source: "None" | "Secret" | "Environment" | "Filesystem"
 
-schema OpentofuUpboundIoV1beta1ProviderConfigSpecCredentialsItems0Env:
+schema OpentofumUpboundIoV1beta1ProviderConfigSpecCredentialsItems0Env:
     r"""
     Env is a reference to an environment variable that contains credentials
     that must be used to connect to the provider.
@@ -94,7 +94,7 @@ schema OpentofuUpboundIoV1beta1ProviderConfigSpecCredentialsItems0Env:
     """
     name: str
 
-schema OpentofuUpboundIoV1beta1ProviderConfigSpecCredentialsItems0Fs:
+schema OpentofumUpboundIoV1beta1ProviderConfigSpecCredentialsItems0Fs:
     r"""
     Fs is a reference to a filesystem location that contains credentials that
     must be used to connect to the provider.
@@ -106,7 +106,7 @@ schema OpentofuUpboundIoV1beta1ProviderConfigSpecCredentialsItems0Fs:
     """
     path: str
 
-schema OpentofuUpboundIoV1beta1ProviderConfigSpecCredentialsItems0SecretRef:
+schema OpentofumUpboundIoV1beta1ProviderConfigSpecCredentialsItems0SecretRef:
     r"""
     A SecretRef is a reference to a secret key that contains the credentials
     that must be used to connect to the provider.
@@ -126,21 +126,21 @@ schema OpentofuUpboundIoV1beta1ProviderConfigSpecCredentialsItems0SecretRef:
 
     namespace: str
 
-schema OpentofuUpboundIoV1beta1ProviderConfigStatus:
+schema OpentofumUpboundIoV1beta1ProviderConfigStatus:
     r"""
     A ProviderConfigStatus reflects the observed state of a ProviderConfig.
 
     Attributes
     ----------
-    conditions : [OpentofuUpboundIoV1beta1ProviderConfigStatusConditionsItems0], default is Undefined, optional
+    conditions : [OpentofumUpboundIoV1beta1ProviderConfigStatusConditionsItems0], default is Undefined, optional
         Conditions of the resource.
     users : int, default is Undefined, optional
         Users of this provider configuration.
     """
-    conditions?: [OpentofuUpboundIoV1beta1ProviderConfigStatusConditionsItems0]
+    conditions?: [OpentofumUpboundIoV1beta1ProviderConfigStatusConditionsItems0]
     users?: int
 
-schema OpentofuUpboundIoV1beta1ProviderConfigStatusConditionsItems0:
+schema OpentofumUpboundIoV1beta1ProviderConfigStatusConditionsItems0:
     r"""
     A Condition that may apply to a resource.
 

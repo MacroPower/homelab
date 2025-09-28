@@ -342,7 +342,9 @@ charts: helm.Charts = {
         schemaGenerator = "NONE"
         crdGenerator = "PATH"
         crdPaths = [
-            "https://doc.crds.dev/raw/github.com/upbound/provider-opentofu@v0.2.7"
+            "https://raw.githubusercontent.com/upbound/provider-opentofu/refs/tags/v1.0.0/package/crds/opentofu.m.upbound.io_clusterproviderconfigs.yaml"
+            "https://raw.githubusercontent.com/upbound/provider-opentofu/refs/tags/v1.0.0/package/crds/opentofu.m.upbound.io_providerconfigs.yaml"
+            "https://raw.githubusercontent.com/upbound/provider-opentofu/refs/tags/v1.0.0/package/crds/opentofu.m.upbound.io_workspaces.yaml"
         ]
     }
     truecommand: {
