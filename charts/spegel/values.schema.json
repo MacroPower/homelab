@@ -84,7 +84,7 @@
       "additionalProperties": true,
       "properties": {
         "digest": {
-          "default": "sha256:4f9f7cf0b8006f2a17599f0a9f2fa6c02c7a206726f2a89ca26c42622346d17f",
+          "default": "sha256:a86089ae74c4f9c98ec86c366d196f7a03044c38af09e6582b0661d42a324226",
           "description": "Image digest.",
           "required": [],
           "title": "digest",
@@ -124,6 +124,21 @@
       "required": [],
       "title": "imagePullSecrets",
       "type": "array"
+    },
+    "livenessProbe": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "description": "When enabled a liveness probe will be added to the registry. ",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "livenessProbe",
+      "type": "object"
     },
     "nameOverride": {
       "default": "",
@@ -237,9 +252,31 @@
     "service": {
       "additionalProperties": true,
       "properties": {
+        "bootstrap": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to add to the bootstrap service",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "bootstrap",
+          "type": "object"
+        },
         "cleanup": {
           "additionalProperties": true,
           "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to add to the cleanup service (used in post-delete hook)",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
             "port": {
               "default": 8080,
               "description": "Port to expose cleanup probe on.",
@@ -255,6 +292,13 @@
         "metrics": {
           "additionalProperties": true,
           "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to add to the metrics service",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
             "port": {
               "default": 9090,
               "description": "Port to expose the metrics via the service.",
@@ -270,6 +314,13 @@
         "registry": {
           "additionalProperties": true,
           "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to add to the registry service",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
             "hostPort": {
               "default": 30020,
               "description": "Local host port to expose the registry.",
@@ -454,7 +505,7 @@
           "type": "string"
         },
         "debugWebEnabled": {
-          "default": false,
+          "default": true,
           "description": "When true enables debug web page.",
           "required": [],
           "title": "debugWebEnabled",
@@ -492,10 +543,19 @@
         },
         "prependExisting": {
           "default": false,
-          "description": "When true existing mirror configuration will be kept and Spegel will prepend it's configuration.",
+          "description": "- \".*:latest$\"\n- \"^docker\\\\.io/\"\n- \"^ghcr\\\\.io/\"\nWhen true existing mirror configuration will be kept and Spegel will prepend it's configuration.",
           "required": [],
           "title": "prependExisting",
           "type": "boolean"
+        },
+        "registryFilters": {
+          "description": "Regular expressions to filter out tags/registries. If empty, all registries/tags are resolved.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "registryFilters",
+          "type": "array"
         },
         "resolveLatestTag": {
           "default": true,

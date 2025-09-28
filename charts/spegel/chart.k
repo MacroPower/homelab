@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "spegel"
     repoURL : str, required, default is "oci://ghcr.io/spegel-org/helm-charts/spegel"
-    targetRevision : str, optional, default is "0.3.0"
+    targetRevision : str, optional, default is "0.4.0"
     """
     values?: Values | any
     chart: str = "spegel"
     repoURL: str = "oci://ghcr.io/spegel-org/helm-charts/spegel"
-    targetRevision?: str = "0.3.0"
+    targetRevision?: str = "0.4.0"
 
