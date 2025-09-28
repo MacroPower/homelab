@@ -407,6 +407,34 @@
               "title": "nodeSelector",
               "type": "object"
             },
+            "podAnnotations": {
+              "additionalProperties": true,
+              "description": "Annotations to apply to the Pod for the Helm Hook to wait for all Alloy instances to be removed before\nuninstalling the Alloy Operator",
+              "required": [],
+              "title": "podAnnotations",
+              "type": "object"
+            },
+            "podLabels": {
+              "additionalProperties": true,
+              "description": "Labels to apply to the Pod for the Helm Hook to wait for all Alloy instances to be removed before uninstalling\nthe Alloy Operator",
+              "properties": {
+                "linkerd.io/inject": {
+                  "default": "disabled",
+                  "required": [],
+                  "title": "linkerd.io/inject",
+                  "type": "string"
+                },
+                "sidecar.istio.io/inject": {
+                  "default": "false",
+                  "required": [],
+                  "title": "sidecar.istio.io/inject",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "podLabels",
+              "type": "object"
+            },
             "tolerations": {
               "description": "Tolerations to apply to the Helm Hook that ensures that Alloy instances are removed during uninstall.",
               "items": {
@@ -419,92 +447,6 @@
           },
           "required": [],
           "title": "waitForAlloyRemoval",
-          "type": "object"
-        },
-        "waitForReadiness": {
-          "additionalProperties": true,
-          "properties": {
-            "enabled": {
-              "default": true,
-              "description": "Utilize a Helm Hook to wait for the Alloy Operator to be ready before creating Alloy instances.\nThis prevents timing issues where Alloy custom resources are created before the operator is ready to process them.",
-              "required": [],
-              "title": "enabled",
-              "type": "boolean"
-            },
-            "image": {
-              "additionalProperties": true,
-              "description": "The image to use for the Helm Hook that ensures the Alloy Operator is ready.",
-              "properties": {
-                "digest": {
-                  "default": "",
-                  "required": [],
-                  "title": "digest",
-                  "type": "string"
-                },
-                "pullPolicy": {
-                  "default": "IfNotPresent",
-                  "required": [],
-                  "title": "pullPolicy",
-                  "type": "string"
-                },
-                "pullSecrets": {
-                  "items": {
-                    "required": []
-                  },
-                  "required": [],
-                  "title": "pullSecrets",
-                  "type": "array"
-                },
-                "registry": {
-                  "default": "ghcr.io",
-                  "required": [],
-                  "title": "registry",
-                  "type": "string"
-                },
-                "repository": {
-                  "default": "grafana/helm-chart-toolbox-kubectl",
-                  "required": [],
-                  "title": "repository",
-                  "type": "string"
-                },
-                "tag": {
-                  "default": "0.1.1",
-                  "required": [],
-                  "title": "tag",
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "title": "image",
-              "type": "object"
-            },
-            "nodeSelector": {
-              "additionalProperties": true,
-              "description": "Node selector to use for the Helm Hook that ensures the Alloy Operator is ready.",
-              "properties": {
-                "kubernetes.io/os": {
-                  "default": "linux",
-                  "required": [],
-                  "title": "kubernetes.io/os",
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "title": "nodeSelector",
-              "type": "object"
-            },
-            "tolerations": {
-              "description": "Tolerations to apply to the Helm Hook that ensures the Alloy Operator is ready.",
-              "items": {
-                "required": []
-              },
-              "required": [],
-              "title": "tolerations",
-              "type": "array"
-            }
-          },
-          "required": [],
-          "title": "waitForReadiness",
           "type": "object"
         }
       },
@@ -802,6 +744,13 @@
           "description": "How frequently to scrape metrics from the API Server\nOverrides metrics.scrapeInterval",
           "required": [],
           "title": "scrapeInterval",
+          "type": "string"
+        },
+        "scrapeTimeout": {
+          "default": "",
+          "description": "The timeout for scraping API Server metrics.",
+          "required": [],
+          "title": "scrapeTimeout",
           "type": "string"
         }
       },
@@ -1602,6 +1551,13 @@
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
+        },
+        "scrapeTimeout": {
+          "default": "",
+          "description": "The timeout for scraping cAdvisor metrics.",
+          "required": [],
+          "title": "scrapeTimeout",
+          "type": "string"
         }
       },
       "required": [],
@@ -1771,7 +1727,7 @@
     "config": {
       "additionalProperties": true,
       "default": "collectors:\n  enabled: '[defaults],memory,container'",
-      "description": "# More configuration options available at https://grafana.com/docs/beyla/latest/configure/options/\n# The below default configuration\n# 1. looks for ALL the services in the host\n# 2. export metrics as prometheus metrics by default at 9090 port\n# 3. enables kubernetes attribute\n# Note: The default configuration is used if config.create=true and config.name=\"\"",
+      "description": "The configuration for this destination.\n@ section -- General",
       "properties": {
         "create": {
           "default": true,
@@ -2234,6 +2190,13 @@
               "description": "Skip Beyla traces when `span.metrics.skip` resource attribute is present.",
               "required": [],
               "title": "skipBeyla",
+              "type": "boolean"
+            },
+            "skipInternal": {
+              "default": true,
+              "description": "Skip span if span kind is internal.",
+              "required": [],
+              "title": "skipInternal",
               "type": "boolean"
             },
             "transforms": {
@@ -3254,6 +3217,12 @@
       "title": "ebpf",
       "type": "object"
     },
+    "ecosystem": {
+      "description": "The ecosystem for this destination. By setting this ecosystem, matching telemetry data sources might be\nauto-assigned to this destination. Options: `loki`, `otlp`, `prometheus`, `pyroscope`\n@ section -- General",
+      "required": [],
+      "title": "ecosystem",
+      "type": "string"
+    },
     "enabled": {
       "description": "Enable this Alloy instance.",
       "required": [],
@@ -3403,6 +3372,12 @@
               "required": [],
               "title": "port",
               "type": "integer"
+            },
+            "protocol": {
+              "description": "The MySQL protocol type.",
+              "required": [],
+              "title": "protocol",
+              "type": "string"
             }
           },
           "required": [],
@@ -3650,7 +3625,7 @@
     },
     "gatherMethod": {
       "default": "volumes",
-      "description": "The method to gather pod logs. Options are \"volumes\", \"filelog\" (experimental), \"kubernetesApi\", \"OpenShiftClusterLogForwarder\" (experimental).",
+      "description": "The method to gather pod logs. Options are \"volumes\", \"filelog\" (experimental), \"kubernetesApi\", \"OpenShiftClusterLogForwarder\" (experimental).\nDEPRECATION WARNING: The \"kubernetesApi\" gather method is deprecated and will be removed in a future release.\nPlease use the podLogsViaKubernetesApi feature instead.",
       "required": [],
       "title": "gatherMethod",
       "type": "string"
@@ -3753,7 +3728,7 @@
         },
         "scrapeTimeout": {
           "default": "10s",
-          "description": "The scrape timeout for discovered pods and services.",
+          "description": "The timeout for scraping metrics.",
           "required": [],
           "title": "scrapeTimeout",
           "type": "string"
@@ -4608,6 +4583,13 @@
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
+        },
+        "scrapeTimeout": {
+          "default": "",
+          "description": "The timeout for scraping Kepler metrics.",
+          "required": [],
+          "title": "scrapeTimeout",
+          "type": "string"
         }
       },
       "required": [],
@@ -4819,6 +4801,13 @@
           "title": "scrapeInterval",
           "type": "string"
         },
+        "scrapeTimeout": {
+          "default": "",
+          "description": "The timeout for scraping kube-state-metrics metrics.",
+          "required": [],
+          "title": "scrapeTimeout",
+          "type": "string"
+        },
         "service": {
           "additionalProperties": true,
           "description": "kube-state-metrics service settings",
@@ -5017,6 +5006,13 @@
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
+        },
+        "scrapeTimeout": {
+          "default": "",
+          "description": "The timeout for scraping KubeDNS metrics.",
+          "required": [],
+          "title": "scrapeTimeout",
+          "type": "string"
         }
       },
       "required": [],
@@ -5101,6 +5097,13 @@
           "description": "How frequently to scrape metrics from the Kube Proxy\nOverrides metrics.scrapeInterval",
           "required": [],
           "title": "scrapeInterval",
+          "type": "string"
+        },
+        "scrapeTimeout": {
+          "default": "",
+          "description": "The timeout for scraping Kube Proxy metrics.",
+          "required": [],
+          "title": "scrapeTimeout",
           "type": "string"
         },
         "selectorLabel": {
@@ -5238,7 +5241,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v0.19.1",
+              "default": "v0.20.0",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -5390,6 +5393,13 @@
           "title": "scrapeInterval",
           "type": "string"
         },
+        "scrapeTimeout": {
+          "default": "",
+          "description": "The timeout for scraping Kube Scheduler metrics.",
+          "required": [],
+          "title": "scrapeTimeout",
+          "type": "string"
+        },
         "selectorLabel": {
           "default": "component=kube-scheduler",
           "description": "Selector label.",
@@ -5510,6 +5520,13 @@
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
+        },
+        "scrapeTimeout": {
+          "default": "",
+          "description": "The timeout for scraping Kubelet metrics.",
+          "required": [],
+          "title": "scrapeTimeout",
+          "type": "string"
         }
       },
       "required": [],
@@ -5601,6 +5618,13 @@
           "description": "How frequently to scrape Kubelet probe metrics.",
           "required": [],
           "title": "scrapeInterval",
+          "type": "string"
+        },
+        "scrapeTimeout": {
+          "default": "",
+          "description": "The timeout for scraping Kubelet probe metrics.",
+          "required": [],
+          "title": "scrapeTimeout",
           "type": "string"
         }
       },
@@ -5694,6 +5718,13 @@
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
+        },
+        "scrapeTimeout": {
+          "default": "",
+          "description": "The timeout for scraping Kubelet resource metrics.",
+          "required": [],
+          "title": "scrapeTimeout",
+          "type": "string"
         }
       },
       "required": [],
@@ -5702,7 +5733,7 @@
     },
     "labelSelectors": {
       "additionalProperties": true,
-      "description": "Discover Tempo instances based on label selectors.",
+      "description": "Filter the list of discovered pods by labels.\nExample: `labelSelectors: { 'app': 'myapp' }` will only discover pods and services with the label `app=myapp`.\nExample: `labelSelectors: { 'app': ['myapp', 'myotherapp'] }` will only discover pods and services with the label `app=myapp` or `app=myotherapp`.",
       "properties": {
         "app.kubernetes.io/name": {
           "items": {
@@ -5847,6 +5878,12 @@
       "title": "logFormat",
       "type": "string"
     },
+    "logProcessingRules": {
+      "description": "Rule blocks to be evaluated before printing the log messages to the standard output. See\n([docs](https://grafana.com/docs/alloy/latest/reference/components/loki/loki.relabel/#rule)) for more information.",
+      "required": [],
+      "title": "logProcessingRules",
+      "type": "string"
+    },
     "logProcessingStages": {
       "description": "Stage blocks to be evaluated before delivering to the Loki destination. See\n([docs](https://grafana.com/docs/alloy/latest/reference/components/loki/loki.process/#blocks)) for more information.",
       "required": [],
@@ -5922,6 +5959,12 @@
           "required": [],
           "title": "namespaces",
           "type": "array"
+        },
+        "target": {
+          "description": "The Alloy component reference for sending logs.\n@ section -- Logs",
+          "required": [],
+          "title": "target",
+          "type": "string"
         },
         "transforms": {
           "additionalProperties": true,
@@ -6101,6 +6144,12 @@
           "title": "enabled",
           "type": "boolean"
         },
+        "extraMetricProcessingRules": {
+          "description": "Rule blocks to be added to the prometheus.relabel component for MySQL metrics.\nThese relabeling rules are applied post-scrape against the metrics returned from the scraped target, no `__meta*` labels are present.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#rule-block))",
+          "required": [],
+          "title": "extraMetricProcessingRules",
+          "type": "string"
+        },
         "filters": {
           "additionalProperties": true,
           "description": "Apply a filter to metrics received via the OTLP or OTLP HTTP receivers.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.processor.filter/))",
@@ -6149,6 +6198,18 @@
           "required": [],
           "title": "scrapeInterval",
           "type": "null"
+        },
+        "scrapeTimeout": {
+          "description": "The timeout for scraping metrics from Tempo.",
+          "required": [],
+          "title": "scrapeTimeout",
+          "type": "string"
+        },
+        "target": {
+          "description": "The Alloy component reference for sending metrics.\n@ section -- Metrics",
+          "required": [],
+          "title": "target",
+          "type": "string"
         },
         "transforms": {
           "additionalProperties": true,
@@ -6900,6 +6961,13 @@
           "title": "scrapeInterval",
           "type": "string"
         },
+        "scrapeTimeout": {
+          "default": "",
+          "description": "The timeout for scraping Node Exporter metrics.",
+          "required": [],
+          "title": "scrapeTimeout",
+          "type": "string"
+        },
         "service": {
           "additionalProperties": true,
           "description": "Node Exporter service settings",
@@ -7053,6 +7121,13 @@
       },
       "required": [],
       "title": "nodeSelector",
+      "type": "object"
+    },
+    "nodeSelectors": {
+      "additionalProperties": true,
+      "description": "Filter the list of discovered nodes by labels.\nExample: `nodeSelectors: { 'kubernetes.io/os': 'linux' }`",
+      "required": [],
+      "title": "nodeSelectors",
       "type": "object"
     },
     "openTelemetryConversion": {
@@ -7264,20 +7339,6 @@
           "title": "customPricing",
           "type": "object"
         },
-        "dataRetention": {
-          "additionalProperties": true,
-          "properties": {
-            "dailyResolutionDays": {
-              "default": 15,
-              "required": [],
-              "title": "dailyResolutionDays",
-              "type": "integer"
-            }
-          },
-          "required": [],
-          "title": "dataRetention",
-          "type": "object"
-        },
         "enabled": {
           "default": false,
           "description": "Deploy and scrape OpenCost.",
@@ -7430,25 +7491,25 @@
                   "title": "networkPort",
                   "type": "integer"
                 },
-                "retentionResolution10m": {
+                "retention10m": {
                   "default": 36,
                   "description": "The number of 10m intervals the Collector DataSource should maintain",
                   "required": [],
-                  "title": "retentionResolution10m",
+                  "title": "retention10m",
                   "type": "integer"
                 },
-                "retentionResolution1d": {
+                "retention1d": {
                   "default": 15,
                   "description": "The number of 1d intervals the Collector DataSource should maintain",
                   "required": [],
-                  "title": "retentionResolution1d",
+                  "title": "retention1d",
                   "type": "integer"
                 },
-                "retentionResolution1h": {
+                "retention1h": {
                   "default": 49,
                   "description": "The number of 1h intervals the Collector DataSource should maintain",
                   "required": [],
-                  "title": "retentionResolution1h",
+                  "title": "retention1h",
                   "type": "integer"
                 },
                 "scrapeInterval": {
@@ -7552,7 +7613,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "1.117.1@sha256:875bfc5f976ef866ceb69b50ec26884a4c86f6a858ff1ab379bedac336233e72",
+                  "default": "1.117.3@sha256:09fae89c4544ec2a891e2902e88ce3137d7032c6edbe0fd97441aaee7bdbea54",
                   "description": "Exporter container image tag",
                   "required": [],
                   "title": "tag",
@@ -8479,6 +8540,13 @@
                   "title": "namespaceName",
                   "type": "string"
                 },
+                "path": {
+                  "default": "",
+                  "description": "Path to access the Prometheus API, this is neccesary if the Prometheus server is behind a reverse proxy(mimir) or has a different path.",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
                 "port": {
                   "default": 80,
                   "description": "Service port of in-cluster Prometheus",
@@ -8636,11 +8704,30 @@
           "title": "prometheus",
           "type": "object"
         },
+        "retention1d": {
+          "default": 15,
+          "required": [],
+          "title": "retention1d",
+          "type": "integer"
+        },
+        "retention1h": {
+          "default": 49,
+          "required": [],
+          "title": "retention1h",
+          "type": "integer"
+        },
         "scrapeInterval": {
           "default": "",
           "description": "How frequently to scrape metrics from Kepler.\nOverrides global.scrapeInterval.",
           "required": [],
           "title": "scrapeInterval",
+          "type": "string"
+        },
+        "scrapeTimeout": {
+          "default": "",
+          "description": "The timeout for scraping OpenCost metrics.",
+          "required": [],
+          "title": "scrapeTimeout",
           "type": "string"
         },
         "sigV4Proxy": {
@@ -8786,7 +8873,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "1.117.1@sha256:83fbb29fb3332791ed357c0eea010c556fd3ec670b64465a5b4a13dae2c410ce",
+                  "default": "1.117.3@sha256:727b95405e8c749ddbaa3bd97b93d9c0e246faeb9be9d370dd93ae6b31cdb0c2",
                   "description": "UI container image tag",
                   "required": [],
                   "title": "tag",
@@ -9061,6 +9148,13 @@
               "title": "securityContext",
               "type": "object"
             },
+            "uiPath": {
+              "default": "/",
+              "description": "Base path for serving the UI.\nRequires building a custom image using the build argument \"ui_path\".",
+              "required": [],
+              "title": "uiPath",
+              "type": "string"
+            },
             "uiPort": {
               "default": 9090,
               "description": "used in the default.nginx.conf if you want to switch for using with Docker\napiServer: 0.0.0.0",
@@ -9305,6 +9399,38 @@
       },
       "required": [],
       "title": "podLogs",
+      "type": "object"
+    },
+    "podLogsViaKubernetesApi": {
+      "additionalProperties": true,
+      "description": "Pod logs via Kubernetes API.\nRequires a destination that supports logs.\nTo see the valid options, please see the [Pod Logs via Kubernetes API feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs-via-kubernetes-api).",
+      "properties": {
+        "collector": {
+          "default": "alloy-logs",
+          "description": "Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.",
+          "required": [],
+          "title": "collector",
+          "type": "string"
+        },
+        "destinations": {
+          "description": "The destinations where logs will be sent. If empty, all logs-capable destinations will be used.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "destinations",
+          "type": "array"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Enable gathering Kubernetes Pod logs.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "podLogsViaKubernetesApi",
       "type": "object"
     },
     "podMonitors": {
@@ -9998,7 +10124,7 @@
           "additionalProperties": true,
           "properties": {
             "annotations": {
-              "description": "Kubernetes annotations to extract and add to the attributes of the received telemetry data.",
+              "description": "Kubernetes annotations to extract and add to the attributes of the received telemetry data in the form of a\nlist of otelcol.processor.k8sattributes extract \u003e annotation blocks. See the\n[Alloy documentation](https://grafana.com/docs/agent/latest/flow/reference/components/otelcol.processor.k8sattributes/#annotation-block)\nfor details on how to configure annotation blocks.",
               "items": {
                 "required": []
               },
@@ -10007,7 +10133,7 @@
               "type": "array"
             },
             "labels": {
-              "description": "Kubernetes labels to extract and add to the attributes of the received telemetry data.",
+              "description": "Kubernetes labels to extract and add to the attributes of the received telemetry data in the form of a list of\notelcol.processor.k8sattributes extract \u003e label blocks. See the\n[Alloy documentation](https://grafana.com/docs/agent/latest/flow/reference/components/otelcol.processor.k8sattributes/#extract-label-block)\nfor details on how to configure label blocks.",
               "items": {
                 "required": []
               },
@@ -10031,6 +10157,31 @@
               "required": [],
               "title": "passthrough",
               "type": "boolean"
+            },
+            "podAssociation": {
+              "description": "Defines the rules on how to associate logs/traces/metrics to Pods.",
+              "items": {
+                "additionalProperties": true,
+                "properties": {
+                  "from": {
+                    "default": "connection",
+                    "required": [],
+                    "title": "from",
+                    "type": "string"
+                  },
+                  "name": {
+                    "default": "k8s.pod.uid",
+                    "required": [],
+                    "title": "name",
+                    "type": "string"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "title": "podAssociation",
+              "type": "array"
             }
           },
           "required": [],
@@ -10064,6 +10215,29 @@
           },
           "required": [],
           "title": "memoryLimiter",
+          "type": "object"
+        },
+        "resourceAttributes": {
+          "additionalProperties": true,
+          "properties": {
+            "removeList": {
+              "description": "List of additional resource attribute names to remove from OTEL signals\nThese attributes will be deleted from the resource context for all signal types (metrics, logs, traces)",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "removeList",
+              "type": "array"
+            },
+            "useDefaultRemoveList": {
+              "description": "Whether to use the default remove list for resource attributes",
+              "required": [],
+              "title": "useDefaultRemoveList",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "resourceAttributes",
           "type": "object"
         },
         "resourceDetection": {
@@ -10132,7 +10306,7 @@
                   "type": "boolean"
                 },
                 "hostnameSources": {
-                  "description": "The priority list of sources from which the hostname will be determined. Options: [\"dns\", \"os\", \"cname\", \"lookup\"].",
+                  "description": "The priority list of sources from which the hostname will be determined.\nOptions: [\"dns\", \"os\", \"cname\", \"lookup\"].",
                   "items": {
                     "required": [],
                     "type": "string"
@@ -10713,6 +10887,26 @@
       "required": [],
       "title": "profileProcessingRules",
       "type": "string"
+    },
+    "profiles": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "description": "Enable sending profiles to this destination.\n@ section -- Profiles",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "target": {
+          "description": "The Alloy component reference for sending profiles.\n@ section -- Profiles",
+          "required": [],
+          "title": "target",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "profiles",
+      "type": "object"
     },
     "profilesReceiver": {
       "additionalProperties": true,
@@ -12266,6 +12460,74 @@
           "title": "secret",
           "type": "object"
         },
+        "tls": {
+          "additionalProperties": true,
+          "properties": {
+            "ca": {
+              "description": "The CA certificate for the server (as a string).",
+              "required": [],
+              "title": "ca",
+              "type": "string"
+            },
+            "caFile": {
+              "description": "The CA certificate for the server (as a path to a file).",
+              "required": [],
+              "title": "caFile",
+              "type": "string"
+            },
+            "caFrom": {
+              "description": "Raw config for accessing the server CA certificate.",
+              "required": [],
+              "title": "caFrom",
+              "type": "string"
+            },
+            "cert": {
+              "description": "The client certificate for the server (as a string).",
+              "required": [],
+              "title": "cert",
+              "type": "string"
+            },
+            "certFile": {
+              "description": "The client certificate for the server (as a path to a file).",
+              "required": [],
+              "title": "certFile",
+              "type": "string"
+            },
+            "certFrom": {
+              "description": "Raw config for accessing the client certificate.",
+              "required": [],
+              "title": "certFrom",
+              "type": "string"
+            },
+            "insecureSkipVerify": {
+              "description": "Disables validation of the server certificate.",
+              "required": [],
+              "title": "insecureSkipVerify",
+              "type": "boolean"
+            },
+            "key": {
+              "description": "The client key for the server (as a string).",
+              "required": [],
+              "title": "key",
+              "type": "string"
+            },
+            "keyFile": {
+              "description": "The client key for the server (as a path to a file).",
+              "required": [],
+              "title": "keyFile",
+              "type": "string"
+            },
+            "keyFrom": {
+              "description": "Raw config for accessing the client key.",
+              "required": [],
+              "title": "keyFrom",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "tls",
+          "type": "object"
+        },
         "url": {
           "description": "The URL of the remote config server.",
           "required": [],
@@ -13712,6 +13974,12 @@
           "title": "filters",
           "type": "object"
         },
+        "target": {
+          "description": "The Alloy component reference for sending traces.\n@ section -- Traces",
+          "required": [],
+          "title": "target",
+          "type": "string"
+        },
         "transforms": {
           "additionalProperties": true,
           "description": "Apply a transformation to traces received via the OTLP or OTLP HTTP receivers.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.processor.transform/))",
@@ -14011,6 +14279,13 @@
           "description": "How frequently to scrape metrics from Windows Exporter.",
           "required": [],
           "title": "scrapeInterval",
+          "type": "string"
+        },
+        "scrapeTimeout": {
+          "default": "",
+          "description": "The timeout for scraping Windows Exporter metrics.",
+          "required": [],
+          "title": "scrapeTimeout",
           "type": "string"
         },
         "service": {
