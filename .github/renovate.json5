@@ -11,10 +11,20 @@
       fileMatch: ["(^|/)charts/charts\\.k$"],
       matchStrings: [
         ".*\\{(\\n.*?)*[^\\}]*",
-        '(.*\\n)*\\s*chart\\s*=\\s*"(?<depName>.+)"(.*\\n)*\\s*repoURL\\s*=\\s*"(?<registryUrl>.+)"(.*\\n)*\\s*targetRevision\\s*=\\s*"(?<currentValue>.+)"',
+        '(.*\\n)*\\s*chart\\s*=\\s*"(?<depName>.+)"(.*\\n)*\\s*repoURL\\s*=\\s*"(?<registryUrl>https:\\/\\/.+)"(.*\\n)*\\s*targetRevision\\s*=\\s*"(?<currentValue>.+)"',
       ],
       matchStringsStrategy: "recursive",
       datasourceTemplate: "helm",
+    },
+    {
+      customType: "regex",
+      fileMatch: ["(^|/)charts/charts\\.k$"],
+      matchStrings: [
+        ".*\\{(\\n.*?)*[^\\}]*",
+        '(.*\\n)*\\s*chart\\s*=\\s*"(?<depName>.+)"(.*\\n)*\\s*repoURL\\s*=\\s*"oci:\\/\\/(?<packageName>.+)"(.*\\n)*\\s*targetRevision\\s*=\\s*"(?<currentValue>.+)"',
+      ],
+      matchStringsStrategy: "recursive",
+      datasourceTemplate: "docker",
     },
   ],
   packageRules: [
