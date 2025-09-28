@@ -25,6 +25,7 @@ schema Values:
     image : ValuesImage, optional
     imagePullSecrets : [any], optional
         Image Pull Secrets
+    livenessProbe : ValuesLivenessProbe, optional
     nameOverride : str, optional, default is ""
         Overrides the name of the chart.
     namespaceOverride : str, optional, default is ""
@@ -63,6 +64,7 @@ schema Values:
     grafanaDashboard?: ValuesGrafanaDashboard
     image?: ValuesImage
     imagePullSecrets?: [any]
+    livenessProbe?: ValuesLivenessProbe
     nameOverride?: str
     namespaceOverride?: str
     nodeSelector?: ValuesNodeSelector
@@ -135,7 +137,7 @@ schema ValuesImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:4f9f7cf0b8006f2a17599f0a9f2fa6c02c7a206726f2a89ca26c42622346d17f"
+    digest : str, optional, default is "sha256:a86089ae74c4f9c98ec86c366d196f7a03044c38af09e6582b0661d42a324226"
         Image digest.
     pullPolicy : str, optional, default is "IfNotPresent"
         Image Pull Policy.
@@ -149,6 +151,18 @@ schema ValuesImage:
     pullPolicy?: str
     repository?: str
     tag?: str
+
+schema ValuesLivenessProbe:
+    r"""
+    ValuesLivenessProbe
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        When enabled a liveness probe will be added to the registry. 
+    """
+    [...str]: any
+    enabled?: bool
 
 schema ValuesNodeSelector:
     r"""
@@ -225,12 +239,14 @@ schema ValuesService:
 
     Attributes
     ----------
+    bootstrap : ValuesServiceBootstrap, optional
     cleanup : ValuesServiceCleanup, optional
     metrics : ValuesServiceMetrics, optional
     registry : ValuesServiceRegistry, optional
     router : ValuesServiceRouter, optional
     """
     [...str]: any
+    bootstrap?: ValuesServiceBootstrap
     cleanup?: ValuesServiceCleanup
     metrics?: ValuesServiceMetrics
     registry?: ValuesServiceRegistry
@@ -258,17 +274,44 @@ schema ValuesServiceAccountAnnotations:
     """
     [...str]: any
 
+schema ValuesServiceBootstrap:
+    r"""
+    ValuesServiceBootstrap
+
+    Attributes
+    ----------
+    annotations : ValuesServiceBootstrapAnnotations, optional
+        Annotations to add to the bootstrap service
+    """
+    [...str]: any
+    annotations?: ValuesServiceBootstrapAnnotations
+
+schema ValuesServiceBootstrapAnnotations:
+    r"""
+    Annotations to add to the bootstrap service
+    """
+    [...str]: any
+
 schema ValuesServiceCleanup:
     r"""
     ValuesServiceCleanup
 
     Attributes
     ----------
+    annotations : ValuesServiceCleanupAnnotations, optional
+        Annotations to add to the cleanup service (used in post-delete hook)
     port : int, optional, default is 8080
         Port to expose cleanup probe on.
     """
     [...str]: any
+    annotations?: ValuesServiceCleanupAnnotations
     port?: int
+
+schema ValuesServiceCleanupAnnotations:
+    r"""
+    Annotations to add to the cleanup service (used in post-delete hook)
+    """
+    [...str]: any
 
 schema ValuesServiceMetrics:
     r"""
@@ -276,11 +319,20 @@ schema ValuesServiceMetrics:
 
     Attributes
     ----------
+    annotations : ValuesServiceMetricsAnnotations, optional
+        Annotations to add to the metrics service
     port : int, optional, default is 9090
         Port to expose the metrics via the service.
     """
     [...str]: any
+    annotations?: ValuesServiceMetricsAnnotations
     port?: int
+
+schema ValuesServiceMetricsAnnotations:
+    r"""
+    Annotations to add to the metrics service
+    """
+    [...str]: any
 
 schema ValuesServiceMonitor:
     r"""
@@ -321,6 +373,8 @@ schema ValuesServiceRegistry:
 
     Attributes
     ----------
+    annotations : ValuesServiceRegistryAnnotations, optional
+        Annotations to add to the registry service
     hostPort : int, optional, default is 30020
         Local host port to expose the registry.
     nodeIp : str, optional, default is ""
@@ -333,11 +387,18 @@ schema ValuesServiceRegistry:
         If true adds topology aware hints annotation to node port service.
     """
     [...str]: any
+    annotations?: ValuesServiceRegistryAnnotations
     hostPort?: int
     nodeIp?: str
     nodePort?: int
     port?: int
     topologyAwareHintsEnabled?: bool
+
+schema ValuesServiceRegistryAnnotations:
+    r"""
+    Annotations to add to the registry service
+    """
+    [...str]: any
 
 schema ValuesServiceRouter:
     r"""
@@ -371,7 +432,7 @@ schema ValuesSpegel:
         Path to Containerd mirror configuration.
     containerdSock : str, optional, default is "/run/containerd/containerd.sock"
         Path to Containerd socket.
-    debugWebEnabled : bool, optional, default is False
+    debugWebEnabled : bool, optional, default is True
         When true enables debug web page.
     logLevel : str, optional, default is "INFO"
         Minimum log level to output. Value should be DEBUG, INFO, WARN, or ERROR.
@@ -382,7 +443,12 @@ schema ValuesSpegel:
     mirroredRegistries : [any], optional
         Registries for which mirror configuration will be created. Empty means all registires will be mirrored.
     prependExisting : bool, optional, default is False
+        - ".*:latest$"
+        - "^docker\\.io/"
+        - "^ghcr\\.io/"
         When true existing mirror configuration will be kept and Spegel will prepend it's configuration.
+    registryFilters : [any], optional
+        Regular expressions to filter out tags/registries. If empty, all registries/tags are resolved.
     resolveLatestTag : bool, optional, default is True
         When true latest tags will be resolved to digests.
     resolveTags : bool, optional, default is True
@@ -401,6 +467,7 @@ schema ValuesSpegel:
     mirrorResolveTimeout?: str
     mirroredRegistries?: [any]
     prependExisting?: bool
+    registryFilters?: [any]
     resolveLatestTag?: bool
     resolveTags?: bool
 
