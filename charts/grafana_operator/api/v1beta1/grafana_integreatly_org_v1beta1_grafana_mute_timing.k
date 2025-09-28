@@ -8,98 +8,84 @@ import k8s.apimachinery.pkg.apis.meta.v1
 
 _regex_match = regex.match
 
-schema GrafanaContactPoint:
+schema GrafanaMuteTiming:
     r"""
-    GrafanaContactPoint is the Schema for the grafanacontactpoints API
+    GrafanaMuteTiming is the Schema for the GrafanaMuteTiming API
 
     Attributes
     ----------
     apiVersion : str, default is "grafana.integreatly.org/v1beta1", required
         APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
-    kind : str, default is "GrafanaContactPoint", required
+    kind : str, default is "GrafanaMuteTiming", required
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, optional
         metadata
-    spec : GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpec, default is Undefined, required
+    spec : GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingSpec, default is Undefined, required
         spec
-    status : GrafanaIntegreatlyOrgV1beta1GrafanaContactPointStatus, default is Undefined, optional
+    status : GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingStatus, default is Undefined, optional
         status
     """
     apiVersion: "grafana.integreatly.org/v1beta1" = "grafana.integreatly.org/v1beta1"
 
-    kind: "GrafanaContactPoint" = "GrafanaContactPoint"
+    kind: "GrafanaMuteTiming" = "GrafanaMuteTiming"
 
     metadata?: v1.ObjectMeta
-    spec: GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpec
+    spec: GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingSpec
 
-    status?: GrafanaIntegreatlyOrgV1beta1GrafanaContactPointStatus
+    status?: GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingStatus
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpec:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingSpec:
     r"""
-    GrafanaContactPointSpec defines the desired state of GrafanaContactPoint
+    GrafanaMuteTimingSpec defines the desired state of GrafanaMuteTiming
 
     Attributes
     ----------
     allowCrossNamespaceImport : bool, default is Undefined, optional
         Allow the Operator to match this resource with Grafanas outside the current namespace
-    disableResolveMessage : bool, default is Undefined, optional
-        disable resolve message
-    instanceSelector : GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecInstanceSelector, default is Undefined, required
+    editable : bool, default is True, optional
+        Whether to enable or disable editing of the mute timing in Grafana UI
+    instanceSelector : GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingSpecInstanceSelector, default is Undefined, required
         instance selector
     name : str, default is Undefined, required
-        name
+        A unique name for the mute timing
     resyncPeriod : str, default is "10m0s", optional
         How often the resource is synced, defaults to 10m0s if not set
-    settings : any, default is Undefined, required
-        settings
     suspend : bool, default is Undefined, optional
         Suspend pauses synchronizing attempts and tells the operator to ignore changes
-    $type : str, default is Undefined, required
-        type
-    uid : str, default is Undefined, optional
-        Manually specify the UID the Contact Point is created with. Can be any string consisting of alphanumeric characters, - and _ with a maximum length of 40
-    valuesFrom : [GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0], default is Undefined, optional
-        values from
+    time_intervals : [GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingSpecTimeIntervalsItems0], default is Undefined, required
+        Time intervals for muting
     """
     allowCrossNamespaceImport?: bool = False
-    disableResolveMessage?: bool
-    instanceSelector: GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecInstanceSelector
+    editable?: bool = True
+    instanceSelector: GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingSpecInstanceSelector
 
     name: str
 
     resyncPeriod?: str = "10m0s"
-    settings: any
-
     suspend?: bool
-    $type: str
-
-    uid?: str
-    valuesFrom?: [GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0]
+    time_intervals: [GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingSpecTimeIntervalsItems0]
 
     check:
         _regex_match(str(resyncPeriod), r"^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$") if resyncPeriod
-        len($type) >= 1
-        len(uid) <= 40 if uid
-        _regex_match(str(uid), r"^[a-zA-Z0-9-_]+$") if uid
-        len(valuesFrom) <= 99 if valuesFrom
+        len(time_intervals) >= 1
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecInstanceSelector:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingSpecInstanceSelector:
     r"""
     Selects Grafana instances for import
 
     Attributes
     ----------
-    matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecInstanceSelectorMatchExpressionsItems0], default is Undefined, optional
+    matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingSpecInstanceSelectorMatchExpressionsItems0], default is Undefined, optional
         matchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
         matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-    matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecInstanceSelectorMatchExpressionsItems0]
+    matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingSpecInstanceSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecInstanceSelectorMatchExpressionsItems0:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingSpecInstanceSelectorMatchExpressionsItems0:
     r"""
     A label selector requirement is a selector that contains values, a key, and an operator that
     relates the key and values.
@@ -123,94 +109,66 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecInstanceSelectorMatchE
 
     values?: [str]
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingSpecTimeIntervalsItems0:
     r"""
-    grafana integreatly org v1beta1 grafana contact point spec values from items0
+    grafana integreatly org v1beta1 grafana mute timing spec time intervals items0
 
     Attributes
     ----------
-    targetPath : str, default is Undefined, required
-        target path
-    valueFrom : GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueFrom, default is Undefined, required
-        value from
+    days_of_month : [str], default is Undefined, optional
+        The date 1-31 of a month. Negative values can also be used to represent days that begin at the end of the month.
+        For example: -1 for the last day of the month.
+    location : str, default is Undefined, optional
+        Depending on the location, the time range is displayed in local time.
+    months : [str], default is Undefined, optional
+        The months of the year in either numerical or the full calendar month.
+        For example: 1, may.
+    times : [GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingSpecTimeIntervalsItems0TimesItems0], default is Undefined, optional
+        The time inclusive of the start and exclusive of the end time (in UTC if no location has been selected, otherwise local time).
+    weekdays : [str], default is Undefined, optional
+        The day or range of days of the week.
+        For example: monday, thursday
+    years : [str], default is Undefined, optional
+        The year or years for the interval.
+        For example: 2021
     """
-    targetPath: str
+    days_of_month?: [str]
+    location?: str
+    months?: [str]
+    times?: [GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingSpecTimeIntervalsItems0TimesItems0]
+    weekdays?: [str]
+    years?: [str]
 
-    valueFrom: GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueFrom
-
-schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueFrom:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingSpecTimeIntervalsItems0TimesItems0:
     r"""
-    grafana integreatly org v1beta1 grafana contact point spec values from items0 value from
+    grafana integreatly org v1beta1 grafana mute timing spec time intervals items0 times items0
 
     Attributes
     ----------
-    configMapKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueFromConfigMapKeyRef, default is Undefined, optional
-        config map key ref
-    secretKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueFromSecretKeyRef, default is Undefined, optional
-        secret key ref
+    end_time : str, default is Undefined, required
+        end time
+    start_time : str, default is Undefined, required
+        start time
     """
-    configMapKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueFromConfigMapKeyRef
-    secretKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueFromSecretKeyRef
+    end_time: str
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueFromConfigMapKeyRef:
-    r"""
-    Selects a key of a ConfigMap.
+    start_time: str
 
-    Attributes
-    ----------
-    key : str, default is Undefined, required
-        The key to select.
-    name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-    optional : bool, default is Undefined, optional
-        Specify whether the ConfigMap or its key must be defined
-    """
-    key: str
-
-    name?: str = ""
-    optional?: bool
-
-schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0ValueFromSecretKeyRef:
-    r"""
-    Selects a key of a Secret.
-
-    Attributes
-    ----------
-    key : str, default is Undefined, required
-        The key of the secret to select from.  Must be a valid secret key.
-    name : str, default is Undefined, optional
-        Name of the referent.
-        This field is effectively required, but due to backwards compatibility is
-        allowed to be empty. Instances of this type with an empty value here are
-        almost certainly wrong.
-        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-    optional : bool, default is Undefined, optional
-        Specify whether the Secret or its key must be defined
-    """
-    key: str
-
-    name?: str = ""
-    optional?: bool
-
-schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointStatus:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingStatus:
     r"""
     The most recent observed state of a Grafana resource
 
     Attributes
     ----------
-    conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaContactPointStatusConditionsItems0], default is Undefined, optional
+    conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingStatusConditionsItems0], default is Undefined, optional
         Results when synchonizing resource with Grafana instances
     lastResync : str, default is Undefined, optional
         Last time the resource was synchronized with Grafana instances
     """
-    conditions?: [GrafanaIntegreatlyOrgV1beta1GrafanaContactPointStatusConditionsItems0]
+    conditions?: [GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingStatusConditionsItems0]
     lastResync?: str
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointStatusConditionsItems0:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaMuteTimingStatusConditionsItems0:
     r"""
     Condition contains details for one aspect of the current state of this API Resource.
 

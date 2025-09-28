@@ -8,106 +8,35 @@ import k8s.apimachinery.pkg.apis.meta.v1
 
 _regex_match = regex.match
 
-schema GrafanaNotificationPolicy:
+schema GrafanaNotificationPolicyRoute:
     r"""
-    GrafanaNotificationPolicy is the Schema for the GrafanaNotificationPolicy API
+    GrafanaNotificationPolicyRoute is the Schema for the grafananotificationpolicyroutes API
 
     Attributes
     ----------
     apiVersion : str, default is "grafana.integreatly.org/v1beta1", required
         APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
-    kind : str, default is "GrafanaNotificationPolicy", required
+    kind : str, default is "GrafanaNotificationPolicyRoute", required
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, optional
         metadata
-    spec : GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpec, default is Undefined, required
+    spec : GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteSpec, default is Undefined, required
         spec
-    status : GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyStatus, default is Undefined, optional
+    status : GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteStatus, default is Undefined, optional
         status
     """
     apiVersion: "grafana.integreatly.org/v1beta1" = "grafana.integreatly.org/v1beta1"
 
-    kind: "GrafanaNotificationPolicy" = "GrafanaNotificationPolicy"
+    kind: "GrafanaNotificationPolicyRoute" = "GrafanaNotificationPolicyRoute"
 
     metadata?: v1.ObjectMeta
-    spec: GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpec
+    spec: GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteSpec
 
-    status?: GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyStatus
+    status?: GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteStatus
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpec:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteSpec:
     r"""
-    GrafanaNotificationPolicySpec defines the desired state of GrafanaNotificationPolicy
-
-    Attributes
-    ----------
-    allowCrossNamespaceImport : bool, default is Undefined, optional
-        Allow the Operator to match this resource with Grafanas outside the current namespace
-    editable : bool, default is Undefined, optional
-        Whether to enable or disable editing of the notification policy in Grafana UI
-    instanceSelector : GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecInstanceSelector, default is Undefined, required
-        instance selector
-    resyncPeriod : str, default is "10m0s", optional
-        How often the resource is synced, defaults to 10m0s if not set
-    route : GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRoute, default is Undefined, required
-        route
-    suspend : bool, default is Undefined, optional
-        Suspend pauses synchronizing attempts and tells the operator to ignore changes
-    """
-    allowCrossNamespaceImport?: bool = False
-    editable?: bool
-    instanceSelector: GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecInstanceSelector
-
-    resyncPeriod?: str = "10m0s"
-    route: GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRoute
-
-    suspend?: bool
-
-    check:
-        _regex_match(str(resyncPeriod), r"^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$") if resyncPeriod
-
-schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecInstanceSelector:
-    r"""
-    Selects Grafana instances for import
-
-    Attributes
-    ----------
-    matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecInstanceSelectorMatchExpressionsItems0], default is Undefined, optional
-        matchExpressions is a list of label selector requirements. The requirements are ANDed.
-    matchLabels : {str:str}, default is Undefined, optional
-        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
-        map is equivalent to an element of matchExpressions, whose key field is "key", the
-        operator is "In", and the values array contains only "value". The requirements are ANDed.
-    """
-    matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecInstanceSelectorMatchExpressionsItems0]
-    matchLabels?: {str:str}
-
-schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecInstanceSelectorMatchExpressionsItems0:
-    r"""
-    A label selector requirement is a selector that contains values, a key, and an operator that
-    relates the key and values.
-
-    Attributes
-    ----------
-    key : str, default is Undefined, required
-        key is the label key that the selector applies to.
-    operator : str, default is Undefined, required
-        operator represents a key's relationship to a set of values.
-        Valid operators are In, NotIn, Exists and DoesNotExist.
-    values : [str], default is Undefined, optional
-        values is an array of string values. If the operator is In or NotIn,
-        the values array must be non-empty. If the operator is Exists or DoesNotExist,
-        the values array must be empty. This array is replaced during a strategic
-        merge patch.
-    """
-    key: str
-
-    operator: str
-
-    values?: [str]
-
-schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRoute:
-    r"""
-    Routes for alerts to match against
+    GrafanaNotificationPolicyRouteSpec defines the desired state of GrafanaNotificationPolicyRoute
 
     Attributes
     ----------
@@ -121,7 +50,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRoute:
         group wait
     match_re : {str:str}, default is Undefined, optional
         match re
-    matchers : [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRouteMatchersItems0], default is Undefined, optional
+    matchers : [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteSpecMatchersItems0], default is Undefined, optional
         matchers
     mute_time_intervals : [str], default is Undefined, optional
         mute time intervals
@@ -133,7 +62,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRoute:
         receiver
     repeat_interval : str, default is Undefined, optional
         repeat interval
-    routeSelector : GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRouteRouteSelector, default is Undefined, optional
+    routeSelector : GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteSpecRouteSelector, default is Undefined, optional
         route selector
     routes : any, default is Undefined, optional
         routes, mutually exclusive with RouteSelector
@@ -143,22 +72,22 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRoute:
     group_interval?: str
     group_wait?: str
     match_re?: {str:str}
-    matchers?: [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRouteMatchersItems0]
+    matchers?: [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteSpecMatchersItems0]
     mute_time_intervals?: [str]
     object_matchers?: [[str]]
     provenance?: str
     receiver: str
 
     repeat_interval?: str
-    routeSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRouteRouteSelector
+    routeSelector?: GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteSpecRouteSelector
     routes?: any
 
     check:
         len(receiver) >= 1
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRouteMatchersItems0:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteSpecMatchersItems0:
     r"""
-    grafana integreatly org v1beta1 grafana notification policy spec route matchers items0
+    grafana integreatly org v1beta1 grafana notification policy route spec matchers items0
 
     Attributes
     ----------
@@ -177,24 +106,24 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRouteMatchersIte
     name?: str
     value: str
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRouteRouteSelector:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteSpecRouteSelector:
     r"""
     selects GrafanaNotificationPolicyRoutes to merge in when specified
     mutually exclusive with Routes
 
     Attributes
     ----------
-    matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRouteRouteSelectorMatchExpressionsItems0], default is Undefined, optional
+    matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteSpecRouteSelectorMatchExpressionsItems0], default is Undefined, optional
         matchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
         matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-    matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRouteRouteSelectorMatchExpressionsItems0]
+    matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteSpecRouteSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRouteRouteSelectorMatchExpressionsItems0:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteSpecRouteSelectorMatchExpressionsItems0:
     r"""
     A label selector requirement is a selector that contains values, a key, and an operator that
     relates the key and values.
@@ -218,24 +147,21 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRouteRouteSelect
 
     values?: [str]
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyStatus:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteStatus:
     r"""
-    GrafanaNotificationPolicyStatus defines the observed state of GrafanaNotificationPolicy
+    The most recent observed state of a Grafana resource
 
     Attributes
     ----------
-    conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyStatusConditionsItems0], default is Undefined, optional
+    conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteStatusConditionsItems0], default is Undefined, optional
         Results when synchonizing resource with Grafana instances
-    discoveredRoutes : [str], default is Undefined, optional
-        discovered routes
     lastResync : str, default is Undefined, optional
         Last time the resource was synchronized with Grafana instances
     """
-    conditions?: [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyStatusConditionsItems0]
-    discoveredRoutes?: [str]
+    conditions?: [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteStatusConditionsItems0]
     lastResync?: str
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyStatusConditionsItems0:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteStatusConditionsItems0:
     r"""
     Condition contains details for one aspect of the current state of this API Resource.
 

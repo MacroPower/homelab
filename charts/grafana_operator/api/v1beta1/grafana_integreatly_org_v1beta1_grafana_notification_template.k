@@ -20,7 +20,7 @@ schema GrafanaNotificationTemplate:
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, optional
         metadata
-    spec : GrafanaIntegreatlyOrgV1beta1GrafanaNotificationTemplateSpec, default is Undefined, optional
+    spec : GrafanaIntegreatlyOrgV1beta1GrafanaNotificationTemplateSpec, default is Undefined, required
         spec
     status : GrafanaIntegreatlyOrgV1beta1GrafanaNotificationTemplateStatus, default is Undefined, optional
         status
@@ -30,7 +30,8 @@ schema GrafanaNotificationTemplate:
     kind: "GrafanaNotificationTemplate" = "GrafanaNotificationTemplate"
 
     metadata?: v1.ObjectMeta
-    spec?: GrafanaIntegreatlyOrgV1beta1GrafanaNotificationTemplateSpec
+    spec: GrafanaIntegreatlyOrgV1beta1GrafanaNotificationTemplateSpec
+
     status?: GrafanaIntegreatlyOrgV1beta1GrafanaNotificationTemplateStatus
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationTemplateSpec:
@@ -49,6 +50,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationTemplateSpec:
         Template name
     resyncPeriod : str, default is "10m0s", optional
         How often the resource is synced, defaults to 10m0s if not set
+    suspend : bool, default is Undefined, optional
+        Suspend pauses synchronizing attempts and tells the operator to ignore changes
     template : str, default is Undefined, optional
         Template content
     """
@@ -59,7 +62,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationTemplateSpec:
     name: str
 
     resyncPeriod?: str = "10m0s"
+    suspend?: bool
     template?: str
+
+    check:
+        _regex_match(str(resyncPeriod), r"^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$") if resyncPeriod
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationTemplateSpecInstanceSelector:
     r"""

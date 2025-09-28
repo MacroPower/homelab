@@ -20,7 +20,7 @@ schema GrafanaFolder:
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, optional
         metadata
-    spec : GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpec, default is Undefined, optional
+    spec : GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpec, default is Undefined, required
         spec
     status : GrafanaIntegreatlyOrgV1beta1GrafanaFolderStatus, default is Undefined, optional
         status
@@ -30,7 +30,8 @@ schema GrafanaFolder:
     kind: "GrafanaFolder" = "GrafanaFolder"
 
     metadata?: v1.ObjectMeta
-    spec?: GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpec
+    spec: GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpec
+
     status?: GrafanaIntegreatlyOrgV1beta1GrafanaFolderStatus
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpec:
@@ -51,10 +52,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpec:
         Raw json with folder permissions, potentially exported from Grafana
     resyncPeriod : str, default is "10m0s", optional
         How often the resource is synced, defaults to 10m0s if not set
+    suspend : bool, default is Undefined, optional
+        Suspend pauses synchronizing attempts and tells the operator to ignore changes
     title : str, default is Undefined, optional
         Display name of the folder in Grafana
     uid : str, default is Undefined, optional
-        Manually specify the UID the Folder is created with
+        Manually specify the UID the Folder is created with. Can be any string consisting of alphanumeric characters, - and _ with a maximum length of 40
     """
     allowCrossNamespaceImport?: bool = False
     instanceSelector: GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpecInstanceSelector
@@ -63,8 +66,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpec:
     parentFolderUID?: str
     permissions?: str
     resyncPeriod?: str = "10m0s"
+    suspend?: bool
     title?: str
     uid?: str
+
+    check:
+        _regex_match(str(resyncPeriod), r"^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$") if resyncPeriod
+        len(uid) <= 40 if uid
+        _regex_match(str(uid), r"^[a-zA-Z0-9-_]+$") if uid
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpecInstanceSelector:
     r"""

@@ -13,6 +13,21 @@ schema Values:
         additional labels to add to all resources
     affinity : ValuesAffinity, optional
         pod affinity
+    clusterDomain : str, optional, default is ""
+        Sets the `CLUSTER_DOMAIN` environment variable,
+        it defines how internal Kubernetes services managed by the operator are addressed.
+        By default, this is empty, and internal services are addressed without a cluster domain specified, i.e., a
+        relative domain name that will resolve regardless of if a custom domain is configured for the cluster. If you
+        wish to have services addressed using their FQDNs, you can specify the cluster domain explicitly, e.g., "cluster.local"
+        for the default Kubernetes configuration.
+    dashboard : ValuesDashboard, optional
+    enforceCacheLabels : str, optional, default is "safe"
+        Sets the `ENFORCE_CACHE_LABELS` environment variable,
+        Allows to tweak how caching of various Kubernetes resources works inside the operator.
+        Valid values are "off", "safe", and "all".
+        When set to "off", all resources are cached (including Deployments, Services, Ingresses, and any other native resources that the operator interacts with), which results in much higher memory usage (essentially, grows with cluster size).
+        When set to `safe`, ConfigMaps and Secrets are not cached, all other native resources are cached only when they have `app.kubernetes.io/managed-by: grafana-operator` label. The label is automatically set on all resources that are created/owned by the operator (applicable to any mode).
+        When set to `all`, only resources that have `app.kubernetes.io/managed-by: grafana-operator` are cached. The caveat is that ConfigMaps and Secrets can be seen by the operator only if they have the label. Thus, usage of this mode requires more careful planning.
     env : [any], optional
         Additional environment variables
     extraObjects : [any], optional
@@ -26,9 +41,11 @@ schema Values:
         image pull secrets
     isOpenShift : bool, optional, default is False
         Determines if the target cluster is OpenShift. Additional rbac permissions for routes will be added on OpenShift
-    leaderElect : bool, optional, default is False
-        If you want to run multiple replicas of the grafana-operator, this is not recommended.
+    leaderElect : bool, optional, default is True
+        This is recommended in most scenarios, even when only running a single instance of the operator.
     logging : ValuesLogging, optional
+    maxConcurrentReconciles : int, optional, default is 1
+        Maximum number of concurrent reconciles per Custom Resource.
     metricsService : ValuesMetricsService, optional
     nameOverride : str, optional, default is ""
         Overrides the name of the chart.
@@ -41,11 +58,17 @@ schema Values:
         pod node selector
     podAnnotations : ValuesPodAnnotations, optional
         pod annotations
+    podLabels : ValuesPodLabels, optional
+        pod labels
     podSecurityContext : ValuesPodSecurityContext, optional
         pod security context
     priorityClassName : str, optional, default is ""
         pod priority class name
     rbac : ValuesRbac, optional
+    replicas : int, optional, default is 1
+        The number of operators to run simultaneously.
+        With leader election, only one instance reconciles CRs preventing duplicate reconciliations.
+        Note: Multiple replicas increase stability, it does not increase throughput.
     resources : ValuesResources, optional
         grafana operator container resources
     securityContext : ValuesSecurityContext, optional
@@ -53,6 +76,13 @@ schema Values:
     serviceMonitor : ValuesServiceMonitor, optional
     tolerations : [any], optional
         pod tolerations
+    watchLabelSelectors : str, optional, default is ""
+        Sets the `WATCH_LABEL_SELECTORS` environment variable,
+        it defines which CRs are watched according to their labels.
+        By default, the operator watches all CRs. To make it watch only a subset of CRs, define the variable as a *stringified label selector*.
+        See also: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+        Beware: Always label Grafana CRs before enabling to ensure labels are inherited.
+        # Existing Secrets/ConfigMaps referenced in CRs also need to be labeled to continue working.
     watchNamespaceSelector : str, optional, default is ""
         Sets the `WATCH_NAMESPACE_SELECTOR` environment variable,
         it defines which namespaces the operator should be listening for based on a namespace label (e.g. `"environment: dev"`).
@@ -65,6 +95,9 @@ schema Values:
     [...str]: any
     additionalLabels?: ValuesAdditionalLabels
     affinity?: ValuesAffinity
+    clusterDomain?: str
+    dashboard?: ValuesDashboard
+    enforceCacheLabels?: str
     env?: [any]
     extraObjects?: [any]
     fullnameOverride?: str
@@ -74,20 +107,24 @@ schema Values:
     isOpenShift?: bool
     leaderElect?: bool
     logging?: ValuesLogging
+    maxConcurrentReconciles?: int
     metricsService?: ValuesMetricsService
     nameOverride?: str
     namespaceOverride?: str
     namespaceScope?: bool
     nodeSelector?: ValuesNodeSelector
     podAnnotations?: ValuesPodAnnotations
+    podLabels?: ValuesPodLabels
     podSecurityContext?: ValuesPodSecurityContext
     priorityClassName?: str
     rbac?: ValuesRbac
+    replicas?: int
     resources?: ValuesResources
     securityContext?: ValuesSecurityContext
     serviceAccount?: ValuesServiceAccount
     serviceMonitor?: ValuesServiceMonitor
     tolerations?: [any]
+    watchLabelSelectors?: str
     watchNamespaceSelector?: str
     watchNamespaces?: str
 
@@ -100,6 +137,40 @@ schema ValuesAdditionalLabels:
 schema ValuesAffinity:
     r"""
     pod affinity
+    """
+    [...str]: any
+
+schema ValuesDashboard:
+    r"""
+    ValuesDashboard
+
+    Attributes
+    ----------
+    annotations : ValuesDashboardAnnotations, optional
+        Annotations to add to the Grafana dashboard ConfigMap
+    enabled : bool, optional, default is False
+        Whether to create a ConfigMap containing a dashboard monitoring the operator metrics.
+        Consider enabling this if you are enabling the ServiceMonitor.
+        Optionally, a GrafanaDashboard CR can be manually created pointing to the Grafana.com dashboard ID 22785
+        https://grafana.com/grafana/dashboards/22785-grafana-operator/
+        The Grafana.com dashboard is maintained by the community and does not necessarily match the JSON definition in this repository.
+    labels : ValuesDashboardLabels, optional
+        Labels to add to the Grafana dashboard ConfigMap
+    """
+    [...str]: any
+    annotations?: ValuesDashboardAnnotations
+    enabled?: bool
+    labels?: ValuesDashboardLabels
+
+schema ValuesDashboardAnnotations:
+    r"""
+    Annotations to add to the Grafana dashboard ConfigMap
+    """
+    [...str]: any
+
+schema ValuesDashboardLabels:
+    r"""
+    Labels to add to the Grafana dashboard ConfigMap
     """
     [...str]: any
 
@@ -172,6 +243,12 @@ schema ValuesNodeSelector:
 schema ValuesPodAnnotations:
     r"""
     pod annotations
+    """
+    [...str]: any
+
+schema ValuesPodLabels:
+    r"""
+    pod labels
     """
     [...str]: any
 

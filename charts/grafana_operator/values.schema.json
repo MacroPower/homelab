@@ -16,6 +16,49 @@
       "title": "affinity",
       "type": "object"
     },
+    "clusterDomain": {
+      "default": "",
+      "description": "Sets the `CLUSTER_DOMAIN` environment variable,\nit defines how internal Kubernetes services managed by the operator are addressed.\nBy default, this is empty, and internal services are addressed without a cluster domain specified, i.e., a\nrelative domain name that will resolve regardless of if a custom domain is configured for the cluster. If you\nwish to have services addressed using their FQDNs, you can specify the cluster domain explicitly, e.g., \"cluster.local\"\nfor the default Kubernetes configuration.",
+      "required": [],
+      "title": "clusterDomain",
+      "type": "string"
+    },
+    "dashboard": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations to add to the Grafana dashboard ConfigMap",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Whether to create a ConfigMap containing a dashboard monitoring the operator metrics.\nConsider enabling this if you are enabling the ServiceMonitor.\nOptionally, a GrafanaDashboard CR can be manually created pointing to the Grafana.com dashboard ID 22785\nhttps://grafana.com/grafana/dashboards/22785-grafana-operator/\nThe Grafana.com dashboard is maintained by the community and does not necessarily match the JSON definition in this repository.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "labels": {
+          "additionalProperties": true,
+          "description": "Labels to add to the Grafana dashboard ConfigMap",
+          "required": [],
+          "title": "labels",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "dashboard",
+      "type": "object"
+    },
+    "enforceCacheLabels": {
+      "default": "safe",
+      "description": "Sets the `ENFORCE_CACHE_LABELS` environment variable,\nAllows to tweak how caching of various Kubernetes resources works inside the operator.\nValid values are \"off\", \"safe\", and \"all\".\nWhen set to \"off\", all resources are cached (including Deployments, Services, Ingresses, and any other native resources that the operator interacts with), which results in much higher memory usage (essentially, grows with cluster size).\nWhen set to `safe`, ConfigMaps and Secrets are not cached, all other native resources are cached only when they have `app.kubernetes.io/managed-by: grafana-operator` label. The label is automatically set on all resources that are created/owned by the operator (applicable to any mode).\nWhen set to `all`, only resources that have `app.kubernetes.io/managed-by: grafana-operator` are cached. The caveat is that ConfigMaps and Secrets can be seen by the operator only if they have the label. Thus, usage of this mode requires more careful planning.",
+      "required": [],
+      "title": "enforceCacheLabels",
+      "type": "string"
+    },
     "env": {
       "description": "Additional environment variables",
       "items": {
@@ -94,8 +137,8 @@
       "type": "boolean"
     },
     "leaderElect": {
-      "default": false,
-      "description": "If you want to run multiple replicas of the grafana-operator, this is not recommended.",
+      "default": true,
+      "description": "This is recommended in most scenarios, even when only running a single instance of the operator.",
       "required": [],
       "title": "leaderElect",
       "type": "boolean"
@@ -128,6 +171,13 @@
       "required": [],
       "title": "logging",
       "type": "object"
+    },
+    "maxConcurrentReconciles": {
+      "default": 1,
+      "description": "Maximum number of concurrent reconciles per Custom Resource.",
+      "required": [],
+      "title": "maxConcurrentReconciles",
+      "type": "integer"
     },
     "metricsService": {
       "additionalProperties": true,
@@ -193,6 +243,13 @@
       "title": "podAnnotations",
       "type": "object"
     },
+    "podLabels": {
+      "additionalProperties": true,
+      "description": "pod labels",
+      "required": [],
+      "title": "podLabels",
+      "type": "object"
+    },
     "podSecurityContext": {
       "additionalProperties": true,
       "description": "pod security context",
@@ -221,6 +278,13 @@
       "required": [],
       "title": "rbac",
       "type": "object"
+    },
+    "replicas": {
+      "default": 1,
+      "description": "The number of operators to run simultaneously.\nWith leader election, only one instance reconciles CRs preventing duplicate reconciliations.\nNote: Multiple replicas increase stability, it does not increase throughput.",
+      "required": [],
+      "title": "replicas",
+      "type": "integer"
     },
     "resources": {
       "additionalProperties": true,
@@ -383,6 +447,13 @@
       "required": [],
       "title": "tolerations",
       "type": "array"
+    },
+    "watchLabelSelectors": {
+      "default": "",
+      "description": "Sets the `WATCH_LABEL_SELECTORS` environment variable,\nit defines which CRs are watched according to their labels.\nBy default, the operator watches all CRs. To make it watch only a subset of CRs, define the variable as a *stringified label selector*.\nSee also: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/\nBeware: Always label Grafana CRs before enabling to ensure labels are inherited.\n# Existing Secrets/ConfigMaps referenced in CRs also need to be labeled to continue working.",
+      "required": [],
+      "title": "watchLabelSelectors",
+      "type": "string"
     },
     "watchNamespaceSelector": {
       "default": "",

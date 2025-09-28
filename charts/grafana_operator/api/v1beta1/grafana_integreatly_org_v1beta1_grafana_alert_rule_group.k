@@ -20,7 +20,7 @@ schema GrafanaAlertRuleGroup:
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, optional
         metadata
-    spec : GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpec, default is Undefined, optional
+    spec : GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpec, default is Undefined, required
         spec
     status : GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupStatus, default is Undefined, optional
         status
@@ -30,7 +30,8 @@ schema GrafanaAlertRuleGroup:
     kind: "GrafanaAlertRuleGroup" = "GrafanaAlertRuleGroup"
 
     metadata?: v1.ObjectMeta
-    spec?: GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpec
+    spec: GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpec
+
     status?: GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupStatus
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpec:
@@ -58,6 +59,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpec:
         How often the resource is synced, defaults to 10m0s if not set
     rules : [GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0], default is Undefined, required
         rules
+    suspend : bool, default is Undefined, optional
+        Suspend pauses synchronizing attempts and tells the operator to ignore changes
     """
     allowCrossNamespaceImport?: bool = False
     editable?: bool
@@ -70,6 +73,12 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpec:
     name?: str
     resyncPeriod?: str = "10m0s"
     rules: [GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0]
+
+    suspend?: bool
+
+    check:
+        _regex_match(str(resyncPeriod), r"^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$") if resyncPeriod
+        len(rules) >= 1
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecInstanceSelector:
     r"""
@@ -125,20 +134,26 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0:
         data
     execErrState : str, default is Undefined, required
         exec err state
-    $for : str, default is Undefined, required
+    $for : str, default is "0s", required
         for
     isPaused : bool, default is Undefined, optional
         is paused
+    keepFiringFor : str, default is Undefined, optional
+        keep firing for
     labels : {str:str}, default is Undefined, optional
         labels
+    missingSeriesEvalsToResolve : int, default is Undefined, optional
+        The number of missing series evaluations that must occur before the rule is considered to be resolved.
     noDataState : str, default is Undefined, required
         no data state
     notificationSettings : GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0NotificationSettings, default is Undefined, optional
         notification settings
+    record : GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0Record, default is Undefined, optional
+        record
     title : str, default is Undefined, required
         title
     uid : str, default is Undefined, required
-        uid
+        UID of the alert rule. Can be any string consisting of alphanumeric characters, - and _ with a maximum length of 40
     """
     annotations?: {str:str}
     condition: str
@@ -147,13 +162,16 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0:
 
     execErrState: "OK" | "Alerting" | "Error" | "KeepLast"
 
-    $for: str
+    $for: str = "0s"
 
     isPaused?: bool
+    keepFiringFor?: str
     labels?: {str:str}
+    missingSeriesEvalsToResolve?: int
     noDataState: "Alerting" | "NoData" | "OK" | "KeepLast"
 
     notificationSettings?: GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0NotificationSettings
+    record?: GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0Record
     title: str
 
     uid: str
@@ -161,6 +179,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0:
     check:
         len(title) <= 190
         len(title) >= 1
+        len(uid) <= 40
         _regex_match(str(uid), r"^[a-zA-Z0-9-_]+$")
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0DataItems0:
@@ -227,6 +246,21 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0Notificat
     receiver: str
 
     repeat_interval?: str
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0Record:
+    r"""
+    grafana integreatly org v1beta1 grafana alert rule group spec rules items0 record
+
+    Attributes
+    ----------
+    from : str, default is Undefined, required
+        from
+    metric : str, default is Undefined, required
+        metric
+    """
+    from: str
+
+    metric: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupStatus:
     r"""

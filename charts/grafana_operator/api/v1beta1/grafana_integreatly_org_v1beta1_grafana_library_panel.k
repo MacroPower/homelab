@@ -8,69 +8,67 @@ import k8s.apimachinery.pkg.apis.meta.v1
 
 _regex_match = regex.match
 
-schema GrafanaDashboard:
+schema GrafanaLibraryPanel:
     r"""
-    GrafanaDashboard is the Schema for the grafanadashboards API
+    GrafanaLibraryPanel is the Schema for the grafanalibrarypanels API
 
     Attributes
     ----------
     apiVersion : str, default is "grafana.integreatly.org/v1beta1", required
         APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
-    kind : str, default is "GrafanaDashboard", required
+    kind : str, default is "GrafanaLibraryPanel", required
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, optional
         metadata
-    spec : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpec, default is Undefined, required
+    spec : GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpec, default is Undefined, required
         spec
-    status : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatus, default is Undefined, optional
+    status : GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelStatus, default is Undefined, optional
         status
     """
     apiVersion: "grafana.integreatly.org/v1beta1" = "grafana.integreatly.org/v1beta1"
 
-    kind: "GrafanaDashboard" = "GrafanaDashboard"
+    kind: "GrafanaLibraryPanel" = "GrafanaLibraryPanel"
 
     metadata?: v1.ObjectMeta
-    spec: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpec
+    spec: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpec
 
-    status?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatus
+    status?: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelStatus
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpec:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpec:
     r"""
-    GrafanaDashboardSpec defines the desired state of GrafanaDashboard
+    GrafanaLibraryPanelSpec defines the desired state of GrafanaLibraryPanel
 
     Attributes
     ----------
     allowCrossNamespaceImport : bool, default is Undefined, optional
         Allow the Operator to match this resource with Grafanas outside the current namespace
-    configMapRef : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecConfigMapRef, default is Undefined, optional
+    configMapRef : GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecConfigMapRef, default is Undefined, optional
         config map ref
     contentCacheDuration : str, default is Undefined, optional
         Cache duration for models fetched from URLs
-    datasources : [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecDatasourcesItems0], default is Undefined, optional
+    datasources : [GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecDatasourcesItems0], default is Undefined, optional
         maps required data sources to existing ones
-    envFrom : [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0], default is Undefined, optional
+    envFrom : [GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvFromItems0], default is Undefined, optional
         environments variables from secrets or config maps
-    envs : [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0], default is Undefined, optional
+    envs : [GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvsItems0], default is Undefined, optional
         environments variables as a map
-    folder : str, default is Undefined, optional
-        folder assignment for dashboard
     folderRef : str, default is Undefined, optional
         Name of a `GrafanaFolder` resource in the same namespace
     folderUID : str, default is Undefined, optional
         UID of the target folder for this dashboard
-    grafanaCom : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecGrafanaCom, default is Undefined, optional
+    grafanaCom : GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecGrafanaCom, default is Undefined, optional
         grafana com
     gzipJson : str, default is Undefined, optional
         GzipJson the model's JSON compressed with Gzip. Base64-encoded when in YAML.
-    instanceSelector : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecInstanceSelector, default is Undefined, required
+    instanceSelector : GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecInstanceSelector, default is Undefined, required
         instance selector
     json : str, default is Undefined, optional
         model json
     jsonnet : str, default is Undefined, optional
         Jsonnet
-    jsonnetLib : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecJsonnetLib, default is Undefined, optional
+    jsonnetLib : GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecJsonnetLib, default is Undefined, optional
         jsonnet lib
-    plugins : [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecPluginsItems0], default is Undefined, optional
+    plugins : [GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecPluginsItems0], default is Undefined, optional
         plugins
     resyncPeriod : str, default is "10m0s", optional
         How often the resource is synced, defaults to 10m0s if not set
@@ -81,38 +79,37 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpec:
         Can be any string consisting of alphanumeric characters, - and _ with a maximum length of 40.
     url : str, default is Undefined, optional
         model url
-    urlAuthorization : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorization, default is Undefined, optional
+    urlAuthorization : GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecURLAuthorization, default is Undefined, optional
         url authorization
     """
     allowCrossNamespaceImport?: bool = False
-    configMapRef?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecConfigMapRef
+    configMapRef?: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecConfigMapRef
     contentCacheDuration?: str
-    datasources?: [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecDatasourcesItems0]
-    envFrom?: [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0]
-    envs?: [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0]
-    folder?: str
+    datasources?: [GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecDatasourcesItems0]
+    envFrom?: [GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvFromItems0]
+    envs?: [GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvsItems0]
     folderRef?: str
     folderUID?: str
-    grafanaCom?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecGrafanaCom
+    grafanaCom?: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecGrafanaCom
     gzipJson?: str
-    instanceSelector: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecInstanceSelector
+    instanceSelector: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecInstanceSelector
 
     json?: str
     jsonnet?: str
-    jsonnetLib?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecJsonnetLib
-    plugins?: [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecPluginsItems0]
+    jsonnetLib?: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecJsonnetLib
+    plugins?: [GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecPluginsItems0]
     resyncPeriod?: str = "10m0s"
     suspend?: bool
     uid?: str
     url?: str
-    urlAuthorization?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorization
+    urlAuthorization?: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecURLAuthorization
 
     check:
         _regex_match(str(resyncPeriod), r"^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$") if resyncPeriod
         len(uid) <= 40 if uid
         _regex_match(str(uid), r"^[a-zA-Z0-9-_]+$") if uid
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecConfigMapRef:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecConfigMapRef:
     r"""
     model from configmap
 
@@ -134,7 +131,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecConfigMapRef:
     name?: str = ""
     optional?: bool
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecDatasourcesItems0:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecDatasourcesItems0:
     r"""
     GrafanaResourceDatasource is used to set the datasource name of any templated datasources in
     content definitions (e.g., dashboard JSON).
@@ -150,21 +147,21 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecDatasourcesItems0:
 
     inputName: str
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvFromItems0:
     r"""
-    grafana integreatly org v1beta1 grafana dashboard spec env from items0
+    grafana integreatly org v1beta1 grafana library panel spec env from items0
 
     Attributes
     ----------
-    configMapKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0ConfigMapKeyRef, default is Undefined, optional
+    configMapKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvFromItems0ConfigMapKeyRef, default is Undefined, optional
         config map key ref
-    secretKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0SecretKeyRef, default is Undefined, optional
+    secretKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvFromItems0SecretKeyRef, default is Undefined, optional
         secret key ref
     """
-    configMapKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0ConfigMapKeyRef
-    secretKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0SecretKeyRef
+    configMapKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvFromItems0ConfigMapKeyRef
+    secretKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvFromItems0SecretKeyRef
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0ConfigMapKeyRef:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvFromItems0ConfigMapKeyRef:
     r"""
     Selects a key of a ConfigMap.
 
@@ -186,7 +183,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0ConfigMapKey
     name?: str = ""
     optional?: bool
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0SecretKeyRef:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvFromItems0SecretKeyRef:
     r"""
     Selects a key of a Secret.
 
@@ -208,9 +205,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvFromItems0SecretKeyRef
     name?: str = ""
     optional?: bool
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvsItems0:
     r"""
-    grafana integreatly org v1beta1 grafana dashboard spec envs items0
+    grafana integreatly org v1beta1 grafana library panel spec envs items0
 
     Attributes
     ----------
@@ -218,29 +215,29 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0:
         name
     value : str, default is Undefined, optional
         Inline env value
-    valueFrom : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFrom, default is Undefined, optional
+    valueFrom : GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvsItems0ValueFrom, default is Undefined, optional
         value from
     """
     name: str
 
     value?: str
-    valueFrom?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFrom
+    valueFrom?: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvsItems0ValueFrom
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFrom:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvsItems0ValueFrom:
     r"""
     Reference on value source, might be the reference on a secret or config map
 
     Attributes
     ----------
-    configMapKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFromConfigMapKeyRef, default is Undefined, optional
+    configMapKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvsItems0ValueFromConfigMapKeyRef, default is Undefined, optional
         config map key ref
-    secretKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFromSecretKeyRef, default is Undefined, optional
+    secretKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvsItems0ValueFromSecretKeyRef, default is Undefined, optional
         secret key ref
     """
-    configMapKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFromConfigMapKeyRef
-    secretKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFromSecretKeyRef
+    configMapKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvsItems0ValueFromConfigMapKeyRef
+    secretKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvsItems0ValueFromSecretKeyRef
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFromConfigMapKeyRef:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvsItems0ValueFromConfigMapKeyRef:
     r"""
     Selects a key of a ConfigMap.
 
@@ -262,7 +259,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFromConfig
     name?: str = ""
     optional?: bool
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFromSecretKeyRef:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecEnvsItems0ValueFromSecretKeyRef:
     r"""
     Selects a key of a Secret.
 
@@ -284,7 +281,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecEnvsItems0ValueFromSecret
     name?: str = ""
     optional?: bool
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecGrafanaCom:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecGrafanaCom:
     r"""
     grafana.com/dashboards
 
@@ -299,23 +296,23 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecGrafanaCom:
 
     revision?: int
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecInstanceSelector:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecInstanceSelector:
     r"""
     Selects Grafana instances for import
 
     Attributes
     ----------
-    matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecInstanceSelectorMatchExpressionsItems0], default is Undefined, optional
+    matchExpressions : [GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecInstanceSelectorMatchExpressionsItems0], default is Undefined, optional
         matchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
         matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
         map is equivalent to an element of matchExpressions, whose key field is "key", the
         operator is "In", and the values array contains only "value". The requirements are ANDed.
     """
-    matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecInstanceSelectorMatchExpressionsItems0]
+    matchExpressions?: [GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecInstanceSelectorMatchExpressionsItems0]
     matchLabels?: {str:str}
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecInstanceSelectorMatchExpressionsItems0:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecInstanceSelectorMatchExpressionsItems0:
     r"""
     A label selector requirement is a selector that contains values, a key, and an operator that
     relates the key and values.
@@ -339,7 +336,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecInstanceSelectorMatchExpr
 
     values?: [str]
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecJsonnetLib:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecJsonnetLib:
     r"""
     Jsonnet project build
 
@@ -358,9 +355,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecJsonnetLib:
 
     jPath?: [str]
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecPluginsItems0:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecPluginsItems0:
     r"""
-    grafana integreatly org v1beta1 grafana dashboard spec plugins items0
+    grafana integreatly org v1beta1 grafana library panel spec plugins items0
 
     Attributes
     ----------
@@ -373,32 +370,32 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecPluginsItems0:
 
     version: str
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorization:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecURLAuthorization:
     r"""
     authorization options for model from url
 
     Attributes
     ----------
-    basicAuth : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuth, default is Undefined, optional
+    basicAuth : GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecURLAuthorizationBasicAuth, default is Undefined, optional
         basic auth
     """
-    basicAuth?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuth
+    basicAuth?: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecURLAuthorizationBasicAuth
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuth:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecURLAuthorizationBasicAuth:
     r"""
-    grafana integreatly org v1beta1 grafana dashboard spec URL authorization basic auth
+    grafana integreatly org v1beta1 grafana library panel spec URL authorization basic auth
 
     Attributes
     ----------
-    password : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuthPassword, default is Undefined, optional
+    password : GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecURLAuthorizationBasicAuthPassword, default is Undefined, optional
         password
-    username : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuthUsername, default is Undefined, optional
+    username : GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecURLAuthorizationBasicAuthUsername, default is Undefined, optional
         username
     """
-    password?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuthPassword
-    username?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuthUsername
+    password?: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecURLAuthorizationBasicAuthPassword
+    username?: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecURLAuthorizationBasicAuthUsername
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuthPassword:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecURLAuthorizationBasicAuthPassword:
     r"""
     SecretKeySelector selects a key of a Secret.
 
@@ -420,7 +417,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuth
     name?: str = ""
     optional?: bool
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuthUsername:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecURLAuthorizationBasicAuthUsername:
     r"""
     SecretKeySelector selects a key of a Secret.
 
@@ -442,15 +439,13 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuth
     name?: str = ""
     optional?: bool
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatus:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelStatus:
     r"""
-    GrafanaDashboardStatus defines the observed state of GrafanaDashboard
+    GrafanaLibraryPanelStatus defines the observed state of GrafanaLibraryPanel
 
     Attributes
     ----------
-    NoMatchingInstances : bool, default is Undefined, optional
-        The dashboard instanceSelector can't find matching grafana instances
-    conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatusConditionsItems0], default is Undefined, optional
+    conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelStatusConditionsItems0], default is Undefined, optional
         Results when synchonizing resource with Grafana instances
     contentCache : str, default is Undefined, optional
         content cache
@@ -465,8 +460,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatus:
     uid : str, default is Undefined, optional
         uid
     """
-    NoMatchingInstances?: bool
-    conditions?: [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatusConditionsItems0]
+    conditions?: [GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelStatusConditionsItems0]
     contentCache?: str
     contentTimestamp?: str
     contentUrl?: str
@@ -474,7 +468,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatus:
     lastResync?: str
     uid?: str
 
-schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatusConditionsItems0:
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelStatusConditionsItems0:
     r"""
     Condition contains details for one aspect of the current state of this API Resource.
 
