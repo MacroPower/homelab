@@ -22,7 +22,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for admin-api Pods",
+          "description": "Affinity for admin-api Pods\nThe value will be passed through tpl.",
           "required": [],
           "title": "affinity",
           "type": "object"
@@ -69,6 +69,13 @@
           },
           "required": [],
           "title": "containerSecurityContext",
+          "type": "object"
+        },
+        "dnsConfig": {
+          "additionalProperties": true,
+          "description": "DNSConfig for `admin-api` pods",
+          "required": [],
+          "title": "dnsConfig",
           "type": "object"
         },
         "env": {
@@ -314,7 +321,7 @@
           "type": "array"
         },
         "topologySpreadConstraints": {
-          "description": "Topology Spread Constraints for admin-api pods",
+          "description": "Topology Spread Constraints for admin-api pods\nThe value will be passed through tpl.",
           "items": {
             "required": []
           },
@@ -347,7 +354,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for backend pods.",
+          "description": "Affinity for backend pods.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -366,6 +373,18 @@
                                 "default": "backend",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -756,7 +775,7 @@
           "type": "array"
         },
         "topologySpreadConstraints": {
-          "description": "Topology Spread Constraints for backend pods",
+          "description": "Topology Spread Constraints for backend pods\nThe value will be passed through tpl.",
           "items": {
             "required": []
           },
@@ -775,7 +794,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for bloom-builder pods.",
+          "description": "Affinity for bloom-builder pods.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -794,6 +813,18 @@
                                 "default": "bloom-builder",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -935,6 +966,13 @@
           "title": "command",
           "type": "null"
         },
+        "dnsConfig": {
+          "additionalProperties": true,
+          "description": "DNSConfig for bloom-builder pods",
+          "required": [],
+          "title": "dnsConfig",
+          "type": "object"
+        },
         "extraArgs": {
           "description": "Additional CLI args for the bloom-builder",
           "items": {
@@ -1033,6 +1071,15 @@
           "required": [],
           "title": "image",
           "type": "object"
+        },
+        "initContainers": {
+          "description": "Init containers to add to the bloom-builder pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "initContainers",
+          "type": "array"
         },
         "maxUnavailable": {
           "default": "null",
@@ -1137,7 +1184,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for bloom-gateway pods.",
+          "description": "Affinity for bloom-gateway pods.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -1156,6 +1203,18 @@
                                 "default": "bloom-gateway",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -1213,6 +1272,13 @@
           "required": [],
           "title": "command",
           "type": "null"
+        },
+        "dnsConfig": {
+          "additionalProperties": true,
+          "description": "DNSConfig for bloom-gateway pods",
+          "required": [],
+          "title": "dnsConfig",
+          "type": "object"
         },
         "extraArgs": {
           "description": "Additional CLI args for the bloom-gateway",
@@ -1561,7 +1627,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for bloom-planner pods.",
+          "description": "Affinity for bloom-planner pods.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -1580,6 +1646,18 @@
                                 "default": "bloom-planner",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -1637,6 +1715,13 @@
           "required": [],
           "title": "command",
           "type": "null"
+        },
+        "dnsConfig": {
+          "additionalProperties": true,
+          "description": "DNSConfig for bloom-planner pods",
+          "required": [],
+          "title": "dnsConfig",
+          "type": "object"
         },
         "extraArgs": {
           "description": "Additional CLI args for the bloom-planner",
@@ -2054,6 +2139,13 @@
           "title": "defaultValidity",
           "type": "string"
         },
+        "dnsConfig": {
+          "additionalProperties": true,
+          "description": "DNSConfig for chunks-cache",
+          "required": [],
+          "title": "dnsConfig",
+          "type": "object"
+        },
         "enabled": {
           "default": true,
           "description": "Specifies whether memcached based chunks-cache should be enabled",
@@ -2171,6 +2263,13 @@
               "title": "defaultValidity",
               "type": "string"
             },
+            "dnsConfig": {
+              "additionalProperties": true,
+              "description": "DNSConfig for chunks-cache-l2",
+              "required": [],
+              "title": "dnsConfig",
+              "type": "object"
+            },
             "enabled": {
               "default": false,
               "description": "Specifies whether memcached based chunks-cache-l2 should be enabled",
@@ -2283,6 +2382,18 @@
                 },
                 "labels": {
                   "additionalProperties": true,
+                  "properties": {
+                    "baz": {
+                      "required": [],
+                      "title": "baz",
+                      "type": "string"
+                    },
+                    "foo": {
+                      "required": [],
+                      "title": "foo",
+                      "type": "string"
+                    }
+                  },
                   "required": [],
                   "title": "labels",
                   "type": "object"
@@ -2504,6 +2615,18 @@
             },
             "labels": {
               "additionalProperties": true,
+              "properties": {
+                "baz": {
+                  "required": [],
+                  "title": "baz",
+                  "type": "string"
+                },
+                "foo": {
+                  "required": [],
+                  "title": "foo",
+                  "type": "string"
+                }
+              },
               "required": [],
               "title": "labels",
               "type": "object"
@@ -2704,7 +2827,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for compactor pods.",
+          "description": "Affinity for compactor pods.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -2723,6 +2846,18 @@
                                 "default": "compactor",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -2780,6 +2915,13 @@
           "required": [],
           "title": "command",
           "type": "null"
+        },
+        "dnsConfig": {
+          "additionalProperties": true,
+          "description": "DNSConfig for compactor pods",
+          "required": [],
+          "title": "dnsConfig",
+          "type": "object"
         },
         "extraArgs": {
           "description": "Additional CLI args for the compactor",
@@ -3410,7 +3552,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for distributor pods.",
+          "description": "Affinity for distributor pods.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -3429,6 +3571,18 @@
                                 "default": "distributor",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -3570,6 +3724,13 @@
           "title": "command",
           "type": "null"
         },
+        "dnsConfig": {
+          "additionalProperties": true,
+          "description": "DNSConfig for distributor pods",
+          "required": [],
+          "title": "dnsConfig",
+          "type": "object"
+        },
         "extraArgs": {
           "description": "Additional CLI args for the distributor",
           "items": {
@@ -3669,6 +3830,15 @@
           "title": "image",
           "type": "object"
         },
+        "initContainers": {
+          "description": "Init containers to add to the distributor pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "initContainers",
+          "type": "array"
+        },
         "maxSurge": {
           "default": 0,
           "description": "Max Surge for distributor pods",
@@ -3763,7 +3933,7 @@
           "type": "array"
         },
         "topologySpreadConstraints": {
-          "description": "Topology Spread Constraints for distributor pods",
+          "description": "Topology Spread Constraints for distributor pods\nThe value will be passed through tpl.",
           "items": {
             "required": []
           },
@@ -3906,7 +4076,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "3.5.2",
+              "default": "3.5.5",
               "description": "Docker image tag",
               "required": [],
               "title": "tag",
@@ -3947,7 +4117,7 @@
             },
             "affinity": {
               "additionalProperties": true,
-              "description": "Affinity for provisioner Pods",
+              "description": "Affinity for provisioner Pods\nThe value will be passed through tpl.",
               "required": [],
               "title": "affinity",
               "type": "object"
@@ -4165,7 +4335,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for gateway Pods",
+          "description": "Affinity for gateway Pods\nThe value will be passed through tpl.",
           "required": [],
           "title": "affinity",
           "type": "object"
@@ -4446,7 +4616,7 @@
           "type": "array"
         },
         "topologySpreadConstraints": {
-          "description": "Topology Spread Constraints for enterprise-gateway pods",
+          "description": "Topology Spread Constraints for enterprise-gateway pods\nThe value will be passed through tpl.",
           "items": {
             "required": []
           },
@@ -4539,14 +4709,30 @@
       "title": "extraContainers",
       "type": "array"
     },
-    "extraObjects": {
-      "description": "Create extra manifests via values. Would be passed through `tpl` for templating\nobjects can also be provided as multiline strings, useful for templating field names",
+    "extraEnv": {
+      "description": "Environment variables to add to rollout-operator container",
       "items": {
         "required": []
       },
       "required": [],
-      "title": "extraObjects",
+      "title": "extraEnv",
       "type": "array"
+    },
+    "extraEnvFrom": {
+      "description": "Environment variables from secrets or configmaps to add to rollout-operator container",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraEnvFrom",
+      "type": "array"
+    },
+    "extraObjects": {
+      "default": "null",
+      "description": "Create extra manifests via values\nCan be a list or dictionary, both are passed through `tpl`.  If dict, keys are ignored and only values are used.\nObjects can also be defined as multiline strings, useful for templating field names",
+      "required": [],
+      "title": "extraObjects",
+      "type": "null"
     },
     "extraSecret": {
       "default": "~",
@@ -4586,7 +4772,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for gateway pods.",
+          "description": "Affinity for gateway pods.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -4605,6 +4791,18 @@
                                 "default": "gateway",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -5033,6 +5231,13 @@
           "title": "lifecycle",
           "type": "object"
         },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "description": "liveness probe for the nginx container in the gateway pods.",
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
         "nginxConfig": {
           "additionalProperties": true,
           "properties": {
@@ -5306,6 +5511,13 @@
           "title": "service",
           "type": "object"
         },
+        "startupProbe": {
+          "additionalProperties": true,
+          "description": "startup probe for the nginx container in the gateway pods.",
+          "required": [],
+          "title": "startupProbe",
+          "type": "object"
+        },
         "terminationGracePeriodSeconds": {
           "default": 30,
           "description": "Grace period to allow the gateway to shutdown before it is killed",
@@ -5323,7 +5535,7 @@
           "type": "array"
         },
         "topologySpreadConstraints": {
-          "description": "Topology Spread Constraints for gateway pods",
+          "description": "Topology Spread Constraints for gateway pods\nThe value will be passed through tpl.",
           "items": {
             "required": []
           },
@@ -5524,7 +5736,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for index-gateway pods.",
+          "description": "Affinity for index-gateway pods.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -5543,6 +5755,18 @@
                                 "default": "index-gateway",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -5592,6 +5816,13 @@
           },
           "required": [],
           "title": "appProtocol",
+          "type": "object"
+        },
+        "dnsConfig": {
+          "additionalProperties": true,
+          "description": "DNSConfig for index-gateway pods",
+          "required": [],
+          "title": "dnsConfig",
           "type": "object"
         },
         "extraArgs": {
@@ -5875,7 +6106,7 @@
           "type": "array"
         },
         "topologySpreadConstraints": {
-          "description": "Topology Spread Constraints for index-gateway pods",
+          "description": "Topology Spread Constraints for index-gateway pods\nThe value will be passed through tpl.",
           "items": {
             "required": []
           },
@@ -5917,7 +6148,7 @@
         },
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for ingester pods. Ignored if zoneAwareReplication is enabled.",
+          "description": "Affinity for ingester pods. Ignored if zoneAwareReplication is enabled.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -5936,6 +6167,18 @@
                                 "default": "ingester",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -6076,6 +6319,13 @@
           "required": [],
           "title": "command",
           "type": "null"
+        },
+        "dnsConfig": {
+          "additionalProperties": true,
+          "description": "DNSConfig for ingester pods",
+          "required": [],
+          "title": "dnsConfig",
+          "type": "object"
         },
         "extraArgs": {
           "description": "Additional CLI args for the ingester",
@@ -6388,7 +6638,7 @@
           "type": "array"
         },
         "topologySpreadConstraints": {
-          "description": "topologySpread for ingester pods.",
+          "description": "topologySpread for ingester pods.\nThe value will be passed through tpl.",
           "items": {
             "additionalProperties": true,
             "properties": {
@@ -6402,6 +6652,18 @@
                         "default": "ingester",
                         "required": [],
                         "title": "app.kubernetes.io/component",
+                        "type": "string"
+                      },
+                      "app.kubernetes.io/instance": {
+                        "default": "{{ .Release.Name }}",
+                        "required": [],
+                        "title": "app.kubernetes.io/instance",
+                        "type": "string"
+                      },
+                      "app.kubernetes.io/name": {
+                        "default": "{{ include \"loki.name\" . }}",
+                        "required": [],
+                        "title": "app.kubernetes.io/name",
                         "type": "string"
                       }
                     },
@@ -6520,7 +6782,7 @@
                 },
                 "extraAffinity": {
                   "additionalProperties": true,
-                  "description": "optionally define extra affinity rules, by default different zones are not allowed to schedule on the same host",
+                  "description": "optionally define extra affinity rules, by default different zones are not allowed to schedule on the same host\nThe value will be passed through tpl.",
                   "required": [],
                   "title": "extraAffinity",
                   "type": "object"
@@ -6556,7 +6818,7 @@
                 },
                 "extraAffinity": {
                   "additionalProperties": true,
-                  "description": "optionally define extra affinity rules, by default different zones are not allowed to schedule on the same host",
+                  "description": "optionally define extra affinity rules, by default different zones are not allowed to schedule on the same host\nThe value will be passed through tpl.",
                   "required": [],
                   "title": "extraAffinity",
                   "type": "object"
@@ -6592,7 +6854,7 @@
                 },
                 "extraAffinity": {
                   "additionalProperties": true,
-                  "description": "optionally define extra affinity rules, by default different zones are not allowed to schedule on the same host",
+                  "description": "optionally define extra affinity rules, by default different zones are not allowed to schedule on the same host\nThe value will be passed through tpl.",
                   "required": [],
                   "title": "extraAffinity",
                   "type": "object"
@@ -6960,6 +7222,13 @@
           "title": "distributor",
           "type": "object"
         },
+        "dnsConfig": {
+          "additionalProperties": true,
+          "description": "DNS config for Loki pods",
+          "required": [],
+          "title": "dnsConfig",
+          "type": "object"
+        },
         "enableServiceLinks": {
           "default": true,
           "description": "Should enableServiceLinks be enabled. Default to enable",
@@ -7047,7 +7316,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "3.5.3",
+              "default": "3.5.5",
               "description": "Overrides the image tag whose default is the chart's appVersion",
               "required": [],
               "title": "tag",
@@ -8050,7 +8319,26 @@
         "tenants": {
           "description": "Tenants list to be created on nginx htpasswd file, with name and password or passwordHash keys\u003cbr\u003e\u003cbr\u003e\nExample:\n\u003cpre\u003e\ntenants:\u003cbr\u003e\n  - name: \"test-user-1\"\u003cbr\u003e\n    password: \"test-password-1\"\u003cbr\u003e\n  - name: \"test-user-2\"\u003cbr\u003e\n    passwordHash: \"$2y$10$7O40CaY1yz7fu9O24k2/u.ct/wELYHRBsn25v/7AyuQ8E8hrLqpva\" # generated using `htpasswd -nbBC10 test-user-2 test-password-2`\n\u003c/pre\u003e",
           "items": {
-            "required": []
+            "additionalProperties": true,
+            "properties": {
+              "name": {
+                "required": [],
+                "title": "name",
+                "type": "string"
+              },
+              "password": {
+                "required": [],
+                "title": "password",
+                "type": "string"
+              },
+              "passwordHash": {
+                "required": [],
+                "title": "passwordHash",
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
           },
           "required": [],
           "title": "tenants",
@@ -8804,7 +9092,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "1.6.38-alpine",
+              "default": "1.6.39-alpine",
               "description": "Memcached Docker image tag",
               "required": [],
               "title": "tag",
@@ -8948,6 +9236,11 @@
           "required": [],
           "title": "readinessProbe",
           "type": "object"
+        },
+        "replicas": {
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
         }
       },
       "required": [],
@@ -9466,7 +9759,7 @@
     },
     "monitoring": {
       "additionalProperties": true,
-      "description": "DEPRECATED Monitoring section determines which monitoring features to enable, this section is being replaced\nby https://github.com/grafana/meta-monitoring-chart",
+      "description": "Monitoring section determines which monitoring features to enable",
       "properties": {
         "dashboards": {
           "additionalProperties": true,
@@ -9533,7 +9826,7 @@
         },
         "rules": {
           "additionalProperties": true,
-          "description": "DEPRECATED Recording rules for monitoring Loki, required for some dashboards",
+          "description": "Recording rules for monitoring Loki, required for some dashboards",
           "properties": {
             "additionalGroups": {
               "description": "Additional groups to add to the rules file",
@@ -9600,7 +9893,7 @@
         },
         "selfMonitoring": {
           "additionalProperties": true,
-          "description": "DEPRECATED Self monitoring determines whether Loki should scrape its own logs.\nThis feature currently relies on the Grafana Agent Operator being installed,\nwhich is installed by default using the grafana-agent-operator sub-chart.\nIt will create custom resources for GrafanaAgent, LogsInstance, and PodLogs to configure\nscrape configs to scrape its own logs with the labels expected by the included dashboards.",
+          "description": "DEPRECATED Self monitoring determines whether Loki should scrape its own logs.\nThis feature relies on Grafana Agent Operator, which is deprecated.\nIt will create custom resources for GrafanaAgent, LogsInstance, and PodLogs to configure\nscrape configs to scrape its own logs with the labels expected by the included dashboards.",
           "properties": {
             "enabled": {
               "default": false,
@@ -9783,7 +10076,7 @@
         },
         "serviceMonitor": {
           "additionalProperties": true,
-          "description": " -- DEPRECATED ServiceMonitor configuration",
+          "description": "ServiceMonitor configuration",
           "properties": {
             "annotations": {
               "additionalProperties": true,
@@ -9831,7 +10124,7 @@
             },
             "metricsInstance": {
               "additionalProperties": true,
-              "description": "If defined, will create a MetricsInstance for the Grafana Agent Operator.",
+              "description": "DEPRECATED If defined, will create a MetricsInstance for the Grafana Agent Operator.",
               "properties": {
                 "annotations": {
                   "additionalProperties": true,
@@ -10242,7 +10535,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for overrides-exporter pods.",
+          "description": "Affinity for overrides-exporter pods.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -10261,6 +10554,18 @@
                                 "default": "overrides-exporter",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -10318,6 +10623,13 @@
           "required": [],
           "title": "command",
           "type": "null"
+        },
+        "dnsConfig": {
+          "additionalProperties": true,
+          "description": "DNSConfig for overrides-exporter",
+          "required": [],
+          "title": "dnsConfig",
+          "type": "object"
         },
         "enabled": {
           "default": false,
@@ -10514,7 +10826,7 @@
           "type": "array"
         },
         "topologySpreadConstraints": {
-          "description": "Topology Spread Constraints for overrides-exporter pods",
+          "description": "Topology Spread Constraints for overrides-exporter pods\nThe value will be passed through tpl.",
           "items": {
             "required": []
           },
@@ -10533,7 +10845,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for pattern ingester pods.",
+          "description": "Affinity for pattern ingester pods.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -10552,6 +10864,18 @@
                                 "default": "pattern-ingester",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -10609,6 +10933,13 @@
           "required": [],
           "title": "command",
           "type": "null"
+        },
+        "dnsConfig": {
+          "additionalProperties": true,
+          "description": "DNSConfig for pattern ingester pods",
+          "required": [],
+          "title": "dnsConfig",
+          "type": "object"
         },
         "extraArgs": {
           "description": "Additional CLI args for the pattern ingester",
@@ -10960,7 +11291,7 @@
           "type": "array"
         },
         "topologySpreadConstraints": {
-          "description": "Topology Spread Constraints for pattern ingester pods",
+          "description": "Topology Spread Constraints for pattern ingester pods\nThe value will be passed through tpl.",
           "items": {
             "required": []
           },
@@ -11177,7 +11508,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for querier pods.",
+          "description": "Affinity for querier pods.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -11196,6 +11527,18 @@
                                 "default": "querier",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -11546,7 +11889,7 @@
           "type": "array"
         },
         "topologySpreadConstraints": {
-          "description": "topologySpread for querier pods.",
+          "description": "topologySpread for querier pods.\nThe value will be passed through tpl.",
           "items": {
             "additionalProperties": true,
             "properties": {
@@ -11560,6 +11903,18 @@
                         "default": "querier",
                         "required": [],
                         "title": "app.kubernetes.io/component",
+                        "type": "string"
+                      },
+                      "app.kubernetes.io/instance": {
+                        "default": "{{ .Release.Name }}",
+                        "required": [],
+                        "title": "app.kubernetes.io/instance",
+                        "type": "string"
+                      },
+                      "app.kubernetes.io/name": {
+                        "default": "{{ include \"loki.name\" . }}",
+                        "required": [],
+                        "title": "app.kubernetes.io/name",
                         "type": "string"
                       }
                     },
@@ -11609,7 +11964,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for query-frontend pods.",
+          "description": "Affinity for query-frontend pods.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -11628,6 +11983,18 @@
                                 "default": "query-frontend",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -11868,6 +12235,15 @@
           "title": "image",
           "type": "object"
         },
+        "initContainers": {
+          "description": "init containers to add to the query-frontend pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "initContainers",
+          "type": "array"
+        },
         "maxUnavailable": {
           "default": "null",
           "description": "Pod Disruption Budget maxUnavailable",
@@ -11955,7 +12331,7 @@
           "type": "array"
         },
         "topologySpreadConstraints": {
-          "description": "Topology Spread Constraints for query-frontend pods",
+          "description": "Topology Spread Constraints for query-frontend pods\nThe value will be passed through tpl.",
           "items": {
             "required": []
           },
@@ -11974,7 +12350,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for query-scheduler pods.",
+          "description": "Affinity for query-scheduler pods.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -11993,6 +12369,18 @@
                                 "default": "query-scheduler",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -12042,6 +12430,13 @@
           },
           "required": [],
           "title": "appProtocol",
+          "type": "object"
+        },
+        "dnsConfig": {
+          "additionalProperties": true,
+          "description": "DNSConfig for query-scheduler",
+          "required": [],
+          "title": "dnsConfig",
           "type": "object"
         },
         "extraArgs": {
@@ -12143,6 +12538,15 @@
           "title": "image",
           "type": "object"
         },
+        "initContainers": {
+          "description": "init containers to add to the query-scheduler pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "initContainers",
+          "type": "array"
+        },
         "maxUnavailable": {
           "default": 1,
           "description": "Pod Disruption Budget maxUnavailable",
@@ -12223,7 +12627,7 @@
           "type": "array"
         },
         "topologySpreadConstraints": {
-          "description": "Topology Spread Constraints for query-scheduler pods",
+          "description": "Topology Spread Constraints for query-scheduler pods\nThe value will be passed through tpl.",
           "items": {
             "required": []
           },
@@ -12300,7 +12704,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for read pods.",
+          "description": "Affinity for read pods.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -12319,6 +12723,18 @@
                                 "default": "read",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -12508,6 +12924,15 @@
           "required": [],
           "title": "image",
           "type": "object"
+        },
+        "initContainers": {
+          "description": "init containers to add to the read pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "initContainers",
+          "type": "array"
         },
         "legacyReadTarget": {
           "default": false,
@@ -12700,7 +13125,7 @@
           "type": "array"
         },
         "topologySpreadConstraints": {
-          "description": "Topology Spread Constraints for read pods",
+          "description": "Topology Spread Constraints for read pods\nThe value will be passed through tpl.",
           "items": {
             "required": []
           },
@@ -12809,6 +13234,13 @@
           "title": "defaultValidity",
           "type": "string"
         },
+        "dnsConfig": {
+          "additionalProperties": true,
+          "description": "DNSConfig for results-cache",
+          "required": [],
+          "title": "dnsConfig",
+          "type": "object"
+        },
         "enabled": {
           "default": true,
           "description": "Specifies whether memcached based results-cache should be enabled",
@@ -12908,6 +13340,18 @@
             "labels": {
               "additionalProperties": true,
               "description": "PVC additional labels",
+              "properties": {
+                "baz": {
+                  "required": [],
+                  "title": "baz",
+                  "type": "string"
+                },
+                "foo": {
+                  "required": [],
+                  "title": "foo",
+                  "type": "string"
+                }
+              },
               "required": [],
               "title": "labels",
               "type": "object"
@@ -13207,7 +13651,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for ruler pods.",
+          "description": "Affinity for ruler pods.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -13226,6 +13670,18 @@
                                 "default": "ruler",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -13553,7 +14009,7 @@
           "type": "array"
         },
         "topologySpreadConstraints": {
-          "description": "Topology Spread Constraints for ruler pods",
+          "description": "Topology Spread Constraints for ruler pods\nThe value will be passed through tpl.",
           "items": {
             "required": []
           },
@@ -13828,7 +14284,7 @@
               "type": "string"
             },
             "repository": {
-              "default": "kiwigrid/k8s-sidecar",
+              "default": "docker.io/kiwigrid/k8s-sidecar",
               "description": "The Docker registry and image for the k8s sidecar",
               "required": [],
               "title": "repository",
@@ -13842,7 +14298,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "1.30.7",
+              "default": "1.30.10",
               "description": "Docker image tag",
               "required": [],
               "title": "tag",
@@ -14029,7 +14485,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for single binary pods.",
+          "description": "Affinity for single binary pods.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -14048,6 +14504,18 @@
                                 "default": "single-binary",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -14495,7 +14963,7 @@
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for table-manager pods.",
+          "description": "Affinity for table-manager pods.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -14514,6 +14982,18 @@
                                 "default": "table-manager",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -14824,7 +15304,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "ewelch-distributed-helm-chart-17db5ee",
+              "default": "latest",
               "description": "Overrides the image tag whose default is the chart's appVersion",
               "required": [],
               "title": "tag",
@@ -14950,13 +15430,42 @@
       "title": "users",
       "type": "array"
     },
+    "webhooks": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "default": true,
+          "description": "Enable the rollout-operator webhooks. See https://github.com/grafana/rollout-operator/#webhooks.\nNote that the webhooks require custom resource definitions. If upgrading, manually apply the files in the `crds` directory.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "failurePolicy": {
+          "default": "Fail",
+          "description": "Validating and mutating webhook failure policy. `Ignore` or `Fail`.",
+          "required": [],
+          "title": "failurePolicy",
+          "type": "string"
+        },
+        "selfSignedCertSecretName": {
+          "default": "certificate",
+          "description": "Secret resource name for the TLS certificate to be used with the webhooks",
+          "required": [],
+          "title": "selfSignedCertSecretName",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "webhooks",
+      "type": "object"
+    },
     "write": {
       "additionalProperties": true,
       "description": "Configuration for the write pod(s)",
       "properties": {
         "affinity": {
           "additionalProperties": true,
-          "description": "Affinity for write pods.",
+          "description": "Affinity for write pods.\nThe value will be passed through tpl.",
           "properties": {
             "podAntiAffinity": {
               "additionalProperties": true,
@@ -14975,6 +15484,18 @@
                                 "default": "write",
                                 "required": [],
                                 "title": "app.kubernetes.io/component",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/instance": {
+                                "default": "{{ .Release.Name }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/instance",
+                                "type": "string"
+                              },
+                              "app.kubernetes.io/name": {
+                                "default": "{{ include \"loki.name\" . }}",
+                                "required": [],
+                                "title": "app.kubernetes.io/name",
                                 "type": "string"
                               }
                             },
@@ -15466,7 +15987,7 @@
           "type": "array"
         },
         "topologySpreadConstraints": {
-          "description": "Topology Spread Constraints for write pods",
+          "description": "Topology Spread Constraints for write pods\nThe value will be passed through tpl.",
           "items": {
             "required": []
           },

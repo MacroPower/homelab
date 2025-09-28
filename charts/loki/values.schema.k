@@ -97,9 +97,14 @@ schema Values:
         List of additional CLI arguments to configure rollout-operator (example: `--log.level=info`)
     extraContainers : [any], optional
         # Additional sidecar containers
-    extraObjects : [any], optional
-        Create extra manifests via values. Would be passed through `tpl` for templating
-        objects can also be provided as multiline strings, useful for templating field names
+    extraEnv : [any], optional
+        Environment variables to add to rollout-operator container
+    extraEnvFrom : [any], optional
+        Environment variables from secrets or configmaps to add to rollout-operator container
+    extraObjects : any, optional, default is "null"
+        Create extra manifests via values
+        Can be a list or dictionary, both are passed through `tpl`.  If dict, keys are ignored and only values are used.
+        Objects can also be defined as multiline strings, useful for templating field names
     extraSecret : any, optional, default is "~"
         # The name of a secret in the same kubernetes namespace which contain secret values
         # This can be useful for LDAP password, etc
@@ -236,8 +241,7 @@ schema Values:
     mode : str, optional, default is "distributed"
         # minio mode, i.e. standalone or distributed
     monitoring : ValuesMonitoring, optional
-        DEPRECATED Monitoring section determines which monitoring features to enable, this section is being replaced
-        by https://github.com/grafana/meta-monitoring-chart
+        Monitoring section determines which monitoring features to enable
     mountPath : str, optional, default is "/export"
         # Path where PV would be mounted on the MinIO Pod
     nameOverride : any, optional, default is "null"
@@ -369,6 +373,7 @@ schema Values:
     users : [ValuesUsersItems0], optional
         # List of users to be created after minio install
         #
+    webhooks : ValuesWebhooks, optional
     write : ValuesWrite, optional
         Configuration for the write pod(s)
     """
@@ -407,7 +412,9 @@ schema Values:
     existingSecret?: str
     extraArgs?: [any]
     extraContainers?: [any]
-    extraObjects?: [any]
+    extraEnv?: [any]
+    extraEnvFrom?: [any]
+    extraObjects?: any
     extraSecret?: any
     extraVolumeMounts?: [any]
     extraVolumes?: [any]
@@ -487,6 +494,7 @@ schema Values:
     topologySpreadConstraints?: [any]
     trustedCertsSecret?: str
     users?: [ValuesUsersItems0]
+    webhooks?: ValuesWebhooks
     write?: ValuesWrite
 
 schema ValuesAdditionalAnnotations:
@@ -509,9 +517,12 @@ schema ValuesAdminApi:
     ----------
     affinity : ValuesAdminApiAffinity, optional
         Affinity for admin-api Pods
+        The value will be passed through tpl.
     annotations : ValuesAdminApiAnnotations, optional
         Additional annotations for the `admin-api` Deployment
     containerSecurityContext : ValuesAdminApiContainerSecurityContext, optional
+    dnsConfig : ValuesAdminApiDnsConfig, optional
+        DNSConfig for `admin-api` pods
     env : [any], optional
         Configure optional environment variables
     extraArgs : ValuesAdminApiExtraArgs, optional
@@ -564,11 +575,13 @@ schema ValuesAdminApi:
         Tolerations for admin-api Pods
     topologySpreadConstraints : [any], optional
         Topology Spread Constraints for admin-api pods
+        The value will be passed through tpl.
     """
     [...str]: any
     affinity?: ValuesAdminApiAffinity
     annotations?: ValuesAdminApiAnnotations
     containerSecurityContext?: ValuesAdminApiContainerSecurityContext
+    dnsConfig?: ValuesAdminApiDnsConfig
     env?: [any]
     extraArgs?: ValuesAdminApiExtraArgs
     extraContainers?: [any]
@@ -596,6 +609,7 @@ schema ValuesAdminApi:
 schema ValuesAdminApiAffinity:
     r"""
     Affinity for admin-api Pods
+    The value will be passed through tpl.
     """
     [...str]: any
 
@@ -630,6 +644,12 @@ schema ValuesAdminApiContainerSecurityContextCapabilities:
     """
     [...str]: any
     drop?: [str]
+
+schema ValuesAdminApiDnsConfig:
+    r"""
+    DNSConfig for `admin-api` pods
+    """
+    [...str]: any
 
 schema ValuesAdminApiExtraArgs:
     r"""
@@ -770,6 +790,7 @@ schema ValuesBackend:
     ----------
     affinity : ValuesBackendAffinity, optional
         Affinity for backend pods.
+        The value will be passed through tpl.
     annotations : ValuesBackendAnnotations, optional
         Annotations for backend StatefulSet
     autoscaling : ValuesBackendAutoscaling, optional
@@ -820,6 +841,7 @@ schema ValuesBackend:
         Tolerations for backend pods
     topologySpreadConstraints : [any], optional
         Topology Spread Constraints for backend pods
+        The value will be passed through tpl.
     """
     [...str]: any
     affinity?: ValuesBackendAffinity
@@ -853,6 +875,7 @@ schema ValuesBackend:
 schema ValuesBackendAffinity:
     r"""
     Affinity for backend pods.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -903,9 +926,13 @@ schema ValuesBackendAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuring
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "backend"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 schema ValuesBackendAnnotations:
     r"""
@@ -1107,11 +1134,14 @@ schema ValuesBloomBuilder:
     ----------
     affinity : ValuesBloomBuilderAffinity, optional
         Affinity for bloom-builder pods.
+        The value will be passed through tpl.
     appProtocol : ValuesBloomBuilderAppProtocol, optional
         Adds the appProtocol field to the queryFrontend service. This allows bloomBuilder to work with istio protocol selection.
     autoscaling : ValuesBloomBuilderAutoscaling, optional
     command : any, optional, default is "null"
         Command to execute instead of defined in Docker image
+    dnsConfig : ValuesBloomBuilderDnsConfig, optional
+        DNSConfig for bloom-builder pods
     extraArgs : [any], optional
         Additional CLI args for the bloom-builder
     extraContainers : [any], optional
@@ -1132,6 +1162,8 @@ schema ValuesBloomBuilder:
              - domain.tld
         Use the host's user namespace in the boom-builder
     image : ValuesBloomBuilderImage, optional
+    initContainers : [any], optional
+        Init containers to add to the bloom-builder pods
     maxUnavailable : any, optional, default is "null"
         Pod Disruption Budget maxUnavailable
     nodeSelector : ValuesBloomBuilderNodeSelector, optional
@@ -1160,6 +1192,7 @@ schema ValuesBloomBuilder:
     appProtocol?: ValuesBloomBuilderAppProtocol
     autoscaling?: ValuesBloomBuilderAutoscaling
     command?: any
+    dnsConfig?: ValuesBloomBuilderDnsConfig
     extraArgs?: [any]
     extraContainers?: [any]
     extraEnv?: [any]
@@ -1169,6 +1202,7 @@ schema ValuesBloomBuilder:
     hostAliases?: [any]
     hostUsers?: str
     image?: ValuesBloomBuilderImage
+    initContainers?: [any]
     maxUnavailable?: any
     nodeSelector?: ValuesBloomBuilderNodeSelector
     podAnnotations?: ValuesBloomBuilderPodAnnotations
@@ -1184,6 +1218,7 @@ schema ValuesBloomBuilder:
 schema ValuesBloomBuilderAffinity:
     r"""
     Affinity for bloom-builder pods.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -1234,9 +1269,13 @@ schema ValuesBloomBuilderAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredD
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "bloom-builder"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 protocol ValuesBloomBuilderAppProtocol:
     r"""
@@ -1322,6 +1361,12 @@ schema ValuesBloomBuilderAutoscalingBehaviorScaleUp:
     """
     [...str]: any
 
+schema ValuesBloomBuilderDnsConfig:
+    r"""
+    DNSConfig for bloom-builder pods
+    """
+    [...str]: any
+
 schema ValuesBloomBuilderImage:
     r"""
     ValuesBloomBuilderImage
@@ -1395,10 +1440,13 @@ schema ValuesBloomGateway:
     ----------
     affinity : ValuesBloomGatewayAffinity, optional
         Affinity for bloom-gateway pods.
+        The value will be passed through tpl.
     appProtocol : ValuesBloomGatewayAppProtocol, optional
         Set the optional grpc service protocol. Ex: "grpc", "http2" or "https"
     command : any, optional, default is "null"
         Command to execute instead of defined in Docker image
+    dnsConfig : ValuesBloomGatewayDnsConfig, optional
+        DNSConfig for bloom-gateway pods
     extraArgs : [any], optional
         Additional CLI args for the bloom-gateway
     extraContainers : [any], optional
@@ -1454,6 +1502,7 @@ schema ValuesBloomGateway:
     affinity?: ValuesBloomGatewayAffinity
     appProtocol?: ValuesBloomGatewayAppProtocol
     command?: any
+    dnsConfig?: ValuesBloomGatewayDnsConfig
     extraArgs?: [any]
     extraContainers?: [any]
     extraEnv?: [any]
@@ -1483,6 +1532,7 @@ schema ValuesBloomGateway:
 schema ValuesBloomGatewayAffinity:
     r"""
     Affinity for bloom-gateway pods.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -1533,9 +1583,13 @@ schema ValuesBloomGatewayAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredD
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "bloom-gateway"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 protocol ValuesBloomGatewayAppProtocol:
     r"""
@@ -1547,6 +1601,12 @@ protocol ValuesBloomGatewayAppProtocol:
     """
     [...str]: any
     grpc?: str
+
+schema ValuesBloomGatewayDnsConfig:
+    r"""
+    DNSConfig for bloom-gateway pods
+    """
+    [...str]: any
 
 schema ValuesBloomGatewayImage:
     r"""
@@ -1723,10 +1783,13 @@ schema ValuesBloomPlanner:
     ----------
     affinity : ValuesBloomPlannerAffinity, optional
         Affinity for bloom-planner pods.
+        The value will be passed through tpl.
     appProtocol : ValuesBloomPlannerAppProtocol, optional
         Set the optional grpc service protocol. Ex: "grpc", "http2" or "https"
     command : any, optional, default is "null"
         Command to execute instead of defined in Docker image
+    dnsConfig : ValuesBloomPlannerDnsConfig, optional
+        DNSConfig for bloom-planner pods
     extraArgs : [any], optional
         Additional CLI args for the bloom-planner
     extraContainers : [any], optional
@@ -1782,6 +1845,7 @@ schema ValuesBloomPlanner:
     affinity?: ValuesBloomPlannerAffinity
     appProtocol?: ValuesBloomPlannerAppProtocol
     command?: any
+    dnsConfig?: ValuesBloomPlannerDnsConfig
     extraArgs?: [any]
     extraContainers?: [any]
     extraEnv?: [any]
@@ -1811,6 +1875,7 @@ schema ValuesBloomPlanner:
 schema ValuesBloomPlannerAffinity:
     r"""
     Affinity for bloom-planner pods.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -1861,9 +1926,13 @@ schema ValuesBloomPlannerAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredD
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "bloom-planner"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 protocol ValuesBloomPlannerAppProtocol:
     r"""
@@ -1875,6 +1944,12 @@ protocol ValuesBloomPlannerAppProtocol:
     """
     [...str]: any
     grpc?: str
+
+schema ValuesBloomPlannerDnsConfig:
+    r"""
+    DNSConfig for bloom-planner pods
+    """
+    [...str]: any
 
 schema ValuesBloomPlannerImage:
     r"""
@@ -2063,6 +2138,8 @@ schema ValuesChunksCache:
         Maximum number of connections allowed
     defaultValidity : str, optional, default is "0s"
         Specify how long cached chunks should be stored in the chunks-cache before being expired
+    dnsConfig : ValuesChunksCacheDnsConfig, optional
+        DNSConfig for chunks-cache
     enabled : bool, optional, default is True
         Specifies whether memcached based chunks-cache should be enabled
     extraArgs : ValuesChunksCacheExtraArgs, optional
@@ -2151,6 +2228,7 @@ schema ValuesChunksCache:
     batchSize?: int
     connectionLimit?: int
     defaultValidity?: str
+    dnsConfig?: ValuesChunksCacheDnsConfig
     enabled?: bool
     extraArgs?: ValuesChunksCacheExtraArgs
     extraContainers?: [any]
@@ -2195,6 +2273,12 @@ schema ValuesChunksCacheAnnotations:
     """
     [...str]: any
 
+schema ValuesChunksCacheDnsConfig:
+    r"""
+    DNSConfig for chunks-cache
+    """
+    [...str]: any
+
 schema ValuesChunksCacheExtraArgs:
     r"""
     Additional CLI args for chunks-cache
@@ -2221,6 +2305,8 @@ schema ValuesChunksCacheL2:
         Maximum number of connections allowed
     defaultValidity : str, optional, default is "0s"
         Specify how long cached chunks should be stored in the chunks-cache-l2 before being expired
+    dnsConfig : ValuesChunksCacheL2DnsConfig, optional
+        DNSConfig for chunks-cache-l2
     enabled : bool, optional, default is False
         Specifies whether memcached based chunks-cache-l2 should be enabled
     extraArgs : ValuesChunksCacheL2ExtraArgs, optional
@@ -2310,6 +2396,7 @@ schema ValuesChunksCacheL2:
     batchSize?: int
     connectionLimit?: int
     defaultValidity?: str
+    dnsConfig?: ValuesChunksCacheL2DnsConfig
     enabled?: bool
     extraArgs?: ValuesChunksCacheL2ExtraArgs
     extraContainers?: [any]
@@ -2351,6 +2438,12 @@ schema ValuesChunksCacheL2Affinity:
 schema ValuesChunksCacheL2Annotations:
     r"""
     Annotations for the chunks-cache-l2 pods
+    """
+    [...str]: any
+
+schema ValuesChunksCacheL2DnsConfig:
+    r"""
+    DNSConfig for chunks-cache-l2
     """
     [...str]: any
 
@@ -2396,8 +2489,15 @@ schema ValuesChunksCacheL2Persistence:
 schema ValuesChunksCacheL2PersistenceLabels:
     r"""
     ValuesChunksCacheL2PersistenceLabels
+
+    Attributes
+    ----------
+    baz : str, optional
+    foo : str, optional
     """
     [...str]: any
+    baz?: str
+    foo?: str
 
 schema ValuesChunksCacheL2PodAnnotations:
     r"""
@@ -2483,8 +2583,15 @@ schema ValuesChunksCachePersistence:
 schema ValuesChunksCachePersistenceLabels:
     r"""
     ValuesChunksCachePersistenceLabels
+
+    Attributes
+    ----------
+    baz : str, optional
+    foo : str, optional
     """
     [...str]: any
+    baz?: str
+    foo?: str
 
 schema ValuesChunksCachePodAnnotations:
     r"""
@@ -2542,10 +2649,13 @@ schema ValuesCompactor:
     ----------
     affinity : ValuesCompactorAffinity, optional
         Affinity for compactor pods.
+        The value will be passed through tpl.
     appProtocol : ValuesCompactorAppProtocol, optional
         Set the optional grpc service protocol. Ex: "grpc", "http2" or "https"
     command : any, optional, default is "null"
         Command to execute instead of defined in Docker image
+    dnsConfig : ValuesCompactorDnsConfig, optional
+        DNSConfig for compactor pods
     extraArgs : [any], optional
         Additional CLI args for the compactor
     extraContainers : [any], optional
@@ -2601,6 +2711,7 @@ schema ValuesCompactor:
     affinity?: ValuesCompactorAffinity
     appProtocol?: ValuesCompactorAppProtocol
     command?: any
+    dnsConfig?: ValuesCompactorDnsConfig
     extraArgs?: [any]
     extraContainers?: [any]
     extraEnv?: [any]
@@ -2630,6 +2741,7 @@ schema ValuesCompactor:
 schema ValuesCompactorAffinity:
     r"""
     Affinity for compactor pods.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -2680,9 +2792,13 @@ schema ValuesCompactorAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuri
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "compactor"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 protocol ValuesCompactorAppProtocol:
     r"""
@@ -2694,6 +2810,12 @@ protocol ValuesCompactorAppProtocol:
     """
     [...str]: any
     grpc?: str
+
+schema ValuesCompactorDnsConfig:
+    r"""
+    DNSConfig for compactor pods
+    """
+    [...str]: any
 
 schema ValuesCompactorImage:
     r"""
@@ -3048,11 +3170,14 @@ schema ValuesDistributor:
     ----------
     affinity : ValuesDistributorAffinity, optional
         Affinity for distributor pods.
+        The value will be passed through tpl.
     appProtocol : ValuesDistributorAppProtocol, optional
         Adds the appProtocol field to the distributor service. This allows distributor to work with istio protocol selection.
     autoscaling : ValuesDistributorAutoscaling, optional
     command : any, optional, default is "null"
         Command to execute instead of defined in Docker image
+    dnsConfig : ValuesDistributorDnsConfig, optional
+        DNSConfig for distributor pods
     extraArgs : [any], optional
         Additional CLI args for the distributor
     extraContainers : [any], optional
@@ -3073,6 +3198,8 @@ schema ValuesDistributor:
              - domain.tld
         Use the host's user namespace in the distributor
     image : ValuesDistributorImage, optional
+    initContainers : [any], optional
+        Init containers to add to the distributor pods
     maxSurge : int, optional, default is 0
         Max Surge for distributor pods
     maxUnavailable : any, optional, default is "null"
@@ -3101,6 +3228,7 @@ schema ValuesDistributor:
         Tolerations for distributor pods
     topologySpreadConstraints : [any], optional
         Topology Spread Constraints for distributor pods
+        The value will be passed through tpl.
     trafficDistribution : str, optional, default is ""
         trafficDistribution for distributor service
     """
@@ -3109,6 +3237,7 @@ schema ValuesDistributor:
     appProtocol?: ValuesDistributorAppProtocol
     autoscaling?: ValuesDistributorAutoscaling
     command?: any
+    dnsConfig?: ValuesDistributorDnsConfig
     extraArgs?: [any]
     extraContainers?: [any]
     extraEnv?: [any]
@@ -3118,6 +3247,7 @@ schema ValuesDistributor:
     hostAliases?: [any]
     hostUsers?: str
     image?: ValuesDistributorImage
+    initContainers?: [any]
     maxSurge?: int
     maxUnavailable?: any
     nodeSelector?: ValuesDistributorNodeSelector
@@ -3137,6 +3267,7 @@ schema ValuesDistributor:
 schema ValuesDistributorAffinity:
     r"""
     Affinity for distributor pods.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -3187,9 +3318,13 @@ schema ValuesDistributorAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDu
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "distributor"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 protocol ValuesDistributorAppProtocol:
     r"""
@@ -3272,6 +3407,12 @@ schema ValuesDistributorAutoscalingBehaviorScaleDown:
 schema ValuesDistributorAutoscalingBehaviorScaleUp:
     r"""
     define scale up policies, must conform to HPAScalingRules
+    """
+    [...str]: any
+
+schema ValuesDistributorDnsConfig:
+    r"""
+    DNSConfig for distributor pods
     """
     [...str]: any
 
@@ -3420,6 +3561,7 @@ schema ValuesEnterpriseGateway:
     ----------
     affinity : ValuesEnterpriseGatewayAffinity, optional
         Affinity for gateway Pods
+        The value will be passed through tpl.
     annotations : ValuesEnterpriseGatewayAnnotations, optional
         Additional annotations for the `gateway` Pod
     containerSecurityContext : ValuesEnterpriseGatewayContainerSecurityContext, optional
@@ -3468,6 +3610,7 @@ schema ValuesEnterpriseGateway:
         Tolerations for gateway Pods
     topologySpreadConstraints : [any], optional
         Topology Spread Constraints for enterprise-gateway pods
+        The value will be passed through tpl.
     useDefaultProxyURLs : bool, optional, default is True
         If you want to use your own proxy URLs, set this to false.
     """
@@ -3500,6 +3643,7 @@ schema ValuesEnterpriseGateway:
 schema ValuesEnterpriseGatewayAffinity:
     r"""
     Affinity for gateway Pods
+    The value will be passed through tpl.
     """
     [...str]: any
 
@@ -3656,7 +3800,7 @@ schema ValuesEnterpriseImage:
         The Docker registry
     repository : str, optional, default is "grafana/enterprise-logs"
         Docker image repository
-    tag : str, optional, default is "3.5.2"
+    tag : str, optional, default is "3.5.5"
         Docker image tag
     """
     [...str]: any
@@ -3698,6 +3842,7 @@ schema ValuesEnterpriseProvisioner:
             secretNamespace: grafana
     affinity : ValuesEnterpriseProvisionerAffinity, optional
         Affinity for provisioner Pods
+        The value will be passed through tpl.
     annotations : ValuesEnterpriseProvisionerAnnotations, optional
         Additional annotations for the `provisioner` Job
     apiUrl : str, optional, default is "{{ include \"loki.address\" . }}"
@@ -3751,6 +3896,7 @@ schema ValuesEnterpriseProvisioner:
 schema ValuesEnterpriseProvisionerAffinity:
     r"""
     Affinity for provisioner Pods
+    The value will be passed through tpl.
     """
     [...str]: any
 
@@ -3846,6 +3992,7 @@ schema ValuesGateway:
     ----------
     affinity : ValuesGatewayAffinity, optional
         Affinity for gateway pods.
+        The value will be passed through tpl.
     annotations : ValuesGatewayAnnotations, optional
         Annotations for gateway deployment
     autoscaling : ValuesGatewayAutoscaling, optional
@@ -3879,6 +4026,8 @@ schema ValuesGateway:
         Gateway ingress configuration
     lifecycle : ValuesGatewayLifecycle, optional
         Lifecycle for the gateway container
+    livenessProbe : ValuesGatewayLivenessProbe, optional
+        liveness probe for the nginx container in the gateway pods.
     nginxConfig : ValuesGatewayNginxConfig, optional
     nodeSelector : ValuesGatewayNodeSelector, optional
         Node selector for gateway pods
@@ -3898,12 +4047,15 @@ schema ValuesGateway:
         Resource requests and limits for the gateway
     service : ValuesGatewayService, optional
         Gateway service configuration
+    startupProbe : ValuesGatewayStartupProbe, optional
+        startup probe for the nginx container in the gateway pods.
     terminationGracePeriodSeconds : int, optional, default is 30
         Grace period to allow the gateway to shutdown before it is killed
     tolerations : [any], optional
         Tolerations for gateway pods
     topologySpreadConstraints : [any], optional
         Topology Spread Constraints for gateway pods
+        The value will be passed through tpl.
     verboseLogging : bool, optional, default is True
         Enable logging of 2xx and 3xx HTTP requests
     """
@@ -3927,6 +4079,7 @@ schema ValuesGateway:
     image?: ValuesGatewayImage
     ingress?: ValuesGatewayIngress
     lifecycle?: ValuesGatewayLifecycle
+    livenessProbe?: ValuesGatewayLivenessProbe
     nginxConfig?: ValuesGatewayNginxConfig
     nodeSelector?: ValuesGatewayNodeSelector
     podAnnotations?: ValuesGatewayPodAnnotations
@@ -3937,6 +4090,7 @@ schema ValuesGateway:
     replicas?: int
     resources?: ValuesGatewayResources
     service?: ValuesGatewayService
+    startupProbe?: ValuesGatewayStartupProbe
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: [any]
@@ -3945,6 +4099,7 @@ schema ValuesGateway:
 schema ValuesGatewayAffinity:
     r"""
     Affinity for gateway pods.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -3995,9 +4150,13 @@ schema ValuesGatewayAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuring
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "gateway"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 schema ValuesGatewayAnnotations:
     r"""
@@ -4220,6 +4379,12 @@ schema ValuesGatewayLifecycle:
     """
     [...str]: any
 
+schema ValuesGatewayLivenessProbe:
+    r"""
+    liveness probe for the nginx container in the gateway pods.
+    """
+    [...str]: any
+
 schema ValuesGatewayNginxConfig:
     r"""
     ValuesGatewayNginxConfig
@@ -4379,6 +4544,12 @@ schema ValuesGatewayServiceLabels:
     """
     [...str]: any
 
+schema ValuesGatewayStartupProbe:
+    r"""
+    startup probe for the nginx container in the gateway pods.
+    """
+    [...str]: any
+
 schema ValuesGlobal:
     r"""
     Global values are values that can be accessed from any chart or subchart by exactly the same name.
@@ -4480,8 +4651,11 @@ schema ValuesIndexGateway:
     ----------
     affinity : ValuesIndexGatewayAffinity, optional
         Affinity for index-gateway pods.
+        The value will be passed through tpl.
     appProtocol : ValuesIndexGatewayAppProtocol, optional
         Set the optional grpc service protocol. Ex: "grpc", "http2" or "https"
+    dnsConfig : ValuesIndexGatewayDnsConfig, optional
+        DNSConfig for index-gateway pods
     extraArgs : [any], optional
         Additional CLI args for the index-gateway
     extraContainers : [any], optional
@@ -4533,12 +4707,14 @@ schema ValuesIndexGateway:
         Tolerations for index-gateway pods
     topologySpreadConstraints : [any], optional
         Topology Spread Constraints for index-gateway pods
+        The value will be passed through tpl.
     updateStrategy : ValuesIndexGatewayUpdateStrategy, optional
         UpdateStrategy for the indexGateway StatefulSet.
     """
     [...str]: any
     affinity?: ValuesIndexGatewayAffinity
     appProtocol?: ValuesIndexGatewayAppProtocol
+    dnsConfig?: ValuesIndexGatewayDnsConfig
     extraArgs?: [any]
     extraContainers?: [any]
     extraEnv?: [any]
@@ -4569,6 +4745,7 @@ schema ValuesIndexGateway:
 schema ValuesIndexGatewayAffinity:
     r"""
     Affinity for index-gateway pods.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -4619,9 +4796,13 @@ schema ValuesIndexGatewayAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredD
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "index-gateway"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 protocol ValuesIndexGatewayAppProtocol:
     r"""
@@ -4633,6 +4814,12 @@ protocol ValuesIndexGatewayAppProtocol:
     """
     [...str]: any
     grpc?: str
+
+schema ValuesIndexGatewayDnsConfig:
+    r"""
+    DNSConfig for index-gateway pods
+    """
+    [...str]: any
 
 schema ValuesIndexGatewayImage:
     r"""
@@ -4763,11 +4950,14 @@ schema ValuesIngester:
         optionally allow adding 'loki-' prefix to ingester name label
     affinity : ValuesIngesterAffinity, optional
         Affinity for ingester pods. Ignored if zoneAwareReplication is enabled.
+        The value will be passed through tpl.
     appProtocol : ValuesIngesterAppProtocol, optional
         Adds the appProtocol field to the ingester service. This allows ingester to work with istio protocol selection.
     autoscaling : ValuesIngesterAutoscaling, optional
     command : any, optional, default is "null"
         Command to execute instead of defined in Docker image
+    dnsConfig : ValuesIngesterDnsConfig, optional
+        DNSConfig for ingester pods
     extraArgs : [any], optional
         Additional CLI args for the ingester
     extraContainers : [any], optional
@@ -4829,6 +5019,7 @@ schema ValuesIngester:
         Tolerations for ingester pods
     topologySpreadConstraints : [ValuesIngesterTopologySpreadConstraintsItems0], optional
         topologySpread for ingester pods.
+        The value will be passed through tpl.
     updateStrategy : ValuesIngesterUpdateStrategy, optional
         UpdateStrategy for the ingester StatefulSets.
     zoneAwareReplication : ValuesIngesterZoneAwareReplication, optional
@@ -4846,6 +5037,7 @@ schema ValuesIngester:
     appProtocol?: ValuesIngesterAppProtocol
     autoscaling?: ValuesIngesterAutoscaling
     command?: any
+    dnsConfig?: ValuesIngesterDnsConfig
     extraArgs?: [any]
     extraContainers?: [any]
     extraEnv?: [any]
@@ -4881,6 +5073,7 @@ schema ValuesIngester:
 schema ValuesIngesterAffinity:
     r"""
     Affinity for ingester pods. Ignored if zoneAwareReplication is enabled.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -4931,9 +5124,13 @@ schema ValuesIngesterAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDurin
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "ingester"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 protocol ValuesIngesterAppProtocol:
     r"""
@@ -5016,6 +5213,12 @@ schema ValuesIngesterAutoscalingBehaviorScaleDown:
 schema ValuesIngesterAutoscalingBehaviorScaleUp:
     r"""
     define scale up policies, must conform to HPAScalingRules
+    """
+    [...str]: any
+
+schema ValuesIngesterDnsConfig:
+    r"""
+    DNSConfig for ingester pods
     """
     [...str]: any
 
@@ -5181,9 +5384,13 @@ schema ValuesIngesterTopologySpreadConstraintsItems0LabelSelectorMatchLabels:
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "ingester"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 schema ValuesIngesterUpdateStrategy:
     r"""
@@ -5255,6 +5462,7 @@ schema ValuesIngesterZoneAwareReplicationZoneA:
         Specific annotations to add to zone A statefulset
     extraAffinity : ValuesIngesterZoneAwareReplicationZoneAExtraAffinity, optional
         optionally define extra affinity rules, by default different zones are not allowed to schedule on the same host
+        The value will be passed through tpl.
     nodeSelector : any, optional, default is "null"
         optionally define a node selector for this zone
     podAnnotations : ValuesIngesterZoneAwareReplicationZoneAPodAnnotations, optional
@@ -5275,6 +5483,7 @@ schema ValuesIngesterZoneAwareReplicationZoneAAnnotations:
 schema ValuesIngesterZoneAwareReplicationZoneAExtraAffinity:
     r"""
     optionally define extra affinity rules, by default different zones are not allowed to schedule on the same host
+    The value will be passed through tpl.
     """
     [...str]: any
 
@@ -5294,6 +5503,7 @@ schema ValuesIngesterZoneAwareReplicationZoneB:
         Specific annotations to add to zone B statefulset
     extraAffinity : ValuesIngesterZoneAwareReplicationZoneBExtraAffinity, optional
         optionally define extra affinity rules, by default different zones are not allowed to schedule on the same host
+        The value will be passed through tpl.
     nodeSelector : any, optional, default is "null"
         optionally define a node selector for this zone
     podAnnotations : ValuesIngesterZoneAwareReplicationZoneBPodAnnotations, optional
@@ -5314,6 +5524,7 @@ schema ValuesIngesterZoneAwareReplicationZoneBAnnotations:
 schema ValuesIngesterZoneAwareReplicationZoneBExtraAffinity:
     r"""
     optionally define extra affinity rules, by default different zones are not allowed to schedule on the same host
+    The value will be passed through tpl.
     """
     [...str]: any
 
@@ -5333,6 +5544,7 @@ schema ValuesIngesterZoneAwareReplicationZoneC:
         Specific annotations to add to zone C statefulset
     extraAffinity : ValuesIngesterZoneAwareReplicationZoneCExtraAffinity, optional
         optionally define extra affinity rules, by default different zones are not allowed to schedule on the same host
+        The value will be passed through tpl.
     nodeSelector : any, optional, default is "null"
         optionally define a node selector for this zone
     podAnnotations : ValuesIngesterZoneAwareReplicationZoneCPodAnnotations, optional
@@ -5353,6 +5565,7 @@ schema ValuesIngesterZoneAwareReplicationZoneCAnnotations:
 schema ValuesIngesterZoneAwareReplicationZoneCExtraAffinity:
     r"""
     optionally define extra affinity rules, by default different zones are not allowed to schedule on the same host
+    The value will be passed through tpl.
     """
     [...str]: any
 
@@ -5511,6 +5724,8 @@ schema ValuesLoki:
         The SecurityContext for Loki containers
     distributor : ValuesLokiDistributor, optional
         Optional distributor configuration
+    dnsConfig : ValuesLokiDnsConfig, optional
+        DNS config for Loki pods
     enableServiceLinks : bool, optional, default is True
         Should enableServiceLinks be enabled. Default to enable
     extraMemberlistConfig : ValuesLokiExtraMemberlistConfig, optional
@@ -5579,7 +5794,7 @@ schema ValuesLoki:
         Additional storage config
     structuredConfig : ValuesLokiStructuredConfig, optional
         Structured loki configuration, takes precedence over `loki.config`, `loki.schemaConfig`, `loki.storageConfig`
-    tenants : [any], optional
+    tenants : [ValuesLokiTenantsItems0], optional
         Tenants list to be created on nginx htpasswd file, with name and password or passwordHash keys<br><br>
         Example:
         <pre>
@@ -5613,6 +5828,7 @@ schema ValuesLoki:
     configStorageType?: str
     containerSecurityContext?: ValuesLokiContainerSecurityContext
     distributor?: ValuesLokiDistributor
+    dnsConfig?: ValuesLokiDnsConfig
     enableServiceLinks?: bool
     extraMemberlistConfig?: ValuesLokiExtraMemberlistConfig
     frontend?: ValuesLokiFrontend
@@ -5645,7 +5861,7 @@ schema ValuesLoki:
     storage?: ValuesLokiStorage
     storage_config?: ValuesLokiStorageConfig
     structuredConfig?: ValuesLokiStructuredConfig
-    tenants?: [any]
+    tenants?: [ValuesLokiTenantsItems0]
     testSchemaConfig?: ValuesLokiTestSchemaConfig
     tracing?: ValuesLokiTracing
     ui?: ValuesLokiUi
@@ -5964,6 +6180,12 @@ schema ValuesLokiDistributor:
     """
     [...str]: any
 
+schema ValuesLokiDnsConfig:
+    r"""
+    DNS config for Loki pods
+    """
+    [...str]: any
+
 schema ValuesLokiExtraMemberlistConfig:
     r"""
     Extra memberlist configuration
@@ -6008,7 +6230,7 @@ schema ValuesLokiImage:
         The Docker registry
     repository : str, optional, default is "grafana/loki"
         Docker image repository
-    tag : str, optional, default is "3.5.3"
+    tag : str, optional, default is "3.5.5"
         Overrides the image tag whose default is the chart's appVersion
     """
     [...str]: any
@@ -6699,6 +6921,21 @@ schema ValuesLokiStructuredConfig:
     """
     [...str]: any
 
+schema ValuesLokiTenantsItems0:
+    r"""
+    ValuesLokiTenantsItems0
+
+    Attributes
+    ----------
+    name : str, optional
+    password : str, optional
+    passwordHash : str, optional
+    """
+    [...str]: any
+    name?: str
+    password?: str
+    passwordHash?: str
+
 schema ValuesLokiTestSchemaConfig:
     r"""
     ValuesLokiTestSchemaConfig
@@ -7108,6 +7345,7 @@ schema ValuesMemcached:
         The name of the PriorityClass for memcached pods
     readinessProbe : ValuesMemcachedReadinessProbe, optional
         Readiness probe for memcached pods (probe port defaults to container port)
+    replicas : int, optional
     """
     [...str]: any
     containerSecurityContext?: ValuesMemcachedContainerSecurityContext
@@ -7117,6 +7355,7 @@ schema ValuesMemcached:
     podSecurityContext?: ValuesMemcachedPodSecurityContext
     priorityClassName?: any
     readinessProbe?: ValuesMemcachedReadinessProbe
+    replicas?: int
 
 schema ValuesMemcachedContainerSecurityContext:
     r"""
@@ -7334,7 +7573,7 @@ schema ValuesMemcachedImage:
         Memcached Docker image pull policy
     repository : str, optional, default is "memcached"
         Memcached Docker image repository
-    tag : str, optional, default is "1.6.38-alpine"
+    tag : str, optional, default is "1.6.39-alpine"
         Memcached Docker image tag
     """
     [...str]: any
@@ -7631,8 +7870,7 @@ schema ValuesMinioUsersItems0:
 
 schema ValuesMonitoring:
     r"""
-    DEPRECATED Monitoring section determines which monitoring features to enable, this section is being replaced
-    by https://github.com/grafana/meta-monitoring-chart
+    Monitoring section determines which monitoring features to enable
 
     Attributes
     ----------
@@ -7641,15 +7879,14 @@ schema ValuesMonitoring:
     enabled : bool, optional
     lokiCanary : ValuesMonitoringLokiCanary, optional
     rules : ValuesMonitoringRules, optional
-        DEPRECATED Recording rules for monitoring Loki, required for some dashboards
+        Recording rules for monitoring Loki, required for some dashboards
     selfMonitoring : ValuesMonitoringSelfMonitoring, optional
         DEPRECATED Self monitoring determines whether Loki should scrape its own logs.
-        This feature currently relies on the Grafana Agent Operator being installed,
-        which is installed by default using the grafana-agent-operator sub-chart.
+        This feature relies on Grafana Agent Operator, which is deprecated.
         It will create custom resources for GrafanaAgent, LogsInstance, and PodLogs to configure
         scrape configs to scrape its own logs with the labels expected by the included dashboards.
     serviceMonitor : ValuesMonitoringServiceMonitor, optional
-         -- DEPRECATED ServiceMonitor configuration
+        ServiceMonitor configuration
     """
     [...str]: any
     dashboards?: ValuesMonitoringDashboards
@@ -7710,7 +7947,7 @@ schema ValuesMonitoringLokiCanary:
 
 schema ValuesMonitoringRules:
     r"""
-    DEPRECATED Recording rules for monitoring Loki, required for some dashboards
+    Recording rules for monitoring Loki, required for some dashboards
 
     Attributes
     ----------
@@ -7774,8 +8011,7 @@ schema ValuesMonitoringRulesLabels:
 schema ValuesMonitoringSelfMonitoring:
     r"""
     DEPRECATED Self monitoring determines whether Loki should scrape its own logs.
-    This feature currently relies on the Grafana Agent Operator being installed,
-    which is installed by default using the grafana-agent-operator sub-chart.
+    This feature relies on Grafana Agent Operator, which is deprecated.
     It will create custom resources for GrafanaAgent, LogsInstance, and PodLogs to configure
     scrape configs to scrape its own logs with the labels expected by the included dashboards.
 
@@ -7942,7 +8178,7 @@ schema ValuesMonitoringSelfMonitoringTenant:
 
 schema ValuesMonitoringServiceMonitor:
     r"""
-     -- DEPRECATED ServiceMonitor configuration
+    ServiceMonitor configuration
 
     Attributes
     ----------
@@ -7960,7 +8196,7 @@ schema ValuesMonitoringServiceMonitor:
         ServiceMonitor metric relabel configs to apply to samples before ingestion
         https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#endpoint
     metricsInstance : ValuesMonitoringServiceMonitorMetricsInstance, optional
-        If defined, will create a MetricsInstance for the Grafana Agent Operator.
+        DEPRECATED If defined, will create a MetricsInstance for the Grafana Agent Operator.
     namespaceSelector : ValuesMonitoringServiceMonitorNamespaceSelector, optional
         Namespace selector for ServiceMonitor resources
     relabelings : [any], optional
@@ -8005,7 +8241,7 @@ schema ValuesMonitoringServiceMonitorLabels:
 
 schema ValuesMonitoringServiceMonitorMetricsInstance:
     r"""
-    If defined, will create a MetricsInstance for the Grafana Agent Operator.
+    DEPRECATED If defined, will create a MetricsInstance for the Grafana Agent Operator.
 
     Attributes
     ----------
@@ -8302,10 +8538,13 @@ schema ValuesOverridesExporter:
     ----------
     affinity : ValuesOverridesExporterAffinity, optional
         Affinity for overrides-exporter pods.
+        The value will be passed through tpl.
     appProtocol : ValuesOverridesExporterAppProtocol, optional
         Set the optional grpc service protocol. Ex: "grpc", "http2" or "https"
     command : any, optional, default is "null"
         Command to execute instead of defined in Docker image
+    dnsConfig : ValuesOverridesExporterDnsConfig, optional
+        DNSConfig for overrides-exporter
     enabled : bool, optional, default is False
         The overrides-exporter component is optional and can be disabled if desired.
     extraArgs : [any], optional
@@ -8354,11 +8593,13 @@ schema ValuesOverridesExporter:
         Tolerations for overrides-exporter pods
     topologySpreadConstraints : [any], optional
         Topology Spread Constraints for overrides-exporter pods
+        The value will be passed through tpl.
     """
     [...str]: any
     affinity?: ValuesOverridesExporterAffinity
     appProtocol?: ValuesOverridesExporterAppProtocol
     command?: any
+    dnsConfig?: ValuesOverridesExporterDnsConfig
     enabled?: bool
     extraArgs?: [any]
     extraContainers?: [any]
@@ -8386,6 +8627,7 @@ schema ValuesOverridesExporter:
 schema ValuesOverridesExporterAffinity:
     r"""
     Affinity for overrides-exporter pods.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -8436,9 +8678,13 @@ schema ValuesOverridesExporterAffinityPodAntiAffinityRequiredDuringSchedulingIgn
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "overrides-exporter"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 protocol ValuesOverridesExporterAppProtocol:
     r"""
@@ -8450,6 +8696,12 @@ protocol ValuesOverridesExporterAppProtocol:
     """
     [...str]: any
     grpc?: str
+
+schema ValuesOverridesExporterDnsConfig:
+    r"""
+    DNSConfig for overrides-exporter
+    """
+    [...str]: any
 
 schema ValuesOverridesExporterImage:
     r"""
@@ -8513,10 +8765,13 @@ schema ValuesPatternIngester:
     ----------
     affinity : ValuesPatternIngesterAffinity, optional
         Affinity for pattern ingester pods.
+        The value will be passed through tpl.
     appProtocol : ValuesPatternIngesterAppProtocol, optional
         Set the optional grpc service protocol. Ex: "grpc", "http2" or "https"
     command : any, optional, default is "null"
         Command to execute instead of defined in Docker image
+    dnsConfig : ValuesPatternIngesterDnsConfig, optional
+        DNSConfig for pattern ingester pods
     extraArgs : [any], optional
         Additional CLI args for the pattern ingester
     extraContainers : [any], optional
@@ -8569,11 +8824,13 @@ schema ValuesPatternIngester:
         Tolerations for pattern ingester pods
     topologySpreadConstraints : [any], optional
         Topology Spread Constraints for pattern ingester pods
+        The value will be passed through tpl.
     """
     [...str]: any
     affinity?: ValuesPatternIngesterAffinity
     appProtocol?: ValuesPatternIngesterAppProtocol
     command?: any
+    dnsConfig?: ValuesPatternIngesterDnsConfig
     extraArgs?: [any]
     extraContainers?: [any]
     extraEnv?: [any]
@@ -8604,6 +8861,7 @@ schema ValuesPatternIngester:
 schema ValuesPatternIngesterAffinity:
     r"""
     Affinity for pattern ingester pods.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -8654,9 +8912,13 @@ schema ValuesPatternIngesterAffinityPodAntiAffinityRequiredDuringSchedulingIgnor
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "pattern-ingester"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 protocol ValuesPatternIngesterAppProtocol:
     r"""
@@ -8668,6 +8930,12 @@ protocol ValuesPatternIngesterAppProtocol:
     """
     [...str]: any
     grpc?: str
+
+schema ValuesPatternIngesterDnsConfig:
+    r"""
+    DNSConfig for pattern ingester pods
+    """
+    [...str]: any
 
 schema ValuesPatternIngesterImage:
     r"""
@@ -8990,6 +9258,7 @@ schema ValuesQuerier:
     ----------
     affinity : ValuesQuerierAffinity, optional
         Affinity for querier pods.
+        The value will be passed through tpl.
     appProtocol : ValuesQuerierAppProtocol, optional
         Adds the appProtocol field to the querier service. This allows querier to work with istio protocol selection.
     autoscaling : ValuesQuerierAutoscaling, optional
@@ -9047,6 +9316,7 @@ schema ValuesQuerier:
         Tolerations for querier pods
     topologySpreadConstraints : [ValuesQuerierTopologySpreadConstraintsItems0], optional
         topologySpread for querier pods.
+        The value will be passed through tpl.
     """
     [...str]: any
     affinity?: ValuesQuerierAffinity
@@ -9082,6 +9352,7 @@ schema ValuesQuerier:
 schema ValuesQuerierAffinity:
     r"""
     Affinity for querier pods.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -9132,9 +9403,13 @@ schema ValuesQuerierAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuring
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "querier"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 protocol ValuesQuerierAppProtocol:
     r"""
@@ -9315,9 +9590,13 @@ schema ValuesQuerierTopologySpreadConstraintsItems0LabelSelectorMatchLabels:
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "querier"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 schema ValuesQueryFrontend:
     r"""
@@ -9327,6 +9606,7 @@ schema ValuesQueryFrontend:
     ----------
     affinity : ValuesQueryFrontendAffinity, optional
         Affinity for query-frontend pods.
+        The value will be passed through tpl.
     appProtocol : ValuesQueryFrontendAppProtocol, optional
         Adds the appProtocol field to the queryFrontend service. This allows queryFrontend to work with istio protocol selection.
     autoscaling : ValuesQueryFrontendAutoscaling, optional
@@ -9352,6 +9632,8 @@ schema ValuesQueryFrontend:
              - domain.tld
         Use the host's user namespace in the query-frontend
     image : ValuesQueryFrontendImage, optional
+    initContainers : [any], optional
+        init containers to add to the query-frontend pods
     maxUnavailable : any, optional, default is "null"
         Pod Disruption Budget maxUnavailable
     nodeSelector : ValuesQueryFrontendNodeSelector, optional
@@ -9378,6 +9660,7 @@ schema ValuesQueryFrontend:
         Tolerations for query-frontend pods
     topologySpreadConstraints : [any], optional
         Topology Spread Constraints for query-frontend pods
+        The value will be passed through tpl.
     """
     [...str]: any
     affinity?: ValuesQueryFrontendAffinity
@@ -9393,6 +9676,7 @@ schema ValuesQueryFrontend:
     hostAliases?: [any]
     hostUsers?: str
     image?: ValuesQueryFrontendImage
+    initContainers?: [any]
     maxUnavailable?: any
     nodeSelector?: ValuesQueryFrontendNodeSelector
     podAnnotations?: ValuesQueryFrontendPodAnnotations
@@ -9410,6 +9694,7 @@ schema ValuesQueryFrontend:
 schema ValuesQueryFrontendAffinity:
     r"""
     Affinity for query-frontend pods.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -9460,9 +9745,13 @@ schema ValuesQueryFrontendAffinityPodAntiAffinityRequiredDuringSchedulingIgnored
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "query-frontend"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 protocol ValuesQueryFrontendAppProtocol:
     r"""
@@ -9610,8 +9899,11 @@ schema ValuesQueryScheduler:
     ----------
     affinity : ValuesQuerySchedulerAffinity, optional
         Affinity for query-scheduler pods.
+        The value will be passed through tpl.
     appProtocol : ValuesQuerySchedulerAppProtocol, optional
         Set the optional grpc service protocol. Ex: "grpc", "http2" or "https"
+    dnsConfig : ValuesQuerySchedulerDnsConfig, optional
+        DNSConfig for query-scheduler
     extraArgs : [any], optional
         Additional CLI args for the query-scheduler
     extraContainers : [any], optional
@@ -9632,6 +9924,8 @@ schema ValuesQueryScheduler:
              - domain.tld
         Use the host's user namespace in the query-scheduler
     image : ValuesQuerySchedulerImage, optional
+    initContainers : [any], optional
+        init containers to add to the query-scheduler pods
     maxUnavailable : int, optional, default is 1
         Pod Disruption Budget maxUnavailable
     nodeSelector : ValuesQuerySchedulerNodeSelector, optional
@@ -9658,10 +9952,12 @@ schema ValuesQueryScheduler:
         Tolerations for query-scheduler pods
     topologySpreadConstraints : [any], optional
         Topology Spread Constraints for query-scheduler pods
+        The value will be passed through tpl.
     """
     [...str]: any
     affinity?: ValuesQuerySchedulerAffinity
     appProtocol?: ValuesQuerySchedulerAppProtocol
+    dnsConfig?: ValuesQuerySchedulerDnsConfig
     extraArgs?: [any]
     extraContainers?: [any]
     extraEnv?: [any]
@@ -9671,6 +9967,7 @@ schema ValuesQueryScheduler:
     hostAliases?: [any]
     hostUsers?: str
     image?: ValuesQuerySchedulerImage
+    initContainers?: [any]
     maxUnavailable?: int
     nodeSelector?: ValuesQuerySchedulerNodeSelector
     podAnnotations?: ValuesQuerySchedulerPodAnnotations
@@ -9687,6 +9984,7 @@ schema ValuesQueryScheduler:
 schema ValuesQuerySchedulerAffinity:
     r"""
     Affinity for query-scheduler pods.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -9737,9 +10035,13 @@ schema ValuesQuerySchedulerAffinityPodAntiAffinityRequiredDuringSchedulingIgnore
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "query-scheduler"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 protocol ValuesQuerySchedulerAppProtocol:
     r"""
@@ -9751,6 +10053,12 @@ protocol ValuesQuerySchedulerAppProtocol:
     """
     [...str]: any
     grpc?: str
+
+schema ValuesQuerySchedulerDnsConfig:
+    r"""
+    DNSConfig for query-scheduler
+    """
+    [...str]: any
 
 schema ValuesQuerySchedulerImage:
     r"""
@@ -9855,6 +10163,7 @@ schema ValuesRead:
     ----------
     affinity : ValuesReadAffinity, optional
         Affinity for read pods.
+        The value will be passed through tpl.
     annotations : ValuesReadAnnotations, optional
         Annotations for read deployment
     autoscaling : ValuesReadAutoscaling, optional
@@ -9875,6 +10184,8 @@ schema ValuesRead:
     hostUsers : str, optional, default is "nil"
         Use the host's user namespace in the read pods.
     image : ValuesReadImage, optional
+    initContainers : [any], optional
+        init containers to add to the read pods
     legacyReadTarget : bool, optional, default is False
         Whether or not to use the 2 target type simple scalable mode (read, write) or the
         3 target type (read, write, backend). Legacy refers to the 2 target type, so true will
@@ -9910,6 +10221,7 @@ schema ValuesRead:
         Tolerations for read pods
     topologySpreadConstraints : [any], optional
         Topology Spread Constraints for read pods
+        The value will be passed through tpl.
     """
     [...str]: any
     affinity?: ValuesReadAffinity
@@ -9924,6 +10236,7 @@ schema ValuesRead:
     extraVolumes?: [any]
     hostUsers?: str
     image?: ValuesReadImage
+    initContainers?: [any]
     legacyReadTarget?: bool
     lifecycle?: ValuesReadLifecycle
     livenessProbe?: ValuesReadLivenessProbe
@@ -9945,6 +10258,7 @@ schema ValuesRead:
 schema ValuesReadAffinity:
     r"""
     Affinity for read pods.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -9995,9 +10309,13 @@ schema ValuesReadAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExe
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "read"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 schema ValuesReadAnnotations:
     r"""
@@ -10238,6 +10556,8 @@ schema ValuesResultsCache:
         Maximum number of connections allowed
     defaultValidity : str, optional, default is "12h"
         Specify how long cached results should be stored in the results-cache before being expired
+    dnsConfig : ValuesResultsCacheDnsConfig, optional
+        DNSConfig for results-cache
     enabled : bool, optional, default is True
         Specifies whether memcached based results-cache should be enabled
     extraArgs : ValuesResultsCacheExtraArgs, optional
@@ -10319,6 +10639,7 @@ schema ValuesResultsCache:
     annotations?: ValuesResultsCacheAnnotations
     connectionLimit?: int
     defaultValidity?: str
+    dnsConfig?: ValuesResultsCacheDnsConfig
     enabled?: bool
     extraArgs?: ValuesResultsCacheExtraArgs
     extraContainers?: [any]
@@ -10357,6 +10678,12 @@ schema ValuesResultsCacheAffinity:
 schema ValuesResultsCacheAnnotations:
     r"""
     Annotations for the results-cache pods
+    """
+    [...str]: any
+
+schema ValuesResultsCacheDnsConfig:
+    r"""
+    DNSConfig for results-cache
     """
     [...str]: any
 
@@ -10403,8 +10730,15 @@ schema ValuesResultsCachePersistence:
 schema ValuesResultsCachePersistenceLabels:
     r"""
     PVC additional labels
+
+    Attributes
+    ----------
+    baz : str, optional
+    foo : str, optional
     """
     [...str]: any
+    baz?: str
+    foo?: str
 
 schema ValuesResultsCachePodAnnotations:
     r"""
@@ -10554,6 +10888,7 @@ schema ValuesRuler:
     ----------
     affinity : ValuesRulerAffinity, optional
         Affinity for ruler pods.
+        The value will be passed through tpl.
     appProtocol : ValuesRulerAppProtocol, optional
         Set the optional grpc service protocol. Ex: "grpc", "http2" or "https"
     command : any, optional, default is "null"
@@ -10613,6 +10948,7 @@ schema ValuesRuler:
         Tolerations for ruler pods
     topologySpreadConstraints : [any], optional
         Topology Spread Constraints for ruler pods
+        The value will be passed through tpl.
     """
     [...str]: any
     affinity?: ValuesRulerAffinity
@@ -10649,6 +10985,7 @@ schema ValuesRuler:
 schema ValuesRulerAffinity:
     r"""
     Affinity for ruler pods.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -10699,9 +11036,13 @@ schema ValuesRulerAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringEx
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "ruler"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 protocol ValuesRulerAppProtocol:
     r"""
@@ -11036,11 +11377,11 @@ schema ValuesSidecarImage:
     ----------
     pullPolicy : str, optional, default is "IfNotPresent"
         Docker image pull policy
-    repository : str, optional, default is "kiwigrid/k8s-sidecar"
+    repository : str, optional, default is "docker.io/kiwigrid/k8s-sidecar"
         The Docker registry and image for the k8s sidecar
     sha : str, optional, default is ""
         Docker image sha. If empty, no sha will be used
-    tag : str, optional, default is "1.30.7"
+    tag : str, optional, default is "1.30.10"
         Docker image tag
     """
     [...str]: any
@@ -11167,6 +11508,7 @@ schema ValuesSingleBinary:
     ----------
     affinity : ValuesSingleBinaryAffinity, optional
         Affinity for single binary pods.
+        The value will be passed through tpl.
     annotations : ValuesSingleBinaryAnnotations, optional
         Annotations for single binary StatefulSet
     autoscaling : ValuesSingleBinaryAutoscaling, optional
@@ -11242,6 +11584,7 @@ schema ValuesSingleBinary:
 schema ValuesSingleBinaryAffinity:
     r"""
     Affinity for single binary pods.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -11292,9 +11635,13 @@ schema ValuesSingleBinaryAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredD
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "single-binary"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 schema ValuesSingleBinaryAnnotations:
     r"""
@@ -11526,6 +11873,7 @@ schema ValuesTableManager:
     ----------
     affinity : ValuesTableManagerAffinity, optional
         Affinity for table-manager pods.
+        The value will be passed through tpl.
     annotations : ValuesTableManagerAnnotations, optional
         Annotations for table-manager deployment
     command : any, optional, default is "null"
@@ -11597,6 +11945,7 @@ schema ValuesTableManager:
 schema ValuesTableManagerAffinity:
     r"""
     Affinity for table-manager pods.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -11647,9 +11996,13 @@ schema ValuesTableManagerAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredD
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "table-manager"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 schema ValuesTableManagerAnnotations:
     r"""
@@ -11786,7 +12139,7 @@ schema ValuesTestImage:
         The Docker registry
     repository : str, optional, default is "grafana/loki-helm-test"
         Docker image repository
-    tag : str, optional, default is "ewelch-distributed-helm-chart-17db5ee"
+    tag : str, optional, default is "latest"
         Overrides the image tag whose default is the chart's appVersion
     """
     [...str]: any
@@ -11835,6 +12188,25 @@ schema ValuesUsersItems0:
     policy?: str
     secretKey?: str
 
+schema ValuesWebhooks:
+    r"""
+    ValuesWebhooks
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+        Enable the rollout-operator webhooks. See https://github.com/grafana/rollout-operator/#webhooks.
+        Note that the webhooks require custom resource definitions. If upgrading, manually apply the files in the `crds` directory.
+    failurePolicy : str, optional, default is "Fail"
+        Validating and mutating webhook failure policy. `Ignore` or `Fail`.
+    selfSignedCertSecretName : str, optional, default is "certificate"
+        Secret resource name for the TLS certificate to be used with the webhooks
+    """
+    [...str]: any
+    enabled?: bool
+    failurePolicy?: str
+    selfSignedCertSecretName?: str
+
 schema ValuesWrite:
     r"""
     Configuration for the write pod(s)
@@ -11843,6 +12215,7 @@ schema ValuesWrite:
     ----------
     affinity : ValuesWriteAffinity, optional
         Affinity for write pods.
+        The value will be passed through tpl.
     annotations : ValuesWriteAnnotations, optional
         Annotations for write StatefulSet
     autoscaling : ValuesWriteAutoscaling, optional
@@ -11902,6 +12275,7 @@ schema ValuesWrite:
         Tolerations for write pods
     topologySpreadConstraints : [any], optional
         Topology Spread Constraints for write pods
+        The value will be passed through tpl.
     """
     [...str]: any
     affinity?: ValuesWriteAffinity
@@ -11937,6 +12311,7 @@ schema ValuesWrite:
 schema ValuesWriteAffinity:
     r"""
     Affinity for write pods.
+    The value will be passed through tpl.
 
     Attributes
     ----------
@@ -11987,9 +12362,13 @@ schema ValuesWriteAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringEx
     Attributes
     ----------
     "app.kubernetes.io/component" : str, optional, default is "write"
+    "app.kubernetes.io/instance" : str, optional, default is "{{ .Release.Name }}"
+    "app.kubernetes.io/name" : str, optional, default is "{{ include \"loki.name\" . }}"
     """
     [...str]: any
     "app.kubernetes.io/component"?: str
+    "app.kubernetes.io/instance"?: str
+    "app.kubernetes.io/name"?: str
 
 schema ValuesWriteAnnotations:
     r"""
