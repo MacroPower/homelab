@@ -2077,8 +2077,10 @@ schema ArgoprojIoV1alpha1ApplicationStatusHealth:
         LastTransitionTime is the time the HealthStatus was set or updated
     message : str, default is Undefined, optional
         Message is a human-readable informational message describing the health status
+
+        Deprecated: this field is not used and will be removed in a future release.
     status : str, default is Undefined, optional
-        Status holds the status code of the application or resource
+        Status holds the status code of the application
     """
     lastTransitionTime?: str
     message?: str
@@ -3925,6 +3927,8 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultResourcesItems
         This can also contain values for non-hook resources.
     hookType : str, default is Undefined, optional
         HookType specifies the type of the hook. Empty for non-hook resources
+    images : [str], default is Undefined, optional
+        Images contains the images related to the ResourceResult
     kind : str, default is Undefined, required
         Kind specifies the API kind of the resource
     message : str, default is Undefined, optional
@@ -3944,6 +3948,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultResourcesItems
 
     hookPhase?: str
     hookType?: str
+    images?: [str]
     kind: str
 
     message?: str
@@ -4765,10 +4770,12 @@ schema ArgoprojIoV1alpha1ApplicationStatusResourcesItems0Health:
     ----------
     lastTransitionTime : str, default is Undefined, optional
         LastTransitionTime is the time the HealthStatus was set or updated
+
+        Deprecated: this field is not used and will be removed in a future release.
     message : str, default is Undefined, optional
         Message is a human-readable informational message describing the health status
     status : str, default is Undefined, optional
-        Status holds the status code of the application or resource
+        Status holds the status code of the resource
     """
     lastTransitionTime?: str
     message?: str
