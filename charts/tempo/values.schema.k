@@ -43,7 +43,7 @@ schema Values:
         #
     compactor : ValuesCompactor, optional
         Configuration for the compactor
-    config : str, optional, default is "multitenancy_enabled: {{ .Values.multitenancyEnabled }}\n\nusage_report:\n  reporting_enabled: {{ .Values.reportingEnabled }}\n\n{{- if .Values.enterprise.enabled }}\nlicense:\n  path: \"/license/license.jwt\"\n\nadmin_api:\n  leader_election:\n    enabled: true\n    ring:\n      kvstore:\n        store: \"memberlist\"\n\nauth:\n  type: enterprise\n\nhttp_api_prefix: {{get .Values.tempo.structuredConfig \"http_api_prefix\"}}\n\nadmin_client:\n  storage:\n    backend: {{.Values.storage.admin.backend}}\n    {{- if eq .Values.storage.admin.backend \"s3\"}}\n    s3:\n      {{- toYaml .Values.storage.admin.s3 | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"gcs\"}}\n    gcs:\n      {{- toYaml .Values.storage.admin.gcs | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"azure\"}}\n    azure:\n      {{- toYaml .Values.storage.admin.azure | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"swift\"}}\n    swift:\n      {{- toYaml .Values.storage.admin.swift | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"filesystem\"}}\n    filesystem:\n      {{- toYaml .Values.storage.admin.filesystem | nindent 6}}\n    {{- end}}\n{{- end }}\n\n{{- if and .Values.enterprise.enabled .Values.enterpriseGateway.useDefaultProxyURLs }}\ngateway:\n  proxy:\n    admin_api:\n      url: http://{{ template \"tempo.fullname\" . }}-admin-api.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    compactor:\n      url: http://{{ template \"tempo.fullname\" . }}-compactor.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    default:\n      url: http://{{ template \"tempo.fullname\" . }}-admin-api.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    distributor:\n      url: http://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n      otlp/grpc:\n        url: h2c://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:4317\n      otlp/http:\n        url: http://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:4318\n    ingester:\n      url: http://{{ template \"tempo.fullname\" . }}-ingester.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    querier:\n      url: http://{{ template \"tempo.fullname\" . }}-querier.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    query_frontend:\n      url: http://{{ template \"tempo.fullname\" . }}-query-frontend.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}{{get .Values.tempo.structuredConfig \"http_api_prefix\"}}\n{{else}}\n{{- if and .Values.enterprise.enabled .Values.enterpriseGateway.proxy }}\ngateway:\n  proxy: {{- toYaml .Values.enterpriseGateway.proxy | nindent 6 }}\n{{- end }}\n{{- end }}\n\ncompactor:\n  compaction:\n    block_retention: {{ .Values.compactor.config.compaction.block_retention }}\n    compacted_block_retention: {{ .Values.compactor.config.compaction.compacted_block_retention }}\n    compaction_window: {{ .Values.compactor.config.compaction.compaction_window }}\n    v2_in_buffer_bytes: {{ .Values.compactor.config.compaction.v2_in_buffer_bytes }}\n    v2_out_buffer_bytes: {{ .Values.compactor.config.compaction.v2_out_buffer_bytes }}\n    max_compaction_objects: {{ .Values.compactor.config.compaction.max_compaction_objects }}\n    max_block_bytes: {{ .Values.compactor.config.compaction.max_block_bytes }}\n    retention_concurrency: {{ .Values.compactor.config.compaction.retention_concurrency }}\n    v2_prefetch_traces_count: {{ .Values.compactor.config.compaction.v2_prefetch_traces_count }}\n    max_time_per_tenant: {{ .Values.compactor.config.compaction.max_time_per_tenant }}\n    compaction_cycle: {{ .Values.compactor.config.compaction.compaction_cycle }}\n  ring:\n    kvstore:\n      store: memberlist\n{{- if and .Values.enterprise.enabled .Values.enterpriseFederationFrontend.enabled }}\nfederation:\n  proxy_targets:\n    {{- toYaml .Values.enterpriseFederationFrontend.proxy_targets | nindent 6 }}\n{{- end }}\n{{- if .Values.metricsGenerator.enabled }}\nmetrics_generator:\n  ring:\n    kvstore:\n      store: memberlist\n  processor:\n    {{- toYaml .Values.metricsGenerator.config.processor | nindent 6 }}\n  storage:\n    {{- toYaml .Values.metricsGenerator.config.storage | nindent 6 }}\n  traces_storage:\n    {{- toYaml .Values.metricsGenerator.config.traces_storage | nindent 6 }}\n  registry:\n    {{- toYaml .Values.metricsGenerator.config.registry | nindent 6 }}\n  metrics_ingestion_time_range_slack: {{ .Values.metricsGenerator.config.metrics_ingestion_time_range_slack }}\n{{- end }}\ndistributor:\n  {{- if .Values.distributor.config.cost_attribution.enabled }}\n  usage:\n    cost_attribution:\n      enabled: {{ .Values.distributor.config.cost_attribution.enabled }}\n      max_cardinality: {{ .Values.distributor.config.cost_attribution.max_cardinality }}\n      stale_duration: {{ .Values.distributor.config.cost_attribution.stale_duration }}\n  {{- end }}\n  ring:\n    kvstore:\n      store: memberlist\n  receivers:\n    {{- if  or (.Values.traces.jaeger.thriftCompact.enabled) (.Values.traces.jaeger.thriftBinary.enabled) (.Values.traces.jaeger.thriftHttp.enabled) (.Values.traces.jaeger.grpc.enabled) }}\n    jaeger:\n      protocols:\n        {{- if .Values.traces.jaeger.thriftCompact.enabled }}\n        thrift_compact:\n          {{- $mergedJaegerThriftCompactConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:6831\") .Values.traces.jaeger.thriftCompact.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftCompactConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.thriftBinary.enabled }}\n        thrift_binary:\n          {{- $mergedJaegerThriftBinaryConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:6832\") .Values.traces.jaeger.thriftBinary.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftBinaryConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.thriftHttp.enabled }}\n        thrift_http:\n          {{- $mergedJaegerThriftHttpConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:14268\") .Values.traces.jaeger.thriftHttp.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftHttpConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.grpc.enabled }}\n        grpc:\n          {{- $mergedJaegerGrpcConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:14250\") .Values.traces.jaeger.grpc.receiverConfig }}\n          {{- toYaml $mergedJaegerGrpcConfig | nindent 10 }}\n        {{- end }}\n    {{- end }}\n    {{- if .Values.traces.zipkin.enabled }}\n    zipkin:\n      {{- $mergedZipkinReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:9411\") .Values.traces.zipkin.receiverConfig }}\n      {{- toYaml $mergedZipkinReceiverConfig | nindent 6 }}\n    {{- end }}\n    {{- if or (.Values.traces.otlp.http.enabled) (.Values.traces.otlp.grpc.enabled) }}\n    otlp:\n      protocols:\n        {{- if .Values.traces.otlp.http.enabled }}\n        http:\n          {{- $mergedOtlpHttpReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:4318\") .Values.traces.otlp.http.receiverConfig }}\n          {{- toYaml $mergedOtlpHttpReceiverConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.otlp.grpc.enabled }}\n        grpc:\n          {{- $mergedOtlpGrpcReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:4317\") .Values.traces.otlp.grpc.receiverConfig }}\n          {{- toYaml $mergedOtlpGrpcReceiverConfig | nindent 10 }}\n        {{- end }}\n    {{- end }}\n    {{- if .Values.traces.opencensus.enabled }}\n    opencensus:\n      {{- $mergedOpencensusReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:55678\") .Values.traces.opencensus.receiverConfig }}\n      {{- toYaml $mergedOpencensusReceiverConfig | nindent 6 }}\n    {{- end }}\n    {{- if .Values.traces.kafka }}\n    kafka:\n      {{- toYaml .Values.traces.kafka | nindent 6 }}\n    {{- end }}\n  {{- if .Values.distributor.config.log_discarded_spans.enabled }}\n  log_discarded_spans:\n    enabled: {{ .Values.distributor.config.log_discarded_spans.enabled }}\n    include_all_attributes: {{ .Values.distributor.config.log_discarded_spans.include_all_attributes }}\n    filter_by_status_error: {{ .Values.distributor.config.log_discarded_spans.filter_by_status_error }}\n  {{- end }}\n  {{- if or .Values.distributor.config.log_received_traces .Values.distributor.config.log_received_spans.enabled }}\n  log_received_spans:\n    enabled: {{ or .Values.distributor.config.log_received_traces .Values.distributor.config.log_received_spans.enabled }}\n    include_all_attributes: {{ .Values.distributor.config.log_received_spans.include_all_attributes }}\n    filter_by_status_error: {{ .Values.distributor.config.log_received_spans.filter_by_status_error }}\n  {{- end }}\n  {{- if .Values.distributor.config.extend_writes }}\n  extend_writes: {{ .Values.distributor.config.extend_writes }}\n  {{- end }}\nquerier:\n  frontend_worker:\n    frontend_address: {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend-discovery\") }}:9095\n    {{- if .Values.querier.config.frontend_worker.grpc_client_config }}\n    grpc_client_config:\n      {{- toYaml .Values.querier.config.frontend_worker.grpc_client_config | nindent 6 }}\n    {{- end }}\n  trace_by_id:\n    query_timeout: {{ .Values.querier.config.trace_by_id.query_timeout }}\n  search:\n    query_timeout: {{ .Values.querier.config.search.query_timeout }}\n  max_concurrent_queries: {{ .Values.querier.config.max_concurrent_queries }}\nquery_frontend:\n  max_outstanding_per_tenant: {{ .Values.queryFrontend.config.max_outstanding_per_tenant }}\n  max_retries: {{ .Values.queryFrontend.config.max_retries }}\n  search:\n    target_bytes_per_job: {{ .Values.queryFrontend.config.search.target_bytes_per_job }}\n    concurrent_jobs: {{ .Values.queryFrontend.config.search.concurrent_jobs }}\n    max_spans_per_span_set: {{ .Values.queryFrontend.config.search.max_spans_per_span_set }}\n  trace_by_id:\n    query_shards: {{ .Values.queryFrontend.config.trace_by_id.query_shards }}\n  metrics:\n    concurrent_jobs:  {{ .Values.queryFrontend.config.metrics.concurrent_jobs }}\n    target_bytes_per_job:  {{ .Values.queryFrontend.config.metrics.target_bytes_per_job }}\n    max_duration: {{ .Values.queryFrontend.config.metrics.max_duration }}\n    query_backend_after: {{ .Values.queryFrontend.config.metrics.query_backend_after }}\n    interval: {{ .Values.queryFrontend.config.metrics.interval }}\n    duration_slo: {{ .Values.queryFrontend.config.metrics.duration_slo }}\n    throughput_bytes_slo: {{ .Values.queryFrontend.config.metrics.throughput_bytes_slo }}\ningester:\n  lifecycler:\n    ring:\n      replication_factor: {{ .Values.ingester.config.replication_factor }}\n      {{- if .Values.ingester.zoneAwareReplication.enabled }}\n      zone_awareness_enabled: true\n      {{- end }}\n      kvstore:\n        store: memberlist\n    tokens_file_path: /var/tempo/tokens.json\n  {{- if .Values.ingester.config.trace_idle_period }}\n  trace_idle_period: {{ .Values.ingester.config.trace_idle_period }}\n  {{- end }}\n  {{- if .Values.ingester.config.flush_check_period }}\n  flush_check_period: {{ .Values.ingester.config.flush_check_period }}\n  {{- end }}\n  {{- if .Values.ingester.config.max_block_bytes }}\n  max_block_bytes: {{ .Values.ingester.config.max_block_bytes }}\n  {{- end }}\n  {{- if .Values.ingester.config.max_block_duration }}\n  max_block_duration: {{ .Values.ingester.config.max_block_duration }}\n  {{- end }}\n  {{- if .Values.ingester.config.complete_block_timeout }}\n  complete_block_timeout: {{ .Values.ingester.config.complete_block_timeout }}\n  {{- end }}\n  {{- if .Values.ingester.config.flush_all_on_shutdown }}\n  flush_all_on_shutdown: {{ .Values.ingester.config.flush_all_on_shutdown }}\n  {{- end }}\nmemberlist:\n  {{- with .Values.memberlist }}\n    {{- toYaml . | nindent 2 }}\n  {{- end }}\n  join_members:\n    - dns+{{ include \"tempo.fullname\" . }}-gossip-ring:{{ .Values.memberlist.bind_port }}\noverrides:\n  {{- toYaml .Values.overrides | nindent 2 }}\nserver:\n  http_listen_port: {{ .Values.server.httpListenPort }}\n  log_level: {{ .Values.server.logLevel }}\n  log_format: {{ .Values.server.logFormat }}\n  grpc_server_max_recv_msg_size: {{ .Values.server.grpc_server_max_recv_msg_size }}\n  grpc_server_max_send_msg_size: {{ .Values.server.grpc_server_max_send_msg_size }}\n  http_server_read_timeout: {{ .Values.server.http_server_read_timeout }}\n  http_server_write_timeout: {{ .Values.server.http_server_write_timeout }}\ncache:\n{{- toYaml .Values.cache | nindent 2}}\nstorage:\n  trace:\n    {{- if .Values.storage.trace.block.version }}\n    block:\n      version: {{.Values.storage.trace.block.version}}\n      {{- if .Values.storage.trace.block.dedicated_columns}}\n      parquet_dedicated_columns:\n        {{ .Values.storage.trace.block.dedicated_columns | toYaml | nindent 8}}\n      {{- end }}\n    {{- end }}\n    pool:\n      max_workers: {{ .Values.storage.trace.pool.max_workers }}\n      queue_depth: {{ .Values.storage.trace.pool.queue_depth }}\n    backend: {{.Values.storage.trace.backend}}\n    {{- if eq .Values.storage.trace.backend \"s3\"}}\n    s3:\n      {{- toYaml .Values.storage.trace.s3 | nindent 6}}\n    {{- end }}\n    {{- if eq .Values.storage.trace.backend \"gcs\"}}\n    gcs:\n      {{- toYaml .Values.storage.trace.gcs | nindent 6}}\n    {{- end }}\n    {{- if eq .Values.storage.trace.backend \"azure\"}}\n    azure:\n      {{- toYaml .Values.storage.trace.azure | nindent 6}}\n    {{- end }}\n    blocklist_poll: 5m\n    local:\n      path: /var/tempo/traces\n    wal:\n      path: /var/tempo/wal\n    search:\n      {{- toYaml .Values.storage.trace.search | nindent 6}}\n\n    {{- if .Values.storage.trace.blocklist_poll }}\n    blocklist_poll: {{ .Values.storage.trace.blocklist_poll }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_concurrency }}\n    blocklist_poll_concurrency: {{ .Values.storage.trace.blocklist_poll_concurrency }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_fallback }}\n    blocklist_poll_fallback: {{ .Values.storage.trace.blocklist_poll_fallback }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_tenant_index_builders }}\n    blocklist_poll_tenant_index_builders: {{ .Values.storage.trace.blocklist_poll_tenant_index_builders }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_stale_tenant_index }}\n    blocklist_poll_stale_tenant_index: {{ .Values.storage.trace.blocklist_poll_stale_tenant_index }}\n    {{- end }}\n"
+    config : str, optional, default is "multitenancy_enabled: {{ .Values.multitenancyEnabled }}\n\nusage_report:\n  reporting_enabled: {{ .Values.reportingEnabled }}\n\n{{- if .Values.enterprise.enabled }}\nlicense:\n  path: \"/license/license.jwt\"\n\nadmin_api:\n  leader_election:\n    enabled: true\n    ring:\n      kvstore:\n        store: \"memberlist\"\n\nauth:\n  type: enterprise\n\nhttp_api_prefix: {{get .Values.tempo.structuredConfig \"http_api_prefix\"}}\n\nadmin_client:\n  storage:\n    backend: {{.Values.storage.admin.backend}}\n    {{- if eq .Values.storage.admin.backend \"s3\"}}\n    s3:\n      {{- toYaml .Values.storage.admin.s3 | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"gcs\"}}\n    gcs:\n      {{- toYaml .Values.storage.admin.gcs | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"azure\"}}\n    azure:\n      {{- toYaml .Values.storage.admin.azure | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"swift\"}}\n    swift:\n      {{- toYaml .Values.storage.admin.swift | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"filesystem\"}}\n    filesystem:\n      {{- toYaml .Values.storage.admin.filesystem | nindent 6}}\n    {{- end}}\n{{- end }}\n\n{{- if and .Values.enterprise.enabled .Values.enterpriseGateway.useDefaultProxyURLs }}\ngateway:\n  proxy:\n    admin_api:\n      url: http://{{ template \"tempo.fullname\" . }}-admin-api.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    compactor:\n      url: http://{{ template \"tempo.fullname\" . }}-compactor.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    default:\n      url: http://{{ template \"tempo.fullname\" . }}-admin-api.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    distributor:\n      url: http://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n      otlp/grpc:\n        url: h2c://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:4317\n      otlp/http:\n        url: http://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:4318\n    ingester:\n      url: http://{{ template \"tempo.fullname\" . }}-ingester.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    querier:\n      url: http://{{ template \"tempo.fullname\" . }}-querier.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    query_frontend:\n      url: http://{{ template \"tempo.fullname\" . }}-query-frontend.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}{{get .Values.tempo.structuredConfig \"http_api_prefix\"}}\n{{else}}\n{{- if and .Values.enterprise.enabled .Values.enterpriseGateway.proxy }}\ngateway:\n  proxy: {{- toYaml .Values.enterpriseGateway.proxy | nindent 6 }}\n{{- end }}\n{{- end }}\n\ncompactor:\n  compaction:\n    block_retention: {{ .Values.compactor.config.compaction.block_retention }}\n    compacted_block_retention: {{ .Values.compactor.config.compaction.compacted_block_retention }}\n    compaction_window: {{ .Values.compactor.config.compaction.compaction_window }}\n    v2_in_buffer_bytes: {{ .Values.compactor.config.compaction.v2_in_buffer_bytes }}\n    v2_out_buffer_bytes: {{ .Values.compactor.config.compaction.v2_out_buffer_bytes }}\n    max_compaction_objects: {{ .Values.compactor.config.compaction.max_compaction_objects }}\n    max_block_bytes: {{ .Values.compactor.config.compaction.max_block_bytes }}\n    retention_concurrency: {{ .Values.compactor.config.compaction.retention_concurrency }}\n    v2_prefetch_traces_count: {{ .Values.compactor.config.compaction.v2_prefetch_traces_count }}\n    max_time_per_tenant: {{ .Values.compactor.config.compaction.max_time_per_tenant }}\n    compaction_cycle: {{ .Values.compactor.config.compaction.compaction_cycle }}\n  ring:\n    kvstore:\n      store: memberlist\n{{- if and .Values.enterprise.enabled .Values.enterpriseFederationFrontend.enabled }}\nfederation:\n  proxy_targets:\n    {{- toYaml .Values.enterpriseFederationFrontend.proxy_targets | nindent 6 }}\n{{- end }}\n{{- if .Values.metricsGenerator.enabled }}\nmetrics_generator:\n  ring:\n    kvstore:\n      store: memberlist\n  processor:\n    {{- toYaml .Values.metricsGenerator.config.processor | nindent 6 }}\n  storage:\n    {{- toYaml .Values.metricsGenerator.config.storage | nindent 6 }}\n  traces_storage:\n    {{- toYaml .Values.metricsGenerator.config.traces_storage | nindent 6 }}\n  registry:\n    {{- toYaml .Values.metricsGenerator.config.registry | nindent 6 }}\n  metrics_ingestion_time_range_slack: {{ .Values.metricsGenerator.config.metrics_ingestion_time_range_slack }}\n{{- end }}\ndistributor:\n  {{- if .Values.distributor.config.cost_attribution.enabled }}\n  usage:\n    cost_attribution:\n      enabled: {{ .Values.distributor.config.cost_attribution.enabled }}\n      max_cardinality: {{ .Values.distributor.config.cost_attribution.max_cardinality }}\n      stale_duration: {{ .Values.distributor.config.cost_attribution.stale_duration }}\n  {{- end }}\n  ring:\n    kvstore:\n      store: memberlist\n  receivers:\n    {{- if  or (.Values.traces.jaeger.thriftCompact.enabled) (.Values.traces.jaeger.thriftBinary.enabled) (.Values.traces.jaeger.thriftHttp.enabled) (.Values.traces.jaeger.grpc.enabled) }}\n    jaeger:\n      protocols:\n        {{- if .Values.traces.jaeger.thriftCompact.enabled }}\n        thrift_compact:\n          {{- $mergedJaegerThriftCompactConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:6831\") .Values.traces.jaeger.thriftCompact.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftCompactConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.thriftBinary.enabled }}\n        thrift_binary:\n          {{- $mergedJaegerThriftBinaryConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:6832\") .Values.traces.jaeger.thriftBinary.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftBinaryConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.thriftHttp.enabled }}\n        thrift_http:\n          {{- $mergedJaegerThriftHttpConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:14268\") .Values.traces.jaeger.thriftHttp.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftHttpConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.grpc.enabled }}\n        grpc:\n          {{- $mergedJaegerGrpcConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:14250\") .Values.traces.jaeger.grpc.receiverConfig }}\n          {{- toYaml $mergedJaegerGrpcConfig | nindent 10 }}\n        {{- end }}\n    {{- end }}\n    {{- if .Values.traces.zipkin.enabled }}\n    zipkin:\n      {{- $mergedZipkinReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:9411\") .Values.traces.zipkin.receiverConfig }}\n      {{- toYaml $mergedZipkinReceiverConfig | nindent 6 }}\n    {{- end }}\n    {{- if or (.Values.traces.otlp.http.enabled) (.Values.traces.otlp.grpc.enabled) }}\n    otlp:\n      protocols:\n        {{- if .Values.traces.otlp.http.enabled }}\n        http:\n          {{- $mergedOtlpHttpReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:4318\") .Values.traces.otlp.http.receiverConfig }}\n          {{- toYaml $mergedOtlpHttpReceiverConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.otlp.grpc.enabled }}\n        grpc:\n          {{- $mergedOtlpGrpcReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:4317\") .Values.traces.otlp.grpc.receiverConfig }}\n          {{- toYaml $mergedOtlpGrpcReceiverConfig | nindent 10 }}\n        {{- end }}\n    {{- end }}\n    {{- if .Values.traces.opencensus.enabled }}\n    opencensus:\n      {{- $mergedOpencensusReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:55678\") .Values.traces.opencensus.receiverConfig }}\n      {{- toYaml $mergedOpencensusReceiverConfig | nindent 6 }}\n    {{- end }}\n    {{- if .Values.traces.kafka }}\n    kafka:\n      {{- toYaml .Values.traces.kafka | nindent 6 }}\n    {{- end }}\n  {{- if .Values.distributor.config.log_discarded_spans.enabled }}\n  log_discarded_spans:\n    enabled: {{ .Values.distributor.config.log_discarded_spans.enabled }}\n    include_all_attributes: {{ .Values.distributor.config.log_discarded_spans.include_all_attributes }}\n    filter_by_status_error: {{ .Values.distributor.config.log_discarded_spans.filter_by_status_error }}\n  {{- end }}\n  {{- if or .Values.distributor.config.log_received_traces .Values.distributor.config.log_received_spans.enabled }}\n  log_received_spans:\n    enabled: {{ or .Values.distributor.config.log_received_traces .Values.distributor.config.log_received_spans.enabled }}\n    include_all_attributes: {{ .Values.distributor.config.log_received_spans.include_all_attributes }}\n    filter_by_status_error: {{ .Values.distributor.config.log_received_spans.filter_by_status_error }}\n  {{- end }}\n  {{- if .Values.distributor.config.extend_writes }}\n  extend_writes: {{ .Values.distributor.config.extend_writes }}\n  {{- end }}\n  {{- if .Values.distributor.config.max_attribute_bytes }}\n  max_attribute_bytes: {{ .Values.distributor.config.max_attribute_bytes }}\n  {{- end }}\nquerier:\n  frontend_worker:\n    frontend_address: {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend-discovery\") }}:9095\n    {{- if .Values.querier.config.frontend_worker.grpc_client_config }}\n    grpc_client_config:\n      {{- toYaml .Values.querier.config.frontend_worker.grpc_client_config | nindent 6 }}\n    {{- end }}\n  trace_by_id:\n    query_timeout: {{ .Values.querier.config.trace_by_id.query_timeout }}\n  search:\n    query_timeout: {{ .Values.querier.config.search.query_timeout }}\n  max_concurrent_queries: {{ .Values.querier.config.max_concurrent_queries }}\nquery_frontend:\n  max_outstanding_per_tenant: {{ .Values.queryFrontend.config.max_outstanding_per_tenant }}\n  max_retries: {{ .Values.queryFrontend.config.max_retries }}\n  search:\n    target_bytes_per_job: {{ .Values.queryFrontend.config.search.target_bytes_per_job }}\n    concurrent_jobs: {{ .Values.queryFrontend.config.search.concurrent_jobs }}\n    max_spans_per_span_set: {{ .Values.queryFrontend.config.search.max_spans_per_span_set }}\n  trace_by_id:\n    query_shards: {{ .Values.queryFrontend.config.trace_by_id.query_shards }}\n  metrics:\n    concurrent_jobs:  {{ .Values.queryFrontend.config.metrics.concurrent_jobs }}\n    target_bytes_per_job:  {{ .Values.queryFrontend.config.metrics.target_bytes_per_job }}\n    max_duration: {{ .Values.queryFrontend.config.metrics.max_duration }}\n    query_backend_after: {{ .Values.queryFrontend.config.metrics.query_backend_after }}\n    interval: {{ .Values.queryFrontend.config.metrics.interval }}\n    duration_slo: {{ .Values.queryFrontend.config.metrics.duration_slo }}\n    throughput_bytes_slo: {{ .Values.queryFrontend.config.metrics.throughput_bytes_slo }}\ningester:\n  lifecycler:\n    ring:\n      replication_factor: {{ .Values.ingester.config.replication_factor }}\n      {{- if .Values.ingester.zoneAwareReplication.enabled }}\n      zone_awareness_enabled: true\n      {{- end }}\n      kvstore:\n        store: memberlist\n    tokens_file_path: /var/tempo/tokens.json\n  {{- if .Values.ingester.config.trace_idle_period }}\n  trace_idle_period: {{ .Values.ingester.config.trace_idle_period }}\n  {{- end }}\n  {{- if .Values.ingester.config.flush_check_period }}\n  flush_check_period: {{ .Values.ingester.config.flush_check_period }}\n  {{- end }}\n  {{- if .Values.ingester.config.max_block_bytes }}\n  max_block_bytes: {{ .Values.ingester.config.max_block_bytes }}\n  {{- end }}\n  {{- if .Values.ingester.config.max_block_duration }}\n  max_block_duration: {{ .Values.ingester.config.max_block_duration }}\n  {{- end }}\n  {{- if .Values.ingester.config.complete_block_timeout }}\n  complete_block_timeout: {{ .Values.ingester.config.complete_block_timeout }}\n  {{- end }}\n  {{- if .Values.ingester.config.flush_all_on_shutdown }}\n  flush_all_on_shutdown: {{ .Values.ingester.config.flush_all_on_shutdown }}\n  {{- end }}\nmemberlist:\n  {{- with .Values.memberlist }}\n    {{- toYaml . | nindent 2 }}\n  {{- end }}\n  join_members:\n    - dns+{{ include \"tempo.fullname\" . }}-gossip-ring:{{ .Values.memberlist.bind_port }}\noverrides:\n  {{- toYaml .Values.overrides | nindent 2 }}\nserver:\n  http_listen_port: {{ .Values.server.httpListenPort }}\n  log_level: {{ .Values.server.logLevel }}\n  log_format: {{ .Values.server.logFormat }}\n  grpc_server_max_recv_msg_size: {{ .Values.server.grpc_server_max_recv_msg_size }}\n  grpc_server_max_send_msg_size: {{ .Values.server.grpc_server_max_send_msg_size }}\n  http_server_read_timeout: {{ .Values.server.http_server_read_timeout }}\n  http_server_write_timeout: {{ .Values.server.http_server_write_timeout }}\ncache:\n{{- toYaml .Values.cache | nindent 2}}\nstorage:\n  trace:\n    {{- if .Values.storage.trace.block.version }}\n    block:\n      version: {{.Values.storage.trace.block.version}}\n      {{- if .Values.storage.trace.block.dedicated_columns}}\n      parquet_dedicated_columns:\n        {{ .Values.storage.trace.block.dedicated_columns | toYaml | nindent 8}}\n      {{- end }}\n    {{- end }}\n    pool:\n      max_workers: {{ .Values.storage.trace.pool.max_workers }}\n      queue_depth: {{ .Values.storage.trace.pool.queue_depth }}\n    backend: {{.Values.storage.trace.backend}}\n    {{- if eq .Values.storage.trace.backend \"s3\"}}\n    s3:\n      {{- toYaml .Values.storage.trace.s3 | nindent 6}}\n    {{- end }}\n    {{- if eq .Values.storage.trace.backend \"gcs\"}}\n    gcs:\n      {{- toYaml .Values.storage.trace.gcs | nindent 6}}\n    {{- end }}\n    {{- if eq .Values.storage.trace.backend \"azure\"}}\n    azure:\n      {{- toYaml .Values.storage.trace.azure | nindent 6}}\n    {{- end }}\n    blocklist_poll: 5m\n    local:\n      path: /var/tempo/traces\n    wal:\n      path: /var/tempo/wal\n    search:\n      {{- toYaml .Values.storage.trace.search | nindent 6}}\n\n    {{- if .Values.storage.trace.blocklist_poll }}\n    blocklist_poll: {{ .Values.storage.trace.blocklist_poll }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_concurrency }}\n    blocklist_poll_concurrency: {{ .Values.storage.trace.blocklist_poll_concurrency }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_fallback }}\n    blocklist_poll_fallback: {{ .Values.storage.trace.blocklist_poll_fallback }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_tenant_index_builders }}\n    blocklist_poll_tenant_index_builders: {{ .Values.storage.trace.blocklist_poll_tenant_index_builders }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_stale_tenant_index }}\n    blocklist_poll_stale_tenant_index: {{ .Values.storage.trace.blocklist_poll_stale_tenant_index }}\n    {{- end }}\n"
     configPathmc : str, optional, default is "/etc/minio/mc/"
     configStorageType : str, optional, default is "ConfigMap"
         Defines what kind of object stores the configuration, a ConfigMap or a Secret.
@@ -316,6 +316,7 @@ schema Values:
     users : [ValuesUsersItems0], optional
         # List of users to be created after minio install
         #
+    webhooks : ValuesWebhooks, optional
     """
     [...str]: any
     DeploymentUpdate?: ValuesDeploymentUpdate
@@ -424,6 +425,7 @@ schema Values:
     trustedCertsSecret?: str
     useExternalConfig?: bool
     users?: [ValuesUsersItems0]
+    webhooks?: ValuesWebhooks
 
 schema ValuesAdminApi:
     r"""
@@ -741,6 +743,8 @@ schema ValuesCompactor:
     ----------
     affinity : str, optional, default is "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"compactor\") | nindent 10 }}\n      topologyKey: kubernetes.io/hostname\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"compactor\") | nindent 12 }}\n        topologyKey: topology.kubernetes.io/zone\n"
         Affinity for compactor pods. Passed through `tpl` and, thus, to be configured as string
+    annotations : ValuesCompactorAnnotations, optional
+        Annotations for compactor deployment
     autoscaling : ValuesCompactorAutoscaling, optional
         Autoscaling configurations
     config : ValuesCompactorConfig, optional
@@ -789,6 +793,7 @@ schema ValuesCompactor:
     """
     [...str]: any
     affinity?: str
+    annotations?: ValuesCompactorAnnotations
     autoscaling?: ValuesCompactorAutoscaling
     config?: ValuesCompactorConfig
     dnsConfigOverides?: ValuesCompactorDnsConfigOverides
@@ -812,6 +817,12 @@ schema ValuesCompactor:
     service?: ValuesCompactorService
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
+
+schema ValuesCompactorAnnotations:
+    r"""
+    Annotations for compactor deployment
+    """
+    [...str]: any
 
 schema ValuesCompactorAutoscaling:
     r"""
@@ -1197,6 +1208,8 @@ schema ValuesDistributor:
     ----------
     affinity : str, optional, default is "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"distributor\") | nindent 10 }}\n      topologyKey: kubernetes.io/hostname\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"distributor\") | nindent 12 }}\n        topologyKey: topology.kubernetes.io/zone\n"
         Affinity for distributor pods. Passed through `tpl` and, thus, to be configured as string
+    annotations : ValuesDistributorAnnotations, optional
+        Annotations for distributor deployment
     appProtocol : ValuesDistributorAppProtocol, optional
         Adds the appProtocol field to the distributor service. This allows distributor to work with istio protocol selection.
     autoscaling : ValuesDistributorAutoscaling, optional
@@ -1221,6 +1234,8 @@ schema ValuesDistributor:
     image : ValuesDistributorImage, optional
     initContainers : [any], optional
         Init containers to add to the distributor pods
+    lifecycle : ValuesDistributorLifecycle, optional
+        Container lifecycle hooks for the distributor
     maxUnavailable : int, optional, default is 1
         Pod Disruption Budget maxUnavailable
     minReadySeconds : int, optional, default is 10
@@ -1250,6 +1265,7 @@ schema ValuesDistributor:
     """
     [...str]: any
     affinity?: str
+    annotations?: ValuesDistributorAnnotations
     appProtocol?: ValuesDistributorAppProtocol
     autoscaling?: ValuesDistributorAutoscaling
     config?: ValuesDistributorConfig
@@ -1262,6 +1278,7 @@ schema ValuesDistributor:
     hostAliases?: [any]
     image?: ValuesDistributorImage
     initContainers?: [any]
+    lifecycle?: ValuesDistributorLifecycle
     maxUnavailable?: int
     minReadySeconds?: int
     nodeSelector?: ValuesDistributorNodeSelector
@@ -1276,6 +1293,12 @@ schema ValuesDistributor:
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: str
+
+schema ValuesDistributorAnnotations:
+    r"""
+    Annotations for distributor deployment
+    """
+    [...str]: any
 
 protocol ValuesDistributorAppProtocol:
     r"""
@@ -1341,6 +1364,8 @@ schema ValuesDistributorConfig:
     log_received_traces : any, optional, default is "null"
         Enable to log every received trace id to help debug ingestion
         WARNING: Deprecated. Use log_received_spans instead.
+    max_attribute_bytes : int, optional, default is 0
+        Trace Attribute bytes limit. This is the maximum number of bytes that can be used in a trace.0 for no limit.
     """
     [...str]: any
     cost_attribution?: ValuesDistributorConfigCostAttribution
@@ -1348,6 +1373,7 @@ schema ValuesDistributorConfig:
     log_discarded_spans?: ValuesDistributorConfigLogDiscardedSpans
     log_received_spans?: ValuesDistributorConfigLogReceivedSpans
     log_received_traces?: any
+    max_attribute_bytes?: int
 
 schema ValuesDistributorConfigCostAttribution:
     r"""
@@ -1419,6 +1445,12 @@ schema ValuesDistributorImage:
     registry?: any
     repository?: any
     tag?: any
+
+schema ValuesDistributorLifecycle:
+    r"""
+    Container lifecycle hooks for the distributor
+    """
+    [...str]: any
 
 schema ValuesDistributorNodeSelector:
     r"""
@@ -1562,6 +1594,8 @@ schema ValuesEnterpriseFederationFrontend:
     ----------
     affinity : str, optional, default is "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"federation-frontend\") | nindent 10 }}\n      topologyKey: kubernetes.io/hostname\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"federation-frontend\") | nindent 12 }}\n        topologyKey: failure-domain.beta.kubernetes.io/zone\n"
         Affinity for federation-frontend pods. Passed through `tpl` and, thus, to be configured as string
+    annotations : ValuesEnterpriseFederationFrontendAnnotations, optional
+        Annotations for the federation-frontend Deployment
     autoscaling : ValuesEnterpriseFederationFrontendAutoscaling, optional
           - name: own-data-center
             url: http://get/tempo
@@ -1613,6 +1647,7 @@ schema ValuesEnterpriseFederationFrontend:
     """
     [...str]: any
     affinity?: str
+    annotations?: ValuesEnterpriseFederationFrontendAnnotations
     autoscaling?: ValuesEnterpriseFederationFrontendAutoscaling
     enabled?: bool
     extraArgs?: [any]
@@ -1634,6 +1669,12 @@ schema ValuesEnterpriseFederationFrontend:
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: str
+
+schema ValuesEnterpriseFederationFrontendAnnotations:
+    r"""
+    Annotations for the federation-frontend Deployment
+    """
+    [...str]: any
 
 schema ValuesEnterpriseFederationFrontendAutoscaling:
     r"""
@@ -4829,12 +4870,14 @@ schema ValuesQuerier:
     ----------
     affinity : str, optional, default is "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"querier\" \"memberlist\" true) | nindent 10 }}\n      topologyKey: kubernetes.io/hostname\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"querier\" \"memberlist\" true) | nindent 12 }}\n        topologyKey: topology.kubernetes.io/zone\n"
         Affinity for querier pods. Passed through `tpl` and, thus, to be configured as string
-    appProtocol : ValuesQuerierAppProtocol, optional
-        Adds the appProtocol field to the querier service. This allows querier to work with istio protocol selection.
-    autoscaling : ValuesQuerierAutoscaling, optional
+    annotations : ValuesQuerierAnnotations, optional
          - ip: 1.2.3.4
            hostnames:
              - domain.tld
+        Annotations for querier deployment
+    appProtocol : ValuesQuerierAppProtocol, optional
+        Adds the appProtocol field to the querier service. This allows querier to work with istio protocol selection.
+    autoscaling : ValuesQuerierAutoscaling, optional
     config : ValuesQuerierConfig, optional
     extraArgs : [any], optional
         Additional CLI args for the querier
@@ -4880,6 +4923,7 @@ schema ValuesQuerier:
     """
     [...str]: any
     affinity?: str
+    annotations?: ValuesQuerierAnnotations
     appProtocol?: ValuesQuerierAppProtocol
     autoscaling?: ValuesQuerierAutoscaling
     config?: ValuesQuerierConfig
@@ -4906,6 +4950,15 @@ schema ValuesQuerier:
     tolerations?: [any]
     topologySpreadConstraints?: str
 
+schema ValuesQuerierAnnotations:
+    r"""
+     - ip: 1.2.3.4
+       hostnames:
+         - domain.tld
+    Annotations for querier deployment
+    """
+    [...str]: any
+
 protocol ValuesQuerierAppProtocol:
     r"""
     Adds the appProtocol field to the querier service. This allows querier to work with istio protocol selection.
@@ -4920,9 +4973,7 @@ protocol ValuesQuerierAppProtocol:
 
 schema ValuesQuerierAutoscaling:
     r"""
-     - ip: 1.2.3.4
-       hostnames:
-         - domain.tld
+    ValuesQuerierAutoscaling
 
     Attributes
     ----------
@@ -5096,6 +5147,8 @@ schema ValuesQueryFrontend:
     ----------
     affinity : str, optional, default is "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"query-frontend\") | nindent 10 }}\n      topologyKey: kubernetes.io/hostname\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"query-frontend\") | nindent 12 }}\n        topologyKey: topology.kubernetes.io/zone\n"
         Affinity for query-frontend pods. Passed through `tpl` and, thus, to be configured as string
+    annotations : ValuesQueryFrontendAnnotations, optional
+        Annotations for the query-frontend Deployment
     appProtocol : ValuesQueryFrontendAppProtocol, optional
         Adds the appProtocol field to the queryFrontend service. This allows queryFrontend to work with istio protocol selection.
     autoscaling : ValuesQueryFrontendAutoscaling, optional
@@ -5147,6 +5200,7 @@ schema ValuesQueryFrontend:
     """
     [...str]: any
     affinity?: str
+    annotations?: ValuesQueryFrontendAnnotations
     appProtocol?: ValuesQueryFrontendAppProtocol
     autoscaling?: ValuesQueryFrontendAutoscaling
     config?: ValuesQueryFrontendConfig
@@ -5173,6 +5227,12 @@ schema ValuesQueryFrontend:
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: str
+
+schema ValuesQueryFrontendAnnotations:
+    r"""
+    Annotations for the query-frontend Deployment
+    """
+    [...str]: any
 
 protocol ValuesQueryFrontendAppProtocol:
     r"""
@@ -6527,4 +6587,23 @@ schema ValuesUsersItems0:
     accessKey?: str
     policy?: str
     secretKey?: str
+
+schema ValuesWebhooks:
+    r"""
+    ValuesWebhooks
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+        Enable the rollout-operator webhooks. See https://github.com/grafana/rollout-operator/#webhooks.
+        Note that the webhooks require custom resource definitions. If upgrading, manually apply the files in the `crds` directory.
+    failurePolicy : str, optional, default is "Fail"
+        Validating and mutating webhook failure policy. `Ignore` or `Fail`.
+    selfSignedCertSecretName : str, optional, default is "certificate"
+        Secret resource name for the TLS certificate to be used with the webhooks
+    """
+    [...str]: any
+    enabled?: bool
+    failurePolicy?: str
+    selfSignedCertSecretName?: str
 
