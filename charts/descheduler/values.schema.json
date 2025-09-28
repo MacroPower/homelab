@@ -46,10 +46,10 @@
     },
     "deschedulerPolicy": {
       "additionalProperties": true,
-      "description": "deschedulerPolicy contains the policies the descheduler will execute.\nTo use policies stored in an existing configMap use:\nNOTE: The name of the cm should comply to {{ template \"descheduler.fullname\" . }}\ndeschedulerPolicy: {}",
+      "description": "deschedulerPolicy contains the policies the descheduler will execute.",
       "properties": {
         "profiles": {
-          "description": "nodeSelector: \"key1=value1,key2=value2\"\nmaxNoOfPodsToEvictPerNode: 10\nmaxNoOfPodsToEvictPerNamespace: 10\nignorePvcPods: true\nevictLocalStoragePods: true\nevictDaemonSetPods: true\ntracing:\n  collectorEndpoint: otel-collector.observability.svc.cluster.local:4317\n  transportCert: \"\"\n  serviceName: \"\"\n  serviceNamespace: \"\"\n  sampleRate: 1.0\n  fallbackToNoOpProviderOnError: true",
+          "description": "nodeSelector: \"key1=value1,key2=value2\"\nmaxNoOfPodsToEvictPerNode: 10\nmaxNoOfPodsToEvictPerNamespace: 10\nmetricsProviders:\n- source: KubernetesMetrics\ntracing:\n  collectorEndpoint: otel-collector.observability.svc.cluster.local:4317\n  transportCert: \"\"\n  serviceName: \"\"\n  serviceNamespace: \"\"\n  sampleRate: 1.0\n  fallbackToNoOpProviderOnError: true",
           "items": {
             "additionalProperties": true,
             "properties": {
@@ -363,6 +363,13 @@
       "title": "nameOverride",
       "type": "string"
     },
+    "namespaceOverride": {
+      "default": "",
+      "description": "Override the deployment namespace; defaults to .Release.Namespace",
+      "required": [],
+      "title": "namespaceOverride",
+      "type": "string"
+    },
     "nodeSelector": {
       "additionalProperties": true,
       "required": [],
@@ -387,6 +394,30 @@
       "required": [],
       "title": "podSecurityContext",
       "type": "object"
+    },
+    "ports": {
+      "items": {
+        "additionalProperties": true,
+        "properties": {
+          "containerPort": {
+            "default": 10258,
+            "required": [],
+            "title": "containerPort",
+            "type": "integer"
+          },
+          "protocol": {
+            "default": "TCP",
+            "required": [],
+            "title": "protocol",
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "required": [],
+      "title": "ports",
+      "type": "array"
     },
     "priorityClassName": {
       "default": "system-cluster-critical",
@@ -420,6 +451,26 @@
       "additionalProperties": true,
       "description": "  - name: container-registry-secret",
       "properties": {
+        "limits": {
+          "additionalProperties": true,
+          "properties": {
+            "cpu": {
+              "default": "500m",
+              "required": [],
+              "title": "cpu",
+              "type": "string"
+            },
+            "memory": {
+              "default": "256Mi",
+              "required": [],
+              "title": "memory",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "limits",
+          "type": "object"
+        },
         "requests": {
           "additionalProperties": true,
           "properties": {
