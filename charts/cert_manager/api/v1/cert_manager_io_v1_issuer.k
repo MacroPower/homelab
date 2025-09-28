@@ -99,13 +99,16 @@ schema CertManagerIoV1IssuerSpecAcme:
         PreferredChain is the chain to use if the ACME server outputs multiple.
         PreferredChain is no guarantee that this one gets delivered by the ACME
         endpoint.
-        For example, for Let's Encrypt's DST crosssign you would use:
+        For example, for Let's Encrypt's DST cross-sign you would use:
         "DST Root CA X3" or "ISRG Root X1" for the newer Let's Encrypt root CA.
         This value picks the first certificate bundle in the combined set of
         ACME default and alternative chains that has a root-most certificate with
         this value as its issuer's commonname.
     privateKeySecretRef : CertManagerIoV1IssuerSpecAcmePrivateKeySecretRef, default is Undefined, required
         private key secret ref
+    profile : str, default is Undefined, optional
+        Profile allows requesting a certificate profile from the ACME server.
+        Supported profiles are listed by the server's ACME directory URL.
     server : str, default is Undefined, required
         Server is the URL used to access the ACME server's 'directory' endpoint.
         For example, for Let's Encrypt's staging endpoint, you would use:
@@ -136,6 +139,7 @@ schema CertManagerIoV1IssuerSpecAcme:
     preferredChain?: str
     privateKeySecretRef: CertManagerIoV1IssuerSpecAcmePrivateKeySecretRef
 
+    profile?: str
     server: str
 
     skipTLSVerify?: bool
@@ -447,12 +451,12 @@ schema CertManagerIoV1IssuerSpecAcmeSolversItems0Dns01AzureDNSManagedIdentity:
     Attributes
     ----------
     clientID : str, default is Undefined, optional
-        client ID of the managed identity, can not be used at the same time as resourceID
+        client ID of the managed identity, cannot be used at the same time as resourceID
     resourceID : str, default is Undefined, optional
-        resource ID of the managed identity, can not be used at the same time as clientID
+        resource ID of the managed identity, cannot be used at the same time as clientID
         Cannot be used for Azure Managed Service Identity
     tenantID : str, default is Undefined, optional
-        tenant ID of the managed identity, can not be used at the same time as resourceID
+        tenant ID of the managed identity, cannot be used at the same time as resourceID
     """
     clientID?: str
     resourceID?: str
@@ -776,7 +780,7 @@ schema CertManagerIoV1IssuerSpecAcmeSolversItems0Dns01Webhook:
         when challenges are processed.
         This can contain arbitrary JSON data.
         Secret values should not be specified in this stanza.
-        If secret values are needed (e.g. credentials for a DNS service), you
+        If secret values are needed (e.g., credentials for a DNS service), you
         should use a SecretKeySelector to reference a Secret resource.
         For details on the schema of this field, consult the webhook provider
         implementation's documentation.
@@ -788,7 +792,7 @@ schema CertManagerIoV1IssuerSpecAcmeSolversItems0Dns01Webhook:
     solverName : str, default is Undefined, required
         The name of the solver to use, as defined in the webhook provider
         implementation.
-        This will typically be the name of the provider, e.g. 'cloudflare'.
+        This will typically be the name of the provider, e.g., 'cloudflare'.
     """
     config?: any
     groupName: str
@@ -800,7 +804,7 @@ schema CertManagerIoV1IssuerSpecAcmeSolversItems0Http01:
     Configures cert-manager to attempt to complete authorizations by
     performing the HTTP01 challenge flow.
     It is not possible to obtain certificates for wildcard domain names
-    (e.g. `*.example.com`) using the HTTP01 challenge mechanism.
+    (e.g., `*.example.com`) using the HTTP01 challenge mechanism.
 
     Attributes
     ----------
@@ -3331,6 +3335,9 @@ schema CertManagerIoV1IssuerSpecVault:
         "my_pki_mount/sign/my-role-name".
     server : str, default is Undefined, required
         Server is the connection address for the Vault server, e.g: "https://vault.example.com:8200".
+    serverName : str, default is Undefined, optional
+        ServerName is used to verify the hostname on the returned certificates
+        by the Vault server.
     """
     auth: CertManagerIoV1IssuerSpecVaultAuth
 
@@ -3342,6 +3349,8 @@ schema CertManagerIoV1IssuerSpecVault:
     path: str
 
     server: str
+
+    serverName?: str
 
 schema CertManagerIoV1IssuerSpecVaultAuth:
     r"""
@@ -3601,7 +3610,7 @@ schema CertManagerIoV1IssuerSpecVenafiCloud:
         api token secret ref
     url : str, default is Undefined, optional
         URL is the base URL for Venafi Cloud.
-        Defaults to "https://api.venafi.cloud/v1".
+        Defaults to "https://api.venafi.cloud/".
     """
     apiTokenSecretRef: CertManagerIoV1IssuerSpecVenafiCloudAPITokenSecretRef
 

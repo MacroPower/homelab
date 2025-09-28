@@ -43,10 +43,6 @@ schema CertManagerIoV1CertificateSpec:
     additionalOutputFormats : [CertManagerIoV1CertificateSpecAdditionalOutputFormatsItems0], default is Undefined, optional
         Defines extra output formats of the private key and signed certificate chain
         to be written to this Certificate's target Secret.
-
-        This is a Beta Feature enabled by default. It can be disabled with the
-        `--feature-gates=AdditionalCertificateOutputFormats=false` option set on both
-        the controller and webhook components.
     commonName : str, default is Undefined, optional
         Requested common name X509 certificate subject attribute.
         More info: https://datatracker.ietf.org/doc/html/rfc5280#section-4.1.2.6
@@ -144,8 +140,7 @@ schema CertManagerIoV1CertificateSpec:
         revisions exceeds this number.
 
         If set, revisionHistoryLimit must be a value of `1` or greater.
-        If unset (`nil`), revisions will not be garbage collected.
-        Default value is `nil`.
+        Default value is `1`.
     secretName : str, default is Undefined, required
         Name of the Secret resource that will be automatically created and
         managed by this Certificate resource. It will be populated with a
@@ -153,6 +148,11 @@ schema CertManagerIoV1CertificateSpec:
         resource lives in the same namespace as the Certificate resource.
     secretTemplate : CertManagerIoV1CertificateSpecSecretTemplate, default is Undefined, optional
         secret template
+    signatureAlgorithm : str, default is Undefined, optional
+        Signature algorithm to use.
+        Allowed values for RSA keys: SHA256WithRSA, SHA384WithRSA, SHA512WithRSA.
+        Allowed values for ECDSA keys: ECDSAWithSHA256, ECDSAWithSHA384, ECDSAWithSHA512.
+        Allowed values for Ed25519 keys: PureEd25519.
     subject : CertManagerIoV1CertificateSpecSubject, default is Undefined, optional
         subject
     uris : [str], default is Undefined, optional
@@ -186,6 +186,7 @@ schema CertManagerIoV1CertificateSpec:
     secretName: str
 
     secretTemplate?: CertManagerIoV1CertificateSpecSecretTemplate
+    signatureAlgorithm?: "SHA256WithRSA" | "SHA384WithRSA" | "SHA512WithRSA" | "ECDSAWithSHA256" | "ECDSAWithSHA384" | "ECDSAWithSHA512" | "PureEd25519"
     subject?: CertManagerIoV1CertificateSpecSubject
     uris?: [str]
     usages?: [str]
@@ -324,7 +325,7 @@ schema CertManagerIoV1CertificateSpecKeystoresPkcs12:
         `LegacyRC2`: Deprecated. Not supported by default in OpenSSL 3 or Java 20.
         `LegacyDES`: Less secure algorithm. Use this option for maximal compatibility.
         `Modern2023`: Secure algorithm. Use this option in case you have to always use secure algorithms
-        (eg. because of company policy). Please note that the security of the algorithm is not that important
+        (e.g., because of company policy). Please note that the security of the algorithm is not that important
         in reality, because the unencrypted certificate and private key are also stored in the Secret.
     """
     create: bool
@@ -469,7 +470,11 @@ schema CertManagerIoV1CertificateSpecPrivateKey:
         to await user intervention.
         If set to `Always`, a private key matching the specified requirements
         will be generated whenever a re-issuance occurs.
-        Default is `Never` for backward compatibility.
+        Default is `Always`.
+        The default was changed from `Never` to `Always` in cert-manager >=v1.18.0.
+        The new default can be disabled by setting the
+        `--feature-gates=DefaultPrivateKeyRotationPolicyAlways=false` option on
+        the controller component.
     size : int, default is Undefined, optional
         Size is the key bit size of the corresponding private key for this certificate.
 
