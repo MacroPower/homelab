@@ -140,6 +140,12 @@
           "title": "affinity",
           "type": "object"
         },
+        "extraArgs": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "extraArgs",
+          "type": "object"
+        },
         "image": {
           "additionalProperties": true,
           "properties": {
@@ -212,6 +218,13 @@
           "required": [],
           "title": "nodeSelector",
           "type": "object"
+        },
+        "priorityClassName": {
+          "default": "",
+          "description": "Priority class name for the operator pod",
+          "required": [],
+          "title": "priorityClassName",
+          "type": "string"
         },
         "readinessProbe": {
           "additionalProperties": true,
@@ -355,6 +368,18 @@
     "rbacProxy": {
       "additionalProperties": true,
       "properties": {
+        "enabled": {
+          "default": true,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraArgs": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "extraArgs",
+          "type": "object"
+        },
         "image": {
           "additionalProperties": true,
           "properties": {
