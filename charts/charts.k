@@ -272,7 +272,7 @@ charts: helm.Charts = {
     securecodebox_generic_webhook: {
         chart = "generic-webhook"
         repoURL = "oci://ghcr.io/securecodebox/helm/generic-webhook"
-        targetRevision = "5.0.0"
+        targetRevision = "5.1.0"
         schemaGenerator = "AUTO"
     }
     webhook: {
