@@ -3061,11 +3061,14 @@ schema DragonflydbIoV1alpha1DragonflySpecSnapshot:
         (Optional) The path to the snapshot directory
         This can also be an S3 URI with the prefix `s3://` when
         using S3 as the snapshot backend
+    enableOnMasterOnly : bool, default is Undefined, optional
+        (Optional) Enable snapshot on master only
     persistentVolumeClaimSpec : DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpec, default is Undefined, optional
         persistent volume claim spec
     """
     cron?: str
     dir?: str
+    enableOnMasterOnly?: bool
     persistentVolumeClaimSpec?: DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpec
 
 schema DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpec:
