@@ -260,7 +260,7 @@ charts: helm.Charts = {
     securecodebox_kube_hunter: {
         chart = "kube-hunter"
         repoURL = "oci://ghcr.io/securecodebox/helm/kube-hunter"
-        targetRevision = "5.0.0"
+        targetRevision = "5.1.0"
         schemaGenerator = "AUTO"
     }
     securecodebox_nmap: {

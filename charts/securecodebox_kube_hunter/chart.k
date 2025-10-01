@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "kube-hunter"
     repoURL : str, required, default is "oci://ghcr.io/securecodebox/helm/kube-hunter"
-    targetRevision : str, optional, default is "5.0.0"
+    targetRevision : str, optional, default is "5.1.0"
     """
     values?: Values | any
     chart: str = "kube-hunter"
     repoURL: str = "oci://ghcr.io/securecodebox/helm/kube-hunter"
-    targetRevision?: str = "5.0.0"
+    targetRevision?: str = "5.1.0"
 
