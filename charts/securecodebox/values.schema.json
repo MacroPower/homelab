@@ -443,6 +443,97 @@
       "title": "presignedUrlExpirationTimes",
       "type": "object"
     },
+    "probes": {
+      "additionalProperties": true,
+      "description": "Health and liveness probe configuration for the controller manager",
+      "properties": {
+        "liveness": {
+          "additionalProperties": true,
+          "description": "Liveness probe configuration",
+          "properties": {
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/healthz",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "port": {
+                  "default": "healthchecks",
+                  "required": [],
+                  "title": "port",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 15,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 20,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "liveness",
+          "type": "object"
+        },
+        "readiness": {
+          "additionalProperties": true,
+          "description": "Readiness probe configuration  ",
+          "properties": {
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/readyz",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "port": {
+                  "default": "healthchecks",
+                  "required": [],
+                  "title": "port",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 5,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "readiness",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "probes",
+      "type": "object"
+    },
     "resources": {
       "additionalProperties": true,
       "description": "resources -- CPU/memory resource requests/limits (see: https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/, https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/)",

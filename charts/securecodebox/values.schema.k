@@ -29,6 +29,8 @@ schema Values:
         Sets the securityContext on the operators pod level. See: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
     presignedUrlExpirationTimes : ValuesPresignedUrlExpirationTimes, optional
         presignedUrlExpirationTimes -- Duration how long presigned urls are valid
+    probes : ValuesProbes, optional
+        Health and liveness probe configuration for the controller manager
     resources : ValuesResources, optional
         resources -- CPU/memory resource requests/limits (see: https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/, https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/)
     s3 : ValuesS3, optional
@@ -51,6 +53,7 @@ schema Values:
     nodeSelector?: ValuesNodeSelector
     podSecurityContext?: ValuesPodSecurityContext
     presignedUrlExpirationTimes?: ValuesPresignedUrlExpirationTimes
+    probes?: ValuesProbes
     resources?: ValuesResources
     s3?: ValuesS3
     securityContext?: ValuesSecurityContext
@@ -370,6 +373,77 @@ schema ValuesPresignedUrlExpirationTimes:
     hooks?: str
     parsers?: str
     scanners?: str
+
+schema ValuesProbes:
+    r"""
+    Health and liveness probe configuration for the controller manager
+
+    Attributes
+    ----------
+    liveness : ValuesProbesLiveness, optional
+        Liveness probe configuration
+    readiness : ValuesProbesReadiness, optional
+        Readiness probe configuration  
+    """
+    [...str]: any
+    liveness?: ValuesProbesLiveness
+    readiness?: ValuesProbesReadiness
+
+schema ValuesProbesLiveness:
+    r"""
+    Liveness probe configuration
+
+    Attributes
+    ----------
+    httpGet : ValuesProbesLivenessHttpGet, optional
+    initialDelaySeconds : int, optional, default is 15
+    periodSeconds : int, optional, default is 20
+    """
+    [...str]: any
+    httpGet?: ValuesProbesLivenessHttpGet
+    initialDelaySeconds?: int
+    periodSeconds?: int
+
+schema ValuesProbesLivenessHttpGet:
+    r"""
+    ValuesProbesLivenessHttpGet
+
+    Attributes
+    ----------
+    path : str, optional, default is "/healthz"
+    port : str, optional, default is "healthchecks"
+    """
+    [...str]: any
+    path?: str
+    port?: str
+
+schema ValuesProbesReadiness:
+    r"""
+    Readiness probe configuration  
+
+    Attributes
+    ----------
+    httpGet : ValuesProbesReadinessHttpGet, optional
+    initialDelaySeconds : int, optional, default is 5
+    periodSeconds : int, optional, default is 10
+    """
+    [...str]: any
+    httpGet?: ValuesProbesReadinessHttpGet
+    initialDelaySeconds?: int
+    periodSeconds?: int
+
+schema ValuesProbesReadinessHttpGet:
+    r"""
+    ValuesProbesReadinessHttpGet
+
+    Attributes
+    ----------
+    path : str, optional, default is "/readyz"
+    port : str, optional, default is "healthchecks"
+    """
+    [...str]: any
+    path?: str
+    port?: str
 
 schema ValuesResources:
     r"""
