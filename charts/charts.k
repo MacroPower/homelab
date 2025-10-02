@@ -266,7 +266,7 @@ charts: helm.Charts = {
     securecodebox_nmap: {
         chart = "nmap"
         repoURL = "oci://ghcr.io/securecodebox/helm/nmap"
-        targetRevision = "5.0.0"
+        targetRevision = "5.1.0"
         schemaGenerator = "AUTO"
     }
     securecodebox_generic_webhook: {
