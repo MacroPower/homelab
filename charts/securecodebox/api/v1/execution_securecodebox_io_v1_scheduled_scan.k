@@ -997,7 +997,8 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecEnvItems0:
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the environment variable. Must be a C_IDENTIFIER.
+        Name of the environment variable.
+        May consist of any printable ASCII characters except '='.
     value : str, default is Undefined, optional
         Variable references $(VAR_NAME) are expanded
         using the previously defined environment variables in the container and
@@ -1021,6 +1022,8 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecEnvItems0ValueFrom:
         config map key ref
     fieldRef : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecEnvItems0ValueFromFieldRef, default is Undefined, optional
         field ref
+    fileKeyRef : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecEnvItems0ValueFromFileKeyRef, default is Undefined, optional
+        file key ref
     resourceFieldRef : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecEnvItems0ValueFromResourceFieldRef, default is Undefined, optional
         resource field ref
     secretKeyRef : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecEnvItems0ValueFromSecretKeyRef, default is Undefined, optional
@@ -1028,6 +1031,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecEnvItems0ValueFrom:
     """
     configMapKeyRef?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecEnvItems0ValueFromConfigMapKeyRef
     fieldRef?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecEnvItems0ValueFromFieldRef
+    fileKeyRef?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecEnvItems0ValueFromFileKeyRef
     resourceFieldRef?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecEnvItems0ValueFromResourceFieldRef
     secretKeyRef?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecEnvItems0ValueFromSecretKeyRef
 
@@ -1067,6 +1071,34 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecEnvItems0ValueFromFiel
     """
     apiVersion?: str
     fieldPath: str
+
+schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecEnvItems0ValueFromFileKeyRef:
+    r"""
+    FileKeyRef selects a key of the env file.
+    Requires the EnvFiles feature gate to be enabled.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        The key within the env file. An invalid key will prevent the pod from starting.
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+    optional : bool, default is Undefined, optional
+        Specify whether the file or its key must be defined. If the file or key
+        does not exist, then the env var is not published.
+        If optional is set to true and the specified key does not exist,
+        the environment variable will not be set in the Pod's containers.
+    path : str, default is Undefined, required
+        The path within the volume from which to select the file.
+        Must be relative and may not contain the '..' path or start with '..'.
+    volumeName : str, default is Undefined, required
+        The name of the volume mount containing the env file.
+    """
+    key: str
+
+    optional?: bool = False
+    path: str
+
+    volumeName: str
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecEnvItems0ValueFromResourceFieldRef:
     r"""
@@ -1171,8 +1203,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0:
         Cannot be updated.
     envFrom : [ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0EnvFromItems0], default is Undefined, optional
         List of sources to populate environment variables in the container.
-        The keys defined within a source must be a C_IDENTIFIER. All invalid keys
-        will be reported as an event when the container is starting.
+        The keys defined within a source may consist of any printable ASCII characters except '='.
     image : str, default is Undefined, optional
         Container image name.
         More info: https://kubernetes.io/docs/concepts/containers/images
@@ -1205,7 +1236,13 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0:
         resources
     restartPolicy : str, default is Undefined, optional
         RestartPolicy defines the restart behavior of individual containers in a pod.
-        This field may only be set for init containers, and the only allowed value is "Always".
+        This overrides the pod-level restart policy. When this field is not specified,
+        the restart behavior is defined by the Pod's restart policy and the container type.
+    restartPolicyRules : [ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0RestartPolicyRulesItems0], default is Undefined, optional
+        Represents a list of rules to be checked to determine if the
+        container should be restarted on exit. The rules are evaluated in
+        order. Once a rule matches a container exit condition, the remaining
+        rules are ignored.
     securityContext : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0SecurityContext, default is Undefined, optional
         security context
     startupProbe : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0StartupProbe, default is Undefined, optional
@@ -1254,6 +1291,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0:
     resizePolicy?: [ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0ResizePolicyItems0]
     resources?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Resources
     restartPolicy?: str
+    restartPolicyRules?: [ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0RestartPolicyRulesItems0]
     securityContext?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0SecurityContext
     startupProbe?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0StartupProbe
     stdin?: bool
@@ -1274,7 +1312,8 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0En
     configMapRef : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0EnvFromItems0ConfigMapRef, default is Undefined, optional
         config map ref
     prefix : str, default is Undefined, optional
-        Optional text to prepend to the name of each environment variable. Must be a C_IDENTIFIER.
+        Optional text to prepend to the name of each environment variable.
+        May consist of any printable ASCII characters except '='.
     secretRef : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0EnvFromItems0SecretRef, default is Undefined, optional
         secret ref
     """
@@ -1325,7 +1364,8 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0En
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the environment variable. Must be a C_IDENTIFIER.
+        Name of the environment variable.
+        May consist of any printable ASCII characters except '='.
     value : str, default is Undefined, optional
         Variable references $(VAR_NAME) are expanded
         using the previously defined environment variables in the container and
@@ -1349,6 +1389,8 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0En
         config map key ref
     fieldRef : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0EnvItems0ValueFromFieldRef, default is Undefined, optional
         field ref
+    fileKeyRef : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0EnvItems0ValueFromFileKeyRef, default is Undefined, optional
+        file key ref
     resourceFieldRef : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0EnvItems0ValueFromResourceFieldRef, default is Undefined, optional
         resource field ref
     secretKeyRef : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0EnvItems0ValueFromSecretKeyRef, default is Undefined, optional
@@ -1356,6 +1398,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0En
     """
     configMapKeyRef?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0EnvItems0ValueFromConfigMapKeyRef
     fieldRef?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0EnvItems0ValueFromFieldRef
+    fileKeyRef?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0EnvItems0ValueFromFileKeyRef
     resourceFieldRef?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0EnvItems0ValueFromResourceFieldRef
     secretKeyRef?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0EnvItems0ValueFromSecretKeyRef
 
@@ -1395,6 +1438,34 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0En
     """
     apiVersion?: str
     fieldPath: str
+
+schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0EnvItems0ValueFromFileKeyRef:
+    r"""
+    FileKeyRef selects a key of the env file.
+    Requires the EnvFiles feature gate to be enabled.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        The key within the env file. An invalid key will prevent the pod from starting.
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+    optional : bool, default is Undefined, optional
+        Specify whether the file or its key must be defined. If the file or key
+        does not exist, then the env var is not published.
+        If optional is set to true and the specified key does not exist,
+        the environment variable will not be set in the Pod's containers.
+    path : str, default is Undefined, required
+        The path within the volume from which to select the file.
+        Must be relative and may not contain the '..' path or start with '..'.
+    volumeName : str, default is Undefined, required
+        The name of the volume mount containing the env file.
+    """
+    key: str
+
+    optional?: bool = False
+    path: str
+
+    volumeName: str
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0EnvItems0ValueFromResourceFieldRef:
     r"""
@@ -2009,7 +2080,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Re
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -2047,6 +2118,42 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Re
     name: str
 
     request?: str
+
+schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0RestartPolicyRulesItems0:
+    r"""
+    ContainerRestartRule describes how a container exit is handled.
+
+    Attributes
+    ----------
+    action : str, default is Undefined, required
+        Specifies the action taken on a container exit if the requirements
+        are satisfied. The only possible value is "Restart" to restart the
+        container.
+    exitCodes : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0RestartPolicyRulesItems0ExitCodes, default is Undefined, optional
+        exit codes
+    """
+    action: str
+
+    exitCodes?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0RestartPolicyRulesItems0ExitCodes
+
+schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0RestartPolicyRulesItems0ExitCodes:
+    r"""
+    Represents the exit codes to check on container exits.
+
+    Attributes
+    ----------
+    operator : str, default is Undefined, required
+        Represents the relationship between the container exit code(s) and the
+        specified values. Possible values are:
+        - In: the requirement is satisfied if the container exit code is in the
+          set of specified values.
+    values : [int], default is Undefined, optional
+        Specifies the set of values to check for container exit codes.
+        At most 255 elements are allowed.
+    """
+    operator: str
+
+    values?: [int]
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0SecurityContext:
     r"""
@@ -2426,7 +2533,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecResources:
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -3343,13 +3450,11 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Glusterfs
     r"""
     glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime.
     Deprecated: Glusterfs is deprecated and the in-tree glusterfs type is no longer supported.
-    More info: https://examples.k8s.io/volumes/glusterfs/README.md
 
     Attributes
     ----------
     endpoints : str, default is Undefined, required
         endpoints is the endpoint name that details Glusterfs topology.
-        More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
     path : str, default is Undefined, required
         path is the Glusterfs volume path.
         More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
@@ -3407,7 +3512,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Iscsi:
     r"""
     iscsi represents an ISCSI Disk resource that is attached to a
     kubelet's host machine and then exposed to the pod.
-    More info: https://examples.k8s.io/volumes/iscsi/README.md
+    More info: https://kubernetes.io/docs/concepts/storage/volumes/#iscsi
 
     Attributes
     ----------
@@ -3582,6 +3687,8 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Projected
         config map
     downwardAPI : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0DownwardAPI, default is Undefined, optional
         downward API
+    podCertificate : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0PodCertificate, default is Undefined, optional
+        pod certificate
     secret : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0Secret, default is Undefined, optional
         secret
     serviceAccountToken : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken, default is Undefined, optional
@@ -3590,6 +3697,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Projected
     clusterTrustBundle?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundle
     configMap?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0ConfigMap
     downwardAPI?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0DownwardAPI
+    podCertificate?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0PodCertificate
     secret?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0Secret
     serviceAccountToken?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken
 
@@ -3783,6 +3891,54 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Projected
     check:
         _regex_match(str(divisor), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if divisor
 
+schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0PodCertificate:
+    r"""
+    Projects an auto-rotating credential bundle (private key and certificate
+    chain) that the pod can use either as a TLS client or server.
+
+    Kubelet generates a private key and uses it to send a
+    PodCertificateRequest to the named signer.
+
+    Attributes
+    ----------
+    certificateChainPath : str, default is Undefined, optional
+        Write the certificate chain at this path in the projected volume.
+
+        Most applications should use credentialBundlePath.
+    credentialBundlePath : str, default is Undefined, optional
+        Write the credential bundle at this path in the projected volume.
+
+        The credential bundle is a single file that contains multiple PEM blocks.
+        The first PEM block is a PRIVATE KEY block, containing a PKCS#8 private
+        key.
+    keyPath : str, default is Undefined, optional
+        Write the key at this path in the projected volume.
+
+        Most applications should use credentialBundlePath.
+    keyType : str, default is Undefined, required
+        The type of keypair Kubelet will generate for the pod.
+
+        Valid values are "RSA3072", "RSA4096", "ECDSAP256", "ECDSAP384",
+        "ECDSAP521", and "ED25519".
+    maxExpirationSeconds : int, default is Undefined, optional
+        maxExpirationSeconds is the maximum lifetime permitted for the
+        certificate.
+
+        Kubelet copies this value verbatim into the PodCertificateRequests it
+        generates for this projection.
+
+        If omitted, kube-apiserver will set it to 86400(24 hours).
+    signerName : str, default is Undefined, required
+        Kubelet's generated CSRs will be addressed to this signer.
+    """
+    certificateChainPath?: str
+    credentialBundlePath?: str
+    keyPath?: str
+    keyType: str
+
+    maxExpirationSeconds?: int
+    signerName: str
+
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0Secret:
     r"""
     secret information about the secret data to project
@@ -3890,7 +4046,6 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Rbd:
     r"""
     rbd represents a Rados Block Device mount on the host that shares a pod's lifetime.
     Deprecated: RBD is deprecated and the in-tree rbd type is no longer supported.
-    More info: https://examples.k8s.io/volumes/rbd/README.md
 
     Attributes
     ----------

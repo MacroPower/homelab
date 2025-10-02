@@ -814,7 +814,8 @@ schema ExecutionSecurecodeboxIoV1ScanCompletionHookSpecEnvItems0:
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the environment variable. Must be a C_IDENTIFIER.
+        Name of the environment variable.
+        May consist of any printable ASCII characters except '='.
     value : str, default is Undefined, optional
         Variable references $(VAR_NAME) are expanded
         using the previously defined environment variables in the container and
@@ -838,6 +839,8 @@ schema ExecutionSecurecodeboxIoV1ScanCompletionHookSpecEnvItems0ValueFrom:
         config map key ref
     fieldRef : ExecutionSecurecodeboxIoV1ScanCompletionHookSpecEnvItems0ValueFromFieldRef, default is Undefined, optional
         field ref
+    fileKeyRef : ExecutionSecurecodeboxIoV1ScanCompletionHookSpecEnvItems0ValueFromFileKeyRef, default is Undefined, optional
+        file key ref
     resourceFieldRef : ExecutionSecurecodeboxIoV1ScanCompletionHookSpecEnvItems0ValueFromResourceFieldRef, default is Undefined, optional
         resource field ref
     secretKeyRef : ExecutionSecurecodeboxIoV1ScanCompletionHookSpecEnvItems0ValueFromSecretKeyRef, default is Undefined, optional
@@ -845,6 +848,7 @@ schema ExecutionSecurecodeboxIoV1ScanCompletionHookSpecEnvItems0ValueFrom:
     """
     configMapKeyRef?: ExecutionSecurecodeboxIoV1ScanCompletionHookSpecEnvItems0ValueFromConfigMapKeyRef
     fieldRef?: ExecutionSecurecodeboxIoV1ScanCompletionHookSpecEnvItems0ValueFromFieldRef
+    fileKeyRef?: ExecutionSecurecodeboxIoV1ScanCompletionHookSpecEnvItems0ValueFromFileKeyRef
     resourceFieldRef?: ExecutionSecurecodeboxIoV1ScanCompletionHookSpecEnvItems0ValueFromResourceFieldRef
     secretKeyRef?: ExecutionSecurecodeboxIoV1ScanCompletionHookSpecEnvItems0ValueFromSecretKeyRef
 
@@ -884,6 +888,34 @@ schema ExecutionSecurecodeboxIoV1ScanCompletionHookSpecEnvItems0ValueFromFieldRe
     """
     apiVersion?: str
     fieldPath: str
+
+schema ExecutionSecurecodeboxIoV1ScanCompletionHookSpecEnvItems0ValueFromFileKeyRef:
+    r"""
+    FileKeyRef selects a key of the env file.
+    Requires the EnvFiles feature gate to be enabled.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        The key within the env file. An invalid key will prevent the pod from starting.
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+    optional : bool, default is Undefined, optional
+        Specify whether the file or its key must be defined. If the file or key
+        does not exist, then the env var is not published.
+        If optional is set to true and the specified key does not exist,
+        the environment variable will not be set in the Pod's containers.
+    path : str, default is Undefined, required
+        The path within the volume from which to select the file.
+        Must be relative and may not contain the '..' path or start with '..'.
+    volumeName : str, default is Undefined, required
+        The name of the volume mount containing the env file.
+    """
+    key: str
+
+    optional?: bool = False
+    path: str
+
+    volumeName: str
 
 schema ExecutionSecurecodeboxIoV1ScanCompletionHookSpecEnvItems0ValueFromResourceFieldRef:
     r"""
@@ -954,7 +986,7 @@ schema ExecutionSecurecodeboxIoV1ScanCompletionHookSpecResources:
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -1871,13 +1903,11 @@ schema ExecutionSecurecodeboxIoV1ScanCompletionHookSpecVolumesItems0Glusterfs:
     r"""
     glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime.
     Deprecated: Glusterfs is deprecated and the in-tree glusterfs type is no longer supported.
-    More info: https://examples.k8s.io/volumes/glusterfs/README.md
 
     Attributes
     ----------
     endpoints : str, default is Undefined, required
         endpoints is the endpoint name that details Glusterfs topology.
-        More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
     path : str, default is Undefined, required
         path is the Glusterfs volume path.
         More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
@@ -1935,7 +1965,7 @@ schema ExecutionSecurecodeboxIoV1ScanCompletionHookSpecVolumesItems0Iscsi:
     r"""
     iscsi represents an ISCSI Disk resource that is attached to a
     kubelet's host machine and then exposed to the pod.
-    More info: https://examples.k8s.io/volumes/iscsi/README.md
+    More info: https://kubernetes.io/docs/concepts/storage/volumes/#iscsi
 
     Attributes
     ----------
@@ -2110,6 +2140,8 @@ schema ExecutionSecurecodeboxIoV1ScanCompletionHookSpecVolumesItems0ProjectedSou
         config map
     downwardAPI : ExecutionSecurecodeboxIoV1ScanCompletionHookSpecVolumesItems0ProjectedSourcesItems0DownwardAPI, default is Undefined, optional
         downward API
+    podCertificate : ExecutionSecurecodeboxIoV1ScanCompletionHookSpecVolumesItems0ProjectedSourcesItems0PodCertificate, default is Undefined, optional
+        pod certificate
     secret : ExecutionSecurecodeboxIoV1ScanCompletionHookSpecVolumesItems0ProjectedSourcesItems0Secret, default is Undefined, optional
         secret
     serviceAccountToken : ExecutionSecurecodeboxIoV1ScanCompletionHookSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken, default is Undefined, optional
@@ -2118,6 +2150,7 @@ schema ExecutionSecurecodeboxIoV1ScanCompletionHookSpecVolumesItems0ProjectedSou
     clusterTrustBundle?: ExecutionSecurecodeboxIoV1ScanCompletionHookSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundle
     configMap?: ExecutionSecurecodeboxIoV1ScanCompletionHookSpecVolumesItems0ProjectedSourcesItems0ConfigMap
     downwardAPI?: ExecutionSecurecodeboxIoV1ScanCompletionHookSpecVolumesItems0ProjectedSourcesItems0DownwardAPI
+    podCertificate?: ExecutionSecurecodeboxIoV1ScanCompletionHookSpecVolumesItems0ProjectedSourcesItems0PodCertificate
     secret?: ExecutionSecurecodeboxIoV1ScanCompletionHookSpecVolumesItems0ProjectedSourcesItems0Secret
     serviceAccountToken?: ExecutionSecurecodeboxIoV1ScanCompletionHookSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken
 
@@ -2311,6 +2344,54 @@ schema ExecutionSecurecodeboxIoV1ScanCompletionHookSpecVolumesItems0ProjectedSou
     check:
         _regex_match(str(divisor), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if divisor
 
+schema ExecutionSecurecodeboxIoV1ScanCompletionHookSpecVolumesItems0ProjectedSourcesItems0PodCertificate:
+    r"""
+    Projects an auto-rotating credential bundle (private key and certificate
+    chain) that the pod can use either as a TLS client or server.
+
+    Kubelet generates a private key and uses it to send a
+    PodCertificateRequest to the named signer.
+
+    Attributes
+    ----------
+    certificateChainPath : str, default is Undefined, optional
+        Write the certificate chain at this path in the projected volume.
+
+        Most applications should use credentialBundlePath.
+    credentialBundlePath : str, default is Undefined, optional
+        Write the credential bundle at this path in the projected volume.
+
+        The credential bundle is a single file that contains multiple PEM blocks.
+        The first PEM block is a PRIVATE KEY block, containing a PKCS#8 private
+        key.
+    keyPath : str, default is Undefined, optional
+        Write the key at this path in the projected volume.
+
+        Most applications should use credentialBundlePath.
+    keyType : str, default is Undefined, required
+        The type of keypair Kubelet will generate for the pod.
+
+        Valid values are "RSA3072", "RSA4096", "ECDSAP256", "ECDSAP384",
+        "ECDSAP521", and "ED25519".
+    maxExpirationSeconds : int, default is Undefined, optional
+        maxExpirationSeconds is the maximum lifetime permitted for the
+        certificate.
+
+        Kubelet copies this value verbatim into the PodCertificateRequests it
+        generates for this projection.
+
+        If omitted, kube-apiserver will set it to 86400(24 hours).
+    signerName : str, default is Undefined, required
+        Kubelet's generated CSRs will be addressed to this signer.
+    """
+    certificateChainPath?: str
+    credentialBundlePath?: str
+    keyPath?: str
+    keyType: str
+
+    maxExpirationSeconds?: int
+    signerName: str
+
 schema ExecutionSecurecodeboxIoV1ScanCompletionHookSpecVolumesItems0ProjectedSourcesItems0Secret:
     r"""
     secret information about the secret data to project
@@ -2418,7 +2499,6 @@ schema ExecutionSecurecodeboxIoV1ScanCompletionHookSpecVolumesItems0Rbd:
     r"""
     rbd represents a Rados Block Device mount on the host that shares a pod's lifetime.
     Deprecated: RBD is deprecated and the in-tree rbd type is no longer supported.
-    More info: https://examples.k8s.io/volumes/rbd/README.md
 
     Attributes
     ----------
