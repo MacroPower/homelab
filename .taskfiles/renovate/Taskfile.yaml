@@ -1,0 +1,9 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+tasks:
+  lint:
+    desc: Lints Renovate configuration
+    cmds:
+      - renovate-config-validator .github/renovate.json5

@@ -28,6 +28,9 @@ includes:
     taskfile: ./.taskfiles/kyverno/taskfile.yaml
     dir: "{{.KYVERNO_POLICY_DIR}}"
     aliases: [ky]
+  renovate:
+    taskfile: ./.taskfiles/renovate/Taskfile.yaml
+    aliases: [rv]
   repo:
     taskfile: ./.taskfiles/repo/Taskfile.yaml
     aliases: [r]
