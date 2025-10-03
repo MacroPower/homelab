@@ -98,7 +98,7 @@ app = frontend.App {
     externalSecrets: {
         sonarrCreds = _sonarrCreds
         sonarrOIDCClient = _sonarrOIDCClient
-        prowlarrTFVars = _tfVars
+        sonarrTFVars = _tfVars
     }
 
     charts.sonarr = sonarr.Chart {

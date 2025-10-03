@@ -10,9 +10,9 @@ controllers:
     pod:
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 1005
+        runAsGroup: 3000
+        fsGroup: 3000
         fsGroupChangePolicy: OnRootMismatch
       tolerations:
         - key: node-role.kubernetes.io/storage

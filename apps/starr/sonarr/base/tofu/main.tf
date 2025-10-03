@@ -27,8 +27,8 @@ resource "sonarr_media_management" "tv" {
 
   # Permissions
   set_permissions = false
-  chmod_folder    = "755"
-  chown_group     = ""
+  chmod_folder    = "775"
+  chown_group     = "3000"
 }
 
 resource "sonarr_root_folder" "tv" {
