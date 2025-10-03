@@ -306,6 +306,14 @@ nodes:
               registerWithTaints:
                 - key: node-role.kubernetes.io/storage
                   effect: NoSchedule
+            extraMounts:
+              - source: /var/media
+                destination: /var/media
+                type: bind
+                options:
+                  - rbind
+                  - rshared
+                  - rw
           features:
             hostDNS:
               enabled: true

@@ -1,12 +1,13 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 services:
   talos:
-    image: ghcr.io/siderolabs/talos:v1.11.0
+    image: ghcr.io/siderolabs/talos:v1.11.1
     container_name: talos
     hostname: knas01
     tty: true
     read_only: true
     privileged: true
+    restart: always
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -18,9 +19,6 @@ services:
       - seccomp=unconfined
     environment:
       - PLATFORM=container
-    sysctls:
-      - net.ipv6.conf.all.forwarding=1
-      - net.ipv6.conf.all.disable_ipv6=0
     devices:
       - /dev/kmsg
     tmpfs:
@@ -36,6 +34,8 @@ services:
       - talos_opt:/opt
       - /sys/fs/bpf:/sys/fs/bpf:rshared
       - /mnt/main/containers/talos/var/openebs/local:/var/openebs/local:rshared
+      - /mnt/main/media/video/tv:/var/media/video/tv:rshared
+      - /mnt/main/media/video/movies:/var/media/video/movies:rshared
     networks:
       talos_macvlan:
         ipv4_address: "10.10.12.1"
