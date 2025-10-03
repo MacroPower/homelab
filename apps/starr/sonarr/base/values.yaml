@@ -14,6 +14,11 @@ controllers:
         runAsGroup: 1000
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
+      tolerations:
+        - key: node-role.kubernetes.io/storage
+          effect: NoSchedule
+      nodeSelector:
+        kubernetes.io/hostname: knas01
     containers:
       app:
         image:
@@ -77,13 +82,22 @@ service:
 
 persistence:
   config:
-    type: emptyDir
+    type: persistentVolumeClaim
+    storageClass: openebs-hostpath
+    accessMode: ReadWriteOnce
+    size: 5Gi
     globalMounts:
       - path: /config
-  media:
-    type: emptyDir
+  downloads:
+    type: hostPath
+    hostPath: /var/media/video/tv/downloads
     globalMounts:
-      - path: /media
+      - path: /media/video/tv/downloads
+  media:
+    type: hostPath
+    hostPath: /var/media/video/tv/library
+    globalMounts:
+      - path: /media/video/tv/library
   tmp:
     type: emptyDir
     globalMounts:

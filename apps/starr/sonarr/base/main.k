@@ -1,4 +1,5 @@
 import file
+import json
 
 import konfig.models.frontend
 import konfig.models.frontend.secret
@@ -7,6 +8,7 @@ import konfig.files
 
 import starr
 import charts.sonarr
+import charts.opentofu.api.v1beta1 as opentofu
 
 _values = files.read_yaml(file.current(), "values.yaml")
 
@@ -30,6 +32,64 @@ _sonarrOIDCClient = secret.ExternalSecret {
     }
 }
 
+_tfVars = secret.ExternalSecret {
+    name = "sonarr-tfvars"
+    data: {
+        SONARR_AUTH_APIKEY = {}
+    }
+    target.template.data: {
+        ".auto.tfvars.json" = json.encode({
+            "sonarr_auth_apikey" = "{{.SONARR_AUTH_APIKEY}}"
+        })
+    }
+}
+
+tofuProvider = opentofu.ProviderConfig {
+    metadata: {
+        name = "sonarr"
+        namespace = "starr-sonarr"
+    }
+    spec: {
+        credentials = [{
+            filename = "sonarr-apikey"
+            source = "Secret"
+            secretRef: {
+                namespace = "starr-sonarr"
+                name = _sonarrCreds.name
+                key = "SONARR_AUTH_APIKEY"
+            }
+        }]
+        configuration = files.read_file(file.current(), "tofu/providers.tf")
+    }
+}
+
+tofuWorkspace = opentofu.Workspace {
+    metadata: {
+        name = "sonarr"
+        namespace = "starr-sonarr"
+    }
+    spec: {
+        providerConfigRef: {
+            kind = "ProviderConfig"
+            name = "sonarr"
+        }
+        forProvider: {
+            initArgs = ["-upgrade=true"]
+            varFiles = [{
+                source = "SecretKey"
+                format = "JSON"
+                secretKeyRef: {
+                    name = _tfVars.name
+                    key = ".auto.tfvars.json"
+                }
+            }]
+            vars = []
+            source = "Inline"
+            module = files.read_file(file.current(), "tofu/main.tf")
+        }
+    }
+}
+
 app = frontend.App {
     name = "sonarr"
     tenantName = starr.tenant.name
@@ -38,6 +98,7 @@ app = frontend.App {
     externalSecrets: {
         sonarrCreds = _sonarrCreds
         sonarrOIDCClient = _sonarrOIDCClient
+        prowlarrTFVars = _tfVars
     }
 
     charts.sonarr = sonarr.Chart {
@@ -60,5 +121,10 @@ app = frontend.App {
             oidcClientRef = _sonarrOIDCClient.name
             oidcIssuer = starr.tenant.oidcIssuer
         }
+    }
+
+    extraResources: {
+        tofuProvider = tofuProvider
+        tofuWorkspace = tofuWorkspace
     }
 }
