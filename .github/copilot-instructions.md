@@ -22,7 +22,7 @@ This is a multi-cluster Kubernetes homelab managed through GitOps using ArgoCD, 
 ```
 
 ## Key Tools & Commands
-- **task kcl:render**: Primary tool for rendering KCL to YAML files for inspection (`task kcl:render APP=tenant/app F=env O=.debug/output.yaml`)
+- **#kat**: Primary tool for rendering KCL to YAML files for inspection (`mcp_kat_list_resources` and `mcp_kat_get_resource`)
 - **task kcl:chart:update**: Updates KCL chart definitions based on `charts/charts.k`
 - **task**: Primary command runner (see `task -l` for all available tasks)
 
@@ -31,7 +31,7 @@ This is a multi-cluster Kubernetes homelab managed through GitOps using ArgoCD, 
 - **Talos**: Immutable Kubernetes OS on bare metal
 - **ArgoCD**: Application lifecycle management
 - **KCL/Konfig**: Application configuration abstraction
-- **ApplicationSets**: Multi-cluster application deployment via `.tenant.yaml` files
+- **ApplicationSets**: Multi-cluster application deployment via `.tenant.yaml` and `.app.yaml` files
 
 ## Development Workflow
 
