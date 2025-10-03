@@ -548,7 +548,7 @@ schema GatewayNetworkingxK8sIoV1alpha1XListenerSetStatus:
 
     Attributes
     ----------
-    conditions : [GatewayNetworkingxK8sIoV1alpha1XListenerSetStatusConditionsItems0], default is [{"reason": "Pending", "status": "Unknown", "type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller"}, {"reason": "Pending", "status": "Unknown", "type": "Programmed", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller"}], optional
+    conditions : [GatewayNetworkingxK8sIoV1alpha1XListenerSetStatusConditionsItems0], default is [{"status": "Unknown", "type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending"}, {"status": "Unknown", "type": "Programmed", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending"}], optional
         Conditions describe the current conditions of the ListenerSet.
 
         Implementations MUST express ListenerSet conditions using the
