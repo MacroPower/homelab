@@ -154,7 +154,7 @@ schema GatewayNetworkingK8sIoV1GatewayClassStatus:
         SupportedFeatures is the set of features the GatewayClass support.
         It MUST be sorted in ascending alphabetical order by the Name key.
     """
-    conditions?: [GatewayNetworkingK8sIoV1GatewayClassStatusConditionsItems0] = [{"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted"}]
+    conditions?: [GatewayNetworkingK8sIoV1GatewayClassStatusConditionsItems0] = [{"type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown"}]
     supportedFeatures?: [GatewayNetworkingK8sIoV1GatewayClassStatusSupportedFeaturesItems0]
 
     check:

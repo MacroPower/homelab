@@ -982,7 +982,7 @@ schema GatewayNetworkingK8sIoV1beta1GatewayStatus:
           * no addresses are specified, all addresses are dynamically assigned
           * a combination of specified and dynamic addresses are assigned
           * a specified address was unusable (e.g. already in use)
-    conditions : [GatewayNetworkingK8sIoV1beta1GatewayStatusConditionsItems0], default is [{"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted"}, {"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Programmed"}], optional
+    conditions : [GatewayNetworkingK8sIoV1beta1GatewayStatusConditionsItems0], default is [{"reason": "Pending", "status": "Unknown", "type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller"}, {"type": "Programmed", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown"}], optional
         Conditions describe the current conditions of the Gateway.
 
         Implementations should prefer to express Gateway conditions
@@ -999,7 +999,7 @@ schema GatewayNetworkingK8sIoV1beta1GatewayStatus:
         Listeners provide status for each unique listener port defined in the Spec.
     """
     addresses?: [GatewayNetworkingK8sIoV1beta1GatewayStatusAddressesItems0]
-    conditions?: [GatewayNetworkingK8sIoV1beta1GatewayStatusConditionsItems0] = [{"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted"}, {"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Programmed"}]
+    conditions?: [GatewayNetworkingK8sIoV1beta1GatewayStatusConditionsItems0] = [{"reason": "Pending", "status": "Unknown", "type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller"}, {"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Programmed"}]
     listeners?: [GatewayNetworkingK8sIoV1beta1GatewayStatusListenersItems0]
 
     check:
