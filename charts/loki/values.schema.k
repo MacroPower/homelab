@@ -5976,6 +5976,8 @@ schema ValuesLokiCanary:
     push : bool, optional, default is True
         If true, the canary will send directly to Loki via the address configured for verification --
         If false, it will write to stdout and an Agent will be needed to scrape and send the logs --
+    replicas : int, optional, default is 1
+        Replicas for `loki-canary` when using a Deployment
     resources : ValuesLokiCanaryResources, optional
         Resource requests and limits for the canary
     service : ValuesLokiCanaryService, optional
@@ -6003,6 +6005,7 @@ schema ValuesLokiCanary:
     podLabels?: ValuesLokiCanaryPodLabels
     priorityClassName?: any
     push?: bool
+    replicas?: int
     resources?: ValuesLokiCanaryResources
     service?: ValuesLokiCanaryService
     tolerations?: [any]
@@ -11742,6 +11745,10 @@ schema ValuesSingleBinaryPersistence:
         If set to "-", storageClassName: "", which disables dynamic provisioning.
         If empty or set to null, no storageClassName spec is
         set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).
+    whenDeleted : str, optional, default is "Delete"
+        What to do with the volumes when the StatefulSet is deleted.
+    whenScaled : str, optional, default is "Delete"
+        What to do with the volume when the StatefulSet is scaled down.
     """
     [...str]: any
     accessModes?: [str]
@@ -11752,6 +11759,8 @@ schema ValuesSingleBinaryPersistence:
     selector?: any
     size?: str
     storageClass?: any
+    whenDeleted?: str
+    whenScaled?: str
 
 schema ValuesSingleBinaryPersistenceAnnotations:
     r"""

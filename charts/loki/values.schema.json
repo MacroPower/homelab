@@ -8642,6 +8642,13 @@
           "title": "push",
           "type": "boolean"
         },
+        "replicas": {
+          "default": 1,
+          "description": "Replicas for `loki-canary` when using a Deployment",
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        },
         "resources": {
           "additionalProperties": true,
           "description": "Resource requests and limits for the canary",
@@ -14790,6 +14797,20 @@
               "required": [],
               "title": "storageClass",
               "type": "null"
+            },
+            "whenDeleted": {
+              "default": "Delete",
+              "description": "What to do with the volumes when the StatefulSet is deleted.",
+              "required": [],
+              "title": "whenDeleted",
+              "type": "string"
+            },
+            "whenScaled": {
+              "default": "Delete",
+              "description": "What to do with the volume when the StatefulSet is scaled down.",
+              "required": [],
+              "title": "whenScaled",
+              "type": "string"
             }
           },
           "required": [],
