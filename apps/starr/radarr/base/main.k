@@ -1,4 +1,5 @@
 import file
+import json
 
 import konfig.models.frontend
 import konfig.models.frontend.secret
@@ -7,6 +8,7 @@ import konfig.files
 
 import starr
 import charts.radarr
+import charts.opentofu.api.v1beta1 as opentofu
 
 _values = files.read_yaml(file.current(), "values.yaml")
 
@@ -30,6 +32,64 @@ _radarrOIDCClient = secret.ExternalSecret {
     }
 }
 
+_tfVars = secret.ExternalSecret {
+    name = "radarr-tfvars"
+    data: {
+        RADARR_AUTH_APIKEY = {}
+    }
+    target.template.data: {
+        ".auto.tfvars.json" = json.encode({
+            "radarr_auth_apikey" = "{{.RADARR_AUTH_APIKEY}}"
+        })
+    }
+}
+
+tofuProvider = opentofu.ProviderConfig {
+    metadata: {
+        name = "radarr"
+        namespace = "starr-radarr"
+    }
+    spec: {
+        credentials = [{
+            filename = "radarr-apikey"
+            source = "Secret"
+            secretRef: {
+                namespace = "starr-radarr"
+                name = _radarrCreds.name
+                key = "RADARR_AUTH_APIKEY"
+            }
+        }]
+        configuration = files.read_file(file.current(), "tofu/providers.tf")
+    }
+}
+
+tofuWorkspace = opentofu.Workspace {
+    metadata: {
+        name = "radarr"
+        namespace = "starr-radarr"
+    }
+    spec: {
+        providerConfigRef: {
+            kind = "ProviderConfig"
+            name = "radarr"
+        }
+        forProvider: {
+            initArgs = ["-upgrade=true"]
+            varFiles = [{
+                source = "SecretKey"
+                format = "JSON"
+                secretKeyRef: {
+                    name = _tfVars.name
+                    key = ".auto.tfvars.json"
+                }
+            }]
+            vars = []
+            source = "Inline"
+            module = files.read_file(file.current(), "tofu/main.tf")
+        }
+    }
+}
+
 app = frontend.App {
     name = "radarr"
     tenantName = starr.tenant.name
@@ -38,6 +98,7 @@ app = frontend.App {
     externalSecrets: {
         radarrCreds = _radarrCreds
         radarrOIDCClient = _radarrOIDCClient
+        radarrTFVars = _tfVars
     }
 
     charts.radarr = radarr.Chart {
@@ -60,5 +121,10 @@ app = frontend.App {
             oidcClientRef = _radarrOIDCClient.name
             oidcIssuer = starr.tenant.oidcIssuer
         }
+    }
+
+    extraResources: {
+        tofuProvider = tofuProvider
+        tofuWorkspace = tofuWorkspace
     }
 }
