@@ -32,7 +32,7 @@ resource "sonarr_media_management" "tv" {
 }
 
 resource "sonarr_root_folder" "tv" {
-  path = "/media/video/tv/library/"
+  path = "/media/video/tv/library"
 }
 
 resource "sonarr_download_client_qbittorrent" "tv" {

@@ -4,7 +4,7 @@ variable "radarr_auth_apikey" {
 }
 
 resource "radarr_root_folder" "movies" {
-  path = "/media/video/movies/library/"
+  path = "/media/video/movies/library"
 }
 
 resource "radarr_download_client_qbittorrent" "movies" {
