@@ -76,7 +76,7 @@ resource "hcloud_server" "wg" {
   name        = "wireguard"
   image       = "wireguard"
   server_type = "cax11" # 2 vCPU, 4 GB RAM - 3.29 EUR/month
-  location    = "hel1"  # Helsinki, Finland
+  location    = "fsn1"  # DE Falkenstein
   ssh_keys = concat(
     [hcloud_ssh_key.wg_terraform.name],
     keys(var.public_keys_openssh),
