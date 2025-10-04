@@ -268,10 +268,14 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCert
     ----------
     clientCert : GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCertClientCert, default is Undefined, optional
         client cert
+    path : str, default is "cert", optional
+        Path where the Certificate authentication backend is mounted
+        in Vault, e.g: "cert"
     secretRef : GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCertSecretRef, default is Undefined, optional
         secret ref
     """
     clientCert?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCertClientCert
+    path?: str = "cert"
     secretRef?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCertSecretRef
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCertClientCert:

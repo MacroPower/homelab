@@ -1609,10 +1609,14 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     ----------
     clientCert : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCertClientCert, default is Undefined, optional
         client cert
+    path : str, default is "cert", optional
+        Path where the Certificate authentication backend is mounted
+        in Vault, e.g: "cert"
     secretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCertSecretRef, default is Undefined, optional
         secret ref
     """
     clientCert?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCertClientCert
+    path?: str = "cert"
     secretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCertSecretRef
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCertClientCert:

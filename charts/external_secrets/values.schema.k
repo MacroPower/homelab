@@ -269,6 +269,7 @@ schema ValuesCertController:
         Specifies the amount of historic ReplicaSets k8s should keep (see https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#clean-up-policy)
     securityContext : ValuesCertControllerSecurityContext, optional
     serviceAccount : ValuesCertControllerServiceAccount, optional
+    startupProbe : ValuesCertControllerStartupProbe, optional
     strategy : ValuesCertControllerStrategy, optional
         Set deployment strategy
     tolerations : [any], optional
@@ -304,6 +305,7 @@ schema ValuesCertController:
     revisionHistoryLimit?: int
     securityContext?: ValuesCertControllerSecurityContext
     serviceAccount?: ValuesCertControllerServiceAccount
+    startupProbe?: ValuesCertControllerStartupProbe
     strategy?: ValuesCertControllerStrategy
     tolerations?: [any]
     topologySpreadConstraints?: [any]
@@ -562,6 +564,24 @@ schema ValuesCertControllerServiceAccountExtraLabels:
     Extra Labels to add to the service account.
     """
     [...str]: any
+
+schema ValuesCertControllerStartupProbe:
+    r"""
+    ValuesCertControllerStartupProbe
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Enabled determines if the startup probe should be used or not. By default it's enabled
+    port : str, optional, default is ""
+        Port for startup probe.
+    useReadinessProbePort : bool, optional, default is True
+        whether to use the readiness probe port for startup probe.
+    """
+    [...str]: any
+    enabled?: bool
+    port?: str
+    useReadinessProbePort?: bool
 
 schema ValuesCertControllerStrategy:
     r"""
@@ -887,13 +907,26 @@ schema ValuesLivenessProbe:
 
     Attributes
     ----------
-    address : str, optional, default is ""
-        Address for liveness probe.
     enabled : bool, optional, default is False
         Enabled determines if the liveness probe should be used or not. By default it's disabled.
+    spec : ValuesLivenessProbeSpec, optional
+        The body of the liveness probe settings.
+    """
+    [...str]: any
+    enabled?: bool
+    spec?: ValuesLivenessProbeSpec
+
+schema ValuesLivenessProbeSpec:
+    r"""
+    The body of the liveness probe settings.
+
+    Attributes
+    ----------
+    address : str, optional, default is ""
+        Address for liveness probe.
     failureThreshold : int, optional, default is 5
         Number of consecutive probe failures that should occur before considering the probe as failed.
-    httpGet : ValuesLivenessProbeHttpGet, optional
+    httpGet : ValuesLivenessProbeSpecHttpGet, optional
         Handler for liveness probe.
     initialDelaySeconds : int, optional, default is 10
         Delay in seconds for the container to start before performing the initial probe.
@@ -906,15 +939,14 @@ schema ValuesLivenessProbe:
     """
     [...str]: any
     address?: str
-    enabled?: bool
     failureThreshold?: int
-    httpGet?: ValuesLivenessProbeHttpGet
+    httpGet?: ValuesLivenessProbeSpecHttpGet
     initialDelaySeconds?: int
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
 
-schema ValuesLivenessProbeHttpGet:
+schema ValuesLivenessProbeSpecHttpGet:
     r"""
     Handler for liveness probe.
 

@@ -14,7 +14,7 @@ schema Chart(helm.Chart):
     values : Values | any, optional, default is {crds = {conversion = {enabled = False}}}
     chart : str, required, default is "external-secrets"
     repoURL : str, required, default is "https://charts.external-secrets.io/"
-    targetRevision : str, optional, default is "0.20.1"
+    targetRevision : str, optional, default is "0.20.2"
     """
     values?: Values | any = {
         crds = {
@@ -23,5 +23,5 @@ schema Chart(helm.Chart):
     }
     chart: str = "external-secrets"
     repoURL: str = "https://charts.external-secrets.io/"
-    targetRevision?: str = "0.20.1"
+    targetRevision?: str = "0.20.2"
 
