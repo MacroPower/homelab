@@ -237,13 +237,16 @@ schema ExternalSecretsIoV1ClusterExternalSecretSpecExternalSecretSpecDataFromIte
         Required if strategy is JSON. Ignored otherwise.
     priority : [str], default is Undefined, optional
         Used to define key priority in conflict resolution.
+    priorityPolicy : str, default is "Strict", optional
+        Used to define the policy when a key in the priority list does not exist in the input.
     strategy : str, default is "Extract", optional
         Used to define the strategy to use in the merge operation.
     """
-    conflictPolicy?: str = "Error"
+    conflictPolicy?: "Ignore" | "Error" = "Error"
     into?: str = ""
     priority?: [str]
-    strategy?: str = "Extract"
+    priorityPolicy?: "IgnoreNotFound" | "Strict" = "Strict"
+    strategy?: "Extract" | "JSON" = "Extract"
 
 schema ExternalSecretsIoV1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0RewriteItems0Regexp:
     r"""

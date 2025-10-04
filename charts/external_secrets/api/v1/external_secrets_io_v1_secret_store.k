@@ -169,6 +169,8 @@ schema ExternalSecretsIoV1SecretStoreSpecProvider:
         keepersecurity
     kubernetes : ExternalSecretsIoV1SecretStoreSpecProviderKubernetes, default is Undefined, optional
         kubernetes
+    ngrok : ExternalSecretsIoV1SecretStoreSpecProviderNgrok, default is Undefined, optional
+        ngrok
     onboardbase : ExternalSecretsIoV1SecretStoreSpecProviderOnboardbase, default is Undefined, optional
         onboardbase
     onepassword : ExternalSecretsIoV1SecretStoreSpecProviderOnepassword, default is Undefined, optional
@@ -223,6 +225,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProvider:
     infisical?: ExternalSecretsIoV1SecretStoreSpecProviderInfisical
     keepersecurity?: ExternalSecretsIoV1SecretStoreSpecProviderKeepersecurity
     kubernetes?: ExternalSecretsIoV1SecretStoreSpecProviderKubernetes
+    ngrok?: ExternalSecretsIoV1SecretStoreSpecProviderNgrok
     onboardbase?: ExternalSecretsIoV1SecretStoreSpecProviderOnboardbase
     onepassword?: ExternalSecretsIoV1SecretStoreSpecProviderOnepassword
     onepasswordSDK?: ExternalSecretsIoV1SecretStoreSpecProviderOnepasswordSDK
@@ -2295,10 +2298,17 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderGcpsm:
         Location optionally defines a location for a secret
     projectID : str, default is Undefined, optional
         ProjectID project where secret is located
+    secretVersionSelectionPolicy : str, default is "LatestOrFail", optional
+        SecretVersionSelectionPolicy specifies how the provider selects a secret version
+        when "latest" is disabled or destroyed.
+        Possible values are:
+        - LatestOrFail: the provider always uses "latest", or fails if that version is disabled/destroyed.
+        - LatestOrFetch: the provider falls back to fetching the latest version if the version is DESTROYED or DISABLED
     """
     auth?: ExternalSecretsIoV1SecretStoreSpecProviderGcpsmAuth
     location?: str
     projectID?: str
+    secretVersionSelectionPolicy?: str = "LatestOrFail"
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderGcpsmAuth:
     r"""
@@ -2549,7 +2559,8 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderGcpsmAuthWorkloadIdentityServic
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderGithub:
     r"""
-    Github configures this store to push Github Action secrets using Github API provider
+    Github configures this store to push GitHub Action secrets using GitHub API provider.
+    Note: This provider only supports write operations (PushSecret) and cannot fetch secrets from GitHub
 
     Attributes
     ----------
@@ -4102,6 +4113,87 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderKubernetesServerCaProvider:
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
+schema ExternalSecretsIoV1SecretStoreSpecProviderNgrok:
+    r"""
+    Ngrok configures this store to sync secrets using the ngrok provider.
+
+    Attributes
+    ----------
+    apiUrl : str, default is "https://api.ngrok.com", optional
+        APIURL is the URL of the ngrok API.
+    auth : ExternalSecretsIoV1SecretStoreSpecProviderNgrokAuth, default is Undefined, required
+        auth
+    vault : ExternalSecretsIoV1SecretStoreSpecProviderNgrokVault, default is Undefined, required
+        vault
+    """
+    apiUrl?: str = "https://api.ngrok.com"
+    auth: ExternalSecretsIoV1SecretStoreSpecProviderNgrokAuth
+
+    vault: ExternalSecretsIoV1SecretStoreSpecProviderNgrokVault
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderNgrokAuth:
+    r"""
+    Auth configures how the ngrok provider authenticates with the ngrok API.
+
+    Attributes
+    ----------
+    apiKey : ExternalSecretsIoV1SecretStoreSpecProviderNgrokAuthAPIKey, default is Undefined, optional
+        api key
+    """
+    apiKey?: ExternalSecretsIoV1SecretStoreSpecProviderNgrokAuthAPIKey
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderNgrokAuthAPIKey:
+    r"""
+    APIKey is the API Key used to authenticate with ngrok. See https://ngrok.com/docs/api/#authentication
+
+    Attributes
+    ----------
+    secretRef : ExternalSecretsIoV1SecretStoreSpecProviderNgrokAuthAPIKeySecretRef, default is Undefined, optional
+        secret ref
+    """
+    secretRef?: ExternalSecretsIoV1SecretStoreSpecProviderNgrokAuthAPIKeySecretRef
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderNgrokAuthAPIKeySecretRef:
+    r"""
+    SecretRef is a reference to a secret containing the ngrok API key.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderNgrokVault:
+    r"""
+    Vault configures the ngrok vault to sync secrets with.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name is the name of the ngrok vault to sync secrets with.
+    """
+    name: str
+
 schema ExternalSecretsIoV1SecretStoreSpecProviderOnboardbase:
     r"""
     Onboardbase configures this store to sync secrets using the Onboardbase provider
@@ -5298,10 +5390,14 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthCert:
     ----------
     clientCert : ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthCertClientCert, default is Undefined, optional
         client cert
+    path : str, default is "cert", optional
+        Path where the Certificate authentication backend is mounted
+        in Vault, e.g: "cert"
     secretRef : ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthCertSecretRef, default is Undefined, optional
         secret ref
     """
     clientCert?: ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthCertClientCert
+    path?: str = "cert"
     secretRef?: ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthCertSecretRef
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthCertClientCert:

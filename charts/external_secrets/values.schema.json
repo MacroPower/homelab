@@ -497,6 +497,35 @@
           "title": "serviceAccount",
           "type": "object"
         },
+        "startupProbe": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enabled determines if the startup probe should be used or not. By default it's enabled",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "port": {
+              "default": "",
+              "description": "Port for startup probe.",
+              "required": [],
+              "title": "port",
+              "type": "string"
+            },
+            "useReadinessProbePort": {
+              "default": true,
+              "description": "whether to use the readiness probe port for startup probe.",
+              "required": [],
+              "title": "useReadinessProbePort",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "startupProbe",
+          "type": "object"
+        },
         "strategy": {
           "additionalProperties": true,
           "description": "Set deployment strategy",
@@ -1060,13 +1089,6 @@
     "livenessProbe": {
       "additionalProperties": true,
       "properties": {
-        "address": {
-          "default": "",
-          "description": "Address for liveness probe.",
-          "required": [],
-          "title": "address",
-          "type": "string"
-        },
         "enabled": {
           "default": false,
           "description": "Enabled determines if the liveness probe should be used or not. By default it's disabled.",
@@ -1074,62 +1096,78 @@
           "title": "enabled",
           "type": "boolean"
         },
-        "failureThreshold": {
-          "default": 5,
-          "description": "Number of consecutive probe failures that should occur before considering the probe as failed.",
-          "required": [],
-          "title": "failureThreshold",
-          "type": "integer"
-        },
-        "httpGet": {
+        "spec": {
           "additionalProperties": true,
-          "description": "Handler for liveness probe.",
+          "description": "The body of the liveness probe settings.",
           "properties": {
-            "path": {
-              "default": "/healthz",
+            "address": {
+              "default": "",
+              "description": "Address for liveness probe.",
               "required": [],
-              "title": "path",
+              "title": "address",
               "type": "string"
             },
-            "port": {
-              "default": "8082",
-              "description": "Set this value to 8082 to active liveness probes.",
+            "failureThreshold": {
+              "default": 5,
+              "description": "Number of consecutive probe failures that should occur before considering the probe as failed.",
               "required": [],
-              "title": "port",
-              "type": "string"
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpGet": {
+              "additionalProperties": true,
+              "description": "Handler for liveness probe.",
+              "properties": {
+                "path": {
+                  "default": "/healthz",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "port": {
+                  "default": "8082",
+                  "description": "Set this value to 8082 to active liveness probes.",
+                  "required": [],
+                  "title": "port",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 10,
+              "description": "Delay in seconds for the container to start before performing the initial probe.",
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 10,
+              "description": "Period in seconds for K8s to start performing probes.",
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "description": "Number of successful probes to mark probe successful.",
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 5,
+              "description": "Specify the maximum amount of time to wait for a probe to respond before considering it fails.",
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
             }
           },
           "required": [],
-          "title": "httpGet",
+          "title": "spec",
           "type": "object"
-        },
-        "initialDelaySeconds": {
-          "default": 10,
-          "description": "Delay in seconds for the container to start before performing the initial probe.",
-          "required": [],
-          "title": "initialDelaySeconds",
-          "type": "integer"
-        },
-        "periodSeconds": {
-          "default": 10,
-          "description": "Period in seconds for K8s to start performing probes.",
-          "required": [],
-          "title": "periodSeconds",
-          "type": "integer"
-        },
-        "successThreshold": {
-          "default": 1,
-          "description": "Number of successful probes to mark probe successful.",
-          "required": [],
-          "title": "successThreshold",
-          "type": "integer"
-        },
-        "timeoutSeconds": {
-          "default": 5,
-          "description": "Specify the maximum amount of time to wait for a probe to respond before considering it fails.",
-          "required": [],
-          "title": "timeoutSeconds",
-          "type": "integer"
         }
       },
       "required": [],
