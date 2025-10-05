@@ -140,35 +140,3 @@ resource "prowlarr_indexer" "avistaz" {
     }
   ]
 }
-
-resource "prowlarr_download_client_qbittorrent" "qbt_tv" {
-  enable = true
-  name   = "qBittorrent-TV"
-  host   = "qbt-tv-web.starr-qbt-tv.svc.cluster.local"
-  port   = 8080
-
-  priority      = 1 # Client Priority
-  item_priority = 0 # Last
-  initial_state = 0 # Start
-  category      = "tv-prowlarr"
-  # categories = [{
-  #   name       = "TV"
-  #   categories = local.tv_categories
-  # }]
-}
-
-resource "prowlarr_download_client_qbittorrent" "qbt_movies" {
-  enable = true
-  name   = "qBittorrent-Movies"
-  host   = "qbt-movies-web.starr-qbt-movies.svc.cluster.local"
-  port   = 8080
-
-  priority      = 1 # Client Priority
-  item_priority = 0 # Last
-  initial_state = 0 # Start
-  category      = "movies-prowlarr"
-  # categories = [{
-  #   name       = "Movies"
-  #   categories = local.movie_categories
-  # }]
-}
