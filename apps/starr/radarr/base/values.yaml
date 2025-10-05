@@ -88,16 +88,11 @@ persistence:
     size: 5Gi
     globalMounts:
       - path: /config
-  downloads:
-    type: hostPath
-    hostPath: /var/media/video/movies/downloads
-    globalMounts:
-      - path: /media/video/movies/downloads
   media:
     type: hostPath
-    hostPath: /var/media/video/movies/library
+    hostPath: /var/media/video/movies
     globalMounts:
-      - path: /media/video/movies/library
+      - path: /media/video/movies
   tmp:
     type: emptyDir
     globalMounts:
