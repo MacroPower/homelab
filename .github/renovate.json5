@@ -4,6 +4,7 @@
     "config:recommended",
     ":disableRateLimiting",
     ":separateMajorReleases",
+    ":automergeDisabled",
   ],
   customManagers: [
     {
