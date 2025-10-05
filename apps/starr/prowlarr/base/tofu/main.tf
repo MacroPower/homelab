@@ -8,29 +8,15 @@ variable "radarr_auth_apikey" {
   sensitive = true
 }
 
-variable "tv_movie_indexer_implementation" {
-  type = string
-}
-
-variable "tv_movie_indexer_config_contract" {
-  type = string
-}
-
-variable "tv_movie_indexer_base_url" {
-  type = string
-}
-
-variable "tv_movie_indexer_username" {
-  type = string
-}
-
-variable "tv_movie_indexer_password" {
-  type      = string
-  sensitive = true
-}
-
-variable "tv_movie_indexer_pid" {
-  type      = string
+variable "avistaz_indexers" {
+  type = map(object({
+    implementation = string
+    base_url = string
+    username = string
+    password = string
+    pid = string
+    priority = optional(number, 25)
+  }))
   sensitive = true
 }
 
@@ -88,31 +74,33 @@ resource "prowlarr_application_radarr" "radarr" {
   sync_categories = local.movie_categories
 }
 
-resource "prowlarr_indexer" "tv_movie" {
+resource "prowlarr_indexer" "avistaz" {
+  for_each = nonsensitive(var.avistaz_indexers)
+
   enable          = true
-  name            = var.tv_movie_indexer_implementation
-  implementation  = var.tv_movie_indexer_implementation
-  config_contract = var.tv_movie_indexer_config_contract
+  name            = each.key
+  implementation  = each.value.implementation
+  config_contract = "AvistazSettings"
   app_profile_id  = 1
-  priority        = 25
+  priority        = each.value.priority
   protocol        = "torrent"
 
   fields = [
     {
       name       = "baseUrl"
-      text_value = var.tv_movie_indexer_base_url
+      text_value = each.value.base_url
     },
     {
       name       = "username"
-      text_value = var.tv_movie_indexer_username
+      text_value = each.value.username
     },
     {
       name            = "password"
-      sensitive_value = var.tv_movie_indexer_password
+      sensitive_value = sensitive(each.value.password)
     },
     {
       name            = "pid"
-      sensitive_value = var.tv_movie_indexer_pid
+      sensitive_value = sensitive(each.value.pid)
     },
     {
       name       = "freeleechOnly"
@@ -120,11 +108,11 @@ resource "prowlarr_indexer" "tv_movie" {
     },
     {
       name         = "baseSettings.queryLimit"
-      number_value = 100
+      number_value = 2400
     },
     {
       name         = "baseSettings.grabLimit"
-      number_value = 25
+      number_value = 48
     },
     {
       name         = "baseSettings.limitsUnit"

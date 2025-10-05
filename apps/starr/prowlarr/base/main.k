@@ -5,6 +5,7 @@ import konfig.models.frontend
 import konfig.models.frontend.secret
 import konfig.models.frontend.gateway
 import konfig.files
+import konfig.strings
 
 import starr
 import charts.prowlarr
@@ -37,24 +38,15 @@ _tfVars = secret.ExternalSecret {
     data: {
         SONARR_AUTH_APIKEY = {}
         RADARR_AUTH_APIKEY = {}
-        PROWLARR_TV_MOVIE_INDEXER_IMPLEMENTATION = {}
-        PROWLARR_TV_MOVIE_INDEXER_CONFIG_CONTRACT = {}
-        PROWLARR_TV_MOVIE_INDEXER_BASE_URL = {}
-        PROWLARR_TV_MOVIE_INDEXER_USERNAME = {}
-        PROWLARR_TV_MOVIE_INDEXER_PASSWORD = {}
-        PROWLARR_TV_MOVIE_INDEXER_PID = {}
+        PROWLARR_AVISTAZ_INDEXERS = {}
     }
     target.template.data: {
-        ".auto.tfvars.json" = json.encode({
-            "sonarr_auth_apikey" = "{{.SONARR_AUTH_APIKEY}}"
-            "radarr_auth_apikey" = "{{.RADARR_AUTH_APIKEY}}"
-            "tv_movie_indexer_implementation" = "{{.PROWLARR_TV_MOVIE_INDEXER_IMPLEMENTATION}}"
-            "tv_movie_indexer_config_contract" = "{{.PROWLARR_TV_MOVIE_INDEXER_CONFIG_CONTRACT}}"
-            "tv_movie_indexer_base_url" = "{{.PROWLARR_TV_MOVIE_INDEXER_BASE_URL}}"
-            "tv_movie_indexer_username" = "{{.PROWLARR_TV_MOVIE_INDEXER_USERNAME}}"
-            "tv_movie_indexer_password" = "{{.PROWLARR_TV_MOVIE_INDEXER_PASSWORD}}"
-            "tv_movie_indexer_pid" = "{{.PROWLARR_TV_MOVIE_INDEXER_PID}}"
-        })
+        ".auto.tfvars.json" = strings.dedent('''\
+        {
+            "sonarr_auth_apikey": {{ printf "%q" .SONARR_AUTH_APIKEY }},
+            "radarr_auth_apikey": {{ printf "%q" .RADARR_AUTH_APIKEY }},
+            "avistaz_indexers": {{ printf "%s" (.PROWLARR_AVISTAZ_INDEXERS | fromJson | toJson) }}
+        }''')
     }
 }
 
