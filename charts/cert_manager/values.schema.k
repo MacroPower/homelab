@@ -845,16 +845,38 @@ schema ValuesGlobal:
     leaderElection : ValuesGlobalLeaderElection, optional
     logLevel : int, optional, default is 2
         Set the verbosity of cert-manager. A range of 0 - 6, with 6 being the most verbose.
+    nodeSelector : ValuesGlobalNodeSelector, optional
+        Global node selector
+
+        The nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with
+        matching labels.
+        For more information, see [Assigning Pods to Nodes](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/).
+
+        If a component-specific nodeSelector is also set, it will take precedence.
+        +docs:property
     podSecurityPolicy : ValuesGlobalPodSecurityPolicy, optional
     priorityClassName : str, optional, default is ""
         The optional priority class to be used for the cert-manager pods.
     rbac : ValuesGlobalRbac, optional
+        Set all pods to run in a user namespace without host access.
+        Experimental: may be removed once the Kubernetes User Namespaces feature is GA.
+
+        Requirements:
+          - Kubernetes ≥ 1.33, or
+          - Kubernetes 1.27–1.32 with UserNamespacesSupport feature gate enabled.
+
+        Set to false to run pods in a user namespace without host access.
+
+        See [limitations](https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/#limitations) for details.
+        +docs:property
+        hostUsers: false
     """
     [...str]: any
     commonLabels?: ValuesGlobalCommonLabels
     imagePullSecrets?: [any]
     leaderElection?: ValuesGlobalLeaderElection
     logLevel?: int
+    nodeSelector?: ValuesGlobalNodeSelector
     podSecurityPolicy?: ValuesGlobalPodSecurityPolicy
     priorityClassName?: str
     rbac?: ValuesGlobalRbac
@@ -883,6 +905,19 @@ schema ValuesGlobalLeaderElection:
     [...str]: any
     namespace?: str
 
+schema ValuesGlobalNodeSelector:
+    r"""
+    Global node selector
+
+    The nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with
+    matching labels.
+    For more information, see [Assigning Pods to Nodes](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/).
+
+    If a component-specific nodeSelector is also set, it will take precedence.
+    +docs:property
+    """
+    [...str]: any
+
 schema ValuesGlobalPodSecurityPolicy:
     r"""
     ValuesGlobalPodSecurityPolicy
@@ -902,7 +937,18 @@ schema ValuesGlobalPodSecurityPolicy:
 
 schema ValuesGlobalRbac:
     r"""
-    ValuesGlobalRbac
+    Set all pods to run in a user namespace without host access.
+    Experimental: may be removed once the Kubernetes User Namespaces feature is GA.
+
+    Requirements:
+      - Kubernetes ≥ 1.33, or
+      - Kubernetes 1.27–1.32 with UserNamespacesSupport feature gate enabled.
+
+    Set to false to run pods in a user namespace without host access.
+
+    See [limitations](https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/#limitations) for details.
+    +docs:property
+    hostUsers: false
 
     Attributes
     ----------
@@ -2037,7 +2083,7 @@ schema ValuesWebhookNetworkPolicyEgressItems0ToItems0IpBlock:
 
     Attributes
     ----------
-    cidr : str, optional, default is "0.0.0.0/0"
+    cidr : str, optional, default is "::/0"
     """
     [...str]: any
     cidr?: str
@@ -2070,7 +2116,7 @@ schema ValuesWebhookNetworkPolicyIngressItems0FromItems0IpBlock:
 
     Attributes
     ----------
-    cidr : str, optional, default is "0.0.0.0/0"
+    cidr : str, optional, default is "::/0"
     """
     [...str]: any
     cidr?: str

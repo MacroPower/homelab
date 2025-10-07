@@ -523,6 +523,13 @@
           "title": "logLevel",
           "type": "integer"
         },
+        "nodeSelector": {
+          "additionalProperties": true,
+          "description": "Global node selector\n\nThe nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with\nmatching labels.\nFor more information, see [Assigning Pods to Nodes](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/).\n\nIf a component-specific nodeSelector is also set, it will take precedence.\n+docs:property",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
         "podSecurityPolicy": {
           "additionalProperties": true,
           "properties": {
@@ -554,6 +561,7 @@
         },
         "rbac": {
           "additionalProperties": true,
+          "description": "Set all pods to run in a user namespace without host access.\nExperimental: may be removed once the Kubernetes User Namespaces feature is GA.\n\nRequirements:\n  - Kubernetes ≥ 1.33, or\n  - Kubernetes 1.27–1.32 with UserNamespacesSupport feature gate enabled.\n\nSet to false to run pods in a user namespace without host access.\n\nSee [limitations](https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/#limitations) for details.\n+docs:property\nhostUsers: false",
           "properties": {
             "aggregateClusterRoles": {
               "default": true,
@@ -1527,7 +1535,7 @@
                           "additionalProperties": true,
                           "properties": {
                             "cidr": {
-                              "default": "0.0.0.0/0",
+                              "default": "::/0",
                               "required": [],
                               "title": "cidr",
                               "type": "string"
@@ -1573,7 +1581,7 @@
                           "additionalProperties": true,
                           "properties": {
                             "cidr": {
-                              "default": "0.0.0.0/0",
+                              "default": "::/0",
                               "required": [],
                               "title": "cidr",
                               "type": "string"

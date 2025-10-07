@@ -101,15 +101,15 @@ schema AcmeCertManagerIoV1ChallengeSpecIssuerRef:
 
     Attributes
     ----------
-    group : str, default is Undefined, optional
-        Group of the resource being referred to.
-    kind : str, default is Undefined, optional
-        Kind of the resource being referred to.
+    group : str, default is "cert-manager.io", optional
+        Group of the issuer being referred to.
+    kind : str, default is "Issuer", optional
+        Kind of the issuer being referred to.
     name : str, default is Undefined, required
-        Name of the resource being referred to.
+        Name of the issuer being referred to.
     """
-    group?: str
-    kind?: str
+    group?: str = "cert-manager.io"
+    kind?: str = "Issuer"
     name: str
 
 schema AcmeCertManagerIoV1ChallengeSpecSolver:
@@ -490,6 +490,8 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverDns01Rfc2136:
         RFC2136 in the form host:port. If the host is an IPv6 address it must be
         enclosed in square brackets (e.g [2001:db8::1]) ; port is optional.
         This field is required.
+    $protocol : str, default is Undefined, optional
+        Protocol to use for dynamic DNS update queries. Valid values are (case-sensitive) ``TCP`` and ``UDP``; ``UDP`` (default).
     tsigAlgorithm : str, default is Undefined, optional
         The TSIG Algorithm configured in the DNS supporting RFC2136. Used only
         when ``tsigSecretSecretRef`` and ``tsigKeyName`` are defined.
@@ -503,6 +505,7 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverDns01Rfc2136:
     """
     nameserver: str
 
+    $protocol?: "TCP" | "UDP"
     tsigAlgorithm?: str
     tsigKeyName?: str
     tsigSecretSecretRef?: AcmeCertManagerIoV1ChallengeSpecSolverDns01Rfc2136TsigSecretSecretRef
@@ -932,6 +935,8 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSp
         More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
     priorityClassName : str, default is Undefined, optional
         If specified, the pod's priorityClassName.
+    resources : AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSpecResources, default is Undefined, optional
+        resources
     securityContext : AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSpecSecurityContext, default is Undefined, optional
         security context
     serviceAccountName : str, default is Undefined, optional
@@ -943,6 +948,7 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSp
     imagePullSecrets?: [AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSpecImagePullSecretsItems0]
     nodeSelector?: {str:str}
     priorityClassName?: str
+    resources?: AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSpecResources
     securityContext?: AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSpecSecurityContext
     serviceAccountName?: str
     tolerations?: [AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSpecTolerationsItems0]
@@ -1208,7 +1214,6 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSp
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -1218,7 +1223,6 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSp
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -1347,7 +1351,6 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSp
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -1357,7 +1360,6 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSp
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -1477,8 +1479,8 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSp
         most preferred is the one with the greatest sum of weights, i.e.
         for each node that meets all of the scheduling requirements (resource
         request, requiredDuringScheduling anti-affinity expressions, etc.),
-        compute a sum by iterating through the elements of this field and adding
-        "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the
+        compute a sum by iterating through the elements of this field and subtracting
+        "weight" from the sum if the node has pods which matches the corresponding podAffinityTerm; the
         node(s) with the highest sum are the most preferred.
     requiredDuringSchedulingIgnoredDuringExecution : [AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
         If the anti-affinity requirements specified by this field are not met at
@@ -1525,7 +1527,6 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSp
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -1535,7 +1536,6 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSp
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -1664,7 +1664,6 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSp
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -1674,7 +1673,6 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSp
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -1796,6 +1794,33 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSp
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
     """
     name?: str = ""
+
+schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSpecResources:
+    r"""
+    If specified, the pod's resource requirements.
+    These values override the global resource configuration flags.
+    Note that when only specifying resource limits, ensure they are greater than or equal
+    to the corresponding global resource requests configured via controller flags
+    (--acme-http01-solver-resource-request-cpu, --acme-http01-solver-resource-request-memory).
+    Kubernetes will reject pod creation if limits are lower than requests, causing challenge failures.
+
+    Attributes
+    ----------
+    limits : {str:int | str}, default is Undefined, optional
+        Limits describes the maximum amount of compute resources allowed.
+        More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+    requests : {str:int | str}, default is Undefined, optional
+        Requests describes the minimum amount of compute resources required.
+        If Requests is omitted for a container, it defaults to Limits if that is explicitly specified,
+        otherwise to the global values configured via controller flags. Requests cannot exceed Limits.
+        More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+    """
+    limits?: {str:int | str}
+    requests?: {str:int | str}
+
+    check:
+        all _, limits in limits {_regex_match(str(limits), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if limits} if limits
+        all _, requests in requests {_regex_match(str(requests), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if requests} if requests
 
 schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSpecSecurityContext:
     r"""
@@ -2086,6 +2111,8 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpec:
         More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
     priorityClassName : str, default is Undefined, optional
         If specified, the pod's priorityClassName.
+    resources : AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecResources, default is Undefined, optional
+        resources
     securityContext : AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecSecurityContext, default is Undefined, optional
         security context
     serviceAccountName : str, default is Undefined, optional
@@ -2097,6 +2124,7 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpec:
     imagePullSecrets?: [AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecImagePullSecretsItems0]
     nodeSelector?: {str:str}
     priorityClassName?: str
+    resources?: AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecResources
     securityContext?: AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecSecurityContext
     serviceAccountName?: str
     tolerations?: [AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecTolerationsItems0]
@@ -2362,7 +2390,6 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecAffinit
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -2372,7 +2399,6 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecAffinit
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -2501,7 +2527,6 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecAffinit
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -2511,7 +2536,6 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecAffinit
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -2631,8 +2655,8 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecAffinit
         most preferred is the one with the greatest sum of weights, i.e.
         for each node that meets all of the scheduling requirements (resource
         request, requiredDuringScheduling anti-affinity expressions, etc.),
-        compute a sum by iterating through the elements of this field and adding
-        "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the
+        compute a sum by iterating through the elements of this field and subtracting
+        "weight" from the sum if the node has pods which matches the corresponding podAffinityTerm; the
         node(s) with the highest sum are the most preferred.
     requiredDuringSchedulingIgnoredDuringExecution : [AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
         If the anti-affinity requirements specified by this field are not met at
@@ -2679,7 +2703,6 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecAffinit
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -2689,7 +2712,6 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecAffinit
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -2818,7 +2840,6 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecAffinit
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -2828,7 +2849,6 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecAffinit
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -2950,6 +2970,33 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecImagePu
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
     """
     name?: str = ""
+
+schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecResources:
+    r"""
+    If specified, the pod's resource requirements.
+    These values override the global resource configuration flags.
+    Note that when only specifying resource limits, ensure they are greater than or equal
+    to the corresponding global resource requests configured via controller flags
+    (--acme-http01-solver-resource-request-cpu, --acme-http01-solver-resource-request-memory).
+    Kubernetes will reject pod creation if limits are lower than requests, causing challenge failures.
+
+    Attributes
+    ----------
+    limits : {str:int | str}, default is Undefined, optional
+        Limits describes the maximum amount of compute resources allowed.
+        More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+    requests : {str:int | str}, default is Undefined, optional
+        Requests describes the minimum amount of compute resources required.
+        If Requests is omitted for a container, it defaults to Limits if that is explicitly specified,
+        otherwise to the global values configured via controller flags. Requests cannot exceed Limits.
+        More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+    """
+    limits?: {str:int | str}
+    requests?: {str:int | str}
+
+    check:
+        all _, limits in limits {_regex_match(str(limits), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if limits} if limits
+        all _, requests in requests {_regex_match(str(requests), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if requests} if requests
 
 schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecSecurityContext:
     r"""

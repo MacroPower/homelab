@@ -14,12 +14,12 @@ schema Chart(helm.Chart):
     values : Values | any, optional, default is {crds = {enabled = True}}
     chart : str, required, default is "cert-manager"
     repoURL : str, required, default is "https://charts.jetstack.io"
-    targetRevision : str, optional, default is "v1.18.2"
+    targetRevision : str, optional, default is "v1.19.0"
     """
     values?: Values | any = {
         crds = {enabled = True}
     }
     chart: str = "cert-manager"
     repoURL: str = "https://charts.jetstack.io"
-    targetRevision?: str = "v1.18.2"
+    targetRevision?: str = "v1.19.0"
 
