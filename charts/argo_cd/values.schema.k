@@ -5613,7 +5613,7 @@ schema ValuesRedisExporterImage:
         Image pull policy for the redis-exporter
     repository : str, optional, default is "ghcr.io/oliver006/redis_exporter"
         Repository to use for the redis-exporter
-    tag : str, optional, default is "v1.77.0"
+    tag : str, optional, default is "v1.78.0"
         Tag to use for the redis-exporter
     """
     [...str]: any
