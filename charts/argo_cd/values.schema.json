@@ -6881,7 +6881,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.77.0",
+                  "default": "v1.78.0",
                   "description": "Tag to use for the redis-exporter",
                   "required": [],
                   "title": "tag",
