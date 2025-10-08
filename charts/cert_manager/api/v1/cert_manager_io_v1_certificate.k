@@ -216,15 +216,15 @@ schema CertManagerIoV1CertificateSpecIssuerRef:
 
     Attributes
     ----------
-    group : str, default is Undefined, optional
-        Group of the resource being referred to.
-    kind : str, default is Undefined, optional
-        Kind of the resource being referred to.
+    group : str, default is "cert-manager.io", optional
+        Group of the issuer being referred to.
+    kind : str, default is "Issuer", optional
+        Kind of the issuer being referred to.
     name : str, default is Undefined, required
-        Name of the resource being referred to.
+        Name of the issuer being referred to.
     """
-    group?: str
-    kind?: str
+    group?: str = "cert-manager.io"
+    kind?: str = "Issuer"
     name: str
 
 schema CertManagerIoV1CertificateSpecKeystores:

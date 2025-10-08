@@ -74,7 +74,7 @@ charts: helm.Charts = {
     cert_manager: {
         chart = "cert-manager"
         repoURL = "https://charts.jetstack.io"
-        targetRevision = "v1.18.2"
+        targetRevision = "v1.19.0"
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
         values: {
