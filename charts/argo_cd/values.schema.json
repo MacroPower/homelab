@@ -7051,7 +7051,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "7.2.8-alpine",
+              "default": "7.2.11-alpine",
               "description": "Redis tag\n# Do not upgrade to \u003e= 7.4.0, otherwise you are no longer using an open source version of Redis",
               "required": [],
               "title": "tag",
@@ -7931,7 +7931,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "7.2.8-alpine",
+              "default": "7.2.11-alpine",
               "description": "Redis tag\n# Do not upgrade to \u003e= 7.4.0, otherwise you are no longer using an open source version of Redis",
               "required": [],
               "title": "tag",

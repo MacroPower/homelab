@@ -5864,7 +5864,7 @@ schema ValuesRedisHaImage:
     ----------
     repository : str, optional, default is "ecr-public.aws.com/docker/library/redis"
         Redis repository
-    tag : str, optional, default is "7.2.8-alpine"
+    tag : str, optional, default is "7.2.11-alpine"
         Redis tag
         # Do not upgrade to >= 7.4.0, otherwise you are no longer using an open source version of Redis
     """
@@ -5943,7 +5943,7 @@ schema ValuesRedisImage:
         Redis image pull policy
     repository : str, optional, default is "ecr-public.aws.com/docker/library/redis"
         Redis repository
-    tag : str, optional, default is "7.2.8-alpine"
+    tag : str, optional, default is "7.2.11-alpine"
         Redis tag
         # Do not upgrade to >= 7.4.0, otherwise you are no longer using an open source version of Redis
     """
