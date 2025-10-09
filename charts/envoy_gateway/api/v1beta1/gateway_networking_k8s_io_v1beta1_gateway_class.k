@@ -144,7 +144,7 @@ schema GatewayNetworkingK8sIoV1beta1GatewayClassStatus:
 
     Attributes
     ----------
-    conditions : [GatewayNetworkingK8sIoV1beta1GatewayClassStatusConditionsItems0], default is [{"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted"}], optional
+    conditions : [GatewayNetworkingK8sIoV1beta1GatewayClassStatusConditionsItems0], default is [{"reason": "Pending", "status": "Unknown", "type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller"}], optional
         Conditions is the current status from the controller for
         this GatewayClass.
 
