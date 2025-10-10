@@ -9714,6 +9714,52 @@
           "title": "autoscaling",
           "type": "object"
         },
+        "backendTLSPolicy": {
+          "additionalProperties": true,
+          "description": "Gateway API BackendTLSPolicy configuration\nNOTE: BackendTLSPolicy is in EXPERIMENTAL status (v1alpha3)\nRequired for HTTPS backends when using Gateway API\nNot all Gateway controllers support this resource (e.g., Cilium does not support it yet)",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Additional BackendTLSPolicy annotations",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable BackendTLSPolicy resource for Argo CD server (Gateway API)",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Additional BackendTLSPolicy labels",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "targetRefs": {
+              "description": "Target references for the BackendTLSPolicy",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "targetRefs",
+              "type": "array"
+            },
+            "validation": {
+              "additionalProperties": true,
+              "description": "- group: \"\"\n  kind: Service\n  name: argocd-server\n  sectionName: https\nTLS validation configuration",
+              "required": [],
+              "title": "validation",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "backendTLSPolicy",
+          "type": "object"
+        },
         "certificate": {
           "additionalProperties": true,
           "description": "TLS certificate configuration via cert-manager\n# Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/tls/#tls-certificates-used-by-argocd-server",
@@ -10213,12 +10259,192 @@
           "title": "extraContainers",
           "type": "array"
         },
+        "grpcroute": {
+          "additionalProperties": true,
+          "description": "Gateway API GRPCRoute configuration\nNOTE: Gateway API support is in EXPERIMENTAL status\nSupport depends on your Gateway controller implementation\nRefer to https://gateway-api.sigs.k8s.io/implementations/ for controller-specific details",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Additional GRPCRoute annotations",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable GRPCRoute resource for Argo CD server (Gateway API)",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "hostnames": {
+              "description": "- name: example-gateway\n  namespace: example-gateway-namespace\n  sectionName: grpc\nList of hostnames for the GRPCRoute",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "hostnames",
+              "type": "array"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Additional GRPCRoute labels",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "parentRefs": {
+              "description": "Gateway API parentRefs for the GRPCRoute\n# Must reference an existing Gateway",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "parentRefs",
+              "type": "array"
+            },
+            "rules": {
+              "description": "- grpc.argocd.example.com\nGRPCRoute rules configuration",
+              "items": {
+                "additionalProperties": true,
+                "properties": {
+                  "matches": {
+                    "items": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "method": {
+                          "additionalProperties": true,
+                          "properties": {
+                            "type": {
+                              "default": "Exact",
+                              "required": [],
+                              "title": "type",
+                              "type": "string"
+                            }
+                          },
+                          "required": [],
+                          "title": "method",
+                          "type": "object"
+                        }
+                      },
+                      "required": [],
+                      "type": "object"
+                    },
+                    "required": [],
+                    "title": "matches",
+                    "type": "array"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "title": "rules",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "grpcroute",
+          "type": "object"
+        },
         "hostNetwork": {
           "default": false,
           "description": "Host Network for Server pods",
           "required": [],
           "title": "hostNetwork",
           "type": "boolean"
+        },
+        "httproute": {
+          "additionalProperties": true,
+          "description": "Gateway API HTTPRoute configuration\nNOTE: Gateway API support is in EXPERIMENTAL status\nSupport depends on your Gateway controller implementation\nSome controllers may require additional configuration (e.g., BackendTLSPolicy for HTTPS backends)\nRefer to https://gateway-api.sigs.k8s.io/implementations/ for controller-specific details",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Additional HTTPRoute annotations",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable HTTPRoute resource for Argo CD server (Gateway API)",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "hostnames": {
+              "description": "- name: example-gateway\n  namespace: example-gateway-namespace\n  sectionName: https\nList of hostnames for the HTTPRoute",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "hostnames",
+              "type": "array"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Additional HTTPRoute labels",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "parentRefs": {
+              "description": "Gateway API parentRefs for the HTTPRoute\n# Must reference an existing Gateway",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "parentRefs",
+              "type": "array"
+            },
+            "rules": {
+              "description": "- argocd.example.com\nHTTPRoute rules configuration",
+              "items": {
+                "additionalProperties": true,
+                "properties": {
+                  "matches": {
+                    "items": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "path": {
+                          "additionalProperties": true,
+                          "properties": {
+                            "type": {
+                              "default": "PathPrefix",
+                              "required": [],
+                              "title": "type",
+                              "type": "string"
+                            },
+                            "value": {
+                              "default": "/",
+                              "required": [],
+                              "title": "value",
+                              "type": "string"
+                            }
+                          },
+                          "required": [],
+                          "title": "path",
+                          "type": "object"
+                        }
+                      },
+                      "required": [],
+                      "type": "object"
+                    },
+                    "required": [],
+                    "title": "matches",
+                    "type": "array"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "title": "rules",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "httproute",
+          "type": "object"
         },
         "image": {
           "additionalProperties": true,
