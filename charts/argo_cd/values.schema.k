@@ -7560,6 +7560,11 @@ schema ValuesServer:
         Automount API credentials for the Service Account into the pod.
     autoscaling : ValuesServerAutoscaling, optional
         # Argo CD server Horizontal Pod Autoscaler
+    backendTLSPolicy : ValuesServerBackendTlspolicy, optional
+        Gateway API BackendTLSPolicy configuration
+        NOTE: BackendTLSPolicy is in EXPERIMENTAL status (v1alpha3)
+        Required for HTTPS backends when using Gateway API
+        Not all Gateway controllers support this resource (e.g., Cilium does not support it yet)
     certificate : ValuesServerCertificate, optional
         TLS certificate configuration via cert-manager
         # Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/tls/#tls-certificates-used-by-argocd-server
@@ -7600,8 +7605,19 @@ schema ValuesServer:
     extraContainers : [any], optional
         Additional containers to be added to the server pod
         # Note: Supports use of custom Helm templates
+    grpcroute : ValuesServerGrpcroute, optional
+        Gateway API GRPCRoute configuration
+        NOTE: Gateway API support is in EXPERIMENTAL status
+        Support depends on your Gateway controller implementation
+        Refer to https://gateway-api.sigs.k8s.io/implementations/ for controller-specific details
     hostNetwork : bool, optional, default is False
         Host Network for Server pods
+    httproute : ValuesServerHttproute, optional
+        Gateway API HTTPRoute configuration
+        NOTE: Gateway API support is in EXPERIMENTAL status
+        Support depends on your Gateway controller implementation
+        Some controllers may require additional configuration (e.g., BackendTLSPolicy for HTTPS backends)
+        Refer to https://gateway-api.sigs.k8s.io/implementations/ for controller-specific details
     image : ValuesServerImage, optional
         # Argo CD server image
     imagePullSecrets : [any], optional
@@ -7670,6 +7686,7 @@ schema ValuesServer:
     affinity?: ValuesServerAffinity
     automountServiceAccountToken?: bool
     autoscaling?: ValuesServerAutoscaling
+    backendTLSPolicy?: ValuesServerBackendTlspolicy
     certificate?: ValuesServerCertificate
     certificateSecret?: ValuesServerCertificateSecret
     clusterRoleRules?: ValuesServerClusterRoleRules
@@ -7686,7 +7703,9 @@ schema ValuesServer:
     extensions?: ValuesServerExtensions
     extraArgs?: [any]
     extraContainers?: [any]
+    grpcroute?: ValuesServerGrpcroute
     hostNetwork?: bool
+    httproute?: ValuesServerHttproute
     image?: ValuesServerImage
     imagePullSecrets?: [any]
     ingress?: ValuesServerIngress
@@ -7767,6 +7786,59 @@ schema ValuesServerAutoscaling:
 schema ValuesServerAutoscalingBehavior:
     r"""
     Configures the scaling behavior of the target in both Up and Down directions.
+    """
+    [...str]: any
+
+schema ValuesServerBackendTlspolicy:
+    r"""
+    Gateway API BackendTLSPolicy configuration
+    NOTE: BackendTLSPolicy is in EXPERIMENTAL status (v1alpha3)
+    Required for HTTPS backends when using Gateway API
+    Not all Gateway controllers support this resource (e.g., Cilium does not support it yet)
+
+    Attributes
+    ----------
+    annotations : ValuesServerBackendTlspolicyAnnotations, optional
+        Additional BackendTLSPolicy annotations
+    enabled : bool, optional, default is False
+        Enable BackendTLSPolicy resource for Argo CD server (Gateway API)
+    labels : ValuesServerBackendTlspolicyLabels, optional
+        Additional BackendTLSPolicy labels
+    targetRefs : [any], optional
+        Target references for the BackendTLSPolicy
+    validation : ValuesServerBackendTlspolicyValidation, optional
+        - group: ""
+          kind: Service
+          name: argocd-server
+          sectionName: https
+        TLS validation configuration
+    """
+    [...str]: any
+    annotations?: ValuesServerBackendTlspolicyAnnotations
+    enabled?: bool
+    labels?: ValuesServerBackendTlspolicyLabels
+    targetRefs?: [any]
+    validation?: ValuesServerBackendTlspolicyValidation
+
+schema ValuesServerBackendTlspolicyAnnotations:
+    r"""
+    Additional BackendTLSPolicy annotations
+    """
+    [...str]: any
+
+schema ValuesServerBackendTlspolicyLabels:
+    r"""
+    Additional BackendTLSPolicy labels
+    """
+    [...str]: any
+
+schema ValuesServerBackendTlspolicyValidation:
+    r"""
+    - group: ""
+      kind: Service
+      name: argocd-server
+      sectionName: https
+    TLS validation configuration
     """
     [...str]: any
 
@@ -8106,6 +8178,169 @@ schema ValuesServerExtensionsResources:
     Resource limits and requests for the argocd-extensions container
     """
     [...str]: any
+
+schema ValuesServerGrpcroute:
+    r"""
+    Gateway API GRPCRoute configuration
+    NOTE: Gateway API support is in EXPERIMENTAL status
+    Support depends on your Gateway controller implementation
+    Refer to https://gateway-api.sigs.k8s.io/implementations/ for controller-specific details
+
+    Attributes
+    ----------
+    annotations : ValuesServerGrpcrouteAnnotations, optional
+        Additional GRPCRoute annotations
+    enabled : bool, optional, default is False
+        Enable GRPCRoute resource for Argo CD server (Gateway API)
+    hostnames : [any], optional
+        - name: example-gateway
+          namespace: example-gateway-namespace
+          sectionName: grpc
+        List of hostnames for the GRPCRoute
+    labels : ValuesServerGrpcrouteLabels, optional
+        Additional GRPCRoute labels
+    parentRefs : [any], optional
+        Gateway API parentRefs for the GRPCRoute
+        # Must reference an existing Gateway
+    rules : [ValuesServerGrpcrouteRulesItems0], optional
+        - grpc.argocd.example.com
+        GRPCRoute rules configuration
+    """
+    [...str]: any
+    annotations?: ValuesServerGrpcrouteAnnotations
+    enabled?: bool
+    hostnames?: [any]
+    labels?: ValuesServerGrpcrouteLabels
+    parentRefs?: [any]
+    rules?: [ValuesServerGrpcrouteRulesItems0]
+
+schema ValuesServerGrpcrouteAnnotations:
+    r"""
+    Additional GRPCRoute annotations
+    """
+    [...str]: any
+
+schema ValuesServerGrpcrouteLabels:
+    r"""
+    Additional GRPCRoute labels
+    """
+    [...str]: any
+
+schema ValuesServerGrpcrouteRulesItems0:
+    r"""
+    ValuesServerGrpcrouteRulesItems0
+
+    Attributes
+    ----------
+    matches : [ValuesServerGrpcrouteRulesItems0MatchesItems0], optional
+    """
+    [...str]: any
+    matches?: [ValuesServerGrpcrouteRulesItems0MatchesItems0]
+
+schema ValuesServerGrpcrouteRulesItems0MatchesItems0:
+    r"""
+    ValuesServerGrpcrouteRulesItems0MatchesItems0
+
+    Attributes
+    ----------
+    method : ValuesServerGrpcrouteRulesItems0MatchesItems0Method, optional
+    """
+    [...str]: any
+    method?: ValuesServerGrpcrouteRulesItems0MatchesItems0Method
+
+schema ValuesServerGrpcrouteRulesItems0MatchesItems0Method:
+    r"""
+    ValuesServerGrpcrouteRulesItems0MatchesItems0Method
+
+    Attributes
+    ----------
+    $type : str, optional, default is "Exact"
+    """
+    [...str]: any
+    $type?: str
+
+schema ValuesServerHttproute:
+    r"""
+    Gateway API HTTPRoute configuration
+    NOTE: Gateway API support is in EXPERIMENTAL status
+    Support depends on your Gateway controller implementation
+    Some controllers may require additional configuration (e.g., BackendTLSPolicy for HTTPS backends)
+    Refer to https://gateway-api.sigs.k8s.io/implementations/ for controller-specific details
+
+    Attributes
+    ----------
+    annotations : ValuesServerHttprouteAnnotations, optional
+        Additional HTTPRoute annotations
+    enabled : bool, optional, default is False
+        Enable HTTPRoute resource for Argo CD server (Gateway API)
+    hostnames : [any], optional
+        - name: example-gateway
+          namespace: example-gateway-namespace
+          sectionName: https
+        List of hostnames for the HTTPRoute
+    labels : ValuesServerHttprouteLabels, optional
+        Additional HTTPRoute labels
+    parentRefs : [any], optional
+        Gateway API parentRefs for the HTTPRoute
+        # Must reference an existing Gateway
+    rules : [ValuesServerHttprouteRulesItems0], optional
+        - argocd.example.com
+        HTTPRoute rules configuration
+    """
+    [...str]: any
+    annotations?: ValuesServerHttprouteAnnotations
+    enabled?: bool
+    hostnames?: [any]
+    labels?: ValuesServerHttprouteLabels
+    parentRefs?: [any]
+    rules?: [ValuesServerHttprouteRulesItems0]
+
+schema ValuesServerHttprouteAnnotations:
+    r"""
+    Additional HTTPRoute annotations
+    """
+    [...str]: any
+
+schema ValuesServerHttprouteLabels:
+    r"""
+    Additional HTTPRoute labels
+    """
+    [...str]: any
+
+schema ValuesServerHttprouteRulesItems0:
+    r"""
+    ValuesServerHttprouteRulesItems0
+
+    Attributes
+    ----------
+    matches : [ValuesServerHttprouteRulesItems0MatchesItems0], optional
+    """
+    [...str]: any
+    matches?: [ValuesServerHttprouteRulesItems0MatchesItems0]
+
+schema ValuesServerHttprouteRulesItems0MatchesItems0:
+    r"""
+    ValuesServerHttprouteRulesItems0MatchesItems0
+
+    Attributes
+    ----------
+    path : ValuesServerHttprouteRulesItems0MatchesItems0Path, optional
+    """
+    [...str]: any
+    path?: ValuesServerHttprouteRulesItems0MatchesItems0Path
+
+schema ValuesServerHttprouteRulesItems0MatchesItems0Path:
+    r"""
+    ValuesServerHttprouteRulesItems0MatchesItems0Path
+
+    Attributes
+    ----------
+    $type : str, optional, default is "PathPrefix"
+    value : str, optional, default is "/"
+    """
+    [...str]: any
+    $type?: str
+    value?: str
 
 schema ValuesServerImage:
     r"""
