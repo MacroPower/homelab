@@ -24,7 +24,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/raydak-labs/configarr
-          tag: "1.17.0"
+          tag: "1.17.1"
         env:
           SONARR_AUTH_APIKEY:
             valueFrom:
