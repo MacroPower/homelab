@@ -38,13 +38,13 @@ schema PrometheusAgent:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
     r"""
-    Specification of the desired behavior of the Prometheus agent. More info:
+    spec defines the specification of the desired behavior of the Prometheus agent. More info:
     https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
 
     Attributes
     ----------
     additionalArgs : [MonitoringCoreosComV1alpha1PrometheusAgentSpecAdditionalArgsItems0], default is Undefined, optional
-        AdditionalArgs allows setting additional arguments for the 'prometheus' container.
+        additionalArgs allows setting additional arguments for the 'prometheus' container.
 
         It is intended for e.g. activating hidden flags which are not supported by
         the dedicated configuration options yet. The arguments are passed as-is to the
@@ -63,24 +63,24 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
     arbitraryFSAccessThroughSMs : MonitoringCoreosComV1alpha1PrometheusAgentSpecArbitraryFSAccessThroughSMs, default is Undefined, optional
         arbitrary f s access through s ms
     automountServiceAccountToken : bool, default is Undefined, optional
-        AutomountServiceAccountToken indicates whether a service account token should be automatically mounted in the pod.
+        automountServiceAccountToken defines whether a service account token should be automatically mounted in the pod.
         If the field isn't set, the operator mounts the service account token by default.
 
         **Warning:** be aware that by default, Prometheus requires the service account token for Kubernetes service discovery.
         It is possible to use strategic merge patch to project the service account token into the 'prometheus' container.
     bodySizeLimit : str, default is Undefined, optional
-        BodySizeLimit defines per-scrape on response body size.
+        bodySizeLimit defines per-scrape on response body size.
         Only valid in Prometheus versions 2.45.0 and newer.
 
         Note that the global limit only applies to scrape objects that don't specify an explicit limit value.
         If you want to enforce a maximum limit for all scrape objects, refer to enforcedBodySizeLimit.
     configMaps : [str], default is Undefined, optional
-        ConfigMaps is a list of ConfigMaps in the same namespace as the Prometheus
+        configMaps defines a list of ConfigMaps in the same namespace as the Prometheus
         object, which shall be mounted into the Prometheus Pods.
         Each ConfigMap is added to the StatefulSet definition as a volume named `configmap-<configmap-name>`.
         The ConfigMaps are mounted into /etc/prometheus/configmaps/<configmap-name> in the 'prometheus' container.
     containers : [MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0], default is Undefined, optional
-        Containers allows injecting additional containers or modifying operator
+        containers allows injecting additional containers or modifying operator
         generated containers. This can be used to allow adding an authentication
         proxy to the Pods or to change the behavior of an operator generated
         container. Containers described here modify an operator generated
@@ -96,16 +96,16 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
         maintainers will support and by doing so, you accept that this behaviour
         may break at any time without notice.
     convertClassicHistogramsToNHCB : bool, default is Undefined, optional
-        Whether to convert all scraped classic histograms into a native
+        convertClassicHistogramsToNHCB defines whether to convert all scraped classic histograms into a native
         histogram with custom buckets.
 
         It requires Prometheus >= v3.4.0.
     dnsConfig : MonitoringCoreosComV1alpha1PrometheusAgentSpecDNSConfig, default is Undefined, optional
         dns config
     dnsPolicy : str, default is Undefined, optional
-        Defines the DNS policy for the pods.
+        dnsPolicy defines the DNS policy for the pods.
     enableFeatures : [str], default is Undefined, optional
-        Enable access to Prometheus feature flags. By default, no features are enabled.
+        enableFeatures enables access to Prometheus feature flags. By default, no features are enabled.
 
         Enabling features which are disabled by default is entirely outside the
         scope of what the maintainers will support and by doing so, you accept
@@ -113,13 +113,13 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
 
         For more information see https://prometheus.io/docs/prometheus/latest/feature_flags/
     enableOTLPReceiver : bool, default is Undefined, optional
-        Enable Prometheus to be used as a receiver for the OTLP Metrics protocol.
+        enableOTLPReceiver defines the Prometheus to be used as a receiver for the OTLP Metrics protocol.
 
         Note that the OTLP receiver endpoint is automatically enabled if `.spec.otlpConfig` is defined.
 
         It requires Prometheus >= v2.47.0.
     enableRemoteWriteReceiver : bool, default is Undefined, optional
-        Enable Prometheus to be used as a receiver for the Prometheus remote
+        enableRemoteWriteReceiver defines the Prometheus to be used as a receiver for the Prometheus remote
         write protocol.
 
         WARNING: This is not considered an efficient way of ingesting samples.
@@ -130,9 +130,9 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
 
         It requires Prometheus >= v2.33.0.
     enableServiceLinks : bool, default is Undefined, optional
-        Indicates whether information about services should be injected into pod's environment variables
+        enableServiceLinks defines whether information about services should be injected into pod's environment variables
     enforcedBodySizeLimit : str, default is Undefined, optional
-        When defined, enforcedBodySizeLimit specifies a global limit on the size
+        enforcedBodySizeLimit when defined specifies a global limit on the size
         of uncompressed response body that will be accepted by Prometheus.
         Targets responding with a body larger than this many bytes will cause
         the scrape to fail.
@@ -145,7 +145,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
         * Scrape objects with a bodySizeLimit value less than or equal to enforcedBodySizeLimit keep their specific value.
         * Scrape objects with a bodySizeLimit value greater than enforcedBodySizeLimit are set to enforcedBodySizeLimit.
     enforcedKeepDroppedTargets : int, default is Undefined, optional
-        When defined, enforcedKeepDroppedTargets specifies a global limit on the number of targets
+        enforcedKeepDroppedTargets when defined specifies a global limit on the number of targets
         dropped by relabeling that will be kept in memory. The value overrides
         any `spec.keepDroppedTargets` set by
         ServiceMonitor, PodMonitor, Probe objects unless `spec.keepDroppedTargets` is
@@ -159,7 +159,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
         * Scrape objects with a keepDroppedTargets value less than or equal to enforcedKeepDroppedTargets keep their specific value.
         * Scrape objects with a keepDroppedTargets value greater than enforcedKeepDroppedTargets are set to enforcedKeepDroppedTargets.
     enforcedLabelLimit : int, default is Undefined, optional
-        When defined, enforcedLabelLimit specifies a global limit on the number
+        enforcedLabelLimit when defined specifies a global limit on the number
         of labels per sample. The value overrides any `spec.labelLimit` set by
         ServiceMonitor, PodMonitor, Probe objects unless `spec.labelLimit` is
         greater than zero and less than `spec.enforcedLabelLimit`.
@@ -172,7 +172,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
         * Scrape objects with a labelLimit value less than or equal to enforcedLabelLimit keep their specific value.
         * Scrape objects with a labelLimit value greater than enforcedLabelLimit are set to enforcedLabelLimit.
     enforcedLabelNameLengthLimit : int, default is Undefined, optional
-        When defined, enforcedLabelNameLengthLimit specifies a global limit on the length
+        enforcedLabelNameLengthLimit when defined specifies a global limit on the length
         of labels name per sample. The value overrides any `spec.labelNameLengthLimit` set by
         ServiceMonitor, PodMonitor, Probe objects unless `spec.labelNameLengthLimit` is
         greater than zero and less than `spec.enforcedLabelNameLengthLimit`.
@@ -185,7 +185,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
         * Scrape objects with a labelNameLengthLimit value less than or equal to enforcedLabelNameLengthLimit keep their specific value.
         * Scrape objects with a labelNameLengthLimit value greater than enforcedLabelNameLengthLimit are set to enforcedLabelNameLengthLimit.
     enforcedLabelValueLengthLimit : int, default is Undefined, optional
-        When not null, enforcedLabelValueLengthLimit defines a global limit on the length
+        enforcedLabelValueLengthLimit when not null defines a global limit on the length
         of labels value per sample. The value overrides any `spec.labelValueLengthLimit` set by
         ServiceMonitor, PodMonitor, Probe objects unless `spec.labelValueLengthLimit` is
         greater than zero and less than `spec.enforcedLabelValueLengthLimit`.
@@ -198,7 +198,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
         * Scrape objects with a labelValueLengthLimit value less than or equal to enforcedLabelValueLengthLimit keep their specific value.
         * Scrape objects with a labelValueLengthLimit value greater than enforcedLabelValueLengthLimit are set to enforcedLabelValueLengthLimit.
     enforcedNamespaceLabel : str, default is Undefined, optional
-        When not empty, a label will be added to:
+        enforcedNamespaceLabel when not empty, a label will be added to:
 
         1. All metrics scraped from `ServiceMonitor`, `PodMonitor`, `Probe` and `ScrapeConfig` objects.
         2. All metrics generated from recording rules defined in `PrometheusRule` objects.
@@ -211,7 +211,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
         The label's value is the namespace of the `ServiceMonitor`,
         `PodMonitor`, `Probe`, `PrometheusRule` or `ScrapeConfig` object.
     enforcedSampleLimit : int, default is Undefined, optional
-        When defined, enforcedSampleLimit specifies a global limit on the number
+        enforcedSampleLimit when defined specifies a global limit on the number
         of scraped samples that will be accepted. This overrides any
         `spec.sampleLimit` set by ServiceMonitor, PodMonitor, Probe objects
         unless `spec.sampleLimit` is greater than zero and less than
@@ -226,7 +226,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
         * Scrape objects with a sampleLimit value less than or equal to enforcedSampleLimit keep their specific value.
         * Scrape objects with a sampleLimit value greater than enforcedSampleLimit are set to enforcedSampleLimit.
     enforcedTargetLimit : int, default is Undefined, optional
-        When defined, enforcedTargetLimit specifies a global limit on the number
+        enforcedTargetLimit when defined specifies a global limit on the number
         of scraped targets. The value overrides any `spec.targetLimit` set by
         ServiceMonitor, PodMonitor, Probe objects unless `spec.targetLimit` is
         greater than zero and less than `spec.enforcedTargetLimit`.
@@ -240,24 +240,24 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
         * Scrape objects with a targetLimit value less than or equal to enforcedTargetLimit keep their specific value.
         * Scrape objects with a targetLimit value greater than enforcedTargetLimit are set to enforcedTargetLimit.
     excludedFromEnforcement : [MonitoringCoreosComV1alpha1PrometheusAgentSpecExcludedFromEnforcementItems0], default is Undefined, optional
-        List of references to PodMonitor, ServiceMonitor, Probe and PrometheusRule objects
+        excludedFromEnforcement defines the list of references to PodMonitor, ServiceMonitor, Probe and PrometheusRule objects
         to be excluded from enforcing a namespace label of origin.
 
         It is only applicable if `spec.enforcedNamespaceLabel` set to true.
     externalLabels : {str:str}, default is Undefined, optional
-        The labels to add to any time series or alerts when communicating with
+        externalLabels defines the labels to add to any time series or alerts when communicating with
         external systems (federation, remote storage, Alertmanager).
         Labels defined by `spec.replicaExternalLabelName` and
         `spec.prometheusExternalLabelName` take precedence over this list.
     externalUrl : str, default is Undefined, optional
-        The external URL under which the Prometheus service is externally
+        externalUrl defines the external URL under which the Prometheus service is externally
         available. This is necessary to generate correct URLs (for instance if
         Prometheus is accessible behind an Ingress resource).
     hostAliases : [MonitoringCoreosComV1alpha1PrometheusAgentSpecHostAliasesItems0], default is Undefined, optional
-        Optional list of hosts and IPs that will be injected into the Pod's
+        hostAliases defines the optional list of hosts and IPs that will be injected into the Pod's
         hosts file if specified.
     hostNetwork : bool, default is Undefined, optional
-        Use the host's network namespace if true.
+        hostNetwork defines the host's network namespace if true.
 
         Make sure to understand the security implications if you want to enable
         it (https://kubernetes.io/docs/concepts/configuration/overview/ ).
@@ -266,19 +266,19 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
         `ClusterFirstWithHostNet` automatically (unless `.spec.DNSPolicy` is set
         to a different value).
     hostUsers : bool, default is Undefined, optional
-        HostUsers supports the user space in Kubernetes.
+        hostUsers supports the user space in Kubernetes.
 
         More info: https://kubernetes.io/docs/tasks/configure-pod-container/user-namespaces/
 
         The feature requires at least Kubernetes 1.28 with the `UserNamespacesSupport` feature gate enabled.
         Starting Kubernetes 1.33, the feature is enabled by default.
     ignoreNamespaceSelectors : bool, default is Undefined, optional
-        When true, `spec.namespaceSelector` from all PodMonitor, ServiceMonitor
+        ignoreNamespaceSelectors when true, `spec.namespaceSelector` from all PodMonitor, ServiceMonitor
         and Probe objects will be ignored. They will only discover targets
         within the namespace of the PodMonitor, ServiceMonitor and Probe
         object.
     image : str, default is Undefined, optional
-        Container image name for Prometheus. If specified, it takes precedence
+        image defines the container image name for Prometheus. If specified, it takes precedence
         over the `spec.baseImage`, `spec.tag` and `spec.sha` fields.
 
         Specifying `spec.version` is still necessary to ensure the Prometheus
@@ -288,14 +288,14 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
         will use the latest upstream version of Prometheus available at the time
         when the operator was released.
     imagePullPolicy : str, default is Undefined, optional
-        Image pull policy for the 'prometheus', 'init-config-reloader' and 'config-reloader' containers.
+        imagePullPolicy defines the image pull policy for the 'prometheus', 'init-config-reloader' and 'config-reloader' containers.
         See https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy for more details.
     imagePullSecrets : [MonitoringCoreosComV1alpha1PrometheusAgentSpecImagePullSecretsItems0], default is Undefined, optional
-        An optional list of references to Secrets in the same namespace
+        imagePullSecrets defines an optional list of references to Secrets in the same namespace
         to use for pulling images from registries.
         See http://kubernetes.io/docs/user-guide/images#specifying-imagepullsecrets-on-a-pod
     initContainers : [MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0], default is Undefined, optional
-        InitContainers allows injecting initContainers to the Pod definition. Those
+        initContainers allows injecting initContainers to the Pod definition. Those
         can be used to e.g.  fetch secrets for injection into the Prometheus
         configuration from external sources. Any errors during the execution of
         an initContainer will lead to a restart of the Pod. More info:
@@ -311,7 +311,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
         maintainers will support and by doing so, you accept that this behaviour
         may break at any time without notice.
     keepDroppedTargets : int, default is Undefined, optional
-        Per-scrape limit on the number of targets dropped by relabeling
+        keepDroppedTargets defines the per-scrape limit on the number of targets dropped by relabeling
         that will be kept in memory. 0 means no limit.
 
         It requires Prometheus >= v2.47.0.
@@ -319,68 +319,68 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
         Note that the global limit only applies to scrape objects that don't specify an explicit limit value.
         If you want to enforce a maximum limit for all scrape objects, refer to enforcedKeepDroppedTargets.
     labelLimit : int, default is Undefined, optional
-        Per-scrape limit on number of labels that will be accepted for a sample.
+        labelLimit defines per-scrape limit on number of labels that will be accepted for a sample.
         Only valid in Prometheus versions 2.45.0 and newer.
 
         Note that the global limit only applies to scrape objects that don't specify an explicit limit value.
         If you want to enforce a maximum limit for all scrape objects, refer to enforcedLabelLimit.
     labelNameLengthLimit : int, default is Undefined, optional
-        Per-scrape limit on length of labels name that will be accepted for a sample.
+        labelNameLengthLimit defines the per-scrape limit on length of labels name that will be accepted for a sample.
         Only valid in Prometheus versions 2.45.0 and newer.
 
         Note that the global limit only applies to scrape objects that don't specify an explicit limit value.
         If you want to enforce a maximum limit for all scrape objects, refer to enforcedLabelNameLengthLimit.
     labelValueLengthLimit : int, default is Undefined, optional
-        Per-scrape limit on length of labels value that will be accepted for a sample.
+        labelValueLengthLimit defines the per-scrape limit on length of labels value that will be accepted for a sample.
         Only valid in Prometheus versions 2.45.0 and newer.
 
         Note that the global limit only applies to scrape objects that don't specify an explicit limit value.
         If you want to enforce a maximum limit for all scrape objects, refer to enforcedLabelValueLengthLimit.
     listenLocal : bool, default is Undefined, optional
-        When true, the Prometheus server listens on the loopback address
+        listenLocal when true, the Prometheus server listens on the loopback address
         instead of the Pod IP's address.
     logFormat : str, default is Undefined, optional
-        Log format for Log level for Prometheus and the config-reloader sidecar.
+        logFormat for Log level for Prometheus and the config-reloader sidecar.
     logLevel : str, default is Undefined, optional
-        Log level for Prometheus and the config-reloader sidecar.
+        logLevel for Prometheus and the config-reloader sidecar.
     maximumStartupDurationSeconds : int, default is Undefined, optional
-        Defines the maximum time that the `prometheus` container's startup probe will wait before being considered failed. The startup probe will return success after the WAL replay is complete.
-        If set, the value should be greater than 60 (seconds). Otherwise it will be equal to 600 seconds (15 minutes).
+        maximumStartupDurationSeconds defines the maximum time that the `prometheus` container's startup probe will wait before being considered failed. The startup probe will return success after the WAL replay is complete.
+        If set, the value should be greater than 60 (seconds). Otherwise it will be equal to 900 seconds (15 minutes).
     minReadySeconds : int, default is Undefined, optional
-        Minimum number of seconds for which a newly created Pod should be ready
+        minReadySeconds defines the minimum number of seconds for which a newly created Pod should be ready
         without any of its container crashing for it to be considered available.
 
         If unset, pods will be considered available as soon as they are ready.
     mode : str, default is Undefined, optional
-        Mode defines how the Prometheus operator deploys the PrometheusAgent pod(s).
+        mode defines how the Prometheus operator deploys the PrometheusAgent pod(s).
 
         (Alpha) Using this field requires the `PrometheusAgentDaemonSet` feature gate to be enabled.
     nameEscapingScheme : str, default is Undefined, optional
-        Specifies the character escaping scheme that will be requested when scraping
+        nameEscapingScheme defines the character escaping scheme that will be requested when scraping
         for metric and label names that do not conform to the legacy Prometheus
         character set.
 
         It requires Prometheus >= v3.4.0.
     nameValidationScheme : str, default is Undefined, optional
-        Specifies the validation scheme for metric and label names.
+        nameValidationScheme defines the validation scheme for metric and label names.
 
         It requires Prometheus >= v2.55.0.
     nodeSelector : {str:str}, default is Undefined, optional
-        Defines on which Nodes the Pods are scheduled.
+        nodeSelector defines on which Nodes the Pods are scheduled.
     otlp : MonitoringCoreosComV1alpha1PrometheusAgentSpecOtlp, default is Undefined, optional
         otlp
     overrideHonorLabels : bool, default is Undefined, optional
-        When true, Prometheus resolves label conflicts by renaming the labels in the scraped data
+        overrideHonorLabels when true, Prometheus resolves label conflicts by renaming the labels in the scraped data
          to “exported_” for all targets created from ServiceMonitor, PodMonitor and
         ScrapeConfig objects. Otherwise the HonorLabels field of the service or pod monitor applies.
-        In practice,`overrideHonorLaels:true` enforces `honorLabels:false`
+        In practice,`OverrideHonorLabels:true` enforces `honorLabels:false`
         for all ServiceMonitor, PodMonitor and ScrapeConfig objects.
     overrideHonorTimestamps : bool, default is Undefined, optional
-        When true, Prometheus ignores the timestamps for all the targets created
+        overrideHonorTimestamps when true, Prometheus ignores the timestamps for all the targets created
         from service and pod monitors.
         Otherwise the HonorTimestamps field of the service or pod monitor applies.
     paused : bool, default is Undefined, optional
-        When a Prometheus deployment is paused, no actions except for deletion
+        paused defines when a Prometheus deployment is paused, no actions except for deletion
         will be performed on the underlying objects.
     persistentVolumeClaimRetentionPolicy : MonitoringCoreosComV1alpha1PrometheusAgentSpecPersistentVolumeClaimRetentionPolicy, default is Undefined, optional
         persistent volume claim retention policy
@@ -391,41 +391,41 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
     podMonitorSelector : MonitoringCoreosComV1alpha1PrometheusAgentSpecPodMonitorSelector, default is Undefined, optional
         pod monitor selector
     podTargetLabels : [str], default is Undefined, optional
-        PodTargetLabels are appended to the `spec.podTargetLabels` field of all
+        podTargetLabels are appended to the `spec.podTargetLabels` field of all
         PodMonitor and ServiceMonitor objects.
     portName : str, default is "web", optional
-        Port name used for the pods and governing service.
+        portName used for the pods and governing service.
         Default: "web"
     priorityClassName : str, default is Undefined, optional
-        Priority class assigned to the Pods.
+        priorityClassName assigned to the Pods.
     probeNamespaceSelector : MonitoringCoreosComV1alpha1PrometheusAgentSpecProbeNamespaceSelector, default is Undefined, optional
         probe namespace selector
     probeSelector : MonitoringCoreosComV1alpha1PrometheusAgentSpecProbeSelector, default is Undefined, optional
         probe selector
     prometheusExternalLabelName : str, default is Undefined, optional
-        Name of Prometheus external label used to denote the Prometheus instance
+        prometheusExternalLabelName defines the name of Prometheus external label used to denote the Prometheus instance
         name. The external label will _not_ be added when the field is set to
         the empty string (`""`).
 
         Default: "prometheus"
     reloadStrategy : str, default is Undefined, optional
-        Defines the strategy used to reload the Prometheus configuration.
+        reloadStrategy defines the strategy used to reload the Prometheus configuration.
         If not specified, the configuration is reloaded using the /-/reload HTTP endpoint.
     remoteWrite : [MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0], default is Undefined, optional
-        Defines the list of remote write configurations.
+        remoteWrite defines the list of remote write configurations.
     remoteWriteReceiverMessageVersions : [str], default is Undefined, optional
-        List of the protobuf message versions to accept when receiving the
+        remoteWriteReceiverMessageVersions list of the protobuf message versions to accept when receiving the
         remote writes.
 
         It requires Prometheus >= v2.54.0.
     replicaExternalLabelName : str, default is Undefined, optional
-        Name of Prometheus external label used to denote the replica name.
+        replicaExternalLabelName defines the name of Prometheus external label used to denote the replica name.
         The external label will _not_ be added when the field is set to the
         empty string (`""`).
 
         Default: "prometheus_replica"
     replicas : int, default is Undefined, optional
-        Number of replicas of each shard to deploy for a Prometheus deployment.
+        replicas defines the number of replicas of each shard to deploy for a Prometheus deployment.
         `spec.replicas` multiplied by `spec.shards` is the total number of Pods
         created.
 
@@ -433,7 +433,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
     resources : MonitoringCoreosComV1alpha1PrometheusAgentSpecResources, default is Undefined, optional
         resources
     routePrefix : str, default is Undefined, optional
-        The route prefix Prometheus registers HTTP handlers for.
+        routePrefix defines the route prefix Prometheus registers HTTP handlers for.
 
         This is useful when using `spec.externalURL`, and a proxy is rewriting
         HTTP routes of a request, and the actual ExternalURL is still true, but
@@ -442,19 +442,19 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
     runtime : MonitoringCoreosComV1alpha1PrometheusAgentSpecRuntime, default is Undefined, optional
         runtime
     sampleLimit : int, default is Undefined, optional
-        SampleLimit defines per-scrape limit on number of scraped samples that will be accepted.
+        sampleLimit defines per-scrape limit on number of scraped samples that will be accepted.
         Only valid in Prometheus versions 2.45.0 and newer.
 
         Note that the global limit only applies to scrape objects that don't specify an explicit limit value.
         If you want to enforce a maximum limit for all scrape objects, refer to enforcedSampleLimit.
     scrapeClasses : [MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0], default is Undefined, optional
-        List of scrape classes to expose to scraping objects such as
+        scrapeClasses defines the list of scrape classes to expose to scraping objects such as
         PodMonitors, ServiceMonitors, Probes and ScrapeConfigs.
 
         This is an *experimental feature*, it may change in any upcoming release
         in a breaking way.
     scrapeClassicHistograms : bool, default is Undefined, optional
-        Whether to scrape a classic histogram that is also exposed as a native histogram.
+        scrapeClassicHistograms defines whether to scrape a classic histogram that is also exposed as a native histogram.
 
         Notice: `scrapeClassicHistograms` corresponds to the `always_scrape_classic_histograms` field in the Prometheus configuration.
 
@@ -464,7 +464,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
     scrapeConfigSelector : MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeConfigSelector, default is Undefined, optional
         scrape config selector
     scrapeFailureLogFile : str, default is Undefined, optional
-        File to which scrape failures are logged.
+        scrapeFailureLogFile defines the file to which scrape failures are logged.
         Reloading the configuration will reopen the file.
 
         If the filename has an empty path, e.g. 'file.log', The Prometheus Pods
@@ -473,11 +473,11 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
         must mount a volume in the specified directory and it must be writable.
         It requires Prometheus >= v2.55.0.
     scrapeInterval : str, default is "30s", optional
-        Interval between consecutive scrapes.
+        scrapeInterval defines interval between consecutive scrapes.
 
         Default: "30s"
     scrapeProtocols : [str], default is Undefined, optional
-        The protocols to negotiate during a scrape. It tells clients the
+        scrapeProtocols defines the protocols to negotiate during a scrape. It tells clients the
         protocols supported by Prometheus in order of preference (from most to least preferred).
 
         If unset, Prometheus uses its default value.
@@ -486,20 +486,20 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
 
         `PrometheusText1.0.0` requires Prometheus >= v3.0.0.
     scrapeTimeout : str, default is Undefined, optional
-        Number of seconds to wait until a scrape request times out.
+        scrapeTimeout defines the number of seconds to wait until a scrape request times out.
         The value cannot be greater than the scrape interval otherwise the operator will reject the resource.
     secrets : [str], default is Undefined, optional
-        Secrets is a list of Secrets in the same namespace as the Prometheus
+        secrets defines a list of Secrets in the same namespace as the Prometheus
         object, which shall be mounted into the Prometheus Pods.
         Each Secret is added to the StatefulSet definition as a volume named `secret-<secret-name>`.
         The Secrets are mounted into /etc/prometheus/secrets/<secret-name> in the 'prometheus' container.
     securityContext : MonitoringCoreosComV1alpha1PrometheusAgentSpecSecurityContext, default is Undefined, optional
         security context
     serviceAccountName : str, default is Undefined, optional
-        ServiceAccountName is the name of the ServiceAccount to use to run the
+        serviceAccountName is the name of the ServiceAccount to use to run the
         Prometheus Pods.
     serviceDiscoveryRole : str, default is Undefined, optional
-        Defines the service discovery role used to discover targets from
+        serviceDiscoveryRole defines the service discovery role used to discover targets from
         `ServiceMonitor` objects and Alertmanager endpoints.
 
         If set, the value should be either "Endpoints" or "EndpointSlice".
@@ -509,14 +509,14 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
     serviceMonitorSelector : MonitoringCoreosComV1alpha1PrometheusAgentSpecServiceMonitorSelector, default is Undefined, optional
         service monitor selector
     serviceName : str, default is Undefined, optional
-        The name of the service name used by the underlying StatefulSet(s) as the governing service.
+        serviceName defines the name of the service name used by the underlying StatefulSet(s) as the governing service.
         If defined, the Service  must be created before the Prometheus/PrometheusAgent resource in the same namespace and it must define a selector that matches the pod labels.
         If empty, the operator will create and manage a headless service named `prometheus-operated` for Prometheus resources,
         or `prometheus-agent-operated` for PrometheusAgent resources.
         When deploying multiple Prometheus/PrometheusAgent resources in the same namespace, it is recommended to specify a different value for each.
         See https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#stable-network-id for more details.
     shards : int, default is Undefined, optional
-        Number of shards to distribute the scraped targets onto.
+        shards defines the number of shards to distribute the scraped targets onto.
 
         `spec.replicas` multiplied by `spec.shards` is the total number of Pods
         being created.
@@ -545,43 +545,43 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpec:
     storage : MonitoringCoreosComV1alpha1PrometheusAgentSpecStorage, default is Undefined, optional
         storage
     targetLimit : int, default is Undefined, optional
-        TargetLimit defines a limit on the number of scraped targets that will be accepted.
+        targetLimit defines a limit on the number of scraped targets that will be accepted.
         Only valid in Prometheus versions 2.45.0 and newer.
 
         Note that the global limit only applies to scrape objects that don't specify an explicit limit value.
         If you want to enforce a maximum limit for all scrape objects, refer to enforcedTargetLimit.
     terminationGracePeriodSeconds : int, default is Undefined, optional
-        Optional duration in seconds the pod needs to terminate gracefully.
+        terminationGracePeriodSeconds defines the optional duration in seconds the pod needs to terminate gracefully.
         Value must be non-negative integer. The value zero indicates stop immediately via
         the kill signal (no opportunity to shut down) which may lead to data corruption.
 
         Defaults to 600 seconds.
     tolerations : [MonitoringCoreosComV1alpha1PrometheusAgentSpecTolerationsItems0], default is Undefined, optional
-        Defines the Pods' tolerations if specified.
+        tolerations defines the Pods' tolerations if specified.
     topologySpreadConstraints : [MonitoringCoreosComV1alpha1PrometheusAgentSpecTopologySpreadConstraintsItems0], default is Undefined, optional
-        Defines the pod's topology spread constraints if specified.
+        topologySpreadConstraints defines the pod's topology spread constraints if specified.
     tracingConfig : MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfig, default is Undefined, optional
         tracing config
     tsdb : MonitoringCoreosComV1alpha1PrometheusAgentSpecTsdb, default is Undefined, optional
         tsdb
     version : str, default is Undefined, optional
-        Version of Prometheus being deployed. The operator uses this information
+        version of Prometheus being deployed. The operator uses this information
         to generate the Prometheus StatefulSet + configuration files.
 
         If not specified, the operator assumes the latest upstream version of
         Prometheus available at the time when the version of the operator was
         released.
     volumeMounts : [MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumeMountsItems0], default is Undefined, optional
-        VolumeMounts allows the configuration of additional VolumeMounts.
+        volumeMounts allows the configuration of additional VolumeMounts.
 
         VolumeMounts will be appended to other VolumeMounts in the 'prometheus'
         container, that are generated as a result of StorageSpec objects.
     volumes : [MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0], default is Undefined, optional
-        Volumes allows the configuration of additional volumes on the output
+        volumes allows the configuration of additional volumes on the output
         StatefulSet definition. Volumes specified will be appended to other
         volumes that are generated as a result of StorageSpec objects.
     walCompression : bool, default is Undefined, optional
-        Configures compression of the write-ahead log (WAL) using Snappy.
+        walCompression defines the compression of the write-ahead log (WAL) using Snappy.
 
         WAL compression is enabled by default for Prometheus >= 2.20.0
 
@@ -709,9 +709,9 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecAdditionalArgsItems0:
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the argument, e.g. "scrape.discovery-reload-interval".
+        name of the argument, e.g. "scrape.discovery-reload-interval".
     value : str, default is Undefined, optional
-        Argument value, e.g. 30s. Can be empty for name-only arguments (e.g. --storage.tsdb.no-lockfile)
+        value defines the argument value, e.g. 30s. Can be empty for name-only arguments (e.g. --storage.tsdb.no-lockfile)
     """
     name: str
 
@@ -722,7 +722,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecAdditionalArgsItems0:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecAdditionalScrapeConfigs:
     r"""
-    AdditionalScrapeConfigs allows specifying a key of a Secret containing
+    additionalScrapeConfigs allows specifying a key of a Secret containing
     additional Prometheus scrape configurations. Scrape configurations
     specified are appended to the configurations generated by the Prometheus
     Operator. Job configurations specified must have the form as specified
@@ -754,7 +754,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecAdditionalScrapeConfigs:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecAffinity:
     r"""
-    Defines the Pods' affinity scheduling rules if specified.
+    affinity defines the Pods' affinity scheduling rules if specified.
 
     Attributes
     ----------
@@ -1278,8 +1278,8 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecAffinityPodAntiAffinity:
         most preferred is the one with the greatest sum of weights, i.e.
         for each node that meets all of the scheduling requirements (resource
         request, requiredDuringScheduling anti-affinity expressions, etc.),
-        compute a sum by iterating through the elements of this field and adding
-        "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the
+        compute a sum by iterating through the elements of this field and subtracting
+        "weight" from the sum if the node has pods which matches the corresponding podAffinityTerm; the
         node(s) with the highest sum are the most preferred.
     requiredDuringSchedulingIgnoredDuringExecution : [MonitoringCoreosComV1alpha1PrometheusAgentSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
         If the anti-affinity requirements specified by this field are not met at
@@ -1580,7 +1580,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecAffinityPodAntiAffinityRequ
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfig:
     r"""
-    APIServerConfig allows specifying a host and auth methods to access the
+    apiserverConfig allows specifying a host and auth methods to access the
     Kuberntees API server.
     If null, Prometheus is assumed to run inside of the cluster: it will
     discover the API servers automatically and use the Pod's CA certificate
@@ -1593,36 +1593,35 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfig:
     basicAuth : MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigBasicAuth, default is Undefined, optional
         basic auth
     bearerToken : str, default is Undefined, optional
-        *Warning: this field shouldn't be used because the token value appears
+        bearerToken is deprecated: this will be removed in a future release.
+         *Warning: this field shouldn't be used because the token value appears
         in clear-text. Prefer using `authorization`.*
-
-        Deprecated: this will be removed in a future release.
     bearerTokenFile : str, default is Undefined, optional
-        File to read bearer token for accessing apiserver.
+        bearerTokenFile defines the file to read bearer token for accessing apiserver.
 
         Cannot be set at the same time as `basicAuth`, `authorization`, or `bearerToken`.
 
         Deprecated: this will be removed in a future release. Prefer using `authorization`.
     host : str, default is Undefined, required
-        Kubernetes API address consisting of a hostname or IP address followed
+        host defines the Kubernetes API address consisting of a hostname or IP address followed
         by an optional port number.
     noProxy : str, default is Undefined, optional
-        `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+        noProxy defines a comma-separated string that can contain IPs, CIDR notation, domain names
         that should be excluded from proxying. IP and domain names can
         contain port numbers.
 
         It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
     proxyConnectHeader : {str:[MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigProxyConnectHeaderItems0]}, default is Undefined, optional
-        ProxyConnectHeader optionally specifies headers to send to
+        proxyConnectHeader optionally specifies headers to send to
         proxies during CONNECT requests.
 
         It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
     proxyFromEnvironment : bool, default is Undefined, optional
-        Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+        proxyFromEnvironment defines whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
 
         It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
     proxyUrl : str, default is Undefined, optional
-        `proxyURL` defines the HTTP proxy server to use.
+        proxyUrl defines the HTTP proxy server to use.
     tlsConfig : MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfig, default is Undefined, optional
         tls config
     """
@@ -1643,7 +1642,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfig:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigAuthorization:
     r"""
-    Authorization section for the API server.
+    authorization section for the API server.
 
     Cannot be set at the same time as `basicAuth`, `bearerToken`, or
     `bearerTokenFile`.
@@ -1653,9 +1652,9 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigAuthorizatio
     credentials : MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigAuthorizationCredentials, default is Undefined, optional
         credentials
     credentialsFile : str, default is Undefined, optional
-        File to read a secret from, mutually exclusive with `credentials`.
+        credentialsFile defines the file to read a secret from, mutually exclusive with `credentials`.
     $type : str, default is Undefined, optional
-        Defines the authentication type. The value is case-insensitive.
+        type defines the authentication type. The value is case-insensitive.
 
         "Basic" is not a supported value.
 
@@ -1667,7 +1666,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigAuthorizatio
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigAuthorizationCredentials:
     r"""
-    Selects a key of a Secret in the namespace that contains the credentials for authentication.
+    credentials defines a key of a Secret in the namespace that contains the credentials for authentication.
 
     Attributes
     ----------
@@ -1689,7 +1688,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigAuthorizatio
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigBasicAuth:
     r"""
-    BasicAuth configuration for the API server.
+    basicAuth configuration for the API server.
 
     Cannot be set at the same time as `authorization`, `bearerToken`, or
     `bearerTokenFile`.
@@ -1706,7 +1705,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigBasicAuth:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigBasicAuthPassword:
     r"""
-    `password` specifies a key of a Secret containing the password for
+    password defines a key of a Secret containing the password for
     authentication.
 
     Attributes
@@ -1729,7 +1728,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigBasicAuthPas
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigBasicAuthUsername:
     r"""
-    `username` specifies a key of a Secret containing the username for
+    username defines a key of a Secret containing the username for
     authentication.
 
     Attributes
@@ -1774,34 +1773,34 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigProxyConnect
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfig:
     r"""
-    TLS Config to use for the API server.
+    tlsConfig to use for the API server.
 
     Attributes
     ----------
     ca : MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfigCa, default is Undefined, optional
         ca
     caFile : str, default is Undefined, optional
-        Path to the CA cert in the Prometheus container to use for the targets.
+        caFile defines the path to the CA cert in the Prometheus container to use for the targets.
     cert : MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfigCert, default is Undefined, optional
         cert
     certFile : str, default is Undefined, optional
-        Path to the client cert file in the Prometheus container for the targets.
+        certFile defines the path to the client cert file in the Prometheus container for the targets.
     insecureSkipVerify : bool, default is Undefined, optional
-        Disable target certificate validation.
+        insecureSkipVerify defines how to disable target certificate validation.
     keyFile : str, default is Undefined, optional
-        Path to the client key file in the Prometheus container for the targets.
+        keyFile defines the path to the client key file in the Prometheus container for the targets.
     keySecret : MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfigKeySecret, default is Undefined, optional
         key secret
     maxVersion : str, default is Undefined, optional
-        Maximum acceptable TLS version.
+        maxVersion defines the maximum acceptable TLS version.
 
         It requires Prometheus >= v2.41.0 or Thanos >= v0.31.0.
     minVersion : str, default is Undefined, optional
-        Minimum acceptable TLS version.
+        minVersion defines the minimum acceptable TLS version.
 
         It requires Prometheus >= v2.35.0 or Thanos >= v0.28.0.
     serverName : str, default is Undefined, optional
-        Used to verify the hostname for the targets.
+        serverName is used to verify the hostname for the targets.
     """
     ca?: MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfigCa
     caFile?: str
@@ -1816,7 +1815,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfig:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfigCa:
     r"""
-    Certificate authority used when verifying server certificates.
+    ca defines the Certificate authority used when verifying server certificates.
 
     Attributes
     ----------
@@ -1830,7 +1829,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfigCa:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfigCaConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -1852,7 +1851,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfigCaC
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfigCaSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -1874,7 +1873,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfigCaS
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfigCert:
     r"""
-    Client certificate to present when doing client-authentication.
+    cert defines the Client certificate to present when doing client-authentication.
 
     Attributes
     ----------
@@ -1888,7 +1887,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfigCer
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfigCertConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -1910,7 +1909,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfigCer
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfigCertSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -1932,7 +1931,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfigCer
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfigKeySecret:
     r"""
-    Secret containing the client key file for the targets.
+    keySecret defines the Secret containing the client key file for the targets.
 
     Attributes
     ----------
@@ -1954,7 +1953,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecApiserverConfigTLSConfigKey
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecArbitraryFSAccessThroughSMs:
     r"""
-    When true, ServiceMonitor, PodMonitor and Probe object are forbidden to
+    arbitraryFSAccessThroughSMs when true, ServiceMonitor, PodMonitor and Probe object are forbidden to
     reference arbitrary files on the file system of the 'prometheus'
     container.
     When a ServiceMonitor's endpoint specifies a `bearerTokenFile` value
@@ -1968,7 +1967,10 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecArbitraryFSAccessThroughSMs
     Attributes
     ----------
     deny : bool, default is Undefined, optional
-        deny
+        deny prevents service monitors from accessing arbitrary files on the file system.
+        When true, service monitors cannot use file-based configurations like BearerTokenFile
+        that could potentially access sensitive files. When false (default), such access is allowed.
+        Setting this to true enhances security by preventing potential credential theft attacks.
     """
     deny?: bool
 
@@ -2001,8 +2003,8 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0:
         Cannot be updated.
     envFrom : [MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvFromItems0], default is Undefined, optional
         List of sources to populate environment variables in the container.
-        The keys defined within a source must be a C_IDENTIFIER. All invalid keys
-        will be reported as an event when the container is starting. When a key exists in multiple
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+        When a key exists in multiple
         sources, the value associated with the last source will take precedence.
         Values defined by an Env with a duplicate key will take precedence.
         Cannot be updated.
@@ -2041,10 +2043,10 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0:
         resources
     restartPolicy : str, default is Undefined, optional
         RestartPolicy defines the restart behavior of individual containers in a pod.
-        This field may only be set for init containers, and the only allowed value is "Always".
-        For non-init containers or when this field is not specified,
+        This overrides the pod-level restart policy. When this field is not specified,
         the restart behavior is defined by the Pod's restart policy and the container type.
-        Setting the RestartPolicy as "Always" for the init container will have the following effect:
+        Additionally, setting the RestartPolicy as "Always" for the init container will
+        have the following effect:
         this init container will be continually restarted on
         exit until all regular containers have terminated. Once all regular
         containers have completed, all init containers with restartPolicy "Always"
@@ -2055,6 +2057,18 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0:
         container. Instead, the next init container starts immediately after this
         init container is started, or after any startupProbe has successfully
         completed.
+    restartPolicyRules : [MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0RestartPolicyRulesItems0], default is Undefined, optional
+        Represents a list of rules to be checked to determine if the
+        container should be restarted on exit. The rules are evaluated in
+        order. Once a rule matches a container exit condition, the remaining
+        rules are ignored. If no rule matches the container exit condition,
+        the Container-level restart policy determines the whether the container
+        is restarted or not. Constraints on the rules:
+        - At most 20 rules are allowed.
+        - Rules can have the same action.
+        - Identical rules are not forbidden in validations.
+        When rules are specified, container MUST set RestartPolicy explicitly
+        even it if matches the Pod's RestartPolicy.
     securityContext : MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0SecurityContext, default is Undefined, optional
         security context
     startupProbe : MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0StartupProbe, default is Undefined, optional
@@ -2116,6 +2130,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0:
     resizePolicy?: [MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0ResizePolicyItems0]
     resources?: MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0Resources
     restartPolicy?: str
+    restartPolicyRules?: [MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0RestartPolicyRulesItems0]
     securityContext?: MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0SecurityContext
     startupProbe?: MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0StartupProbe
     stdin?: bool
@@ -2136,7 +2151,8 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvFromItem
     configMapRef : MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvFromItems0ConfigMapRef, default is Undefined, optional
         config map ref
     prefix : str, default is Undefined, optional
-        Optional text to prepend to the name of each environment variable. Must be a C_IDENTIFIER.
+        Optional text to prepend to the name of each environment variable.
+        May consist of any printable ASCII characters except '='.
     secretRef : MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvFromItems0SecretRef, default is Undefined, optional
         secret ref
     """
@@ -2187,7 +2203,8 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvItems0:
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the environment variable. Must be a C_IDENTIFIER.
+        Name of the environment variable.
+        May consist of any printable ASCII characters except '='.
     value : str, default is Undefined, optional
         Variable references $(VAR_NAME) are expanded
         using the previously defined environment variables in the container and
@@ -2216,6 +2233,8 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvItems0Va
         config map key ref
     fieldRef : MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvItems0ValueFromFieldRef, default is Undefined, optional
         field ref
+    fileKeyRef : MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvItems0ValueFromFileKeyRef, default is Undefined, optional
+        file key ref
     resourceFieldRef : MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvItems0ValueFromResourceFieldRef, default is Undefined, optional
         resource field ref
     secretKeyRef : MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvItems0ValueFromSecretKeyRef, default is Undefined, optional
@@ -2223,6 +2242,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvItems0Va
     """
     configMapKeyRef?: MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvItems0ValueFromConfigMapKeyRef
     fieldRef?: MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvItems0ValueFromFieldRef
+    fileKeyRef?: MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvItems0ValueFromFileKeyRef
     resourceFieldRef?: MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvItems0ValueFromResourceFieldRef
     secretKeyRef?: MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvItems0ValueFromSecretKeyRef
 
@@ -2262,6 +2282,38 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvItems0Va
     """
     apiVersion?: str
     fieldPath: str
+
+schema MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvItems0ValueFromFileKeyRef:
+    r"""
+    FileKeyRef selects a key of the env file.
+    Requires the EnvFiles feature gate to be enabled.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        The key within the env file. An invalid key will prevent the pod from starting.
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+        During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
+    optional : bool, default is Undefined, optional
+        Specify whether the file or its key must be defined. If the file or key
+        does not exist, then the env var is not published.
+        If optional is set to true and the specified key does not exist,
+        the environment variable will not be set in the Pod's containers.
+
+        If optional is set to false and the specified key does not exist,
+        an error will be returned during Pod creation.
+    path : str, default is Undefined, required
+        The path within the volume from which to select the file.
+        Must be relative and may not contain the '..' path or start with '..'.
+    volumeName : str, default is Undefined, required
+        The name of the volume mount containing the env file.
+    """
+    key: str
+
+    optional?: bool = False
+    path: str
+
+    volumeName: str
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0EnvItems0ValueFromResourceFieldRef:
     r"""
@@ -2911,7 +2963,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0Resources:
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -2950,6 +3002,44 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0ResourcesCl
     name: str
 
     request?: str
+
+schema MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0RestartPolicyRulesItems0:
+    r"""
+    ContainerRestartRule describes how a container exit is handled.
+
+    Attributes
+    ----------
+    action : str, default is Undefined, required
+        Specifies the action taken on a container exit if the requirements
+        are satisfied. The only possible value is "Restart" to restart the
+        container.
+    exitCodes : MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0RestartPolicyRulesItems0ExitCodes, default is Undefined, optional
+        exit codes
+    """
+    action: str
+
+    exitCodes?: MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0RestartPolicyRulesItems0ExitCodes
+
+schema MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0RestartPolicyRulesItems0ExitCodes:
+    r"""
+    Represents the exit codes to check on container exits.
+
+    Attributes
+    ----------
+    operator : str, default is Undefined, required
+        Represents the relationship between the container exit code(s) and the
+        specified values. Possible values are:
+        - In: the requirement is satisfied if the container exit code is in the
+          set of specified values.
+        - NotIn: the requirement is satisfied if the container exit code is
+          not in the set of specified values.
+    values : [int], default is Undefined, optional
+        Specifies the set of values to check for container exit codes.
+        At most 255 elements are allowed.
+    """
+    operator: str
+
+    values?: [int]
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0SecurityContext:
     r"""
@@ -3370,20 +3460,20 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecContainersItems0VolumeMount
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecDNSConfig:
     r"""
-    Defines the DNS configuration for the pods.
+    dnsConfig defines the DNS configuration for the pods.
 
     Attributes
     ----------
     nameservers : [str], default is Undefined, optional
-        A list of DNS name server IP addresses.
+        nameservers defines the list of DNS name server IP addresses.
         This will be appended to the base nameservers generated from DNSPolicy.
     options : [MonitoringCoreosComV1alpha1PrometheusAgentSpecDNSConfigOptionsItems0], default is Undefined, optional
-        A list of DNS resolver options.
+        options defines the list of DNS resolver options.
         This will be merged with the base options generated from DNSPolicy.
         Resolution options given in Options
         will override those that appear in the base DNSPolicy.
     searches : [str], default is Undefined, optional
-        A list of DNS search domains for host-name lookup.
+        searches defines the list of DNS search domains for host-name lookup.
         This will be appended to the base search paths generated from DNSPolicy.
     """
     nameservers?: [str]
@@ -3401,9 +3491,9 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecDNSConfigOptionsItems0:
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name is required and must be unique.
+        name is required and must be unique.
     value : str, default is Undefined, optional
-        Value is optional.
+        value is optional.
     """
     name: str
 
@@ -3419,14 +3509,14 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecExcludedFromEnforcementItem
     Attributes
     ----------
     group : str, default is "monitoring.coreos.com", optional
-        Group of the referent. When not specified, it defaults to `monitoring.coreos.com`
+        group of the referent. When not specified, it defaults to `monitoring.coreos.com`
     name : str, default is Undefined, optional
-        Name of the referent. When not set, all resources in the namespace are matched.
+        name of the referent. When not set, all resources in the namespace are matched.
     namespace : str, default is Undefined, required
-        Namespace of the referent.
+        namespace of the referent.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
     resource : str, default is Undefined, required
-        Resource of the referent.
+        resource of the referent.
     """
     group?: "monitoring.coreos.com" = "monitoring.coreos.com"
     name?: str
@@ -3445,9 +3535,9 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecHostAliasesItems0:
     Attributes
     ----------
     hostnames : [str], default is Undefined, required
-        Hostnames for the above IP address.
+        hostnames defines hostnames for the above IP address.
     ip : str, default is Undefined, required
-        IP address of the host file entry.
+        ip defines the IP address of the host file entry.
     """
     hostnames: [str]
 
@@ -3498,8 +3588,8 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0:
         Cannot be updated.
     envFrom : [MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvFromItems0], default is Undefined, optional
         List of sources to populate environment variables in the container.
-        The keys defined within a source must be a C_IDENTIFIER. All invalid keys
-        will be reported as an event when the container is starting. When a key exists in multiple
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+        When a key exists in multiple
         sources, the value associated with the last source will take precedence.
         Values defined by an Env with a duplicate key will take precedence.
         Cannot be updated.
@@ -3538,10 +3628,10 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0:
         resources
     restartPolicy : str, default is Undefined, optional
         RestartPolicy defines the restart behavior of individual containers in a pod.
-        This field may only be set for init containers, and the only allowed value is "Always".
-        For non-init containers or when this field is not specified,
+        This overrides the pod-level restart policy. When this field is not specified,
         the restart behavior is defined by the Pod's restart policy and the container type.
-        Setting the RestartPolicy as "Always" for the init container will have the following effect:
+        Additionally, setting the RestartPolicy as "Always" for the init container will
+        have the following effect:
         this init container will be continually restarted on
         exit until all regular containers have terminated. Once all regular
         containers have completed, all init containers with restartPolicy "Always"
@@ -3552,6 +3642,18 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0:
         container. Instead, the next init container starts immediately after this
         init container is started, or after any startupProbe has successfully
         completed.
+    restartPolicyRules : [MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0RestartPolicyRulesItems0], default is Undefined, optional
+        Represents a list of rules to be checked to determine if the
+        container should be restarted on exit. The rules are evaluated in
+        order. Once a rule matches a container exit condition, the remaining
+        rules are ignored. If no rule matches the container exit condition,
+        the Container-level restart policy determines the whether the container
+        is restarted or not. Constraints on the rules:
+        - At most 20 rules are allowed.
+        - Rules can have the same action.
+        - Identical rules are not forbidden in validations.
+        When rules are specified, container MUST set RestartPolicy explicitly
+        even it if matches the Pod's RestartPolicy.
     securityContext : MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0SecurityContext, default is Undefined, optional
         security context
     startupProbe : MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0StartupProbe, default is Undefined, optional
@@ -3613,6 +3715,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0:
     resizePolicy?: [MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0ResizePolicyItems0]
     resources?: MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0Resources
     restartPolicy?: str
+    restartPolicyRules?: [MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0RestartPolicyRulesItems0]
     securityContext?: MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0SecurityContext
     startupProbe?: MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0StartupProbe
     stdin?: bool
@@ -3633,7 +3736,8 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvFrom
     configMapRef : MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvFromItems0ConfigMapRef, default is Undefined, optional
         config map ref
     prefix : str, default is Undefined, optional
-        Optional text to prepend to the name of each environment variable. Must be a C_IDENTIFIER.
+        Optional text to prepend to the name of each environment variable.
+        May consist of any printable ASCII characters except '='.
     secretRef : MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvFromItems0SecretRef, default is Undefined, optional
         secret ref
     """
@@ -3684,7 +3788,8 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvItem
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the environment variable. Must be a C_IDENTIFIER.
+        Name of the environment variable.
+        May consist of any printable ASCII characters except '='.
     value : str, default is Undefined, optional
         Variable references $(VAR_NAME) are expanded
         using the previously defined environment variables in the container and
@@ -3713,6 +3818,8 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvItem
         config map key ref
     fieldRef : MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvItems0ValueFromFieldRef, default is Undefined, optional
         field ref
+    fileKeyRef : MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvItems0ValueFromFileKeyRef, default is Undefined, optional
+        file key ref
     resourceFieldRef : MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvItems0ValueFromResourceFieldRef, default is Undefined, optional
         resource field ref
     secretKeyRef : MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvItems0ValueFromSecretKeyRef, default is Undefined, optional
@@ -3720,6 +3827,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvItem
     """
     configMapKeyRef?: MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvItems0ValueFromConfigMapKeyRef
     fieldRef?: MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvItems0ValueFromFieldRef
+    fileKeyRef?: MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvItems0ValueFromFileKeyRef
     resourceFieldRef?: MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvItems0ValueFromResourceFieldRef
     secretKeyRef?: MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvItems0ValueFromSecretKeyRef
 
@@ -3759,6 +3867,38 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvItem
     """
     apiVersion?: str
     fieldPath: str
+
+schema MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvItems0ValueFromFileKeyRef:
+    r"""
+    FileKeyRef selects a key of the env file.
+    Requires the EnvFiles feature gate to be enabled.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        The key within the env file. An invalid key will prevent the pod from starting.
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+        During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
+    optional : bool, default is Undefined, optional
+        Specify whether the file or its key must be defined. If the file or key
+        does not exist, then the env var is not published.
+        If optional is set to true and the specified key does not exist,
+        the environment variable will not be set in the Pod's containers.
+
+        If optional is set to false and the specified key does not exist,
+        an error will be returned during Pod creation.
+    path : str, default is Undefined, required
+        The path within the volume from which to select the file.
+        Must be relative and may not contain the '..' path or start with '..'.
+    volumeName : str, default is Undefined, required
+        The name of the volume mount containing the env file.
+    """
+    key: str
+
+    optional?: bool = False
+    path: str
+
+    volumeName: str
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0EnvItems0ValueFromResourceFieldRef:
     r"""
@@ -4408,7 +4548,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0Resourc
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -4447,6 +4587,44 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0Resourc
     name: str
 
     request?: str
+
+schema MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0RestartPolicyRulesItems0:
+    r"""
+    ContainerRestartRule describes how a container exit is handled.
+
+    Attributes
+    ----------
+    action : str, default is Undefined, required
+        Specifies the action taken on a container exit if the requirements
+        are satisfied. The only possible value is "Restart" to restart the
+        container.
+    exitCodes : MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0RestartPolicyRulesItems0ExitCodes, default is Undefined, optional
+        exit codes
+    """
+    action: str
+
+    exitCodes?: MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0RestartPolicyRulesItems0ExitCodes
+
+schema MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0RestartPolicyRulesItems0ExitCodes:
+    r"""
+    Represents the exit codes to check on container exits.
+
+    Attributes
+    ----------
+    operator : str, default is Undefined, required
+        Represents the relationship between the container exit code(s) and the
+        specified values. Possible values are:
+        - In: the requirement is satisfied if the container exit code is in the
+          set of specified values.
+        - NotIn: the requirement is satisfied if the container exit code is
+          not in the set of specified values.
+    values : [int], default is Undefined, optional
+        Specifies the set of values to check for container exit codes.
+        At most 255 elements are allowed.
+    """
+    operator: str
+
+    values?: [int]
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0SecurityContext:
     r"""
@@ -4867,34 +5045,38 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecInitContainersItems0VolumeM
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecOtlp:
     r"""
-    Settings related to the OTLP receiver feature.
+    otlp defines the settings related to the OTLP receiver feature.
     It requires Prometheus >= v2.55.0.
 
     Attributes
     ----------
     convertHistogramsToNHCB : bool, default is Undefined, optional
-        Configures optional translation of OTLP explicit bucket histograms into native histograms with custom buckets.
+        convertHistogramsToNHCB defines optional translation of OTLP explicit bucket histograms into native histograms with custom buckets.
         It requires Prometheus >= v3.4.0.
     ignoreResourceAttributes : [str], default is Undefined, optional
-        List of OpenTelemetry resource attributes to ignore when `promoteAllResourceAttributes` is true.
+        ignoreResourceAttributes defines the list of OpenTelemetry resource attributes to ignore when `promoteAllResourceAttributes` is true.
 
         It requires `promoteAllResourceAttributes` to be true.
         It requires Prometheus >= v3.5.0.
     keepIdentifyingResourceAttributes : bool, default is Undefined, optional
-        Enables adding `service.name`, `service.namespace` and `service.instance.id`
+        keepIdentifyingResourceAttributes enables adding `service.name`, `service.namespace` and `service.instance.id`
         resource attributes to the `target_info` metric, on top of converting them into the `instance` and `job` labels.
 
         It requires Prometheus >= v3.1.0.
     promoteAllResourceAttributes : bool, default is Undefined, optional
-        Promote all resource attributes to metric labels except the ones defined in `ignoreResourceAttributes`.
+        promoteAllResourceAttributes promotes all resource attributes to metric labels except the ones defined in `ignoreResourceAttributes`.
 
         Cannot be true when `promoteResourceAttributes` is defined.
         It requires Prometheus >= v3.5.0.
     promoteResourceAttributes : [str], default is Undefined, optional
-        List of OpenTelemetry Attributes that should be promoted to metric labels, defaults to none.
+        promoteResourceAttributes defines the list of OpenTelemetry Attributes that should be promoted to metric labels, defaults to none.
         Cannot be defined when `promoteAllResourceAttributes` is true.
+    promoteScopeMetadata : bool, default is Undefined, optional
+        promoteScopeMetadata controls whether to promote OpenTelemetry scope metadata (i.e. name, version, schema URL, and attributes) to metric labels.
+        As per the OpenTelemetry specification, the aforementioned scope metadata should be identifying, i.e. made into metric labels.
+        It requires Prometheus >= v3.6.0.
     translationStrategy : str, default is Undefined, optional
-        Configures how the OTLP receiver endpoint translates the incoming metrics.
+        translationStrategy defines how the OTLP receiver endpoint translates the incoming metrics.
 
         It requires Prometheus >= v3.0.0.
     """
@@ -4903,7 +5085,8 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecOtlp:
     keepIdentifyingResourceAttributes?: bool
     promoteAllResourceAttributes?: bool
     promoteResourceAttributes?: [str]
-    translationStrategy?: "NoUTF8EscapingWithSuffixes" | "UnderscoreEscapingWithSuffixes" | "NoTranslation"
+    promoteScopeMetadata?: bool
+    translationStrategy?: "NoUTF8EscapingWithSuffixes" | "UnderscoreEscapingWithSuffixes" | "NoTranslation" | "UnderscoreEscapingWithoutSuffixes"
 
     check:
         len(ignoreResourceAttributes) >= 1 if ignoreResourceAttributes
@@ -4913,7 +5096,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecOtlp:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecPersistentVolumeClaimRetentionPolicy:
     r"""
-    The field controls if and how PVCs are deleted during the lifecycle of a StatefulSet.
+    persistentVolumeClaimRetentionPolicy defines the field controls if and how PVCs are deleted during the lifecycle of a StatefulSet.
     The default behavior is all PVCs are retained.
     This is an alpha field from kubernetes 1.23 until 1.26 and a beta field from 1.26.
     It requires enabling the StatefulSetAutoDeletePVC feature gate.
@@ -4937,7 +5120,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecPersistentVolumeClaimRetent
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecPodMetadata:
     r"""
-    PodMetadata configures labels and annotations which are propagated to the Prometheus pods.
+    podMetadata defines labels and annotations which are propagated to the Prometheus pods.
 
     The following items are reserved and cannot be overridden:
     * "prometheus" label, set to the name of the Prometheus object.
@@ -4952,17 +5135,17 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecPodMetadata:
     Attributes
     ----------
     annotations : {str:str}, default is Undefined, optional
-        Annotations is an unstructured key value map stored with a resource that may be
+        annotations defines an unstructured key value map stored with a resource that may be
         set by external tools to store and retrieve arbitrary metadata. They are not
         queryable and should be preserved when modifying objects.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
     labels : {str:str}, default is Undefined, optional
-        Map of string keys and values that can be used to organize and categorize
+        labels define the map of string keys and values that can be used to organize and categorize
         (scope and select) objects. May match selectors of replication controllers
         and services.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
     name : str, default is Undefined, optional
-        Name must be unique within a namespace. Is required when creating resources, although
+        name must be unique within a namespace. Is required when creating resources, although
         some resources may allow a client to request the generation of an appropriate name
         automatically. Name is primarily intended for creation idempotence and configuration
         definition.
@@ -4975,7 +5158,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecPodMetadata:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecPodMonitorNamespaceSelector:
     r"""
-    Namespaces to match for PodMonitors discovery. An empty label selector
+    podMonitorNamespaceSelector defines the namespaces to match for PodMonitors discovery. An empty label selector
     matches all namespaces. A null label selector (default value) matches the current
     namespace only.
 
@@ -5017,7 +5200,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecPodMonitorNamespaceSelector
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecPodMonitorSelector:
     r"""
-    PodMonitors to be selected for target discovery. An empty label selector
+    podMonitorSelector defines the podMonitors to be selected for target discovery. An empty label selector
     matches all objects. A null label selector matches no objects.
 
     If `spec.serviceMonitorSelector`, `spec.podMonitorSelector`, `spec.probeSelector`
@@ -5067,7 +5250,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecPodMonitorSelectorMatchExpr
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecProbeNamespaceSelector:
     r"""
-    Namespaces to match for Probe discovery. An empty label
+    probeNamespaceSelector defines the namespaces to match for Probe discovery. An empty label
     selector matches all namespaces. A null label selector matches the
     current namespace only.
 
@@ -5109,7 +5292,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecProbeNamespaceSelectorMatch
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecProbeSelector:
     r"""
-    Probes to be selected for target discovery. An empty label selector
+    probeSelector defines the probes to be selected for target discovery. An empty label selector
     matches all objects. A null label selector matches no objects.
 
     If `spec.serviceMonitorSelector`, `spec.podMonitorSelector`, `spec.probeSelector`
@@ -5171,27 +5354,26 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0:
     basicAuth : MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0BasicAuth, default is Undefined, optional
         basic auth
     bearerToken : str, default is Undefined, optional
+        bearerToken is deprecated: this will be removed in a future release.
         *Warning: this field shouldn't be used because the token value appears
         in clear-text. Prefer using `authorization`.*
-
-        Deprecated: this will be removed in a future release.
     bearerTokenFile : str, default is Undefined, optional
-        File from which to read bearer token for the URL.
+        bearerTokenFile defines the file from which to read bearer token for the URL.
 
         Deprecated: this will be removed in a future release. Prefer using `authorization`.
     enableHTTP2 : bool, default is Undefined, optional
-        Whether to enable HTTP2.
+        enableHTTP2 defines whether to enable HTTP2.
     followRedirects : bool, default is Undefined, optional
-        Configure whether HTTP requests follow HTTP 3xx redirects.
+        followRedirects defines whether HTTP requests follow HTTP 3xx redirects.
 
         It requires Prometheus >= v2.26.0 or Thanos >= v0.24.0.
     headers : {str:str}, default is Undefined, optional
-        Custom HTTP headers to be sent along with each remote write request.
+        headers defines the custom HTTP headers to be sent along with each remote write request.
         Be aware that headers that are set by Prometheus itself can't be overwritten.
 
         It requires Prometheus >= v2.25.0 or Thanos >= v0.24.0.
     messageVersion : str, default is Undefined, optional
-        The Remote Write message's version to use when writing to the endpoint.
+        messageVersion defines the Remote Write message's version to use when writing to the endpoint.
 
         `Version1.0` corresponds to the `prometheus.WriteRequest` protobuf message introduced in Remote Write 1.0.
         `Version2.0` corresponds to the `io.prometheus.write.v2.Request` protobuf message introduced in Remote Write 2.0.
@@ -5206,12 +5388,12 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0:
     metadataConfig : MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0MetadataConfig, default is Undefined, optional
         metadata config
     name : str, default is Undefined, optional
-        The name of the remote write queue, it must be unique if specified. The
+        name of the remote write queue, it must be unique if specified. The
         name is used in metrics and logging in order to differentiate queues.
 
         It requires Prometheus >= v2.15.0 or Thanos >= 0.24.0.
     noProxy : str, default is Undefined, optional
-        `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+        noProxy defines a comma-separated string that can contain IPs, CIDR notation, domain names
         that should be excluded from proxying. IP and domain names can
         contain port numbers.
 
@@ -5219,41 +5401,43 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0:
     oauth2 : MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2, default is Undefined, optional
         oauth2
     proxyConnectHeader : {str:[MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0ProxyConnectHeaderItems0]}, default is Undefined, optional
-        ProxyConnectHeader optionally specifies headers to send to
+        proxyConnectHeader optionally specifies headers to send to
         proxies during CONNECT requests.
 
         It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
     proxyFromEnvironment : bool, default is Undefined, optional
-        Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+        proxyFromEnvironment defines whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
 
         It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
     proxyUrl : str, default is Undefined, optional
-        `proxyURL` defines the HTTP proxy server to use.
+        proxyUrl defines the HTTP proxy server to use.
     queueConfig : MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0QueueConfig, default is Undefined, optional
         queue config
     remoteTimeout : str, default is Undefined, optional
-        Timeout for requests to the remote write endpoint.
+        remoteTimeout defines the timeout for requests to the remote write endpoint.
     roundRobinDNS : bool, default is Undefined, optional
+        roundRobinDNS controls the DNS resolution behavior for remote-write connections.
         When enabled:
-            - The remote-write mechanism will resolve the hostname via DNS.
-            - It will randomly select one of the resolved IP addresses and connect to it.
+          - The remote-write mechanism will resolve the hostname via DNS.
+          - It will randomly select one of the resolved IP addresses and connect to it.
 
         When disabled (default behavior):
-            - The Go standard library will handle hostname resolution.
-            - It will attempt connections to each resolved IP address sequentially.
+          - The Go standard library will handle hostname resolution.
+          - It will attempt connections to each resolved IP address sequentially.
 
         Note: The connection timeout applies to the entire resolution and connection process.
-              If disabled, the timeout is distributed across all connection attempts.
+
+        	If disabled, the timeout is distributed across all connection attempts.
 
         It requires Prometheus >= v3.1.0 or Thanos >= v0.38.0.
     sendExemplars : bool, default is Undefined, optional
-        Enables sending of exemplars over remote write. Note that
+        sendExemplars enables sending of exemplars over remote write. Note that
         exemplar-storage itself must be enabled using the `spec.enableFeatures`
         option for exemplars to be scraped in the first place.
 
         It requires Prometheus >= v2.27.0 or Thanos >= v0.24.0.
     sendNativeHistograms : bool, default is Undefined, optional
-        Enables sending of native histograms, also known as sparse histograms
+        sendNativeHistograms enables sending of native histograms, also known as sparse histograms
         over remote write.
 
         It requires Prometheus >= v2.40.0 or Thanos >= v0.30.0.
@@ -5262,9 +5446,9 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0:
     tlsConfig : MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfig, default is Undefined, optional
         tls config
     url : str, default is Undefined, required
-        The URL of the endpoint to send samples to.
+        url defines the URL of the endpoint to send samples to.
     writeRelabelConfigs : [MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0WriteRelabelConfigsItems0], default is Undefined, optional
-        The list of remote write relabel configurations.
+        writeRelabelConfigs defines the list of remote write relabel configurations.
     """
     authorization?: MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Authorization
     azureAd?: MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0AzureAd
@@ -5300,7 +5484,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Authorization:
     r"""
-    Authorization section for the URL.
+    authorization section for the URL.
 
     It requires Prometheus >= v2.26.0 or Thanos >= v0.24.0.
 
@@ -5311,9 +5495,9 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Authorizat
     credentials : MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0AuthorizationCredentials, default is Undefined, optional
         credentials
     credentialsFile : str, default is Undefined, optional
-        File to read a secret from, mutually exclusive with `credentials`.
+        credentialsFile defines the file to read a secret from, mutually exclusive with `credentials`.
     $type : str, default is Undefined, optional
-        Defines the authentication type. The value is case-insensitive.
+        type defines the authentication type. The value is case-insensitive.
 
         "Basic" is not a supported value.
 
@@ -5325,7 +5509,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Authorizat
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0AuthorizationCredentials:
     r"""
-    Selects a key of a Secret in the namespace that contains the credentials for authentication.
+    credentials defines a key of a Secret in the namespace that contains the credentials for authentication.
 
     Attributes
     ----------
@@ -5347,7 +5531,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Authorizat
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0AzureAd:
     r"""
-    AzureAD for the URL.
+    azureAd for the URL.
 
     It requires Prometheus >= v2.45.0 or Thanos >= v0.31.0.
 
@@ -5356,7 +5540,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0AzureAd:
     Attributes
     ----------
     cloud : str, default is Undefined, optional
-        The Azure Cloud. Options are 'AzurePublic', 'AzureChina', or 'AzureGovernment'.
+        cloud defines the Azure Cloud. Options are 'AzurePublic', 'AzureChina', or 'AzureGovernment'.
     managedIdentity : MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0AzureAdManagedIdentity, default is Undefined, optional
         managed identity
     oauth : MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0AzureAdOauth, default is Undefined, optional
@@ -5371,19 +5555,19 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0AzureAd:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0AzureAdManagedIdentity:
     r"""
-    ManagedIdentity defines the Azure User-assigned Managed identity.
+    managedIdentity defines the Azure User-assigned Managed identity.
     Cannot be set at the same time as `oauth` or `sdk`.
 
     Attributes
     ----------
     clientId : str, default is Undefined, required
-        The client id
+        clientId defines defines the Azure User-assigned Managed identity.
     """
     clientId: str
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0AzureAdOauth:
     r"""
-    OAuth defines the oauth config that is being used to authenticate.
+    oauth defines the oauth config that is being used to authenticate.
     Cannot be set at the same time as `managedIdentity` or `sdk`.
 
     It requires Prometheus >= v2.48.0 or Thanos >= v0.31.0.
@@ -5391,11 +5575,11 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0AzureAdOau
     Attributes
     ----------
     clientId : str, default is Undefined, required
-        `clientID` is the clientId of the Azure Active Directory application that is being used to authenticate.
+        clientId defines the clientId of the Azure Active Directory application that is being used to authenticate.
     clientSecret : MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0AzureAdOauthClientSecret, default is Undefined, required
         client secret
     tenantId : str, default is Undefined, required
-        `tenantId` is the tenant ID of the Azure Active Directory application that is being used to authenticate.
+        tenantId is the tenant ID of the Azure Active Directory application that is being used to authenticate.
     """
     clientId: str
 
@@ -5410,7 +5594,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0AzureAdOau
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0AzureAdOauthClientSecret:
     r"""
-    `clientSecret` specifies a key of a Secret containing the client secret of the Azure Active Directory application that is being used to authenticate.
+    clientSecret specifies a key of a Secret containing the client secret of the Azure Active Directory application that is being used to authenticate.
 
     Attributes
     ----------
@@ -5432,7 +5616,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0AzureAdOau
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0AzureAdSdk:
     r"""
-    SDK defines the Azure SDK config that is being used to authenticate.
+    sdk defines the Azure SDK config that is being used to authenticate.
     See https://learn.microsoft.com/en-us/azure/developer/go/azure-sdk-authentication
     Cannot be set at the same time as `oauth` or `managedIdentity`.
 
@@ -5441,7 +5625,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0AzureAdSdk
     Attributes
     ----------
     tenantId : str, default is Undefined, optional
-        `tenantId` is the tenant ID of the azure active directory application that is being used to authenticate.
+        tenantId defines the tenant ID of the azure active directory application that is being used to authenticate.
     """
     tenantId?: str
 
@@ -5450,7 +5634,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0AzureAdSdk
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0BasicAuth:
     r"""
-    BasicAuth configuration for the URL.
+    basicAuth configuration for the URL.
 
     Cannot be set at the same time as `sigv4`, `authorization`, `oauth2`, or `azureAd`.
 
@@ -5466,7 +5650,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0BasicAuth:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0BasicAuthPassword:
     r"""
-    `password` specifies a key of a Secret containing the password for
+    password defines a key of a Secret containing the password for
     authentication.
 
     Attributes
@@ -5489,7 +5673,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0BasicAuthP
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0BasicAuthUsername:
     r"""
-    `username` specifies a key of a Secret containing the username for
+    username defines a key of a Secret containing the username for
     authentication.
 
     Attributes
@@ -5512,18 +5696,18 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0BasicAuthU
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0MetadataConfig:
     r"""
-    MetadataConfig configures the sending of series metadata to the remote storage.
+    metadataConfig defines how to send a series metadata to the remote storage.
 
     Attributes
     ----------
     maxSamplesPerSend : int, default is Undefined, optional
-        MaxSamplesPerSend is the maximum number of metadata samples per send.
+        maxSamplesPerSend defines the maximum number of metadata samples per send.
 
         It requires Prometheus >= v2.29.0.
     send : bool, default is Undefined, optional
-        Defines whether metric metadata is sent to the remote storage or not.
+        send defines whether metric metadata is sent to the remote storage or not.
     sendInterval : str, default is Undefined, optional
-        Defines how frequently metric metadata is sent to the remote storage.
+        sendInterval defines how frequently metric metadata is sent to the remote storage.
     """
     maxSamplesPerSend?: int
     send?: bool
@@ -5535,7 +5719,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0MetadataCo
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2:
     r"""
-    OAuth2 configuration for the URL.
+    oauth2 configuration for the URL.
 
     It requires Prometheus >= v2.27.0 or Thanos >= v0.24.0.
 
@@ -5548,31 +5732,31 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2:
     clientSecret : MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2ClientSecret, default is Undefined, required
         client secret
     endpointParams : {str:str}, default is Undefined, optional
-        `endpointParams` configures the HTTP parameters to append to the token
+        endpointParams configures the HTTP parameters to append to the token
         URL.
     noProxy : str, default is Undefined, optional
-        `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+        noProxy defines a comma-separated string that can contain IPs, CIDR notation, domain names
         that should be excluded from proxying. IP and domain names can
         contain port numbers.
 
         It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
     proxyConnectHeader : {str:[MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2ProxyConnectHeaderItems0]}, default is Undefined, optional
-        ProxyConnectHeader optionally specifies headers to send to
+        proxyConnectHeader optionally specifies headers to send to
         proxies during CONNECT requests.
 
         It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
     proxyFromEnvironment : bool, default is Undefined, optional
-        Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+        proxyFromEnvironment defines whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
 
         It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
     proxyUrl : str, default is Undefined, optional
-        `proxyURL` defines the HTTP proxy server to use.
+        proxyUrl defines the HTTP proxy server to use.
     scopes : [str], default is Undefined, optional
-        `scopes` defines the OAuth2 scopes used for the token request.
+        scopes defines the OAuth2 scopes used for the token request.
     tlsConfig : MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSConfig, default is Undefined, optional
         tls config
     tokenUrl : str, default is Undefined, required
-        `tokenURL` configures the URL to fetch the token from.
+        tokenUrl defines the URL to fetch the token from.
     """
     clientId: MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2ClientID
 
@@ -5593,7 +5777,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2ClientID:
     r"""
-    `clientId` specifies a key of a Secret or ConfigMap containing the
+    clientId defines a key of a Secret or ConfigMap containing the
     OAuth2 client's ID.
 
     Attributes
@@ -5608,7 +5792,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2Clie
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2ClientIDConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -5630,7 +5814,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2Clie
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2ClientIDSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -5652,7 +5836,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2Clie
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2ClientSecret:
     r"""
-    `clientSecret` specifies a key of a Secret containing the OAuth2
+    clientSecret defines a key of a Secret containing the OAuth2
     client's secret.
 
     Attributes
@@ -5697,7 +5881,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2Prox
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSConfig:
     r"""
-    TLS configuration to use when connecting to the OAuth2 server.
+    tlsConfig defines the TLS configuration to use when connecting to the OAuth2 server.
     It requires Prometheus >= v2.43.0.
 
     Attributes
@@ -5707,19 +5891,19 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSC
     cert : MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSConfigCert, default is Undefined, optional
         cert
     insecureSkipVerify : bool, default is Undefined, optional
-        Disable target certificate validation.
+        insecureSkipVerify defines how to disable target certificate validation.
     keySecret : MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSConfigKeySecret, default is Undefined, optional
         key secret
     maxVersion : str, default is Undefined, optional
-        Maximum acceptable TLS version.
+        maxVersion defines the maximum acceptable TLS version.
 
         It requires Prometheus >= v2.41.0 or Thanos >= v0.31.0.
     minVersion : str, default is Undefined, optional
-        Minimum acceptable TLS version.
+        minVersion defines the minimum acceptable TLS version.
 
         It requires Prometheus >= v2.35.0 or Thanos >= v0.28.0.
     serverName : str, default is Undefined, optional
-        Used to verify the hostname for the targets.
+        serverName is used to verify the hostname for the targets.
     """
     ca?: MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSConfigCa
     cert?: MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSConfigCert
@@ -5731,7 +5915,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSC
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSConfigCa:
     r"""
-    Certificate authority used when verifying server certificates.
+    ca defines the Certificate authority used when verifying server certificates.
 
     Attributes
     ----------
@@ -5745,7 +5929,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSC
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSConfigCaConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -5767,7 +5951,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSC
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSConfigCaSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -5789,7 +5973,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSC
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSConfigCert:
     r"""
-    Client certificate to present when doing client-authentication.
+    cert defines the Client certificate to present when doing client-authentication.
 
     Attributes
     ----------
@@ -5803,7 +5987,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSC
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSConfigCertConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -5825,7 +6009,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSC
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSConfigCertSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -5847,7 +6031,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSC
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Oauth2TLSConfigKeySecret:
     r"""
-    Secret containing the client key file for the targets.
+    keySecret defines the Secret containing the client key file for the targets.
 
     Attributes
     ----------
@@ -5891,34 +6075,34 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0ProxyConne
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0QueueConfig:
     r"""
-    QueueConfig allows tuning of the remote write queue parameters.
+    queueConfig allows tuning of the remote write queue parameters.
 
     Attributes
     ----------
     batchSendDeadline : str, default is Undefined, optional
-        BatchSendDeadline is the maximum time a sample will wait in buffer.
+        batchSendDeadline defines the maximum time a sample will wait in buffer.
     capacity : int, default is Undefined, optional
-        Capacity is the number of samples to buffer per shard before we start
+        capacity defines the number of samples to buffer per shard before we start
         dropping them.
     maxBackoff : str, default is Undefined, optional
-        MaxBackoff is the maximum retry delay.
+        maxBackoff defines the maximum retry delay.
     maxRetries : int, default is Undefined, optional
-        MaxRetries is the maximum number of times to retry a batch on recoverable errors.
+        maxRetries defines the maximum number of times to retry a batch on recoverable errors.
     maxSamplesPerSend : int, default is Undefined, optional
-        MaxSamplesPerSend is the maximum number of samples per send.
+        maxSamplesPerSend defines the maximum number of samples per send.
     maxShards : int, default is Undefined, optional
-        MaxShards is the maximum number of shards, i.e. amount of concurrency.
+        maxShards defines the maximum number of shards, i.e. amount of concurrency.
     minBackoff : str, default is Undefined, optional
-        MinBackoff is the initial retry delay. Gets doubled for every retry.
+        minBackoff defines the initial retry delay. Gets doubled for every retry.
     minShards : int, default is Undefined, optional
-        MinShards is the minimum number of shards, i.e. amount of concurrency.
+        minShards defines the minimum number of shards, i.e. amount of concurrency.
     retryOnRateLimit : bool, default is Undefined, optional
-        Retry upon receiving a 429 status code from the remote-write storage.
+        retryOnRateLimit defines the retry upon receiving a 429 status code from the remote-write storage.
 
         This is an *experimental feature*, it may change in any upcoming release
         in a breaking way.
     sampleAgeLimit : str, default is Undefined, optional
-        SampleAgeLimit drops samples older than the limit.
+        sampleAgeLimit drops samples older than the limit.
         It requires Prometheus >= v2.50.0 or Thanos >= v0.32.0.
     """
     batchSendDeadline?: str
@@ -5940,7 +6124,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0QueueConfi
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Sigv4:
     r"""
-    Sigv4 allows to configures AWS's Signature Verification 4 for the URL.
+    sigv4 defines the AWS's Signature Verification 4 for the URL.
 
     It requires Prometheus >= v2.26.0 or Thanos >= v0.24.0.
 
@@ -5951,23 +6135,27 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Sigv4:
     accessKey : MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Sigv4AccessKey, default is Undefined, optional
         access key
     profile : str, default is Undefined, optional
-        Profile is the named AWS profile used to authenticate.
+        profile defines the named AWS profile used to authenticate.
     region : str, default is Undefined, optional
-        Region is the AWS region. If blank, the region from the default credentials chain used.
+        region defines the AWS region. If blank, the region from the default credentials chain used.
     roleArn : str, default is Undefined, optional
-        RoleArn is the named AWS profile used to authenticate.
+        roleArn defines the named AWS profile used to authenticate.
     secretKey : MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Sigv4SecretKey, default is Undefined, optional
         secret key
+    useFIPSSTSEndpoint : bool, default is Undefined, optional
+        useFIPSSTSEndpoint defines FIPS mode for AWS STS endpoint.
+        It requires Prometheus >= v2.54.0.
     """
     accessKey?: MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Sigv4AccessKey
     profile?: str
     region?: str
     roleArn?: str
     secretKey?: MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Sigv4SecretKey
+    useFIPSSTSEndpoint?: bool
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Sigv4AccessKey:
     r"""
-    AccessKey is the AWS API key. If not specified, the environment variable
+    accessKey defines the AWS API key. If not specified, the environment variable
     `AWS_ACCESS_KEY_ID` is used.
 
     Attributes
@@ -5990,7 +6178,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Sigv4Acces
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Sigv4SecretKey:
     r"""
-    SecretKey is the AWS API secret. If not specified, the environment
+    secretKey defines the AWS API secret. If not specified, the environment
     variable `AWS_SECRET_ACCESS_KEY` is used.
 
     Attributes
@@ -6013,34 +6201,34 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0Sigv4Secre
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfig:
     r"""
-    TLS Config to use for the URL.
+    tlsConfig to use for the URL.
 
     Attributes
     ----------
     ca : MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfigCa, default is Undefined, optional
         ca
     caFile : str, default is Undefined, optional
-        Path to the CA cert in the Prometheus container to use for the targets.
+        caFile defines the path to the CA cert in the Prometheus container to use for the targets.
     cert : MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfigCert, default is Undefined, optional
         cert
     certFile : str, default is Undefined, optional
-        Path to the client cert file in the Prometheus container for the targets.
+        certFile defines the path to the client cert file in the Prometheus container for the targets.
     insecureSkipVerify : bool, default is Undefined, optional
-        Disable target certificate validation.
+        insecureSkipVerify defines how to disable target certificate validation.
     keyFile : str, default is Undefined, optional
-        Path to the client key file in the Prometheus container for the targets.
+        keyFile defines the path to the client key file in the Prometheus container for the targets.
     keySecret : MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfigKeySecret, default is Undefined, optional
         key secret
     maxVersion : str, default is Undefined, optional
-        Maximum acceptable TLS version.
+        maxVersion defines the maximum acceptable TLS version.
 
         It requires Prometheus >= v2.41.0 or Thanos >= v0.31.0.
     minVersion : str, default is Undefined, optional
-        Minimum acceptable TLS version.
+        minVersion defines the minimum acceptable TLS version.
 
         It requires Prometheus >= v2.35.0 or Thanos >= v0.28.0.
     serverName : str, default is Undefined, optional
-        Used to verify the hostname for the targets.
+        serverName is used to verify the hostname for the targets.
     """
     ca?: MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfigCa
     caFile?: str
@@ -6055,7 +6243,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfig:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfigCa:
     r"""
-    Certificate authority used when verifying server certificates.
+    ca defines the Certificate authority used when verifying server certificates.
 
     Attributes
     ----------
@@ -6069,7 +6257,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfigC
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfigCaConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -6091,7 +6279,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfigC
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfigCaSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -6113,7 +6301,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfigC
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfigCert:
     r"""
-    Client certificate to present when doing client-authentication.
+    cert defines the Client certificate to present when doing client-authentication.
 
     Attributes
     ----------
@@ -6127,7 +6315,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfigC
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfigCertConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -6149,7 +6337,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfigC
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfigCertSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -6171,7 +6359,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfigC
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0TLSConfigKeySecret:
     r"""
-    Secret containing the client key file for the targets.
+    keySecret defines the Secret containing the client key file for the targets.
 
     Attributes
     ----------
@@ -6201,31 +6389,31 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0WriteRelab
     Attributes
     ----------
     action : str, default is "replace", optional
-        Action to perform based on the regex matching.
+        action to perform based on the regex matching.
 
         `Uppercase` and `Lowercase` actions require Prometheus >= v2.36.0.
         `DropEqual` and `KeepEqual` actions require Prometheus >= v2.41.0.
 
         Default: "Replace"
     modulus : int, default is Undefined, optional
-        Modulus to take of the hash of the source label values.
+        modulus to take of the hash of the source label values.
 
         Only applicable when the action is `HashMod`.
     regex : str, default is Undefined, optional
-        Regular expression against which the extracted value is matched.
+        regex defines the regular expression against which the extracted value is matched.
     replacement : str, default is Undefined, optional
-        Replacement value against which a Replace action is performed if the
+        replacement value against which a Replace action is performed if the
         regular expression matches.
 
         Regex capture groups are available.
     separator : str, default is Undefined, optional
-        Separator is the string between concatenated SourceLabels.
+        separator defines the string between concatenated SourceLabels.
     sourceLabels : [str], default is Undefined, optional
-        The source labels select values from existing labels. Their content is
+        sourceLabels defines the source labels select values from existing labels. Their content is
         concatenated using the configured Separator and matched against the
         configured regular expression.
     targetLabel : str, default is Undefined, optional
-        Label to which the resulting string is written in a replacement.
+        targetLabel defines the label to which the resulting string is written in a replacement.
 
         It is mandatory for `Replace`, `HashMod`, `Lowercase`, `Uppercase`,
         `KeepEqual` and `DropEqual` actions.
@@ -6240,12 +6428,9 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRemoteWriteItems0WriteRelab
     sourceLabels?: [str]
     targetLabel?: str
 
-    check:
-        all sourceLabels in sourceLabels {_regex_match(str(sourceLabels), r"^[a-zA-Z_][a-zA-Z0-9_]*$") if sourceLabels} if sourceLabels
-
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecResources:
     r"""
-    Defines the resources requests and limits of the 'prometheus' container.
+    resources defines the resources requests and limits of the 'prometheus' container.
 
     Attributes
     ----------
@@ -6253,7 +6438,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecResources:
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -6295,12 +6480,12 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecResourcesClaimsItems0:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecRuntime:
     r"""
-    RuntimeConfig configures the values for the Prometheus process behavior
+    runtime defines the values for the Prometheus process behavior
 
     Attributes
     ----------
     goGC : int, default is Undefined, optional
-        The Go garbage collection target percentage. Lowering this number may increase the CPU usage.
+        goGC defines the Go garbage collection target percentage. Lowering this number may increase the CPU usage.
         See: https://tip.golang.org/doc/gc-guide#GOGC
     """
     goGC?: int
@@ -6319,17 +6504,17 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0:
     authorization : MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0Authorization, default is Undefined, optional
         authorization
     default : bool, default is Undefined, optional
-        Default indicates that the scrape applies to all scrape objects that
+        default defines that the scrape applies to all scrape objects that
         don't configure an explicit scrape class name.
 
         Only one scrape class can be set as the default.
     fallbackScrapeProtocol : str, default is Undefined, optional
-        The protocol to use if a scrape returns blank, unparseable, or otherwise invalid Content-Type.
+        fallbackScrapeProtocol defines the protocol to use if a scrape returns blank, unparseable, or otherwise invalid Content-Type.
         It will only apply if the scrape resource doesn't specify any FallbackScrapeProtocol
 
         It requires Prometheus >= v3.0.0.
     metricRelabelings : [MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0MetricRelabelingsItems0], default is Undefined, optional
-        MetricRelabelings configures the relabeling rules to apply to all samples before ingestion.
+        metricRelabelings defines the relabeling rules to apply to all samples before ingestion.
 
         The Operator adds the scrape class metric relabelings defined here.
         Then the Operator adds the target-specific metric relabelings defined in ServiceMonitors, PodMonitors, Probes and ScrapeConfigs.
@@ -6337,9 +6522,9 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0:
 
         More info: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#metric_relabel_configs
     name : str, default is Undefined, required
-        Name of the scrape class.
+        name of the scrape class.
     relabelings : [MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0RelabelingsItems0], default is Undefined, optional
-        Relabelings configures the relabeling rules to apply to all scrape targets.
+        relabelings defines the relabeling rules to apply to all scrape targets.
 
         The Operator automatically adds relabelings for a few standard Kubernetes fields
         like `__meta_kubernetes_namespace` and `__meta_kubernetes_service_name`.
@@ -6365,14 +6550,14 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0AttachMetadata:
     r"""
-    AttachMetadata configures additional metadata to the discovered targets.
+    attachMetadata defines additional metadata to the discovered targets.
     When the scrape object defines its own configuration, it takes
     precedence over the scrape class configuration.
 
     Attributes
     ----------
     node : bool, default is Undefined, optional
-        When set to true, Prometheus attaches node metadata to the discovered
+        node when set to true, Prometheus attaches node metadata to the discovered
         targets.
 
         The Prometheus service account must have the `list` and `watch`
@@ -6382,7 +6567,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0AttachMe
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0Authorization:
     r"""
-    Authorization section for the ScrapeClass.
+    authorization section for the ScrapeClass.
     It will only apply if the scrape resource doesn't specify any Authorization.
 
     Attributes
@@ -6390,9 +6575,9 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0Authoriz
     credentials : MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0AuthorizationCredentials, default is Undefined, optional
         credentials
     credentialsFile : str, default is Undefined, optional
-        File to read a secret from, mutually exclusive with `credentials`.
+        credentialsFile defines the file to read a secret from, mutually exclusive with `credentials`.
     $type : str, default is Undefined, optional
-        Defines the authentication type. The value is case-insensitive.
+        type defines the authentication type. The value is case-insensitive.
 
         "Basic" is not a supported value.
 
@@ -6404,7 +6589,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0Authoriz
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0AuthorizationCredentials:
     r"""
-    Selects a key of a Secret in the namespace that contains the credentials for authentication.
+    credentials defines a key of a Secret in the namespace that contains the credentials for authentication.
 
     Attributes
     ----------
@@ -6434,31 +6619,31 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0MetricRe
     Attributes
     ----------
     action : str, default is "replace", optional
-        Action to perform based on the regex matching.
+        action to perform based on the regex matching.
 
         `Uppercase` and `Lowercase` actions require Prometheus >= v2.36.0.
         `DropEqual` and `KeepEqual` actions require Prometheus >= v2.41.0.
 
         Default: "Replace"
     modulus : int, default is Undefined, optional
-        Modulus to take of the hash of the source label values.
+        modulus to take of the hash of the source label values.
 
         Only applicable when the action is `HashMod`.
     regex : str, default is Undefined, optional
-        Regular expression against which the extracted value is matched.
+        regex defines the regular expression against which the extracted value is matched.
     replacement : str, default is Undefined, optional
-        Replacement value against which a Replace action is performed if the
+        replacement value against which a Replace action is performed if the
         regular expression matches.
 
         Regex capture groups are available.
     separator : str, default is Undefined, optional
-        Separator is the string between concatenated SourceLabels.
+        separator defines the string between concatenated SourceLabels.
     sourceLabels : [str], default is Undefined, optional
-        The source labels select values from existing labels. Their content is
+        sourceLabels defines the source labels select values from existing labels. Their content is
         concatenated using the configured Separator and matched against the
         configured regular expression.
     targetLabel : str, default is Undefined, optional
-        Label to which the resulting string is written in a replacement.
+        targetLabel defines the label to which the resulting string is written in a replacement.
 
         It is mandatory for `Replace`, `HashMod`, `Lowercase`, `Uppercase`,
         `KeepEqual` and `DropEqual` actions.
@@ -6472,9 +6657,6 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0MetricRe
     separator?: str
     sourceLabels?: [str]
     targetLabel?: str
-
-    check:
-        all sourceLabels in sourceLabels {_regex_match(str(sourceLabels), r"^[a-zA-Z_][a-zA-Z0-9_]*$") if sourceLabels} if sourceLabels
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0RelabelingsItems0:
     r"""
@@ -6486,31 +6668,31 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0Relabeli
     Attributes
     ----------
     action : str, default is "replace", optional
-        Action to perform based on the regex matching.
+        action to perform based on the regex matching.
 
         `Uppercase` and `Lowercase` actions require Prometheus >= v2.36.0.
         `DropEqual` and `KeepEqual` actions require Prometheus >= v2.41.0.
 
         Default: "Replace"
     modulus : int, default is Undefined, optional
-        Modulus to take of the hash of the source label values.
+        modulus to take of the hash of the source label values.
 
         Only applicable when the action is `HashMod`.
     regex : str, default is Undefined, optional
-        Regular expression against which the extracted value is matched.
+        regex defines the regular expression against which the extracted value is matched.
     replacement : str, default is Undefined, optional
-        Replacement value against which a Replace action is performed if the
+        replacement value against which a Replace action is performed if the
         regular expression matches.
 
         Regex capture groups are available.
     separator : str, default is Undefined, optional
-        Separator is the string between concatenated SourceLabels.
+        separator defines the string between concatenated SourceLabels.
     sourceLabels : [str], default is Undefined, optional
-        The source labels select values from existing labels. Their content is
+        sourceLabels defines the source labels select values from existing labels. Their content is
         concatenated using the configured Separator and matched against the
         configured regular expression.
     targetLabel : str, default is Undefined, optional
-        Label to which the resulting string is written in a replacement.
+        targetLabel defines the label to which the resulting string is written in a replacement.
 
         It is mandatory for `Replace`, `HashMod`, `Lowercase`, `Uppercase`,
         `KeepEqual` and `DropEqual` actions.
@@ -6525,12 +6707,9 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0Relabeli
     sourceLabels?: [str]
     targetLabel?: str
 
-    check:
-        all sourceLabels in sourceLabels {_regex_match(str(sourceLabels), r"^[a-zA-Z_][a-zA-Z0-9_]*$") if sourceLabels} if sourceLabels
-
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfig:
     r"""
-    TLSConfig defines the TLS settings to use for the scrape. When the
+    tlsConfig defines the TLS settings to use for the scrape. When the
     scrape objects define their own CA, certificate and/or key, they take
     precedence over the corresponding scrape class fields.
 
@@ -6541,27 +6720,27 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfi
     ca : MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfigCa, default is Undefined, optional
         ca
     caFile : str, default is Undefined, optional
-        Path to the CA cert in the Prometheus container to use for the targets.
+        caFile defines the path to the CA cert in the Prometheus container to use for the targets.
     cert : MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfigCert, default is Undefined, optional
         cert
     certFile : str, default is Undefined, optional
-        Path to the client cert file in the Prometheus container for the targets.
+        certFile defines the path to the client cert file in the Prometheus container for the targets.
     insecureSkipVerify : bool, default is Undefined, optional
-        Disable target certificate validation.
+        insecureSkipVerify defines how to disable target certificate validation.
     keyFile : str, default is Undefined, optional
-        Path to the client key file in the Prometheus container for the targets.
+        keyFile defines the path to the client key file in the Prometheus container for the targets.
     keySecret : MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfigKeySecret, default is Undefined, optional
         key secret
     maxVersion : str, default is Undefined, optional
-        Maximum acceptable TLS version.
+        maxVersion defines the maximum acceptable TLS version.
 
         It requires Prometheus >= v2.41.0 or Thanos >= v0.31.0.
     minVersion : str, default is Undefined, optional
-        Minimum acceptable TLS version.
+        minVersion defines the minimum acceptable TLS version.
 
         It requires Prometheus >= v2.35.0 or Thanos >= v0.28.0.
     serverName : str, default is Undefined, optional
-        Used to verify the hostname for the targets.
+        serverName is used to verify the hostname for the targets.
     """
     ca?: MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfigCa
     caFile?: str
@@ -6576,7 +6755,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfi
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfigCa:
     r"""
-    Certificate authority used when verifying server certificates.
+    ca defines the Certificate authority used when verifying server certificates.
 
     Attributes
     ----------
@@ -6590,7 +6769,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfi
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfigCaConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -6612,7 +6791,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfi
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfigCaSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -6634,7 +6813,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfi
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfigCert:
     r"""
-    Client certificate to present when doing client-authentication.
+    cert defines the Client certificate to present when doing client-authentication.
 
     Attributes
     ----------
@@ -6648,7 +6827,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfi
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfigCertConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -6670,7 +6849,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfi
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfigCertSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -6692,7 +6871,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfi
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfigKeySecret:
     r"""
-    Secret containing the client key file for the targets.
+    keySecret defines the Secret containing the client key file for the targets.
 
     Attributes
     ----------
@@ -6714,7 +6893,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeClassesItems0TLSConfi
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeConfigNamespaceSelector:
     r"""
-    Namespaces to match for ScrapeConfig discovery. An empty label selector
+    scrapeConfigNamespaceSelector defines the namespaces to match for ScrapeConfig discovery. An empty label selector
     matches all namespaces. A null label selector matches the current
     namespace only.
 
@@ -6758,7 +6937,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeConfigNamespaceSelect
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeConfigSelector:
     r"""
-    ScrapeConfigs to be selected for target discovery. An empty label
+    scrapeConfigSelector defines the scrapeConfigs to be selected for target discovery. An empty label
     selector matches all objects. A null label selector matches no objects.
 
     If `spec.serviceMonitorSelector`, `spec.podMonitorSelector`, `spec.probeSelector`
@@ -6810,7 +6989,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecScrapeConfigSelectorMatchEx
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecSecurityContext:
     r"""
-    SecurityContext holds pod-level security attributes and common container settings.
+    securityContext holds pod-level security attributes and common container settings.
     This defaults to the default PodSecurityContext.
 
     Attributes
@@ -7040,7 +7219,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecSecurityContextWindowsOptio
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecServiceMonitorNamespaceSelector:
     r"""
-    Namespaces to match for ServicedMonitors discovery. An empty label selector
+    serviceMonitorNamespaceSelector defines the namespaces to match for ServicedMonitors discovery. An empty label selector
     matches all namespaces. A null label selector (default value) matches the current
     namespace only.
 
@@ -7082,7 +7261,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecServiceMonitorNamespaceSele
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecServiceMonitorSelector:
     r"""
-    ServiceMonitors to be selected for target discovery. An empty label
+    serviceMonitorSelector defines the serviceMonitors to be selected for target discovery. An empty label
     selector matches all objects. A null label selector matches no objects.
 
     If `spec.serviceMonitorSelector`, `spec.podMonitorSelector`, `spec.probeSelector`
@@ -7132,12 +7311,12 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecServiceMonitorSelectorMatch
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecStorage:
     r"""
-    Storage defines the storage used by Prometheus.
+    storage defines the storage used by Prometheus.
 
     Attributes
     ----------
     disableMountSubPath : bool, default is Undefined, optional
-        Deprecated: subPath usage will be removed in a future release.
+        disableMountSubPath deprecated: subPath usage will be removed in a future release.
     emptyDir : MonitoringCoreosComV1alpha1PrometheusAgentSpecStorageEmptyDir, default is Undefined, optional
         empty dir
     ephemeral : MonitoringCoreosComV1alpha1PrometheusAgentSpecStorageEphemeral, default is Undefined, optional
@@ -7152,7 +7331,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecStorage:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecStorageEmptyDir:
     r"""
-    EmptyDirVolumeSource to be used by the StatefulSet.
+    emptyDir to be used by the StatefulSet.
     If specified, it takes precedence over `ephemeral` and `volumeClaimTemplate`.
     More info: https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
 
@@ -7179,7 +7358,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecStorageEmptyDir:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecStorageEphemeral:
     r"""
-    EphemeralVolumeSource to be used by the StatefulSet.
+    ephemeral to be used by the StatefulSet.
     This is a beta field in k8s 1.21 and GA in 1.15.
     For lower versions, starting with k8s 1.19, it requires enabling the GenericEphemeralVolume feature gate.
     More info: https://kubernetes.io/docs/concepts/storage/ephemeral-volumes/#generic-ephemeral-volumes
@@ -7254,15 +7433,13 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecStorageEphemeralVolumeClaim
         volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim.
         If specified, the CSI driver will create or update the volume with the attributes defined
         in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName,
-        it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass
-        will be applied to the claim but it's not allowed to reset this field to empty string once it is set.
-        If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass
-        will be set by the persistentvolume controller if it exists.
+        it can be changed after the claim is created. An empty string or nil value indicates that no
+        VolumeAttributesClass will be applied to the claim. If the claim enters an Infeasible error state,
+        this field can be reset to its previous value (including nil) to cancel the modification.
         If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be
         set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource
         exists.
         More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/
-        (Beta) Using this field requires the VolumeAttributesClass feature gate to be enabled (off by default).
     volumeMode : str, default is Undefined, optional
         volumeMode defines what type of volume is required by the claim.
         Value of Filesystem is implied when not included in claim spec.
@@ -7422,7 +7599,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecStorageEphemeralVolumeClaim
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecStorageVolumeClaimTemplate:
     r"""
-    Defines the PVC spec to be used by the Prometheus StatefulSets.
+    volumeClaimTemplate defines the PVC spec to be used by the Prometheus StatefulSets.
     The easiest way to use a volume that cannot be automatically provisioned
     is to use a label selector alongside manually created PersistentVolumes.
 
@@ -7454,22 +7631,22 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecStorageVolumeClaimTemplate:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecStorageVolumeClaimTemplateMetadata:
     r"""
-    EmbeddedMetadata contains metadata relevant to an EmbeddedResource.
+    metadata defines EmbeddedMetadata contains metadata relevant to an EmbeddedResource.
 
     Attributes
     ----------
     annotations : {str:str}, default is Undefined, optional
-        Annotations is an unstructured key value map stored with a resource that may be
+        annotations defines an unstructured key value map stored with a resource that may be
         set by external tools to store and retrieve arbitrary metadata. They are not
         queryable and should be preserved when modifying objects.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
     labels : {str:str}, default is Undefined, optional
-        Map of string keys and values that can be used to organize and categorize
+        labels define the map of string keys and values that can be used to organize and categorize
         (scope and select) objects. May match selectors of replication controllers
         and services.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
     name : str, default is Undefined, optional
-        Name must be unique within a namespace. Is required when creating resources, although
+        name must be unique within a namespace. Is required when creating resources, although
         some resources may allow a client to request the generation of an appropriate name
         automatically. Name is primarily intended for creation idempotence and configuration
         definition.
@@ -7482,7 +7659,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecStorageVolumeClaimTemplateM
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecStorageVolumeClaimTemplateSpec:
     r"""
-    Defines the desired characteristics of a volume requested by a pod author.
+    spec defines the specification of the  characteristics of a volume requested by a pod author.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
 
     Attributes
@@ -7505,15 +7682,13 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecStorageVolumeClaimTemplateS
         volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim.
         If specified, the CSI driver will create or update the volume with the attributes defined
         in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName,
-        it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass
-        will be applied to the claim but it's not allowed to reset this field to empty string once it is set.
-        If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass
-        will be set by the persistentvolume controller if it exists.
+        it can be changed after the claim is created. An empty string or nil value indicates that no
+        VolumeAttributesClass will be applied to the claim. If the claim enters an Infeasible error state,
+        this field can be reset to its previous value (including nil) to cancel the modification.
         If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be
         set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource
         exists.
         More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/
-        (Beta) Using this field requires the VolumeAttributesClass feature gate to be enabled (off by default).
     volumeMode : str, default is Undefined, optional
         volumeMode defines what type of volume is required by the claim.
         Value of Filesystem is implied when not included in claim spec.
@@ -7673,7 +7848,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecStorageVolumeClaimTemplateS
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecStorageVolumeClaimTemplateStatus:
     r"""
-    Deprecated: this field is never set.
+    status is deprecated: this field is never set.
 
     Attributes
     ----------
@@ -7747,7 +7922,6 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecStorageVolumeClaimTemplateS
     currentVolumeAttributesClassName : str, default is Undefined, optional
         currentVolumeAttributesClassName is the current name of the VolumeAttributesClass the PVC is using.
         When unset, there is no VolumeAttributeClass applied to this PersistentVolumeClaim
-        This is a beta field and requires enabling VolumeAttributesClass feature (off by default).
     modifyVolumeStatus : MonitoringCoreosComV1alpha1PrometheusAgentSpecStorageVolumeClaimTemplateStatusModifyVolumeStatus, default is Undefined, optional
         modify volume status
     phase : str, default is Undefined, optional
@@ -7802,7 +7976,6 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecStorageVolumeClaimTemplateS
     r"""
     ModifyVolumeStatus represents the status object of ControllerModifyVolume operation.
     When this is unset, there is no ModifyVolume operation being attempted.
-    This is a beta field and requires enabling VolumeAttributesClass feature (off by default).
 
     Attributes
     ----------
@@ -7864,7 +8037,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTopologySpreadConstraintsIt
     Attributes
     ----------
     additionalLabelSelectors : str, default is Undefined, optional
-        Defines what Prometheus Operator managed labels should be added to labelSelector on the topologySpreadConstraint.
+        additionalLabelSelectors Defines what Prometheus Operator managed labels should be added to labelSelector on the topologySpreadConstraint.
     labelSelector : MonitoringCoreosComV1alpha1PrometheusAgentSpecTopologySpreadConstraintsItems0LabelSelector, default is Undefined, optional
         label selector
     matchLabelKeys : [str], default is Undefined, optional
@@ -8018,7 +8191,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTopologySpreadConstraintsIt
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfig:
     r"""
-    TracingConfig configures tracing in Prometheus.
+    tracingConfig defines tracing in Prometheus.
 
     This is an *experimental feature*, it may change in any upcoming release
     in a breaking way.
@@ -8026,19 +8199,19 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfig:
     Attributes
     ----------
     clientType : str, default is Undefined, optional
-        Client used to export the traces. Supported values are `http` or `grpc`.
+        clientType defines the client used to export the traces. Supported values are `http` or `grpc`.
     compression : str, default is Undefined, optional
-        Compression key for supported compression types. The only supported value is `gzip`.
+        compression key for supported compression types. The only supported value is `gzip`.
     endpoint : str, default is Undefined, required
-        Endpoint to send the traces to. Should be provided in format <host>:<port>.
+        endpoint to send the traces to. Should be provided in format <host>:<port>.
     headers : {str:str}, default is Undefined, optional
-        Key-value pairs to be used as headers associated with gRPC or HTTP requests.
+        headers defines the key-value pairs to be used as headers associated with gRPC or HTTP requests.
     insecure : bool, default is Undefined, optional
-        If disabled, the client will use a secure connection.
+        insecure if disabled, the client will use a secure connection.
     samplingFraction : int | str, default is Undefined, optional
-        Sets the probability a given trace will be sampled. Must be a float from 0 through 1.
+        samplingFraction defines the probability a given trace will be sampled. Must be a float from 0 through 1.
     timeout : str, default is Undefined, optional
-        Maximum time the exporter will wait for each batch export.
+        timeout defines the maximum time the exporter will wait for each batch export.
     tlsConfig : MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfig, default is Undefined, optional
         tls config
     """
@@ -8059,34 +8232,34 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfig:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfig:
     r"""
-    TLS Config to use when sending traces.
+    tlsConfig to use when sending traces.
 
     Attributes
     ----------
     ca : MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfigCa, default is Undefined, optional
         ca
     caFile : str, default is Undefined, optional
-        Path to the CA cert in the Prometheus container to use for the targets.
+        caFile defines the path to the CA cert in the Prometheus container to use for the targets.
     cert : MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfigCert, default is Undefined, optional
         cert
     certFile : str, default is Undefined, optional
-        Path to the client cert file in the Prometheus container for the targets.
+        certFile defines the path to the client cert file in the Prometheus container for the targets.
     insecureSkipVerify : bool, default is Undefined, optional
-        Disable target certificate validation.
+        insecureSkipVerify defines how to disable target certificate validation.
     keyFile : str, default is Undefined, optional
-        Path to the client key file in the Prometheus container for the targets.
+        keyFile defines the path to the client key file in the Prometheus container for the targets.
     keySecret : MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfigKeySecret, default is Undefined, optional
         key secret
     maxVersion : str, default is Undefined, optional
-        Maximum acceptable TLS version.
+        maxVersion defines the maximum acceptable TLS version.
 
         It requires Prometheus >= v2.41.0 or Thanos >= v0.31.0.
     minVersion : str, default is Undefined, optional
-        Minimum acceptable TLS version.
+        minVersion defines the minimum acceptable TLS version.
 
         It requires Prometheus >= v2.35.0 or Thanos >= v0.28.0.
     serverName : str, default is Undefined, optional
-        Used to verify the hostname for the targets.
+        serverName is used to verify the hostname for the targets.
     """
     ca?: MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfigCa
     caFile?: str
@@ -8101,7 +8274,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfig:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfigCa:
     r"""
-    Certificate authority used when verifying server certificates.
+    ca defines the Certificate authority used when verifying server certificates.
 
     Attributes
     ----------
@@ -8115,7 +8288,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfigCa:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfigCaConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -8137,7 +8310,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfigCaCon
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfigCaSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -8159,7 +8332,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfigCaSec
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfigCert:
     r"""
-    Client certificate to present when doing client-authentication.
+    cert defines the Client certificate to present when doing client-authentication.
 
     Attributes
     ----------
@@ -8173,7 +8346,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfigCert:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfigCertConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -8195,7 +8368,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfigCertC
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfigCertSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -8217,7 +8390,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfigCertS
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfigKeySecret:
     r"""
-    Secret containing the client key file for the targets.
+    keySecret defines the Secret containing the client key file for the targets.
 
     Attributes
     ----------
@@ -8239,13 +8412,13 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTracingConfigTLSConfigKeySe
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecTsdb:
     r"""
-    Defines the runtime reloadable configuration of the timeseries database(TSDB).
+    tsdb defines the runtime reloadable configuration of the timeseries database(TSDB).
     It requires Prometheus >= v2.39.0 or PrometheusAgent >= v2.54.0.
 
     Attributes
     ----------
     outOfOrderTimeWindow : str, default is Undefined, optional
-        Configures how old an out-of-order/out-of-bounds sample can be with
+        outOfOrderTimeWindow defines how old an out-of-order/out-of-bounds sample can be with
         respect to the TSDB max time.
 
         An out-of-order/out-of-bounds sample is ingested into the TSDB as long as
@@ -8917,15 +9090,13 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0EphemeralVolum
         volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim.
         If specified, the CSI driver will create or update the volume with the attributes defined
         in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName,
-        it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass
-        will be applied to the claim but it's not allowed to reset this field to empty string once it is set.
-        If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass
-        will be set by the persistentvolume controller if it exists.
+        it can be changed after the claim is created. An empty string or nil value indicates that no
+        VolumeAttributesClass will be applied to the claim. If the claim enters an Infeasible error state,
+        this field can be reset to its previous value (including nil) to cancel the modification.
         If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be
         set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource
         exists.
         More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/
-        (Beta) Using this field requires the VolumeAttributesClass feature gate to be enabled (off by default).
     volumeMode : str, default is Undefined, optional
         volumeMode defines what type of volume is required by the claim.
         Value of Filesystem is implied when not included in claim spec.
@@ -9237,13 +9408,11 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0Glusterfs:
     r"""
     glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime.
     Deprecated: Glusterfs is deprecated and the in-tree glusterfs type is no longer supported.
-    More info: https://examples.k8s.io/volumes/glusterfs/README.md
 
     Attributes
     ----------
     endpoints : str, default is Undefined, required
         endpoints is the endpoint name that details Glusterfs topology.
-        More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
     path : str, default is Undefined, required
         path is the Glusterfs volume path.
         More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
@@ -9321,7 +9490,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0Iscsi:
     r"""
     iscsi represents an ISCSI Disk resource that is attached to a
     kubelet's host machine and then exposed to the pod.
-    More info: https://examples.k8s.io/volumes/iscsi/README.md
+    More info: https://kubernetes.io/docs/concepts/storage/volumes/#iscsi
 
     Attributes
     ----------
@@ -9501,6 +9670,8 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0ProjectedSourc
         config map
     downwardAPI : MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0ProjectedSourcesItems0DownwardAPI, default is Undefined, optional
         downward API
+    podCertificate : MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0ProjectedSourcesItems0PodCertificate, default is Undefined, optional
+        pod certificate
     secret : MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0ProjectedSourcesItems0Secret, default is Undefined, optional
         secret
     serviceAccountToken : MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken, default is Undefined, optional
@@ -9509,6 +9680,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0ProjectedSourc
     clusterTrustBundle?: MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundle
     configMap?: MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0ProjectedSourcesItems0ConfigMap
     downwardAPI?: MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0ProjectedSourcesItems0DownwardAPI
+    podCertificate?: MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0ProjectedSourcesItems0PodCertificate
     secret?: MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0ProjectedSourcesItems0Secret
     serviceAccountToken?: MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken
 
@@ -9723,6 +9895,105 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0ProjectedSourc
     check:
         _regex_match(str(divisor), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if divisor
 
+schema MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0ProjectedSourcesItems0PodCertificate:
+    r"""
+    Projects an auto-rotating credential bundle (private key and certificate
+    chain) that the pod can use either as a TLS client or server.
+
+    Kubelet generates a private key and uses it to send a
+    PodCertificateRequest to the named signer.  Once the signer approves the
+    request and issues a certificate chain, Kubelet writes the key and
+    certificate chain to the pod filesystem.  The pod does not start until
+    certificates have been issued for each podCertificate projected volume
+    source in its spec.
+
+    Kubelet will begin trying to rotate the certificate at the time indicated
+    by the signer using the PodCertificateRequest.Status.BeginRefreshAt
+    timestamp.
+
+    Kubelet can write a single file, indicated by the credentialBundlePath
+    field, or separate files, indicated by the keyPath and
+    certificateChainPath fields.
+
+    The credential bundle is a single file in PEM format.  The first PEM
+    entry is the private key (in PKCS#8 format), and the remaining PEM
+    entries are the certificate chain issued by the signer (typically,
+    signers will return their certificate chain in leaf-to-root order).
+
+    Prefer using the credential bundle format, since your application code
+    can read it atomically.  If you use keyPath and certificateChainPath,
+    your application must make two separate file reads. If these coincide
+    with a certificate rotation, it is possible that the private key and leaf
+    certificate you read may not correspond to each other.  Your application
+    will need to check for this condition, and re-read until they are
+    consistent.
+
+    The named signer controls chooses the format of the certificate it
+    issues; consult the signer implementation's documentation to learn how to
+    use the certificates it issues.
+
+    Attributes
+    ----------
+    certificateChainPath : str, default is Undefined, optional
+        Write the certificate chain at this path in the projected volume.
+
+        Most applications should use credentialBundlePath.  When using keyPath
+        and certificateChainPath, your application needs to check that the key
+        and leaf certificate are consistent, because it is possible to read the
+        files mid-rotation.
+    credentialBundlePath : str, default is Undefined, optional
+        Write the credential bundle at this path in the projected volume.
+
+        The credential bundle is a single file that contains multiple PEM blocks.
+        The first PEM block is a PRIVATE KEY block, containing a PKCS#8 private
+        key.
+
+        The remaining blocks are CERTIFICATE blocks, containing the issued
+        certificate chain from the signer (leaf and any intermediates).
+
+        Using credentialBundlePath lets your Pod's application code make a single
+        atomic read that retrieves a consistent key and certificate chain.  If you
+        project them to separate files, your application code will need to
+        additionally check that the leaf certificate was issued to the key.
+    keyPath : str, default is Undefined, optional
+        Write the key at this path in the projected volume.
+
+        Most applications should use credentialBundlePath.  When using keyPath
+        and certificateChainPath, your application needs to check that the key
+        and leaf certificate are consistent, because it is possible to read the
+        files mid-rotation.
+    keyType : str, default is Undefined, required
+        The type of keypair Kubelet will generate for the pod.
+
+        Valid values are "RSA3072", "RSA4096", "ECDSAP256", "ECDSAP384",
+        "ECDSAP521", and "ED25519".
+    maxExpirationSeconds : int, default is Undefined, optional
+        maxExpirationSeconds is the maximum lifetime permitted for the
+        certificate.
+
+        Kubelet copies this value verbatim into the PodCertificateRequests it
+        generates for this projection.
+
+        If omitted, kube-apiserver will set it to 86400(24 hours). kube-apiserver
+        will reject values shorter than 3600 (1 hour).  The maximum allowable
+        value is 7862400 (91 days).
+
+        The signer implementation is then free to issue a certificate with any
+        lifetime *shorter* than MaxExpirationSeconds, but no shorter than 3600
+        seconds (1 hour).  This constraint is enforced by kube-apiserver.
+        `kubernetes.io` signers will never issue certificates with a lifetime
+        longer than 24 hours.
+    signerName : str, default is Undefined, required
+        Kubelet's generated CSRs will be addressed to this signer.
+    """
+    certificateChainPath?: str
+    credentialBundlePath?: str
+    keyPath?: str
+    keyType: str
+
+    maxExpirationSeconds?: int
+    signerName: str
+
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0ProjectedSourcesItems0Secret:
     r"""
     secret information about the secret data to project
@@ -9840,7 +10111,6 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0Rbd:
     r"""
     rbd represents a Rados Block Device mount on the host that shares a pod's lifetime.
     Deprecated: RBD is deprecated and the in-tree rbd type is no longer supported.
-    More info: https://examples.k8s.io/volumes/rbd/README.md
 
     Attributes
     ----------
@@ -10102,17 +10372,17 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecVolumesItems0VsphereVolume:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWeb:
     r"""
-    Defines the configuration of the Prometheus web server.
+    web defines the configuration of the Prometheus web server.
 
     Attributes
     ----------
     httpConfig : MonitoringCoreosComV1alpha1PrometheusAgentSpecWebHTTPConfig, default is Undefined, optional
         http config
     maxConnections : int, default is Undefined, optional
-        Defines the maximum number of simultaneous connections
+        maxConnections defines the maximum number of simultaneous connections
         A zero value means that Prometheus doesn't accept any incoming connection.
     pageTitle : str, default is Undefined, optional
-        The prometheus web page title.
+        pageTitle defines the prometheus web page title.
     tlsConfig : MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfig, default is Undefined, optional
         tls config
     """
@@ -10126,14 +10396,14 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWeb:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebHTTPConfig:
     r"""
-    Defines HTTP parameters for web server.
+    httpConfig defines HTTP parameters for web server.
 
     Attributes
     ----------
     headers : MonitoringCoreosComV1alpha1PrometheusAgentSpecWebHTTPConfigHeaders, default is Undefined, optional
         headers
     http2 : bool, default is Undefined, optional
-        Enable HTTP/2 support. Note that HTTP/2 is only supported with TLS.
+        http2 enable HTTP/2 support. Note that HTTP/2 is only supported with TLS.
         When TLSConfig is not configured, HTTP/2 will be disabled.
         Whenever the value of the field changes, a rolling update will be triggered.
     """
@@ -10142,30 +10412,30 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebHTTPConfig:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebHTTPConfigHeaders:
     r"""
-    List of headers that can be added to HTTP responses.
+    headers defines a list of headers that can be added to HTTP responses.
 
     Attributes
     ----------
     contentSecurityPolicy : str, default is Undefined, optional
-        Set the Content-Security-Policy header to HTTP responses.
+        contentSecurityPolicy defines the Content-Security-Policy header to HTTP responses.
         Unset if blank.
     strictTransportSecurity : str, default is Undefined, optional
-        Set the Strict-Transport-Security header to HTTP responses.
+        strictTransportSecurity defines the Strict-Transport-Security header to HTTP responses.
         Unset if blank.
         Please make sure that you use this with care as this header might force
         browsers to load Prometheus and the other applications hosted on the same
         domain and subdomains over HTTPS.
         https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
     xContentTypeOptions : str, default is Undefined, optional
-        Set the X-Content-Type-Options header to HTTP responses.
+        xContentTypeOptions defines the X-Content-Type-Options header to HTTP responses.
         Unset if blank. Accepted value is nosniff.
         https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
     xFrameOptions : str, default is Undefined, optional
-        Set the X-Frame-Options header to HTTP responses.
+        xFrameOptions defines the X-Frame-Options header to HTTP responses.
         Unset if blank. Accepted values are deny and sameorigin.
         https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
     xXSSProtection : str, default is Undefined, optional
-        Set the X-XSS-Protection header to all responses.
+        xXSSProtection defines the X-XSS-Protection header to all responses.
         Unset if blank.
         https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
     """
@@ -10177,44 +10447,44 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebHTTPConfigHeaders:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfig:
     r"""
-    Defines the TLS parameters for HTTPS.
+    tlsConfig defines the TLS parameters for HTTPS.
 
     Attributes
     ----------
     cert : MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfigCert, default is Undefined, optional
         cert
     certFile : str, default is Undefined, optional
-        Path to the TLS certificate file in the container for the web server.
+        certFile defines the path to the TLS certificate file in the container for the web server.
 
         Either `keySecret` or `keyFile` must be defined.
 
         It is mutually exclusive with `cert`.
     cipherSuites : [str], default is Undefined, optional
-        List of supported cipher suites for TLS versions up to TLS 1.2.
+        cipherSuites defines the list of supported cipher suites for TLS versions up to TLS 1.2.
 
         If not defined, the Go default cipher suites are used.
         Available cipher suites are documented in the Go documentation:
         https://golang.org/pkg/crypto/tls/#pkg-constants
     clientAuthType : str, default is Undefined, optional
-        The server policy for client TLS authentication.
+        clientAuthType defines the server policy for client TLS authentication.
 
         For more detail on clientAuth options:
         https://golang.org/pkg/crypto/tls/#ClientAuthType
     clientCAFile : str, default is Undefined, optional
-        Path to the CA certificate file for client certificate authentication to
+        clientCAFile defines the path to the CA certificate file for client certificate authentication to
         the server.
 
         It is mutually exclusive with `client_ca`.
     client_ca : MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfigClientCa, default is Undefined, optional
         client ca
     curvePreferences : [str], default is Undefined, optional
-        Elliptic curves that will be used in an ECDHE handshake, in preference
+        curvePreferences defines elliptic curves that will be used in an ECDHE handshake, in preference
         order.
 
         Available curves are documented in the Go documentation:
         https://golang.org/pkg/crypto/tls/#CurveID
     keyFile : str, default is Undefined, optional
-        Path to the TLS private key file in the container for the web server.
+        keyFile defines the path to the TLS private key file in the container for the web server.
 
         If defined, either `cert` or `certFile` must be defined.
 
@@ -10222,11 +10492,11 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfig:
     keySecret : MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfigKeySecret, default is Undefined, optional
         key secret
     maxVersion : str, default is Undefined, optional
-        Maximum TLS version that is acceptable.
+        maxVersion defines the Maximum TLS version that is acceptable.
     minVersion : str, default is Undefined, optional
-        Minimum TLS version that is acceptable.
+        minVersion defines the minimum TLS version that is acceptable.
     preferServerCipherSuites : bool, default is Undefined, optional
-        Controls whether the server selects the client's most preferred cipher
+        preferServerCipherSuites defines whether the server selects the client's most preferred cipher
         suite, or the server's most preferred cipher suite.
 
         If true then the server's preference, as expressed in
@@ -10247,7 +10517,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfig:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfigCert:
     r"""
-    Secret or ConfigMap containing the TLS certificate for the web server.
+    cert defines the Secret or ConfigMap containing the TLS certificate for the web server.
 
     Either `keySecret` or `keyFile` must be defined.
 
@@ -10265,7 +10535,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfigCert:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfigCertConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -10287,7 +10557,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfigCertConfigMap:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfigCertSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -10309,7 +10579,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfigCertSecret:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfigClientCa:
     r"""
-    Secret or ConfigMap containing the CA certificate for client certificate
+    client_ca defines the Secret or ConfigMap containing the CA certificate for client certificate
     authentication to the server.
 
     It is mutually exclusive with `clientCAFile`.
@@ -10326,7 +10596,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfigClientCa:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfigClientCaConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -10348,7 +10618,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfigClientCaConfigM
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfigClientCaSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -10370,7 +10640,7 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfigClientCaSecret:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfigKeySecret:
     r"""
-    Secret containing the TLS private key for the web server.
+    keySecret defines the secret containing the TLS private key for the web server.
 
     Either `cert` or `certFile` must be defined.
 
@@ -10396,48 +10666,44 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentSpecWebTLSConfigKeySecret:
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentStatus:
     r"""
-    Most recent observed status of the Prometheus cluster. Read-only.
+    status defines the most recent observed status of the Prometheus cluster. Read-only.
     More info:
     https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
 
     Attributes
     ----------
-    availableReplicas : int, default is Undefined, required
-        Total number of available pods (ready for at least minReadySeconds)
+    availableReplicas : int, default is Undefined, optional
+        availableReplicas defines the total number of available pods (ready for at least minReadySeconds)
         targeted by this Prometheus deployment.
     conditions : [MonitoringCoreosComV1alpha1PrometheusAgentStatusConditionsItems0], default is Undefined, optional
-        The current state of the Prometheus deployment.
-    paused : bool, default is Undefined, required
-        Represents whether any actions on the underlying managed objects are
+        conditions defines the current state of the Prometheus deployment.
+    paused : bool, default is Undefined, optional
+        paused defines whether any actions on the underlying managed objects are
         being performed. Only delete actions will be performed.
-    replicas : int, default is Undefined, required
-        Total number of non-terminated pods targeted by this Prometheus deployment
+    replicas : int, default is Undefined, optional
+        replicas defines the total number of non-terminated pods targeted by this Prometheus deployment
         (their labels match the selector).
     selector : str, default is Undefined, optional
-        The selector used to match the pods targeted by this Prometheus resource.
+        selector used to match the pods targeted by this Prometheus resource.
     shardStatuses : [MonitoringCoreosComV1alpha1PrometheusAgentStatusShardStatusesItems0], default is Undefined, optional
-        The list has one entry per shard. Each entry provides a summary of the shard status.
+        shardStatuses defines the list has one entry per shard. Each entry provides a summary of the shard status.
     shards : int, default is Undefined, optional
-        Shards is the most recently observed number of shards.
-    unavailableReplicas : int, default is Undefined, required
-        Total number of unavailable pods targeted by this Prometheus deployment.
-    updatedReplicas : int, default is Undefined, required
-        Total number of non-terminated pods targeted by this Prometheus deployment
+        shards defines the most recently observed number of shards.
+    unavailableReplicas : int, default is Undefined, optional
+        unavailableReplicas defines the total number of unavailable pods targeted by this Prometheus deployment.
+    updatedReplicas : int, default is Undefined, optional
+        updatedReplicas defines the total number of non-terminated pods targeted by this Prometheus deployment
         that have the desired version spec.
     """
-    availableReplicas: int
-
+    availableReplicas?: int
     conditions?: [MonitoringCoreosComV1alpha1PrometheusAgentStatusConditionsItems0]
-    paused: bool
-
-    replicas: int
-
+    paused?: bool
+    replicas?: int
     selector?: str
     shardStatuses?: [MonitoringCoreosComV1alpha1PrometheusAgentStatusShardStatusesItems0]
     shards?: int
-    unavailableReplicas: int
-
-    updatedReplicas: int
+    unavailableReplicas?: int
+    updatedReplicas?: int
 
 schema MonitoringCoreosComV1alpha1PrometheusAgentStatusConditionsItems0:
     r"""
@@ -10449,19 +10715,19 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentStatusConditionsItems0:
     lastTransitionTime : str, default is Undefined, required
         lastTransitionTime is the time of the last update to the current status property.
     message : str, default is Undefined, optional
-        Human-readable message indicating details for the condition's last transition.
+        message defines human-readable message indicating details for the condition's last transition.
     observedGeneration : int, default is Undefined, optional
-        ObservedGeneration represents the .metadata.generation that the
+        observedGeneration defines the .metadata.generation that the
         condition was set based upon. For instance, if `.metadata.generation` is
         currently 12, but the `.status.conditions[].observedGeneration` is 9, the
         condition is out of date with respect to the current state of the
         instance.
     reason : str, default is Undefined, optional
-        Reason for the condition's last transition.
+        reason for the condition's last transition.
     status : str, default is Undefined, required
-        Status of the condition.
+        status of the condition.
     $type : str, default is Undefined, required
-        Type of the condition being reported.
+        type of the condition being reported.
     """
     lastTransitionTime: str
 
@@ -10483,16 +10749,16 @@ schema MonitoringCoreosComV1alpha1PrometheusAgentStatusShardStatusesItems0:
     Attributes
     ----------
     availableReplicas : int, default is Undefined, required
-        Total number of available pods (ready for at least minReadySeconds)
+        availableReplicas defines the total number of available pods (ready for at least minReadySeconds)
         targeted by this shard.
     replicas : int, default is Undefined, required
-        Total number of pods targeted by this shard.
+        replicas defines the total number of pods targeted by this shard.
     shardID : str, default is Undefined, required
-        Identifier of the shard.
+        shardID defines the identifier of the shard.
     unavailableReplicas : int, default is Undefined, required
-        Total number of unavailable pods targeted by this shard.
+        unavailableReplicas defines the Total number of unavailable pods targeted by this shard.
     updatedReplicas : int, default is Undefined, required
-        Total number of non-terminated pods targeted by this shard
+        updatedReplicas defines the total number of non-terminated pods targeted by this shard
         that have the desired spec.
     """
     availableReplicas: int

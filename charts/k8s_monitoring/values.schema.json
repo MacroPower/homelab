@@ -582,7 +582,10 @@
     },
     "annotations": {
       "additionalProperties": true,
-      "description": "Log labels to set with values copied from the Kubernetes Pod annotations.\nFormat: `\u003clog_label\u003e: \u003ckubernetes_annotation\u003e`.",
+      "description": "Annotations to add to the Alloy Custom Resource. These annotations are not added to the workload or Pod.",
+      "items": {
+        "required": []
+      },
       "properties": {
         "instance": {
           "default": "k8s.grafana.com/instance",
@@ -671,7 +674,7 @@
       },
       "required": [],
       "title": "annotations",
-      "type": "object"
+      "type": "array"
     },
     "apiServer": {
       "additionalProperties": true,
@@ -2167,7 +2170,7 @@
                   "type": "string"
                 },
                 "unit": {
-                  "default": "ms",
+                  "default": "s",
                   "description": "The histogram unit.",
                   "required": [],
                   "title": "unit",
@@ -3149,7 +3152,7 @@
           "properties": {
             "enable": {
               "default": "enabled",
-              "description": "The annotation action for enabling or disabling collecting of profiles with eBPF.\nDefault is `profiles.grafana.com/cpu.ebpf.enabled`.",
+              "description": "The annotation action for enabling or disabling collecting of profiles with eBPF.",
               "required": [],
               "title": "enable",
               "type": "string"
@@ -3207,7 +3210,7 @@
         },
         "targetingScheme": {
           "default": "annotation",
-          "description": "How to target pods for collecting profiles with eBPF. Options are `all` and `annotation`. If using `all`, all\nKubernetes pods will be targeted for collecting profiles, and you can exclude certain pods by setting the\n`profiles.grafana.com/cpu.ebpf.scrape=\"false\"` annotation on that pod. If using `annotation`, only pods with the\n`profiles.grafana.com/cpu.ebpf.scrape=\"true\"` annotation will have profiles collected with eBPF.",
+          "description": "How to target pods for collecting profiles with eBPF. Options are `all` and `annotation`. If using `all`, all\nKubernetes pods will be targeted for collecting profiles, and you can exclude certain pods by setting the\n`profiles.grafana.com/cpu.ebpf.enabled=\"false\"` annotation on that pod. If using `annotation`, only pods with the\n`profiles.grafana.com/cpu.ebpf.enabled=\"true\"` annotation will have profiles collected with eBPF.",
           "required": [],
           "title": "targetingScheme",
           "type": "string"
@@ -5733,7 +5736,7 @@
     },
     "labelSelectors": {
       "additionalProperties": true,
-      "description": "Filter the list of discovered pods by labels.\nExample: `labelSelectors: { 'app': 'myapp' }` will only discover pods and services with the label `app=myapp`.\nExample: `labelSelectors: { 'app': ['myapp', 'myotherapp'] }` will only discover pods and services with the label `app=myapp` or `app=myotherapp`.",
+      "description": "Filter the list of discovered pods and services by labels. Only for the \"volumes\" gather method.\nExample: `labelSelectors: { 'app': 'myapp' }` will only discover pods with the label `app=myapp`.\nExample: `labelSelectors: { 'app': ['myapp', 'myotherapp'] }` will only discover pods with the label `app=myapp` or `app=myotherapp`.",
       "properties": {
         "app.kubernetes.io/name": {
           "items": {
@@ -5751,7 +5754,10 @@
     },
     "labels": {
       "additionalProperties": true,
-      "description": "Log labels to set with values copied from the Kubernetes Pod labels.\nFormat: `\u003clog_label\u003e: \u003ckubernetes_label\u003e`.",
+      "description": "Labels to add to the Alloy Custom Resource. These labels are not added to the workload or Pod.",
+      "items": {
+        "required": []
+      },
       "properties": {
         "app_kubernetes_io_name": {
           "default": "app.kubernetes.io/name",
@@ -5762,7 +5768,7 @@
       },
       "required": [],
       "title": "labels",
-      "type": "object"
+      "type": "array"
     },
     "labelsToKeep": {
       "description": "The list of labels to keep on the logs, all other pipeline labels will be dropped.",
@@ -7125,7 +7131,7 @@
     },
     "nodeSelectors": {
       "additionalProperties": true,
-      "description": "Filter the list of discovered nodes by labels.\nExample: `nodeSelectors: { 'kubernetes.io/os': 'linux' }`",
+      "description": "Filter the list of discovered nodes by labels. Only for the \"volumes\" gather method.\nExample: `nodeSelectors: { 'kubernetes.io/os': 'linux' }`",
       "required": [],
       "title": "nodeSelectors",
       "type": "object"
@@ -7583,6 +7589,7 @@
             },
             "image": {
               "additionalProperties": true,
+              "description": "If clusterIdConfigmap is defined, use user-generated ConfigMap with key CLUSTER_ID as default cluster ID.\nThis overrides the above defaultClusterId. Ensure the ConfigMap exists and contains the required CLUSTER_ID key.\nclusterIdConfigmap: cluster-id-configmap",
               "properties": {
                 "fullImageName": {
                   "default": "null",
@@ -7613,7 +7620,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "1.117.3@sha256:09fae89c4544ec2a891e2902e88ce3137d7032c6edbe0fd97441aaee7bdbea54",
+                  "default": "1.117.6@sha256:6f1a0e6fe21559a77051e7b7f9e4ac6bc80277131492ae084e8365ada805af91",
                   "description": "Exporter container image tag",
                   "required": [],
                   "title": "tag",
@@ -8873,7 +8880,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "1.117.3@sha256:727b95405e8c749ddbaa3bd97b93d9c0e246faeb9be9d370dd93ae6b31cdb0c2",
+                  "default": "1.117.6@sha256:fd26f004b2b2565e22240fc2a9f6adb078fdb4de3fc1a1b16c611a3c3b80683e",
                   "description": "UI container image tag",
                   "required": [],
                   "title": "tag",
@@ -9179,6 +9186,86 @@
           },
           "required": [],
           "title": "ui",
+          "type": "object"
+        },
+        "updateCaTrust": {
+          "additionalProperties": true,
+          "properties": {
+            "caCertsSecret": {
+              "default": "ca-certs-secret",
+              "required": [],
+              "title": "caCertsSecret",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "resources": {
+              "additionalProperties": true,
+              "description": "caCertsConfig: ca-certs-config  # The name of the ConfigMap containing the CA trust configuration.",
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            },
+            "securityContext": {
+              "additionalProperties": true,
+              "description": "# Security context settings for the init container.",
+              "properties": {
+                "allowPrivilegeEscalation": {
+                  "default": false,
+                  "required": [],
+                  "title": "allowPrivilegeEscalation",
+                  "type": "boolean"
+                },
+                "readOnlyRootFilesystem": {
+                  "default": true,
+                  "required": [],
+                  "title": "readOnlyRootFilesystem",
+                  "type": "boolean"
+                },
+                "runAsGroup": {
+                  "default": 0,
+                  "required": [],
+                  "title": "runAsGroup",
+                  "type": "integer"
+                },
+                "runAsNonRoot": {
+                  "default": false,
+                  "required": [],
+                  "title": "runAsNonRoot",
+                  "type": "boolean"
+                },
+                "runAsUser": {
+                  "default": 0,
+                  "required": [],
+                  "title": "runAsUser",
+                  "type": "integer"
+                },
+                "seccompProfile": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "type": {
+                      "default": "RuntimeDefault",
+                      "required": [],
+                      "title": "type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "seccompProfile",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "securityContext",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "updateCaTrust",
           "type": "object"
         }
       },
@@ -9548,6 +9635,46 @@
     "podSecurityContext": {
       "additionalProperties": true,
       "description": "Holds pod-level security attributes and common container settings",
+      "properties": {
+        "fsGroup": {
+          "default": 1000,
+          "required": [],
+          "title": "fsGroup",
+          "type": "integer"
+        },
+        "runAsGroup": {
+          "default": 1000,
+          "required": [],
+          "title": "runAsGroup",
+          "type": "integer"
+        },
+        "runAsNonRoot": {
+          "default": true,
+          "required": [],
+          "title": "runAsNonRoot",
+          "type": "boolean"
+        },
+        "runAsUser": {
+          "default": 1000,
+          "required": [],
+          "title": "runAsUser",
+          "type": "integer"
+        },
+        "seccompProfile": {
+          "additionalProperties": true,
+          "properties": {
+            "type": {
+              "default": "RuntimeDefault",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "seccompProfile",
+          "type": "object"
+        }
+      },
       "required": [],
       "title": "podSecurityContext",
       "type": "object"
@@ -9662,6 +9789,13 @@
           "required": [],
           "title": "annotations",
           "type": "object"
+        },
+        "bearerTokenFile": {
+          "default": "/var/run/secrets/kubernetes.io/serviceaccount/token",
+          "description": "The bearer token file to use when scraping profiles.",
+          "required": [],
+          "title": "bearerTokenFile",
+          "type": "string"
         },
         "enabled": {
           "default": true,
@@ -10375,10 +10509,20 @@
               "type": "object"
             },
             "databaseNameAttribute": {
-              "description": "The attribute name used to identify the database name from span attributes.",
+              "description": "The attribute name used to identify the database name from span attributes.\nDEPRECATED: Please use databaseNameAttributes instead. If this is provided, it will override\ndatabaseNameAttributes as the only attribute to used.",
               "required": [],
               "title": "databaseNameAttribute",
               "type": "string"
+            },
+            "databaseNameAttributes": {
+              "description": "The attribute names used to identify the database name from span attributes.",
+              "items": {
+                "required": [],
+                "type": "string"
+              },
+              "required": [],
+              "title": "databaseNameAttributes",
+              "type": "array"
             },
             "destinations": {
               "description": "The destinations where service graph metrics will be sent. If empty, all metrics-capable destinations will be used.",
@@ -12779,6 +12923,29 @@
       "additionalProperties": true,
       "description": "Privileges and access control settings for a container",
       "properties": {
+        "allowPrivilegeEscalation": {
+          "default": false,
+          "required": [],
+          "title": "allowPrivilegeEscalation",
+          "type": "boolean"
+        },
+        "capabilities": {
+          "additionalProperties": true,
+          "properties": {
+            "drop": {
+              "items": {
+                "required": [],
+                "type": "string"
+              },
+              "required": [],
+              "title": "drop",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "capabilities",
+          "type": "object"
+        },
         "enabled": {
           "default": true,
           "required": [],
@@ -12795,6 +12962,12 @@
           "default": true,
           "required": [],
           "title": "privileged",
+          "type": "boolean"
+        },
+        "readOnlyRootFilesystem": {
+          "default": true,
+          "required": [],
+          "title": "readOnlyRootFilesystem",
           "type": "boolean"
         },
         "runAsGroup": {
@@ -13259,6 +13432,7 @@
         },
         "enabled": {
           "default": false,
+          "description": "Whether to create a ServiceMonitor",
           "required": [],
           "title": "enabled",
           "type": "boolean"
@@ -13392,8 +13566,25 @@
         },
         "scrapeTimeout": {
           "default": "5s",
+          "description": "Set timeout for scrape",
           "required": [],
           "title": "scrapeTimeout",
+          "type": "string"
+        },
+        "targetLabels": {
+          "description": "Set of labels to transfer from the Kubernetes Service onto the target",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "targetLabels",
+          "type": "array"
+        },
+        "telemetryPath": {
+          "default": "/metrics",
+          "description": "Set path to metrics path",
+          "required": [],
+          "title": "telemetryPath",
           "type": "string"
         },
         "tlsConfig": {
