@@ -38,9 +38,8 @@ schema Values:
         Annotation Autodiscovery enables gathering metrics from Kubernetes Pods and Services discovered by special annotations.
         Requires a destination that supports metrics.
         To see the valid options, please see the [Annotation Autodiscovery feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-annotation-autodiscovery).
-    annotations : ValuesAnnotations, optional
-        Log labels to set with values copied from the Kubernetes Pod annotations.
-        Format: `<log_label>: <kubernetes_annotation>`.
+    annotations : [any | ValuesAnnotations], optional
+        Annotations to add to the Alloy Custom Resource. These annotations are not added to the workload or Pod.
     apiServer : ValuesApiServer, optional
         API Server metrics gather information about the Kubernetes API Server.
     applicationObservability : ValuesApplicationObservability, optional
@@ -280,12 +279,11 @@ schema Values:
     kubeletResource : ValuesKubeletResource, optional
         Kubelet Resource metrics gather information about resource information on each node.
     labelSelectors : ValuesLabelSelectors, optional
-        Filter the list of discovered pods by labels.
-        Example: `labelSelectors: { 'app': 'myapp' }` will only discover pods and services with the label `app=myapp`.
-        Example: `labelSelectors: { 'app': ['myapp', 'myotherapp'] }` will only discover pods and services with the label `app=myapp` or `app=myotherapp`.
-    labels : ValuesLabels, optional
-        Log labels to set with values copied from the Kubernetes Pod labels.
-        Format: `<log_label>: <kubernetes_label>`.
+        Filter the list of discovered pods and services by labels. Only for the "volumes" gather method.
+        Example: `labelSelectors: { 'app': 'myapp' }` will only discover pods with the label `app=myapp`.
+        Example: `labelSelectors: { 'app': ['myapp', 'myotherapp'] }` will only discover pods with the label `app=myapp` or `app=myotherapp`.
+    labels : [any | ValuesLabels], optional
+        Labels to add to the Alloy Custom Resource. These labels are not added to the workload or Pod.
     labelsToKeep : [str], optional
         The list of labels to keep on the logs, all other pipeline labels will be dropped.
     leaderElection : ValuesLeaderElection, optional
@@ -404,7 +402,7 @@ schema Values:
         # Assign a nodeSelector if operating a hybrid cluster
         #
     nodeSelectors : ValuesNodeSelectors, optional
-        Filter the list of discovered nodes by labels.
+        Filter the list of discovered nodes by labels. Only for the "volumes" gather method.
         Example: `nodeSelectors: { 'kubernetes.io/os': 'linux' }`
     openTelemetryConversion : ValuesOpenTelemetryConversion, optional
         Settings for converting OpenTelemetry ecosystem metrics to Prometheus ecosystem metrics.
@@ -631,7 +629,7 @@ schema Values:
     "alloy-receiver"?: ValuesAlloyReceiver
     "alloy-singleton"?: ValuesAlloySingleton
     annotationAutodiscovery?: ValuesAnnotationAutodiscovery
-    annotations?: ValuesAnnotations
+    annotations?: [any | ValuesAnnotations]
     apiServer?: ValuesApiServer
     applicationObservability?: ValuesApplicationObservability
     auth?: ValuesAuth
@@ -736,7 +734,7 @@ schema Values:
     kubeletProbes?: ValuesKubeletProbes
     kubeletResource?: ValuesKubeletResource
     labelSelectors?: ValuesLabelSelectors
-    labels?: ValuesLabels
+    labels?: [any | ValuesLabels]
     labelsToKeep?: [str]
     leaderElection?: ValuesLeaderElection
     liveDebugging?: ValuesLiveDebugging
@@ -1294,8 +1292,7 @@ schema ValuesAnnotationAutodiscovery:
 
 schema ValuesAnnotations:
     r"""
-    Log labels to set with values copied from the Kubernetes Pod annotations.
-    Format: `<log_label>: <kubernetes_annotation>`.
+    Annotations to add to the Alloy Custom Resource. These annotations are not added to the workload or Pod.
 
     Attributes
     ----------
@@ -2412,7 +2409,7 @@ schema ValuesConnectorsSpanMetricsHistogram:
         Settings for exponential histograms.
     $type : str, optional, default is "explicit"
         Type of histograms to create. Must be either "explicit" or "exponential".
-    unit : str, optional, default is "ms"
+    unit : str, optional, default is "s"
         The histogram unit.
     """
     [...str]: any
@@ -3188,8 +3185,8 @@ schema ValuesEbpf:
     targetingScheme : str, optional, default is "annotation"
         How to target pods for collecting profiles with eBPF. Options are `all` and `annotation`. If using `all`, all
         Kubernetes pods will be targeted for collecting profiles, and you can exclude certain pods by setting the
-        `profiles.grafana.com/cpu.ebpf.scrape="false"` annotation on that pod. If using `annotation`, only pods with the
-        `profiles.grafana.com/cpu.ebpf.scrape="true"` annotation will have profiles collected with eBPF.
+        `profiles.grafana.com/cpu.ebpf.enabled="false"` annotation on that pod. If using `annotation`, only pods with the
+        `profiles.grafana.com/cpu.ebpf.enabled="true"` annotation will have profiles collected with eBPF.
     """
     [...str]: any
     annotationSelectors?: ValuesEbpfAnnotationSelectors
@@ -3221,7 +3218,6 @@ schema ValuesEbpfAnnotations:
     ----------
     enable : str, optional, default is "enabled"
         The annotation action for enabling or disabling collecting of profiles with eBPF.
-        Default is `profiles.grafana.com/cpu.ebpf.enabled`.
     """
     [...str]: any
     enable?: str
@@ -4848,9 +4844,9 @@ schema ValuesKubeletResourceMetricsTuning:
 
 schema ValuesLabelSelectors:
     r"""
-    Filter the list of discovered pods by labels.
-    Example: `labelSelectors: { 'app': 'myapp' }` will only discover pods and services with the label `app=myapp`.
-    Example: `labelSelectors: { 'app': ['myapp', 'myotherapp'] }` will only discover pods and services with the label `app=myapp` or `app=myotherapp`.
+    Filter the list of discovered pods and services by labels. Only for the "volumes" gather method.
+    Example: `labelSelectors: { 'app': 'myapp' }` will only discover pods with the label `app=myapp`.
+    Example: `labelSelectors: { 'app': ['myapp', 'myotherapp'] }` will only discover pods with the label `app=myapp` or `app=myotherapp`.
 
     Attributes
     ----------
@@ -4861,8 +4857,7 @@ schema ValuesLabelSelectors:
 
 schema ValuesLabels:
     r"""
-    Log labels to set with values copied from the Kubernetes Pod labels.
-    Format: `<log_label>: <kubernetes_label>`.
+    Labels to add to the Alloy Custom Resource. These labels are not added to the workload or Pod.
 
     Attributes
     ----------
@@ -5759,7 +5754,7 @@ schema ValuesNodeSelector:
 
 schema ValuesNodeSelectors:
     r"""
-    Filter the list of discovered nodes by labels.
+    Filter the list of discovered nodes by labels. Only for the "volumes" gather method.
     Example: `nodeSelectors: { 'kubernetes.io/os': 'linux' }`
     """
     [...str]: any
@@ -5839,6 +5834,7 @@ schema ValuesOpencost:
     topologySpreadConstraints : [any], optional
         Assign custom TopologySpreadConstraints rules
     ui : ValuesOpencostUi, optional
+    updateCaTrust : ValuesOpencostUpdateCaTrust, optional
     """
     [...str]: any
     affinity?: ValuesOpencostAffinity
@@ -5869,6 +5865,7 @@ schema ValuesOpencost:
     tolerations?: [any]
     topologySpreadConstraints?: [any]
     ui?: ValuesOpencostUi
+    updateCaTrust?: ValuesOpencostUpdateCaTrust
 
 schema ValuesOpencostAffinity:
     r"""
@@ -6003,6 +6000,9 @@ schema ValuesOpencostExporter:
     extraVolumeMounts : [any], optional
         A list of volume mounts to be added to the pod
     image : ValuesOpencostExporterImage, optional
+        If clusterIdConfigmap is defined, use user-generated ConfigMap with key CLUSTER_ID as default cluster ID.
+        This overrides the above defaultClusterId. Ensure the ConfigMap exists and contains the required CLUSTER_ID key.
+        clusterIdConfigmap: cluster-id-configmap
     livenessProbe : ValuesOpencostExporterLivenessProbe, optional
         Liveness probe configuration
     persistence : ValuesOpencostExporterPersistence, optional
@@ -6155,7 +6155,9 @@ schema ValuesOpencostExporterExtraEnv:
 
 schema ValuesOpencostExporterImage:
     r"""
-    ValuesOpencostExporterImage
+    If clusterIdConfigmap is defined, use user-generated ConfigMap with key CLUSTER_ID as default cluster ID.
+    This overrides the above defaultClusterId. Ensure the ConfigMap exists and contains the required CLUSTER_ID key.
+    clusterIdConfigmap: cluster-id-configmap
 
     Attributes
     ----------
@@ -6167,7 +6169,7 @@ schema ValuesOpencostExporterImage:
         Exporter container image registry
     repository : str, optional, default is "opencost/opencost"
         Exporter container image name
-    tag : str, optional, default is "1.117.3@sha256:09fae89c4544ec2a891e2902e88ce3137d7032c6edbe0fd97441aaee7bdbea54"
+    tag : str, optional, default is "1.117.6@sha256:6f1a0e6fe21559a77051e7b7f9e4ac6bc80277131492ae084e8365ada805af91"
         Exporter container image tag
     """
     [...str]: any
@@ -6990,7 +6992,7 @@ schema ValuesOpencostUiImage:
         UI container image registry
     repository : str, optional, default is "opencost/opencost-ui"
         UI container image name
-    tag : str, optional, default is "1.117.3@sha256:727b95405e8c749ddbaa3bd97b93d9c0e246faeb9be9d370dd93ae6b31cdb0c2"
+    tag : str, optional, default is "1.117.6@sha256:fd26f004b2b2565e22240fc2a9f6adb078fdb4de3fc1a1b16c611a3c3b80683e"
         UI container image tag
     """
     [...str]: any
@@ -7174,6 +7176,63 @@ schema ValuesOpencostUiSecurityContext:
     The security options the container should be run with
     """
     [...str]: any
+
+schema ValuesOpencostUpdateCaTrust:
+    r"""
+    ValuesOpencostUpdateCaTrust
+
+    Attributes
+    ----------
+    caCertsSecret : str, optional, default is "ca-certs-secret"
+    enabled : bool, optional, default is False
+    resources : ValuesOpencostUpdateCaTrustResources, optional
+        caCertsConfig: ca-certs-config  # The name of the ConfigMap containing the CA trust configuration.
+    securityContext : ValuesOpencostUpdateCaTrustSecurityContext, optional
+        # Security context settings for the init container.
+    """
+    [...str]: any
+    caCertsSecret?: str
+    enabled?: bool
+    resources?: ValuesOpencostUpdateCaTrustResources
+    securityContext?: ValuesOpencostUpdateCaTrustSecurityContext
+
+schema ValuesOpencostUpdateCaTrustResources:
+    r"""
+    caCertsConfig: ca-certs-config  # The name of the ConfigMap containing the CA trust configuration.
+    """
+    [...str]: any
+
+schema ValuesOpencostUpdateCaTrustSecurityContext:
+    r"""
+    # Security context settings for the init container.
+
+    Attributes
+    ----------
+    allowPrivilegeEscalation : bool, optional, default is False
+    readOnlyRootFilesystem : bool, optional, default is True
+    runAsGroup : int, optional, default is 0
+    runAsNonRoot : bool, optional, default is False
+    runAsUser : int, optional, default is 0
+    seccompProfile : ValuesOpencostUpdateCaTrustSecurityContextSeccompProfile, optional
+    """
+    [...str]: any
+    allowPrivilegeEscalation?: bool
+    readOnlyRootFilesystem?: bool
+    runAsGroup?: int
+    runAsNonRoot?: bool
+    runAsUser?: int
+    seccompProfile?: ValuesOpencostUpdateCaTrustSecurityContextSeccompProfile
+
+schema ValuesOpencostUpdateCaTrustSecurityContextSeccompProfile:
+    r"""
+    ValuesOpencostUpdateCaTrustSecurityContextSeccompProfile
+
+    Attributes
+    ----------
+    $type : str, optional, default is "RuntimeDefault"
+    """
+    [...str]: any
+    $type?: str
 
 schema ValuesPdb:
     r"""
@@ -7414,8 +7473,32 @@ schema ValuesPodMonitorsMetricsTuning:
 schema ValuesPodSecurityContext:
     r"""
     Holds pod-level security attributes and common container settings
+
+    Attributes
+    ----------
+    fsGroup : int, optional, default is 1000
+    runAsGroup : int, optional, default is 1000
+    runAsNonRoot : bool, optional, default is True
+    runAsUser : int, optional, default is 1000
+    seccompProfile : ValuesPodSecurityContextSeccompProfile, optional
     """
     [...str]: any
+    fsGroup?: int
+    runAsGroup?: int
+    runAsNonRoot?: bool
+    runAsUser?: int
+    seccompProfile?: ValuesPodSecurityContextSeccompProfile
+
+schema ValuesPodSecurityContextSeccompProfile:
+    r"""
+    ValuesPodSecurityContextSeccompProfile
+
+    Attributes
+    ----------
+    $type : str, optional, default is "RuntimeDefault"
+    """
+    [...str]: any
+    $type?: str
 
 schema ValuesPods:
     r"""
@@ -7489,6 +7572,8 @@ schema ValuesPprof:
         All annotations will be `<prefix>/<type>.<action>`, for example, to "enable" scraping of CPU profiles, set the
         annotation `profiles.grafana.com/cpu.scrape: "true"` on the pod. To set the path for memory profiles, set the
         annotation `profiles.grafana.com/memory.path: "/debug/pprof/mem"` on the pod.
+    bearerTokenFile : str, optional, default is "/var/run/secrets/kubernetes.io/serviceaccount/token"
+        The bearer token file to use when scraping profiles.
     enabled : bool, optional, default is True
         Gather profiles by scraping pprof HTTP endpoints
     excludeNamespaces : [any], optional
@@ -7516,6 +7601,7 @@ schema ValuesPprof:
     [...str]: any
     annotationSelectors?: ValuesPprofAnnotationSelectors
     annotations?: ValuesPprofAnnotations
+    bearerTokenFile?: str
     enabled?: bool
     excludeNamespaces?: [any]
     extraDiscoveryRules?: str
@@ -8041,6 +8127,10 @@ schema ValuesProcessorsServiceGraphMetrics:
         Settings for the Alloy instance that will handle service graph metrics.
     databaseNameAttribute : str, optional
         The attribute name used to identify the database name from span attributes.
+        DEPRECATED: Please use databaseNameAttributes instead. If this is provided, it will override
+        databaseNameAttributes as the only attribute to used.
+    databaseNameAttributes : [str], optional
+        The attribute names used to identify the database name from span attributes.
     destinations : [any], optional
         The destinations where service graph metrics will be sent. If empty, all metrics-capable destinations will be used.
     dimensions : [any], optional
@@ -8062,6 +8152,7 @@ schema ValuesProcessorsServiceGraphMetrics:
     cacheLoop?: str
     collector?: ValuesProcessorsServiceGraphMetricsCollector
     databaseNameAttribute?: str
+    databaseNameAttributes?: [str]
     destinations?: [any]
     dimensions?: [any]
     enabled?: bool
@@ -9688,9 +9779,12 @@ schema ValuesSecurityContext:
 
     Attributes
     ----------
+    allowPrivilegeEscalation : bool, optional, default is False
+    capabilities : ValuesSecurityContextCapabilities, optional
     enabled : bool, optional, default is True
     fsGroup : int, optional, default is 65534
     privileged : bool, optional, default is True
+    readOnlyRootFilesystem : bool, optional, default is True
     runAsGroup : int, optional, default is 65534
     runAsNonRoot : bool, optional, default is True
     runAsUser : int, optional, default is 65534
@@ -9698,14 +9792,28 @@ schema ValuesSecurityContext:
     windowsOptions : ValuesSecurityContextWindowsOptions, optional
     """
     [...str]: any
+    allowPrivilegeEscalation?: bool
+    capabilities?: ValuesSecurityContextCapabilities
     enabled?: bool
     fsGroup?: int
     privileged?: bool
+    readOnlyRootFilesystem?: bool
     runAsGroup?: int
     runAsNonRoot?: bool
     runAsUser?: int
     seccompProfile?: ValuesSecurityContextSeccompProfile
     windowsOptions?: ValuesSecurityContextWindowsOptions
+
+schema ValuesSecurityContextCapabilities:
+    r"""
+    ValuesSecurityContextCapabilities
+
+    Attributes
+    ----------
+    drop : [str], optional
+    """
+    [...str]: any
+    drop?: [str]
 
 schema ValuesSecurityContextSeccompProfile:
     r"""
@@ -9997,6 +10105,7 @@ schema ValuesServiceMonitor:
         ServiceMonitor annotations
     attachMetadata : ValuesServiceMonitorAttachMetadata, optional
     enabled : bool, optional, default is False
+        Whether to create a ServiceMonitor
     internalMetrics : ValuesServiceMonitorInternalMetrics, optional
     interval : str, optional, default is "30s"
         Scrape interval. If not set, the Prometheus default scrape interval is used.
@@ -10013,6 +10122,11 @@ schema ValuesServiceMonitor:
         RelabelConfigs to apply to samples before scraping
         ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#relabelconfig
     scrapeTimeout : str, optional, default is "5s"
+        Set timeout for scrape
+    targetLabels : [any], optional
+        Set of labels to transfer from the Kubernetes Service onto the target
+    telemetryPath : str, optional, default is "/metrics"
+        Set path to metrics path
     tlsConfig : ValuesServiceMonitorTlsConfig, optional
         Customize tls parameters for the service monitor
     """
@@ -10030,6 +10144,8 @@ schema ValuesServiceMonitor:
     namespace?: str
     relabelings?: [ValuesServiceMonitorRelabelingsItems0]
     scrapeTimeout?: str
+    targetLabels?: [any]
+    telemetryPath?: str
     tlsConfig?: ValuesServiceMonitorTlsConfig
 
 schema ValuesServiceMonitorAdditionalLabels:

@@ -24,6 +24,8 @@ schema PrometheusRule:
         metadata
     spec : MonitoringCoreosComV1PrometheusRuleSpec, default is Undefined, required
         spec
+    status : MonitoringCoreosComV1PrometheusRuleStatus, default is Undefined, optional
+        status
     """
     apiVersion: "monitoring.coreos.com/v1" = "monitoring.coreos.com/v1"
 
@@ -32,14 +34,16 @@ schema PrometheusRule:
     metadata?: v1.ObjectMeta
     spec: MonitoringCoreosComV1PrometheusRuleSpec
 
+    status?: MonitoringCoreosComV1PrometheusRuleStatus
+
 schema MonitoringCoreosComV1PrometheusRuleSpec:
     r"""
-    Specification of desired alerting rule definitions for Prometheus.
+    spec defines the specification of desired alerting rule definitions for Prometheus.
 
     Attributes
     ----------
     groups : [MonitoringCoreosComV1PrometheusRuleSpecGroupsItems0], default is Undefined, optional
-        Content of Prometheus rule file
+        groups defines the content of Prometheus rule file
     """
     groups?: [MonitoringCoreosComV1PrometheusRuleSpecGroupsItems0]
 
@@ -50,30 +54,30 @@ schema MonitoringCoreosComV1PrometheusRuleSpecGroupsItems0:
     Attributes
     ----------
     interval : str, default is Undefined, optional
-        Interval determines how often rules in the group are evaluated.
+        interval defines how often rules in the group are evaluated.
     labels : {str:str}, default is Undefined, optional
-        Labels to add or overwrite before storing the result for its rules.
+        labels define the labels to add or overwrite before storing the result for its rules.
         The labels defined at the rule level take precedence.
 
         It requires Prometheus >= 3.0.0.
         The field is ignored for Thanos Ruler.
     limit : int, default is Undefined, optional
-        Limit the number of alerts an alerting rule and series a recording
+        limit defines the number of alerts an alerting rule and series a recording
         rule can produce.
         Limit is supported starting with Prometheus >= 2.31 and Thanos Ruler >= 0.24.
     name : str, default is Undefined, required
-        Name of the rule group.
+        name defines the name of the rule group.
     partial_response_strategy : str, default is Undefined, optional
-        PartialResponseStrategy is only used by ThanosRuler and will
+        partial_response_strategy is only used by ThanosRuler and will
         be ignored by Prometheus instances.
         More info: https://github.com/thanos-io/thanos/blob/main/docs/components/rule.md#partial-response
     query_offset : str, default is Undefined, optional
-        Defines the offset the rule evaluation timestamp of this particular group by the specified duration into the past.
+        query_offset defines the offset the rule evaluation timestamp of this particular group by the specified duration into the past.
 
         It requires Prometheus >= v2.53.0.
         It is not supported for ThanosRuler.
     rules : [MonitoringCoreosComV1PrometheusRuleSpecGroupsItems0RulesItems0], default is Undefined, optional
-        List of alerting and recording rules.
+        rules defines the list of alerting and recording rules.
     """
     interval?: str
     labels?: {str:str}
@@ -98,21 +102,21 @@ schema MonitoringCoreosComV1PrometheusRuleSpecGroupsItems0RulesItems0:
     Attributes
     ----------
     alert : str, default is Undefined, optional
-        Name of the alert. Must be a valid label value.
+        alert defines the name of the alert. Must be a valid label value.
         Only one of `record` and `alert` must be set.
     annotations : {str:str}, default is Undefined, optional
-        Annotations to add to each alert.
+        annotations defines annotations to add to each alert.
         Only valid for alerting rules.
     expr : int | str, default is Undefined, required
-        PromQL expression to evaluate.
+        expr defines the PromQL expression to evaluate.
     $for : str, default is Undefined, optional
-        Alerts are considered firing once they have been returned for this long.
+        for defines how alerts are considered firing once they have been returned for this long.
     keep_firing_for : str, default is Undefined, optional
-        KeepFiringFor defines how long an alert will continue firing after the condition that triggered it has cleared.
+        keep_firing_for defines how long an alert will continue firing after the condition that triggered it has cleared.
     labels : {str:str}, default is Undefined, optional
-        Labels to add or overwrite.
+        labels defines labels to add or overwrite.
     record : str, default is Undefined, optional
-        Name of the time series to output to. Must be a valid metric name.
+        record defines the name of the time series to output to. Must be a valid metric name.
         Only one of `record` and `alert` must be set.
     """
     alert?: str
@@ -128,4 +132,86 @@ schema MonitoringCoreosComV1PrometheusRuleSpecGroupsItems0RulesItems0:
         _regex_match(str($for), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if $for
         len(keep_firing_for) >= 1 if keep_firing_for
         _regex_match(str(keep_firing_for), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if keep_firing_for
+
+schema MonitoringCoreosComV1PrometheusRuleStatus:
+    r"""
+    status defines the status subresource. It is under active development and is updated only when the
+    "StatusForConfigurationResources" feature gate is enabled.
+
+    Most recent observed status of the PrometheusRule. Read-only.
+    More info:
+    https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+
+    Attributes
+    ----------
+    bindings : [MonitoringCoreosComV1PrometheusRuleStatusBindingsItems0], default is Undefined, optional
+        bindings defines the list of workload resources (Prometheus, PrometheusAgent, ThanosRuler or Alertmanager) which select the configuration resource.
+    """
+    bindings?: [MonitoringCoreosComV1PrometheusRuleStatusBindingsItems0]
+
+schema MonitoringCoreosComV1PrometheusRuleStatusBindingsItems0:
+    r"""
+    WorkloadBinding is a link between a configuration resource and a workload resource.
+
+    Attributes
+    ----------
+    conditions : [MonitoringCoreosComV1PrometheusRuleStatusBindingsItems0ConditionsItems0], default is Undefined, optional
+        conditions defines the current state of the configuration resource when bound to the referenced Workload object.
+    group : str, default is Undefined, required
+        group defines the group of the referenced resource.
+    name : str, default is Undefined, required
+        name defines the name of the referenced object.
+    namespace : str, default is Undefined, required
+        namespace defines the namespace of the referenced object.
+    resource : str, default is Undefined, required
+        resource defines the type of resource being referenced (e.g. Prometheus, PrometheusAgent, ThanosRuler or Alertmanager).
+    """
+    conditions?: [MonitoringCoreosComV1PrometheusRuleStatusBindingsItems0ConditionsItems0]
+    group: "monitoring.coreos.com"
+
+    name: str
+
+    namespace: str
+
+    resource: "prometheuses" | "prometheusagents" | "thanosrulers" | "alertmanagers"
+
+    check:
+        len(name) >= 1
+        len(namespace) >= 1
+
+schema MonitoringCoreosComV1PrometheusRuleStatusBindingsItems0ConditionsItems0:
+    r"""
+    ConfigResourceCondition describes the status of configuration resources linked to Prometheus, PrometheusAgent, Alertmanager or ThanosRuler.
+
+    Attributes
+    ----------
+    lastTransitionTime : str, default is Undefined, required
+        lastTransitionTime defines the time of the last update to the current status property.
+    message : str, default is Undefined, optional
+        message defines the human-readable message indicating details for the condition's last transition.
+    observedGeneration : int, default is Undefined, optional
+        observedGeneration defines the .metadata.generation that the
+        condition was set based upon. For instance, if `.metadata.generation` is
+        currently 12, but the `.status.conditions[].observedGeneration` is 9, the
+        condition is out of date with respect to the current state of the object.
+    reason : str, default is Undefined, optional
+        reason for the condition's last transition.
+    status : str, default is Undefined, required
+        status of the condition.
+    $type : str, default is Undefined, required
+        type of the condition being reported.
+        Currently, only "Accepted" is supported.
+    """
+    lastTransitionTime: str
+
+    message?: str
+    observedGeneration?: int
+    reason?: str
+    status: str
+
+    $type: "Accepted"
+
+    check:
+        len(status) >= 1
+        len($type) >= 1
 

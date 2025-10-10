@@ -40,13 +40,13 @@ schema ThanosRuler:
 
 schema MonitoringCoreosComV1ThanosRulerSpec:
     r"""
-    Specification of the desired behavior of the ThanosRuler cluster. More info:
+    spec defines the specification of the desired behavior of the ThanosRuler cluster. More info:
     https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
 
     Attributes
     ----------
     additionalArgs : [MonitoringCoreosComV1ThanosRulerSpecAdditionalArgsItems0], default is Undefined, optional
-        AdditionalArgs allows setting additional arguments for the ThanosRuler container.
+        additionalArgs defines how to add additional arguments for the ThanosRuler container.
         It is intended for e.g. activating hidden flags which are not supported by
         the dedicated configuration options yet. The arguments are passed as-is to the
         ThanosRuler container which may cause issues if they are invalid or not supported
@@ -57,16 +57,16 @@ schema MonitoringCoreosComV1ThanosRulerSpec:
     affinity : MonitoringCoreosComV1ThanosRulerSpecAffinity, default is Undefined, optional
         affinity
     alertDropLabels : [str], default is Undefined, optional
-        Configures the label names which should be dropped in Thanos Ruler
+        alertDropLabels defines the label names which should be dropped in Thanos Ruler
         alerts.
 
         The replica label `thanos_ruler_replica` will always be dropped from the alerts.
     alertQueryUrl : str, default is Undefined, optional
-        The external Query URL the Thanos Ruler will set in the 'Source' field
+        alertQueryUrl defines how Thanos Ruler will set in the 'Source' field
         of all alerts.
         Maps to the '--alert.query-url' CLI arg.
     alertRelabelConfigFile : str, default is Undefined, optional
-        Configures the path to the alert relabeling configuration file.
+        alertRelabelConfigFile defines the path to the alert relabeling configuration file.
 
         Alert relabel configuration must have the form as specified in the
         official Prometheus documentation:
@@ -80,13 +80,13 @@ schema MonitoringCoreosComV1ThanosRulerSpec:
     alertmanagersConfig : MonitoringCoreosComV1ThanosRulerSpecAlertmanagersConfig, default is Undefined, optional
         alertmanagers config
     alertmanagersUrl : [str], default is Undefined, optional
-        Configures the list of Alertmanager endpoints to send alerts to.
+        alertmanagersUrl defines the list of Alertmanager endpoints to send alerts to.
 
         For Thanos >= v0.10.0, it is recommended to use `alertmanagersConfig` instead.
 
         `alertmanagersConfig` takes precedence over this field.
     containers : [MonitoringCoreosComV1ThanosRulerSpecContainersItems0], default is Undefined, optional
-        Containers allows injecting additional containers or modifying operator generated
+        containers allows injecting additional containers or modifying operator generated
         containers. This can be used to allow adding an authentication proxy to a ThanosRuler pod or
         to change the behavior of an operator generated container. Containers described here modify
         an operator generated container if they share the same name and modifications are done via a
@@ -96,9 +96,9 @@ schema MonitoringCoreosComV1ThanosRulerSpec:
     dnsConfig : MonitoringCoreosComV1ThanosRulerSpecDNSConfig, default is Undefined, optional
         dns config
     dnsPolicy : str, default is Undefined, optional
-        Defines the DNS policy for the pods.
+        dnsPolicy defines the DNS policy for the pods.
     enableFeatures : [str], default is Undefined, optional
-        Enable access to Thanos Ruler feature flags. By default, no features are enabled.
+        enableFeatures defines how to setup Thanos Ruler feature flags. By default, no features are enabled.
 
         Enabling features which are disabled by default is entirely outside the
         scope of what the maintainers will support and by doing so, you accept
@@ -108,43 +108,43 @@ schema MonitoringCoreosComV1ThanosRulerSpec:
 
         It requires Thanos >= 0.39.0.
     enableServiceLinks : bool, default is Undefined, optional
-        Indicates whether information about services should be injected into pod's environment variables
+        enableServiceLinks defines whether information about services should be injected into pod's environment variables
     enforcedNamespaceLabel : str, default is Undefined, optional
-        EnforcedNamespaceLabel enforces adding a namespace label of origin for each alert
+        enforcedNamespaceLabel enforces adding a namespace label of origin for each alert
         and metric that is user created. The label value will always be the namespace of the object that is
         being created.
     evaluationInterval : str, default is "15s", optional
-        Interval between consecutive evaluations.
+        evaluationInterval defines the interval between consecutive evaluations.
     excludedFromEnforcement : [MonitoringCoreosComV1ThanosRulerSpecExcludedFromEnforcementItems0], default is Undefined, optional
-        List of references to PrometheusRule objects
+        excludedFromEnforcement defines the list of references to PrometheusRule objects
         to be excluded from enforcing a namespace label of origin.
         Applies only if enforcedNamespaceLabel set to true.
     externalPrefix : str, default is Undefined, optional
-        The external URL the Thanos Ruler instances will be available under. This is
+        externalPrefix defines the Thanos Ruler instances will be available under. This is
         necessary to generate correct URLs. This is necessary if Thanos Ruler is not
         served from root of a DNS name.
     grpcServerTlsConfig : MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfig, default is Undefined, optional
         grpc server Tls config
     hostAliases : [MonitoringCoreosComV1ThanosRulerSpecHostAliasesItems0], default is Undefined, optional
-        Pods' hostAliases configuration
+        hostAliases defines pods' hostAliases configuration
     hostUsers : bool, default is Undefined, optional
-        HostUsers supports the user space in Kubernetes.
+        hostUsers supports the user space in Kubernetes.
 
         More info: https://kubernetes.io/docs/tasks/configure-pod-container/user-namespaces/
 
         The feature requires at least Kubernetes 1.28 with the `UserNamespacesSupport` feature gate enabled.
         Starting Kubernetes 1.33, the feature is enabled by default.
     image : str, default is Undefined, optional
-        Thanos container image URL.
+        image defines Thanos container image URL.
     imagePullPolicy : str, default is Undefined, optional
-        Image pull policy for the 'thanos', 'init-config-reloader' and 'config-reloader' containers.
+        imagePullPolicy defines for the 'thanos', 'init-config-reloader' and 'config-reloader' containers.
         See https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy for more details.
     imagePullSecrets : [MonitoringCoreosComV1ThanosRulerSpecImagePullSecretsItems0], default is Undefined, optional
-        An optional list of references to secrets in the same namespace
+        imagePullSecrets defines an optional list of references to secrets in the same namespace
         to use for pulling thanos images from registries
         see http://kubernetes.io/docs/user-guide/images#specifying-imagepullsecrets-on-a-pod
     initContainers : [MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0], default is Undefined, optional
-        InitContainers allows adding initContainers to the pod definition. Those can be used to e.g.
+        initContainers allows adding initContainers to the pod definition. Those can be used to e.g.
         fetch secrets for injection into the ThanosRuler configuration from external sources. Any
         errors during the execution of an initContainer will lead to a restart of the Pod.
         More info: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
@@ -152,28 +152,28 @@ schema MonitoringCoreosComV1ThanosRulerSpec:
         of what the maintainers will support and by doing so, you accept that this behaviour may break
         at any time without notice.
     labels : {str:str}, default is Undefined, optional
-        Configures the external label pairs of the ThanosRuler resource.
+        labels defines the external label pairs of the ThanosRuler resource.
 
         A default replica label `thanos_ruler_replica` will be always added as a
         label with the value of the pod's name.
     listenLocal : bool, default is Undefined, optional
-        ListenLocal makes the Thanos ruler listen on loopback, so that it
+        listenLocal defines the Thanos ruler listen on loopback, so that it
         does not bind against the Pod IP.
     logFormat : str, default is Undefined, optional
-        Log format for ThanosRuler to be configured with.
+        logFormat for ThanosRuler to be configured with.
     logLevel : str, default is Undefined, optional
-        Log level for ThanosRuler to be configured with.
+        logLevel for ThanosRuler to be configured with.
     minReadySeconds : int, default is Undefined, optional
-        Minimum number of seconds for which a newly created pod should be ready
+        minReadySeconds defines the minimum number of seconds for which a newly created pod should be ready
         without any of its container crashing for it to be considered available.
 
         If unset, pods will be considered available as soon as they are ready.
     nodeSelector : {str:str}, default is Undefined, optional
-        Define which Nodes the Pods are scheduled on.
+        nodeSelector defines which Nodes the Pods are scheduled on.
     objectStorageConfig : MonitoringCoreosComV1ThanosRulerSpecObjectStorageConfig, default is Undefined, optional
         object storage config
     objectStorageConfigFile : str, default is Undefined, optional
-        Configures the path of the object storage configuration file.
+        objectStorageConfigFile defines the path of the object storage configuration file.
 
         The configuration format is defined at https://thanos.io/tip/thanos/storage.md/#configuring-access-to-object-storage
 
@@ -181,73 +181,73 @@ schema MonitoringCoreosComV1ThanosRulerSpec:
 
         This field takes precedence over `objectStorageConfig`.
     paused : bool, default is Undefined, optional
-        When a ThanosRuler deployment is paused, no actions except for deletion
+        paused defines when a ThanosRuler deployment is paused, no actions except for deletion
         will be performed on the underlying objects.
     podMetadata : MonitoringCoreosComV1ThanosRulerSpecPodMetadata, default is Undefined, optional
         pod metadata
     portName : str, default is "web", optional
-        Port name used for the pods and governing service.
+        portName defines the port name used for the pods and governing service.
         Defaults to `web`.
     priorityClassName : str, default is Undefined, optional
-        Priority class assigned to the Pods
+        priorityClassName defines the priority class assigned to the Pods
     prometheusRulesExcludedFromEnforce : [MonitoringCoreosComV1ThanosRulerSpecPrometheusRulesExcludedFromEnforceItems0], default is Undefined, optional
-        PrometheusRulesExcludedFromEnforce - list of Prometheus rules to be excluded from enforcing
+        prometheusRulesExcludedFromEnforce defines a list of Prometheus rules to be excluded from enforcing
         of adding namespace labels. Works only if enforcedNamespaceLabel set to true.
         Make sure both ruleNamespace and ruleName are set for each pair
         Deprecated: use excludedFromEnforcement instead.
     queryConfig : MonitoringCoreosComV1ThanosRulerSpecQueryConfig, default is Undefined, optional
         query config
     queryEndpoints : [str], default is Undefined, optional
-        Configures the list of Thanos Query endpoints from which to query metrics.
+        queryEndpoints defines the list of Thanos Query endpoints from which to query metrics.
 
         For Thanos >= v0.11.0, it is recommended to use `queryConfig` instead.
 
         `queryConfig` takes precedence over this field.
     remoteWrite : [MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0], default is Undefined, optional
-        Defines the list of remote write configurations.
+        remoteWrite defines the list of remote write configurations.
 
         When the list isn't empty, the ruler is configured with stateless mode.
 
         It requires Thanos >= 0.24.0.
     replicas : int, default is Undefined, optional
-        Number of thanos ruler instances to deploy.
+        replicas defines the number of thanos ruler instances to deploy.
     resendDelay : str, default is Undefined, optional
-        Minimum amount of time to wait before resending an alert to Alertmanager.
+        resendDelay defines the minimum amount of time to wait before resending an alert to Alertmanager.
     resources : MonitoringCoreosComV1ThanosRulerSpecResources, default is Undefined, optional
         resources
     retention : str, default is "24h", optional
-        Time duration ThanosRuler shall retain data for. Default is '24h', and
+        retention defines the time duration ThanosRuler shall retain data for. Default is '24h', and
         must match the regular expression `[0-9]+(ms|s|m|h|d|w|y)` (milliseconds
         seconds minutes hours days weeks years).
 
         The field has no effect when remote-write is configured since the Ruler
         operates in stateless mode.
     routePrefix : str, default is Undefined, optional
-        The route prefix ThanosRuler registers HTTP handlers for. This allows thanos UI to be served on a sub-path.
+        routePrefix defines the route prefix ThanosRuler registers HTTP handlers for. This allows thanos UI to be served on a sub-path.
     ruleConcurrentEval : int, default is Undefined, optional
-        How many rules can be evaluated concurrently.
+        ruleConcurrentEval defines how many rules can be evaluated concurrently.
         It requires Thanos >= v0.37.0.
     ruleGracePeriod : str, default is Undefined, optional
-        Minimum duration between alert and restored "for" state.
+        ruleGracePeriod defines the minimum duration between alert and restored "for" state.
         This is maintained only for alerts with configured "for" time greater than grace period.
         It requires Thanos >= v0.30.0.
     ruleNamespaceSelector : MonitoringCoreosComV1ThanosRulerSpecRuleNamespaceSelector, default is Undefined, optional
         rule namespace selector
     ruleOutageTolerance : str, default is Undefined, optional
-        Max time to tolerate prometheus outage for restoring "for" state of alert.
+        ruleOutageTolerance defines the max time to tolerate prometheus outage for restoring "for" state of alert.
         It requires Thanos >= v0.30.0.
     ruleQueryOffset : str, default is Undefined, optional
-        The default rule group's query offset duration to use.
+        ruleQueryOffset defines the default rule group's query offset duration to use.
         It requires Thanos >= v0.38.0.
     ruleSelector : MonitoringCoreosComV1ThanosRulerSpecRuleSelector, default is Undefined, optional
         rule selector
     securityContext : MonitoringCoreosComV1ThanosRulerSpecSecurityContext, default is Undefined, optional
         security context
     serviceAccountName : str, default is Undefined, optional
-        ServiceAccountName is the name of the ServiceAccount to use to run the
+        serviceAccountName defines the name of the ServiceAccount to use to run the
         Thanos Ruler Pods.
     serviceName : str, default is Undefined, optional
-        The name of the service name used by the underlying StatefulSet(s) as the governing service.
+        serviceName defines the name of the service name used by the underlying StatefulSet(s) as the governing service.
         If defined, the Service  must be created before the ThanosRuler resource in the same namespace and it must define a selector that matches the pod labels.
         If empty, the operator will create and manage a headless service named `thanos-ruler-operated` for ThanosRuler resources.
         When deploying multiple ThanosRuler resources in the same namespace, it is recommended to specify a different value for each.
@@ -255,19 +255,19 @@ schema MonitoringCoreosComV1ThanosRulerSpec:
     storage : MonitoringCoreosComV1ThanosRulerSpecStorage, default is Undefined, optional
         storage
     terminationGracePeriodSeconds : int, default is Undefined, optional
-        Optional duration in seconds the pod needs to terminate gracefully.
+        terminationGracePeriodSeconds defines the optional duration in seconds the pod needs to terminate gracefully.
         Value must be non-negative integer. The value zero indicates stop immediately via
         the kill signal (no opportunity to shut down) which may lead to data corruption.
 
         Defaults to 120 seconds.
     tolerations : [MonitoringCoreosComV1ThanosRulerSpecTolerationsItems0], default is Undefined, optional
-        If specified, the pod's tolerations.
+        tolerations defines when specified, the pod's tolerations.
     topologySpreadConstraints : [MonitoringCoreosComV1ThanosRulerSpecTopologySpreadConstraintsItems0], default is Undefined, optional
-        If specified, the pod's topology spread constraints.
+        topologySpreadConstraints defines the pod's topology spread constraints.
     tracingConfig : MonitoringCoreosComV1ThanosRulerSpecTracingConfig, default is Undefined, optional
         tracing config
     tracingConfigFile : str, default is Undefined, optional
-        Configures the path of the tracing configuration file.
+        tracingConfigFile defines the path of the tracing configuration file.
 
         The configuration format is defined at https://thanos.io/tip/thanos/tracing.md/#configuration
 
@@ -278,13 +278,13 @@ schema MonitoringCoreosComV1ThanosRulerSpec:
 
         This field takes precedence over `tracingConfig`.
     version : str, default is Undefined, optional
-        Version of Thanos to be deployed.
+        version of Thanos to be deployed.
     volumeMounts : [MonitoringCoreosComV1ThanosRulerSpecVolumeMountsItems0], default is Undefined, optional
-        VolumeMounts allows configuration of additional VolumeMounts on the output StatefulSet definition.
+        volumeMounts defines how the configuration of additional VolumeMounts on the output StatefulSet definition.
         VolumeMounts specified will be appended to other VolumeMounts in the ruler container,
         that are generated as a result of StorageSpec objects.
     volumes : [MonitoringCoreosComV1ThanosRulerSpecVolumesItems0], default is Undefined, optional
-        Volumes allows configuration of additional volumes on the output StatefulSet definition. Volumes specified will
+        volumes defines how configuration of additional volumes on the output StatefulSet definition. Volumes specified will
         be appended to other volumes that are generated as a result of StorageSpec objects.
     web : MonitoringCoreosComV1ThanosRulerSpecWeb, default is Undefined, optional
         web
@@ -374,9 +374,9 @@ schema MonitoringCoreosComV1ThanosRulerSpecAdditionalArgsItems0:
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the argument, e.g. "scrape.discovery-reload-interval".
+        name of the argument, e.g. "scrape.discovery-reload-interval".
     value : str, default is Undefined, optional
-        Argument value, e.g. 30s. Can be empty for name-only arguments (e.g. --storage.tsdb.no-lockfile)
+        value defines the argument value, e.g. 30s. Can be empty for name-only arguments (e.g. --storage.tsdb.no-lockfile)
     """
     name: str
 
@@ -387,7 +387,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecAdditionalArgsItems0:
 
 schema MonitoringCoreosComV1ThanosRulerSpecAffinity:
     r"""
-    If specified, the pod's scheduling constraints.
+    affinity defines when specified, the pod's scheduling constraints.
 
     Attributes
     ----------
@@ -911,8 +911,8 @@ schema MonitoringCoreosComV1ThanosRulerSpecAffinityPodAntiAffinity:
         most preferred is the one with the greatest sum of weights, i.e.
         for each node that meets all of the scheduling requirements (resource
         request, requiredDuringScheduling anti-affinity expressions, etc.),
-        compute a sum by iterating through the elements of this field and adding
-        "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the
+        compute a sum by iterating through the elements of this field and subtracting
+        "weight" from the sum if the node has pods which matches the corresponding podAffinityTerm; the
         node(s) with the highest sum are the most preferred.
     requiredDuringSchedulingIgnoredDuringExecution : [MonitoringCoreosComV1ThanosRulerSpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
         If the anti-affinity requirements specified by this field are not met at
@@ -1213,7 +1213,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecAffinityPodAntiAffinityRequiredDuring
 
 schema MonitoringCoreosComV1ThanosRulerSpecAlertRelabelConfigs:
     r"""
-    Configures alert relabeling in Thanos Ruler.
+    alertRelabelConfigs defines the alert relabeling in Thanos Ruler.
 
     Alert relabel configuration must have the form as specified in the
     official Prometheus documentation:
@@ -1243,7 +1243,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecAlertRelabelConfigs:
 
 schema MonitoringCoreosComV1ThanosRulerSpecAlertmanagersConfig:
     r"""
-    Configures the list of Alertmanager endpoints to send alerts to.
+    alertmanagersConfig defines the list of Alertmanager endpoints to send alerts to.
 
     The configuration format is defined at https://thanos.io/tip/components/rule.md/#alertmanager.
 
@@ -1300,8 +1300,8 @@ schema MonitoringCoreosComV1ThanosRulerSpecContainersItems0:
         Cannot be updated.
     envFrom : [MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvFromItems0], default is Undefined, optional
         List of sources to populate environment variables in the container.
-        The keys defined within a source must be a C_IDENTIFIER. All invalid keys
-        will be reported as an event when the container is starting. When a key exists in multiple
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+        When a key exists in multiple
         sources, the value associated with the last source will take precedence.
         Values defined by an Env with a duplicate key will take precedence.
         Cannot be updated.
@@ -1340,10 +1340,10 @@ schema MonitoringCoreosComV1ThanosRulerSpecContainersItems0:
         resources
     restartPolicy : str, default is Undefined, optional
         RestartPolicy defines the restart behavior of individual containers in a pod.
-        This field may only be set for init containers, and the only allowed value is "Always".
-        For non-init containers or when this field is not specified,
+        This overrides the pod-level restart policy. When this field is not specified,
         the restart behavior is defined by the Pod's restart policy and the container type.
-        Setting the RestartPolicy as "Always" for the init container will have the following effect:
+        Additionally, setting the RestartPolicy as "Always" for the init container will
+        have the following effect:
         this init container will be continually restarted on
         exit until all regular containers have terminated. Once all regular
         containers have completed, all init containers with restartPolicy "Always"
@@ -1354,6 +1354,18 @@ schema MonitoringCoreosComV1ThanosRulerSpecContainersItems0:
         container. Instead, the next init container starts immediately after this
         init container is started, or after any startupProbe has successfully
         completed.
+    restartPolicyRules : [MonitoringCoreosComV1ThanosRulerSpecContainersItems0RestartPolicyRulesItems0], default is Undefined, optional
+        Represents a list of rules to be checked to determine if the
+        container should be restarted on exit. The rules are evaluated in
+        order. Once a rule matches a container exit condition, the remaining
+        rules are ignored. If no rule matches the container exit condition,
+        the Container-level restart policy determines the whether the container
+        is restarted or not. Constraints on the rules:
+        - At most 20 rules are allowed.
+        - Rules can have the same action.
+        - Identical rules are not forbidden in validations.
+        When rules are specified, container MUST set RestartPolicy explicitly
+        even it if matches the Pod's RestartPolicy.
     securityContext : MonitoringCoreosComV1ThanosRulerSpecContainersItems0SecurityContext, default is Undefined, optional
         security context
     startupProbe : MonitoringCoreosComV1ThanosRulerSpecContainersItems0StartupProbe, default is Undefined, optional
@@ -1415,6 +1427,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecContainersItems0:
     resizePolicy?: [MonitoringCoreosComV1ThanosRulerSpecContainersItems0ResizePolicyItems0]
     resources?: MonitoringCoreosComV1ThanosRulerSpecContainersItems0Resources
     restartPolicy?: str
+    restartPolicyRules?: [MonitoringCoreosComV1ThanosRulerSpecContainersItems0RestartPolicyRulesItems0]
     securityContext?: MonitoringCoreosComV1ThanosRulerSpecContainersItems0SecurityContext
     startupProbe?: MonitoringCoreosComV1ThanosRulerSpecContainersItems0StartupProbe
     stdin?: bool
@@ -1435,7 +1448,8 @@ schema MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvFromItems0:
     configMapRef : MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvFromItems0ConfigMapRef, default is Undefined, optional
         config map ref
     prefix : str, default is Undefined, optional
-        Optional text to prepend to the name of each environment variable. Must be a C_IDENTIFIER.
+        Optional text to prepend to the name of each environment variable.
+        May consist of any printable ASCII characters except '='.
     secretRef : MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvFromItems0SecretRef, default is Undefined, optional
         secret ref
     """
@@ -1486,7 +1500,8 @@ schema MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvItems0:
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the environment variable. Must be a C_IDENTIFIER.
+        Name of the environment variable.
+        May consist of any printable ASCII characters except '='.
     value : str, default is Undefined, optional
         Variable references $(VAR_NAME) are expanded
         using the previously defined environment variables in the container and
@@ -1515,6 +1530,8 @@ schema MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvItems0ValueFrom:
         config map key ref
     fieldRef : MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvItems0ValueFromFieldRef, default is Undefined, optional
         field ref
+    fileKeyRef : MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvItems0ValueFromFileKeyRef, default is Undefined, optional
+        file key ref
     resourceFieldRef : MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvItems0ValueFromResourceFieldRef, default is Undefined, optional
         resource field ref
     secretKeyRef : MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvItems0ValueFromSecretKeyRef, default is Undefined, optional
@@ -1522,6 +1539,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvItems0ValueFrom:
     """
     configMapKeyRef?: MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvItems0ValueFromConfigMapKeyRef
     fieldRef?: MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvItems0ValueFromFieldRef
+    fileKeyRef?: MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvItems0ValueFromFileKeyRef
     resourceFieldRef?: MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvItems0ValueFromResourceFieldRef
     secretKeyRef?: MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvItems0ValueFromSecretKeyRef
 
@@ -1561,6 +1579,38 @@ schema MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvItems0ValueFromFie
     """
     apiVersion?: str
     fieldPath: str
+
+schema MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvItems0ValueFromFileKeyRef:
+    r"""
+    FileKeyRef selects a key of the env file.
+    Requires the EnvFiles feature gate to be enabled.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        The key within the env file. An invalid key will prevent the pod from starting.
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+        During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
+    optional : bool, default is Undefined, optional
+        Specify whether the file or its key must be defined. If the file or key
+        does not exist, then the env var is not published.
+        If optional is set to true and the specified key does not exist,
+        the environment variable will not be set in the Pod's containers.
+
+        If optional is set to false and the specified key does not exist,
+        an error will be returned during Pod creation.
+    path : str, default is Undefined, required
+        The path within the volume from which to select the file.
+        Must be relative and may not contain the '..' path or start with '..'.
+    volumeName : str, default is Undefined, required
+        The name of the volume mount containing the env file.
+    """
+    key: str
+
+    optional?: bool = False
+    path: str
+
+    volumeName: str
 
 schema MonitoringCoreosComV1ThanosRulerSpecContainersItems0EnvItems0ValueFromResourceFieldRef:
     r"""
@@ -2210,7 +2260,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecContainersItems0Resources:
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -2249,6 +2299,44 @@ schema MonitoringCoreosComV1ThanosRulerSpecContainersItems0ResourcesClaimsItems0
     name: str
 
     request?: str
+
+schema MonitoringCoreosComV1ThanosRulerSpecContainersItems0RestartPolicyRulesItems0:
+    r"""
+    ContainerRestartRule describes how a container exit is handled.
+
+    Attributes
+    ----------
+    action : str, default is Undefined, required
+        Specifies the action taken on a container exit if the requirements
+        are satisfied. The only possible value is "Restart" to restart the
+        container.
+    exitCodes : MonitoringCoreosComV1ThanosRulerSpecContainersItems0RestartPolicyRulesItems0ExitCodes, default is Undefined, optional
+        exit codes
+    """
+    action: str
+
+    exitCodes?: MonitoringCoreosComV1ThanosRulerSpecContainersItems0RestartPolicyRulesItems0ExitCodes
+
+schema MonitoringCoreosComV1ThanosRulerSpecContainersItems0RestartPolicyRulesItems0ExitCodes:
+    r"""
+    Represents the exit codes to check on container exits.
+
+    Attributes
+    ----------
+    operator : str, default is Undefined, required
+        Represents the relationship between the container exit code(s) and the
+        specified values. Possible values are:
+        - In: the requirement is satisfied if the container exit code is in the
+          set of specified values.
+        - NotIn: the requirement is satisfied if the container exit code is
+          not in the set of specified values.
+    values : [int], default is Undefined, optional
+        Specifies the set of values to check for container exit codes.
+        At most 255 elements are allowed.
+    """
+    operator: str
+
+    values?: [int]
 
 schema MonitoringCoreosComV1ThanosRulerSpecContainersItems0SecurityContext:
     r"""
@@ -2669,20 +2757,20 @@ schema MonitoringCoreosComV1ThanosRulerSpecContainersItems0VolumeMountsItems0:
 
 schema MonitoringCoreosComV1ThanosRulerSpecDNSConfig:
     r"""
-    Defines the DNS configuration for the pods.
+    dnsConfig defines Defines the DNS configuration for the pods.
 
     Attributes
     ----------
     nameservers : [str], default is Undefined, optional
-        A list of DNS name server IP addresses.
+        nameservers defines the list of DNS name server IP addresses.
         This will be appended to the base nameservers generated from DNSPolicy.
     options : [MonitoringCoreosComV1ThanosRulerSpecDNSConfigOptionsItems0], default is Undefined, optional
-        A list of DNS resolver options.
+        options defines the list of DNS resolver options.
         This will be merged with the base options generated from DNSPolicy.
         Resolution options given in Options
         will override those that appear in the base DNSPolicy.
     searches : [str], default is Undefined, optional
-        A list of DNS search domains for host-name lookup.
+        searches defines the list of DNS search domains for host-name lookup.
         This will be appended to the base search paths generated from DNSPolicy.
     """
     nameservers?: [str]
@@ -2700,9 +2788,9 @@ schema MonitoringCoreosComV1ThanosRulerSpecDNSConfigOptionsItems0:
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name is required and must be unique.
+        name is required and must be unique.
     value : str, default is Undefined, optional
-        Value is optional.
+        value is optional.
     """
     name: str
 
@@ -2718,14 +2806,14 @@ schema MonitoringCoreosComV1ThanosRulerSpecExcludedFromEnforcementItems0:
     Attributes
     ----------
     group : str, default is "monitoring.coreos.com", optional
-        Group of the referent. When not specified, it defaults to `monitoring.coreos.com`
+        group of the referent. When not specified, it defaults to `monitoring.coreos.com`
     name : str, default is Undefined, optional
-        Name of the referent. When not set, all resources in the namespace are matched.
+        name of the referent. When not set, all resources in the namespace are matched.
     namespace : str, default is Undefined, required
-        Namespace of the referent.
+        namespace of the referent.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
     resource : str, default is Undefined, required
-        Resource of the referent.
+        resource of the referent.
     """
     group?: "monitoring.coreos.com" = "monitoring.coreos.com"
     name?: str
@@ -2738,7 +2826,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecExcludedFromEnforcementItems0:
 
 schema MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfig:
     r"""
-    GRPCServerTLSConfig configures the gRPC server from which Thanos Querier reads
+    grpcServerTlsConfig defines the gRPC server from which Thanos Querier reads
     recorded rule data.
     Note: Currently only the CAFile, CertFile, and KeyFile fields are supported.
     Maps to the '--grpc-server-tls-*' CLI args.
@@ -2748,27 +2836,27 @@ schema MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfig:
     ca : MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfigCa, default is Undefined, optional
         ca
     caFile : str, default is Undefined, optional
-        Path to the CA cert in the Prometheus container to use for the targets.
+        caFile defines the path to the CA cert in the Prometheus container to use for the targets.
     cert : MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfigCert, default is Undefined, optional
         cert
     certFile : str, default is Undefined, optional
-        Path to the client cert file in the Prometheus container for the targets.
+        certFile defines the path to the client cert file in the Prometheus container for the targets.
     insecureSkipVerify : bool, default is Undefined, optional
-        Disable target certificate validation.
+        insecureSkipVerify defines how to disable target certificate validation.
     keyFile : str, default is Undefined, optional
-        Path to the client key file in the Prometheus container for the targets.
+        keyFile defines the path to the client key file in the Prometheus container for the targets.
     keySecret : MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfigKeySecret, default is Undefined, optional
         key secret
     maxVersion : str, default is Undefined, optional
-        Maximum acceptable TLS version.
+        maxVersion defines the maximum acceptable TLS version.
 
         It requires Prometheus >= v2.41.0 or Thanos >= v0.31.0.
     minVersion : str, default is Undefined, optional
-        Minimum acceptable TLS version.
+        minVersion defines the minimum acceptable TLS version.
 
         It requires Prometheus >= v2.35.0 or Thanos >= v0.28.0.
     serverName : str, default is Undefined, optional
-        Used to verify the hostname for the targets.
+        serverName is used to verify the hostname for the targets.
     """
     ca?: MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfigCa
     caFile?: str
@@ -2783,7 +2871,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfig:
 
 schema MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfigCa:
     r"""
-    Certificate authority used when verifying server certificates.
+    ca defines the Certificate authority used when verifying server certificates.
 
     Attributes
     ----------
@@ -2797,7 +2885,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfigCa:
 
 schema MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfigCaConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -2819,7 +2907,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfigCaConfigMap:
 
 schema MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfigCaSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -2841,7 +2929,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfigCaSecret:
 
 schema MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfigCert:
     r"""
-    Client certificate to present when doing client-authentication.
+    cert defines the Client certificate to present when doing client-authentication.
 
     Attributes
     ----------
@@ -2855,7 +2943,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfigCert:
 
 schema MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfigCertConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -2877,7 +2965,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfigCertConfigMap:
 
 schema MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfigCertSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -2899,7 +2987,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfigCertSecret:
 
 schema MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfigKeySecret:
     r"""
-    Secret containing the client key file for the targets.
+    keySecret defines the Secret containing the client key file for the targets.
 
     Attributes
     ----------
@@ -2927,9 +3015,9 @@ schema MonitoringCoreosComV1ThanosRulerSpecHostAliasesItems0:
     Attributes
     ----------
     hostnames : [str], default is Undefined, required
-        Hostnames for the above IP address.
+        hostnames defines hostnames for the above IP address.
     ip : str, default is Undefined, required
-        IP address of the host file entry.
+        ip defines the IP address of the host file entry.
     """
     hostnames: [str]
 
@@ -2980,8 +3068,8 @@ schema MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0:
         Cannot be updated.
     envFrom : [MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvFromItems0], default is Undefined, optional
         List of sources to populate environment variables in the container.
-        The keys defined within a source must be a C_IDENTIFIER. All invalid keys
-        will be reported as an event when the container is starting. When a key exists in multiple
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+        When a key exists in multiple
         sources, the value associated with the last source will take precedence.
         Values defined by an Env with a duplicate key will take precedence.
         Cannot be updated.
@@ -3020,10 +3108,10 @@ schema MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0:
         resources
     restartPolicy : str, default is Undefined, optional
         RestartPolicy defines the restart behavior of individual containers in a pod.
-        This field may only be set for init containers, and the only allowed value is "Always".
-        For non-init containers or when this field is not specified,
+        This overrides the pod-level restart policy. When this field is not specified,
         the restart behavior is defined by the Pod's restart policy and the container type.
-        Setting the RestartPolicy as "Always" for the init container will have the following effect:
+        Additionally, setting the RestartPolicy as "Always" for the init container will
+        have the following effect:
         this init container will be continually restarted on
         exit until all regular containers have terminated. Once all regular
         containers have completed, all init containers with restartPolicy "Always"
@@ -3034,6 +3122,18 @@ schema MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0:
         container. Instead, the next init container starts immediately after this
         init container is started, or after any startupProbe has successfully
         completed.
+    restartPolicyRules : [MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0RestartPolicyRulesItems0], default is Undefined, optional
+        Represents a list of rules to be checked to determine if the
+        container should be restarted on exit. The rules are evaluated in
+        order. Once a rule matches a container exit condition, the remaining
+        rules are ignored. If no rule matches the container exit condition,
+        the Container-level restart policy determines the whether the container
+        is restarted or not. Constraints on the rules:
+        - At most 20 rules are allowed.
+        - Rules can have the same action.
+        - Identical rules are not forbidden in validations.
+        When rules are specified, container MUST set RestartPolicy explicitly
+        even it if matches the Pod's RestartPolicy.
     securityContext : MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0SecurityContext, default is Undefined, optional
         security context
     startupProbe : MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0StartupProbe, default is Undefined, optional
@@ -3095,6 +3195,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0:
     resizePolicy?: [MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0ResizePolicyItems0]
     resources?: MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0Resources
     restartPolicy?: str
+    restartPolicyRules?: [MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0RestartPolicyRulesItems0]
     securityContext?: MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0SecurityContext
     startupProbe?: MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0StartupProbe
     stdin?: bool
@@ -3115,7 +3216,8 @@ schema MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvFromItems0:
     configMapRef : MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvFromItems0ConfigMapRef, default is Undefined, optional
         config map ref
     prefix : str, default is Undefined, optional
-        Optional text to prepend to the name of each environment variable. Must be a C_IDENTIFIER.
+        Optional text to prepend to the name of each environment variable.
+        May consist of any printable ASCII characters except '='.
     secretRef : MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvFromItems0SecretRef, default is Undefined, optional
         secret ref
     """
@@ -3166,7 +3268,8 @@ schema MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvItems0:
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the environment variable. Must be a C_IDENTIFIER.
+        Name of the environment variable.
+        May consist of any printable ASCII characters except '='.
     value : str, default is Undefined, optional
         Variable references $(VAR_NAME) are expanded
         using the previously defined environment variables in the container and
@@ -3195,6 +3298,8 @@ schema MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvItems0ValueFro
         config map key ref
     fieldRef : MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvItems0ValueFromFieldRef, default is Undefined, optional
         field ref
+    fileKeyRef : MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvItems0ValueFromFileKeyRef, default is Undefined, optional
+        file key ref
     resourceFieldRef : MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvItems0ValueFromResourceFieldRef, default is Undefined, optional
         resource field ref
     secretKeyRef : MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvItems0ValueFromSecretKeyRef, default is Undefined, optional
@@ -3202,6 +3307,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvItems0ValueFro
     """
     configMapKeyRef?: MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvItems0ValueFromConfigMapKeyRef
     fieldRef?: MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvItems0ValueFromFieldRef
+    fileKeyRef?: MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvItems0ValueFromFileKeyRef
     resourceFieldRef?: MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvItems0ValueFromResourceFieldRef
     secretKeyRef?: MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvItems0ValueFromSecretKeyRef
 
@@ -3241,6 +3347,38 @@ schema MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvItems0ValueFro
     """
     apiVersion?: str
     fieldPath: str
+
+schema MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvItems0ValueFromFileKeyRef:
+    r"""
+    FileKeyRef selects a key of the env file.
+    Requires the EnvFiles feature gate to be enabled.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        The key within the env file. An invalid key will prevent the pod from starting.
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+        During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
+    optional : bool, default is Undefined, optional
+        Specify whether the file or its key must be defined. If the file or key
+        does not exist, then the env var is not published.
+        If optional is set to true and the specified key does not exist,
+        the environment variable will not be set in the Pod's containers.
+
+        If optional is set to false and the specified key does not exist,
+        an error will be returned during Pod creation.
+    path : str, default is Undefined, required
+        The path within the volume from which to select the file.
+        Must be relative and may not contain the '..' path or start with '..'.
+    volumeName : str, default is Undefined, required
+        The name of the volume mount containing the env file.
+    """
+    key: str
+
+    optional?: bool = False
+    path: str
+
+    volumeName: str
 
 schema MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0EnvItems0ValueFromResourceFieldRef:
     r"""
@@ -3890,7 +4028,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0Resources:
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -3929,6 +4067,44 @@ schema MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0ResourcesClaimsIt
     name: str
 
     request?: str
+
+schema MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0RestartPolicyRulesItems0:
+    r"""
+    ContainerRestartRule describes how a container exit is handled.
+
+    Attributes
+    ----------
+    action : str, default is Undefined, required
+        Specifies the action taken on a container exit if the requirements
+        are satisfied. The only possible value is "Restart" to restart the
+        container.
+    exitCodes : MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0RestartPolicyRulesItems0ExitCodes, default is Undefined, optional
+        exit codes
+    """
+    action: str
+
+    exitCodes?: MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0RestartPolicyRulesItems0ExitCodes
+
+schema MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0RestartPolicyRulesItems0ExitCodes:
+    r"""
+    Represents the exit codes to check on container exits.
+
+    Attributes
+    ----------
+    operator : str, default is Undefined, required
+        Represents the relationship between the container exit code(s) and the
+        specified values. Possible values are:
+        - In: the requirement is satisfied if the container exit code is in the
+          set of specified values.
+        - NotIn: the requirement is satisfied if the container exit code is
+          not in the set of specified values.
+    values : [int], default is Undefined, optional
+        Specifies the set of values to check for container exit codes.
+        At most 255 elements are allowed.
+    """
+    operator: str
+
+    values?: [int]
 
 schema MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0SecurityContext:
     r"""
@@ -4349,9 +4525,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0VolumeMountsItems
 
 schema MonitoringCoreosComV1ThanosRulerSpecObjectStorageConfig:
     r"""
-    Configures object storage.
-
-    The configuration format is defined at https://thanos.io/tip/thanos/storage.md/#configuring-access-to-object-storage
+    objectStorageConfig defines the configuration format is defined at https://thanos.io/tip/thanos/storage.md/#configuring-access-to-object-storage
 
     The operator performs no validation of the configuration.
 
@@ -4377,7 +4551,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecObjectStorageConfig:
 
 schema MonitoringCoreosComV1ThanosRulerSpecPodMetadata:
     r"""
-    PodMetadata configures labels and annotations which are propagated to the ThanosRuler pods.
+    podMetadata defines labels and annotations which are propagated to the ThanosRuler pods.
 
     The following items are reserved and cannot be overridden:
     * "app.kubernetes.io/name" label, set to "thanos-ruler".
@@ -4389,17 +4563,17 @@ schema MonitoringCoreosComV1ThanosRulerSpecPodMetadata:
     Attributes
     ----------
     annotations : {str:str}, default is Undefined, optional
-        Annotations is an unstructured key value map stored with a resource that may be
+        annotations defines an unstructured key value map stored with a resource that may be
         set by external tools to store and retrieve arbitrary metadata. They are not
         queryable and should be preserved when modifying objects.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
     labels : {str:str}, default is Undefined, optional
-        Map of string keys and values that can be used to organize and categorize
+        labels define the map of string keys and values that can be used to organize and categorize
         (scope and select) objects. May match selectors of replication controllers
         and services.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
     name : str, default is Undefined, optional
-        Name must be unique within a namespace. Is required when creating resources, although
+        name must be unique within a namespace. Is required when creating resources, although
         some resources may allow a client to request the generation of an appropriate name
         automatically. Name is primarily intended for creation idempotence and configuration
         definition.
@@ -4419,9 +4593,9 @@ schema MonitoringCoreosComV1ThanosRulerSpecPrometheusRulesExcludedFromEnforceIte
     Attributes
     ----------
     ruleName : str, default is Undefined, required
-        Name of the excluded PrometheusRule object.
+        ruleName defines the name of the excluded PrometheusRule object.
     ruleNamespace : str, default is Undefined, required
-        Namespace of the excluded PrometheusRule object.
+        ruleNamespace defines the namespace of the excluded PrometheusRule object.
     """
     ruleName: str
 
@@ -4429,7 +4603,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecPrometheusRulesExcludedFromEnforceIte
 
 schema MonitoringCoreosComV1ThanosRulerSpecQueryConfig:
     r"""
-    Configures the list of Thanos Query endpoints from which to query metrics.
+    queryConfig defines the list of Thanos Query endpoints from which to query metrics.
 
     The configuration format is defined at https://thanos.io/tip/components/rule.md/#query-api
 
@@ -4471,27 +4645,26 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0:
     basicAuth : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0BasicAuth, default is Undefined, optional
         basic auth
     bearerToken : str, default is Undefined, optional
+        bearerToken is deprecated: this will be removed in a future release.
         *Warning: this field shouldn't be used because the token value appears
         in clear-text. Prefer using `authorization`.*
-
-        Deprecated: this will be removed in a future release.
     bearerTokenFile : str, default is Undefined, optional
-        File from which to read bearer token for the URL.
+        bearerTokenFile defines the file from which to read bearer token for the URL.
 
         Deprecated: this will be removed in a future release. Prefer using `authorization`.
     enableHTTP2 : bool, default is Undefined, optional
-        Whether to enable HTTP2.
+        enableHTTP2 defines whether to enable HTTP2.
     followRedirects : bool, default is Undefined, optional
-        Configure whether HTTP requests follow HTTP 3xx redirects.
+        followRedirects defines whether HTTP requests follow HTTP 3xx redirects.
 
         It requires Prometheus >= v2.26.0 or Thanos >= v0.24.0.
     headers : {str:str}, default is Undefined, optional
-        Custom HTTP headers to be sent along with each remote write request.
+        headers defines the custom HTTP headers to be sent along with each remote write request.
         Be aware that headers that are set by Prometheus itself can't be overwritten.
 
         It requires Prometheus >= v2.25.0 or Thanos >= v0.24.0.
     messageVersion : str, default is Undefined, optional
-        The Remote Write message's version to use when writing to the endpoint.
+        messageVersion defines the Remote Write message's version to use when writing to the endpoint.
 
         `Version1.0` corresponds to the `prometheus.WriteRequest` protobuf message introduced in Remote Write 1.0.
         `Version2.0` corresponds to the `io.prometheus.write.v2.Request` protobuf message introduced in Remote Write 2.0.
@@ -4506,12 +4679,12 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0:
     metadataConfig : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0MetadataConfig, default is Undefined, optional
         metadata config
     name : str, default is Undefined, optional
-        The name of the remote write queue, it must be unique if specified. The
+        name of the remote write queue, it must be unique if specified. The
         name is used in metrics and logging in order to differentiate queues.
 
         It requires Prometheus >= v2.15.0 or Thanos >= 0.24.0.
     noProxy : str, default is Undefined, optional
-        `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+        noProxy defines a comma-separated string that can contain IPs, CIDR notation, domain names
         that should be excluded from proxying. IP and domain names can
         contain port numbers.
 
@@ -4519,41 +4692,43 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0:
     oauth2 : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2, default is Undefined, optional
         oauth2
     proxyConnectHeader : {str:[MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0ProxyConnectHeaderItems0]}, default is Undefined, optional
-        ProxyConnectHeader optionally specifies headers to send to
+        proxyConnectHeader optionally specifies headers to send to
         proxies during CONNECT requests.
 
         It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
     proxyFromEnvironment : bool, default is Undefined, optional
-        Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+        proxyFromEnvironment defines whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
 
         It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
     proxyUrl : str, default is Undefined, optional
-        `proxyURL` defines the HTTP proxy server to use.
+        proxyUrl defines the HTTP proxy server to use.
     queueConfig : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0QueueConfig, default is Undefined, optional
         queue config
     remoteTimeout : str, default is Undefined, optional
-        Timeout for requests to the remote write endpoint.
+        remoteTimeout defines the timeout for requests to the remote write endpoint.
     roundRobinDNS : bool, default is Undefined, optional
+        roundRobinDNS controls the DNS resolution behavior for remote-write connections.
         When enabled:
-            - The remote-write mechanism will resolve the hostname via DNS.
-            - It will randomly select one of the resolved IP addresses and connect to it.
+          - The remote-write mechanism will resolve the hostname via DNS.
+          - It will randomly select one of the resolved IP addresses and connect to it.
 
         When disabled (default behavior):
-            - The Go standard library will handle hostname resolution.
-            - It will attempt connections to each resolved IP address sequentially.
+          - The Go standard library will handle hostname resolution.
+          - It will attempt connections to each resolved IP address sequentially.
 
         Note: The connection timeout applies to the entire resolution and connection process.
-              If disabled, the timeout is distributed across all connection attempts.
+
+        	If disabled, the timeout is distributed across all connection attempts.
 
         It requires Prometheus >= v3.1.0 or Thanos >= v0.38.0.
     sendExemplars : bool, default is Undefined, optional
-        Enables sending of exemplars over remote write. Note that
+        sendExemplars enables sending of exemplars over remote write. Note that
         exemplar-storage itself must be enabled using the `spec.enableFeatures`
         option for exemplars to be scraped in the first place.
 
         It requires Prometheus >= v2.27.0 or Thanos >= v0.24.0.
     sendNativeHistograms : bool, default is Undefined, optional
-        Enables sending of native histograms, also known as sparse histograms
+        sendNativeHistograms enables sending of native histograms, also known as sparse histograms
         over remote write.
 
         It requires Prometheus >= v2.40.0 or Thanos >= v0.30.0.
@@ -4562,9 +4737,9 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0:
     tlsConfig : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfig, default is Undefined, optional
         tls config
     url : str, default is Undefined, required
-        The URL of the endpoint to send samples to.
+        url defines the URL of the endpoint to send samples to.
     writeRelabelConfigs : [MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0WriteRelabelConfigsItems0], default is Undefined, optional
-        The list of remote write relabel configurations.
+        writeRelabelConfigs defines the list of remote write relabel configurations.
     """
     authorization?: MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Authorization
     azureAd?: MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAd
@@ -4600,7 +4775,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Authorization:
     r"""
-    Authorization section for the URL.
+    authorization section for the URL.
 
     It requires Prometheus >= v2.26.0 or Thanos >= v0.24.0.
 
@@ -4611,9 +4786,9 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Authorization:
     credentials : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AuthorizationCredentials, default is Undefined, optional
         credentials
     credentialsFile : str, default is Undefined, optional
-        File to read a secret from, mutually exclusive with `credentials`.
+        credentialsFile defines the file to read a secret from, mutually exclusive with `credentials`.
     $type : str, default is Undefined, optional
-        Defines the authentication type. The value is case-insensitive.
+        type defines the authentication type. The value is case-insensitive.
 
         "Basic" is not a supported value.
 
@@ -4625,7 +4800,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Authorization:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AuthorizationCredentials:
     r"""
-    Selects a key of a Secret in the namespace that contains the credentials for authentication.
+    credentials defines a key of a Secret in the namespace that contains the credentials for authentication.
 
     Attributes
     ----------
@@ -4647,7 +4822,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AuthorizationCredent
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAd:
     r"""
-    AzureAD for the URL.
+    azureAd for the URL.
 
     It requires Prometheus >= v2.45.0 or Thanos >= v0.31.0.
 
@@ -4656,7 +4831,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAd:
     Attributes
     ----------
     cloud : str, default is Undefined, optional
-        The Azure Cloud. Options are 'AzurePublic', 'AzureChina', or 'AzureGovernment'.
+        cloud defines the Azure Cloud. Options are 'AzurePublic', 'AzureChina', or 'AzureGovernment'.
     managedIdentity : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdManagedIdentity, default is Undefined, optional
         managed identity
     oauth : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdOauth, default is Undefined, optional
@@ -4671,19 +4846,19 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAd:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdManagedIdentity:
     r"""
-    ManagedIdentity defines the Azure User-assigned Managed identity.
+    managedIdentity defines the Azure User-assigned Managed identity.
     Cannot be set at the same time as `oauth` or `sdk`.
 
     Attributes
     ----------
     clientId : str, default is Undefined, required
-        The client id
+        clientId defines defines the Azure User-assigned Managed identity.
     """
     clientId: str
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdOauth:
     r"""
-    OAuth defines the oauth config that is being used to authenticate.
+    oauth defines the oauth config that is being used to authenticate.
     Cannot be set at the same time as `managedIdentity` or `sdk`.
 
     It requires Prometheus >= v2.48.0 or Thanos >= v0.31.0.
@@ -4691,11 +4866,11 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdOauth:
     Attributes
     ----------
     clientId : str, default is Undefined, required
-        `clientID` is the clientId of the Azure Active Directory application that is being used to authenticate.
+        clientId defines the clientId of the Azure Active Directory application that is being used to authenticate.
     clientSecret : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdOauthClientSecret, default is Undefined, required
         client secret
     tenantId : str, default is Undefined, required
-        `tenantId` is the tenant ID of the Azure Active Directory application that is being used to authenticate.
+        tenantId is the tenant ID of the Azure Active Directory application that is being used to authenticate.
     """
     clientId: str
 
@@ -4710,7 +4885,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdOauth:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdOauthClientSecret:
     r"""
-    `clientSecret` specifies a key of a Secret containing the client secret of the Azure Active Directory application that is being used to authenticate.
+    clientSecret specifies a key of a Secret containing the client secret of the Azure Active Directory application that is being used to authenticate.
 
     Attributes
     ----------
@@ -4732,7 +4907,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdOauthClientSe
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdSdk:
     r"""
-    SDK defines the Azure SDK config that is being used to authenticate.
+    sdk defines the Azure SDK config that is being used to authenticate.
     See https://learn.microsoft.com/en-us/azure/developer/go/azure-sdk-authentication
     Cannot be set at the same time as `oauth` or `managedIdentity`.
 
@@ -4741,7 +4916,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdSdk:
     Attributes
     ----------
     tenantId : str, default is Undefined, optional
-        `tenantId` is the tenant ID of the azure active directory application that is being used to authenticate.
+        tenantId defines the tenant ID of the azure active directory application that is being used to authenticate.
     """
     tenantId?: str
 
@@ -4750,7 +4925,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdSdk:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0BasicAuth:
     r"""
-    BasicAuth configuration for the URL.
+    basicAuth configuration for the URL.
 
     Cannot be set at the same time as `sigv4`, `authorization`, `oauth2`, or `azureAd`.
 
@@ -4766,7 +4941,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0BasicAuth:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0BasicAuthPassword:
     r"""
-    `password` specifies a key of a Secret containing the password for
+    password defines a key of a Secret containing the password for
     authentication.
 
     Attributes
@@ -4789,7 +4964,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0BasicAuthPassword:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0BasicAuthUsername:
     r"""
-    `username` specifies a key of a Secret containing the username for
+    username defines a key of a Secret containing the username for
     authentication.
 
     Attributes
@@ -4812,18 +4987,18 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0BasicAuthUsername:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0MetadataConfig:
     r"""
-    MetadataConfig configures the sending of series metadata to the remote storage.
+    metadataConfig defines how to send a series metadata to the remote storage.
 
     Attributes
     ----------
     maxSamplesPerSend : int, default is Undefined, optional
-        MaxSamplesPerSend is the maximum number of metadata samples per send.
+        maxSamplesPerSend defines the maximum number of metadata samples per send.
 
         It requires Prometheus >= v2.29.0.
     send : bool, default is Undefined, optional
-        Defines whether metric metadata is sent to the remote storage or not.
+        send defines whether metric metadata is sent to the remote storage or not.
     sendInterval : str, default is Undefined, optional
-        Defines how frequently metric metadata is sent to the remote storage.
+        sendInterval defines how frequently metric metadata is sent to the remote storage.
     """
     maxSamplesPerSend?: int
     send?: bool
@@ -4835,7 +5010,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0MetadataConfig:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2:
     r"""
-    OAuth2 configuration for the URL.
+    oauth2 configuration for the URL.
 
     It requires Prometheus >= v2.27.0 or Thanos >= v0.24.0.
 
@@ -4848,31 +5023,31 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2:
     clientSecret : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2ClientSecret, default is Undefined, required
         client secret
     endpointParams : {str:str}, default is Undefined, optional
-        `endpointParams` configures the HTTP parameters to append to the token
+        endpointParams configures the HTTP parameters to append to the token
         URL.
     noProxy : str, default is Undefined, optional
-        `noProxy` is a comma-separated string that can contain IPs, CIDR notation, domain names
+        noProxy defines a comma-separated string that can contain IPs, CIDR notation, domain names
         that should be excluded from proxying. IP and domain names can
         contain port numbers.
 
         It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
     proxyConnectHeader : {str:[MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2ProxyConnectHeaderItems0]}, default is Undefined, optional
-        ProxyConnectHeader optionally specifies headers to send to
+        proxyConnectHeader optionally specifies headers to send to
         proxies during CONNECT requests.
 
         It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
     proxyFromEnvironment : bool, default is Undefined, optional
-        Whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
+        proxyFromEnvironment defines whether to use the proxy configuration defined by environment variables (HTTP_PROXY, HTTPS_PROXY, and NO_PROXY).
 
         It requires Prometheus >= v2.43.0, Alertmanager >= v0.25.0 or Thanos >= v0.32.0.
     proxyUrl : str, default is Undefined, optional
-        `proxyURL` defines the HTTP proxy server to use.
+        proxyUrl defines the HTTP proxy server to use.
     scopes : [str], default is Undefined, optional
-        `scopes` defines the OAuth2 scopes used for the token request.
+        scopes defines the OAuth2 scopes used for the token request.
     tlsConfig : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfig, default is Undefined, optional
         tls config
     tokenUrl : str, default is Undefined, required
-        `tokenURL` configures the URL to fetch the token from.
+        tokenUrl defines the URL to fetch the token from.
     """
     clientId: MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2ClientID
 
@@ -4893,7 +5068,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2ClientID:
     r"""
-    `clientId` specifies a key of a Secret or ConfigMap containing the
+    clientId defines a key of a Secret or ConfigMap containing the
     OAuth2 client's ID.
 
     Attributes
@@ -4908,7 +5083,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2ClientID:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2ClientIDConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -4930,7 +5105,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2ClientIDConfig
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2ClientIDSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -4952,7 +5127,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2ClientIDSecret
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2ClientSecret:
     r"""
-    `clientSecret` specifies a key of a Secret containing the OAuth2
+    clientSecret defines a key of a Secret containing the OAuth2
     client's secret.
 
     Attributes
@@ -4997,7 +5172,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2ProxyConnectHe
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfig:
     r"""
-    TLS configuration to use when connecting to the OAuth2 server.
+    tlsConfig defines the TLS configuration to use when connecting to the OAuth2 server.
     It requires Prometheus >= v2.43.0.
 
     Attributes
@@ -5007,19 +5182,19 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfig:
     cert : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfigCert, default is Undefined, optional
         cert
     insecureSkipVerify : bool, default is Undefined, optional
-        Disable target certificate validation.
+        insecureSkipVerify defines how to disable target certificate validation.
     keySecret : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfigKeySecret, default is Undefined, optional
         key secret
     maxVersion : str, default is Undefined, optional
-        Maximum acceptable TLS version.
+        maxVersion defines the maximum acceptable TLS version.
 
         It requires Prometheus >= v2.41.0 or Thanos >= v0.31.0.
     minVersion : str, default is Undefined, optional
-        Minimum acceptable TLS version.
+        minVersion defines the minimum acceptable TLS version.
 
         It requires Prometheus >= v2.35.0 or Thanos >= v0.28.0.
     serverName : str, default is Undefined, optional
-        Used to verify the hostname for the targets.
+        serverName is used to verify the hostname for the targets.
     """
     ca?: MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfigCa
     cert?: MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfigCert
@@ -5031,7 +5206,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfig:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfigCa:
     r"""
-    Certificate authority used when verifying server certificates.
+    ca defines the Certificate authority used when verifying server certificates.
 
     Attributes
     ----------
@@ -5045,7 +5220,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfigCa:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfigCaConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -5067,7 +5242,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfigCaCon
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfigCaSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -5089,7 +5264,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfigCaSec
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfigCert:
     r"""
-    Client certificate to present when doing client-authentication.
+    cert defines the Client certificate to present when doing client-authentication.
 
     Attributes
     ----------
@@ -5103,7 +5278,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfigCert:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfigCertConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -5125,7 +5300,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfigCertC
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfigCertSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -5147,7 +5322,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfigCertS
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Oauth2TLSConfigKeySecret:
     r"""
-    Secret containing the client key file for the targets.
+    keySecret defines the Secret containing the client key file for the targets.
 
     Attributes
     ----------
@@ -5191,34 +5366,34 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0ProxyConnectHeaderIt
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0QueueConfig:
     r"""
-    QueueConfig allows tuning of the remote write queue parameters.
+    queueConfig allows tuning of the remote write queue parameters.
 
     Attributes
     ----------
     batchSendDeadline : str, default is Undefined, optional
-        BatchSendDeadline is the maximum time a sample will wait in buffer.
+        batchSendDeadline defines the maximum time a sample will wait in buffer.
     capacity : int, default is Undefined, optional
-        Capacity is the number of samples to buffer per shard before we start
+        capacity defines the number of samples to buffer per shard before we start
         dropping them.
     maxBackoff : str, default is Undefined, optional
-        MaxBackoff is the maximum retry delay.
+        maxBackoff defines the maximum retry delay.
     maxRetries : int, default is Undefined, optional
-        MaxRetries is the maximum number of times to retry a batch on recoverable errors.
+        maxRetries defines the maximum number of times to retry a batch on recoverable errors.
     maxSamplesPerSend : int, default is Undefined, optional
-        MaxSamplesPerSend is the maximum number of samples per send.
+        maxSamplesPerSend defines the maximum number of samples per send.
     maxShards : int, default is Undefined, optional
-        MaxShards is the maximum number of shards, i.e. amount of concurrency.
+        maxShards defines the maximum number of shards, i.e. amount of concurrency.
     minBackoff : str, default is Undefined, optional
-        MinBackoff is the initial retry delay. Gets doubled for every retry.
+        minBackoff defines the initial retry delay. Gets doubled for every retry.
     minShards : int, default is Undefined, optional
-        MinShards is the minimum number of shards, i.e. amount of concurrency.
+        minShards defines the minimum number of shards, i.e. amount of concurrency.
     retryOnRateLimit : bool, default is Undefined, optional
-        Retry upon receiving a 429 status code from the remote-write storage.
+        retryOnRateLimit defines the retry upon receiving a 429 status code from the remote-write storage.
 
         This is an *experimental feature*, it may change in any upcoming release
         in a breaking way.
     sampleAgeLimit : str, default is Undefined, optional
-        SampleAgeLimit drops samples older than the limit.
+        sampleAgeLimit drops samples older than the limit.
         It requires Prometheus >= v2.50.0 or Thanos >= v0.32.0.
     """
     batchSendDeadline?: str
@@ -5240,7 +5415,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0QueueConfig:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Sigv4:
     r"""
-    Sigv4 allows to configures AWS's Signature Verification 4 for the URL.
+    sigv4 defines the AWS's Signature Verification 4 for the URL.
 
     It requires Prometheus >= v2.26.0 or Thanos >= v0.24.0.
 
@@ -5251,23 +5426,27 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Sigv4:
     accessKey : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Sigv4AccessKey, default is Undefined, optional
         access key
     profile : str, default is Undefined, optional
-        Profile is the named AWS profile used to authenticate.
+        profile defines the named AWS profile used to authenticate.
     region : str, default is Undefined, optional
-        Region is the AWS region. If blank, the region from the default credentials chain used.
+        region defines the AWS region. If blank, the region from the default credentials chain used.
     roleArn : str, default is Undefined, optional
-        RoleArn is the named AWS profile used to authenticate.
+        roleArn defines the named AWS profile used to authenticate.
     secretKey : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Sigv4SecretKey, default is Undefined, optional
         secret key
+    useFIPSSTSEndpoint : bool, default is Undefined, optional
+        useFIPSSTSEndpoint defines FIPS mode for AWS STS endpoint.
+        It requires Prometheus >= v2.54.0.
     """
     accessKey?: MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Sigv4AccessKey
     profile?: str
     region?: str
     roleArn?: str
     secretKey?: MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Sigv4SecretKey
+    useFIPSSTSEndpoint?: bool
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Sigv4AccessKey:
     r"""
-    AccessKey is the AWS API key. If not specified, the environment variable
+    accessKey defines the AWS API key. If not specified, the environment variable
     `AWS_ACCESS_KEY_ID` is used.
 
     Attributes
@@ -5290,7 +5469,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Sigv4AccessKey:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Sigv4SecretKey:
     r"""
-    SecretKey is the AWS API secret. If not specified, the environment
+    secretKey defines the AWS API secret. If not specified, the environment
     variable `AWS_SECRET_ACCESS_KEY` is used.
 
     Attributes
@@ -5313,34 +5492,34 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Sigv4SecretKey:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfig:
     r"""
-    TLS Config to use for the URL.
+    tlsConfig to use for the URL.
 
     Attributes
     ----------
     ca : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfigCa, default is Undefined, optional
         ca
     caFile : str, default is Undefined, optional
-        Path to the CA cert in the Prometheus container to use for the targets.
+        caFile defines the path to the CA cert in the Prometheus container to use for the targets.
     cert : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfigCert, default is Undefined, optional
         cert
     certFile : str, default is Undefined, optional
-        Path to the client cert file in the Prometheus container for the targets.
+        certFile defines the path to the client cert file in the Prometheus container for the targets.
     insecureSkipVerify : bool, default is Undefined, optional
-        Disable target certificate validation.
+        insecureSkipVerify defines how to disable target certificate validation.
     keyFile : str, default is Undefined, optional
-        Path to the client key file in the Prometheus container for the targets.
+        keyFile defines the path to the client key file in the Prometheus container for the targets.
     keySecret : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfigKeySecret, default is Undefined, optional
         key secret
     maxVersion : str, default is Undefined, optional
-        Maximum acceptable TLS version.
+        maxVersion defines the maximum acceptable TLS version.
 
         It requires Prometheus >= v2.41.0 or Thanos >= v0.31.0.
     minVersion : str, default is Undefined, optional
-        Minimum acceptable TLS version.
+        minVersion defines the minimum acceptable TLS version.
 
         It requires Prometheus >= v2.35.0 or Thanos >= v0.28.0.
     serverName : str, default is Undefined, optional
-        Used to verify the hostname for the targets.
+        serverName is used to verify the hostname for the targets.
     """
     ca?: MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfigCa
     caFile?: str
@@ -5355,7 +5534,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfig:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfigCa:
     r"""
-    Certificate authority used when verifying server certificates.
+    ca defines the Certificate authority used when verifying server certificates.
 
     Attributes
     ----------
@@ -5369,7 +5548,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfigCa:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfigCaConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -5391,7 +5570,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfigCaConfigMap
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfigCaSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -5413,7 +5592,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfigCaSecret:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfigCert:
     r"""
-    Client certificate to present when doing client-authentication.
+    cert defines the Client certificate to present when doing client-authentication.
 
     Attributes
     ----------
@@ -5427,7 +5606,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfigCert:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfigCertConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -5449,7 +5628,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfigCertConfigM
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfigCertSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -5471,7 +5650,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfigCertSecret:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0TLSConfigKeySecret:
     r"""
-    Secret containing the client key file for the targets.
+    keySecret defines the Secret containing the client key file for the targets.
 
     Attributes
     ----------
@@ -5501,31 +5680,31 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0WriteRelabelConfigsI
     Attributes
     ----------
     action : str, default is "replace", optional
-        Action to perform based on the regex matching.
+        action to perform based on the regex matching.
 
         `Uppercase` and `Lowercase` actions require Prometheus >= v2.36.0.
         `DropEqual` and `KeepEqual` actions require Prometheus >= v2.41.0.
 
         Default: "Replace"
     modulus : int, default is Undefined, optional
-        Modulus to take of the hash of the source label values.
+        modulus to take of the hash of the source label values.
 
         Only applicable when the action is `HashMod`.
     regex : str, default is Undefined, optional
-        Regular expression against which the extracted value is matched.
+        regex defines the regular expression against which the extracted value is matched.
     replacement : str, default is Undefined, optional
-        Replacement value against which a Replace action is performed if the
+        replacement value against which a Replace action is performed if the
         regular expression matches.
 
         Regex capture groups are available.
     separator : str, default is Undefined, optional
-        Separator is the string between concatenated SourceLabels.
+        separator defines the string between concatenated SourceLabels.
     sourceLabels : [str], default is Undefined, optional
-        The source labels select values from existing labels. Their content is
+        sourceLabels defines the source labels select values from existing labels. Their content is
         concatenated using the configured Separator and matched against the
         configured regular expression.
     targetLabel : str, default is Undefined, optional
-        Label to which the resulting string is written in a replacement.
+        targetLabel defines the label to which the resulting string is written in a replacement.
 
         It is mandatory for `Replace`, `HashMod`, `Lowercase`, `Uppercase`,
         `KeepEqual` and `DropEqual` actions.
@@ -5540,12 +5719,9 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0WriteRelabelConfigsI
     sourceLabels?: [str]
     targetLabel?: str
 
-    check:
-        all sourceLabels in sourceLabels {_regex_match(str(sourceLabels), r"^[a-zA-Z_][a-zA-Z0-9_]*$") if sourceLabels} if sourceLabels
-
 schema MonitoringCoreosComV1ThanosRulerSpecResources:
     r"""
-    Resources defines the resource requirements for single Pods.
+    resources defines the resource requirements for single Pods.
     If not provided, no requests/limits will be set
 
     Attributes
@@ -5554,7 +5730,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecResources:
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -5596,7 +5772,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecResourcesClaimsItems0:
 
 schema MonitoringCoreosComV1ThanosRulerSpecRuleNamespaceSelector:
     r"""
-    Namespaces to be selected for Rules discovery. If unspecified, only
+    ruleNamespaceSelector defines the namespaces to be selected for Rules discovery. If unspecified, only
     the same namespace as the ThanosRuler object is in is used.
 
     Attributes
@@ -5637,7 +5813,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRuleNamespaceSelectorMatchExpressions
 
 schema MonitoringCoreosComV1ThanosRulerSpecRuleSelector:
     r"""
-    PrometheusRule objects to be selected for rule evaluation. An empty
+    ruleSelector defines the PrometheusRule objects to be selected for rule evaluation. An empty
     label selector matches all objects. A null label selector matches no
     objects.
 
@@ -5679,7 +5855,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRuleSelectorMatchExpressionsItems0:
 
 schema MonitoringCoreosComV1ThanosRulerSpecSecurityContext:
     r"""
-    SecurityContext holds pod-level security attributes and common container settings.
+    securityContext defines the pod-level security attributes and common container settings.
     This defaults to the default PodSecurityContext.
 
     Attributes
@@ -5909,12 +6085,12 @@ schema MonitoringCoreosComV1ThanosRulerSpecSecurityContextWindowsOptions:
 
 schema MonitoringCoreosComV1ThanosRulerSpecStorage:
     r"""
-    Storage spec to specify how storage shall be used.
+    storage defines the specification of how storage shall be used.
 
     Attributes
     ----------
     disableMountSubPath : bool, default is Undefined, optional
-        Deprecated: subPath usage will be removed in a future release.
+        disableMountSubPath deprecated: subPath usage will be removed in a future release.
     emptyDir : MonitoringCoreosComV1ThanosRulerSpecStorageEmptyDir, default is Undefined, optional
         empty dir
     ephemeral : MonitoringCoreosComV1ThanosRulerSpecStorageEphemeral, default is Undefined, optional
@@ -5929,7 +6105,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecStorage:
 
 schema MonitoringCoreosComV1ThanosRulerSpecStorageEmptyDir:
     r"""
-    EmptyDirVolumeSource to be used by the StatefulSet.
+    emptyDir to be used by the StatefulSet.
     If specified, it takes precedence over `ephemeral` and `volumeClaimTemplate`.
     More info: https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
 
@@ -5956,7 +6132,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecStorageEmptyDir:
 
 schema MonitoringCoreosComV1ThanosRulerSpecStorageEphemeral:
     r"""
-    EphemeralVolumeSource to be used by the StatefulSet.
+    ephemeral to be used by the StatefulSet.
     This is a beta field in k8s 1.21 and GA in 1.15.
     For lower versions, starting with k8s 1.19, it requires enabling the GenericEphemeralVolume feature gate.
     More info: https://kubernetes.io/docs/concepts/storage/ephemeral-volumes/#generic-ephemeral-volumes
@@ -6031,15 +6207,13 @@ schema MonitoringCoreosComV1ThanosRulerSpecStorageEphemeralVolumeClaimTemplateSp
         volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim.
         If specified, the CSI driver will create or update the volume with the attributes defined
         in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName,
-        it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass
-        will be applied to the claim but it's not allowed to reset this field to empty string once it is set.
-        If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass
-        will be set by the persistentvolume controller if it exists.
+        it can be changed after the claim is created. An empty string or nil value indicates that no
+        VolumeAttributesClass will be applied to the claim. If the claim enters an Infeasible error state,
+        this field can be reset to its previous value (including nil) to cancel the modification.
         If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be
         set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource
         exists.
         More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/
-        (Beta) Using this field requires the VolumeAttributesClass feature gate to be enabled (off by default).
     volumeMode : str, default is Undefined, optional
         volumeMode defines what type of volume is required by the claim.
         Value of Filesystem is implied when not included in claim spec.
@@ -6199,7 +6373,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecStorageEphemeralVolumeClaimTemplateSp
 
 schema MonitoringCoreosComV1ThanosRulerSpecStorageVolumeClaimTemplate:
     r"""
-    Defines the PVC spec to be used by the Prometheus StatefulSets.
+    volumeClaimTemplate defines the PVC spec to be used by the Prometheus StatefulSets.
     The easiest way to use a volume that cannot be automatically provisioned
     is to use a label selector alongside manually created PersistentVolumes.
 
@@ -6231,22 +6405,22 @@ schema MonitoringCoreosComV1ThanosRulerSpecStorageVolumeClaimTemplate:
 
 schema MonitoringCoreosComV1ThanosRulerSpecStorageVolumeClaimTemplateMetadata:
     r"""
-    EmbeddedMetadata contains metadata relevant to an EmbeddedResource.
+    metadata defines EmbeddedMetadata contains metadata relevant to an EmbeddedResource.
 
     Attributes
     ----------
     annotations : {str:str}, default is Undefined, optional
-        Annotations is an unstructured key value map stored with a resource that may be
+        annotations defines an unstructured key value map stored with a resource that may be
         set by external tools to store and retrieve arbitrary metadata. They are not
         queryable and should be preserved when modifying objects.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
     labels : {str:str}, default is Undefined, optional
-        Map of string keys and values that can be used to organize and categorize
+        labels define the map of string keys and values that can be used to organize and categorize
         (scope and select) objects. May match selectors of replication controllers
         and services.
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
     name : str, default is Undefined, optional
-        Name must be unique within a namespace. Is required when creating resources, although
+        name must be unique within a namespace. Is required when creating resources, although
         some resources may allow a client to request the generation of an appropriate name
         automatically. Name is primarily intended for creation idempotence and configuration
         definition.
@@ -6259,7 +6433,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecStorageVolumeClaimTemplateMetadata:
 
 schema MonitoringCoreosComV1ThanosRulerSpecStorageVolumeClaimTemplateSpec:
     r"""
-    Defines the desired characteristics of a volume requested by a pod author.
+    spec defines the specification of the  characteristics of a volume requested by a pod author.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
 
     Attributes
@@ -6282,15 +6456,13 @@ schema MonitoringCoreosComV1ThanosRulerSpecStorageVolumeClaimTemplateSpec:
         volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim.
         If specified, the CSI driver will create or update the volume with the attributes defined
         in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName,
-        it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass
-        will be applied to the claim but it's not allowed to reset this field to empty string once it is set.
-        If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass
-        will be set by the persistentvolume controller if it exists.
+        it can be changed after the claim is created. An empty string or nil value indicates that no
+        VolumeAttributesClass will be applied to the claim. If the claim enters an Infeasible error state,
+        this field can be reset to its previous value (including nil) to cancel the modification.
         If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be
         set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource
         exists.
         More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/
-        (Beta) Using this field requires the VolumeAttributesClass feature gate to be enabled (off by default).
     volumeMode : str, default is Undefined, optional
         volumeMode defines what type of volume is required by the claim.
         Value of Filesystem is implied when not included in claim spec.
@@ -6450,7 +6622,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecStorageVolumeClaimTemplateSpecSelecto
 
 schema MonitoringCoreosComV1ThanosRulerSpecStorageVolumeClaimTemplateStatus:
     r"""
-    Deprecated: this field is never set.
+    status is deprecated: this field is never set.
 
     Attributes
     ----------
@@ -6524,7 +6696,6 @@ schema MonitoringCoreosComV1ThanosRulerSpecStorageVolumeClaimTemplateStatus:
     currentVolumeAttributesClassName : str, default is Undefined, optional
         currentVolumeAttributesClassName is the current name of the VolumeAttributesClass the PVC is using.
         When unset, there is no VolumeAttributeClass applied to this PersistentVolumeClaim
-        This is a beta field and requires enabling VolumeAttributesClass feature (off by default).
     modifyVolumeStatus : MonitoringCoreosComV1ThanosRulerSpecStorageVolumeClaimTemplateStatusModifyVolumeStatus, default is Undefined, optional
         modify volume status
     phase : str, default is Undefined, optional
@@ -6579,7 +6750,6 @@ schema MonitoringCoreosComV1ThanosRulerSpecStorageVolumeClaimTemplateStatusModif
     r"""
     ModifyVolumeStatus represents the status object of ControllerModifyVolume operation.
     When this is unset, there is no ModifyVolume operation being attempted.
-    This is a beta field and requires enabling VolumeAttributesClass feature (off by default).
 
     Attributes
     ----------
@@ -6792,7 +6962,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecTopologySpreadConstraintsItems0LabelS
 
 schema MonitoringCoreosComV1ThanosRulerSpecTracingConfig:
     r"""
-    Configures tracing.
+    tracingConfig defines the tracing configuration.
 
     The configuration format is defined at https://thanos.io/tip/thanos/tracing.md/#configuration
 
@@ -7477,15 +7647,13 @@ schema MonitoringCoreosComV1ThanosRulerSpecVolumesItems0EphemeralVolumeClaimTemp
         volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim.
         If specified, the CSI driver will create or update the volume with the attributes defined
         in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName,
-        it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass
-        will be applied to the claim but it's not allowed to reset this field to empty string once it is set.
-        If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass
-        will be set by the persistentvolume controller if it exists.
+        it can be changed after the claim is created. An empty string or nil value indicates that no
+        VolumeAttributesClass will be applied to the claim. If the claim enters an Infeasible error state,
+        this field can be reset to its previous value (including nil) to cancel the modification.
         If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be
         set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource
         exists.
         More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/
-        (Beta) Using this field requires the VolumeAttributesClass feature gate to be enabled (off by default).
     volumeMode : str, default is Undefined, optional
         volumeMode defines what type of volume is required by the claim.
         Value of Filesystem is implied when not included in claim spec.
@@ -7797,13 +7965,11 @@ schema MonitoringCoreosComV1ThanosRulerSpecVolumesItems0Glusterfs:
     r"""
     glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime.
     Deprecated: Glusterfs is deprecated and the in-tree glusterfs type is no longer supported.
-    More info: https://examples.k8s.io/volumes/glusterfs/README.md
 
     Attributes
     ----------
     endpoints : str, default is Undefined, required
         endpoints is the endpoint name that details Glusterfs topology.
-        More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
     path : str, default is Undefined, required
         path is the Glusterfs volume path.
         More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
@@ -7881,7 +8047,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecVolumesItems0Iscsi:
     r"""
     iscsi represents an ISCSI Disk resource that is attached to a
     kubelet's host machine and then exposed to the pod.
-    More info: https://examples.k8s.io/volumes/iscsi/README.md
+    More info: https://kubernetes.io/docs/concepts/storage/volumes/#iscsi
 
     Attributes
     ----------
@@ -8061,6 +8227,8 @@ schema MonitoringCoreosComV1ThanosRulerSpecVolumesItems0ProjectedSourcesItems0:
         config map
     downwardAPI : MonitoringCoreosComV1ThanosRulerSpecVolumesItems0ProjectedSourcesItems0DownwardAPI, default is Undefined, optional
         downward API
+    podCertificate : MonitoringCoreosComV1ThanosRulerSpecVolumesItems0ProjectedSourcesItems0PodCertificate, default is Undefined, optional
+        pod certificate
     secret : MonitoringCoreosComV1ThanosRulerSpecVolumesItems0ProjectedSourcesItems0Secret, default is Undefined, optional
         secret
     serviceAccountToken : MonitoringCoreosComV1ThanosRulerSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken, default is Undefined, optional
@@ -8069,6 +8237,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecVolumesItems0ProjectedSourcesItems0:
     clusterTrustBundle?: MonitoringCoreosComV1ThanosRulerSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundle
     configMap?: MonitoringCoreosComV1ThanosRulerSpecVolumesItems0ProjectedSourcesItems0ConfigMap
     downwardAPI?: MonitoringCoreosComV1ThanosRulerSpecVolumesItems0ProjectedSourcesItems0DownwardAPI
+    podCertificate?: MonitoringCoreosComV1ThanosRulerSpecVolumesItems0ProjectedSourcesItems0PodCertificate
     secret?: MonitoringCoreosComV1ThanosRulerSpecVolumesItems0ProjectedSourcesItems0Secret
     serviceAccountToken?: MonitoringCoreosComV1ThanosRulerSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken
 
@@ -8283,6 +8452,105 @@ schema MonitoringCoreosComV1ThanosRulerSpecVolumesItems0ProjectedSourcesItems0Do
     check:
         _regex_match(str(divisor), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if divisor
 
+schema MonitoringCoreosComV1ThanosRulerSpecVolumesItems0ProjectedSourcesItems0PodCertificate:
+    r"""
+    Projects an auto-rotating credential bundle (private key and certificate
+    chain) that the pod can use either as a TLS client or server.
+
+    Kubelet generates a private key and uses it to send a
+    PodCertificateRequest to the named signer.  Once the signer approves the
+    request and issues a certificate chain, Kubelet writes the key and
+    certificate chain to the pod filesystem.  The pod does not start until
+    certificates have been issued for each podCertificate projected volume
+    source in its spec.
+
+    Kubelet will begin trying to rotate the certificate at the time indicated
+    by the signer using the PodCertificateRequest.Status.BeginRefreshAt
+    timestamp.
+
+    Kubelet can write a single file, indicated by the credentialBundlePath
+    field, or separate files, indicated by the keyPath and
+    certificateChainPath fields.
+
+    The credential bundle is a single file in PEM format.  The first PEM
+    entry is the private key (in PKCS#8 format), and the remaining PEM
+    entries are the certificate chain issued by the signer (typically,
+    signers will return their certificate chain in leaf-to-root order).
+
+    Prefer using the credential bundle format, since your application code
+    can read it atomically.  If you use keyPath and certificateChainPath,
+    your application must make two separate file reads. If these coincide
+    with a certificate rotation, it is possible that the private key and leaf
+    certificate you read may not correspond to each other.  Your application
+    will need to check for this condition, and re-read until they are
+    consistent.
+
+    The named signer controls chooses the format of the certificate it
+    issues; consult the signer implementation's documentation to learn how to
+    use the certificates it issues.
+
+    Attributes
+    ----------
+    certificateChainPath : str, default is Undefined, optional
+        Write the certificate chain at this path in the projected volume.
+
+        Most applications should use credentialBundlePath.  When using keyPath
+        and certificateChainPath, your application needs to check that the key
+        and leaf certificate are consistent, because it is possible to read the
+        files mid-rotation.
+    credentialBundlePath : str, default is Undefined, optional
+        Write the credential bundle at this path in the projected volume.
+
+        The credential bundle is a single file that contains multiple PEM blocks.
+        The first PEM block is a PRIVATE KEY block, containing a PKCS#8 private
+        key.
+
+        The remaining blocks are CERTIFICATE blocks, containing the issued
+        certificate chain from the signer (leaf and any intermediates).
+
+        Using credentialBundlePath lets your Pod's application code make a single
+        atomic read that retrieves a consistent key and certificate chain.  If you
+        project them to separate files, your application code will need to
+        additionally check that the leaf certificate was issued to the key.
+    keyPath : str, default is Undefined, optional
+        Write the key at this path in the projected volume.
+
+        Most applications should use credentialBundlePath.  When using keyPath
+        and certificateChainPath, your application needs to check that the key
+        and leaf certificate are consistent, because it is possible to read the
+        files mid-rotation.
+    keyType : str, default is Undefined, required
+        The type of keypair Kubelet will generate for the pod.
+
+        Valid values are "RSA3072", "RSA4096", "ECDSAP256", "ECDSAP384",
+        "ECDSAP521", and "ED25519".
+    maxExpirationSeconds : int, default is Undefined, optional
+        maxExpirationSeconds is the maximum lifetime permitted for the
+        certificate.
+
+        Kubelet copies this value verbatim into the PodCertificateRequests it
+        generates for this projection.
+
+        If omitted, kube-apiserver will set it to 86400(24 hours). kube-apiserver
+        will reject values shorter than 3600 (1 hour).  The maximum allowable
+        value is 7862400 (91 days).
+
+        The signer implementation is then free to issue a certificate with any
+        lifetime *shorter* than MaxExpirationSeconds, but no shorter than 3600
+        seconds (1 hour).  This constraint is enforced by kube-apiserver.
+        `kubernetes.io` signers will never issue certificates with a lifetime
+        longer than 24 hours.
+    signerName : str, default is Undefined, required
+        Kubelet's generated CSRs will be addressed to this signer.
+    """
+    certificateChainPath?: str
+    credentialBundlePath?: str
+    keyPath?: str
+    keyType: str
+
+    maxExpirationSeconds?: int
+    signerName: str
+
 schema MonitoringCoreosComV1ThanosRulerSpecVolumesItems0ProjectedSourcesItems0Secret:
     r"""
     secret information about the secret data to project
@@ -8400,7 +8668,6 @@ schema MonitoringCoreosComV1ThanosRulerSpecVolumesItems0Rbd:
     r"""
     rbd represents a Rados Block Device mount on the host that shares a pod's lifetime.
     Deprecated: RBD is deprecated and the in-tree rbd type is no longer supported.
-    More info: https://examples.k8s.io/volumes/rbd/README.md
 
     Attributes
     ----------
@@ -8662,7 +8929,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecVolumesItems0VsphereVolume:
 
 schema MonitoringCoreosComV1ThanosRulerSpecWeb:
     r"""
-    Defines the configuration of the ThanosRuler web server.
+    web defines the configuration of the ThanosRuler web server.
 
     Attributes
     ----------
@@ -8676,14 +8943,14 @@ schema MonitoringCoreosComV1ThanosRulerSpecWeb:
 
 schema MonitoringCoreosComV1ThanosRulerSpecWebHTTPConfig:
     r"""
-    Defines HTTP parameters for web server.
+    httpConfig defines HTTP parameters for web server.
 
     Attributes
     ----------
     headers : MonitoringCoreosComV1ThanosRulerSpecWebHTTPConfigHeaders, default is Undefined, optional
         headers
     http2 : bool, default is Undefined, optional
-        Enable HTTP/2 support. Note that HTTP/2 is only supported with TLS.
+        http2 enable HTTP/2 support. Note that HTTP/2 is only supported with TLS.
         When TLSConfig is not configured, HTTP/2 will be disabled.
         Whenever the value of the field changes, a rolling update will be triggered.
     """
@@ -8692,30 +8959,30 @@ schema MonitoringCoreosComV1ThanosRulerSpecWebHTTPConfig:
 
 schema MonitoringCoreosComV1ThanosRulerSpecWebHTTPConfigHeaders:
     r"""
-    List of headers that can be added to HTTP responses.
+    headers defines a list of headers that can be added to HTTP responses.
 
     Attributes
     ----------
     contentSecurityPolicy : str, default is Undefined, optional
-        Set the Content-Security-Policy header to HTTP responses.
+        contentSecurityPolicy defines the Content-Security-Policy header to HTTP responses.
         Unset if blank.
     strictTransportSecurity : str, default is Undefined, optional
-        Set the Strict-Transport-Security header to HTTP responses.
+        strictTransportSecurity defines the Strict-Transport-Security header to HTTP responses.
         Unset if blank.
         Please make sure that you use this with care as this header might force
         browsers to load Prometheus and the other applications hosted on the same
         domain and subdomains over HTTPS.
         https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
     xContentTypeOptions : str, default is Undefined, optional
-        Set the X-Content-Type-Options header to HTTP responses.
+        xContentTypeOptions defines the X-Content-Type-Options header to HTTP responses.
         Unset if blank. Accepted value is nosniff.
         https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
     xFrameOptions : str, default is Undefined, optional
-        Set the X-Frame-Options header to HTTP responses.
+        xFrameOptions defines the X-Frame-Options header to HTTP responses.
         Unset if blank. Accepted values are deny and sameorigin.
         https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
     xXSSProtection : str, default is Undefined, optional
-        Set the X-XSS-Protection header to all responses.
+        xXSSProtection defines the X-XSS-Protection header to all responses.
         Unset if blank.
         https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
     """
@@ -8727,44 +8994,44 @@ schema MonitoringCoreosComV1ThanosRulerSpecWebHTTPConfigHeaders:
 
 schema MonitoringCoreosComV1ThanosRulerSpecWebTLSConfig:
     r"""
-    Defines the TLS parameters for HTTPS.
+    tlsConfig defines the TLS parameters for HTTPS.
 
     Attributes
     ----------
     cert : MonitoringCoreosComV1ThanosRulerSpecWebTLSConfigCert, default is Undefined, optional
         cert
     certFile : str, default is Undefined, optional
-        Path to the TLS certificate file in the container for the web server.
+        certFile defines the path to the TLS certificate file in the container for the web server.
 
         Either `keySecret` or `keyFile` must be defined.
 
         It is mutually exclusive with `cert`.
     cipherSuites : [str], default is Undefined, optional
-        List of supported cipher suites for TLS versions up to TLS 1.2.
+        cipherSuites defines the list of supported cipher suites for TLS versions up to TLS 1.2.
 
         If not defined, the Go default cipher suites are used.
         Available cipher suites are documented in the Go documentation:
         https://golang.org/pkg/crypto/tls/#pkg-constants
     clientAuthType : str, default is Undefined, optional
-        The server policy for client TLS authentication.
+        clientAuthType defines the server policy for client TLS authentication.
 
         For more detail on clientAuth options:
         https://golang.org/pkg/crypto/tls/#ClientAuthType
     clientCAFile : str, default is Undefined, optional
-        Path to the CA certificate file for client certificate authentication to
+        clientCAFile defines the path to the CA certificate file for client certificate authentication to
         the server.
 
         It is mutually exclusive with `client_ca`.
     client_ca : MonitoringCoreosComV1ThanosRulerSpecWebTLSConfigClientCa, default is Undefined, optional
         client ca
     curvePreferences : [str], default is Undefined, optional
-        Elliptic curves that will be used in an ECDHE handshake, in preference
+        curvePreferences defines elliptic curves that will be used in an ECDHE handshake, in preference
         order.
 
         Available curves are documented in the Go documentation:
         https://golang.org/pkg/crypto/tls/#CurveID
     keyFile : str, default is Undefined, optional
-        Path to the TLS private key file in the container for the web server.
+        keyFile defines the path to the TLS private key file in the container for the web server.
 
         If defined, either `cert` or `certFile` must be defined.
 
@@ -8772,11 +9039,11 @@ schema MonitoringCoreosComV1ThanosRulerSpecWebTLSConfig:
     keySecret : MonitoringCoreosComV1ThanosRulerSpecWebTLSConfigKeySecret, default is Undefined, optional
         key secret
     maxVersion : str, default is Undefined, optional
-        Maximum TLS version that is acceptable.
+        maxVersion defines the Maximum TLS version that is acceptable.
     minVersion : str, default is Undefined, optional
-        Minimum TLS version that is acceptable.
+        minVersion defines the minimum TLS version that is acceptable.
     preferServerCipherSuites : bool, default is Undefined, optional
-        Controls whether the server selects the client's most preferred cipher
+        preferServerCipherSuites defines whether the server selects the client's most preferred cipher
         suite, or the server's most preferred cipher suite.
 
         If true then the server's preference, as expressed in
@@ -8797,7 +9064,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecWebTLSConfig:
 
 schema MonitoringCoreosComV1ThanosRulerSpecWebTLSConfigCert:
     r"""
-    Secret or ConfigMap containing the TLS certificate for the web server.
+    cert defines the Secret or ConfigMap containing the TLS certificate for the web server.
 
     Either `keySecret` or `keyFile` must be defined.
 
@@ -8815,7 +9082,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecWebTLSConfigCert:
 
 schema MonitoringCoreosComV1ThanosRulerSpecWebTLSConfigCertConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -8837,7 +9104,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecWebTLSConfigCertConfigMap:
 
 schema MonitoringCoreosComV1ThanosRulerSpecWebTLSConfigCertSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -8859,7 +9126,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecWebTLSConfigCertSecret:
 
 schema MonitoringCoreosComV1ThanosRulerSpecWebTLSConfigClientCa:
     r"""
-    Secret or ConfigMap containing the CA certificate for client certificate
+    client_ca defines the Secret or ConfigMap containing the CA certificate for client certificate
     authentication to the server.
 
     It is mutually exclusive with `clientCAFile`.
@@ -8876,7 +9143,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecWebTLSConfigClientCa:
 
 schema MonitoringCoreosComV1ThanosRulerSpecWebTLSConfigClientCaConfigMap:
     r"""
-    ConfigMap containing data to use for the targets.
+    configMap defines the ConfigMap containing data to use for the targets.
 
     Attributes
     ----------
@@ -8898,7 +9165,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecWebTLSConfigClientCaConfigMap:
 
 schema MonitoringCoreosComV1ThanosRulerSpecWebTLSConfigClientCaSecret:
     r"""
-    Secret containing data to use for the targets.
+    secret defines the Secret containing data to use for the targets.
 
     Attributes
     ----------
@@ -8920,7 +9187,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecWebTLSConfigClientCaSecret:
 
 schema MonitoringCoreosComV1ThanosRulerSpecWebTLSConfigKeySecret:
     r"""
-    Secret containing the TLS private key for the web server.
+    keySecret defines the secret containing the TLS private key for the web server.
 
     Either `cert` or `certFile` must be defined.
 
@@ -8946,39 +9213,35 @@ schema MonitoringCoreosComV1ThanosRulerSpecWebTLSConfigKeySecret:
 
 schema MonitoringCoreosComV1ThanosRulerStatus:
     r"""
-    Most recent observed status of the ThanosRuler cluster. Read-only.
+    status defines the most recent observed status of the ThanosRuler cluster. Read-only.
     More info:
     https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
 
     Attributes
     ----------
-    availableReplicas : int, default is Undefined, required
-        Total number of available pods (ready for at least minReadySeconds)
+    availableReplicas : int, default is Undefined, optional
+        availableReplicas defines the total number of available pods (ready for at least minReadySeconds)
         targeted by this ThanosRuler deployment.
     conditions : [MonitoringCoreosComV1ThanosRulerStatusConditionsItems0], default is Undefined, optional
-        The current state of the ThanosRuler object.
-    paused : bool, default is Undefined, required
-        Represents whether any actions on the underlying managed objects are
+        conditions defines the current state of the ThanosRuler object.
+    paused : bool, default is Undefined, optional
+        paused defines whether any actions on the underlying managed objects are
         being performed. Only delete actions will be performed.
-    replicas : int, default is Undefined, required
-        Total number of non-terminated pods targeted by this ThanosRuler deployment
+    replicas : int, default is Undefined, optional
+        replicas defines the total number of non-terminated pods targeted by this ThanosRuler deployment
         (their labels match the selector).
-    unavailableReplicas : int, default is Undefined, required
-        Total number of unavailable pods targeted by this ThanosRuler deployment.
-    updatedReplicas : int, default is Undefined, required
-        Total number of non-terminated pods targeted by this ThanosRuler deployment
+    unavailableReplicas : int, default is Undefined, optional
+        unavailableReplicas defines the total number of unavailable pods targeted by this ThanosRuler deployment.
+    updatedReplicas : int, default is Undefined, optional
+        updatedReplicas defines the total number of non-terminated pods targeted by this ThanosRuler deployment
         that have the desired version spec.
     """
-    availableReplicas: int
-
+    availableReplicas?: int
     conditions?: [MonitoringCoreosComV1ThanosRulerStatusConditionsItems0]
-    paused: bool
-
-    replicas: int
-
-    unavailableReplicas: int
-
-    updatedReplicas: int
+    paused?: bool
+    replicas?: int
+    unavailableReplicas?: int
+    updatedReplicas?: int
 
 schema MonitoringCoreosComV1ThanosRulerStatusConditionsItems0:
     r"""
@@ -8990,19 +9253,19 @@ schema MonitoringCoreosComV1ThanosRulerStatusConditionsItems0:
     lastTransitionTime : str, default is Undefined, required
         lastTransitionTime is the time of the last update to the current status property.
     message : str, default is Undefined, optional
-        Human-readable message indicating details for the condition's last transition.
+        message defines human-readable message indicating details for the condition's last transition.
     observedGeneration : int, default is Undefined, optional
-        ObservedGeneration represents the .metadata.generation that the
+        observedGeneration defines the .metadata.generation that the
         condition was set based upon. For instance, if `.metadata.generation` is
         currently 12, but the `.status.conditions[].observedGeneration` is 9, the
         condition is out of date with respect to the current state of the
         instance.
     reason : str, default is Undefined, optional
-        Reason for the condition's last transition.
+        reason for the condition's last transition.
     status : str, default is Undefined, required
-        Status of the condition.
+        status of the condition.
     $type : str, default is Undefined, required
-        Type of the condition being reported.
+        type of the condition being reported.
     """
     lastTransitionTime: str
 
