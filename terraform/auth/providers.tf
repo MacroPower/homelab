@@ -2,7 +2,7 @@ terraform {
   required_providers {
     doppler = {
       source = "DopplerHQ/doppler"
-      version = "1.20.0"
+      version = "1.21.0"
     }
     auth0 = {
       source = "auth0/auth0"
