@@ -6,7 +6,7 @@ terraform {
     }
     auth0 = {
       source = "auth0/auth0"
-      version = "1.31.0"
+      version = "1.32.0"
     }
     cloudflare = {
       source = "cloudflare/cloudflare"
