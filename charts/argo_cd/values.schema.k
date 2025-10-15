@@ -6249,6 +6249,8 @@ schema ValuesRedisSecretInit:
         Application controller container-level security context
     enabled : bool, optional, default is True
         Enable Redis secret initialization. If disabled, secret must be provisioned by alternative methods
+    extraArgs : [any], optional
+        Additional command line arguments for the Redis secret-init Job
     image : ValuesRedisSecretInitImage, optional
     imagePullSecrets : [any], optional
         Secrets with credentials to pull images from a private registry
@@ -6266,6 +6268,8 @@ schema ValuesRedisSecretInit:
         Priority class for Redis secret-init Job
     resources : ValuesRedisSecretInitResources, optional
         Resource limits and requests for Redis secret-init Job
+    runtimeClassName : str, optional, default is ""
+        Runtime class name for the Redis secret-init Job
     securityContext : ValuesRedisSecretInitSecurityContext, optional
         Redis secret-init Job pod-level security context
     serviceAccount : ValuesRedisSecretInitServiceAccount, optional
@@ -6276,6 +6280,7 @@ schema ValuesRedisSecretInit:
     affinity?: ValuesRedisSecretInitAffinity
     containerSecurityContext?: ValuesRedisSecretInitContainerSecurityContext
     enabled?: bool
+    extraArgs?: [any]
     image?: ValuesRedisSecretInitImage
     imagePullSecrets?: [any]
     jobAnnotations?: ValuesRedisSecretInitJobAnnotations
@@ -6285,6 +6290,7 @@ schema ValuesRedisSecretInit:
     podLabels?: ValuesRedisSecretInitPodLabels
     priorityClassName?: str
     resources?: ValuesRedisSecretInitResources
+    runtimeClassName?: str
     securityContext?: ValuesRedisSecretInitSecurityContext
     serviceAccount?: ValuesRedisSecretInitServiceAccount
     tolerations?: [any]

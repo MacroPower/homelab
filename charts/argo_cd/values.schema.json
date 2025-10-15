@@ -8122,6 +8122,15 @@
           "title": "enabled",
           "type": "boolean"
         },
+        "extraArgs": {
+          "description": "Additional command line arguments for the Redis secret-init Job",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraArgs",
+          "type": "array"
+        },
         "image": {
           "additionalProperties": true,
           "properties": {
@@ -8208,6 +8217,13 @@
           "required": [],
           "title": "resources",
           "type": "object"
+        },
+        "runtimeClassName": {
+          "default": "",
+          "description": "Runtime class name for the Redis secret-init Job",
+          "required": [],
+          "title": "runtimeClassName",
+          "type": "string"
         },
         "securityContext": {
           "additionalProperties": true,
