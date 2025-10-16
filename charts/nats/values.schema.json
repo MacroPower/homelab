@@ -1084,6 +1084,13 @@
           "required": [],
           "title": "ports",
           "type": "object"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "container resources",
+          "required": [],
+          "title": "resources",
+          "type": "object"
         }
       },
       "required": [],
@@ -1246,8 +1253,14 @@
                   "title": "repository",
                   "type": "string"
                 },
+                "resources": {
+                  "additionalProperties": true,
+                  "required": [],
+                  "title": "resources",
+                  "type": "object"
+                },
                 "tag": {
-                  "default": "0.18.0",
+                  "default": "0.19.2",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -1843,7 +1856,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "0.19.1",
+              "default": "0.20.0",
               "required": [],
               "title": "tag",
               "type": "string"

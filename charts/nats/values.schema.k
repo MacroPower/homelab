@@ -914,6 +914,8 @@ schema ValuesContainer:
         container port options
         must be enabled in the config section also
         https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#containerport-v1-core
+    resources : ValuesContainerResources, optional
+        container resources
     """
     [...str]: any
     env?: ValuesContainerEnv
@@ -921,6 +923,7 @@ schema ValuesContainer:
     merge?: ValuesContainerMerge
     patch?: [any]
     ports?: ValuesContainerPorts
+    resources?: ValuesContainerResources
 
 schema ValuesContainerEnv:
     r"""
@@ -1039,6 +1042,12 @@ schema ValuesContainerPortsProfiling:
 schema ValuesContainerPortsWebsocket:
     r"""
     ValuesContainerPortsWebsocket
+    """
+    [...str]: any
+
+schema ValuesContainerResources:
+    r"""
+    container resources
     """
     [...str]: any
 
@@ -1193,7 +1202,8 @@ schema ValuesNatsBoxContainerImage:
     pullPolicy : any, optional, default is ""
     registry : any, optional, default is ""
     repository : str, optional, default is "natsio/nats-box"
-    tag : str, optional, default is "0.18.0"
+    resources : ValuesNatsBoxContainerImageResources, optional
+    tag : str, optional, default is "0.19.2"
     """
     [...str]: any
     digest?: any
@@ -1201,7 +1211,14 @@ schema ValuesNatsBoxContainerImage:
     pullPolicy?: any
     registry?: any
     repository?: str
+    resources?: ValuesNatsBoxContainerImageResources
     tag?: str
+
+schema ValuesNatsBoxContainerImageResources:
+    r"""
+    ValuesNatsBoxContainerImageResources
+    """
+    [...str]: any
 
 schema ValuesNatsBoxContainerMerge:
     r"""
@@ -1653,7 +1670,7 @@ schema ValuesReloaderImage:
     pullPolicy : any, optional, default is ""
     registry : any, optional, default is ""
     repository : str, optional, default is "natsio/nats-server-config-reloader"
-    tag : str, optional, default is "0.19.1"
+    tag : str, optional, default is "0.20.0"
     """
     [...str]: any
     digest?: any
