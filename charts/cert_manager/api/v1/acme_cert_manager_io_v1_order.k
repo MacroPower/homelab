@@ -82,15 +82,17 @@ schema AcmeCertManagerIoV1OrderSpecIssuerRef:
 
     Attributes
     ----------
-    group : str, default is "cert-manager.io", optional
+    group : str, default is Undefined, optional
         Group of the issuer being referred to.
-    kind : str, default is "Issuer", optional
+        Defaults to 'cert-manager.io'.
+    kind : str, default is Undefined, optional
         Kind of the issuer being referred to.
+        Defaults to 'Issuer'.
     name : str, default is Undefined, required
         Name of the issuer being referred to.
     """
-    group?: str = "cert-manager.io"
-    kind?: str = "Issuer"
+    group?: str
+    kind?: str
     name: str
 
 schema AcmeCertManagerIoV1OrderStatus:
