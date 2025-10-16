@@ -84,7 +84,7 @@ app = frontend.App {
             name = "mullvad-doh-egress"
             egress = [{
                 toFQDNs = [{
-                    matchPattern = "dns.mullvad.net"
+                    matchPattern = "*.mullvad.net"
                 }]
                 toPorts = [{
                     ports = [{

@@ -30,7 +30,8 @@ app = public_adguard_base.app | {
             "AdGuardHome.yaml" = yaml.encode(_adguardConfig | {
                 tls.server_name = "dns.${domainName}"
                 dns.upstream_dns = [
-                    "https://dns.mullvad.net/dns-query"
+                    "https://us-nyc-dns-601.mullvad.net/dns-query"
+                    "https://us-dal-dns-001.mullvad.net/dns-query"
                     "[/macro.network/]tcp://10.10.0.1"
                     "[/jacobcolvin.com/]tcp://10.10.0.1"
                     "[/raw.githubusercontent.com/]tcp://10.10.0.1"
