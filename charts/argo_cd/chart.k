@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "argo-cd"
     repoURL : str, required, default is "https://argoproj.github.io/argo-helm"
-    targetRevision : str, optional, default is "8.6.3"
+    targetRevision : str, optional, default is "8.6.4"
     """
     values?: Values | any
     chart: str = "argo-cd"
     repoURL: str = "https://argoproj.github.io/argo-helm"
-    targetRevision?: str = "8.6.3"
+    targetRevision?: str = "8.6.4"
 
