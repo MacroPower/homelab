@@ -5710,7 +5710,7 @@ schema ValuesLoki:
          Optional compactor configuration
     compactor_grpc_client : ValuesLokiCompactorGrpcClient, optional
          Optional compactor grpc client configuration
-    config : str, optional, default is "{{- if .Values.enterprise.enabled}}\n{{- tpl .Values.enterprise.config . }}\n{{- else }}\nauth_enabled: {{ .Values.loki.auth_enabled }}\n{{- end }}\n\n{{- with .Values.loki.server }}\nserver:\n  {{- toYaml . | nindent 2}}\n{{- end}}\n\n{{- with .Values.loki.pattern_ingester }}\npattern_ingester:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\nmemberlist:\n{{- if .Values.loki.memberlistConfig }}\n  {{- toYaml .Values.loki.memberlistConfig | nindent 2 }}\n{{- else }}\n{{- if .Values.loki.extraMemberlistConfig}}\n{{- toYaml .Values.loki.extraMemberlistConfig | nindent 2}}\n{{- end }}\n  join_members:\n    - {{ include \"loki.memberlist\" . }}\n    {{- with .Values.migrate.fromDistributed }}\n    {{- if .enabled }}\n    - {{ .memberlistService }}\n    {{- end }}\n    {{- end }}\n{{- end }}\n\n{{- with .Values.loki.ingester }}\ningester:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.ingester_client }}\ningester_client:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.block_builder }}\nblock_builder:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- if .Values.loki.commonConfig}}\ncommon:\n{{- toYaml .Values.loki.commonConfig | nindent 2}}\n  storage:\n  {{- include \"loki.commonStorageConfig\" . | nindent 4}}\n{{- end}}\n\n{{- with .Values.loki.limits_config }}\nlimits_config:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\nruntime_config:\n  file: /etc/loki/runtime-config/runtime-config.yaml\n\n{{- if .Values.chunksCache.enabled }}\n{{- with .Values.chunksCache }}\nchunk_store_config:\n  chunk_cache_config:\n    default_validity: {{ .defaultValidity }}\n    background:\n      writeback_goroutines: {{ .writebackParallelism }}\n      writeback_buffer: {{ .writebackBuffer }}\n      writeback_size_limit: {{ .writebackSizeLimit }}\n    memcached:\n      batch_size: {{ .batchSize }}\n      parallelism: {{ .parallelism }}\n    memcached_client:\n      addresses: {{ .addresses }}\n      consistent_hash: true\n      timeout: {{ .timeout }}\n      max_idle_conns: 72\n  {{- end }}\n  {{- with .Values.chunksCache.l2 }}\n  {{- if .enabled }}\n  l2_chunk_cache_handoff: {{ .l2ChunkCacheHandoff }}\n  chunk_cache_config_l2:\n    default_validity: {{ .defaultValidity }}\n    background:\n      writeback_goroutines: {{ .writebackParallelism }}\n      writeback_buffer: {{ .writebackBuffer }}\n      writeback_size_limit: {{ .writebackSizeLimit }}\n    memcached:\n      batch_size: {{ .batchSize }}\n      parallelism: {{ .parallelism }}\n    memcached_client:\n      addresses: {{ .addresses }}\n      consistent_hash: true\n      timeout: {{ .timeout }}\n      max_idle_conns: 72\n  {{- end }}\n  {{- end }}\n{{- end }}\n\n{{- if .Values.loki.schemaConfig }}\nschema_config:\n{{- toYaml .Values.loki.schemaConfig | nindent 2}}\n{{- end }}\n\n{{- if .Values.loki.useTestSchema }}\nschema_config:\n{{- toYaml .Values.loki.testSchemaConfig | nindent 2}}\n{{- end }}\n\n{{- if .Values.ruler.enabled }}\n{{ include \"loki.rulerConfig\" . }}\n{{- end }}\n\n{{- if and .Values.loki.storage.use_thanos_objstore .Values.ruler.enabled}}\nruler_storage:\n  {{- include \"loki.rulerThanosStorageConfig\" . | nindent 2 }}\n{{- end }}\n\n{{- if or .Values.tableManager.retention_deletes_enabled .Values.tableManager.retention_period }}\ntable_manager:\n  retention_deletes_enabled: {{ .Values.tableManager.retention_deletes_enabled }}\n  retention_period: {{ .Values.tableManager.retention_period }}\n{{- end }}\n\nquery_range:\n  align_queries_with_step: true\n  {{- with .Values.loki.query_range }}\n  {{- tpl (. | toYaml) $ | nindent 2 }}\n  {{- end }}\n  {{- if .Values.resultsCache.enabled }}\n  {{- with .Values.resultsCache }}\n  cache_results: true\n  results_cache:\n    cache:\n      default_validity: {{ .defaultValidity }}\n      background:\n        writeback_goroutines: {{ .writebackParallelism }}\n        writeback_buffer: {{ .writebackBuffer }}\n        writeback_size_limit: {{ .writebackSizeLimit }}\n      memcached_client:\n        addresses: {{ .addresses }}\n        consistent_hash: true\n        timeout: {{ .timeout }}\n        update_interval: 1m\n  {{- end }}\n  {{- end }}\n\n{{- with .Values.loki.storage_config }}\nstorage_config:\n    {{- if not (hasKey $.Values.loki.storage_config \"use_thanos_objstore\") }}\n    use_thanos_objstore: {{ $.Values.loki.storage.use_thanos_objstore }}\n    {{- end }}\n    {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.query_scheduler }}\nquery_scheduler:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.compactor }}\ncompactor:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.compactor_grpc_client }}\ncompactor_grpc_client:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.analytics }}\nanalytics:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- if .Values.loki.ui.enabled }}\nui:\n  enabled: true\n  discovery:\n    join_peers:\n      - '{{ include \"loki.queryFrontendFullname\" . }}.{{ include \"loki.namespace\" . }}.svc.{{ .Values.global.clusterDomain }}'\n{{- end }}\n{{- with .Values.loki.querier }}\nquerier:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.index_gateway }}\nindex_gateway:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.frontend }}\nfrontend:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.frontend_worker }}\nfrontend_worker:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.distributor }}\ndistributor:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\ntracing:\n  enabled: {{ .Values.loki.tracing.enabled }}\n\n{{- with .Values.loki.bloom_build }}\nbloom_build:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.bloom_gateway }}\nbloom_gateway:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.operational_config }}\noperational_config:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n"
+    config : str, optional, default is "{{- if .Values.enterprise.enabled}}\n{{- tpl .Values.enterprise.config . }}\n{{- else }}\nauth_enabled: {{ .Values.loki.auth_enabled }}\n{{- end }}\n\n{{- with .Values.loki.server }}\nserver:\n  {{- toYaml . | nindent 2}}\n{{- end}}\n\n{{- with .Values.loki.pattern_ingester }}\npattern_ingester:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\nmemberlist:\n{{- if .Values.loki.memberlistConfig }}\n  {{- toYaml .Values.loki.memberlistConfig | nindent 2 }}\n{{- else }}\n{{- if .Values.loki.extraMemberlistConfig}}\n{{- toYaml .Values.loki.extraMemberlistConfig | nindent 2}}\n{{- end }}\n  join_members:\n    - {{ include \"loki.memberlist\" . }}\n    {{- with .Values.migrate.fromDistributed }}\n    {{- if .enabled }}\n    - {{ .memberlistService }}\n    {{- end }}\n    {{- end }}\n{{- end }}\n\n{{- with .Values.loki.ingester }}\ningester:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.ingester_client }}\ningester_client:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.block_builder }}\nblock_builder:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- if .Values.loki.commonConfig}}\ncommon:\n{{- toYaml .Values.loki.commonConfig | nindent 2}}\n  storage:\n  {{- include \"loki.commonStorageConfig\" . | nindent 4}}\n{{- end}}\n\n{{- with .Values.loki.limits_config }}\nlimits_config:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\nruntime_config:\n  file: /etc/loki/runtime-config/runtime-config.yaml\n\n{{- if .Values.chunksCache.enabled }}\n{{- with .Values.chunksCache }}\nchunk_store_config:\n  chunk_cache_config:\n    default_validity: {{ .defaultValidity }}\n    background:\n      writeback_goroutines: {{ .writebackParallelism }}\n      writeback_buffer: {{ .writebackBuffer }}\n      writeback_size_limit: {{ .writebackSizeLimit }}\n    memcached:\n      batch_size: {{ .batchSize }}\n      parallelism: {{ .parallelism }}\n    memcached_client:\n      addresses: {{ .addresses }}\n      consistent_hash: true\n      timeout: {{ .timeout }}\n      max_idle_conns: 72\n  {{- end }}\n  {{- with .Values.chunksCache.l2 }}\n  {{- if .enabled }}\n  l2_chunk_cache_handoff: {{ .l2ChunkCacheHandoff }}\n  chunk_cache_config_l2:\n    default_validity: {{ .defaultValidity }}\n    background:\n      writeback_goroutines: {{ .writebackParallelism }}\n      writeback_buffer: {{ .writebackBuffer }}\n      writeback_size_limit: {{ .writebackSizeLimit }}\n    memcached:\n      batch_size: {{ .batchSize }}\n      parallelism: {{ .parallelism }}\n    memcached_client:\n      addresses: {{ .addresses }}\n      consistent_hash: true\n      timeout: {{ .timeout }}\n      max_idle_conns: 72\n  {{- end }}\n  {{- end }}\n{{- end }}\n\n{{- if .Values.loki.schemaConfig }}\nschema_config:\n{{- toYaml .Values.loki.schemaConfig | nindent 2}}\n{{- end }}\n\n{{- if .Values.loki.useTestSchema }}\nschema_config:\n{{- toYaml .Values.loki.testSchemaConfig | nindent 2}}\n{{- end }}\n\n{{- if .Values.ruler.enabled }}\n{{ include \"loki.rulerConfig\" . }}\n{{- end }}\n\n{{- if and .Values.loki.storage.use_thanos_objstore .Values.ruler.enabled}}\nruler_storage:\n  {{- include \"loki.rulerThanosStorageConfig\" . | nindent 2 }}\n{{- end }}\n\n{{- if or .Values.tableManager.retention_deletes_enabled .Values.tableManager.retention_period }}\ntable_manager:\n  retention_deletes_enabled: {{ .Values.tableManager.retention_deletes_enabled }}\n  retention_period: {{ .Values.tableManager.retention_period }}\n{{- end }}\n\nquery_range:\n  align_queries_with_step: true\n  {{- with .Values.loki.query_range }}\n  {{- tpl (. | toYaml) $ | nindent 2 }}\n  {{- end }}\n  {{- if .Values.resultsCache.enabled }}\n  {{- with .Values.resultsCache }}\n  cache_results: true\n  results_cache:\n    cache:\n      default_validity: {{ .defaultValidity }}\n      background:\n        writeback_goroutines: {{ .writebackParallelism }}\n        writeback_buffer: {{ .writebackBuffer }}\n        writeback_size_limit: {{ .writebackSizeLimit }}\n      memcached_client:\n        addresses: {{ .addresses }}\n        consistent_hash: true\n        timeout: {{ .timeout }}\n        update_interval: 1m\n  {{- end }}\n  {{- end }}\n\n{{- with .Values.loki.storage_config }}\nstorage_config:\n    {{- if not (hasKey $.Values.loki.storage_config \"use_thanos_objstore\") }}\n    use_thanos_objstore: {{ $.Values.loki.storage.use_thanos_objstore }}\n    {{- end }}\n    {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.query_scheduler }}\nquery_scheduler:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.compactor }}\ncompactor:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.compactor_grpc_client }}\ncompactor_grpc_client:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.analytics }}\nanalytics:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- if .Values.loki.ui.enabled }}\nui:\n  enabled: true\n{{- end }}\n{{- with .Values.loki.querier }}\nquerier:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.index_gateway }}\nindex_gateway:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.frontend }}\nfrontend:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.frontend_worker }}\nfrontend_worker:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.distributor }}\ndistributor:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\ntracing:\n  enabled: {{ .Values.loki.tracing.enabled }}\n\n{{- with .Values.loki.bloom_build }}\nbloom_build:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.bloom_gateway }}\nbloom_gateway:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n\n{{- with .Values.loki.operational_config }}\noperational_config:\n  {{- tpl (. | toYaml) $ | nindent 4 }}\n{{- end }}\n"
         Config file contents for Loki
     configObjectName : str, optional, default is "{{ include \"loki.name\" . }}"
         The name of the object which Loki will mount as a volume containing the config.
@@ -7349,6 +7349,8 @@ schema ValuesMemcached:
     readinessProbe : ValuesMemcachedReadinessProbe, optional
         Readiness probe for memcached pods (probe port defaults to container port)
     replicas : int, optional
+    startupProbe : ValuesMemcachedStartupProbe, optional
+        Startup probe for memcached pods
     """
     [...str]: any
     containerSecurityContext?: ValuesMemcachedContainerSecurityContext
@@ -7359,6 +7361,7 @@ schema ValuesMemcached:
     priorityClassName?: any
     readinessProbe?: ValuesMemcachedReadinessProbe
     replicas?: int
+    startupProbe?: ValuesMemcachedStartupProbe
 
 schema ValuesMemcachedContainerSecurityContext:
     r"""
@@ -7412,6 +7415,8 @@ schema ValuesMemcachedExporter:
     readinessProbe : ValuesMemcachedExporterReadinessProbe, optional
         Readiness probe for memcached exporter
     resources : ValuesMemcachedExporterResources, optional
+    startupProbe : ValuesMemcachedExporterStartupProbe, optional
+        Startup probe for memcached exporter
     """
     [...str]: any
     containerSecurityContext?: ValuesMemcachedExporterContainerSecurityContext
@@ -7421,6 +7426,7 @@ schema ValuesMemcachedExporter:
     livenessProbe?: ValuesMemcachedExporterLivenessProbe
     readinessProbe?: ValuesMemcachedExporterReadinessProbe
     resources?: ValuesMemcachedExporterResources
+    startupProbe?: ValuesMemcachedExporterStartupProbe
 
 schema ValuesMemcachedExporterContainerSecurityContext:
     r"""
@@ -7566,6 +7572,12 @@ schema ValuesMemcachedExporterResourcesRequests:
     """
     [...str]: any
 
+schema ValuesMemcachedExporterStartupProbe:
+    r"""
+    Startup probe for memcached exporter
+    """
+    [...str]: any
+
 schema ValuesMemcachedImage:
     r"""
     ValuesMemcachedImage
@@ -7660,6 +7672,12 @@ schema ValuesMemcachedReadinessProbeTcpSocket:
     """
     [...str]: any
     port?: str
+
+schema ValuesMemcachedStartupProbe:
+    r"""
+    Startup probe for memcached pods
+    """
+    [...str]: any
 
 schema ValuesMetrics:
     r"""
@@ -7956,7 +7974,13 @@ schema ValuesMonitoringRules:
     ----------
     additionalGroups : [any], optional
         Additional groups to add to the rules file
+    additionalRuleAnnotations : ValuesMonitoringRulesAdditionalRuleAnnotations, optional
+        Additional annotations for PrometheusRule alerts
     additionalRuleLabels : ValuesMonitoringRulesAdditionalRuleLabels, optional
+        e.g.:
+        additionalRuleAnnotations:
+          runbook_url: "https://runbooks.example.com/oncall/loki"
+          summary: "What this alert means and how to respond"
         Additional labels for PrometheusRule alerts
     alerting : bool, optional, default is True
         Include alerting rules
@@ -7977,6 +8001,7 @@ schema ValuesMonitoringRules:
     """
     [...str]: any
     additionalGroups?: [any]
+    additionalRuleAnnotations?: ValuesMonitoringRulesAdditionalRuleAnnotations
     additionalRuleLabels?: ValuesMonitoringRulesAdditionalRuleLabels
     alerting?: bool
     annotations?: ValuesMonitoringRulesAnnotations
@@ -7985,8 +8010,18 @@ schema ValuesMonitoringRules:
     labels?: ValuesMonitoringRulesLabels
     namespace?: any
 
+schema ValuesMonitoringRulesAdditionalRuleAnnotations:
+    r"""
+    Additional annotations for PrometheusRule alerts
+    """
+    [...str]: any
+
 schema ValuesMonitoringRulesAdditionalRuleLabels:
     r"""
+    e.g.:
+    additionalRuleAnnotations:
+      runbook_url: "https://runbooks.example.com/oncall/loki"
+      summary: "What this alert means and how to respond"
     Additional labels for PrometheusRule alerts
     """
     [...str]: any
