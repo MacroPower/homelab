@@ -1680,89 +1680,13 @@ schema ValuesConfigsParams:
     ----------
     annotations : ValuesConfigsParamsAnnotations, optional
         Annotations to be added to the argocd-cmd-params-cm ConfigMap
-    "application.namespaces" : str, optional, default is ""
-        Enables [Applications in any namespace]
-        # List of additional namespaces where applications may be created in and reconciled from.
-        # The namespace where Argo CD is installed to will always be allowed.
-        # Set comma-separated list. (e.g. app-team-one, app-team-two)
-    "applicationsetcontroller.enable.progressive.syncs" : bool, optional, default is False
-        Enables use of the Progressive Syncs capability
-    "applicationsetcontroller.namespaces" : str, optional, default is ""
-        A list of glob patterns specifying where to look for ApplicationSet resources. (e.g. `"argocd,argocd-appsets-*"`)
-        # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Appset-Any-Namespace/
-    "applicationsetcontroller.policy" : str, optional, default is "sync"
-        # ApplicationSet Properties
-        Modify how application is synced between the generator and the cluster. One of: `sync`, `create-only`, `create-update`, `create-delete`
-    "controller.ignore.normalizer.jq.timeout" : str, optional, default is "1s"
-        JQ Path expression timeout
-        # By default, the evaluation of a JQPathExpression is limited to one second.
-        # If you encounter a "JQ patch execution timed out" error message due to a complex JQPathExpression
-        # that requires more time to evaluate, you can extend the timeout period.
-    "controller.operation.processors" : int, optional, default is 10
-        Number of application operation processors
-    "controller.repo.server.timeout.seconds" : int, optional, default is 60
-        Repo server RPC call timeout seconds.
-    "controller.self.heal.timeout.seconds" : int, optional, default is 5
-        Specifies timeout between application self heal attempts
-    "controller.status.processors" : int, optional, default is 20
-        # Controller Properties
-        Number of application status processors
-    "controller.sync.timeout.seconds" : int, optional, default is 0
-        Specifies the timeout after which a sync would be terminated. 0 means no timeout
     create : bool, optional, default is True
         Create the argocd-cmd-params-cm configmap
         If false, it is expected the configmap will be created by something else.
-    "hydrator.enabled" : bool, optional, default is False
-        Enable the hydrator feature (hydrator is in Alpha phase)
-    "otlp.address" : str, optional, default is ""
-        # Generic parameters
-        Open-Telemetry collector address: (e.g. "otel-collector:4317")
-    "reposerver.parallelism.limit" : int, optional, default is 0
-        # Repo-server properties
-        Limit on number of concurrent manifests generate requests. Any value less the 1 means no limit.
-    "server.basehref" : str, optional, default is "/"
-        Value for base href in index.html. Used if Argo CD is running behind reverse proxy under subpath different from /
-    "server.disable.auth" : bool, optional, default is False
-        Disable Argo CD RBAC for user authentication
-    "server.enable.gzip" : bool, optional, default is True
-        Enable GZIP compression
-    "server.enable.proxy.extension" : bool, optional, default is False
-        Enable proxy extension feature. (proxy extension is in Alpha phase)
-    "server.insecure" : bool, optional, default is False
-        # Server properties
-        Run server without TLS
-        # NOTE: This value should be set when you generate params by other means as it changes ports used by ingress template.
-    "server.rootpath" : str, optional, default is ""
-        Used if Argo CD is running behind reverse proxy under subpath different from /
-    "server.staticassets" : str, optional, default is "/shared/app"
-        Directory path that contains additional static assets
-    "server.x.frame.options" : str, optional, default is "sameorigin"
-        Set X-Frame-Options header in HTTP responses to value. To disable, set to "".
     """
     [...str]: any
     annotations?: ValuesConfigsParamsAnnotations
-    "application.namespaces"?: str
-    "applicationsetcontroller.enable.progressive.syncs"?: bool
-    "applicationsetcontroller.namespaces"?: str
-    "applicationsetcontroller.policy"?: str
-    "controller.ignore.normalizer.jq.timeout"?: str
-    "controller.operation.processors"?: int
-    "controller.repo.server.timeout.seconds"?: int
-    "controller.self.heal.timeout.seconds"?: int
-    "controller.status.processors"?: int
-    "controller.sync.timeout.seconds"?: int
     create?: bool
-    "hydrator.enabled"?: bool
-    "otlp.address"?: str
-    "reposerver.parallelism.limit"?: int
-    "server.basehref"?: str
-    "server.disable.auth"?: bool
-    "server.enable.gzip"?: bool
-    "server.enable.proxy.extension"?: bool
-    "server.insecure"?: bool
-    "server.rootpath"?: str
-    "server.staticassets"?: str
-    "server.x.frame.options"?: str
 
 schema ValuesConfigsParamsAnnotations:
     r"""
