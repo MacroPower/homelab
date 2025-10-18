@@ -429,51 +429,51 @@
         }
       }
     },
-    "natscli@0.2.2": {
-      "last_modified": "2025-09-18T16:33:27Z",
-      "resolved": "github:NixOS/nixpkgs/f4b140d5b253f5e2a1ff4e5506edbf8267724bde#natscli",
+    "natscli@0.3.0": {
+      "last_modified": "2025-10-13T09:56:54Z",
+      "resolved": "github:NixOS/nixpkgs/c12c63cd6c5eb34c7b4c3076c6a99e00fcab86ec#natscli",
       "source": "devbox-search",
-      "version": "0.2.2",
+      "version": "0.3.0",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/ix8d71slpphi6a3f0vlvs62h6mnwm7im-natscli-0.2.2",
+              "path": "/nix/store/iddapv164lfb1ymj81svnxnjn9qhlzg1-natscli-0.3.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/ix8d71slpphi6a3f0vlvs62h6mnwm7im-natscli-0.2.2"
+          "store_path": "/nix/store/iddapv164lfb1ymj81svnxnjn9qhlzg1-natscli-0.3.0"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/7bmw15a7dz0bhxc3nv85kf78j1h81yd5-natscli-0.2.2",
+              "path": "/nix/store/hr3sjfj0v79qgih9fxah0vja514sk8df-natscli-0.3.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/7bmw15a7dz0bhxc3nv85kf78j1h81yd5-natscli-0.2.2"
+          "store_path": "/nix/store/hr3sjfj0v79qgih9fxah0vja514sk8df-natscli-0.3.0"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/28xzh8l6lfd6g7a8jz53zyw2yk4jjbb9-natscli-0.2.2",
+              "path": "/nix/store/yq1c3rkldwqr0x2qzibbfqqq6lh54gg5-natscli-0.3.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/28xzh8l6lfd6g7a8jz53zyw2yk4jjbb9-natscli-0.2.2"
+          "store_path": "/nix/store/yq1c3rkldwqr0x2qzibbfqqq6lh54gg5-natscli-0.3.0"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/l0rpdq7kpsinfvlkpkqhr4sgz5iinqsx-natscli-0.2.2",
+              "path": "/nix/store/35vpddjfjaxc1kabdviqkwj5x48ibyni-natscli-0.3.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/l0rpdq7kpsinfvlkpkqhr4sgz5iinqsx-natscli-0.2.2"
+          "store_path": "/nix/store/35vpddjfjaxc1kabdviqkwj5x48ibyni-natscli-0.3.0"
         }
       }
     },
