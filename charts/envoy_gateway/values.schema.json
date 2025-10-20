@@ -559,7 +559,7 @@
               "additionalProperties": true,
               "properties": {
                 "image": {
-                  "default": "docker.io/envoyproxy/gateway:v1.5.3",
+                  "default": "docker.io/envoyproxy/gateway:v1.5.4",
                   "description": "This is the full image name including the hub, repo, and tag.",
                   "required": [],
                   "title": "image",
