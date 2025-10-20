@@ -23,6 +23,21 @@
       "title": "clusterDomain",
       "type": "string"
     },
+    "crds": {
+      "additionalProperties": true,
+      "properties": {
+        "immutable": {
+          "default": true,
+          "description": "Immutable CustomResourceDefinitions are installed only once using `crds/` directory\nand require manual upgrade by `kubectl apply`.\nMutable CRDs are installed and upgraded together with the Helm chart using `templates/` directory\nwithout manual `kubectl apply` step required.\nUse `helm upgrade -i --take-ownership` when switching to mutable CRDs for the first time only.\nBoth types of CRDs are protected on the Helm chart uninstall to avoid cascading deletion.",
+          "required": [],
+          "title": "immutable",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "crds",
+      "type": "object"
+    },
     "dashboard": {
       "additionalProperties": true,
       "properties": {

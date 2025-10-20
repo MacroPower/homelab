@@ -20,6 +20,7 @@ schema Values:
         relative domain name that will resolve regardless of if a custom domain is configured for the cluster. If you
         wish to have services addressed using their FQDNs, you can specify the cluster domain explicitly, e.g., "cluster.local"
         for the default Kubernetes configuration.
+    crds : ValuesCrds, optional
     dashboard : ValuesDashboard, optional
     enforceCacheLabels : str, optional, default is "safe"
         Sets the `ENFORCE_CACHE_LABELS` environment variable,
@@ -96,6 +97,7 @@ schema Values:
     additionalLabels?: ValuesAdditionalLabels
     affinity?: ValuesAffinity
     clusterDomain?: str
+    crds?: ValuesCrds
     dashboard?: ValuesDashboard
     enforceCacheLabels?: str
     env?: [any]
@@ -139,6 +141,23 @@ schema ValuesAffinity:
     pod affinity
     """
     [...str]: any
+
+schema ValuesCrds:
+    r"""
+    ValuesCrds
+
+    Attributes
+    ----------
+    immutable : bool, optional, default is True
+        Immutable CustomResourceDefinitions are installed only once using `crds/` directory
+        and require manual upgrade by `kubectl apply`.
+        Mutable CRDs are installed and upgraded together with the Helm chart using `templates/` directory
+        without manual `kubectl apply` step required.
+        Use `helm upgrade -i --take-ownership` when switching to mutable CRDs for the first time only.
+        Both types of CRDs are protected on the Helm chart uninstall to avoid cascading deletion.
+    """
+    [...str]: any
+    immutable?: bool
 
 schema ValuesDashboard:
     r"""

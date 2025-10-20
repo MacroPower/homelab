@@ -1027,6 +1027,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         resources
     restartPolicy : str, default is Undefined, optional
         restart policy
+    restartPolicyRules : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0RestartPolicyRulesItems0], default is Undefined, optional
+        restart policy rules
     securityContext : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContext, default is Undefined, optional
         security context
     startupProbe : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbe, default is Undefined, optional
@@ -1063,6 +1065,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     resizePolicy?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0ResizePolicyItems0]
     resources?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0Resources
     restartPolicy?: str
+    restartPolicyRules?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0RestartPolicyRulesItems0]
     securityContext?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContext
     startupProbe?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0StartupProbe
     stdin?: bool
@@ -1147,6 +1150,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
         config map key ref
     fieldRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromFieldRef, default is Undefined, optional
         field ref
+    fileKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromFileKeyRef, default is Undefined, optional
+        file key ref
     resourceFieldRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromResourceFieldRef, default is Undefined, optional
         resource field ref
     secretKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromSecretKeyRef, default is Undefined, optional
@@ -1154,6 +1159,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     """
     configMapKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromConfigMapKeyRef
     fieldRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromFieldRef
+    fileKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromFileKeyRef
     resourceFieldRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromResourceFieldRef
     secretKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromSecretKeyRef
 
@@ -1188,6 +1194,28 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
     """
     apiVersion?: str
     fieldPath: str
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromFileKeyRef:
+    r"""
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 env items0 value from file key ref
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key
+    optional : bool, default is Undefined, optional
+        optional
+    path : str, default is Undefined, required
+        path
+    volumeName : str, default is Undefined, required
+        volume name
+    """
+    key: str
+
+    optional?: bool = False
+    path: str
+
+    volumeName: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0EnvItems0ValueFromResourceFieldRef:
     r"""
@@ -1743,6 +1771,36 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContaine
 
     request?: str
 
+schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0RestartPolicyRulesItems0:
+    r"""
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 restart policy rules items0
+
+    Attributes
+    ----------
+    action : str, default is Undefined, required
+        action
+    exitCodes : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0RestartPolicyRulesItems0ExitCodes, default is Undefined, optional
+        exit codes
+    """
+    action: str
+
+    exitCodes?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0RestartPolicyRulesItems0ExitCodes
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0RestartPolicyRulesItems0ExitCodes:
+    r"""
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 restart policy rules items0 exit codes
+
+    Attributes
+    ----------
+    operator : str, default is Undefined, required
+        operator
+    values : [int], default is Undefined, optional
+        values
+    """
+    operator: str
+
+    values?: [int]
+
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecContainersItems0SecurityContext:
     r"""
     grafana integreatly org v1beta1 grafana spec deployment spec template spec containers items0 security context
@@ -2097,6 +2155,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         resources
     restartPolicy : str, default is Undefined, optional
         restart policy
+    restartPolicyRules : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0RestartPolicyRulesItems0], default is Undefined, optional
+        restart policy rules
     securityContext : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContext, default is Undefined, optional
         security context
     startupProbe : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbe, default is Undefined, optional
@@ -2135,6 +2195,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     resizePolicy?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0ResizePolicyItems0]
     resources?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0Resources
     restartPolicy?: str
+    restartPolicyRules?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0RestartPolicyRulesItems0]
     securityContext?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContext
     startupProbe?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0StartupProbe
     stdin?: bool
@@ -2220,6 +2281,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
         config map key ref
     fieldRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromFieldRef, default is Undefined, optional
         field ref
+    fileKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromFileKeyRef, default is Undefined, optional
+        file key ref
     resourceFieldRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromResourceFieldRef, default is Undefined, optional
         resource field ref
     secretKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromSecretKeyRef, default is Undefined, optional
@@ -2227,6 +2290,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     """
     configMapKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromConfigMapKeyRef
     fieldRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromFieldRef
+    fileKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromFileKeyRef
     resourceFieldRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromResourceFieldRef
     secretKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromSecretKeyRef
 
@@ -2261,6 +2325,28 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
     """
     apiVersion?: str
     fieldPath: str
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromFileKeyRef:
+    r"""
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 env items0 value from file key ref
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key
+    optional : bool, default is Undefined, optional
+        optional
+    path : str, default is Undefined, required
+        path
+    volumeName : str, default is Undefined, required
+        volume name
+    """
+    key: str
+
+    optional?: bool = False
+    path: str
+
+    volumeName: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0EnvItems0ValueFromResourceFieldRef:
     r"""
@@ -2816,6 +2902,36 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemera
 
     request?: str
 
+schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0RestartPolicyRulesItems0:
+    r"""
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 restart policy rules items0
+
+    Attributes
+    ----------
+    action : str, default is Undefined, required
+        action
+    exitCodes : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0RestartPolicyRulesItems0ExitCodes, default is Undefined, optional
+        exit codes
+    """
+    action: str
+
+    exitCodes?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0RestartPolicyRulesItems0ExitCodes
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0RestartPolicyRulesItems0ExitCodes:
+    r"""
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 restart policy rules items0 exit codes
+
+    Attributes
+    ----------
+    operator : str, default is Undefined, required
+        operator
+    values : [int], default is Undefined, optional
+        values
+    """
+    operator: str
+
+    values?: [int]
+
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecEphemeralContainersItems0SecurityContext:
     r"""
     grafana integreatly org v1beta1 grafana spec deployment spec template spec ephemeral containers items0 security context
@@ -3164,6 +3280,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         resources
     restartPolicy : str, default is Undefined, optional
         restart policy
+    restartPolicyRules : [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0RestartPolicyRulesItems0], default is Undefined, optional
+        restart policy rules
     securityContext : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContext, default is Undefined, optional
         security context
     startupProbe : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbe, default is Undefined, optional
@@ -3200,6 +3318,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     resizePolicy?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0ResizePolicyItems0]
     resources?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0Resources
     restartPolicy?: str
+    restartPolicyRules?: [GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0RestartPolicyRulesItems0]
     securityContext?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContext
     startupProbe?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0StartupProbe
     stdin?: bool
@@ -3284,6 +3403,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
         config map key ref
     fieldRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromFieldRef, default is Undefined, optional
         field ref
+    fileKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromFileKeyRef, default is Undefined, optional
+        file key ref
     resourceFieldRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromResourceFieldRef, default is Undefined, optional
         resource field ref
     secretKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromSecretKeyRef, default is Undefined, optional
@@ -3291,6 +3412,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     """
     configMapKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromConfigMapKeyRef
     fieldRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromFieldRef
+    fileKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromFileKeyRef
     resourceFieldRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromResourceFieldRef
     secretKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromSecretKeyRef
 
@@ -3325,6 +3447,28 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     """
     apiVersion?: str
     fieldPath: str
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromFileKeyRef:
+    r"""
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 env items0 value from file key ref
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key
+    optional : bool, default is Undefined, optional
+        optional
+    path : str, default is Undefined, required
+        path
+    volumeName : str, default is Undefined, required
+        volume name
+    """
+    key: str
+
+    optional?: bool = False
+    path: str
+
+    volumeName: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0EnvItems0ValueFromResourceFieldRef:
     r"""
@@ -3879,6 +4023,36 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitCont
     name: str
 
     request?: str
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0RestartPolicyRulesItems0:
+    r"""
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 restart policy rules items0
+
+    Attributes
+    ----------
+    action : str, default is Undefined, required
+        action
+    exitCodes : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0RestartPolicyRulesItems0ExitCodes, default is Undefined, optional
+        exit codes
+    """
+    action: str
+
+    exitCodes?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0RestartPolicyRulesItems0ExitCodes
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0RestartPolicyRulesItems0ExitCodes:
+    r"""
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec init containers items0 restart policy rules items0 exit codes
+
+    Attributes
+    ----------
+    operator : str, default is Undefined, required
+        operator
+    values : [int], default is Undefined, optional
+        values
+    """
+    operator: str
+
+    values?: [int]
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecInitContainersItems0SecurityContext:
     r"""
@@ -5261,6 +5435,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
         config map
     downwardAPI : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPI, default is Undefined, optional
         downward API
+    podCertificate : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0PodCertificate, default is Undefined, optional
+        pod certificate
     secret : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0Secret, default is Undefined, optional
         secret
     serviceAccountToken : GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken, default is Undefined, optional
@@ -5269,6 +5445,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
     clusterTrustBundle?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundle
     configMap?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ConfigMap
     downwardAPI?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPI
+    podCertificate?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0PodCertificate
     secret?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0Secret
     serviceAccountToken?: GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken
 
@@ -5429,6 +5606,33 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesI
 
     check:
         _regex_match(str(divisor), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if divisor
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0PodCertificate:
+    r"""
+    grafana integreatly org v1beta1 grafana spec deployment spec template spec volumes items0 projected sources items0 pod certificate
+
+    Attributes
+    ----------
+    certificateChainPath : str, default is Undefined, optional
+        certificate chain path
+    credentialBundlePath : str, default is Undefined, optional
+        credential bundle path
+    keyPath : str, default is Undefined, optional
+        key path
+    keyType : str, default is Undefined, required
+        key type
+    maxExpirationSeconds : int, default is Undefined, optional
+        max expiration seconds
+    signerName : str, default is Undefined, required
+        signer name
+    """
+    certificateChainPath?: str
+    credentialBundlePath?: str
+    keyPath?: str
+    keyType: str
+
+    maxExpirationSeconds?: int
+    signerName: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecDeploymentSpecTemplateSpecVolumesItems0ProjectedSourcesItems0Secret:
     r"""
@@ -6296,7 +6500,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaSpecPersistentVolumeClaimSpecResources
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -7032,6 +7236,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaStatus:
         mute timings
     notificationTemplates : [str], default is Undefined, optional
         notification templates
+    serviceaccounts : [str], default is Undefined, optional
+        serviceaccounts
     stage : str, default is Undefined, optional
         stage
     stageStatus : str, default is Undefined, optional
@@ -7050,6 +7256,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaStatus:
     libraryPanels?: [str]
     muteTimings?: [str]
     notificationTemplates?: [str]
+    serviceaccounts?: [str]
     stage?: str
     stageStatus?: str
     version?: str
