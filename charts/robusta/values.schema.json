@@ -8939,7 +8939,23 @@
       "properties": {
         "additional_env_vars": {
           "items": {
-            "required": []
+            "additionalProperties": true,
+            "properties": {
+              "name": {
+                "default": "ADVANCED_FILTERS",
+                "required": [],
+                "title": "name",
+                "type": "string"
+              },
+              "value": {
+                "default": "true",
+                "required": [],
+                "title": "value",
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
           },
           "required": [],
           "title": "additional_env_vars",
@@ -9106,7 +9122,7 @@
           "type": "null"
         },
         "imageName": {
-          "default": "kubewatch:v2.11.0",
+          "default": "kubewatch:v2.12.0",
           "required": [],
           "title": "imageName",
           "type": "string"
@@ -9409,6 +9425,184 @@
       "required": [],
       "title": "logLevel",
       "type": "string"
+    },
+    "mcpAddons": {
+      "additionalProperties": true,
+      "description": "MCP (Model Context Protocol) Add-ons\nThese are optional MCP servers that can be deployed alongside Holmes",
+      "properties": {
+        "aws": {
+          "additionalProperties": true,
+          "properties": {
+            "affinity": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
+            "config": {
+              "additionalProperties": true,
+              "properties": {
+                "namespace": {
+                  "default": "",
+                  "required": [],
+                  "title": "namespace",
+                  "type": "string"
+                },
+                "readOnlyMode": {
+                  "default": true,
+                  "required": [],
+                  "title": "readOnlyMode",
+                  "type": "boolean"
+                },
+                "region": {
+                  "default": "us-east-1",
+                  "required": [],
+                  "title": "region",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "config",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "image": {
+              "default": "aws-api-mcp-server:1.0.0",
+              "required": [],
+              "title": "image",
+              "type": "string"
+            },
+            "llmInstructions": {
+              "default": "",
+              "description": "Custom LLM instructions (optional)\nLeave empty to use default comprehensive instructions\nSet to override the default investigation patterns and guidelines",
+              "required": [],
+              "title": "llmInstructions",
+              "type": "string"
+            },
+            "networkPolicy": {
+              "additionalProperties": true,
+              "description": "Network policy to restrict access to MCP server",
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "networkPolicy",
+              "type": "object"
+            },
+            "nodeSelector": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "nodeSelector",
+              "type": "object"
+            },
+            "registry": {
+              "default": "us-central1-docker.pkg.dev/genuine-flight-317411/devel",
+              "required": [],
+              "title": "registry",
+              "type": "string"
+            },
+            "resources": {
+              "additionalProperties": true,
+              "properties": {
+                "limits": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "cpu": {
+                      "default": "500m",
+                      "required": [],
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "1Gi",
+                      "required": [],
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "cpu": {
+                      "default": "250m",
+                      "required": [],
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "512Mi",
+                      "required": [],
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            },
+            "serviceAccount": {
+              "additionalProperties": true,
+              "description": "Service account configuration for IRSA (IAM Roles for Service Accounts)",
+              "properties": {
+                "annotations": {
+                  "additionalProperties": true,
+                  "required": [],
+                  "title": "annotations",
+                  "type": "object"
+                },
+                "create": {
+                  "default": true,
+                  "required": [],
+                  "title": "create",
+                  "type": "boolean"
+                },
+                "name": {
+                  "default": "aws-api-mcp-sa",
+                  "required": [],
+                  "title": "name",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "serviceAccount",
+              "type": "object"
+            },
+            "tolerations": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "tolerations",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "aws",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "mcpAddons",
+      "type": "object"
     },
     "mcp_servers": {
       "additionalProperties": true,
@@ -9839,6 +10033,20 @@
                   "title": "cleanup_robusta_pods",
                   "type": "object"
                 },
+                "create_event_finding": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "aggregation_key": {
+                      "default": "PodEviction",
+                      "required": [],
+                      "title": "aggregation_key",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "create_event_finding",
+                  "type": "object"
+                },
                 "create_finding": {
                   "additionalProperties": true,
                   "properties": {
@@ -9977,6 +10185,43 @@
             "items": {
               "additionalProperties": true,
               "properties": {
+                "on_event_create": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "scope": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "include": {
+                          "items": {
+                            "additionalProperties": true,
+                            "properties": {
+                              "attributes": {
+                                "items": {
+                                  "required": [],
+                                  "type": "string"
+                                },
+                                "required": [],
+                                "title": "attributes",
+                                "type": "array"
+                              }
+                            },
+                            "required": [],
+                            "type": "object"
+                          },
+                          "required": [],
+                          "title": "include",
+                          "type": "array"
+                        }
+                      },
+                      "required": [],
+                      "title": "scope",
+                      "type": "object"
+                    }
+                  },
+                  "required": [],
+                  "title": "on_event_create",
+                  "type": "object"
+                },
                 "on_job_failure": {
                   "additionalProperties": true,
                   "required": [],
@@ -15884,7 +16129,7 @@
           "type": "null"
         },
         "imageName": {
-          "default": "robusta-runner:0.28.1",
+          "default": "robusta-runner:0.29.0",
           "required": [],
           "title": "imageName",
           "type": "string"
