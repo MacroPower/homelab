@@ -27,6 +27,30 @@ schema Values:
     s3 : ValuesS3, optional
     sftp : ValuesSftp, optional
     volume : ValuesVolume, optional
+    volumes : ValuesVolumes, optional
+        Map of named volume groups for topology-aware deployments.
+        Each key inherits all fields from the `volume` section but can override
+        them locally—for example, replicas, nodeSelector, dataCenter, etc.
+        To switch entirely to this scheme, set `volume.enabled: false`
+        and define one entry per zone/data-center under `volumes`.
+
+        volumes:
+          dc1:
+            replicas: 2
+            dataCenter: "dc1"
+            nodeSelector: |
+             topology.kubernetes.io/zone: dc1
+          dc2:
+            replicas: 2
+            dataCenter: "dc2"
+            nodeSelector: |
+             topology.kubernetes.io/zone: dc2
+          dc3:
+            replicas: 2
+            dataCenter: "dc3"
+            nodeSelector: |
+             topology.kubernetes.io/zone: dc3
+
     """
     [...str]: any
     allInOne?: ValuesAllInOne
@@ -41,6 +65,7 @@ schema Values:
     s3?: ValuesS3
     sftp?: ValuesSftp
     volume?: ValuesVolume
+    volumes?: ValuesVolumes
 
 schema ValuesAllInOne:
     r"""
@@ -79,7 +104,7 @@ schema ValuesAllInOne:
     loggingOverrideLevel : any, optional, default is "null"
     metricsIp : str, optional, default is ""
     metricsPort : int, optional, default is 9324
-    nodeSelector : str, optional, default is "kubernetes.io/arch: amd64\n"
+    nodeSelector : str, optional, default is ""
         nodeSelector labels for master pod assignment, formatted as a muli-line string.
         ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
     podAnnotations : ValuesAllInOnePodAnnotations, optional
@@ -99,7 +124,6 @@ schema ValuesAllInOne:
     rack : str, optional, default is ""
     readinessProbe : ValuesAllInOneReadinessProbe, optional
         Health checks
-    replicas : int, optional, default is 1
     resources : ValuesAllInOneResources, optional
         Resource management
     restartPolicy : str, optional, default is "Always"
@@ -116,7 +140,7 @@ schema ValuesAllInOne:
         Toleration Settings for master pods
         This should be a multi-line string matching the Toleration array
         in a PodSpec.
-    topologySpreadConstraints : any, optional, default is "null"
+    topologySpreadConstraints : str, optional, default is ""
         Topology Spread Constraints Settings
         This should map directly to the value of the topologySpreadConstraints
         for a PodSpec. By Default no constraints are set.
@@ -147,7 +171,6 @@ schema ValuesAllInOne:
     priorityClassName?: str
     rack?: str
     readinessProbe?: ValuesAllInOneReadinessProbe
-    replicas?: int
     resources?: ValuesAllInOneResources
     restartPolicy?: str
     s3?: ValuesAllInOneS3
@@ -156,7 +179,7 @@ schema ValuesAllInOne:
     sftp?: ValuesAllInOneSftp
     sidecars?: str
     tolerations?: str
-    topologySpreadConstraints?: any
+    topologySpreadConstraints?: str
     whiteList?: str
 
 schema ValuesAllInOneAnnotations:
@@ -493,7 +516,7 @@ schema ValuesCosiSidecar:
 
     Attributes
     ----------
-    image : str, optional, default is "gcr.io/k8s-staging-sig-storage/objectstorage-sidecar/objectstorage-sidecar:v20230130-v0.1.0-24-gc0cf995"
+    image : str, optional, default is "gcr.io/k8s-staging-sig-storage/objectstorage-sidecar:v20250711-controllerv0.2.0-rc1-80-gc2f6e65"
     resources : ValuesCosiSidecarResources, optional
         Resource requests, limits, etc. for the server cluster placement. This
         should map directly to the value of the resources field for a PodSpec,
@@ -598,7 +621,7 @@ schema ValuesFiler:
         split files larger than the limit, default 32
     metricsIp : str, optional, default is ""
     metricsPort : int, optional, default is 9327
-    nodeSelector : str, optional, default is "kubernetes.io/arch: amd64\n"
+    nodeSelector : str, optional, default is ""
         nodeSelector labels for server pod assignment, formatted as a muli-line string.
         ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
         Example:
@@ -672,7 +695,7 @@ schema ValuesFiler:
         Toleration Settings for server pods
         This should be a multi-line string matching the Toleration array
         in a PodSpec.
-    topologySpreadConstraints : any, optional, default is "null"
+    topologySpreadConstraints : str, optional, default is ""
         Topology Spread Constraints Settings
         This should map directly to the value of the topologySpreadConstraints
         for a PodSpec. By Default no constraints are set.
@@ -730,7 +753,7 @@ schema ValuesFiler:
     storage?: str
     storageClass?: any
     tolerations?: str
-    topologySpreadConstraints?: any
+    topologySpreadConstraints?: str
     updatePartition?: int
 
 schema ValuesFilerAnnotations:
@@ -832,12 +855,16 @@ schema ValuesFilerIngress:
     enabled : bool, optional, default is False
     host : str, optional, default is "seaweedfs.cluster.local"
         host: false for "*" hostname
+    path : str, optional, default is "/sw-filer/?(.*)"
+    pathType : str, optional, default is "ImplementationSpecific"
     """
     [...str]: any
     annotations?: ValuesFilerIngressAnnotations
     className?: str
     enabled?: bool
     host?: str
+    path?: str
+    pathType?: str
 
 schema ValuesFilerIngressAnnotations:
     r"""
@@ -1066,6 +1093,7 @@ schema ValuesGlobal:
         Y number of replica in other racks in the same data center
         Z number of replica in other servers in the same rack
     repository : str, optional, default is ""
+        if repository is set, it overrides the namespace part of imageName
     restartPolicy : str, optional, default is "Always"
     securityConfig : ValuesGlobalSecurityConfig, optional
     serviceAccountName : str, optional, default is "seaweedfs"
@@ -1262,7 +1290,7 @@ schema ValuesMaster:
         Prometheus push interval in seconds, default 15
     metricsIp : str, optional, default is ""
     metricsPort : int, optional, default is 9327
-    nodeSelector : str, optional, default is "kubernetes.io/arch: amd64\n"
+    nodeSelector : str, optional, default is ""
         nodeSelector labels for master pod assignment, formatted as a muli-line string.
         ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
         Example:
@@ -1319,7 +1347,7 @@ schema ValuesMaster:
         Toleration Settings for master pods
         This should be a multi-line string matching the Toleration array
         in a PodSpec.
-    topologySpreadConstraints : any, optional, default is "null"
+    topologySpreadConstraints : str, optional, default is ""
         Topology Spread Constraints Settings
         This should map directly to the value of the topologySpreadConstraints
         for a PodSpec. By Default no constraints are set.
@@ -1373,7 +1401,7 @@ schema ValuesMaster:
     serviceAccountName?: str
     sidecars?: [any]
     tolerations?: str
-    topologySpreadConstraints?: any
+    topologySpreadConstraints?: str
     updatePartition?: int
     volumePreallocate?: bool
     volumeSizeLimitMB?: int
@@ -1455,6 +1483,8 @@ schema ValuesMasterIngress:
     enabled : bool, optional, default is False
     host : str, optional, default is "master.seaweedfs.local"
         host: false for "*" hostname
+    path : str, optional, default is "/sw-master/?(.*)"
+    pathType : str, optional, default is "ImplementationSpecific"
     tls : [any], optional
     """
     [...str]: any
@@ -1462,6 +1492,8 @@ schema ValuesMasterIngress:
     className?: str
     enabled?: bool
     host?: str
+    path?: str
+    pathType?: str
     tls?: [any]
 
 schema ValuesMasterIngressAnnotations:
@@ -1656,10 +1688,13 @@ schema ValuesS3:
         Suffix of the host name, {bucket}.{domainName}
     enableAuth : bool, optional, default is False
         enable user & permission to s3 (need to inject to all services)
-    enabled : bool, optional, default is False
+    enabled : bool, optional, default is True
     existingConfigSecret : any, optional, default is "null"
         set to the name of an existing kubernetes Secret with the s3 json config file
         should have a secret key called seaweedfs_s3_config with an inline json config
+    extraArgs : [str], optional
+        Custom command line arguments to add to the s3 command
+        Example to fix connection idle seconds:
     extraEnvironmentVars : any, optional, default is ""
     extraVolumeMounts : str, optional, default is ""
     extraVolumes : str, optional, default is ""
@@ -1677,7 +1712,7 @@ schema ValuesS3:
          logs:
            type: "emptyDir"
     metricsPort : int, optional, default is 9327
-    nodeSelector : str, optional, default is "kubernetes.io/arch: amd64\n"
+    nodeSelector : str, optional, default is ""
         nodeSelector labels for server pod assignment, formatted as a muli-line string.
         ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
         Example:
@@ -1737,6 +1772,7 @@ schema ValuesS3:
     enableAuth?: bool
     enabled?: bool
     existingConfigSecret?: any
+    extraArgs?: [str]
     extraEnvironmentVars?: any
     extraVolumeMounts?: str
     extraVolumes?: str
@@ -1798,6 +1834,8 @@ schema ValuesS3Ingress:
     enabled : bool, optional, default is False
     host : str, optional, default is "seaweedfs.cluster.local"
         host: false for "*" hostname
+    path : str, optional, default is "/"
+    pathType : str, optional, default is "Prefix"
     tls : [any], optional
     """
     [...str]: any
@@ -1805,6 +1843,8 @@ schema ValuesS3Ingress:
     className?: str
     enabled?: bool
     host?: str
+    path?: str
+    pathType?: str
     tls?: [any]
 
 schema ValuesS3IngressAnnotations:
@@ -1978,7 +2018,7 @@ schema ValuesSftp:
     maxAuthTries : int, optional, default is 6
     metricsIp : str, optional, default is ""
     metricsPort : int, optional, default is 9327
-    nodeSelector : str, optional, default is "kubernetes.io/arch: amd64\n"
+    nodeSelector : str, optional, default is ""
     podAnnotations : ValuesSftpPodAnnotations, optional
     podLabels : ValuesSftpPodLabels, optional
     podSecurityContext : ValuesSftpPodSecurityContext, optional
@@ -2142,7 +2182,7 @@ schema ValuesVolume:
 
     Attributes
     ----------
-    affinity : str, optional, default is "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          app.kubernetes.io/name: {{ template \"seaweedfs.name\" . }}\n          app.kubernetes.io/instance: {{ .Release.Name }}\n          app.kubernetes.io/component: volume\n      topologyKey: kubernetes.io/hostname\n"
+    affinity : str, optional, default is "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          app.kubernetes.io/name: {{ template \"seaweedfs.name\" . }}\n          app.kubernetes.io/instance: {{ .Release.Name }}\n          app.kubernetes.io/component: {{ $volumeName }}\n      topologyKey: kubernetes.io/hostname\n"
         Affinity Settings
         Commenting out or setting as empty the affinity variable, will allow
         deployment to single node services such as Minikube
@@ -2228,7 +2268,7 @@ schema ValuesVolume:
     metricsPort : int, optional, default is 9327
     minFreeSpacePercent : int, optional, default is 7
         minimum free disk space(in percents). If free disk space lower this value - all volumes marks as ReadOnly
-    nodeSelector : str, optional, default is "kubernetes.io/arch: amd64\n"
+    nodeSelector : str, optional, default is ""
         nodeSelector labels for server pod assignment, formatted as a muli-line string.
         ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
         Example:
@@ -2287,7 +2327,7 @@ schema ValuesVolume:
         Toleration Settings for server pods
         This should be a multi-line string matching the Toleration array
         in a PodSpec.
-    topologySpreadConstraints : any, optional, default is "null"
+    topologySpreadConstraints : str, optional, default is ""
         Topology Spread Constraints Settings
         This should map directly to the value of the topologySpreadConstraints
         for a PodSpec. By Default no constraints are set.
@@ -2338,7 +2378,7 @@ schema ValuesVolume:
     serviceAccountName?: str
     sidecars?: [any]
     tolerations?: str
-    topologySpreadConstraints?: any
+    topologySpreadConstraints?: str
     whiteList?: any
 
 schema ValuesVolumeAnnotations:
@@ -2494,7 +2534,7 @@ schema ValuesVolumeResizeHook:
     Attributes
     ----------
     enabled : bool, optional, default is True
-    image : str, optional, default is "bitnami/kubectl"
+    image : str, optional, default is "alpine/k8s:1.28.4"
     """
     [...str]: any
     enabled?: bool
@@ -2506,6 +2546,34 @@ schema ValuesVolumeResources:
     should map directly to the value of the resources field for a PodSpec,
     formatted as a multi-line string. By default no direct resource request
     is made.
+    """
+    [...str]: any
+
+schema ValuesVolumes:
+    r"""
+    Map of named volume groups for topology-aware deployments.
+    Each key inherits all fields from the `volume` section but can override
+    them locally—for example, replicas, nodeSelector, dataCenter, etc.
+    To switch entirely to this scheme, set `volume.enabled: false`
+    and define one entry per zone/data-center under `volumes`.
+
+    volumes:
+      dc1:
+        replicas: 2
+        dataCenter: "dc1"
+        nodeSelector: |
+         topology.kubernetes.io/zone: dc1
+      dc2:
+        replicas: 2
+        dataCenter: "dc2"
+        nodeSelector: |
+         topology.kubernetes.io/zone: dc2
+      dc3:
+        replicas: 2
+        dataCenter: "dc3"
+        nodeSelector: |
+         topology.kubernetes.io/zone: dc3
+
     """
     [...str]: any
 
