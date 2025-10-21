@@ -210,7 +210,7 @@
           "type": "integer"
         },
         "nodeSelector": {
-          "default": "kubernetes.io/arch: amd64\n",
+          "default": "",
           "description": "nodeSelector labels for master pod assignment, formatted as a muli-line string.\nref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector",
           "required": [],
           "title": "nodeSelector",
@@ -318,12 +318,6 @@
           "required": [],
           "title": "readinessProbe",
           "type": "object"
-        },
-        "replicas": {
-          "default": 1,
-          "required": [],
-          "title": "replicas",
-          "type": "integer"
         },
         "resources": {
           "additionalProperties": true,
@@ -451,11 +445,11 @@
           "type": "string"
         },
         "topologySpreadConstraints": {
-          "default": "null",
+          "default": "",
           "description": "Topology Spread Constraints Settings\nThis should map directly to the value of the topologySpreadConstraints\nfor a PodSpec. By Default no constraints are set.",
           "required": [],
           "title": "topologySpreadConstraints",
-          "type": "null"
+          "type": "string"
         },
         "whiteList": {
           "default": "",
@@ -618,7 +612,7 @@
           "additionalProperties": true,
           "properties": {
             "image": {
-              "default": "gcr.io/k8s-staging-sig-storage/objectstorage-sidecar/objectstorage-sidecar:v20230130-v0.1.0-24-gc0cf995",
+              "default": "gcr.io/k8s-staging-sig-storage/objectstorage-sidecar:v20250711-controllerv0.2.0-rc1-80-gc2f6e65",
               "required": [],
               "title": "image",
               "type": "string"
@@ -966,6 +960,18 @@
               "required": [],
               "title": "host",
               "type": "string"
+            },
+            "path": {
+              "default": "/sw-filer/?(.*)",
+              "required": [],
+              "title": "path",
+              "type": "string"
+            },
+            "pathType": {
+              "default": "ImplementationSpecific",
+              "required": [],
+              "title": "pathType",
+              "type": "string"
             }
           },
           "required": [],
@@ -1108,7 +1114,7 @@
           "type": "integer"
         },
         "nodeSelector": {
-          "default": "kubernetes.io/arch: amd64\n",
+          "default": "",
           "description": "nodeSelector labels for server pod assignment, formatted as a muli-line string.\nref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector\nExample:",
           "required": [],
           "title": "nodeSelector",
@@ -1366,11 +1372,11 @@
           "type": "string"
         },
         "topologySpreadConstraints": {
-          "default": "null",
+          "default": "",
           "description": "Topology Spread Constraints Settings\nThis should map directly to the value of the topologySpreadConstraints\nfor a PodSpec. By Default no constraints are set.",
           "required": [],
           "title": "topologySpreadConstraints",
-          "type": "null"
+          "type": "string"
         },
         "updatePartition": {
           "default": 0,
@@ -1529,6 +1535,7 @@
         },
         "repository": {
           "default": "",
+          "description": "if repository is set, it overrides the namespace part of imageName",
           "required": [],
           "title": "repository",
           "type": "string"
@@ -1870,6 +1877,18 @@
               "title": "host",
               "type": "string"
             },
+            "path": {
+              "default": "/sw-master/?(.*)",
+              "required": [],
+              "title": "path",
+              "type": "string"
+            },
+            "pathType": {
+              "default": "ImplementationSpecific",
+              "required": [],
+              "title": "pathType",
+              "type": "string"
+            },
             "tls": {
               "items": {
                 "required": []
@@ -2019,7 +2038,7 @@
           "type": "integer"
         },
         "nodeSelector": {
-          "default": "kubernetes.io/arch: amd64\n",
+          "default": "",
           "description": "nodeSelector labels for master pod assignment, formatted as a muli-line string.\nref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector\nExample:",
           "required": [],
           "title": "nodeSelector",
@@ -2195,11 +2214,11 @@
           "type": "string"
         },
         "topologySpreadConstraints": {
-          "default": "null",
+          "default": "",
           "description": "Topology Spread Constraints Settings\nThis should map directly to the value of the topologySpreadConstraints\nfor a PodSpec. By Default no constraints are set.",
           "required": [],
           "title": "topologySpreadConstraints",
-          "type": "null"
+          "type": "string"
         },
         "updatePartition": {
           "default": 0,
@@ -2290,7 +2309,7 @@
           "type": "boolean"
         },
         "enabled": {
-          "default": false,
+          "default": true,
           "required": [],
           "title": "enabled",
           "type": "boolean"
@@ -2301,6 +2320,16 @@
           "required": [],
           "title": "existingConfigSecret",
           "type": "null"
+        },
+        "extraArgs": {
+          "description": "Custom command line arguments to add to the s3 command\nExample to fix connection idle seconds:",
+          "items": {
+            "required": [],
+            "type": "string"
+          },
+          "required": [],
+          "title": "extraArgs",
+          "type": "array"
         },
         "extraEnvironmentVars": {
           "default": "",
@@ -2360,6 +2389,18 @@
               "description": "host: false for \"*\" hostname",
               "required": [],
               "title": "host",
+              "type": "string"
+            },
+            "path": {
+              "default": "/",
+              "required": [],
+              "title": "path",
+              "type": "string"
+            },
+            "pathType": {
+              "default": "Prefix",
+              "required": [],
+              "title": "pathType",
               "type": "string"
             },
             "tls": {
@@ -2492,7 +2533,7 @@
           "type": "integer"
         },
         "nodeSelector": {
-          "default": "kubernetes.io/arch: amd64\n",
+          "default": "",
           "description": "nodeSelector labels for server pod assignment, formatted as a muli-line string.\nref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector\nExample:",
           "required": [],
           "title": "nodeSelector",
@@ -2860,7 +2901,7 @@
           "type": "integer"
         },
         "nodeSelector": {
-          "default": "kubernetes.io/arch: amd64\n",
+          "default": "",
           "required": [],
           "title": "nodeSelector",
           "type": "string"
@@ -2995,7 +3036,7 @@
       "additionalProperties": true,
       "properties": {
         "affinity": {
-          "default": "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          app.kubernetes.io/name: {{ template \"seaweedfs.name\" . }}\n          app.kubernetes.io/instance: {{ .Release.Name }}\n          app.kubernetes.io/component: volume\n      topologyKey: kubernetes.io/hostname\n",
+          "default": "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          app.kubernetes.io/name: {{ template \"seaweedfs.name\" . }}\n          app.kubernetes.io/instance: {{ .Release.Name }}\n          app.kubernetes.io/component: {{ $volumeName }}\n      topologyKey: kubernetes.io/hostname\n",
           "description": "Affinity Settings\nCommenting out or setting as empty the affinity variable, will allow\ndeployment to single node services such as Minikube",
           "required": [],
           "title": "affinity",
@@ -3249,7 +3290,7 @@
           "type": "integer"
         },
         "nodeSelector": {
-          "default": "kubernetes.io/arch: amd64\n",
+          "default": "",
           "description": "nodeSelector labels for server pod assignment, formatted as a muli-line string.\nref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector\nExample:",
           "required": [],
           "title": "nodeSelector",
@@ -3399,7 +3440,7 @@
               "type": "boolean"
             },
             "image": {
-              "default": "bitnami/kubectl",
+              "default": "alpine/k8s:1.28.4",
               "required": [],
               "title": "image",
               "type": "string"
@@ -3446,11 +3487,11 @@
           "type": "string"
         },
         "topologySpreadConstraints": {
-          "default": "null",
+          "default": "",
           "description": "Topology Spread Constraints Settings\nThis should map directly to the value of the topologySpreadConstraints\nfor a PodSpec. By Default no constraints are set.",
           "required": [],
           "title": "topologySpreadConstraints",
-          "type": "null"
+          "type": "string"
         },
         "whiteList": {
           "default": "null",
@@ -3462,6 +3503,13 @@
       },
       "required": [],
       "title": "volume",
+      "type": "object"
+    },
+    "volumes": {
+      "additionalProperties": true,
+      "description": "Map of named volume groups for topology-aware deployments.\nEach key inherits all fields from the `volume` section but can override\nthem locally—for example, replicas, nodeSelector, dataCenter, etc.\nTo switch entirely to this scheme, set `volume.enabled: false`\nand define one entry per zone/data-center under `volumes`.\n\nvolumes:\n  dc1:\n    replicas: 2\n    dataCenter: \"dc1\"\n    nodeSelector: |\n     topology.kubernetes.io/zone: dc1\n  dc2:\n    replicas: 2\n    dataCenter: \"dc2\"\n    nodeSelector: |\n     topology.kubernetes.io/zone: dc2\n  dc3:\n    replicas: 2\n    dataCenter: \"dc3\"\n    nodeSelector: |\n     topology.kubernetes.io/zone: dc3\n",
+      "required": [],
+      "title": "volumes",
       "type": "object"
     }
   },
