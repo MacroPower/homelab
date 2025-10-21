@@ -181,6 +181,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecPluginsItems0:
 
     version: str
 
+    check:
+        len(name) >= 1
+        _regex_match(str(version), r"^((0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?|latest)$")
+
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0:
     r"""
     grafana integreatly org v1beta1 grafana datasource spec values from items0

@@ -373,6 +373,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecPluginsItems0:
 
     version: str
 
+    check:
+        len(name) >= 1
+        _regex_match(str(version), r"^((0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?|latest)$")
+
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorization:
     r"""
     authorization options for model from url
