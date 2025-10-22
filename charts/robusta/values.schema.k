@@ -327,6 +327,9 @@ schema Values:
         # Liveness probe
         #
     logLevel : str, optional, default is "INFO"
+    mcpAddons : ValuesMcpAddons, optional
+        MCP (Model Context Protocol) Add-ons
+        These are optional MCP servers that can be deployed alongside Holmes
     mcp_servers : ValuesMcpServers, optional
     metricAllowlist : [any], optional
         Comma-separated list of metrics to be exposed.
@@ -665,6 +668,7 @@ schema Values:
     lightActions?: [str]
     livenessProbe?: ValuesLivenessProbe
     logLevel?: str
+    mcpAddons?: ValuesMcpAddons
     mcp_servers?: ValuesMcpServers
     metricAllowlist?: [any]
     metricAnnotationsAllowList?: [any]
@@ -7637,12 +7641,12 @@ schema ValuesKubewatch:
 
     Attributes
     ----------
-    additional_env_vars : [any], optional
+    additional_env_vars : [ValuesKubewatchAdditionalEnvVarsItems0], optional
     annotations : ValuesKubewatchAnnotations, optional
     config : ValuesKubewatchConfig, optional
     customServiceAccount : str, optional, default is ""
     image : any, optional, default is "~"
-    imageName : str, optional, default is "kubewatch:v2.11.0"
+    imageName : str, optional, default is "kubewatch:v2.12.0"
     imagePullPolicy : str, optional, default is "IfNotPresent"
     imagePullSecrets : [any], optional
     nodeSelector : any, optional, default is "~"
@@ -7656,7 +7660,7 @@ schema ValuesKubewatch:
     tolerations : [any], optional
     """
     [...str]: any
-    additional_env_vars?: [any]
+    additional_env_vars?: [ValuesKubewatchAdditionalEnvVarsItems0]
     annotations?: ValuesKubewatchAnnotations
     config?: ValuesKubewatchConfig
     customServiceAccount?: str
@@ -7673,6 +7677,19 @@ schema ValuesKubewatch:
     serviceAccount?: ValuesKubewatchServiceAccount
     serviceMonitor?: ValuesKubewatchServiceMonitor
     tolerations?: [any]
+
+schema ValuesKubewatchAdditionalEnvVarsItems0:
+    r"""
+    ValuesKubewatchAdditionalEnvVarsItems0
+
+    Attributes
+    ----------
+    name : str, optional, default is "ADVANCED_FILTERS"
+    value : str, optional, default is "true"
+    """
+    [...str]: any
+    name?: str
+    value?: str
 
 schema ValuesKubewatchAnnotations:
     r"""
@@ -7918,6 +7935,152 @@ schema ValuesLivenessProbeHttpGet:
     path?: str
     port?: int
     scheme?: str
+
+schema ValuesMcpAddons:
+    r"""
+    MCP (Model Context Protocol) Add-ons
+    These are optional MCP servers that can be deployed alongside Holmes
+
+    Attributes
+    ----------
+    aws : ValuesMcpAddonsAws, optional
+    """
+    [...str]: any
+    aws?: ValuesMcpAddonsAws
+
+schema ValuesMcpAddonsAws:
+    r"""
+    ValuesMcpAddonsAws
+
+    Attributes
+    ----------
+    affinity : ValuesMcpAddonsAwsAffinity, optional
+    config : ValuesMcpAddonsAwsConfig, optional
+    enabled : bool, optional, default is False
+    image : str, optional, default is "aws-api-mcp-server:1.0.0"
+    llmInstructions : str, optional, default is ""
+        Custom LLM instructions (optional)
+        Leave empty to use default comprehensive instructions
+        Set to override the default investigation patterns and guidelines
+    networkPolicy : ValuesMcpAddonsAwsNetworkPolicy, optional
+        Network policy to restrict access to MCP server
+    nodeSelector : ValuesMcpAddonsAwsNodeSelector, optional
+    registry : str, optional, default is "us-central1-docker.pkg.dev/genuine-flight-317411/devel"
+    resources : ValuesMcpAddonsAwsResources, optional
+    serviceAccount : ValuesMcpAddonsAwsServiceAccount, optional
+        Service account configuration for IRSA (IAM Roles for Service Accounts)
+    tolerations : [any], optional
+    """
+    [...str]: any
+    affinity?: ValuesMcpAddonsAwsAffinity
+    config?: ValuesMcpAddonsAwsConfig
+    enabled?: bool
+    image?: str
+    llmInstructions?: str
+    networkPolicy?: ValuesMcpAddonsAwsNetworkPolicy
+    nodeSelector?: ValuesMcpAddonsAwsNodeSelector
+    registry?: str
+    resources?: ValuesMcpAddonsAwsResources
+    serviceAccount?: ValuesMcpAddonsAwsServiceAccount
+    tolerations?: [any]
+
+schema ValuesMcpAddonsAwsAffinity:
+    r"""
+    ValuesMcpAddonsAwsAffinity
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsAwsConfig:
+    r"""
+    ValuesMcpAddonsAwsConfig
+
+    Attributes
+    ----------
+    namespace : str, optional, default is ""
+    readOnlyMode : bool, optional, default is True
+    region : str, optional, default is "us-east-1"
+    """
+    [...str]: any
+    namespace?: str
+    readOnlyMode?: bool
+    region?: str
+
+schema ValuesMcpAddonsAwsNetworkPolicy:
+    r"""
+    Network policy to restrict access to MCP server
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMcpAddonsAwsNodeSelector:
+    r"""
+    ValuesMcpAddonsAwsNodeSelector
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsAwsResources:
+    r"""
+    ValuesMcpAddonsAwsResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsAwsResourcesLimits, optional
+    requests : ValuesMcpAddonsAwsResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsAwsResourcesLimits
+    requests?: ValuesMcpAddonsAwsResourcesRequests
+
+schema ValuesMcpAddonsAwsResourcesLimits:
+    r"""
+    ValuesMcpAddonsAwsResourcesLimits
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "500m"
+    memory : str, optional, default is "1Gi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsAwsResourcesRequests:
+    r"""
+    ValuesMcpAddonsAwsResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "250m"
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsAwsServiceAccount:
+    r"""
+    Service account configuration for IRSA (IAM Roles for Service Accounts)
+
+    Attributes
+    ----------
+    annotations : ValuesMcpAddonsAwsServiceAccountAnnotations, optional
+    create : bool, optional, default is True
+    name : str, optional, default is "aws-api-mcp-sa"
+    """
+    [...str]: any
+    annotations?: ValuesMcpAddonsAwsServiceAccountAnnotations
+    create?: bool
+    name?: str
+
+schema ValuesMcpAddonsAwsServiceAccountAnnotations:
+    r"""
+    ValuesMcpAddonsAwsServiceAccountAnnotations
+    """
+    [...str]: any
 
 schema ValuesMcpServers:
     r"""
@@ -8249,6 +8412,7 @@ schema ValuesPlatformPlaybooksItems0ActionsItems0:
     Attributes
     ----------
     cleanup_robusta_pods : ValuesPlatformPlaybooksItems0ActionsItems0CleanupRobustaPods, optional
+    create_event_finding : ValuesPlatformPlaybooksItems0ActionsItems0CreateEventFinding, optional
     create_finding : ValuesPlatformPlaybooksItems0ActionsItems0CreateFinding, optional
     customise_finding : ValuesPlatformPlaybooksItems0ActionsItems0CustomiseFinding, optional
     event_resource_events : ValuesPlatformPlaybooksItems0ActionsItems0EventResourceEvents, optional
@@ -8262,6 +8426,7 @@ schema ValuesPlatformPlaybooksItems0ActionsItems0:
     """
     [...str]: any
     cleanup_robusta_pods?: ValuesPlatformPlaybooksItems0ActionsItems0CleanupRobustaPods
+    create_event_finding?: ValuesPlatformPlaybooksItems0ActionsItems0CreateEventFinding
     create_finding?: ValuesPlatformPlaybooksItems0ActionsItems0CreateFinding
     customise_finding?: ValuesPlatformPlaybooksItems0ActionsItems0CustomiseFinding
     event_resource_events?: ValuesPlatformPlaybooksItems0ActionsItems0EventResourceEvents
@@ -8283,6 +8448,17 @@ schema ValuesPlatformPlaybooksItems0ActionsItems0CleanupRobustaPods:
     """
     [...str]: any
     hours_back?: int
+
+schema ValuesPlatformPlaybooksItems0ActionsItems0CreateEventFinding:
+    r"""
+    ValuesPlatformPlaybooksItems0ActionsItems0CreateEventFinding
+
+    Attributes
+    ----------
+    aggregation_key : str, optional, default is "PodEviction"
+    """
+    [...str]: any
+    aggregation_key?: str
 
 schema ValuesPlatformPlaybooksItems0ActionsItems0CreateFinding:
     r"""
@@ -8380,16 +8556,51 @@ schema ValuesPlatformPlaybooksItems0TriggersItems0:
 
     Attributes
     ----------
+    on_event_create : ValuesPlatformPlaybooksItems0TriggersItems0OnEventCreate, optional
     on_job_failure : ValuesPlatformPlaybooksItems0TriggersItems0OnJobFailure, optional
     on_kubernetes_resource_operation : ValuesPlatformPlaybooksItems0TriggersItems0OnKubernetesResourceOperation, optional
     on_kubernetes_warning_event_create : ValuesPlatformPlaybooksItems0TriggersItems0OnKubernetesWarningEventCreate, optional
     on_schedule : ValuesPlatformPlaybooksItems0TriggersItems0OnSchedule, optional
     """
     [...str]: any
+    on_event_create?: ValuesPlatformPlaybooksItems0TriggersItems0OnEventCreate
     on_job_failure?: ValuesPlatformPlaybooksItems0TriggersItems0OnJobFailure
     on_kubernetes_resource_operation?: ValuesPlatformPlaybooksItems0TriggersItems0OnKubernetesResourceOperation
     on_kubernetes_warning_event_create?: ValuesPlatformPlaybooksItems0TriggersItems0OnKubernetesWarningEventCreate
     on_schedule?: ValuesPlatformPlaybooksItems0TriggersItems0OnSchedule
+
+schema ValuesPlatformPlaybooksItems0TriggersItems0OnEventCreate:
+    r"""
+    ValuesPlatformPlaybooksItems0TriggersItems0OnEventCreate
+
+    Attributes
+    ----------
+    scope : ValuesPlatformPlaybooksItems0TriggersItems0OnEventCreateScope, optional
+    """
+    [...str]: any
+    scope?: ValuesPlatformPlaybooksItems0TriggersItems0OnEventCreateScope
+
+schema ValuesPlatformPlaybooksItems0TriggersItems0OnEventCreateScope:
+    r"""
+    ValuesPlatformPlaybooksItems0TriggersItems0OnEventCreateScope
+
+    Attributes
+    ----------
+    include : [ValuesPlatformPlaybooksItems0TriggersItems0OnEventCreateScopeIncludeItems0], optional
+    """
+    [...str]: any
+    include?: [ValuesPlatformPlaybooksItems0TriggersItems0OnEventCreateScopeIncludeItems0]
+
+schema ValuesPlatformPlaybooksItems0TriggersItems0OnEventCreateScopeIncludeItems0:
+    r"""
+    ValuesPlatformPlaybooksItems0TriggersItems0OnEventCreateScopeIncludeItems0
+
+    Attributes
+    ----------
+    attributes : [str], optional
+    """
+    [...str]: any
+    attributes?: [str]
 
 schema ValuesPlatformPlaybooksItems0TriggersItems0OnJobFailure:
     r"""
@@ -13062,7 +13273,7 @@ schema ValuesRunner:
     hardenedFs : bool, optional, default is False
         Enable hardened filesystem security (read-only root filesystem with writable volume mounts)
     image : any, optional, default is "~"
-    imageName : str, optional, default is "robusta-runner:0.28.1"
+    imageName : str, optional, default is "robusta-runner:0.29.0"
     imagePullPolicy : str, optional, default is "IfNotPresent"
     imagePullSecrets : [any], optional
     log_level : str, optional, default is "INFO"
