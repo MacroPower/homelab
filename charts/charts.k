@@ -20,7 +20,7 @@ charts: helm.Charts = {
     tetragon: {
         chart = "tetragon"
         repoURL = "https://helm.cilium.io"
-        targetRevision = "1.5.0"
+        targetRevision = "1.6.0"
         schemaGenerator = "VALUE-INFERENCE"
         crdGenerator = "PATH"
         crdPaths = [

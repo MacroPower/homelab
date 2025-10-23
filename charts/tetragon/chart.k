@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "tetragon"
     repoURL : str, required, default is "https://helm.cilium.io"
-    targetRevision : str, optional, default is "1.5.0"
+    targetRevision : str, optional, default is "1.6.0"
     """
     values?: Values | any
     chart: str = "tetragon"
     repoURL: str = "https://helm.cilium.io"
-    targetRevision?: str = "1.5.0"
+    targetRevision?: str = "1.6.0"
 
