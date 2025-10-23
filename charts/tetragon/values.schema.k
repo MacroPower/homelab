@@ -174,7 +174,35 @@ schema ValuesExportStdout:
         * When enabledCommand=true and commandOverride override is set, the command inserted will be the value of commandOverride.
           This is useful for inserting another sidecar container that requires a command override.
         * When enabledCommand=false, no command will be specified in the manifest and container's default command will take over.
+    envFromSecrets : [any], optional
+        A simplified way to add secret references to envFrom.
+        Can be specified either as a string (just the secret name) or as an object with additional parameters.
+        Example:
+        envFromSecrets:
+          - my-simple-secret
+          - name: my-optional-secret
+            optional: true
     extraEnv : [any], optional
+        Extra environment variables to add to the export-stdout container.
+        Example:
+        extraEnv:
+          - name: FOO
+            value: bar
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: my-secret
+                key: secret-key
+    extraEnvFrom : [any], optional
+        Extra envFrom sources to add to the export-stdout container.
+        This allows adding any type of envFrom source (configMapRef, secretRef, etc.).
+        Example:
+        extraEnvFrom:
+          - configMapRef:
+              name: my-config-map
+          - secretRef:
+              name: my-secret
+              optional: true
     extraVolumeMounts : [any], optional
         Extra volume mounts to add to stdout export pod
     image : ValuesExportStdoutImage, optional
@@ -184,7 +212,9 @@ schema ValuesExportStdout:
     commandOverride?: [any]
     enabledArgs?: bool
     enabledCommand?: bool
+    envFromSecrets?: [any]
     extraEnv?: [any]
+    extraEnvFrom?: [any]
     extraVolumeMounts?: [any]
     image?: ValuesExportStdoutImage
 
@@ -278,6 +308,8 @@ schema ValuesRthooks:
              see: https://github.com/containerd/containerd/blob/main/docs/NRI.md.
              Specific configuration for this interface can be found under "nriHook".
 
+    nameOverride : str, optional, default is ""
+        tetragon-rthooks name override
     nriHook : ValuesRthooksNriHook, optional
         configuration for the "nri-hook" interface
     ociHooks : ValuesRthooksOciHooks, optional
@@ -303,6 +335,7 @@ schema ValuesRthooks:
     image?: ValuesRthooksImage
     installDir?: str
     interface?: str
+    nameOverride?: str
     nriHook?: ValuesRthooksNriHook
     ociHooks?: ValuesRthooksOciHooks
     podAnnotations?: ValuesRthooksPodAnnotations
@@ -575,6 +608,7 @@ schema ValuesTetragon:
         password arguments.
     resources : ValuesTetragonResources, optional
     securityContext : ValuesTetragonSecurityContext, optional
+    usePerfRingBuffer : bool, optional, default is False
     """
     [...str]: any
     argsOverride?: [any]
@@ -623,6 +657,7 @@ schema ValuesTetragon:
     redactionFilters?: str
     resources?: ValuesTetragonResources
     securityContext?: ValuesTetragonSecurityContext
+    usePerfRingBuffer?: bool
 
 schema ValuesTetragonCgidmap:
     r"""
@@ -716,7 +751,7 @@ schema ValuesTetragonImage:
     ----------
     override : any, optional, default is "~"
     repository : str, optional, default is "quay.io/cilium/tetragon"
-    tag : str, optional, default is "v1.5.0"
+    tag : str, optional, default is "v1.6.0"
     """
     [...str]: any
     override?: any
@@ -738,6 +773,8 @@ schema ValuesTetragonOperator:
     affinity : ValuesTetragonOperatorAffinity, optional
     annotations : ValuesTetragonOperatorAnnotations, optional
         Annotations for the Tetragon Operator Deployment.
+    containerSecurityContext : ValuesTetragonOperatorContainerSecurityContext, optional
+        securityContext for the Tetragon Operator Deployment Pod container.
     enabled : bool, optional, default is True
         Enables the Tetragon Operator.
     extraLabels : ValuesTetragonOperatorExtraLabels, optional
@@ -769,7 +806,7 @@ schema ValuesTetragonOperator:
     resources : ValuesTetragonOperatorResources, optional
         resources for the Tetragon Operator Deployment Pod container.
     securityContext : ValuesTetragonOperatorSecurityContext, optional
-        securityContext for the Tetragon Operator Deployment Pod container.
+        securityContext for the Tetragon Operator Deployment Pod container. (DEPRECATED: Use containerSecurityContext instead. TODO: Remove in v1.6.0)
     serviceAccount : ValuesTetragonOperatorServiceAccount, optional
         tetragon-operator service account.
     strategy : ValuesTetragonOperatorStrategy, optional
@@ -780,6 +817,7 @@ schema ValuesTetragonOperator:
     [...str]: any
     affinity?: ValuesTetragonOperatorAffinity
     annotations?: ValuesTetragonOperatorAnnotations
+    containerSecurityContext?: ValuesTetragonOperatorContainerSecurityContext
     enabled?: bool
     extraLabels?: ValuesTetragonOperatorExtraLabels
     extraPodLabels?: ValuesTetragonOperatorExtraPodLabels
@@ -879,6 +917,36 @@ schema ValuesTetragonOperatorAnnotations:
     """
     [...str]: any
 
+schema ValuesTetragonOperatorContainerSecurityContext:
+    r"""
+    securityContext for the Tetragon Operator Deployment Pod container.
+
+    Attributes
+    ----------
+    allowPrivilegeEscalation : bool, optional, default is False
+    capabilities : ValuesTetragonOperatorContainerSecurityContextCapabilities, optional
+    runAsGroup : int, optional, default is 65532
+    runAsNonRoot : bool, optional, default is True
+    runAsUser : int, optional, default is 65532
+    """
+    [...str]: any
+    allowPrivilegeEscalation?: bool
+    capabilities?: ValuesTetragonOperatorContainerSecurityContextCapabilities
+    runAsGroup?: int
+    runAsNonRoot?: bool
+    runAsUser?: int
+
+schema ValuesTetragonOperatorContainerSecurityContextCapabilities:
+    r"""
+    ValuesTetragonOperatorContainerSecurityContextCapabilities
+
+    Attributes
+    ----------
+    drop : [str], optional
+    """
+    [...str]: any
+    drop?: [str]
+
 schema ValuesTetragonOperatorExtraLabels:
     r"""
     Extra labels to be added on the Tetragon Operator Deployment.
@@ -924,7 +992,7 @@ schema ValuesTetragonOperatorImage:
     override : any, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/tetragon-operator"
-    tag : str, optional, default is "v1.5.0"
+    tag : str, optional, default is "v1.6.0"
     """
     [...str]: any
     override?: any
@@ -1057,27 +1125,9 @@ schema ValuesTetragonOperatorResourcesRequests:
 
 schema ValuesTetragonOperatorSecurityContext:
     r"""
-    securityContext for the Tetragon Operator Deployment Pod container.
-
-    Attributes
-    ----------
-    allowPrivilegeEscalation : bool, optional, default is False
-    capabilities : ValuesTetragonOperatorSecurityContextCapabilities, optional
+    securityContext for the Tetragon Operator Deployment Pod container. (DEPRECATED: Use containerSecurityContext instead. TODO: Remove in v1.6.0)
     """
     [...str]: any
-    allowPrivilegeEscalation?: bool
-    capabilities?: ValuesTetragonOperatorSecurityContextCapabilities
-
-schema ValuesTetragonOperatorSecurityContextCapabilities:
-    r"""
-    ValuesTetragonOperatorSecurityContextCapabilities
-
-    Attributes
-    ----------
-    drop : [str], optional
-    """
-    [...str]: any
-    drop?: [str]
 
 schema ValuesTetragonOperatorServiceAccount:
     r"""
@@ -1177,7 +1227,7 @@ schema ValuesTetragonProcessAncestors:
     ----------
     enabled : str, optional, default is ""
         Comma-separated list of process event types to enable ancestors for.
-        Supported event types are: base, kprobe, tracepoint, uprobe, lsm. Unknown event types will be ignored.
+        Supported event types are: base, kprobe, tracepoint, uprobe, lsm, usdt. Unknown event types will be ignored.
         Type "base" is required by all other supported event types for correct reference counting.
         Set it to "" to disable ancestors completely.
     """

@@ -118,12 +118,31 @@
               "title": "enabledCommand",
               "type": "boolean"
             },
+            "envFromSecrets": {
+              "description": "A simplified way to add secret references to envFrom.\nCan be specified either as a string (just the secret name) or as an object with additional parameters.\nExample:\nenvFromSecrets:\n  - my-simple-secret\n  - name: my-optional-secret\n    optional: true",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "envFromSecrets",
+              "type": "array"
+            },
             "extraEnv": {
+              "description": "Extra environment variables to add to the export-stdout container.\nExample:\nextraEnv:\n  - name: FOO\n    value: bar\n  - name: SECRET_KEY\n    valueFrom:\n      secretKeyRef:\n        name: my-secret\n        key: secret-key",
               "items": {
                 "required": []
               },
               "required": [],
               "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra envFrom sources to add to the export-stdout container.\nThis allows adding any type of envFrom source (configMapRef, secretRef, etc.).\nExample:\nextraEnvFrom:\n  - configMapRef:\n      name: my-config-map\n  - secretRef:\n      name: my-secret\n      optional: true",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "extraEnvFrom",
               "type": "array"
             },
             "extraVolumeMounts": {
@@ -354,6 +373,13 @@
           "description": "Method to use for installing  rthooks. Values:\n\n   \"oci-hooks\":\n      Add an apppriate file to \"/usr/share/containers/oci/hooks.d\". Use this with CRI-O.\n      See https://github.com/containers/common/blob/main/pkg/hooks/docs/oci-hooks.5.md\n      for more details.\n      Specific configuration for this interface can be found under \"ociHooks\".\n\n   \"nri-hook\":\n     Install the hook via NRI. Use this with containerd. Requires NRI being enabled.\n     see: https://github.com/containerd/containerd/blob/main/docs/NRI.md.\n     Specific configuration for this interface can be found under \"nriHook\".\n",
           "required": [],
           "title": "interface",
+          "type": "string"
+        },
+        "nameOverride": {
+          "default": "",
+          "description": "tetragon-rthooks name override",
+          "required": [],
+          "title": "nameOverride",
           "type": "string"
         },
         "nriHook": {
@@ -817,7 +843,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.5.0",
+              "default": "v1.6.0",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -889,7 +915,7 @@
           "properties": {
             "enabled": {
               "default": "",
-              "description": "Comma-separated list of process event types to enable ancestors for.\nSupported event types are: base, kprobe, tracepoint, uprobe, lsm. Unknown event types will be ignored.\nType \"base\" is required by all other supported event types for correct reference counting.\nSet it to \"\" to disable ancestors completely.",
+              "description": "Comma-separated list of process event types to enable ancestors for.\nSupported event types are: base, kprobe, tracepoint, uprobe, lsm, usdt. Unknown event types will be ignored.\nType \"base\" is required by all other supported event types for correct reference counting.\nSet it to \"\" to disable ancestors completely.",
               "required": [],
               "title": "enabled",
               "type": "string"
@@ -1011,6 +1037,12 @@
           "required": [],
           "title": "securityContext",
           "type": "object"
+        },
+        "usePerfRingBuffer": {
+          "default": false,
+          "required": [],
+          "title": "usePerfRingBuffer",
+          "type": "boolean"
         }
       },
       "required": [],
@@ -1096,6 +1128,56 @@
           "description": "Annotations for the Tetragon Operator Deployment.",
           "required": [],
           "title": "annotations",
+          "type": "object"
+        },
+        "containerSecurityContext": {
+          "additionalProperties": true,
+          "description": "securityContext for the Tetragon Operator Deployment Pod container.",
+          "properties": {
+            "allowPrivilegeEscalation": {
+              "default": false,
+              "required": [],
+              "title": "allowPrivilegeEscalation",
+              "type": "boolean"
+            },
+            "capabilities": {
+              "additionalProperties": true,
+              "properties": {
+                "drop": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "capabilities",
+              "type": "object"
+            },
+            "runAsGroup": {
+              "default": 65532,
+              "required": [],
+              "title": "runAsGroup",
+              "type": "integer"
+            },
+            "runAsNonRoot": {
+              "default": true,
+              "required": [],
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            },
+            "runAsUser": {
+              "default": 65532,
+              "required": [],
+              "title": "runAsUser",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "containerSecurityContext",
           "type": "object"
         },
         "enabled": {
@@ -1209,7 +1291,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.5.0",
+              "default": "v1.6.0",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -1392,32 +1474,7 @@
         },
         "securityContext": {
           "additionalProperties": true,
-          "description": "securityContext for the Tetragon Operator Deployment Pod container.",
-          "properties": {
-            "allowPrivilegeEscalation": {
-              "default": false,
-              "required": [],
-              "title": "allowPrivilegeEscalation",
-              "type": "boolean"
-            },
-            "capabilities": {
-              "additionalProperties": true,
-              "properties": {
-                "drop": {
-                  "items": {
-                    "required": [],
-                    "type": "string"
-                  },
-                  "required": [],
-                  "title": "drop",
-                  "type": "array"
-                }
-              },
-              "required": [],
-              "title": "capabilities",
-              "type": "object"
-            }
-          },
+          "description": "securityContext for the Tetragon Operator Deployment Pod container. (DEPRECATED: Use containerSecurityContext instead. TODO: Remove in v1.6.0)",
           "required": [],
           "title": "securityContext",
           "type": "object"
