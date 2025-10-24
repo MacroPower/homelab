@@ -10536,7 +10536,8 @@
             "dimensions": {
               "description": "A list of dimensions to add with the default dimensions.",
               "items": {
-                "required": []
+                "required": [],
+                "type": "string"
               },
               "required": [],
               "title": "dimensions",

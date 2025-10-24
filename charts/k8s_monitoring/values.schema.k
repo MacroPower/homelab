@@ -8133,7 +8133,7 @@ schema ValuesProcessorsServiceGraphMetrics:
         The attribute names used to identify the database name from span attributes.
     destinations : [any], optional
         The destinations where service graph metrics will be sent. If empty, all metrics-capable destinations will be used.
-    dimensions : [any], optional
+    dimensions : [str], optional
         A list of dimensions to add with the default dimensions.
     enabled : bool, optional
         Generate service graph metrics from traces. This will deploy an additional Alloy
@@ -8154,7 +8154,7 @@ schema ValuesProcessorsServiceGraphMetrics:
     databaseNameAttribute?: str
     databaseNameAttributes?: [str]
     destinations?: [any]
-    dimensions?: [any]
+    dimensions?: [str]
     enabled?: bool
     latencyHistogramBuckets?: [str]
     metricsFlushInterval?: str
