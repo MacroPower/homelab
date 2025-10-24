@@ -44,7 +44,7 @@ charts: helm.Charts = {
     argo_cd: {
         chart = "argo-cd"
         repoURL = "https://argoproj.github.io/argo-helm"
-        targetRevision = "8.6.4"
+        targetRevision = "9.0.5"
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
     }
