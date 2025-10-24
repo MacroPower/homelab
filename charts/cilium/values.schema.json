@@ -411,7 +411,7 @@
                       "description": "init container image of SPIRE agent and server",
                       "properties": {
                         "digest": {
-                          "default": "sha256:ab33eacc8251e3807b85bb6dba570e4698c3998eca6f0fc2ccb60575a563ea74",
+                          "default": "sha256:2f590fc602ce325cbff2ccfc39499014d039546dc400ef8bbf5c6ffb860632e7",
                           "required": [],
                           "title": "digest",
                           "type": "string"
@@ -1789,7 +1789,7 @@
               "description": "Clustermesh API server image.",
               "properties": {
                 "digest": {
-                  "default": "sha256:cd689a07bfc7622e812fef023cb277fdc695b60a960d36f32f93614177a7a0f6",
+                  "default": "sha256:0d15efc992a85003759232598bf05fb1a4cd3c9fa28fb96bee1789ffe27cc50d",
                   "description": "clustermesh-apiserver-digest",
                   "required": [],
                   "title": "digest",
@@ -1817,7 +1817,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.18.2",
+                  "default": "v1.18.3",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -3894,7 +3894,7 @@
           "description": "Envoy container image.",
           "properties": {
             "digest": {
-              "default": "sha256:7932d656b63f6f866b6732099d33355184322123cfe1182e6f05175a3bc2e0e0",
+              "default": "sha256:ca76eb4e9812d114c7f43215a742c00b8bf41200992af0d21b5561d46156fd15",
               "required": [],
               "title": "digest",
               "type": "string"
@@ -3921,7 +3921,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.34.7-1757592137-1a52bb680a956879722f48c591a2ca90f7791324",
+              "default": "v1.34.10-1761014632-c360e8557eb41011dfb5210f8fb53fed6c0b3222",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -5480,7 +5480,7 @@
               "properties": {
                 "apiKey": {
                   "default": true,
-                  "description": "Enables redacting Kafka's API key.\nExample:\n\n  redact:\n    enabled: true\n    kafka:\n      apiKey: true\n\nYou can specify the options from the helm CLI:\n\n  --set hubble.redact.enabled=\"true\"\n  --set hubble.redact.kafka.apiKey=\"true\"",
+                  "description": "Enables redacting Kafka's API key (deprecated, will be removed in v1.19).\nExample:\n\n  redact:\n    enabled: true\n    kafka:\n      apiKey: true\n\nYou can specify the options from the helm CLI:\n\n  --set hubble.redact.enabled=\"true\"\n  --set hubble.redact.kafka.apiKey=\"true\"",
                   "required": [],
                   "title": "apiKey",
                   "type": "boolean"
@@ -5623,7 +5623,7 @@
               "description": "Hubble-relay container image.",
               "properties": {
                 "digest": {
-                  "default": "sha256:6079308ee15e44dff476fb522612732f7c5c4407a1017bc3470916242b0405ac",
+                  "default": "sha256:e53e00c47fe4ffb9c086bad0c1c77f23cb968be4385881160683d9e15aa34dc3",
                   "description": "hubble-relay-digest",
                   "required": [],
                   "title": "digest",
@@ -5651,7 +5651,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.18.2",
+                  "default": "v1.18.3",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -7016,7 +7016,7 @@
       "description": "Agent container image.",
       "properties": {
         "digest": {
-          "default": "sha256:858f807ea4e20e85e3ea3240a762e1f4b29f1cb5bbd0463b8aa77e7b097c0667",
+          "default": "sha256:5649db451c88d928ea585514746d50d91e6210801b300c897283ea319d68de15",
           "description": "cilium-digest",
           "required": [],
           "title": "digest",
@@ -7044,7 +7044,7 @@
           "type": "string"
         },
         "tag": {
-          "default": "v1.18.2",
+          "default": "v1.18.3",
           "required": [],
           "title": "tag",
           "type": "string"
@@ -7710,6 +7710,16 @@
       "title": "kubeConfigPath",
       "type": "string"
     },
+    "kubeProxyReplacement": {
+      "default": false,
+      "description": "Configure the kube-proxy replacement in Cilium BPF datapath\nValid options are \"true\" or \"false\".\nref: https://docs.cilium.io/en/stable/network/kubernetes/kubeproxy-free/",
+      "required": [],
+      "title": "kubeProxyReplacement",
+      "type": [
+        "string",
+        "boolean"
+      ]
+    },
     "kubeProxyReplacementHealthzBindAddr": {
       "default": "",
       "description": "healthz server bind address for the kube-proxy replacement.\nTo enable set the value to '0.0.0.0:10256' for all ipv4\naddresses and this '[::]:10256' for all ipv6 addresses.\nBy default it is disabled.",
@@ -8127,7 +8137,7 @@
           "description": "node-init image.",
           "properties": {
             "digest": {
-              "default": "sha256:0c91245afb3a4ff78b5cc8c09226806e94a9a10eb0adb74a85e0eeed2a5cae8c",
+              "default": "sha256:5bdca3c2dec2c79f58d45a7a560bf1098c2126350c901379fe850b7f78d3d757",
               "required": [],
               "title": "digest",
               "type": "string"
@@ -8600,28 +8610,28 @@
           "description": "cilium-operator image.",
           "properties": {
             "alibabacloudDigest": {
-              "default": "sha256:612b1d94c179cd8ae239e571e96ebd95662bb5cccb62aacfdf79355aa9cdddc8",
+              "default": "sha256:df8b6830ef0545199cffc5fb9fbf14c9dc8d92093b0e6355d8659705227f89ef",
               "description": "operator-alibabacloud-digest",
               "required": [],
               "title": "alibabacloudDigest",
               "type": "string"
             },
             "awsDigest": {
-              "default": "sha256:1cb856fbe265dfbcfe816bd6aa4acaf006ecbb22dcc989116a1a81bb269ea328",
+              "default": "sha256:ef39d61183b3bdf0e235650461b6c4d9ec7aa5f61a6c770f33c47a6bc5165e24",
               "description": "operator-aws-digest",
               "required": [],
               "title": "awsDigest",
               "type": "string"
             },
             "azureDigest": {
-              "default": "sha256:9696e9b8219b9a5c16987e072eda2da378d42a32f9305375e56d7380a0c2ba8e",
+              "default": "sha256:10a8a83ca6f0b02432c1ca0e67af98a48fdbefb684af44a399f58184ab174143",
               "description": "operator-azure-digest",
               "required": [],
               "title": "azureDigest",
               "type": "string"
             },
             "genericDigest": {
-              "default": "sha256:cb4e4ffc5789fd5ff6a534e3b1460623df61cba00f5ea1c7b40153b5efb81805",
+              "default": "sha256:b5a0138e1a38e4437c5215257ff4e35373619501f4877dbaf92c89ecfad81797",
               "description": "operator-generic-digest",
               "required": [],
               "title": "genericDigest",
@@ -8655,7 +8665,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.18.2",
+              "default": "v1.18.3",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -9299,7 +9309,7 @@
               "description": "Envoy pre-flight image.",
               "properties": {
                 "digest": {
-                  "default": "sha256:7932d656b63f6f866b6732099d33355184322123cfe1182e6f05175a3bc2e0e0",
+                  "default": "sha256:ca76eb4e9812d114c7f43215a742c00b8bf41200992af0d21b5561d46156fd15",
                   "required": [],
                   "title": "digest",
                   "type": "string"
@@ -9326,7 +9336,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.34.7-1757592137-1a52bb680a956879722f48c591a2ca90f7791324",
+                  "default": "v1.34.10-1761014632-c360e8557eb41011dfb5210f8fb53fed6c0b3222",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -9379,7 +9389,7 @@
           "description": "Cilium pre-flight image.",
           "properties": {
             "digest": {
-              "default": "sha256:858f807ea4e20e85e3ea3240a762e1f4b29f1cb5bbd0463b8aa77e7b097c0667",
+              "default": "sha256:5649db451c88d928ea585514746d50d91e6210801b300c897283ea319d68de15",
               "description": "cilium-digest",
               "required": [],
               "title": "digest",
@@ -9407,7 +9417,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.18.2",
+              "default": "v1.18.3",
               "required": [],
               "title": "tag",
               "type": "string"
