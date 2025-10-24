@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "cloudnative-pg"
     repoURL : str, required, default is "https://cloudnative-pg.io/charts/"
-    targetRevision : str, optional, default is "0.26.0"
+    targetRevision : str, optional, default is "0.26.1"
     """
     values?: Values | any
     chart: str = "cloudnative-pg"
     repoURL: str = "https://cloudnative-pg.io/charts/"
-    targetRevision?: str = "0.26.0"
+    targetRevision?: str = "0.26.1"
 

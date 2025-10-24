@@ -10,7 +10,8 @@ _regex_match = regex.match
 
 schema Cluster:
     r"""
-    Cluster is the Schema for the PostgreSQL API
+    Cluster defines the API schema for a highly available PostgreSQL database cluster
+    managed by CloudNativePG.
 
     Attributes
     ----------
@@ -167,7 +168,7 @@ schema PostgresqlCnpgIoV1ClusterSpec:
     smartShutdownTimeout : int, default is 180, optional
         The time in seconds that controls the window of time reserved for the smart shutdown of Postgres to complete.
         Make sure you reserve enough time for the operator to request a fast shutdown of Postgres
-        (that is: `stopDelay` - `smartShutdownTimeout`).
+        (that is: `stopDelay` - `smartShutdownTimeout`). Default is 180 seconds.
     startDelay : int, default is 3600, optional
         The time in seconds that is allowed for a PostgreSQL instance to
         successfully start up (default 3600).
@@ -620,8 +621,8 @@ schema PostgresqlCnpgIoV1ClusterSpecAffinityAdditionalPodAntiAffinity:
         most preferred is the one with the greatest sum of weights, i.e.
         for each node that meets all of the scheduling requirements (resource
         request, requiredDuringScheduling anti-affinity expressions, etc.),
-        compute a sum by iterating through the elements of this field and adding
-        "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the
+        compute a sum by iterating through the elements of this field and subtracting
+        "weight" from the sum if the node has pods which matches the corresponding podAffinityTerm; the
         node(s) with the highest sum are the most preferred.
     requiredDuringSchedulingIgnoredDuringExecution : [PostgresqlCnpgIoV1ClusterSpecAffinityAdditionalPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
         If the anti-affinity requirements specified by this field are not met at
@@ -2242,7 +2243,8 @@ schema PostgresqlCnpgIoV1ClusterSpecEnvFromItems0:
     configMapRef : PostgresqlCnpgIoV1ClusterSpecEnvFromItems0ConfigMapRef, default is Undefined, optional
         config map ref
     prefix : str, default is Undefined, optional
-        Optional text to prepend to the name of each environment variable. Must be a C_IDENTIFIER.
+        Optional text to prepend to the name of each environment variable.
+        May consist of any printable ASCII characters except '='.
     secretRef : PostgresqlCnpgIoV1ClusterSpecEnvFromItems0SecretRef, default is Undefined, optional
         secret ref
     """
@@ -2293,7 +2295,8 @@ schema PostgresqlCnpgIoV1ClusterSpecEnvItems0:
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the environment variable. Must be a C_IDENTIFIER.
+        Name of the environment variable.
+        May consist of any printable ASCII characters except '='.
     value : str, default is Undefined, optional
         Variable references $(VAR_NAME) are expanded
         using the previously defined environment variables in the container and
@@ -2322,6 +2325,8 @@ schema PostgresqlCnpgIoV1ClusterSpecEnvItems0ValueFrom:
         config map key ref
     fieldRef : PostgresqlCnpgIoV1ClusterSpecEnvItems0ValueFromFieldRef, default is Undefined, optional
         field ref
+    fileKeyRef : PostgresqlCnpgIoV1ClusterSpecEnvItems0ValueFromFileKeyRef, default is Undefined, optional
+        file key ref
     resourceFieldRef : PostgresqlCnpgIoV1ClusterSpecEnvItems0ValueFromResourceFieldRef, default is Undefined, optional
         resource field ref
     secretKeyRef : PostgresqlCnpgIoV1ClusterSpecEnvItems0ValueFromSecretKeyRef, default is Undefined, optional
@@ -2329,6 +2334,7 @@ schema PostgresqlCnpgIoV1ClusterSpecEnvItems0ValueFrom:
     """
     configMapKeyRef?: PostgresqlCnpgIoV1ClusterSpecEnvItems0ValueFromConfigMapKeyRef
     fieldRef?: PostgresqlCnpgIoV1ClusterSpecEnvItems0ValueFromFieldRef
+    fileKeyRef?: PostgresqlCnpgIoV1ClusterSpecEnvItems0ValueFromFileKeyRef
     resourceFieldRef?: PostgresqlCnpgIoV1ClusterSpecEnvItems0ValueFromResourceFieldRef
     secretKeyRef?: PostgresqlCnpgIoV1ClusterSpecEnvItems0ValueFromSecretKeyRef
 
@@ -2368,6 +2374,38 @@ schema PostgresqlCnpgIoV1ClusterSpecEnvItems0ValueFromFieldRef:
     """
     apiVersion?: str
     fieldPath: str
+
+schema PostgresqlCnpgIoV1ClusterSpecEnvItems0ValueFromFileKeyRef:
+    r"""
+    FileKeyRef selects a key of the env file.
+    Requires the EnvFiles feature gate to be enabled.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        The key within the env file. An invalid key will prevent the pod from starting.
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+        During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
+    optional : bool, default is Undefined, optional
+        Specify whether the file or its key must be defined. If the file or key
+        does not exist, then the env var is not published.
+        If optional is set to true and the specified key does not exist,
+        the environment variable will not be set in the Pod's containers.
+
+        If optional is set to false and the specified key does not exist,
+        an error will be returned during Pod creation.
+    path : str, default is Undefined, required
+        The path within the volume from which to select the file.
+        Must be relative and may not contain the '..' path or start with '..'.
+    volumeName : str, default is Undefined, required
+        The name of the volume mount containing the env file.
+    """
+    key: str
+
+    optional?: bool = False
+    path: str
+
+    volumeName: str
 
 schema PostgresqlCnpgIoV1ClusterSpecEnvItems0ValueFromResourceFieldRef:
     r"""
@@ -2486,15 +2524,13 @@ schema PostgresqlCnpgIoV1ClusterSpecEphemeralVolumeSourceVolumeClaimTemplateSpec
         volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim.
         If specified, the CSI driver will create or update the volume with the attributes defined
         in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName,
-        it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass
-        will be applied to the claim but it's not allowed to reset this field to empty string once it is set.
-        If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass
-        will be set by the persistentvolume controller if it exists.
+        it can be changed after the claim is created. An empty string or nil value indicates that no
+        VolumeAttributesClass will be applied to the claim. If the claim enters an Infeasible error state,
+        this field can be reset to its previous value (including nil) to cancel the modification.
         If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be
         set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource
         exists.
         More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/
-        (Beta) Using this field requires the VolumeAttributesClass feature gate to be enabled (off by default).
     volumeMode : str, default is Undefined, optional
         volumeMode defines what type of volume is required by the claim.
         Value of Filesystem is implied when not included in claim spec.
@@ -3123,8 +3159,9 @@ schema PostgresqlCnpgIoV1ClusterSpecExternalClustersItems0Plugin:
     enabled : bool, default is True, optional
         Enabled is true if this plugin will be used
     isWALArchiver : bool, default is Undefined, optional
-        Only one plugin can be declared as WALArchiver.
-        Cannot be active if ".spec.backup.barmanObjectStore" configuration is present.
+        Marks the plugin as the WAL archiver. At most one plugin can be
+        designated as a WAL archiver. This cannot be enabled if the
+        `.spec.backup.barmanObjectStore` configuration is present.
     name : str, default is Undefined, required
         Name is the plugin name
     parameters : {str:str}, default is Undefined, optional
@@ -3757,10 +3794,19 @@ schema PostgresqlCnpgIoV1ClusterSpecMonitoring:
         Default: false.
     enablePodMonitor : bool, default is Undefined, optional
         Enable or disable the `PodMonitor`
+
+        Deprecated: This feature will be removed in an upcoming release. If
+        you need this functionality, you can create a PodMonitor manually.
     podMonitorMetricRelabelings : [PostgresqlCnpgIoV1ClusterSpecMonitoringPodMonitorMetricRelabelingsItems0], default is Undefined, optional
         The list of metric relabelings for the `PodMonitor`. Applied to samples before ingestion.
+
+        Deprecated: This feature will be removed in an upcoming release. If
+        you need this functionality, you can create a PodMonitor manually.
     podMonitorRelabelings : [PostgresqlCnpgIoV1ClusterSpecMonitoringPodMonitorRelabelingsItems0], default is Undefined, optional
         The list of relabelings for the `PodMonitor`. Applied to samples before scraping.
+
+        Deprecated: This feature will be removed in an upcoming release. If
+        you need this functionality, you can create a PodMonitor manually.
     tls : PostgresqlCnpgIoV1ClusterSpecMonitoringTLS, default is Undefined, optional
         tls
     """
@@ -3814,31 +3860,31 @@ schema PostgresqlCnpgIoV1ClusterSpecMonitoringPodMonitorMetricRelabelingsItems0:
     Attributes
     ----------
     action : str, default is "replace", optional
-        Action to perform based on the regex matching.
+        action to perform based on the regex matching.
 
         `Uppercase` and `Lowercase` actions require Prometheus >= v2.36.0.
         `DropEqual` and `KeepEqual` actions require Prometheus >= v2.41.0.
 
         Default: "Replace"
     modulus : int, default is Undefined, optional
-        Modulus to take of the hash of the source label values.
+        modulus to take of the hash of the source label values.
 
         Only applicable when the action is `HashMod`.
     regex : str, default is Undefined, optional
-        Regular expression against which the extracted value is matched.
+        regex defines the regular expression against which the extracted value is matched.
     replacement : str, default is Undefined, optional
-        Replacement value against which a Replace action is performed if the
+        replacement value against which a Replace action is performed if the
         regular expression matches.
 
         Regex capture groups are available.
     separator : str, default is Undefined, optional
-        Separator is the string between concatenated SourceLabels.
+        separator defines the string between concatenated SourceLabels.
     sourceLabels : [str], default is Undefined, optional
-        The source labels select values from existing labels. Their content is
+        sourceLabels defines the source labels select values from existing labels. Their content is
         concatenated using the configured Separator and matched against the
         configured regular expression.
     targetLabel : str, default is Undefined, optional
-        Label to which the resulting string is written in a replacement.
+        targetLabel defines the label to which the resulting string is written in a replacement.
 
         It is mandatory for `Replace`, `HashMod`, `Lowercase`, `Uppercase`,
         `KeepEqual` and `DropEqual` actions.
@@ -3852,9 +3898,6 @@ schema PostgresqlCnpgIoV1ClusterSpecMonitoringPodMonitorMetricRelabelingsItems0:
     separator?: str
     sourceLabels?: [str]
     targetLabel?: str
-
-    check:
-        all sourceLabels in sourceLabels {_regex_match(str(sourceLabels), r"^[a-zA-Z_][a-zA-Z0-9_]*$") if sourceLabels} if sourceLabels
 
 schema PostgresqlCnpgIoV1ClusterSpecMonitoringPodMonitorRelabelingsItems0:
     r"""
@@ -3866,31 +3909,31 @@ schema PostgresqlCnpgIoV1ClusterSpecMonitoringPodMonitorRelabelingsItems0:
     Attributes
     ----------
     action : str, default is "replace", optional
-        Action to perform based on the regex matching.
+        action to perform based on the regex matching.
 
         `Uppercase` and `Lowercase` actions require Prometheus >= v2.36.0.
         `DropEqual` and `KeepEqual` actions require Prometheus >= v2.41.0.
 
         Default: "Replace"
     modulus : int, default is Undefined, optional
-        Modulus to take of the hash of the source label values.
+        modulus to take of the hash of the source label values.
 
         Only applicable when the action is `HashMod`.
     regex : str, default is Undefined, optional
-        Regular expression against which the extracted value is matched.
+        regex defines the regular expression against which the extracted value is matched.
     replacement : str, default is Undefined, optional
-        Replacement value against which a Replace action is performed if the
+        replacement value against which a Replace action is performed if the
         regular expression matches.
 
         Regex capture groups are available.
     separator : str, default is Undefined, optional
-        Separator is the string between concatenated SourceLabels.
+        separator defines the string between concatenated SourceLabels.
     sourceLabels : [str], default is Undefined, optional
-        The source labels select values from existing labels. Their content is
+        sourceLabels defines the source labels select values from existing labels. Their content is
         concatenated using the configured Separator and matched against the
         configured regular expression.
     targetLabel : str, default is Undefined, optional
-        Label to which the resulting string is written in a replacement.
+        targetLabel defines the label to which the resulting string is written in a replacement.
 
         It is mandatory for `Replace`, `HashMod`, `Lowercase`, `Uppercase`,
         `KeepEqual` and `DropEqual` actions.
@@ -3904,9 +3947,6 @@ schema PostgresqlCnpgIoV1ClusterSpecMonitoringPodMonitorRelabelingsItems0:
     separator?: str
     sourceLabels?: [str]
     targetLabel?: str
-
-    check:
-        all sourceLabels in sourceLabels {_regex_match(str(sourceLabels), r"^[a-zA-Z_][a-zA-Z0-9_]*$") if sourceLabels} if sourceLabels
 
 schema PostgresqlCnpgIoV1ClusterSpecMonitoringTLS:
     r"""
@@ -3946,8 +3986,9 @@ schema PostgresqlCnpgIoV1ClusterSpecPluginsItems0:
     enabled : bool, default is True, optional
         Enabled is true if this plugin will be used
     isWALArchiver : bool, default is Undefined, optional
-        Only one plugin can be declared as WALArchiver.
-        Cannot be active if ".spec.backup.barmanObjectStore" configuration is present.
+        Marks the plugin as the WAL archiver. At most one plugin can be
+        designated as a WAL archiver. This cannot be enabled if the
+        `.spec.backup.barmanObjectStore` configuration is present.
     name : str, default is Undefined, required
         Name is the plugin name
     parameters : {str:str}, default is Undefined, optional
@@ -4420,6 +4461,8 @@ schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0:
         config map
     downwardAPI : PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0DownwardAPI, default is Undefined, optional
         downward API
+    podCertificate : PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0PodCertificate, default is Undefined, optional
+        pod certificate
     secret : PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0Secret, default is Undefined, optional
         secret
     serviceAccountToken : PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0ServiceAccountToken, default is Undefined, optional
@@ -4428,6 +4471,7 @@ schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0:
     clusterTrustBundle?: PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0ClusterTrustBundle
     configMap?: PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0ConfigMap
     downwardAPI?: PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0DownwardAPI
+    podCertificate?: PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0PodCertificate
     secret?: PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0Secret
     serviceAccountToken?: PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0ServiceAccountToken
 
@@ -4642,6 +4686,105 @@ schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0Downward
     check:
         _regex_match(str(divisor), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if divisor
 
+schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0PodCertificate:
+    r"""
+    Projects an auto-rotating credential bundle (private key and certificate
+    chain) that the pod can use either as a TLS client or server.
+
+    Kubelet generates a private key and uses it to send a
+    PodCertificateRequest to the named signer.  Once the signer approves the
+    request and issues a certificate chain, Kubelet writes the key and
+    certificate chain to the pod filesystem.  The pod does not start until
+    certificates have been issued for each podCertificate projected volume
+    source in its spec.
+
+    Kubelet will begin trying to rotate the certificate at the time indicated
+    by the signer using the PodCertificateRequest.Status.BeginRefreshAt
+    timestamp.
+
+    Kubelet can write a single file, indicated by the credentialBundlePath
+    field, or separate files, indicated by the keyPath and
+    certificateChainPath fields.
+
+    The credential bundle is a single file in PEM format.  The first PEM
+    entry is the private key (in PKCS#8 format), and the remaining PEM
+    entries are the certificate chain issued by the signer (typically,
+    signers will return their certificate chain in leaf-to-root order).
+
+    Prefer using the credential bundle format, since your application code
+    can read it atomically.  If you use keyPath and certificateChainPath,
+    your application must make two separate file reads. If these coincide
+    with a certificate rotation, it is possible that the private key and leaf
+    certificate you read may not correspond to each other.  Your application
+    will need to check for this condition, and re-read until they are
+    consistent.
+
+    The named signer controls chooses the format of the certificate it
+    issues; consult the signer implementation's documentation to learn how to
+    use the certificates it issues.
+
+    Attributes
+    ----------
+    certificateChainPath : str, default is Undefined, optional
+        Write the certificate chain at this path in the projected volume.
+
+        Most applications should use credentialBundlePath.  When using keyPath
+        and certificateChainPath, your application needs to check that the key
+        and leaf certificate are consistent, because it is possible to read the
+        files mid-rotation.
+    credentialBundlePath : str, default is Undefined, optional
+        Write the credential bundle at this path in the projected volume.
+
+        The credential bundle is a single file that contains multiple PEM blocks.
+        The first PEM block is a PRIVATE KEY block, containing a PKCS#8 private
+        key.
+
+        The remaining blocks are CERTIFICATE blocks, containing the issued
+        certificate chain from the signer (leaf and any intermediates).
+
+        Using credentialBundlePath lets your Pod's application code make a single
+        atomic read that retrieves a consistent key and certificate chain.  If you
+        project them to separate files, your application code will need to
+        additionally check that the leaf certificate was issued to the key.
+    keyPath : str, default is Undefined, optional
+        Write the key at this path in the projected volume.
+
+        Most applications should use credentialBundlePath.  When using keyPath
+        and certificateChainPath, your application needs to check that the key
+        and leaf certificate are consistent, because it is possible to read the
+        files mid-rotation.
+    keyType : str, default is Undefined, required
+        The type of keypair Kubelet will generate for the pod.
+
+        Valid values are "RSA3072", "RSA4096", "ECDSAP256", "ECDSAP384",
+        "ECDSAP521", and "ED25519".
+    maxExpirationSeconds : int, default is Undefined, optional
+        maxExpirationSeconds is the maximum lifetime permitted for the
+        certificate.
+
+        Kubelet copies this value verbatim into the PodCertificateRequests it
+        generates for this projection.
+
+        If omitted, kube-apiserver will set it to 86400(24 hours). kube-apiserver
+        will reject values shorter than 3600 (1 hour).  The maximum allowable
+        value is 7862400 (91 days).
+
+        The signer implementation is then free to issue a certificate with any
+        lifetime *shorter* than MaxExpirationSeconds, but no shorter than 3600
+        seconds (1 hour).  This constraint is enforced by kube-apiserver.
+        `kubernetes.io` signers will never issue certificates with a lifetime
+        longer than 24 hours.
+    signerName : str, default is Undefined, required
+        Kubelet's generated CSRs will be addressed to this signer.
+    """
+    certificateChainPath?: str
+    credentialBundlePath?: str
+    keyPath?: str
+    keyType: str
+
+    maxExpirationSeconds?: int
+    signerName: str
+
 schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0Secret:
     r"""
     secret information about the secret data to project
@@ -4841,7 +4984,7 @@ schema PostgresqlCnpgIoV1ClusterSpecResources:
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -4988,15 +5131,13 @@ schema PostgresqlCnpgIoV1ClusterSpecStoragePvcTemplate:
         volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim.
         If specified, the CSI driver will create or update the volume with the attributes defined
         in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName,
-        it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass
-        will be applied to the claim but it's not allowed to reset this field to empty string once it is set.
-        If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass
-        will be set by the persistentvolume controller if it exists.
+        it can be changed after the claim is created. An empty string or nil value indicates that no
+        VolumeAttributesClass will be applied to the claim. If the claim enters an Infeasible error state,
+        this field can be reset to its previous value (including nil) to cancel the modification.
         If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be
         set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource
         exists.
         More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/
-        (Beta) Using this field requires the VolumeAttributesClass feature gate to be enabled (off by default).
     volumeMode : str, default is Undefined, optional
         volumeMode defines what type of volume is required by the claim.
         Value of Filesystem is implied when not included in claim spec.
@@ -5252,15 +5393,13 @@ schema PostgresqlCnpgIoV1ClusterSpecTablespacesItems0StoragePvcTemplate:
         volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim.
         If specified, the CSI driver will create or update the volume with the attributes defined
         in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName,
-        it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass
-        will be applied to the claim but it's not allowed to reset this field to empty string once it is set.
-        If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass
-        will be set by the persistentvolume controller if it exists.
+        it can be changed after the claim is created. An empty string or nil value indicates that no
+        VolumeAttributesClass will be applied to the claim. If the claim enters an Infeasible error state,
+        this field can be reset to its previous value (including nil) to cancel the modification.
         If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be
         set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource
         exists.
         More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/
-        (Beta) Using this field requires the VolumeAttributesClass feature gate to be enabled (off by default).
     volumeMode : str, default is Undefined, optional
         volumeMode defines what type of volume is required by the claim.
         Value of Filesystem is implied when not included in claim spec.
@@ -5623,15 +5762,13 @@ schema PostgresqlCnpgIoV1ClusterSpecWalStoragePvcTemplate:
         volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim.
         If specified, the CSI driver will create or update the volume with the attributes defined
         in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName,
-        it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass
-        will be applied to the claim but it's not allowed to reset this field to empty string once it is set.
-        If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass
-        will be set by the persistentvolume controller if it exists.
+        it can be changed after the claim is created. An empty string or nil value indicates that no
+        VolumeAttributesClass will be applied to the claim. If the claim enters an Infeasible error state,
+        this field can be reset to its previous value (including nil) to cancel the modification.
         If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be
         set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource
         exists.
         More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/
-        (Beta) Using this field requires the VolumeAttributesClass feature gate to be enabled (off by default).
     volumeMode : str, default is Undefined, optional
         volumeMode defines what type of volume is required by the claim.
         Value of Filesystem is implied when not included in claim spec.

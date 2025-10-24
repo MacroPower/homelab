@@ -100,7 +100,7 @@ charts: helm.Charts = {
     cloudnative_pg: {
         chart = "cloudnative-pg"
         repoURL = "https://cloudnative-pg.io/charts/"
-        targetRevision = "0.26.0"
+        targetRevision = "0.26.1"
         schemaGenerator = "VALUE-INFERENCE"
         crdGenerator = "TEMPLATE"
     }

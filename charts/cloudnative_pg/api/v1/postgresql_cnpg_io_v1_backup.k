@@ -167,6 +167,9 @@ schema PostgresqlCnpgIoV1BackupStatus:
         google credentials
     instanceID : PostgresqlCnpgIoV1BackupStatusInstanceID, default is Undefined, optional
         instance ID
+    majorVersion : int, default is Undefined, optional
+        The PostgreSQL major version that was running when the
+        backup was taken.
     method : str, default is Undefined, optional
         The backup method being used
     online : bool, default is Undefined, optional
@@ -206,6 +209,7 @@ schema PostgresqlCnpgIoV1BackupStatus:
     error?: str
     googleCredentials?: PostgresqlCnpgIoV1BackupStatusGoogleCredentials
     instanceID?: PostgresqlCnpgIoV1BackupStatusInstanceID
+    majorVersion?: int
     method?: str
     online?: bool
     phase?: str
