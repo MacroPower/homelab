@@ -41,8 +41,14 @@ schema JetstreamNatsIoV1beta2StreamSpec:
     ----------
     account : str, default is Undefined, optional
         Name of the account to which the Stream belongs.
+    allowAtomicPublish : bool, default is Undefined, optional
+        When true, enables atomic batch publishing.
     allowDirect : bool, default is Undefined, optional
         When true, allow higher performance, direct access to get individual messages.
+    allowMsgCounter : bool, default is Undefined, optional
+        When true, enables message counters for the stream.
+    allowMsgSchedules : bool, default is Undefined, optional
+        When true, enables message scheduling.
     allowMsgTtl : bool, default is Undefined, optional
         When true, allows header initiated per-message TTLs. If disabled, then the `NATS-TTL` header will be ignored.
     allowRollup : bool, default is Undefined, optional
@@ -93,6 +99,8 @@ schema JetstreamNatsIoV1beta2StreamSpec:
         NATS user NKey for connecting to servers.
     noAck : bool, default is Undefined, optional
         Disables acknowledging messages that are received by the Stream.
+    persistMode : str, default is Undefined, optional
+        Configures stream persistence settings (async or default).
     placement : JetstreamNatsIoV1beta2StreamSpecPlacement, default is Undefined, optional
         placement
     preventDelete : bool, default is Undefined, optional
@@ -125,7 +133,10 @@ schema JetstreamNatsIoV1beta2StreamSpec:
         When true, the KV Store will initiate TLS before server INFO.
     """
     account?: str
+    allowAtomicPublish?: bool = False
     allowDirect?: bool = False
+    allowMsgCounter?: bool = False
+    allowMsgSchedules?: bool = False
     allowMsgTtl?: bool = False
     allowRollup?: bool = False
     compression?: "s2" | "none" | "" = ""
@@ -151,6 +162,7 @@ schema JetstreamNatsIoV1beta2StreamSpec:
     name?: str
     nkey?: str = ""
     noAck?: bool = False
+    persistMode?: str = ""
     placement?: JetstreamNatsIoV1beta2StreamSpecPlacement
     preventDelete?: bool = False
     preventUpdate?: bool = False

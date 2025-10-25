@@ -135,7 +135,7 @@ schema ValuesJetstreamImage:
     ----------
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "natsio/jetstream-controller"
-    tag : str, optional, default is "0.19.1"
+    tag : str, optional, default is "0.20.1"
     """
     [...str]: any
     pullPolicy?: str

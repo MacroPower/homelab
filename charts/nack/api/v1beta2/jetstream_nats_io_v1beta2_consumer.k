@@ -95,10 +95,16 @@ schema JetstreamNatsIoV1beta2ConsumerSpec:
         opt start seq
     optStartTime : str, default is Undefined, optional
         Time format must be RFC3339.
+    pinnedTtl : str, default is Undefined, optional
+        TTL for pinned client when using pinned_client priority policy.
     preventDelete : bool, default is Undefined, optional
         When true, the managed Consumer will not be deleted when the resource is deleted.
     preventUpdate : bool, default is Undefined, optional
         When true, the managed Consumer will not be updated when the resource is updated.
+    priorityGroups : [str], default is Undefined, optional
+        List of priority groups for the consumer. For now, only one group is supported.
+    priorityPolicy : str, default is Undefined, optional
+        Priority policy for consumer (pinned_client, overflow, prioritized, or none).
     rateLimitBps : int, default is Undefined, optional
         Rate at which messages will be delivered to clients, expressed in bit per second.
     replayPolicy : str, default is "instant", optional
@@ -144,8 +150,11 @@ schema JetstreamNatsIoV1beta2ConsumerSpec:
     nkey?: str = ""
     optStartSeq?: int
     optStartTime?: str
+    pinnedTtl?: str = ""
     preventDelete?: bool = False
     preventUpdate?: bool = False
+    priorityGroups?: [str]
+    priorityPolicy?: str = ""
     rateLimitBps?: int
     replayPolicy?: "instant" | "original" = "instant"
     replicas?: int
