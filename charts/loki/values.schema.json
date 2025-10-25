@@ -4076,7 +4076,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "3.5.5",
+              "default": "3.5.7",
               "description": "Docker image tag",
               "required": [],
               "title": "tag",
@@ -14782,6 +14782,13 @@
               "description": "Enable StatefulSetAutoDeletePVC feature",
               "required": [],
               "title": "enableStatefulSetAutoDeletePVC",
+              "type": "boolean"
+            },
+            "enableStatefulSetRecreationForSizeChange": {
+              "default": false,
+              "description": "Enable StatefulSetRecreation for changes to PVC size.\nThis means that the StatefulSet will be deleted, recreated (with the same name) and rolled when a change to the\nPVC size is detected. That way the PVC can be resized without manual intervention.",
+              "required": [],
+              "title": "enableStatefulSetRecreationForSizeChange",
               "type": "boolean"
             },
             "enabled": {

@@ -3800,7 +3800,7 @@ schema ValuesEnterpriseImage:
         The Docker registry
     repository : str, optional, default is "grafana/enterprise-logs"
         Docker image repository
-    tag : str, optional, default is "3.5.5"
+    tag : str, optional, default is "3.5.7"
         Docker image tag
     """
     [...str]: any
@@ -11766,6 +11766,10 @@ schema ValuesSingleBinaryPersistence:
         Annotations for volume claim
     enableStatefulSetAutoDeletePVC : bool, optional, default is True
         Enable StatefulSetAutoDeletePVC feature
+    enableStatefulSetRecreationForSizeChange : bool, optional, default is False
+        Enable StatefulSetRecreation for changes to PVC size.
+        This means that the StatefulSet will be deleted, recreated (with the same name) and rolled when a change to the
+        PVC size is detected. That way the PVC can be resized without manual intervention.
     enabled : bool, optional, default is True
         Enable persistent disk
     labels : ValuesSingleBinaryPersistenceLabels, optional
@@ -11789,6 +11793,7 @@ schema ValuesSingleBinaryPersistence:
     accessModes?: [str]
     annotations?: ValuesSingleBinaryPersistenceAnnotations
     enableStatefulSetAutoDeletePVC?: bool
+    enableStatefulSetRecreationForSizeChange?: bool
     enabled?: bool
     labels?: ValuesSingleBinaryPersistenceLabels
     selector?: any
