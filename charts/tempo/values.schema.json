@@ -2549,6 +2549,24 @@
       "title": "extraArgs",
       "type": "array"
     },
+    "extraEnv": {
+      "description": "Environment variables to add to rollout-operator container",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraEnv",
+      "type": "array"
+    },
+    "extraEnvFrom": {
+      "description": "Environment variables from secrets or configmaps to add to rollout-operator container",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraEnvFrom",
+      "type": "array"
+    },
     "extraObjects": {
       "description": "extraObjects could be utilized to add dynamic manifests via values",
       "items": {
