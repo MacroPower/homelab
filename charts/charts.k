@@ -316,7 +316,7 @@ charts: helm.Charts = {
     nats: {
         chart = "nats"
         repoURL = "https://nats-io.github.io/k8s/helm/charts/"
-        targetRevision = "1.3.15"
+        targetRevision = "1.3.16"
         schemaGenerator = "AUTO"
     }
     qbittorrent: {
