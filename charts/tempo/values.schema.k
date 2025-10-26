@@ -96,6 +96,10 @@ schema Values:
         Name of the Secret or ConfigMap that contains the runtime configuration (used for naming even if config is internal).
     extraArgs : [any], optional
         List of additional CLI arguments to configure rollout-operator (example: `--log.level=info`)
+    extraEnv : [any], optional
+        Environment variables to add to rollout-operator container
+    extraEnvFrom : [any], optional
+        Environment variables from secrets or configmaps to add to rollout-operator container
     extraObjects : [any], optional
         extraObjects could be utilized to add dynamic manifests via values
     fullnameOverride : str, optional, default is ""
@@ -352,6 +356,8 @@ schema Values:
     externalConfigVersion?: str
     externalRuntimeConfigName?: str
     extraArgs?: [any]
+    extraEnv?: [any]
+    extraEnvFrom?: [any]
     extraObjects?: [any]
     fullnameOverride?: str
     gateway?: ValuesGateway
