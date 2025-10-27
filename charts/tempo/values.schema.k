@@ -2207,6 +2207,8 @@ schema ValuesGateway:
     image : ValuesGatewayImage, optional
     ingress : ValuesGatewayIngress, optional
         Gateway ingress configuration
+    livenessProbe : ValuesGatewayLivenessProbe, optional
+        Configures the liveness probe for the gateway
     maxUnavailable : int, optional, default is 1
         Pod Disruption Budget maxUnavailable
     minReadySeconds : int, optional, default is 10
@@ -2253,6 +2255,7 @@ schema ValuesGateway:
     hostAliases?: [any]
     image?: ValuesGatewayImage
     ingress?: ValuesGatewayIngress
+    livenessProbe?: ValuesGatewayLivenessProbe
     maxUnavailable?: int
     minReadySeconds?: int
     nginxConfig?: ValuesGatewayNginxConfig
@@ -2437,6 +2440,34 @@ schema ValuesGatewayIngressTlsItems0:
     [...str]: any
     hosts?: [str]
     secretName?: str
+
+schema ValuesGatewayLivenessProbe:
+    r"""
+    Configures the liveness probe for the gateway
+
+    Attributes
+    ----------
+    httpGet : ValuesGatewayLivenessProbeHttpGet, optional
+    initialDelaySeconds : int, optional, default is 30
+    timeoutSeconds : int, optional, default is 5
+    """
+    [...str]: any
+    httpGet?: ValuesGatewayLivenessProbeHttpGet
+    initialDelaySeconds?: int
+    timeoutSeconds?: int
+
+schema ValuesGatewayLivenessProbeHttpGet:
+    r"""
+    ValuesGatewayLivenessProbeHttpGet
+
+    Attributes
+    ----------
+    path : str, optional, default is "/"
+    port : str, optional, default is "http-metrics"
+    """
+    [...str]: any
+    path?: str
+    port?: str
 
 schema ValuesGatewayNginxConfig:
     r"""
@@ -6030,6 +6061,7 @@ schema ValuesTempo:
     Attributes
     ----------
     image : ValuesTempoImage, optional
+    livenessProbe : ValuesTempoLivenessProbe, optional
     memberlist : ValuesTempoMemberlist, optional
         Memberlist service configuration.
     podAnnotations : ValuesTempoPodAnnotations, optional
@@ -6049,6 +6081,7 @@ schema ValuesTempo:
     """
     [...str]: any
     image?: ValuesTempoImage
+    livenessProbe?: ValuesTempoLivenessProbe
     memberlist?: ValuesTempoMemberlist
     podAnnotations?: ValuesTempoPodAnnotations
     podLabels?: ValuesTempoPodLabels
@@ -6081,6 +6114,34 @@ schema ValuesTempoImage:
     registry?: str
     repository?: str
     tag?: any
+
+schema ValuesTempoLivenessProbe:
+    r"""
+    ValuesTempoLivenessProbe
+
+    Attributes
+    ----------
+    httpGet : ValuesTempoLivenessProbeHttpGet, optional
+    initialDelaySeconds : int, optional, default is 60
+    timeoutSeconds : int, optional, default is 5
+    """
+    [...str]: any
+    httpGet?: ValuesTempoLivenessProbeHttpGet
+    initialDelaySeconds?: int
+    timeoutSeconds?: int
+
+schema ValuesTempoLivenessProbeHttpGet:
+    r"""
+    ValuesTempoLivenessProbeHttpGet
+
+    Attributes
+    ----------
+    path : str, optional, default is "/ready"
+    port : str, optional, default is "http-metrics"
+    """
+    [...str]: any
+    path?: str
+    port?: str
 
 schema ValuesTempoMemberlist:
     r"""

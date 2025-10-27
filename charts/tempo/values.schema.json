@@ -2906,6 +2906,47 @@
           "title": "ingress",
           "type": "object"
         },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "description": "Configures the liveness probe for the gateway",
+          "properties": {
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "port": {
+                  "default": "http-metrics",
+                  "required": [],
+                  "title": "port",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 30,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 5,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
         "maxUnavailable": {
           "default": 1,
           "description": "Pod Disruption Budget maxUnavailable",
@@ -8108,6 +8149,46 @@
           },
           "required": [],
           "title": "image",
+          "type": "object"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "properties": {
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/ready",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "port": {
+                  "default": "http-metrics",
+                  "required": [],
+                  "title": "port",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 60,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 5,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "livenessProbe",
           "type": "object"
         },
         "memberlist": {
