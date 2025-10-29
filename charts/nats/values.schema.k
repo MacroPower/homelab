@@ -953,7 +953,7 @@ schema ValuesContainerImage:
     pullPolicy : any, optional, default is ""
     registry : any, optional, default is ""
     repository : str, optional, default is "nats"
-    tag : str, optional, default is "2.11.10-alpine"
+    tag : str, optional, default is "2.12.1-alpine"
     """
     [...str]: any
     digest?: any
