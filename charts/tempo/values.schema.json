@@ -3851,6 +3851,13 @@
               "items": {
                 "additionalProperties": true,
                 "properties": {
+                  "annotations": {
+                    "additionalProperties": true,
+                    "description": "Specific annotations to add to zone-c statefulset",
+                    "required": [],
+                    "title": "annotations",
+                    "type": "object"
+                  },
                   "extraAffinity": {
                     "additionalProperties": true,
                     "description": "extraAffinity adds user defined custom affinity rules (merged with generated rules)",
@@ -3870,6 +3877,13 @@
                     "required": [],
                     "title": "nodeSelector",
                     "type": "null"
+                  },
+                  "podAnnotations": {
+                    "additionalProperties": true,
+                    "description": "Specific annotations to add to zone-c pods",
+                    "required": [],
+                    "title": "podAnnotations",
+                    "type": "object"
                   },
                   "storageClass": {
                     "default": "null",

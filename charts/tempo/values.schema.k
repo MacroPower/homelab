@@ -3055,6 +3055,8 @@ schema ValuesIngesterZoneAwareReplicationZonesItems0:
 
     Attributes
     ----------
+    annotations : ValuesIngesterZoneAwareReplicationZonesItems0Annotations, optional
+        Specific annotations to add to zone-c statefulset
     extraAffinity : ValuesIngesterZoneAwareReplicationZonesItems0ExtraAffinity, optional
         extraAffinity adds user defined custom affinity rules (merged with generated rules)
     name : str, optional, default is "zone-c"
@@ -3062,6 +3064,8 @@ schema ValuesIngesterZoneAwareReplicationZonesItems0:
         nodeselector to restrict where pods of this zone can be placed. E.g.:
         nodeSelector:
           topology.kubernetes.io/zone: zone-c
+    podAnnotations : ValuesIngesterZoneAwareReplicationZonesItems0PodAnnotations, optional
+        Specific annotations to add to zone-c pods
     storageClass : any, optional, default is "null"
         Ingester data Persistent Volume Storage Class
         If defined, storageClassName: <storageClass>
@@ -3069,14 +3073,28 @@ schema ValuesIngesterZoneAwareReplicationZonesItems0:
         If undefined or set to null (the default), then fall back to the value of `ingester.persistentVolume.storageClass`.
     """
     [...str]: any
+    annotations?: ValuesIngesterZoneAwareReplicationZonesItems0Annotations
     extraAffinity?: ValuesIngesterZoneAwareReplicationZonesItems0ExtraAffinity
     name?: str
     nodeSelector?: any
+    podAnnotations?: ValuesIngesterZoneAwareReplicationZonesItems0PodAnnotations
     storageClass?: any
+
+schema ValuesIngesterZoneAwareReplicationZonesItems0Annotations:
+    r"""
+    Specific annotations to add to zone-c statefulset
+    """
+    [...str]: any
 
 schema ValuesIngesterZoneAwareReplicationZonesItems0ExtraAffinity:
     r"""
     extraAffinity adds user defined custom affinity rules (merged with generated rules)
+    """
+    [...str]: any
+
+schema ValuesIngesterZoneAwareReplicationZonesItems0PodAnnotations:
+    r"""
+    Specific annotations to add to zone-c pods
     """
     [...str]: any
 
