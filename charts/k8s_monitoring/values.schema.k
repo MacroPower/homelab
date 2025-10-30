@@ -1087,6 +1087,8 @@ schema ValuesAlloyOperatorWaitForAlloyRemoval:
     podLabels : ValuesAlloyOperatorWaitForAlloyRemovalPodLabels, optional
         Labels to apply to the Pod for the Helm Hook to wait for all Alloy instances to be removed before uninstalling
         the Alloy Operator
+    resources : ValuesAlloyOperatorWaitForAlloyRemovalResources, optional
+        Set the resource field for the Helm Hook that ensures that Alloy instances are removed during uninstall.
     tolerations : [any], optional
         Tolerations to apply to the Helm Hook that ensures that Alloy instances are removed during uninstall.
     """
@@ -1096,6 +1098,7 @@ schema ValuesAlloyOperatorWaitForAlloyRemoval:
     nodeSelector?: ValuesAlloyOperatorWaitForAlloyRemovalNodeSelector
     podAnnotations?: ValuesAlloyOperatorWaitForAlloyRemovalPodAnnotations
     podLabels?: ValuesAlloyOperatorWaitForAlloyRemovalPodLabels
+    resources?: ValuesAlloyOperatorWaitForAlloyRemovalResources
     tolerations?: [any]
 
 schema ValuesAlloyOperatorWaitForAlloyRemovalImage:
@@ -1150,6 +1153,12 @@ schema ValuesAlloyOperatorWaitForAlloyRemovalPodLabels:
     [...str]: any
     "linkerd.io/inject"?: str
     "sidecar.istio.io/inject"?: str
+
+schema ValuesAlloyOperatorWaitForAlloyRemovalResources:
+    r"""
+    Set the resource field for the Helm Hook that ensures that Alloy instances are removed during uninstall.
+    """
+    [...str]: any
 
 schema ValuesAlloyProfiles:
     r"""
@@ -7966,6 +7975,7 @@ schema ValuesProcessorsK8Sattributes:
         list of otelcol.processor.k8sattributes extract > annotation blocks. See the
         [Alloy documentation](https://grafana.com/docs/agent/latest/flow/reference/components/otelcol.processor.k8sattributes/#annotation-block)
         for details on how to configure annotation blocks.
+    filters : ValuesProcessorsK8SattributesFilters, optional
     labels : [any], optional
         Kubernetes labels to extract and add to the attributes of the received telemetry data in the form of a list of
         otelcol.processor.k8sattributes extract > label blocks. See the
@@ -7980,10 +7990,37 @@ schema ValuesProcessorsK8Sattributes:
     """
     [...str]: any
     annotations?: [any]
+    filters?: ValuesProcessorsK8SattributesFilters
     labels?: [any]
     metadata?: [str]
     passthrough?: bool
     podAssociation?: [ValuesProcessorsK8SattributesPodAssociationItems0]
+
+schema ValuesProcessorsK8SattributesFilters:
+    r"""
+    ValuesProcessorsK8SattributesFilters
+
+    Attributes
+    ----------
+    byField : [any], optional
+        Only extract Kubernetes attributes for telemetry data coming from pods that match the field selectors.
+        Each entry can have "key", "value", and "op", where "op" is one of "equals", "not-equals", "exists", or "does-not-exist".
+    byLabel : [any], optional
+        Only extract Kubernetes attributes for telemetry data coming from pods that match the label selectors.
+        Each entry can have "key", "value", and "op", where "op" is one of "equals", "not-equals", "exists", or "does-not-exist".
+    byNamespace : str, optional, default is ""
+        Only extract Kubernetes attributes for telemetry data coming from the specified Kubernetes namespace.
+    byNode : str, optional, default is ""
+        Only extract Kubernetes attributes for telemetry data coming from the specified Kubernetes node.
+    ownNode : bool, optional, default is False
+        Only extract Kubernetes attributes for telemetry data coming from the same node as this Alloy instance.
+    """
+    [...str]: any
+    byField?: [any]
+    byLabel?: [any]
+    byNamespace?: str
+    byNode?: str
+    ownNode?: bool
 
 schema ValuesProcessorsK8SattributesPodAssociationItems0:
     r"""
@@ -9169,6 +9206,8 @@ schema ValuesRbac:
 
     Attributes
     ----------
+    clusterRules : [ValuesRbacClusterRulesItems0], optional
+        The rules to create for the ClusterRole objects.
     create : bool, optional, default is True
         Whether to create RBAC resources for Alloy.
     createClusterRoles : bool, optional, default is True
@@ -9183,16 +9222,57 @@ schema ValuesRbac:
         - apiGroups: ["monitoring.coreos.com"]
           resources: ["prometheuses"]
           verbs: ["list", "watch"]
+    namespaces : [any], optional
+        If set, only create Roles and RoleBindings in the given list of namespaces, rather than ClusterRoles and
+        ClusterRoleBindings. If not using ClusterRoles, bear in mind that Alloy will not be able to discover cluster-scoped
+        resources such as Nodes.
+    rules : [ValuesRbacRulesItems0], optional
+        The rules to create for the ClusterRole or Role objects.
     useClusterRole : bool, optional, default is True
         If set to false - Run without Cluteradmin privs needed - ONLY works if namespace is also set (if useExistingRole is set this name is used as ClusterRole or Role to bind to)
     """
     [...str]: any
+    clusterRules?: [ValuesRbacClusterRulesItems0]
     create?: bool
     createClusterRoles?: bool
     enabled?: bool
     extraClusterRoleRules?: [any]
     extraRules?: [any]
+    namespaces?: [any]
+    rules?: [ValuesRbacRulesItems0]
     useClusterRole?: bool
+
+schema ValuesRbacClusterRulesItems0:
+    r"""
+    ValuesRbacClusterRulesItems0
+
+    Attributes
+    ----------
+    apiGroups : [str], optional
+    nonResourceURLs : [str], optional
+    resources : [str], optional
+    verbs : [str], optional
+    """
+    [...str]: any
+    apiGroups?: [str]
+    nonResourceURLs?: [str]
+    resources?: [str]
+    verbs?: [str]
+
+schema ValuesRbacRulesItems0:
+    r"""
+    ValuesRbacRulesItems0
+
+    Attributes
+    ----------
+    apiGroups : [str], optional
+    resources : [str], optional
+    verbs : [str], optional
+    """
+    [...str]: any
+    apiGroups?: [str]
+    resources?: [str]
+    verbs?: [str]
 
 schema ValuesReadinessProbe:
     r"""

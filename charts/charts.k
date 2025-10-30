@@ -142,7 +142,7 @@ charts: helm.Charts = {
     k8s_monitoring: {
         chart = "k8s-monitoring"
         repoURL = "https://grafana.github.io/helm-charts"
-        targetRevision = "3.5.5"
+        targetRevision = "3.5.6"
         schemaGenerator = "VALUE-INFERENCE"
         crdGenerator = "TEMPLATE"
         values: {
