@@ -23,7 +23,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/home-operations/sonarr
-          tag: "4.0.15.2940"
+          tag: "4.0.16.2942"
         env:
           SONARR__SERVER__PORT: { value: &port 8989 }
           SONARR__APP__INSTANCENAME: { value: Sonarr }
