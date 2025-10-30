@@ -4691,7 +4691,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "1.6.33-alpine",
+              "default": "1.6.39-alpine",
               "description": "Memcached Docker image tag",
               "required": [],
               "title": "tag",
@@ -4937,7 +4937,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v0.14.4",
+              "default": "v0.15.3",
               "description": "Memcached Exporter Docker image tag",
               "required": [],
               "title": "tag",

@@ -3694,7 +3694,7 @@ schema ValuesMemcachedExporterImage:
         The Docker registry for the Memcached Exporter image. Overrides `global.image.registry`
     repository : str, optional, default is "prom/memcached-exporter"
         Memcached Exporter Docker image repository
-    tag : str, optional, default is "v0.14.4"
+    tag : str, optional, default is "v0.15.3"
         Memcached Exporter Docker image tag
     """
     [...str]: any
@@ -3724,7 +3724,7 @@ schema ValuesMemcachedImage:
         The Docker registry for the Memcached image. Overrides `global.image.registry`
     repository : str, optional, default is "memcached"
         Memcached Docker image repository
-    tag : str, optional, default is "1.6.33-alpine"
+    tag : str, optional, default is "1.6.39-alpine"
         Memcached Docker image tag
     """
     [...str]: any
