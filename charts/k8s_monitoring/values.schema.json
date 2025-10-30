@@ -435,6 +435,13 @@
               "title": "podLabels",
               "type": "object"
             },
+            "resources": {
+              "additionalProperties": true,
+              "description": "Set the resource field for the Helm Hook that ensures that Alloy instances are removed during uninstall.",
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            },
             "tolerations": {
               "description": "Tolerations to apply to the Helm Hook that ensures that Alloy instances are removed during uninstall.",
               "items": {
@@ -10266,6 +10273,53 @@
               "title": "annotations",
               "type": "array"
             },
+            "filters": {
+              "additionalProperties": true,
+              "properties": {
+                "byField": {
+                  "description": "Only extract Kubernetes attributes for telemetry data coming from pods that match the field selectors.\nEach entry can have \"key\", \"value\", and \"op\", where \"op\" is one of \"equals\", \"not-equals\", \"exists\", or \"does-not-exist\".",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "byField",
+                  "type": "array"
+                },
+                "byLabel": {
+                  "description": "Only extract Kubernetes attributes for telemetry data coming from pods that match the label selectors.\nEach entry can have \"key\", \"value\", and \"op\", where \"op\" is one of \"equals\", \"not-equals\", \"exists\", or \"does-not-exist\".",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "byLabel",
+                  "type": "array"
+                },
+                "byNamespace": {
+                  "default": "",
+                  "description": "Only extract Kubernetes attributes for telemetry data coming from the specified Kubernetes namespace.",
+                  "required": [],
+                  "title": "byNamespace",
+                  "type": "string"
+                },
+                "byNode": {
+                  "default": "",
+                  "description": "Only extract Kubernetes attributes for telemetry data coming from the specified Kubernetes node.",
+                  "required": [],
+                  "title": "byNode",
+                  "type": "string"
+                },
+                "ownNode": {
+                  "default": false,
+                  "description": "Only extract Kubernetes attributes for telemetry data coming from the same node as this Alloy instance.",
+                  "required": [],
+                  "title": "ownNode",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "filters",
+              "type": "object"
+            },
             "labels": {
               "description": "Kubernetes labels to extract and add to the attributes of the received telemetry data in the form of a list of\notelcol.processor.k8sattributes extract \u003e label blocks. See the\n[Alloy documentation](https://grafana.com/docs/agent/latest/flow/reference/components/otelcol.processor.k8sattributes/#extract-label-block)\nfor details on how to configure label blocks.",
               "items": {
@@ -11982,6 +12036,55 @@
       "additionalProperties": true,
       "description": "Create cluster role policies",
       "properties": {
+        "clusterRules": {
+          "description": "The rules to create for the ClusterRole objects.",
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "apiGroups": {
+                "items": {
+                  "required": [],
+                  "type": "string"
+                },
+                "required": [],
+                "title": "apiGroups",
+                "type": "array"
+              },
+              "nonResourceURLs": {
+                "items": {
+                  "required": [],
+                  "type": "string"
+                },
+                "required": [],
+                "title": "nonResourceURLs",
+                "type": "array"
+              },
+              "resources": {
+                "items": {
+                  "required": [],
+                  "type": "string"
+                },
+                "required": [],
+                "title": "resources",
+                "type": "array"
+              },
+              "verbs": {
+                "items": {
+                  "required": [],
+                  "type": "string"
+                },
+                "required": [],
+                "title": "verbs",
+                "type": "array"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "required": [],
+          "title": "clusterRules",
+          "type": "array"
+        },
         "create": {
           "default": true,
           "description": "Whether to create RBAC resources for Alloy.",
@@ -12018,6 +12121,55 @@
           },
           "required": [],
           "title": "extraRules",
+          "type": "array"
+        },
+        "namespaces": {
+          "description": "If set, only create Roles and RoleBindings in the given list of namespaces, rather than ClusterRoles and\nClusterRoleBindings. If not using ClusterRoles, bear in mind that Alloy will not be able to discover cluster-scoped\nresources such as Nodes.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "namespaces",
+          "type": "array"
+        },
+        "rules": {
+          "description": "The rules to create for the ClusterRole or Role objects.",
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "apiGroups": {
+                "items": {
+                  "required": [],
+                  "type": "string"
+                },
+                "required": [],
+                "title": "apiGroups",
+                "type": "array"
+              },
+              "resources": {
+                "items": {
+                  "required": [],
+                  "type": "string"
+                },
+                "required": [],
+                "title": "resources",
+                "type": "array"
+              },
+              "verbs": {
+                "items": {
+                  "required": [],
+                  "type": "string"
+                },
+                "required": [],
+                "title": "verbs",
+                "type": "array"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "required": [],
+          "title": "rules",
           "type": "array"
         },
         "useClusterRole": {
