@@ -38,11 +38,30 @@
       "title": "commonLabels",
       "type": "object"
     },
+    "cronJobAnnotations": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "cronJobAnnotations",
+      "type": "object"
+    },
     "cronJobApiVersion": {
       "default": "batch/v1",
       "required": [],
       "title": "cronJobApiVersion",
       "type": "string"
+    },
+    "cronJobLabels": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "cronJobLabels",
+      "type": "object"
+    },
+    "deploymentAnnotations": {
+      "additionalProperties": true,
+      "description": "Annotations that'll be applied to deployment",
+      "required": [],
+      "title": "deploymentAnnotations",
+      "type": "object"
     },
     "deschedulerPolicy": {
       "additionalProperties": true,
@@ -66,18 +85,6 @@
                     "args": {
                       "additionalProperties": true,
                       "properties": {
-                        "evictLocalStoragePods": {
-                          "default": true,
-                          "required": [],
-                          "title": "evictLocalStoragePods",
-                          "type": "boolean"
-                        },
-                        "ignorePvcPods": {
-                          "default": true,
-                          "required": [],
-                          "title": "ignorePvcPods",
-                          "type": "boolean"
-                        },
                         "includingInitContainers": {
                           "default": true,
                           "required": [],
@@ -92,6 +99,32 @@
                           "required": [],
                           "title": "nodeAffinityType",
                           "type": "array"
+                        },
+                        "podProtections": {
+                          "additionalProperties": true,
+                          "properties": {
+                            "defaultDisabled": {
+                              "items": {
+                                "required": [],
+                                "type": "string"
+                              },
+                              "required": [],
+                              "title": "defaultDisabled",
+                              "type": "array"
+                            },
+                            "extraEnabled": {
+                              "items": {
+                                "required": [],
+                                "type": "string"
+                              },
+                              "required": [],
+                              "title": "extraEnabled",
+                              "type": "array"
+                            }
+                          },
+                          "required": [],
+                          "title": "podProtections",
+                          "type": "object"
                         },
                         "podRestartThreshold": {
                           "default": 100,
@@ -291,6 +324,18 @@
       "title": "imagePullSecrets",
       "type": "null"
     },
+    "jobAnnotations": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "jobAnnotations",
+      "type": "object"
+    },
+    "jobLabels": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "jobLabels",
+      "type": "object"
+    },
     "kind": {
       "default": "CronJob",
       "description": "CronJob or Deployment",
@@ -341,15 +386,21 @@
           "type": "object"
         },
         "initialDelaySeconds": {
-          "default": 3,
+          "default": 5,
           "required": [],
           "title": "initialDelaySeconds",
           "type": "integer"
         },
         "periodSeconds": {
-          "default": 10,
+          "default": 20,
           "required": [],
           "title": "periodSeconds",
+          "type": "integer"
+        },
+        "timeoutSeconds": {
+          "default": 5,
+          "required": [],
+          "title": "timeoutSeconds",
           "type": "integer"
         }
       },

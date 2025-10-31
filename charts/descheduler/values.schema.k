@@ -14,7 +14,11 @@ schema Values:
     command : [str], optional
     commonLabels : ValuesCommonLabels, optional
         labels that'll be applied to all resources
+    cronJobAnnotations : ValuesCronJobAnnotations, optional
     cronJobApiVersion : str, optional, default is "batch/v1"
+    cronJobLabels : ValuesCronJobLabels, optional
+    deploymentAnnotations : ValuesDeploymentAnnotations, optional
+        Annotations that'll be applied to deployment
     deschedulerPolicy : ValuesDeschedulerPolicy, optional
         deschedulerPolicy contains the policies the descheduler will execute.
     deschedulerPolicyAPIVersion : str, optional, default is "descheduler/v1alpha2"
@@ -27,6 +31,8 @@ schema Values:
         Global values are values that can be accessed from any chart or subchart by exactly the same name.
     image : ValuesImage, optional
     imagePullSecrets : any, optional, default is ""
+    jobAnnotations : ValuesJobAnnotations, optional
+    jobLabels : ValuesJobLabels, optional
     kind : str, optional, default is "CronJob"
         CronJob or Deployment
     leaderElection : ValuesLeaderElection, optional
@@ -90,7 +96,10 @@ schema Values:
     cmdOptions?: ValuesCmdOptions
     command?: [str]
     commonLabels?: ValuesCommonLabels
+    cronJobAnnotations?: ValuesCronJobAnnotations
     cronJobApiVersion?: str
+    cronJobLabels?: ValuesCronJobLabels
+    deploymentAnnotations?: ValuesDeploymentAnnotations
     deschedulerPolicy?: ValuesDeschedulerPolicy
     deschedulerPolicyAPIVersion?: str
     deschedulingInterval?: str
@@ -99,6 +108,8 @@ schema Values:
     global?: ValuesGlobal
     image?: ValuesImage
     imagePullSecrets?: any
+    jobAnnotations?: ValuesJobAnnotations
+    jobLabels?: ValuesJobLabels
     kind?: str
     leaderElection?: ValuesLeaderElection
     livenessProbe?: ValuesLivenessProbe
@@ -142,6 +153,24 @@ schema ValuesCmdOptions:
 schema ValuesCommonLabels:
     r"""
     labels that'll be applied to all resources
+    """
+    [...str]: any
+
+schema ValuesCronJobAnnotations:
+    r"""
+    ValuesCronJobAnnotations
+    """
+    [...str]: any
+
+schema ValuesCronJobLabels:
+    r"""
+    ValuesCronJobLabels
+    """
+    [...str]: any
+
+schema ValuesDeploymentAnnotations:
+    r"""
+    Annotations that'll be applied to deployment
     """
     [...str]: any
 
@@ -202,22 +231,33 @@ schema ValuesDeschedulerPolicyProfilesItems0PluginConfigItems0Args:
 
     Attributes
     ----------
-    evictLocalStoragePods : bool, optional, default is True
-    ignorePvcPods : bool, optional, default is True
     includingInitContainers : bool, optional, default is True
     nodeAffinityType : [str], optional
+    podProtections : ValuesDeschedulerPolicyProfilesItems0PluginConfigItems0ArgsPodProtections, optional
     podRestartThreshold : int, optional, default is 100
     targetThresholds : ValuesDeschedulerPolicyProfilesItems0PluginConfigItems0ArgsTargetThresholds, optional
     thresholds : ValuesDeschedulerPolicyProfilesItems0PluginConfigItems0ArgsThresholds, optional
     """
     [...str]: any
-    evictLocalStoragePods?: bool
-    ignorePvcPods?: bool
     includingInitContainers?: bool
     nodeAffinityType?: [str]
+    podProtections?: ValuesDeschedulerPolicyProfilesItems0PluginConfigItems0ArgsPodProtections
     podRestartThreshold?: int
     targetThresholds?: ValuesDeschedulerPolicyProfilesItems0PluginConfigItems0ArgsTargetThresholds
     thresholds?: ValuesDeschedulerPolicyProfilesItems0PluginConfigItems0ArgsThresholds
+
+schema ValuesDeschedulerPolicyProfilesItems0PluginConfigItems0ArgsPodProtections:
+    r"""
+    ValuesDeschedulerPolicyProfilesItems0PluginConfigItems0ArgsPodProtections
+
+    Attributes
+    ----------
+    defaultDisabled : [str], optional
+    extraEnabled : [str], optional
+    """
+    [...str]: any
+    defaultDisabled?: [str]
+    extraEnabled?: [str]
 
 schema ValuesDeschedulerPolicyProfilesItems0PluginConfigItems0ArgsTargetThresholds:
     r"""
@@ -312,6 +352,18 @@ schema ValuesImage:
     repository?: str
     tag?: str
 
+schema ValuesJobAnnotations:
+    r"""
+    ValuesJobAnnotations
+    """
+    [...str]: any
+
+schema ValuesJobLabels:
+    r"""
+    ValuesJobLabels
+    """
+    [...str]: any
+
 schema ValuesLeaderElection:
     r"""
     Specifies whether Leader Election resources should be created
@@ -328,14 +380,16 @@ schema ValuesLivenessProbe:
     ----------
     failureThreshold : int, optional, default is 3
     httpGet : ValuesLivenessProbeHttpGet, optional
-    initialDelaySeconds : int, optional, default is 3
-    periodSeconds : int, optional, default is 10
+    initialDelaySeconds : int, optional, default is 5
+    periodSeconds : int, optional, default is 20
+    timeoutSeconds : int, optional, default is 5
     """
     [...str]: any
     failureThreshold?: int
     httpGet?: ValuesLivenessProbeHttpGet
     initialDelaySeconds?: int
     periodSeconds?: int
+    timeoutSeconds?: int
 
 schema ValuesLivenessProbeHttpGet:
     r"""
