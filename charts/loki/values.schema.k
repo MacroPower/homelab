@@ -2859,14 +2859,6 @@ schema ValuesCompactorPersistence:
         Enable StatefulSetAutoDeletePVC feature
     enabled : bool, optional, default is False
         Enable creating PVCs for the compactor
-    size : str, optional, default is "10Gi"
-        Size of persistent disk
-    storageClass : any, optional, default is "null"
-        Storage class to be used.
-        If defined, storageClassName: <storageClass>.
-        If set to "-", storageClassName: "", which disables dynamic provisioning.
-        If empty or set to null, no storageClassName spec is
-        set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).
     whenDeleted : str, optional, default is "Retain"
     whenScaled : str, optional, default is "Retain"
     """
@@ -2874,8 +2866,6 @@ schema ValuesCompactorPersistence:
     claims?: [ValuesCompactorPersistenceClaimsItems0]
     enableStatefulSetAutoDeletePVC?: bool
     enabled?: bool
-    size?: str
-    storageClass?: any
     whenDeleted?: str
     whenScaled?: str
 
@@ -3509,8 +3499,8 @@ schema ValuesEnterprise:
         Note: Uses enterprise.adminToken.secret value to mount the admin token used to call the admin api.
     useExternalLicense : bool, optional, default is False
         Set to true when providing an external license
-    version : str, optional, default is "3.5.2"
-        Default verion of GEL to deploy
+    version : str, optional, default is "3.5.4"
+        Default version of GEL to deploy
     """
     [...str]: any
     adminApi?: ValuesEnterpriseAdminApi
@@ -3800,7 +3790,7 @@ schema ValuesEnterpriseImage:
         The Docker registry
     repository : str, optional, default is "grafana/enterprise-logs"
         Docker image repository
-    tag : str, optional, default is "3.5.7"
+    tag : str, optional, default is "3.5.4"
         Docker image tag
     """
     [...str]: any
@@ -4584,6 +4574,8 @@ schema ValuesGlobal:
         Common volumes to add to all pods directly managed by this chart.
         scope: admin-api, backend, bloom-builder, bloom-gateway, bloom-planner, compactor, distributor, index-gateway, ingester, overrides-exporter, pattern-ingester, querier, query-frontend, query-scheduler, read, ruler, write.
     image : ValuesGlobalImage, optional
+    imageRegistry : any, optional, default is "null"
+        Overrides the Docker registry globally for all images (standard format)
     priorityClassName : any, optional, default is "null"
         Overrides the priorityClassName for all pods
     """
@@ -4598,6 +4590,7 @@ schema ValuesGlobal:
     extraVolumeMounts?: [any]
     extraVolumes?: [any]
     image?: ValuesGlobalImage
+    imageRegistry?: any
     priorityClassName?: any
 
 schema ValuesGlobalCommonLabels:
@@ -4613,7 +4606,7 @@ schema ValuesGlobalImage:
     Attributes
     ----------
     registry : any, optional, default is "null"
-        Overrides the Docker registry globally for all images
+        Overrides the Docker registry globally for all images (deprecated, use global.imageRegistry)
     """
     [...str]: any
     registry?: any
@@ -4680,6 +4673,8 @@ schema ValuesIndexGateway:
         Init containers to add to the index-gateway pods
     joinMemberlist : bool, optional, default is True
         Whether the index gateway should join the memberlist hashring
+    lifecycle : ValuesIndexGatewayLifecycle, optional
+        Lifecycle for the index-gateway container
     maxUnavailable : any, optional, default is "null"
         Pod Disruption Budget maxUnavailable
     nodeSelector : ValuesIndexGatewayNodeSelector, optional
@@ -4726,6 +4721,7 @@ schema ValuesIndexGateway:
     image?: ValuesIndexGatewayImage
     initContainers?: [any]
     joinMemberlist?: bool
+    lifecycle?: ValuesIndexGatewayLifecycle
     maxUnavailable?: any
     nodeSelector?: ValuesIndexGatewayNodeSelector
     persistence?: ValuesIndexGatewayPersistence
@@ -4838,6 +4834,12 @@ schema ValuesIndexGatewayImage:
     registry?: any
     repository?: any
     tag?: any
+
+schema ValuesIndexGatewayLifecycle:
+    r"""
+    Lifecycle for the index-gateway container
+    """
+    [...str]: any
 
 schema ValuesIndexGatewayNodeSelector:
     r"""
@@ -6233,7 +6235,7 @@ schema ValuesLokiImage:
         The Docker registry
     repository : str, optional, default is "grafana/loki"
         Docker image repository
-    tag : str, optional, default is "3.5.5"
+    tag : str, optional, default is "3.5.7"
         Overrides the image tag whose default is the chart's appVersion
     """
     [...str]: any
@@ -6387,13 +6389,19 @@ schema ValuesLokiReadinessProbe:
 
     Attributes
     ----------
+    failureThreshold : int, optional, default is 3
     httpGet : ValuesLokiReadinessProbeHttpGet, optional
-    initialDelaySeconds : int, optional, default is 30
+    initialDelaySeconds : int, optional, default is 15
+    periodSeconds : int, optional, default is 10
+    successThreshold : int, optional, default is 1
     timeoutSeconds : int, optional, default is 1
     """
     [...str]: any
+    failureThreshold?: int
     httpGet?: ValuesLokiReadinessProbeHttpGet
     initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
     timeoutSeconds?: int
 
 schema ValuesLokiReadinessProbeHttpGet:
@@ -7986,17 +7994,18 @@ schema ValuesMonitoringRules:
         Include alerting rules
     annotations : ValuesMonitoringRulesAnnotations, optional
         Additional annotations for the rules PrometheusRule resource
+    configs : ValuesMonitoringRulesConfigs, optional
     disabled : ValuesMonitoringRulesDisabled, optional
         Specify which individual alerts should be disabled
         Instead of turning off each alert one by one, set the .monitoring.rules.alerting value to false instead.
         If you disable all the alerts and keep .monitoring.rules.alerting set to true, the chart will fail to render.
+
+        DEPRECATED: use monitoring.rules.configs.*.enabled instead
     enabled : bool, optional, default is False
         If enabled, create PrometheusRule resource with Loki recording rules
     labels : ValuesMonitoringRulesLabels, optional
         Additional labels for the rules PrometheusRule resource
     namespace : any, optional, default is "null"
-         LokiRequestErrors: true
-         LokiRequestPanics: true
         Alternative namespace to create PrometheusRule resources in
     """
     [...str]: any
@@ -8005,6 +8014,7 @@ schema ValuesMonitoringRules:
     additionalRuleLabels?: ValuesMonitoringRulesAdditionalRuleLabels
     alerting?: bool
     annotations?: ValuesMonitoringRulesAnnotations
+    configs?: ValuesMonitoringRulesConfigs
     disabled?: ValuesMonitoringRulesDisabled
     enabled?: bool
     labels?: ValuesMonitoringRulesLabels
@@ -8032,11 +8042,119 @@ schema ValuesMonitoringRulesAnnotations:
     """
     [...str]: any
 
+schema ValuesMonitoringRulesConfigs:
+    r"""
+    ValuesMonitoringRulesConfigs
+
+    Attributes
+    ----------
+    LokiCanaryLatency : ValuesMonitoringRulesConfigsLokiCanaryLatency, optional
+    LokiRequestErrors : ValuesMonitoringRulesConfigsLokiRequestErrors, optional
+    LokiRequestLatency : ValuesMonitoringRulesConfigsLokiRequestLatency, optional
+    LokiRequestPanics : ValuesMonitoringRulesConfigsLokiRequestPanics, optional
+    LokiTooManyCompactorsRunning : ValuesMonitoringRulesConfigsLokiTooManyCompactorsRunning, optional
+    """
+    [...str]: any
+    LokiCanaryLatency?: ValuesMonitoringRulesConfigsLokiCanaryLatency
+    LokiRequestErrors?: ValuesMonitoringRulesConfigsLokiRequestErrors
+    LokiRequestLatency?: ValuesMonitoringRulesConfigsLokiRequestLatency
+    LokiRequestPanics?: ValuesMonitoringRulesConfigsLokiRequestPanics
+    LokiTooManyCompactorsRunning?: ValuesMonitoringRulesConfigsLokiTooManyCompactorsRunning
+
+schema ValuesMonitoringRulesConfigsLokiCanaryLatency:
+    r"""
+    ValuesMonitoringRulesConfigsLokiCanaryLatency
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    $for : str, optional, default is "15m"
+    lookbackPeriod : str, optional, default is "5m"
+    severity : str, optional, default is "warning"
+    threshold : int, optional, default is 5
+    """
+    [...str]: any
+    enabled?: bool
+    $for?: str
+    lookbackPeriod?: str
+    severity?: str
+    threshold?: int
+
+schema ValuesMonitoringRulesConfigsLokiRequestErrors:
+    r"""
+    ValuesMonitoringRulesConfigsLokiRequestErrors
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    $for : str, optional, default is "15m"
+    lookbackPeriod : str, optional, default is "2m"
+    severity : str, optional, default is "critical"
+    threshold : int, optional, default is 10
+    """
+    [...str]: any
+    enabled?: bool
+    $for?: str
+    lookbackPeriod?: str
+    severity?: str
+    threshold?: int
+
+schema ValuesMonitoringRulesConfigsLokiRequestLatency:
+    r"""
+    ValuesMonitoringRulesConfigsLokiRequestLatency
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    $for : str, optional, default is "15m"
+    severity : str, optional, default is "critical"
+    threshold : int, optional, default is 1
+    """
+    [...str]: any
+    enabled?: bool
+    $for?: str
+    severity?: str
+    threshold?: int
+
+schema ValuesMonitoringRulesConfigsLokiRequestPanics:
+    r"""
+    ValuesMonitoringRulesConfigsLokiRequestPanics
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    lookbackPeriod : str, optional, default is "10m"
+    severity : str, optional, default is "critical"
+    threshold : int, optional, default is 0
+    """
+    [...str]: any
+    enabled?: bool
+    lookbackPeriod?: str
+    severity?: str
+    threshold?: int
+
+schema ValuesMonitoringRulesConfigsLokiTooManyCompactorsRunning:
+    r"""
+    ValuesMonitoringRulesConfigsLokiTooManyCompactorsRunning
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    $for : str, optional, default is "5m"
+    severity : str, optional, default is "warning"
+    """
+    [...str]: any
+    enabled?: bool
+    $for?: str
+    severity?: str
+
 schema ValuesMonitoringRulesDisabled:
     r"""
     Specify which individual alerts should be disabled
     Instead of turning off each alert one by one, set the .monitoring.rules.alerting value to false instead.
     If you disable all the alerts and keep .monitoring.rules.alerting set to true, the chart will fail to render.
+
+    DEPRECATED: use monitoring.rules.configs.*.enabled instead
     """
     [...str]: any
 

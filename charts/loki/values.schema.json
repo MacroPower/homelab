@@ -3118,20 +3118,6 @@
               "title": "enabled",
               "type": "boolean"
             },
-            "size": {
-              "default": "10Gi",
-              "description": "Size of persistent disk",
-              "required": [],
-              "title": "size",
-              "type": "string"
-            },
-            "storageClass": {
-              "default": "null",
-              "description": "Storage class to be used.\nIf defined, storageClassName: \u003cstorageClass\u003e.\nIf set to \"-\", storageClassName: \"\", which disables dynamic provisioning.\nIf empty or set to null, no storageClassName spec is\nset, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).",
-              "required": [],
-              "title": "storageClass",
-              "type": "null"
-            },
             "whenDeleted": {
               "default": "Retain",
               "required": [],
@@ -4076,7 +4062,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "3.5.7",
+              "default": "3.5.4",
               "description": "Docker image tag",
               "required": [],
               "title": "tag",
@@ -4318,8 +4304,8 @@
           "type": "boolean"
         },
         "version": {
-          "default": "3.5.2",
-          "description": "Default verion of GEL to deploy",
+          "default": "3.5.4",
+          "description": "Default version of GEL to deploy",
           "required": [],
           "title": "version",
           "type": "string"
@@ -5637,7 +5623,7 @@
           "properties": {
             "registry": {
               "default": "null",
-              "description": "Overrides the Docker registry globally for all images",
+              "description": "Overrides the Docker registry globally for all images (deprecated, use global.imageRegistry)",
               "required": [],
               "title": "registry",
               "type": "null"
@@ -5646,6 +5632,13 @@
           "required": [],
           "title": "image",
           "type": "object"
+        },
+        "imageRegistry": {
+          "default": "null",
+          "description": "Overrides the Docker registry globally for all images (standard format)",
+          "required": [],
+          "title": "imageRegistry",
+          "type": "null"
         },
         "priorityClassName": {
           "default": "null",
@@ -5939,6 +5932,13 @@
           "required": [],
           "title": "joinMemberlist",
           "type": "boolean"
+        },
+        "lifecycle": {
+          "additionalProperties": true,
+          "description": "Lifecycle for the index-gateway container",
+          "required": [],
+          "title": "lifecycle",
+          "type": "object"
         },
         "maxUnavailable": {
           "default": "null",
@@ -7316,7 +7316,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "3.5.5",
+              "default": "3.5.7",
               "description": "Overrides the image tag whose default is the chart's appVersion",
               "required": [],
               "title": "tag",
@@ -7536,6 +7536,12 @@
           "additionalProperties": true,
           "description": "Configures the readiness probe for all of the Loki pods",
           "properties": {
+            "failureThreshold": {
+              "default": 3,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
             "httpGet": {
               "additionalProperties": true,
               "properties": {
@@ -7557,9 +7563,21 @@
               "type": "object"
             },
             "initialDelaySeconds": {
-              "default": 30,
+              "default": 15,
               "required": [],
               "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
               "type": "integer"
             },
             "timeoutSeconds": {
@@ -9886,9 +9904,183 @@
               "title": "annotations",
               "type": "object"
             },
+            "configs": {
+              "additionalProperties": true,
+              "properties": {
+                "LokiCanaryLatency": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "enabled": {
+                      "default": true,
+                      "required": [],
+                      "title": "enabled",
+                      "type": "boolean"
+                    },
+                    "for": {
+                      "default": "15m",
+                      "required": [],
+                      "title": "for",
+                      "type": "string"
+                    },
+                    "lookbackPeriod": {
+                      "default": "5m",
+                      "required": [],
+                      "title": "lookbackPeriod",
+                      "type": "string"
+                    },
+                    "severity": {
+                      "default": "warning",
+                      "required": [],
+                      "title": "severity",
+                      "type": "string"
+                    },
+                    "threshold": {
+                      "default": 5,
+                      "required": [],
+                      "title": "threshold",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "LokiCanaryLatency",
+                  "type": "object"
+                },
+                "LokiRequestErrors": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "enabled": {
+                      "default": true,
+                      "required": [],
+                      "title": "enabled",
+                      "type": "boolean"
+                    },
+                    "for": {
+                      "default": "15m",
+                      "required": [],
+                      "title": "for",
+                      "type": "string"
+                    },
+                    "lookbackPeriod": {
+                      "default": "2m",
+                      "required": [],
+                      "title": "lookbackPeriod",
+                      "type": "string"
+                    },
+                    "severity": {
+                      "default": "critical",
+                      "required": [],
+                      "title": "severity",
+                      "type": "string"
+                    },
+                    "threshold": {
+                      "default": 10,
+                      "required": [],
+                      "title": "threshold",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "LokiRequestErrors",
+                  "type": "object"
+                },
+                "LokiRequestLatency": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "enabled": {
+                      "default": true,
+                      "required": [],
+                      "title": "enabled",
+                      "type": "boolean"
+                    },
+                    "for": {
+                      "default": "15m",
+                      "required": [],
+                      "title": "for",
+                      "type": "string"
+                    },
+                    "severity": {
+                      "default": "critical",
+                      "required": [],
+                      "title": "severity",
+                      "type": "string"
+                    },
+                    "threshold": {
+                      "default": 1,
+                      "required": [],
+                      "title": "threshold",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "LokiRequestLatency",
+                  "type": "object"
+                },
+                "LokiRequestPanics": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "enabled": {
+                      "default": true,
+                      "required": [],
+                      "title": "enabled",
+                      "type": "boolean"
+                    },
+                    "lookbackPeriod": {
+                      "default": "10m",
+                      "required": [],
+                      "title": "lookbackPeriod",
+                      "type": "string"
+                    },
+                    "severity": {
+                      "default": "critical",
+                      "required": [],
+                      "title": "severity",
+                      "type": "string"
+                    },
+                    "threshold": {
+                      "default": 0,
+                      "required": [],
+                      "title": "threshold",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "LokiRequestPanics",
+                  "type": "object"
+                },
+                "LokiTooManyCompactorsRunning": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "enabled": {
+                      "default": true,
+                      "required": [],
+                      "title": "enabled",
+                      "type": "boolean"
+                    },
+                    "for": {
+                      "default": "5m",
+                      "required": [],
+                      "title": "for",
+                      "type": "string"
+                    },
+                    "severity": {
+                      "default": "warning",
+                      "required": [],
+                      "title": "severity",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "LokiTooManyCompactorsRunning",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "configs",
+              "type": "object"
+            },
             "disabled": {
               "additionalProperties": true,
-              "description": "Specify which individual alerts should be disabled\nInstead of turning off each alert one by one, set the .monitoring.rules.alerting value to false instead.\nIf you disable all the alerts and keep .monitoring.rules.alerting set to true, the chart will fail to render.",
+              "description": "Specify which individual alerts should be disabled\nInstead of turning off each alert one by one, set the .monitoring.rules.alerting value to false instead.\nIf you disable all the alerts and keep .monitoring.rules.alerting set to true, the chart will fail to render.\n\nDEPRECATED: use monitoring.rules.configs.*.enabled instead",
               "required": [],
               "title": "disabled",
               "type": "object"
@@ -9909,7 +10101,7 @@
             },
             "namespace": {
               "default": "null",
-              "description": " LokiRequestErrors: true\n LokiRequestPanics: true\nAlternative namespace to create PrometheusRule resources in",
+              "description": "Alternative namespace to create PrometheusRule resources in",
               "required": [],
               "title": "namespace",
               "type": "null"
