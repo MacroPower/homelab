@@ -3609,6 +3609,13 @@
           "title": "initContainers",
           "type": "array"
         },
+        "labels": {
+          "additionalProperties": true,
+          "description": "Labels for the ingester StatefulSet",
+          "required": [],
+          "title": "labels",
+          "type": "object"
+        },
         "nodeSelector": {
           "additionalProperties": true,
           "description": "Override Pod Disruption Budget maxUnavailable with a static value\nmaxUnavailable: 1\nNode selector for ingester pods",

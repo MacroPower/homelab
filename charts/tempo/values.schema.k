@@ -2712,6 +2712,8 @@ schema ValuesIngester:
          - ip: 1.2.3.4
            hostnames:
              - domain.tld
+    labels : ValuesIngesterLabels, optional
+        Labels for the ingester StatefulSet
     nodeSelector : ValuesIngesterNodeSelector, optional
         Override Pod Disruption Budget maxUnavailable with a static value
         maxUnavailable: 1
@@ -2758,6 +2760,7 @@ schema ValuesIngester:
     hostAliases?: [any]
     image?: ValuesIngesterImage
     initContainers?: [any]
+    labels?: ValuesIngesterLabels
     nodeSelector?: ValuesIngesterNodeSelector
     persistence?: ValuesIngesterPersistence
     persistentVolumeClaimRetentionPolicy?: ValuesIngesterPersistentVolumeClaimRetentionPolicy
@@ -2875,6 +2878,12 @@ schema ValuesIngesterImage:
     registry?: any
     repository?: any
     tag?: any
+
+schema ValuesIngesterLabels:
+    r"""
+    Labels for the ingester StatefulSet
+    """
+    [...str]: any
 
 schema ValuesIngesterNodeSelector:
     r"""
