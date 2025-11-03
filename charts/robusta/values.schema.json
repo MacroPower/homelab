@@ -16129,7 +16129,7 @@
           "type": "null"
         },
         "imageName": {
-          "default": "robusta-runner:0.29.0",
+          "default": "robusta-runner:0.29.1",
           "required": [],
           "title": "imageName",
           "type": "string"
