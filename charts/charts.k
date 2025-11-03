@@ -128,7 +128,7 @@ charts: helm.Charts = {
     tempo: {
         chart = "tempo-distributed"
         repoURL = "https://grafana.github.io/helm-charts"
-        targetRevision = "1.52.6"
+        targetRevision = "1.52.7"
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
     }
