@@ -13273,7 +13273,7 @@ schema ValuesRunner:
     hardenedFs : bool, optional, default is False
         Enable hardened filesystem security (read-only root filesystem with writable volume mounts)
     image : any, optional, default is "~"
-    imageName : str, optional, default is "robusta-runner:0.29.0"
+    imageName : str, optional, default is "robusta-runner:0.29.1"
     imagePullPolicy : str, optional, default is "IfNotPresent"
     imagePullSecrets : [any], optional
     log_level : str, optional, default is "INFO"
