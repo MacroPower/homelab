@@ -1,4 +1,7 @@
 #!/bin/bash
 
-iptables -I INPUT 1 -p tcp -m tcp --dport 6443 -j ACCEPT -m comment \
-    --comment "iX Custom Rule to allow connection requests to k8s cluster from all external sources"
+docker network create -d macvlan \
+  --subnet=10.10.0.0/16 \
+  --subnet=fc42:0:0:a::/64 \
+  -o parent=bond0 \
+  shared_macvlan

@@ -34,16 +34,19 @@ services:
       - talos_opt:/opt
       - /sys/fs/bpf:/sys/fs/bpf:rshared
       - /mnt/main/containers/talos/var/openebs/local:/var/openebs/local:rshared
+      - /mnt/main/media/video/anime:/var/media/video/anime:rshared
       - /mnt/main/media/video/tv:/var/media/video/tv:rshared
       - /mnt/main/media/video/movies:/var/media/video/movies:rshared
     networks:
-      talos_macvlan:
+      shared_macvlan:
         ipv4_address: "10.10.12.1"
         ipv6_address: "fc42:0:0:a::1201"
         mac_address: "e4:dd:9a:b9:42:89"
     dns:
       - "10.10.0.1"
       - "fc42:0:0:a::"
+    mem_limit: 32g
+    mem_reservation: 8g
 volumes:
   talos_system_state: {}
   talos_var: {}
@@ -52,13 +55,6 @@ volumes:
   talos_libexec: {}
   talos_opt: {}
 networks:
-  talos_macvlan:
-    driver: macvlan
-    driver_opts:
-      parent: bond0
-    ipam:
-      config:
-        - subnet: "10.10.0.0/16"
-          gateway: "10.10.0.1"
-        - subnet: "fc42:0:0:a::/64"
-          gateway: "fc42:0:0:a::"
+  shared_macvlan:
+    external: true
+    name: shared_macvlan

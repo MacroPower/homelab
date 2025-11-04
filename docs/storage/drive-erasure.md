@@ -5,7 +5,7 @@ My "good enough" methods.
 ## HDD
 
 ```sh
-dd bs=1M status=progress if=/dev/zero of=/dev/sdX
+dd bs=1M status=progress oflag=direct conv=fsync if=/dev/zero of=/dev/sdX
 ```
 
 ## SATA SSD
@@ -20,10 +20,14 @@ blkdiscard -v -f /dev/sdX
 ```sh
 apt-get install nvme-cli
 nvme list
-nvme format -s1 /dev/nvme0nX
+nvme format -s2 /dev/nvme0nX
 ```
 
 ## Verification
+
+```sh
+dd if=/dev/sdX bs=1M skip=500000 count=1 | hexdump -C
+```
 
 ```sh
 apt-get install testdisk
