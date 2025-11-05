@@ -2309,7 +2309,7 @@
           "type": "boolean"
         },
         "enabled": {
-          "default": true,
+          "default": false,
           "required": [],
           "title": "enabled",
           "type": "boolean"

@@ -1688,7 +1688,7 @@ schema ValuesS3:
         Suffix of the host name, {bucket}.{domainName}
     enableAuth : bool, optional, default is False
         enable user & permission to s3 (need to inject to all services)
-    enabled : bool, optional, default is True
+    enabled : bool, optional, default is False
     existingConfigSecret : any, optional, default is "null"
         set to the name of an existing kubernetes Secret with the s3 json config file
         should have a secret key called seaweedfs_s3_config with an inline json config
