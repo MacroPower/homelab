@@ -328,7 +328,7 @@ charts: helm.Charts = {
     crossplane: {
         chart = "crossplane"
         repoURL = "https://charts.crossplane.io/stable"
-        targetRevision = "2.0.2"
+        targetRevision = "2.1.0"
         schemaGenerator = "AUTO"
         crdGenerator = "PATH"
         crdPaths = [
