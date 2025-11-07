@@ -204,7 +204,7 @@ charts: helm.Charts = {
     spegel: {
         chart = "spegel"
         repoURL = "oci://ghcr.io/spegel-org/helm-charts/spegel"
-        targetRevision = "0.4.0"
+        targetRevision = "0.5.1"
         schemaGenerator = "AUTO"
     }
     reloader: {

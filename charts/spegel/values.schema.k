@@ -17,6 +17,8 @@ schema Values:
         Domain configured for service domain names.
     commonLabels : ValuesCommonLabels, optional
         Common labels to apply to all rendered resources.
+    daemonsetAnnotations : ValuesDaemonsetAnnotations, optional
+        Annotations to add to the DaemonSet.
     fullnameOverride : str, optional, default is ""
         Overrides the full name of the chart.
     global : ValuesGlobal, optional
@@ -59,6 +61,7 @@ schema Values:
     basicAuthSecretName?: str
     clusterDomain?: str
     commonLabels?: ValuesCommonLabels
+    daemonsetAnnotations?: ValuesDaemonsetAnnotations
     fullnameOverride?: str
     global?: ValuesGlobal
     grafanaDashboard?: ValuesGrafanaDashboard
@@ -94,6 +97,12 @@ schema ValuesCommonLabels:
     """
     [...str]: any
 
+schema ValuesDaemonsetAnnotations:
+    r"""
+    Annotations to add to the DaemonSet.
+    """
+    [...str]: any
+
 schema ValuesGlobal:
     r"""
     Global values are values that can be accessed from any chart or subchart by exactly the same name.
@@ -107,27 +116,61 @@ schema ValuesGrafanaDashboard:
     Attributes
     ----------
     annotations : ValuesGrafanaDashboardAnnotations, optional
-        Annotations that ConfigMaps can have to get configured in Grafana,
-        See: sidecar.dashboards.folderAnnotation for specifying the dashboard folder.
-        https://github.com/grafana/helm-charts/tree/main/charts/grafana
+        grafana_dashboard: "1"
+        Annotations to add to the Sidecar configMap or GrafanaDashboard.
     enabled : bool, optional, default is False
         If true creates a Grafana dashboard.
-    sidecarLabel : str, optional, default is "grafana_dashboard"
-        Label that ConfigMaps should have to be loaded as dashboards.
-    sidecarLabelValue : str, optional, default is "1"
-        Label value that ConfigMaps should have to be loaded as dashboards.
+    grafanaOperator : ValuesGrafanaDashboardGrafanaOperator, optional
+        grafana_folder: "Spegel"
+    labels : ValuesGrafanaDashboardLabels, optional
+        Labels to add to the Sidecar configMap or GrafanaDashboard.
+    mode : str, optional, default is "Sidecar"
+        Mode for Grafana dashboard creation. Valid values are `Sidecar` and `GrafanaOperator`.
     """
     [...str]: any
     annotations?: ValuesGrafanaDashboardAnnotations
     enabled?: bool
-    sidecarLabel?: str
-    sidecarLabelValue?: str
+    grafanaOperator?: ValuesGrafanaDashboardGrafanaOperator
+    labels?: ValuesGrafanaDashboardLabels
+    mode?: str
 
 schema ValuesGrafanaDashboardAnnotations:
     r"""
-    Annotations that ConfigMaps can have to get configured in Grafana,
-    See: sidecar.dashboards.folderAnnotation for specifying the dashboard folder.
-    https://github.com/grafana/helm-charts/tree/main/charts/grafana
+    grafana_dashboard: "1"
+    Annotations to add to the Sidecar configMap or GrafanaDashboard.
+    """
+    [...str]: any
+
+schema ValuesGrafanaDashboardGrafanaOperator:
+    r"""
+    grafana_folder: "Spegel"
+
+    Attributes
+    ----------
+    allowCrossNamespaceImport : bool, optional, default is True
+        If true allows for a Grafana in any namespace to access this GrafanaDashboard.
+    folder : str, optional, default is ""
+        Folder to create the dashboard in.
+    matchLabels : ValuesGrafanaDashboardGrafanaOperatorMatchLabels, optional
+        Selected labels for Grafana instance.
+    resyncPeriod : str, optional, default is "10m"
+        Resync period for the Grafana operator to check for updates to the dashboard.
+    """
+    [...str]: any
+    allowCrossNamespaceImport?: bool
+    folder?: str
+    matchLabels?: ValuesGrafanaDashboardGrafanaOperatorMatchLabels
+    resyncPeriod?: str
+
+schema ValuesGrafanaDashboardGrafanaOperatorMatchLabels:
+    r"""
+    Selected labels for Grafana instance.
+    """
+    [...str]: any
+
+schema ValuesGrafanaDashboardLabels:
+    r"""
+    Labels to add to the Sidecar configMap or GrafanaDashboard.
     """
     [...str]: any
 
@@ -137,7 +180,7 @@ schema ValuesImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:a86089ae74c4f9c98ec86c366d196f7a03044c38af09e6582b0661d42a324226"
+    digest : str, optional, default is "sha256:44548375366edbc8ffaa04e9f0087b939de45aaddad4493fb8b7216d3a8ad572"
         Image digest.
     pullPolicy : str, optional, default is "IfNotPresent"
         Image Pull Policy.
@@ -159,7 +202,7 @@ schema ValuesLivenessProbe:
     Attributes
     ----------
     enabled : bool, optional, default is False
-        When enabled a liveness probe will be added to the registry. 
+        When enabled a liveness probe will be added to the registry.
     """
     [...str]: any
     enabled?: bool
@@ -385,6 +428,9 @@ schema ValuesServiceRegistry:
         Port to expose the registry via the service.
     topologyAwareHintsEnabled : bool, optional, default is True
         If true adds topology aware hints annotation to node port service.
+    usePreferSameNodeTrafficDistribution : bool, optional, default is False
+        Use PreferSameNode traffic distribution on the node port service
+        instead of using an additional mirror registry on a container host port.
     """
     [...str]: any
     annotations?: ValuesServiceRegistryAnnotations
@@ -393,6 +439,7 @@ schema ValuesServiceRegistry:
     nodePort?: int
     port?: int
     topologyAwareHintsEnabled?: bool
+    usePreferSameNodeTrafficDistribution?: bool
 
 schema ValuesServiceRegistryAnnotations:
     r"""

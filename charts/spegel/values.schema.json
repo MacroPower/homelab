@@ -30,6 +30,13 @@
       "title": "commonLabels",
       "type": "object"
     },
+    "daemonsetAnnotations": {
+      "additionalProperties": true,
+      "description": "Annotations to add to the DaemonSet.",
+      "required": [],
+      "title": "daemonsetAnnotations",
+      "type": "object"
+    },
     "fullnameOverride": {
       "default": "",
       "description": "Overrides the full name of the chart.",
@@ -49,7 +56,7 @@
       "properties": {
         "annotations": {
           "additionalProperties": true,
-          "description": "Annotations that ConfigMaps can have to get configured in Grafana,\nSee: sidecar.dashboards.folderAnnotation for specifying the dashboard folder.\nhttps://github.com/grafana/helm-charts/tree/main/charts/grafana",
+          "description": "grafana_dashboard: \"1\"\nAnnotations to add to the Sidecar configMap or GrafanaDashboard.",
           "required": [],
           "title": "annotations",
           "type": "object"
@@ -61,18 +68,55 @@
           "title": "enabled",
           "type": "boolean"
         },
-        "sidecarLabel": {
-          "default": "grafana_dashboard",
-          "description": "Label that ConfigMaps should have to be loaded as dashboards.",
+        "grafanaOperator": {
+          "additionalProperties": true,
+          "description": "grafana_folder: \"Spegel\"",
+          "properties": {
+            "allowCrossNamespaceImport": {
+              "default": true,
+              "description": "If true allows for a Grafana in any namespace to access this GrafanaDashboard.",
+              "required": [],
+              "title": "allowCrossNamespaceImport",
+              "type": "boolean"
+            },
+            "folder": {
+              "default": "",
+              "description": "Folder to create the dashboard in.",
+              "required": [],
+              "title": "folder",
+              "type": "string"
+            },
+            "matchLabels": {
+              "additionalProperties": true,
+              "description": "Selected labels for Grafana instance.",
+              "required": [],
+              "title": "matchLabels",
+              "type": "object"
+            },
+            "resyncPeriod": {
+              "default": "10m",
+              "description": "Resync period for the Grafana operator to check for updates to the dashboard.",
+              "required": [],
+              "title": "resyncPeriod",
+              "type": "string"
+            }
+          },
           "required": [],
-          "title": "sidecarLabel",
-          "type": "string"
+          "title": "grafanaOperator",
+          "type": "object"
         },
-        "sidecarLabelValue": {
-          "default": "1",
-          "description": "Label value that ConfigMaps should have to be loaded as dashboards.",
+        "labels": {
+          "additionalProperties": true,
+          "description": "Labels to add to the Sidecar configMap or GrafanaDashboard.",
           "required": [],
-          "title": "sidecarLabelValue",
+          "title": "labels",
+          "type": "object"
+        },
+        "mode": {
+          "default": "Sidecar",
+          "description": "Mode for Grafana dashboard creation. Valid values are `Sidecar` and `GrafanaOperator`.",
+          "required": [],
+          "title": "mode",
           "type": "string"
         }
       },
@@ -84,7 +128,7 @@
       "additionalProperties": true,
       "properties": {
         "digest": {
-          "default": "sha256:a86089ae74c4f9c98ec86c366d196f7a03044c38af09e6582b0661d42a324226",
+          "default": "sha256:44548375366edbc8ffaa04e9f0087b939de45aaddad4493fb8b7216d3a8ad572",
           "description": "Image digest.",
           "required": [],
           "title": "digest",
@@ -130,7 +174,7 @@
       "properties": {
         "enabled": {
           "default": false,
-          "description": "When enabled a liveness probe will be added to the registry. ",
+          "description": "When enabled a liveness probe will be added to the registry.",
           "required": [],
           "title": "enabled",
           "type": "boolean"
@@ -354,6 +398,13 @@
               "description": "If true adds topology aware hints annotation to node port service.",
               "required": [],
               "title": "topologyAwareHintsEnabled",
+              "type": "boolean"
+            },
+            "usePreferSameNodeTrafficDistribution": {
+              "default": false,
+              "description": "Use PreferSameNode traffic distribution on the node port service\ninstead of using an additional mirror registry on a container host port.",
+              "required": [],
+              "title": "usePreferSameNodeTrafficDistribution",
               "type": "boolean"
             }
           },
