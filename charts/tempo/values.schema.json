@@ -922,6 +922,35 @@
           "title": "service",
           "type": "object"
         },
+        "strategy": {
+          "additionalProperties": true,
+          "description": "Strategy of updating pods",
+          "properties": {
+            "rollingUpdate": {
+              "additionalProperties": true,
+              "properties": {
+                "maxSurge": {
+                  "default": 0,
+                  "required": [],
+                  "title": "maxSurge",
+                  "type": "integer"
+                },
+                "maxUnavailable": {
+                  "default": 1,
+                  "required": [],
+                  "title": "maxUnavailable",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "rollingUpdate",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "strategy",
+          "type": "object"
+        },
         "terminationGracePeriodSeconds": {
           "default": 30,
           "description": "Grace period to allow the compactor to shutdown before it is killed",
@@ -3208,7 +3237,7 @@
         },
         "commonLabels": {
           "additionalProperties": true,
-          "description": "Common labels for all object directly managed by this chart.",
+          "description": "Adding common labels to all K8S resources including pods",
           "required": [],
           "title": "commonLabels",
           "type": "object"
@@ -3276,6 +3305,20 @@
           },
           "required": [],
           "title": "image",
+          "type": "object"
+        },
+        "labels": {
+          "additionalProperties": true,
+          "description": "Adding labels to K8S resources (excluding pods)",
+          "required": [],
+          "title": "labels",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "description": "Adding labels to all pods",
+          "required": [],
+          "title": "podLabels",
           "type": "object"
         },
         "priorityClassName": {
@@ -7937,6 +7980,13 @@
           "required": [],
           "title": "imagePullSecrets",
           "type": "array"
+        },
+        "labels": {
+          "additionalProperties": true,
+          "description": "Labels for the service account",
+          "required": [],
+          "title": "labels",
+          "type": "object"
         },
         "name": {
           "default": "null",
