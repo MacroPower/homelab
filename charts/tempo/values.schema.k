@@ -792,6 +792,8 @@ schema ValuesCompactor:
     resources : ValuesCompactorResources, optional
         Resource requests and limits for the compactor
     service : ValuesCompactorService, optional
+    strategy : ValuesCompactorStrategy, optional
+        Strategy of updating pods
     terminationGracePeriodSeconds : int, optional, default is 30
         Grace period to allow the compactor to shutdown before it is killed
     tolerations : [any], optional
@@ -821,6 +823,7 @@ schema ValuesCompactor:
     replicas?: int
     resources?: ValuesCompactorResources
     service?: ValuesCompactorService
+    strategy?: ValuesCompactorStrategy
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
 
@@ -1049,6 +1052,30 @@ schema ValuesCompactorServiceAnnotations:
     Annotations for compactor service
     """
     [...str]: any
+
+schema ValuesCompactorStrategy:
+    r"""
+    Strategy of updating pods
+
+    Attributes
+    ----------
+    rollingUpdate : ValuesCompactorStrategyRollingUpdate, optional
+    """
+    [...str]: any
+    rollingUpdate?: ValuesCompactorStrategyRollingUpdate
+
+schema ValuesCompactorStrategyRollingUpdate:
+    r"""
+    ValuesCompactorStrategyRollingUpdate
+
+    Attributes
+    ----------
+    maxSurge : int, optional, default is 0
+    maxUnavailable : int, optional, default is 1
+    """
+    [...str]: any
+    maxSurge?: int
+    maxUnavailable?: int
 
 schema ValuesConsoleIngress:
     r"""
@@ -2599,7 +2626,7 @@ schema ValuesGlobal:
     clusterDomain : str, optional, default is "cluster.local"
         configures cluster domain ("cluster.local" by default)
     commonLabels : ValuesGlobalCommonLabels, optional
-        Common labels for all object directly managed by this chart.
+        Adding common labels to all K8S resources including pods
     dnsNamespace : str, optional, default is "kube-system"
         configures DNS service namespace
     dnsService : str, optional, default is "kube-dns"
@@ -2614,6 +2641,10 @@ schema ValuesGlobal:
         Common environment variables which come from a ConfigMap or Secret to add to all pods directly managed by this chart.
         scope: admin-api, compactor, distributor, enterprise-federation-frontend, gateway, ingester, memcached, metrics-generator, querier, query-frontend, tokengen
     image : ValuesGlobalImage, optional
+    labels : ValuesGlobalLabels, optional
+        Adding labels to K8S resources (excluding pods)
+    podLabels : ValuesGlobalPodLabels, optional
+        Adding labels to all pods
     priorityClassName : any, optional, default is "null"
         Overrides the priorityClassName for all pods
     storageClass : any, optional, default is "null"
@@ -2628,12 +2659,14 @@ schema ValuesGlobal:
     extraEnv?: [any]
     extraEnvFrom?: [any]
     image?: ValuesGlobalImage
+    labels?: ValuesGlobalLabels
+    podLabels?: ValuesGlobalPodLabels
     priorityClassName?: any
     storageClass?: any
 
 schema ValuesGlobalCommonLabels:
     r"""
-    Common labels for all object directly managed by this chart.
+    Adding common labels to all K8S resources including pods
     """
     [...str]: any
 
@@ -2655,6 +2688,18 @@ schema ValuesGlobalImage:
     [...str]: any
     pullSecrets?: [any]
     registry?: str
+
+schema ValuesGlobalLabels:
+    r"""
+    Adding labels to K8S resources (excluding pods)
+    """
+    [...str]: any
+
+schema ValuesGlobalPodLabels:
+    r"""
+    Adding labels to all pods
+    """
+    [...str]: any
 
 schema ValuesImage:
     r"""
@@ -5929,6 +5974,8 @@ schema ValuesServiceAccount:
         Specifies whether a ServiceAccount should be created
     imagePullSecrets : [any], optional
         Image pull secrets for the service account
+    labels : ValuesServiceAccountLabels, optional
+        Labels for the service account
     name : any, optional, default is "null"
         The name of the ServiceAccount to use.
         If not set and create is true, a name is generated using the fullname template
@@ -5938,11 +5985,18 @@ schema ValuesServiceAccount:
     automountServiceAccountToken?: bool
     create?: bool
     imagePullSecrets?: [any]
+    labels?: ValuesServiceAccountLabels
     name?: any
 
 schema ValuesServiceAccountAnnotations:
     r"""
     Annotations for the service account
+    """
+    [...str]: any
+
+schema ValuesServiceAccountLabels:
+    r"""
+    Labels for the service account
     """
     [...str]: any
 
