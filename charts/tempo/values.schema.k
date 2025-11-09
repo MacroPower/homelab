@@ -13,9 +13,9 @@ schema Values:
         # Update strategy for Deployments
     StatefulSetUpdate : ValuesStatefulSetUpdate, optional
         # Update strategy for StatefulSets
-    additionalAnnotations : [any], optional
+    additionalAnnotations : ValuesAdditionalAnnotations, optional
         # Additional annotations to include with deployment or statefulset
-    additionalLabels : [any], optional
+    additionalLabels : ValuesAdditionalLabels, optional
         # Additional labels to include with deployment or statefulset
     adminApi : ValuesAdminApi, optional
         Settings for the admin_api service providing authentication and authorization service.
@@ -102,6 +102,10 @@ schema Values:
         Environment variables from secrets or configmaps to add to rollout-operator container
     extraObjects : [any], optional
         extraObjects could be utilized to add dynamic manifests via values
+    extraVolumeMounts : [any], optional
+        # Additional volumeMounts to minio container
+    extraVolumes : [any], optional
+        # Additional volumes to minio container
     fullnameOverride : str, optional, default is ""
         # Provide a name to substitute for the full names of resources
         #
@@ -172,6 +176,21 @@ schema Values:
                 - "s3:GetBucketLocation"
                 - "s3:ListBucket"
                 - "s3:ListBucketMultipartUploads"
+        # conditionsexample policy creates all access to example bucket with aws:username="johndoe" and source ip range 10.0.0.0/8 and 192.168.0.0/24 only
+        - name: conditionsexample
+          statements:
+            - resources:
+              - 'arn:aws:s3:::example/*'
+              actions:
+              - 's3:*'
+              conditions:
+                - StringEquals: '"aws:username": "johndoe"'
+                - IpAddress: |
+                    "aws:SourceIp": [
+                      "10.0.0.0/8",
+                      "192.168.0.0/24"
+                    ]
+
         # Additional Annotations for the Kubernetes Job makePolicyJob
     makeUserJob : ValuesMakeUserJob, optional
         # Additional Annotations for the Kubernetes Job makeUserJob
@@ -213,7 +232,7 @@ schema Values:
     oidc : ValuesOidc, optional
         # OpenID Identity Management
         # The following section documents environment variables for enabling external identity management using an OpenID Connect (OIDC)-compatible provider.
-        # See https://docs.min.io/minio/baremetal/security/openid-external-identity-management/external-authentication-with-openid-identity-provider.html#minio-external-identity-management-openid for a tutorial on using these variables.
+        # See https://min.io/docs/minio/linux/operations/external-iam/configure-openid-external-identity-management.html for a tutorial on using these variables.
     overrides : ValuesOverrides, optional
         The standard overrides configuration section. This can include a `defaults` object for applying to all tenants (not to be confused with the `global` property of the same name, which overrides `max_byte_per_trace` for all tenants). For an example on how to enable the metrics generator using the `overrides` object, see the 'Activate metrics generator' section below. Refer to [Standard overrides](https://grafana.com/docs/tempo/latest/configuration/#standard-overrides) for more details.
     per_tenant_overrides : any, optional, default is ""
@@ -266,7 +285,7 @@ schema Values:
     rootUser : str, optional, default is ""
         # Set default rootUser, rootPassword
         # AccessKey and secretKey is generated when not set
-        # Distributed MinIO ref: https://docs.minio.io/docs/distributed-minio-quickstart-guide
+        # Distributed MinIO ref: https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-multi-node-multi-drive.html
         #
     runtimeClassName : str, optional, default is ""
         # Pod runtime class name
@@ -308,7 +327,7 @@ schema Values:
     topologySpreadConstraints : [any], optional
     traces : ValuesTraces, optional
     trustedCertsSecret : str, optional, default is ""
-        # Trusted Certificates Settings for MinIO. Ref: https://docs.minio.io/docs/how-to-secure-access-to-minio-server-with-tls#install-certificates-from-third-party-cas
+        # Trusted Certificates Settings for MinIO. Ref: https://min.io/docs/minio/linux/operations/network-encryption.html#third-party-certificate-authorities
         # Bundle multiple trusted certificates into one secret and pass that here. Ref: https://github.com/minio/minio/tree/master/docs/tls/kubernetes#2-create-kubernetes-secret
         # When using self-signed certificates, remember to include MinIO's own certificate in the bundle with key public.crt.
         # If certSecret is left empty and tls is enabled, this chart installs the public certificate from .Values.tls.certSecret.
@@ -325,8 +344,8 @@ schema Values:
     [...str]: any
     DeploymentUpdate?: ValuesDeploymentUpdate
     StatefulSetUpdate?: ValuesStatefulSetUpdate
-    additionalAnnotations?: [any]
-    additionalLabels?: [any]
+    additionalAnnotations?: ValuesAdditionalAnnotations
+    additionalLabels?: ValuesAdditionalLabels
     adminApi?: ValuesAdminApi
     affinity?: ValuesAffinity
     annotations?: ValuesAnnotations
@@ -359,6 +378,8 @@ schema Values:
     extraEnv?: [any]
     extraEnvFrom?: [any]
     extraObjects?: [any]
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
     fullnameOverride?: str
     gateway?: ValuesGateway
     global?: ValuesGlobal
@@ -432,6 +453,18 @@ schema Values:
     useExternalConfig?: bool
     users?: [ValuesUsersItems0]
     webhooks?: ValuesWebhooks
+
+schema ValuesAdditionalAnnotations:
+    r"""
+    # Additional annotations to include with deployment or statefulset
+    """
+    [...str]: any
+
+schema ValuesAdditionalLabels:
+    r"""
+    # Additional labels to include with deployment or statefulset
+    """
+    [...str]: any
 
 schema ValuesAdminApi:
     r"""
@@ -1148,21 +1181,21 @@ schema ValuesCustomCommandJob:
     Attributes
     ----------
     affinity : ValuesCustomCommandJobAffinity, optional
-    annotations : any, optional, default is ""
+    annotations : ValuesCustomCommandJobAnnotations, optional
     exitCommand : str, optional, default is ""
         Command to run after the main command on exit
     nodeSelector : ValuesCustomCommandJobNodeSelector, optional
-    podAnnotations : any, optional, default is ""
+    podAnnotations : ValuesCustomCommandJobPodAnnotations, optional
     resources : ValuesCustomCommandJobResources, optional
     securityContext : ValuesCustomCommandJobSecurityContext, optional
     tolerations : [any], optional
     """
     [...str]: any
     affinity?: ValuesCustomCommandJobAffinity
-    annotations?: any
+    annotations?: ValuesCustomCommandJobAnnotations
     exitCommand?: str
     nodeSelector?: ValuesCustomCommandJobNodeSelector
-    podAnnotations?: any
+    podAnnotations?: ValuesCustomCommandJobPodAnnotations
     resources?: ValuesCustomCommandJobResources
     securityContext?: ValuesCustomCommandJobSecurityContext
     tolerations?: [any]
@@ -1173,9 +1206,21 @@ schema ValuesCustomCommandJobAffinity:
     """
     [...str]: any
 
+schema ValuesCustomCommandJobAnnotations:
+    r"""
+    ValuesCustomCommandJobAnnotations
+    """
+    [...str]: any
+
 schema ValuesCustomCommandJobNodeSelector:
     r"""
     ValuesCustomCommandJobNodeSelector
+    """
+    [...str]: any
+
+schema ValuesCustomCommandJobPodAnnotations:
+    r"""
+    ValuesCustomCommandJobPodAnnotations
     """
     [...str]: any
 
@@ -3315,21 +3360,25 @@ schema ValuesMakeBucketJob:
     Attributes
     ----------
     affinity : ValuesMakeBucketJobAffinity, optional
-    annotations : any, optional, default is ""
+    annotations : ValuesMakeBucketJobAnnotations, optional
     exitCommand : str, optional, default is ""
         Command to run after the main command on exit
+    extraVolumeMounts : [any], optional
+    extraVolumes : [any], optional
     nodeSelector : ValuesMakeBucketJobNodeSelector, optional
-    podAnnotations : any, optional, default is ""
+    podAnnotations : ValuesMakeBucketJobPodAnnotations, optional
     resources : ValuesMakeBucketJobResources, optional
     securityContext : ValuesMakeBucketJobSecurityContext, optional
     tolerations : [any], optional
     """
     [...str]: any
     affinity?: ValuesMakeBucketJobAffinity
-    annotations?: any
+    annotations?: ValuesMakeBucketJobAnnotations
     exitCommand?: str
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
     nodeSelector?: ValuesMakeBucketJobNodeSelector
-    podAnnotations?: any
+    podAnnotations?: ValuesMakeBucketJobPodAnnotations
     resources?: ValuesMakeBucketJobResources
     securityContext?: ValuesMakeBucketJobSecurityContext
     tolerations?: [any]
@@ -3340,9 +3389,21 @@ schema ValuesMakeBucketJobAffinity:
     """
     [...str]: any
 
+schema ValuesMakeBucketJobAnnotations:
+    r"""
+    ValuesMakeBucketJobAnnotations
+    """
+    [...str]: any
+
 schema ValuesMakeBucketJobNodeSelector:
     r"""
     ValuesMakeBucketJobNodeSelector
+    """
+    [...str]: any
+
+schema ValuesMakeBucketJobPodAnnotations:
+    r"""
+    ValuesMakeBucketJobPodAnnotations
     """
     [...str]: any
 
@@ -3422,26 +3483,45 @@ schema ValuesMakePolicyJob:
             - "s3:GetBucketLocation"
             - "s3:ListBucket"
             - "s3:ListBucketMultipartUploads"
+    # conditionsexample policy creates all access to example bucket with aws:username="johndoe" and source ip range 10.0.0.0/8 and 192.168.0.0/24 only
+    - name: conditionsexample
+      statements:
+        - resources:
+          - 'arn:aws:s3:::example/*'
+          actions:
+          - 's3:*'
+          conditions:
+            - StringEquals: '"aws:username": "johndoe"'
+            - IpAddress: |
+                "aws:SourceIp": [
+                  "10.0.0.0/8",
+                  "192.168.0.0/24"
+                ]
+
     # Additional Annotations for the Kubernetes Job makePolicyJob
 
     Attributes
     ----------
     affinity : ValuesMakePolicyJobAffinity, optional
-    annotations : any, optional, default is ""
+    annotations : ValuesMakePolicyJobAnnotations, optional
     exitCommand : str, optional, default is ""
         Command to run after the main command on exit
+    extraVolumeMounts : [any], optional
+    extraVolumes : [any], optional
     nodeSelector : ValuesMakePolicyJobNodeSelector, optional
-    podAnnotations : any, optional, default is ""
+    podAnnotations : ValuesMakePolicyJobPodAnnotations, optional
     resources : ValuesMakePolicyJobResources, optional
     securityContext : ValuesMakePolicyJobSecurityContext, optional
     tolerations : [any], optional
     """
     [...str]: any
     affinity?: ValuesMakePolicyJobAffinity
-    annotations?: any
+    annotations?: ValuesMakePolicyJobAnnotations
     exitCommand?: str
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
     nodeSelector?: ValuesMakePolicyJobNodeSelector
-    podAnnotations?: any
+    podAnnotations?: ValuesMakePolicyJobPodAnnotations
     resources?: ValuesMakePolicyJobResources
     securityContext?: ValuesMakePolicyJobSecurityContext
     tolerations?: [any]
@@ -3452,9 +3532,21 @@ schema ValuesMakePolicyJobAffinity:
     """
     [...str]: any
 
+schema ValuesMakePolicyJobAnnotations:
+    r"""
+    ValuesMakePolicyJobAnnotations
+    """
+    [...str]: any
+
 schema ValuesMakePolicyJobNodeSelector:
     r"""
     ValuesMakePolicyJobNodeSelector
+    """
+    [...str]: any
+
+schema ValuesMakePolicyJobPodAnnotations:
+    r"""
+    ValuesMakePolicyJobPodAnnotations
     """
     [...str]: any
 
@@ -3504,21 +3596,25 @@ schema ValuesMakeUserJob:
     Attributes
     ----------
     affinity : ValuesMakeUserJobAffinity, optional
-    annotations : any, optional, default is ""
+    annotations : ValuesMakeUserJobAnnotations, optional
     exitCommand : str, optional, default is ""
         Command to run after the main command on exit
+    extraVolumeMounts : [any], optional
+    extraVolumes : [any], optional
     nodeSelector : ValuesMakeUserJobNodeSelector, optional
-    podAnnotations : any, optional, default is ""
+    podAnnotations : ValuesMakeUserJobPodAnnotations, optional
     resources : ValuesMakeUserJobResources, optional
     securityContext : ValuesMakeUserJobSecurityContext, optional
     tolerations : [any], optional
     """
     [...str]: any
     affinity?: ValuesMakeUserJobAffinity
-    annotations?: any
+    annotations?: ValuesMakeUserJobAnnotations
     exitCommand?: str
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
     nodeSelector?: ValuesMakeUserJobNodeSelector
-    podAnnotations?: any
+    podAnnotations?: ValuesMakeUserJobPodAnnotations
     resources?: ValuesMakeUserJobResources
     securityContext?: ValuesMakeUserJobSecurityContext
     tolerations?: [any]
@@ -3529,9 +3625,21 @@ schema ValuesMakeUserJobAffinity:
     """
     [...str]: any
 
+schema ValuesMakeUserJobAnnotations:
+    r"""
+    ValuesMakeUserJobAnnotations
+    """
+    [...str]: any
+
 schema ValuesMakeUserJobNodeSelector:
     r"""
     ValuesMakeUserJobNodeSelector
+    """
+    [...str]: any
+
+schema ValuesMakeUserJobPodAnnotations:
+    r"""
+    ValuesMakeUserJobPodAnnotations
     """
     [...str]: any
 
@@ -3584,7 +3692,7 @@ schema ValuesMcImage:
     ----------
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/minio/mc"
-    tag : str, optional, default is "RELEASE.2022-08-11T00-30-48Z"
+    tag : str, optional, default is "RELEASE.2022-10-20T23-26-33Z"
     """
     [...str]: any
     pullPolicy?: str
@@ -4581,17 +4689,22 @@ schema ValuesMetricsServiceMonitor:
     Attributes
     ----------
     additionalLabels : ValuesMetricsServiceMonitorAdditionalLabels, optional
-    annotations : ValuesMetricsServiceMonitorAnnotations, optional
     enabled : bool, optional, default is False
+    includeNode : bool, optional, default is False
+        scrape each node/pod individually for additional metrics
     public : bool, optional, default is True
     relabelConfigs : ValuesMetricsServiceMonitorRelabelConfigs, optional
+        for node metrics
+    relabelConfigsCluster : ValuesMetricsServiceMonitorRelabelConfigsCluster, optional
+        for cluster metrics
     """
     [...str]: any
     additionalLabels?: ValuesMetricsServiceMonitorAdditionalLabels
-    annotations?: ValuesMetricsServiceMonitorAnnotations
     enabled?: bool
+    includeNode?: bool
     public?: bool
     relabelConfigs?: ValuesMetricsServiceMonitorRelabelConfigs
+    relabelConfigsCluster?: ValuesMetricsServiceMonitorRelabelConfigsCluster
 
 schema ValuesMetricsServiceMonitorAdditionalLabels:
     r"""
@@ -4599,15 +4712,15 @@ schema ValuesMetricsServiceMonitorAdditionalLabels:
     """
     [...str]: any
 
-schema ValuesMetricsServiceMonitorAnnotations:
+schema ValuesMetricsServiceMonitorRelabelConfigs:
     r"""
-    ValuesMetricsServiceMonitorAnnotations
+    for node metrics
     """
     [...str]: any
 
-schema ValuesMetricsServiceMonitorRelabelConfigs:
+schema ValuesMetricsServiceMonitorRelabelConfigsCluster:
     r"""
-    ValuesMetricsServiceMonitorRelabelConfigs
+    for cluster metrics
     """
     [...str]: any
 
@@ -4712,7 +4825,7 @@ schema ValuesOidc:
     r"""
     # OpenID Identity Management
     # The following section documents environment variables for enabling external identity management using an OpenID Connect (OIDC)-compatible provider.
-    # See https://docs.min.io/minio/baremetal/security/openid-external-identity-management/external-authentication-with-openid-identity-provider.html#minio-external-identity-management-openid for a tutorial on using these variables.
+    # See https://min.io/docs/minio/linux/operations/external-iam/configure-openid-external-identity-management.html for a tutorial on using these variables.
 
     Attributes
     ----------

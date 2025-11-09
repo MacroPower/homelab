@@ -45,22 +45,18 @@
       "type": "object"
     },
     "additionalAnnotations": {
+      "additionalProperties": true,
       "description": "# Additional annotations to include with deployment or statefulset",
-      "items": {
-        "required": []
-      },
       "required": [],
       "title": "additionalAnnotations",
-      "type": "array"
+      "type": "object"
     },
     "additionalLabels": {
+      "additionalProperties": true,
       "description": "# Additional labels to include with deployment or statefulset",
-      "items": {
-        "required": []
-      },
       "required": [],
       "title": "additionalLabels",
-      "type": "array"
+      "type": "object"
     },
     "adminApi": {
       "additionalProperties": true,
@@ -1092,10 +1088,10 @@
           "type": "object"
         },
         "annotations": {
-          "default": "",
+          "additionalProperties": true,
           "required": [],
           "title": "annotations",
-          "type": "null"
+          "type": "object"
         },
         "exitCommand": {
           "default": "",
@@ -1111,10 +1107,10 @@
           "type": "object"
         },
         "podAnnotations": {
-          "default": "",
+          "additionalProperties": true,
           "required": [],
           "title": "podAnnotations",
-          "type": "null"
+          "type": "object"
         },
         "resources": {
           "additionalProperties": true,
@@ -2603,6 +2599,24 @@
       },
       "required": [],
       "title": "extraObjects",
+      "type": "array"
+    },
+    "extraVolumeMounts": {
+      "description": "# Additional volumeMounts to minio container",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraVolumeMounts",
+      "type": "array"
+    },
+    "extraVolumes": {
+      "description": "# Additional volumes to minio container",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraVolumes",
       "type": "array"
     },
     "fullnameOverride": {
@@ -4185,10 +4199,10 @@
           "type": "object"
         },
         "annotations": {
-          "default": "",
+          "additionalProperties": true,
           "required": [],
           "title": "annotations",
-          "type": "null"
+          "type": "object"
         },
         "exitCommand": {
           "default": "",
@@ -4197,6 +4211,22 @@
           "title": "exitCommand",
           "type": "string"
         },
+        "extraVolumeMounts": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumes",
+          "type": "array"
+        },
         "nodeSelector": {
           "additionalProperties": true,
           "required": [],
@@ -4204,10 +4234,10 @@
           "type": "object"
         },
         "podAnnotations": {
-          "default": "",
+          "additionalProperties": true,
           "required": [],
           "title": "podAnnotations",
-          "type": "null"
+          "type": "object"
         },
         "resources": {
           "additionalProperties": true,
@@ -4278,7 +4308,7 @@
     },
     "makePolicyJob": {
       "additionalProperties": true,
-      "description": "# writeexamplepolicy policy grants creation or deletion of buckets with name\n# starting with example. In addition, grants objects write permissions on buckets starting with\n# example.\n- name: writeexamplepolicy\n  statements:\n    - resources:\n        - 'arn:aws:s3:::example*/*'\n      actions:\n        - \"s3:AbortMultipartUpload\"\n        - \"s3:GetObject\"\n        - \"s3:DeleteObject\"\n        - \"s3:PutObject\"\n        - \"s3:ListMultipartUploadParts\"\n    - resources:\n        - 'arn:aws:s3:::example*'\n      actions:\n        - \"s3:CreateBucket\"\n        - \"s3:DeleteBucket\"\n        - \"s3:GetBucketLocation\"\n        - \"s3:ListBucket\"\n        - \"s3:ListBucketMultipartUploads\"\n# readonlyexamplepolicy policy grants access to buckets with name starting with example.\n# In addition, grants objects read permissions on buckets starting with example.\n- name: readonlyexamplepolicy\n  statements:\n    - resources:\n        - 'arn:aws:s3:::example*/*'\n      actions:\n        - \"s3:GetObject\"\n    - resources:\n        - 'arn:aws:s3:::example*'\n      actions:\n        - \"s3:GetBucketLocation\"\n        - \"s3:ListBucket\"\n        - \"s3:ListBucketMultipartUploads\"\n# Additional Annotations for the Kubernetes Job makePolicyJob",
+      "description": "# writeexamplepolicy policy grants creation or deletion of buckets with name\n# starting with example. In addition, grants objects write permissions on buckets starting with\n# example.\n- name: writeexamplepolicy\n  statements:\n    - resources:\n        - 'arn:aws:s3:::example*/*'\n      actions:\n        - \"s3:AbortMultipartUpload\"\n        - \"s3:GetObject\"\n        - \"s3:DeleteObject\"\n        - \"s3:PutObject\"\n        - \"s3:ListMultipartUploadParts\"\n    - resources:\n        - 'arn:aws:s3:::example*'\n      actions:\n        - \"s3:CreateBucket\"\n        - \"s3:DeleteBucket\"\n        - \"s3:GetBucketLocation\"\n        - \"s3:ListBucket\"\n        - \"s3:ListBucketMultipartUploads\"\n# readonlyexamplepolicy policy grants access to buckets with name starting with example.\n# In addition, grants objects read permissions on buckets starting with example.\n- name: readonlyexamplepolicy\n  statements:\n    - resources:\n        - 'arn:aws:s3:::example*/*'\n      actions:\n        - \"s3:GetObject\"\n    - resources:\n        - 'arn:aws:s3:::example*'\n      actions:\n        - \"s3:GetBucketLocation\"\n        - \"s3:ListBucket\"\n        - \"s3:ListBucketMultipartUploads\"\n# conditionsexample policy creates all access to example bucket with aws:username=\"johndoe\" and source ip range 10.0.0.0/8 and 192.168.0.0/24 only\n- name: conditionsexample\n  statements:\n    - resources:\n      - 'arn:aws:s3:::example/*'\n      actions:\n      - 's3:*'\n      conditions:\n        - StringEquals: '\"aws:username\": \"johndoe\"'\n        - IpAddress: |\n            \"aws:SourceIp\": [\n              \"10.0.0.0/8\",\n              \"192.168.0.0/24\"\n            ]\n\n# Additional Annotations for the Kubernetes Job makePolicyJob",
       "properties": {
         "affinity": {
           "additionalProperties": true,
@@ -4287,10 +4317,10 @@
           "type": "object"
         },
         "annotations": {
-          "default": "",
+          "additionalProperties": true,
           "required": [],
           "title": "annotations",
-          "type": "null"
+          "type": "object"
         },
         "exitCommand": {
           "default": "",
@@ -4299,6 +4329,22 @@
           "title": "exitCommand",
           "type": "string"
         },
+        "extraVolumeMounts": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumes",
+          "type": "array"
+        },
         "nodeSelector": {
           "additionalProperties": true,
           "required": [],
@@ -4306,10 +4352,10 @@
           "type": "object"
         },
         "podAnnotations": {
-          "default": "",
+          "additionalProperties": true,
           "required": [],
           "title": "podAnnotations",
-          "type": "null"
+          "type": "object"
         },
         "resources": {
           "additionalProperties": true,
@@ -4389,10 +4435,10 @@
           "type": "object"
         },
         "annotations": {
-          "default": "",
+          "additionalProperties": true,
           "required": [],
           "title": "annotations",
-          "type": "null"
+          "type": "object"
         },
         "exitCommand": {
           "default": "",
@@ -4401,6 +4447,22 @@
           "title": "exitCommand",
           "type": "string"
         },
+        "extraVolumeMounts": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumes",
+          "type": "array"
+        },
         "nodeSelector": {
           "additionalProperties": true,
           "required": [],
@@ -4408,10 +4470,10 @@
           "type": "object"
         },
         "podAnnotations": {
-          "default": "",
+          "additionalProperties": true,
           "required": [],
           "title": "podAnnotations",
-          "type": "null"
+          "type": "object"
         },
         "resources": {
           "additionalProperties": true,
@@ -4497,7 +4559,7 @@
           "type": "string"
         },
         "tag": {
-          "default": "RELEASE.2022-08-11T00-30-48Z",
+          "default": "RELEASE.2022-10-20T23-26-33Z",
           "required": [],
           "title": "tag",
           "type": "string"
@@ -5345,16 +5407,17 @@
               "title": "additionalLabels",
               "type": "object"
             },
-            "annotations": {
-              "additionalProperties": true,
-              "required": [],
-              "title": "annotations",
-              "type": "object"
-            },
             "enabled": {
               "default": false,
               "required": [],
               "title": "enabled",
+              "type": "boolean"
+            },
+            "includeNode": {
+              "default": false,
+              "description": "scrape each node/pod individually for additional metrics",
+              "required": [],
+              "title": "includeNode",
               "type": "boolean"
             },
             "public": {
@@ -5365,8 +5428,16 @@
             },
             "relabelConfigs": {
               "additionalProperties": true,
+              "description": "for node metrics",
               "required": [],
               "title": "relabelConfigs",
+              "type": "object"
+            },
+            "relabelConfigsCluster": {
+              "additionalProperties": true,
+              "description": "for cluster metrics",
+              "required": [],
+              "title": "relabelConfigsCluster",
               "type": "object"
             }
           },
@@ -6116,7 +6187,7 @@
     },
     "oidc": {
       "additionalProperties": true,
-      "description": "# OpenID Identity Management\n# The following section documents environment variables for enabling external identity management using an OpenID Connect (OIDC)-compatible provider.\n# See https://docs.min.io/minio/baremetal/security/openid-external-identity-management/external-authentication-with-openid-identity-provider.html#minio-external-identity-management-openid for a tutorial on using these variables.",
+      "description": "# OpenID Identity Management\n# The following section documents environment variables for enabling external identity management using an OpenID Connect (OIDC)-compatible provider.\n# See https://min.io/docs/minio/linux/operations/external-iam/configure-openid-external-identity-management.html for a tutorial on using these variables.",
       "properties": {
         "claimName": {
           "default": "policy",
@@ -7806,7 +7877,7 @@
     },
     "rootUser": {
       "default": "",
-      "description": "# Set default rootUser, rootPassword\n# AccessKey and secretKey is generated when not set\n# Distributed MinIO ref: https://docs.minio.io/docs/distributed-minio-quickstart-guide\n#",
+      "description": "# Set default rootUser, rootPassword\n# AccessKey and secretKey is generated when not set\n# Distributed MinIO ref: https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-multi-node-multi-drive.html\n#",
       "required": [],
       "title": "rootUser",
       "type": "string"
@@ -8938,7 +9009,7 @@
     },
     "trustedCertsSecret": {
       "default": "",
-      "description": "# Trusted Certificates Settings for MinIO. Ref: https://docs.minio.io/docs/how-to-secure-access-to-minio-server-with-tls#install-certificates-from-third-party-cas\n# Bundle multiple trusted certificates into one secret and pass that here. Ref: https://github.com/minio/minio/tree/master/docs/tls/kubernetes#2-create-kubernetes-secret\n# When using self-signed certificates, remember to include MinIO's own certificate in the bundle with key public.crt.\n# If certSecret is left empty and tls is enabled, this chart installs the public certificate from .Values.tls.certSecret.",
+      "description": "# Trusted Certificates Settings for MinIO. Ref: https://min.io/docs/minio/linux/operations/network-encryption.html#third-party-certificate-authorities\n# Bundle multiple trusted certificates into one secret and pass that here. Ref: https://github.com/minio/minio/tree/master/docs/tls/kubernetes#2-create-kubernetes-secret\n# When using self-signed certificates, remember to include MinIO's own certificate in the bundle with key public.crt.\n# If certSecret is left empty and tls is enabled, this chart installs the public certificate from .Values.tls.certSecret.",
       "required": [],
       "title": "trustedCertsSecret",
       "type": "string"
