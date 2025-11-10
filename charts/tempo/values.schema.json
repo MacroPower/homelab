@@ -3391,7 +3391,7 @@
           "type": "array"
         },
         "registry": {
-          "default": "docker.io",
+          "default": "",
           "description": "Image registry",
           "required": [],
           "title": "registry",
@@ -7583,6 +7583,20 @@
               "required": [],
               "title": "annotations",
               "type": "object"
+            },
+            "grpcPort": {
+              "default": 9095,
+              "description": "grpc Port of the query-frontend service",
+              "required": [],
+              "title": "grpcPort",
+              "type": "integer"
+            },
+            "httpMetricsPort": {
+              "default": 3200,
+              "description": "http Metrics port of the query-frontend service",
+              "required": [],
+              "title": "httpMetricsPort",
+              "type": "integer"
             },
             "labels": {
               "additionalProperties": true,

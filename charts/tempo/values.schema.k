@@ -2757,7 +2757,7 @@ schema ValuesImage:
         Image pull policy
     pullSecrets : [any], optional
         Image pull secrets
-    registry : str, optional, default is "docker.io"
+    registry : str, optional, default is ""
         Image registry
     repository : str, optional, default is "grafana/rollout-operator"
         Image repo
@@ -5813,6 +5813,10 @@ schema ValuesQueryFrontendService:
     ----------
     annotations : ValuesQueryFrontendServiceAnnotations, optional
         Annotations for queryFrontend service
+    grpcPort : int, optional, default is 9095
+        grpc Port of the query-frontend service
+    httpMetricsPort : int, optional, default is 3200
+        http Metrics port of the query-frontend service
     labels : ValuesQueryFrontendServiceLabels, optional
         Labels for queryFrontend service
     loadBalancerIP : str, optional, default is ""
@@ -5826,6 +5830,8 @@ schema ValuesQueryFrontendService:
     """
     [...str]: any
     annotations?: ValuesQueryFrontendServiceAnnotations
+    grpcPort?: int
+    httpMetricsPort?: int
     labels?: ValuesQueryFrontendServiceLabels
     loadBalancerIP?: str
     loadBalancerSourceRanges?: [any]
