@@ -523,7 +523,7 @@ schema ValuesGlobalImagesEnvoyGateway:
 
     Attributes
     ----------
-    image : str, optional, default is "docker.io/envoyproxy/gateway:v1.5.4"
+    image : str, optional, default is "docker.io/envoyproxy/gateway:v1.6.0"
         This is the full image name including the hub, repo, and tag.
     pullPolicy : str, optional, default is "IfNotPresent"
         Specify image pull policy if default behavior isn't desired.
@@ -542,7 +542,7 @@ schema ValuesGlobalImagesRatelimit:
 
     Attributes
     ----------
-    image : str, optional, default is "docker.io/envoyproxy/ratelimit:e74a664a"
+    image : str, optional, default is "docker.io/envoyproxy/ratelimit:99d85510"
         This is the full image name including the hub, repo, and tag.
     pullPolicy : str, optional, default is "IfNotPresent"
         Specify image pull policy if default behavior isn't desired.
@@ -600,10 +600,12 @@ schema ValuesService:
     annotations : ValuesServiceAnnotations, optional
     trafficDistribution : str, optional, default is ""
         If set to PreferClose, the Envoy fleet will prioritize connecting to the Envoy Gateway pods that are topologically closest to them.
+    $type : str, optional, default is "ClusterIP"
     """
     [...str]: any
     annotations?: ValuesServiceAnnotations
     trafficDistribution?: str
+    $type?: str
 
 schema ValuesServiceAnnotations:
     r"""

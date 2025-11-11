@@ -45,7 +45,7 @@ schema GatewayNetworkingK8sIoV1GatewaySpec:
         Addresses requested for this Gateway. This is optional and behavior can
         depend on the implementation. If a value is set in the spec and the
         requested address is invalid or unavailable, the implementation MUST
-        indicate this in the associated entry in GatewayStatus.Addresses.
+        indicate this in an associated entry in GatewayStatus.Conditions.
 
         The Addresses field represents a request for the address(es) on the
         "outside of the Gateway", that traffic bound for this Gateway will use.
@@ -64,8 +64,24 @@ schema GatewayNetworkingK8sIoV1GatewaySpec:
         Support: Extended
     allowedListeners : GatewayNetworkingK8sIoV1GatewaySpecAllowedListeners, default is Undefined, optional
         allowed listeners
-    backendTLS : GatewayNetworkingK8sIoV1GatewaySpecBackendTLS, default is Undefined, optional
-        backend TLS
+    defaultScope : str, default is Undefined, optional
+        DefaultScope, when set, configures the Gateway as a default Gateway,
+        meaning it will dynamically and implicitly have Routes (e.g. HTTPRoute)
+        attached to it, according to the scope configured here.
+
+        If unset (the default) or set to None, the Gateway will not act as a
+        default Gateway; if set, the Gateway will claim any Route with a
+        matching scope set in its UseDefaultGateway field, subject to the usual
+        rules about which routes the Gateway can attach to.
+
+        Think carefully before using this functionality! While the normal rules
+        about which Route can apply are still enforced, it is simply easier for
+        the wrong Route to be accidentally attached to this Gateway in this
+        configuration. If the Gateway operator is not also the operator in
+        control of the scope (e.g. namespace) with tight controls and checks on
+        what kind of workloads and Routes get added in that scope, we strongly
+        recommend not using this just because it seems convenient, and instead
+        stick to direct Route attachment.
     gatewayClassName : str, default is Undefined, required
         GatewayClassName used for this Gateway. This is the name of a
         GatewayClass resource.
@@ -233,14 +249,18 @@ schema GatewayNetworkingK8sIoV1GatewaySpec:
         In a future release the MinItems=1 requirement MAY be dropped.
 
         Support: Core
+    tls : GatewayNetworkingK8sIoV1GatewaySpecTLS, default is Undefined, optional
+        tls
     """
     addresses?: [GatewayNetworkingK8sIoV1GatewaySpecAddressesItems0]
     allowedListeners?: GatewayNetworkingK8sIoV1GatewaySpecAllowedListeners
-    backendTLS?: GatewayNetworkingK8sIoV1GatewaySpecBackendTLS
+    defaultScope?: "All" | "None"
     gatewayClassName: str
 
     infrastructure?: GatewayNetworkingK8sIoV1GatewaySpecInfrastructure
     listeners: [GatewayNetworkingK8sIoV1GatewaySpecListenersItems0]
+
+    tls?: GatewayNetworkingK8sIoV1GatewaySpecTLS
 
     check:
         len(addresses) <= 16 if addresses
@@ -351,76 +371,6 @@ schema GatewayNetworkingK8sIoV1GatewaySpecAllowedListenersNamespacesSelectorMatc
     operator: str
 
     values?: [str]
-
-schema GatewayNetworkingK8sIoV1GatewaySpecBackendTLS:
-    r"""
-    BackendTLS configures TLS settings for when this Gateway is connecting to
-    backends with TLS.
-
-    Support: Core
-
-    Attributes
-    ----------
-    clientCertificateRef : GatewayNetworkingK8sIoV1GatewaySpecBackendTLSClientCertificateRef, default is Undefined, optional
-        client certificate ref
-    """
-    clientCertificateRef?: GatewayNetworkingK8sIoV1GatewaySpecBackendTLSClientCertificateRef
-
-schema GatewayNetworkingK8sIoV1GatewaySpecBackendTLSClientCertificateRef:
-    r"""
-    ClientCertificateRef is a reference to an object that contains a Client
-    Certificate and the associated private key.
-
-    References to a resource in different namespace are invalid UNLESS there
-    is a ReferenceGrant in the target namespace that allows the certificate
-    to be attached. If a ReferenceGrant does not allow this reference, the
-    "ResolvedRefs" condition MUST be set to False for this listener with the
-    "RefNotPermitted" reason.
-
-    ClientCertificateRef can reference to standard Kubernetes resources, i.e.
-    Secret, or implementation-specific custom resources.
-
-    This setting can be overridden on the service level by use of BackendTLSPolicy.
-
-    Support: Core
-
-    Attributes
-    ----------
-    group : str, default is Undefined, optional
-        Group is the group of the referent. For example, "gateway.networking.k8s.io".
-        When unspecified or empty string, core API group is inferred.
-    kind : str, default is "Secret", optional
-        Kind is kind of the referent. For example "Secret".
-    name : str, default is Undefined, required
-        Name is the name of the referent.
-    namespace : str, default is Undefined, optional
-        Namespace is the namespace of the referenced object. When unspecified, the local
-        namespace is inferred.
-
-        Note that when a namespace different than the local namespace is specified,
-        a ReferenceGrant object is required in the referent namespace to allow that
-        namespace's owner to accept the reference. See the ReferenceGrant
-        documentation for details.
-
-        Support: Core
-    """
-    group?: str = ""
-    kind?: str = "Secret"
-    name: str
-
-    namespace?: str
-
-    check:
-        len(group) <= 253 if group
-        _regex_match(str(group), r"^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if group
-        len(kind) <= 63 if kind
-        len(kind) >= 1 if kind
-        _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$") if kind
-        len(name) <= 253
-        len(name) >= 1
-        len(namespace) <= 63 if namespace
-        len(namespace) >= 1 if namespace
-        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
 schema GatewayNetworkingK8sIoV1GatewaySpecInfrastructure:
     r"""
@@ -751,7 +701,7 @@ schema GatewayNetworkingK8sIoV1GatewaySpecListenersItems0TLS:
     the Protocol field is "HTTPS" or "TLS". It is invalid to set this field
     if the Protocol field is "HTTP", "TCP", or "UDP".
 
-    The association of SNIs to Certificate defined in GatewayTLSConfig is
+    The association of SNIs to Certificate defined in ListenerTLSConfig is
     defined based on the Hostname field for this listener.
 
     The GatewayClass MUST use the longest matching SNI out of all
@@ -786,8 +736,6 @@ schema GatewayNetworkingK8sIoV1GatewaySpecListenersItems0TLS:
         Support: Core - A single reference to a Kubernetes Secret of type kubernetes.io/tls
 
         Support: Implementation-specific (More than one reference or other resource types)
-    frontendValidation : GatewayNetworkingK8sIoV1GatewaySpecListenersItems0TLSFrontendValidation, default is Undefined, optional
-        frontend validation
     mode : str, default is "Terminate", optional
         Mode defines the TLS behavior for the TLS session initiated by the client.
         There are two possible modes:
@@ -815,7 +763,6 @@ schema GatewayNetworkingK8sIoV1GatewaySpecListenersItems0TLS:
         Support: Implementation-specific
     """
     certificateRefs?: [GatewayNetworkingK8sIoV1GatewaySpecListenersItems0TLSCertificateRefsItems0]
-    frontendValidation?: GatewayNetworkingK8sIoV1GatewaySpecListenersItems0TLSFrontendValidation
     mode?: "Terminate" | "Passthrough" = "Terminate"
     options?: {str:str}
 
@@ -874,19 +821,147 @@ schema GatewayNetworkingK8sIoV1GatewaySpecListenersItems0TLSCertificateRefsItems
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-schema GatewayNetworkingK8sIoV1GatewaySpecListenersItems0TLSFrontendValidation:
+schema GatewayNetworkingK8sIoV1GatewaySpecTLS:
     r"""
-    FrontendValidation holds configuration information for validating the frontend (client).
-    Setting this field will require clients to send a client certificate
-    required for validation during the TLS handshake. In browsers this may result in a dialog appearing
-    that requests a user to specify the client certificate.
-    The maximum depth of a certificate chain accepted in verification is Implementation specific.
+    TLS specifies frontend and backend tls configuration for entire gateway.
 
     Support: Extended
 
     Attributes
     ----------
-    caCertificateRefs : [GatewayNetworkingK8sIoV1GatewaySpecListenersItems0TLSFrontendValidationCaCertificateRefsItems0], default is Undefined, optional
+    backend : GatewayNetworkingK8sIoV1GatewaySpecTLSBackend, default is Undefined, optional
+        backend
+    frontend : GatewayNetworkingK8sIoV1GatewaySpecTLSFrontend, default is Undefined, optional
+        frontend
+    """
+    backend?: GatewayNetworkingK8sIoV1GatewaySpecTLSBackend
+    frontend?: GatewayNetworkingK8sIoV1GatewaySpecTLSFrontend
+
+schema GatewayNetworkingK8sIoV1GatewaySpecTLSBackend:
+    r"""
+    Backend describes TLS configuration for gateway when connecting
+    to backends.
+
+    Note that this contains only details for the Gateway as a TLS client,
+    and does _not_ imply behavior about how to choose which backend should
+    get a TLS connection. That is determined by the presence of a BackendTLSPolicy.
+
+    Support: Core
+
+    Attributes
+    ----------
+    clientCertificateRef : GatewayNetworkingK8sIoV1GatewaySpecTLSBackendClientCertificateRef, default is Undefined, optional
+        client certificate ref
+    """
+    clientCertificateRef?: GatewayNetworkingK8sIoV1GatewaySpecTLSBackendClientCertificateRef
+
+schema GatewayNetworkingK8sIoV1GatewaySpecTLSBackendClientCertificateRef:
+    r"""
+    ClientCertificateRef is a reference to an object that contains a Client
+    Certificate and the associated private key.
+
+    References to a resource in different namespace are invalid UNLESS there
+    is a ReferenceGrant in the target namespace that allows the certificate
+    to be attached. If a ReferenceGrant does not allow this reference, the
+    "ResolvedRefs" condition MUST be set to False for this listener with the
+    "RefNotPermitted" reason.
+
+    ClientCertificateRef can reference to standard Kubernetes resources, i.e.
+    Secret, or implementation-specific custom resources.
+
+    Support: Core
+
+    Attributes
+    ----------
+    group : str, default is Undefined, optional
+        Group is the group of the referent. For example, "gateway.networking.k8s.io".
+        When unspecified or empty string, core API group is inferred.
+    kind : str, default is "Secret", optional
+        Kind is kind of the referent. For example "Secret".
+    name : str, default is Undefined, required
+        Name is the name of the referent.
+    namespace : str, default is Undefined, optional
+        Namespace is the namespace of the referenced object. When unspecified, the local
+        namespace is inferred.
+
+        Note that when a namespace different than the local namespace is specified,
+        a ReferenceGrant object is required in the referent namespace to allow that
+        namespace's owner to accept the reference. See the ReferenceGrant
+        documentation for details.
+
+        Support: Core
+    """
+    group?: str = ""
+    kind?: str = "Secret"
+    name: str
+
+    namespace?: str
+
+    check:
+        len(group) <= 253 if group
+        _regex_match(str(group), r"^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if group
+        len(kind) <= 63 if kind
+        len(kind) >= 1 if kind
+        _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$") if kind
+        len(name) <= 253
+        len(name) >= 1
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema GatewayNetworkingK8sIoV1GatewaySpecTLSFrontend:
+    r"""
+    Frontend describes TLS config when client connects to Gateway.
+    Support: Core
+
+    Attributes
+    ----------
+    default : GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendDefault, default is Undefined, required
+        default
+    perPort : [GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendPerPortItems0], default is Undefined, optional
+        PerPort specifies tls configuration assigned per port.
+        Per port configuration is optional. Once set this configuration overrides
+        the default configuration for all Listeners handling HTTPS traffic
+        that match this port.
+        Each override port requires a unique TLS configuration.
+
+        support: Core
+    """
+    default: GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendDefault
+
+    perPort?: [GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendPerPortItems0]
+
+    check:
+        len(perPort) <= 64 if perPort
+
+schema GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendDefault:
+    r"""
+    Default specifies the default client certificate validation configuration
+    for all Listeners handling HTTPS traffic, unless a per-port configuration
+    is defined.
+
+    support: Core
+
+    Attributes
+    ----------
+    validation : GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendDefaultValidation, default is Undefined, optional
+        validation
+    """
+    validation?: GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendDefaultValidation
+
+schema GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendDefaultValidation:
+    r"""
+    Validation holds configuration information for validating the frontend (client).
+    Setting this field will result in mutual authentication when connecting to the gateway.
+    In browsers this may result in a dialog appearing
+    that requests a user to specify the client certificate.
+    The maximum depth of a certificate chain accepted in verification is Implementation specific.
+
+    Support: Core
+
+    Attributes
+    ----------
+    caCertificateRefs : [GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendDefaultValidationCaCertificateRefsItems0], default is Undefined, required
         CACertificateRefs contains one or more references to
         Kubernetes objects that contain TLS certificates of
         the Certificate Authorities that can be used
@@ -900,22 +975,189 @@ schema GatewayNetworkingK8sIoV1GatewaySpecListenersItems0TLSFrontendValidation:
         Support: Core - A single reference to a Kubernetes ConfigMap
         with the CA certificate in a key named `ca.crt`.
 
-        Support: Implementation-specific (More than one reference, or other kinds
-        of resources).
+        Support: Implementation-specific (More than one certificate in a ConfigMap
+        with different keys or more than one reference, or other kinds of resources).
 
         References to a resource in a different namespace are invalid UNLESS there
         is a ReferenceGrant in the target namespace that allows the certificate
         to be attached. If a ReferenceGrant does not allow this reference, the
         "ResolvedRefs" condition MUST be set to False for this listener with the
         "RefNotPermitted" reason.
+    mode : str, default is "AllowValidOnly", optional
+        FrontendValidationMode defines the mode for validating the client certificate.
+        There are two possible modes:
+
+        - AllowValidOnly: In this mode, the gateway will accept connections only if
+          the client presents a valid certificate. This certificate must successfully
+          pass validation against the CA certificates specified in `CACertificateRefs`.
+        - AllowInsecureFallback: In this mode, the gateway will accept connections
+          even if the client certificate is not presented or fails verification.
+
+          This approach delegates client authorization to the backend and introduce
+          a significant security risk. It should be used in testing environments or
+          on a temporary basis in non-testing environments.
+
+        Defaults to AllowValidOnly.
+
+        Support: Core
     """
-    caCertificateRefs?: [GatewayNetworkingK8sIoV1GatewaySpecListenersItems0TLSFrontendValidationCaCertificateRefsItems0]
+    caCertificateRefs: [GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendDefaultValidationCaCertificateRefsItems0]
+
+    mode?: "AllowValidOnly" | "AllowInsecureFallback" = "AllowValidOnly"
 
     check:
-        len(caCertificateRefs) >= 1 if caCertificateRefs
-        len(caCertificateRefs) <= 8 if caCertificateRefs
+        len(caCertificateRefs) >= 1
+        len(caCertificateRefs) <= 8
 
-schema GatewayNetworkingK8sIoV1GatewaySpecListenersItems0TLSFrontendValidationCaCertificateRefsItems0:
+schema GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendDefaultValidationCaCertificateRefsItems0:
+    r"""
+    ObjectReference identifies an API object including its namespace.
+
+    The API object must be valid in the cluster; the Group and Kind must
+    be registered in the cluster for this reference to be valid.
+
+    References to objects with invalid Group and Kind are not valid, and must
+    be rejected by the implementation, with appropriate Conditions set
+    on the containing object.
+
+    Attributes
+    ----------
+    group : str, default is Undefined, required
+        Group is the group of the referent. For example, "gateway.networking.k8s.io".
+        When set to the empty string, core API group is inferred.
+    kind : str, default is Undefined, required
+        Kind is kind of the referent. For example "ConfigMap" or "Service".
+    name : str, default is Undefined, required
+        Name is the name of the referent.
+    namespace : str, default is Undefined, optional
+        Namespace is the namespace of the referenced object. When unspecified, the local
+        namespace is inferred.
+
+        Note that when a namespace different than the local namespace is specified,
+        a ReferenceGrant object is required in the referent namespace to allow that
+        namespace's owner to accept the reference. See the ReferenceGrant
+        documentation for details.
+
+        Support: Core
+    """
+    group: str
+
+    kind: str
+
+    name: str
+
+    namespace?: str
+
+    check:
+        len(group) <= 253
+        _regex_match(str(group), r"^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(kind) <= 63
+        len(kind) >= 1
+        _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$")
+        len(name) <= 253
+        len(name) >= 1
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendPerPortItems0:
+    r"""
+    gateway networking k8s io v1 gateway spec TLS frontend per port items0
+
+    Attributes
+    ----------
+    port : int, default is Undefined, required
+        The Port indicates the Port Number to which the TLS configuration will be
+        applied. This configuration will be applied to all Listeners handling HTTPS
+        traffic that match this port.
+
+        Support: Core
+    tls : GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendPerPortItems0TLS, default is Undefined, required
+        tls
+    """
+    port: int
+
+    tls: GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendPerPortItems0TLS
+
+    check:
+        port <= 65535
+        port >= 1
+
+schema GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendPerPortItems0TLS:
+    r"""
+    TLS store the configuration that will be applied to all Listeners handling
+    HTTPS traffic and matching given port.
+
+    Support: Core
+
+    Attributes
+    ----------
+    validation : GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendPerPortItems0TLSValidation, default is Undefined, optional
+        validation
+    """
+    validation?: GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendPerPortItems0TLSValidation
+
+schema GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendPerPortItems0TLSValidation:
+    r"""
+    Validation holds configuration information for validating the frontend (client).
+    Setting this field will result in mutual authentication when connecting to the gateway.
+    In browsers this may result in a dialog appearing
+    that requests a user to specify the client certificate.
+    The maximum depth of a certificate chain accepted in verification is Implementation specific.
+
+    Support: Core
+
+    Attributes
+    ----------
+    caCertificateRefs : [GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendPerPortItems0TLSValidationCaCertificateRefsItems0], default is Undefined, required
+        CACertificateRefs contains one or more references to
+        Kubernetes objects that contain TLS certificates of
+        the Certificate Authorities that can be used
+        as a trust anchor to validate the certificates presented by the client.
+
+        A single CA certificate reference to a Kubernetes ConfigMap
+        has "Core" support.
+        Implementations MAY choose to support attaching multiple CA certificates to
+        a Listener, but this behavior is implementation-specific.
+
+        Support: Core - A single reference to a Kubernetes ConfigMap
+        with the CA certificate in a key named `ca.crt`.
+
+        Support: Implementation-specific (More than one certificate in a ConfigMap
+        with different keys or more than one reference, or other kinds of resources).
+
+        References to a resource in a different namespace are invalid UNLESS there
+        is a ReferenceGrant in the target namespace that allows the certificate
+        to be attached. If a ReferenceGrant does not allow this reference, the
+        "ResolvedRefs" condition MUST be set to False for this listener with the
+        "RefNotPermitted" reason.
+    mode : str, default is "AllowValidOnly", optional
+        FrontendValidationMode defines the mode for validating the client certificate.
+        There are two possible modes:
+
+        - AllowValidOnly: In this mode, the gateway will accept connections only if
+          the client presents a valid certificate. This certificate must successfully
+          pass validation against the CA certificates specified in `CACertificateRefs`.
+        - AllowInsecureFallback: In this mode, the gateway will accept connections
+          even if the client certificate is not presented or fails verification.
+
+          This approach delegates client authorization to the backend and introduce
+          a significant security risk. It should be used in testing environments or
+          on a temporary basis in non-testing environments.
+
+        Defaults to AllowValidOnly.
+
+        Support: Core
+    """
+    caCertificateRefs: [GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendPerPortItems0TLSValidationCaCertificateRefsItems0]
+
+    mode?: "AllowValidOnly" | "AllowInsecureFallback" = "AllowValidOnly"
+
+    check:
+        len(caCertificateRefs) >= 1
+        len(caCertificateRefs) <= 8
+
+schema GatewayNetworkingK8sIoV1GatewaySpecTLSFrontendPerPortItems0TLSValidationCaCertificateRefsItems0:
     r"""
     ObjectReference identifies an API object including its namespace.
 
@@ -999,7 +1241,7 @@ schema GatewayNetworkingK8sIoV1GatewayStatus:
         Listeners provide status for each unique listener port defined in the Spec.
     """
     addresses?: [GatewayNetworkingK8sIoV1GatewayStatusAddressesItems0]
-    conditions?: [GatewayNetworkingK8sIoV1GatewayStatusConditionsItems0] = [{"type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown"}, {"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Programmed"}]
+    conditions?: [GatewayNetworkingK8sIoV1GatewayStatusConditionsItems0] = [{"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted"}, {"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Programmed"}]
     listeners?: [GatewayNetworkingK8sIoV1GatewayStatusListenersItems0]
 
     check:

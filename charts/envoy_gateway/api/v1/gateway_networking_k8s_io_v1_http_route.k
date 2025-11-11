@@ -161,12 +161,26 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpec:
         ParentRef of the Route.
     rules : [GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0], default is [{"matches": [{"path": {"type": "PathPrefix", "value": "/"}}]}], optional
         Rules are a list of HTTP matchers, filters and actions.
+    useDefaultGateways : str, default is Undefined, optional
+        UseDefaultGateways indicates the default Gateway scope to use for this
+        Route. If unset (the default) or set to None, the Route will not be
+        attached to any default Gateway; if set, it will be attached to any
+        default Gateway supporting the named scope, subject to the usual rules
+        about which Routes a Gateway is allowed to claim.
+
+        Think carefully before using this functionality! The set of default
+        Gateways supporting the requested scope can change over time without
+        any notice to the Route author, and in many situations it will not be
+        appropriate to request a default Gateway for a given Route -- for
+        example, a Route with specific security requirements should almost
+        certainly not use a default Gateway.
     """
     hostnames?: [str]
     parentRefs?: [GatewayNetworkingK8sIoV1HTTPRouteSpecParentRefsItems0]
     rules?: [GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0] = [{"matches": [{
         "path": {"type": "PathPrefix", "value": "/"}
     }]}]
+    useDefaultGateways?: "All" | "None"
 
     check:
         len(hostnames) <= 16 if hostnames
@@ -399,7 +413,7 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0:
         this configuration error.
 
         Support: Core
-    matches : [GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0MatchesItems0], default is [{"path": {"value": "/", "type": "PathPrefix"}}], optional
+    matches : [GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0MatchesItems0], default is [{"path": {"type": "PathPrefix", "value": "/"}}], optional
         Matches define conditions used for matching the rule against incoming
         HTTP requests. Each match is independent, i.e. this rule will be matched
         if **any** one of the matches is satisfied.
@@ -609,6 +623,8 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersI
         cors
     extensionRef : GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ExtensionRef, default is Undefined, optional
         extension ref
+    externalAuth : GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ExternalAuth, default is Undefined, optional
+        external auth
     requestHeaderModifier : GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0RequestHeaderModifier, default is Undefined, optional
         request header modifier
     requestMirror : GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0RequestMirror, default is Undefined, optional
@@ -655,11 +671,12 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersI
     """
     cors?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0Cors
     extensionRef?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ExtensionRef
+    externalAuth?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ExternalAuth
     requestHeaderModifier?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0RequestHeaderModifier
     requestMirror?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0RequestMirror
     requestRedirect?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0RequestRedirect
     responseHeaderModifier?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ResponseHeaderModifier
-    $type: "RequestHeaderModifier" | "ResponseHeaderModifier" | "RequestMirror" | "RequestRedirect" | "URLRewrite" | "ExtensionRef" | "CORS"
+    $type: "RequestHeaderModifier" | "ResponseHeaderModifier" | "RequestMirror" | "RequestRedirect" | "URLRewrite" | "ExtensionRef" | "CORS" | "ExternalAuth"
 
     urlRewrite?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0URLRewrite
 
@@ -676,12 +693,12 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersI
         AllowCredentials indicates whether the actual cross-origin request allows
         to include credentials.
 
-        The only valid value for the `Access-Control-Allow-Credentials` response
-        header is true (case-sensitive).
+        When set to true, the gateway will include the `Access-Control-Allow-Credentials`
+        response header with value true (case-sensitive).
 
-        If the credentials are not allowed in cross-origin requests, the gateway
-        will omit the header `Access-Control-Allow-Credentials` entirely rather
-        than setting its value to false.
+        When set to false or omitted the gateway will omit the header
+        `Access-Control-Allow-Credentials` entirely (this is the standard CORS
+        behavior).
 
         Support: Extended
     allowHeaders : [str], default is Undefined, optional
@@ -708,9 +725,9 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersI
 
         A wildcard indicates that the requests with all HTTP headers are allowed.
         The `Access-Control-Allow-Headers` response header can only use `*`
-        wildcard as value when the `AllowCredentials` field is unspecified.
+        wildcard as value when the `AllowCredentials` field is false or omitted.
 
-        When the `AllowCredentials` field is specified and `AllowHeaders` field
+        When the `AllowCredentials` field is true and `AllowHeaders` field
         specified with the `*` wildcard, the gateway must specify one or more
         HTTP headers in the value of the `Access-Control-Allow-Headers` response
         header. The value of the header `Access-Control-Allow-Headers` is same as
@@ -749,9 +766,9 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersI
         side.
 
         The `Access-Control-Allow-Methods` response header can only use `*`
-        wildcard as value when the `AllowCredentials` field is unspecified.
+        wildcard as value when the `AllowCredentials` field is false or omitted.
 
-        When the `AllowCredentials` field is specified and `AllowMethods` field
+        When the `AllowCredentials` field is true and `AllowMethods` field
         specified with the `*` wildcard, the gateway must specify one HTTP method
         in the value of the Access-Control-Allow-Methods response header. The
         value of the header `Access-Control-Allow-Methods` is same as the
@@ -806,9 +823,9 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersI
         Therefore, the client doesn't attempt the actual cross-origin request.
 
         The `Access-Control-Allow-Origin` response header can only use `*`
-        wildcard as value when the `AllowCredentials` field is unspecified.
+        wildcard as value when the `AllowCredentials` field is false or omitted.
 
-        When the `AllowCredentials` field is specified and `AllowOrigins` field
+        When the `AllowCredentials` field is true and `AllowOrigins` field
         specified with the `*` wildcard, the gateway must return a single origin
         in the value of the `Access-Control-Allow-Origin` response header,
         instead of specifying the `*` wildcard. The value of the header
@@ -844,8 +861,7 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersI
 
         A wildcard indicates that the responses with all HTTP headers are exposed
         to clients. The `Access-Control-Expose-Headers` response header can only
-        use `*` wildcard as value when the `AllowCredentials` field is
-        unspecified.
+        use `*` wildcard as value when the `AllowCredentials` field is false or omitted.
 
         Support: Extended
     maxAge : int, default is 5, optional
@@ -859,7 +875,7 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersI
         The default value of `Access-Control-Max-Age` response header is 5
         (seconds).
     """
-    allowCredentials?: True
+    allowCredentials?: bool
     allowHeaders?: [str]
     allowMethods?: [str]
     allowOrigins?: [str]
@@ -875,7 +891,7 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersI
         len(allowOrigins) <= 64 if allowOrigins
         all allowOrigins in allowOrigins {len(allowOrigins) <= 253 if allowOrigins not in [None, Undefined]} if allowOrigins
         all allowOrigins in allowOrigins {len(allowOrigins) >= 1 if allowOrigins not in [None, Undefined]} if allowOrigins
-        all allowOrigins in allowOrigins {_regex_match(str(allowOrigins), r"^(([^:/?#]+):)(//([^/?#]*))([^?#]*)(\?([^#]*))?(#(.*))?") if allowOrigins} if allowOrigins
+        all allowOrigins in allowOrigins {_regex_match(str(allowOrigins), r"(^\*$)|(^([a-zA-Z][a-zA-Z0-9+\-.]+):\/\/([^:/?#]+)(:([0-9]{1,5}))?$)") if allowOrigins} if allowOrigins
         len(exposeHeaders) <= 64 if exposeHeaders
         all exposeHeaders in exposeHeaders {len(exposeHeaders) <= 256 if exposeHeaders not in [None, Undefined]} if exposeHeaders
         all exposeHeaders in exposeHeaders {len(exposeHeaders) >= 1 if exposeHeaders not in [None, Undefined]} if exposeHeaders
@@ -917,6 +933,235 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersI
         _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$")
         len(name) <= 253
         len(name) >= 1
+
+schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ExternalAuth:
+    r"""
+    ExternalAuth configures settings related to sending request details
+    to an external auth service. The external service MUST authenticate
+    the request, and MAY authorize the request as well.
+
+    If there is any problem communicating with the external service,
+    this filter MUST fail closed.
+
+    Support: Extended
+
+    Attributes
+    ----------
+    backendRef : GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ExternalAuthBackendRef, default is Undefined, required
+        backend ref
+    forwardBody : GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ExternalAuthForwardBody, default is Undefined, optional
+        forward body
+    grpc : GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ExternalAuthGrpc, default is Undefined, optional
+        grpc
+    http : GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ExternalAuthHTTP, default is Undefined, optional
+        http
+    $protocol : str, default is Undefined, required
+        ExternalAuthProtocol describes which protocol to use when communicating with an
+        ext_authz authorization server.
+
+        When this is set to GRPC, each backend must use the Envoy ext_authz protocol
+        on the port specified in `backendRefs`. Requests and responses are defined
+        in the protobufs explained at:
+        https://www.envoyproxy.io/docs/envoy/latest/api-v3/service/auth/v3/external_auth.proto
+
+        When this is set to HTTP, each backend must respond with a `200` status
+        code in on a successful authorization. Any other code is considered
+        an authorization failure.
+
+        Feature Names:
+        GRPC Support - HTTPRouteExternalAuthGRPC
+        HTTP Support - HTTPRouteExternalAuthHTTP
+    """
+    backendRef: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ExternalAuthBackendRef
+
+    forwardBody?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ExternalAuthForwardBody
+    grpc?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ExternalAuthGrpc
+    http?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ExternalAuthHTTP
+    $protocol: "HTTP" | "GRPC"
+
+schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ExternalAuthBackendRef:
+    r"""
+    BackendRef is a reference to a backend to send authorization
+    requests to.
+
+    The backend must speak the selected protocol (GRPC or HTTP) on the
+    referenced port.
+
+    If the backend service requires TLS, use BackendTLSPolicy to tell the
+    implementation to supply the TLS details to be used to connect to that
+    backend.
+
+    Attributes
+    ----------
+    group : str, default is Undefined, optional
+        Group is the group of the referent. For example, "gateway.networking.k8s.io".
+        When unspecified or empty string, core API group is inferred.
+    kind : str, default is "Service", optional
+        Kind is the Kubernetes resource kind of the referent. For example
+        "Service".
+
+        Defaults to "Service" when not specified.
+
+        ExternalName services can refer to CNAME DNS records that may live
+        outside of the cluster and as such are difficult to reason about in
+        terms of conformance. They also may not be safe to forward to (see
+        CVE-2021-25740 for more information). Implementations SHOULD NOT
+        support ExternalName Services.
+
+        Support: Core (Services with a type other than ExternalName)
+
+        Support: Implementation-specific (Services with type ExternalName)
+    name : str, default is Undefined, required
+        Name is the name of the referent.
+    namespace : str, default is Undefined, optional
+        Namespace is the namespace of the backend. When unspecified, the local
+        namespace is inferred.
+
+        Note that when a namespace different than the local namespace is specified,
+        a ReferenceGrant object is required in the referent namespace to allow that
+        namespace's owner to accept the reference. See the ReferenceGrant
+        documentation for details.
+
+        Support: Core
+    port : int, default is Undefined, optional
+        Port specifies the destination port number to use for this resource.
+        Port is required when the referent is a Kubernetes Service. In this
+        case, the port number is the service port number, not the target port.
+        For other resources, destination port might be derived from the referent
+        resource or this field.
+    """
+    group?: str = ""
+    kind?: str = "Service"
+    name: str
+
+    namespace?: str
+    port?: int
+
+    check:
+        len(group) <= 253 if group
+        _regex_match(str(group), r"^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if group
+        len(kind) <= 63 if kind
+        len(kind) >= 1 if kind
+        _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$") if kind
+        len(name) <= 253
+        len(name) >= 1
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+        port <= 65535 if port not in [None, Undefined]
+        port >= 1 if port not in [None, Undefined]
+
+schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ExternalAuthForwardBody:
+    r"""
+    ForwardBody controls if requests to the authorization server should include
+    the body of the client request; and if so, how big that body is allowed
+    to be.
+
+    It is expected that implementations will buffer the request body up to
+    `forwardBody.maxSize` bytes. Bodies over that size must be rejected with a
+    4xx series error (413 or 403 are common examples), and fail processing
+    of the filter.
+
+    If unset, or `forwardBody.maxSize` is set to `0`, then the body will not
+    be forwarded.
+
+    Feature Name: HTTPRouteExternalAuthForwardBody
+
+    Attributes
+    ----------
+    maxSize : int, default is Undefined, optional
+        MaxSize specifies how large in bytes the largest body that will be buffered
+        and sent to the authorization server. If the body size is larger than
+        `maxSize`, then the body sent to the authorization server must be
+        truncated to `maxSize` bytes.
+
+        Experimental note: This behavior needs to be checked against
+        various dataplanes; it may need to be changed.
+        See https://github.com/kubernetes-sigs/gateway-api/pull/4001#discussion_r2291405746
+        for more.
+
+        If 0, the body will not be sent to the authorization server.
+    """
+    maxSize?: int
+
+schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ExternalAuthGrpc:
+    r"""
+    GRPCAuthConfig contains configuration for communication with ext_authz
+    protocol-speaking backends.
+
+    If unset, implementations must assume the default behavior for each
+    included field is intended.
+
+    Attributes
+    ----------
+    allowedHeaders : [str], default is Undefined, optional
+        AllowedRequestHeaders specifies what headers from the client request
+        will be sent to the authorization server.
+
+        If this list is empty, then all headers must be sent.
+
+        If the list has entries, only those entries must be sent.
+    """
+    allowedHeaders?: [str]
+
+schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ExternalAuthHTTP:
+    r"""
+    HTTPAuthConfig contains configuration for communication with HTTP-speaking
+    backends.
+
+    If unset, implementations must assume the default behavior for each
+    included field is intended.
+
+    Attributes
+    ----------
+    allowedHeaders : [str], default is Undefined, optional
+        AllowedRequestHeaders specifies what additional headers from the client request
+        will be sent to the authorization server.
+
+        The following headers must always be sent to the authorization server,
+        regardless of this setting:
+
+        * `Host`
+        * `Method`
+        * `Path`
+        * `Content-Length`
+        * `Authorization`
+
+        If this list is empty, then only those headers must be sent.
+
+        Note that `Content-Length` has a special behavior, in that the length
+        sent must be correct for the actual request to the external authorization
+        server - that is, it must reflect the actual number of bytes sent in the
+        body of the request to the authorization server.
+
+        So if the `forwardBody` stanza is unset, or `forwardBody.maxSize` is set
+        to `0`, then `Content-Length` must be `0`. If `forwardBody.maxSize` is set
+        to anything other than `0`, then the `Content-Length` of the authorization
+        request must be set to the actual number of bytes forwarded.
+    allowedResponseHeaders : [str], default is Undefined, optional
+        AllowedResponseHeaders specifies what headers from the authorization response
+        will be copied into the request to the backend.
+
+        If this list is empty, then all headers from the authorization server
+        except Authority or Host must be copied.
+    path : str, default is Undefined, optional
+        Path sets the prefix that paths from the client request will have added
+        when forwarded to the authorization server.
+
+        When empty or unspecified, no prefix is added.
+
+        Valid values are the same as the "value" regex for path values in the `match`
+        stanza, and the validation regex will screen out invalid paths in the same way.
+        Even with the validation, implementations MUST sanitize this input before using it
+        directly.
+    """
+    allowedHeaders?: [str]
+    allowedResponseHeaders?: [str]
+    path?: str
+
+    check:
+        len(path) <= 1024 if path
+        _regex_match(str(path), r"^(?:[-A-Za-z0-9/._~!$&'()*+,;=:@]|[%][0-9a-fA-F]{2})+$") if path
 
 schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0RequestHeaderModifier:
     r"""
@@ -1532,6 +1777,8 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0:
         cors
     extensionRef : GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ExtensionRef, default is Undefined, optional
         extension ref
+    externalAuth : GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ExternalAuth, default is Undefined, optional
+        external auth
     requestHeaderModifier : GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0RequestHeaderModifier, default is Undefined, optional
         request header modifier
     requestMirror : GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0RequestMirror, default is Undefined, optional
@@ -1578,11 +1825,12 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0:
     """
     cors?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0Cors
     extensionRef?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ExtensionRef
+    externalAuth?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ExternalAuth
     requestHeaderModifier?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0RequestHeaderModifier
     requestMirror?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0RequestMirror
     requestRedirect?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0RequestRedirect
     responseHeaderModifier?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ResponseHeaderModifier
-    $type: "RequestHeaderModifier" | "ResponseHeaderModifier" | "RequestMirror" | "RequestRedirect" | "URLRewrite" | "ExtensionRef" | "CORS"
+    $type: "RequestHeaderModifier" | "ResponseHeaderModifier" | "RequestMirror" | "RequestRedirect" | "URLRewrite" | "ExtensionRef" | "CORS" | "ExternalAuth"
 
     urlRewrite?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0URLRewrite
 
@@ -1599,12 +1847,12 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0Cors:
         AllowCredentials indicates whether the actual cross-origin request allows
         to include credentials.
 
-        The only valid value for the `Access-Control-Allow-Credentials` response
-        header is true (case-sensitive).
+        When set to true, the gateway will include the `Access-Control-Allow-Credentials`
+        response header with value true (case-sensitive).
 
-        If the credentials are not allowed in cross-origin requests, the gateway
-        will omit the header `Access-Control-Allow-Credentials` entirely rather
-        than setting its value to false.
+        When set to false or omitted the gateway will omit the header
+        `Access-Control-Allow-Credentials` entirely (this is the standard CORS
+        behavior).
 
         Support: Extended
     allowHeaders : [str], default is Undefined, optional
@@ -1631,9 +1879,9 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0Cors:
 
         A wildcard indicates that the requests with all HTTP headers are allowed.
         The `Access-Control-Allow-Headers` response header can only use `*`
-        wildcard as value when the `AllowCredentials` field is unspecified.
+        wildcard as value when the `AllowCredentials` field is false or omitted.
 
-        When the `AllowCredentials` field is specified and `AllowHeaders` field
+        When the `AllowCredentials` field is true and `AllowHeaders` field
         specified with the `*` wildcard, the gateway must specify one or more
         HTTP headers in the value of the `Access-Control-Allow-Headers` response
         header. The value of the header `Access-Control-Allow-Headers` is same as
@@ -1672,9 +1920,9 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0Cors:
         side.
 
         The `Access-Control-Allow-Methods` response header can only use `*`
-        wildcard as value when the `AllowCredentials` field is unspecified.
+        wildcard as value when the `AllowCredentials` field is false or omitted.
 
-        When the `AllowCredentials` field is specified and `AllowMethods` field
+        When the `AllowCredentials` field is true and `AllowMethods` field
         specified with the `*` wildcard, the gateway must specify one HTTP method
         in the value of the Access-Control-Allow-Methods response header. The
         value of the header `Access-Control-Allow-Methods` is same as the
@@ -1729,9 +1977,9 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0Cors:
         Therefore, the client doesn't attempt the actual cross-origin request.
 
         The `Access-Control-Allow-Origin` response header can only use `*`
-        wildcard as value when the `AllowCredentials` field is unspecified.
+        wildcard as value when the `AllowCredentials` field is false or omitted.
 
-        When the `AllowCredentials` field is specified and `AllowOrigins` field
+        When the `AllowCredentials` field is true and `AllowOrigins` field
         specified with the `*` wildcard, the gateway must return a single origin
         in the value of the `Access-Control-Allow-Origin` response header,
         instead of specifying the `*` wildcard. The value of the header
@@ -1767,8 +2015,7 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0Cors:
 
         A wildcard indicates that the responses with all HTTP headers are exposed
         to clients. The `Access-Control-Expose-Headers` response header can only
-        use `*` wildcard as value when the `AllowCredentials` field is
-        unspecified.
+        use `*` wildcard as value when the `AllowCredentials` field is false or omitted.
 
         Support: Extended
     maxAge : int, default is 5, optional
@@ -1782,7 +2029,7 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0Cors:
         The default value of `Access-Control-Max-Age` response header is 5
         (seconds).
     """
-    allowCredentials?: True
+    allowCredentials?: bool
     allowHeaders?: [str]
     allowMethods?: [str]
     allowOrigins?: [str]
@@ -1798,7 +2045,7 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0Cors:
         len(allowOrigins) <= 64 if allowOrigins
         all allowOrigins in allowOrigins {len(allowOrigins) <= 253 if allowOrigins not in [None, Undefined]} if allowOrigins
         all allowOrigins in allowOrigins {len(allowOrigins) >= 1 if allowOrigins not in [None, Undefined]} if allowOrigins
-        all allowOrigins in allowOrigins {_regex_match(str(allowOrigins), r"^(([^:/?#]+):)(//([^/?#]*))([^?#]*)(\?([^#]*))?(#(.*))?") if allowOrigins} if allowOrigins
+        all allowOrigins in allowOrigins {_regex_match(str(allowOrigins), r"(^\*$)|(^([a-zA-Z][a-zA-Z0-9+\-.]+):\/\/([^:/?#]+)(:([0-9]{1,5}))?$)") if allowOrigins} if allowOrigins
         len(exposeHeaders) <= 64 if exposeHeaders
         all exposeHeaders in exposeHeaders {len(exposeHeaders) <= 256 if exposeHeaders not in [None, Undefined]} if exposeHeaders
         all exposeHeaders in exposeHeaders {len(exposeHeaders) >= 1 if exposeHeaders not in [None, Undefined]} if exposeHeaders
@@ -1840,6 +2087,235 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ExtensionRef
         _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$")
         len(name) <= 253
         len(name) >= 1
+
+schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ExternalAuth:
+    r"""
+    ExternalAuth configures settings related to sending request details
+    to an external auth service. The external service MUST authenticate
+    the request, and MAY authorize the request as well.
+
+    If there is any problem communicating with the external service,
+    this filter MUST fail closed.
+
+    Support: Extended
+
+    Attributes
+    ----------
+    backendRef : GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ExternalAuthBackendRef, default is Undefined, required
+        backend ref
+    forwardBody : GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ExternalAuthForwardBody, default is Undefined, optional
+        forward body
+    grpc : GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ExternalAuthGrpc, default is Undefined, optional
+        grpc
+    http : GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ExternalAuthHTTP, default is Undefined, optional
+        http
+    $protocol : str, default is Undefined, required
+        ExternalAuthProtocol describes which protocol to use when communicating with an
+        ext_authz authorization server.
+
+        When this is set to GRPC, each backend must use the Envoy ext_authz protocol
+        on the port specified in `backendRefs`. Requests and responses are defined
+        in the protobufs explained at:
+        https://www.envoyproxy.io/docs/envoy/latest/api-v3/service/auth/v3/external_auth.proto
+
+        When this is set to HTTP, each backend must respond with a `200` status
+        code in on a successful authorization. Any other code is considered
+        an authorization failure.
+
+        Feature Names:
+        GRPC Support - HTTPRouteExternalAuthGRPC
+        HTTP Support - HTTPRouteExternalAuthHTTP
+    """
+    backendRef: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ExternalAuthBackendRef
+
+    forwardBody?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ExternalAuthForwardBody
+    grpc?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ExternalAuthGrpc
+    http?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ExternalAuthHTTP
+    $protocol: "HTTP" | "GRPC"
+
+schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ExternalAuthBackendRef:
+    r"""
+    BackendRef is a reference to a backend to send authorization
+    requests to.
+
+    The backend must speak the selected protocol (GRPC or HTTP) on the
+    referenced port.
+
+    If the backend service requires TLS, use BackendTLSPolicy to tell the
+    implementation to supply the TLS details to be used to connect to that
+    backend.
+
+    Attributes
+    ----------
+    group : str, default is Undefined, optional
+        Group is the group of the referent. For example, "gateway.networking.k8s.io".
+        When unspecified or empty string, core API group is inferred.
+    kind : str, default is "Service", optional
+        Kind is the Kubernetes resource kind of the referent. For example
+        "Service".
+
+        Defaults to "Service" when not specified.
+
+        ExternalName services can refer to CNAME DNS records that may live
+        outside of the cluster and as such are difficult to reason about in
+        terms of conformance. They also may not be safe to forward to (see
+        CVE-2021-25740 for more information). Implementations SHOULD NOT
+        support ExternalName Services.
+
+        Support: Core (Services with a type other than ExternalName)
+
+        Support: Implementation-specific (Services with type ExternalName)
+    name : str, default is Undefined, required
+        Name is the name of the referent.
+    namespace : str, default is Undefined, optional
+        Namespace is the namespace of the backend. When unspecified, the local
+        namespace is inferred.
+
+        Note that when a namespace different than the local namespace is specified,
+        a ReferenceGrant object is required in the referent namespace to allow that
+        namespace's owner to accept the reference. See the ReferenceGrant
+        documentation for details.
+
+        Support: Core
+    port : int, default is Undefined, optional
+        Port specifies the destination port number to use for this resource.
+        Port is required when the referent is a Kubernetes Service. In this
+        case, the port number is the service port number, not the target port.
+        For other resources, destination port might be derived from the referent
+        resource or this field.
+    """
+    group?: str = ""
+    kind?: str = "Service"
+    name: str
+
+    namespace?: str
+    port?: int
+
+    check:
+        len(group) <= 253 if group
+        _regex_match(str(group), r"^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if group
+        len(kind) <= 63 if kind
+        len(kind) >= 1 if kind
+        _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$") if kind
+        len(name) <= 253
+        len(name) >= 1
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+        port <= 65535 if port not in [None, Undefined]
+        port >= 1 if port not in [None, Undefined]
+
+schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ExternalAuthForwardBody:
+    r"""
+    ForwardBody controls if requests to the authorization server should include
+    the body of the client request; and if so, how big that body is allowed
+    to be.
+
+    It is expected that implementations will buffer the request body up to
+    `forwardBody.maxSize` bytes. Bodies over that size must be rejected with a
+    4xx series error (413 or 403 are common examples), and fail processing
+    of the filter.
+
+    If unset, or `forwardBody.maxSize` is set to `0`, then the body will not
+    be forwarded.
+
+    Feature Name: HTTPRouteExternalAuthForwardBody
+
+    Attributes
+    ----------
+    maxSize : int, default is Undefined, optional
+        MaxSize specifies how large in bytes the largest body that will be buffered
+        and sent to the authorization server. If the body size is larger than
+        `maxSize`, then the body sent to the authorization server must be
+        truncated to `maxSize` bytes.
+
+        Experimental note: This behavior needs to be checked against
+        various dataplanes; it may need to be changed.
+        See https://github.com/kubernetes-sigs/gateway-api/pull/4001#discussion_r2291405746
+        for more.
+
+        If 0, the body will not be sent to the authorization server.
+    """
+    maxSize?: int
+
+schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ExternalAuthGrpc:
+    r"""
+    GRPCAuthConfig contains configuration for communication with ext_authz
+    protocol-speaking backends.
+
+    If unset, implementations must assume the default behavior for each
+    included field is intended.
+
+    Attributes
+    ----------
+    allowedHeaders : [str], default is Undefined, optional
+        AllowedRequestHeaders specifies what headers from the client request
+        will be sent to the authorization server.
+
+        If this list is empty, then all headers must be sent.
+
+        If the list has entries, only those entries must be sent.
+    """
+    allowedHeaders?: [str]
+
+schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0ExternalAuthHTTP:
+    r"""
+    HTTPAuthConfig contains configuration for communication with HTTP-speaking
+    backends.
+
+    If unset, implementations must assume the default behavior for each
+    included field is intended.
+
+    Attributes
+    ----------
+    allowedHeaders : [str], default is Undefined, optional
+        AllowedRequestHeaders specifies what additional headers from the client request
+        will be sent to the authorization server.
+
+        The following headers must always be sent to the authorization server,
+        regardless of this setting:
+
+        * `Host`
+        * `Method`
+        * `Path`
+        * `Content-Length`
+        * `Authorization`
+
+        If this list is empty, then only those headers must be sent.
+
+        Note that `Content-Length` has a special behavior, in that the length
+        sent must be correct for the actual request to the external authorization
+        server - that is, it must reflect the actual number of bytes sent in the
+        body of the request to the authorization server.
+
+        So if the `forwardBody` stanza is unset, or `forwardBody.maxSize` is set
+        to `0`, then `Content-Length` must be `0`. If `forwardBody.maxSize` is set
+        to anything other than `0`, then the `Content-Length` of the authorization
+        request must be set to the actual number of bytes forwarded.
+    allowedResponseHeaders : [str], default is Undefined, optional
+        AllowedResponseHeaders specifies what headers from the authorization response
+        will be copied into the request to the backend.
+
+        If this list is empty, then all headers from the authorization server
+        except Authority or Host must be copied.
+    path : str, default is Undefined, optional
+        Path sets the prefix that paths from the client request will have added
+        when forwarded to the authorization server.
+
+        When empty or unspecified, no prefix is added.
+
+        Valid values are the same as the "value" regex for path values in the `match`
+        stanza, and the validation regex will screen out invalid paths in the same way.
+        Even with the validation, implementations MUST sanitize this input before using it
+        directly.
+    """
+    allowedHeaders?: [str]
+    allowedResponseHeaders?: [str]
+    path?: str
+
+    check:
+        len(path) <= 1024 if path
+        _regex_match(str(path), r"^(?:[-A-Za-z0-9/._~!$&'()*+,;=:@]|[%][0-9a-fA-F]{2})+$") if path
 
 schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0RequestHeaderModifier:
     r"""
@@ -2857,7 +3333,7 @@ schema GatewayNetworkingK8sIoV1HTTPRouteStatusParentsItems0:
 
     Attributes
     ----------
-    conditions : [GatewayNetworkingK8sIoV1HTTPRouteStatusParentsItems0ConditionsItems0], default is Undefined, optional
+    conditions : [GatewayNetworkingK8sIoV1HTTPRouteStatusParentsItems0ConditionsItems0], default is Undefined, required
         Conditions describes the status of the route with respect to the Gateway.
         Note that the route's availability is also subject to the Gateway's own
         status conditions and listener status.
@@ -2894,14 +3370,15 @@ schema GatewayNetworkingK8sIoV1HTTPRouteStatusParentsItems0:
     parentRef : GatewayNetworkingK8sIoV1HTTPRouteStatusParentsItems0ParentRef, default is Undefined, required
         parent ref
     """
-    conditions?: [GatewayNetworkingK8sIoV1HTTPRouteStatusParentsItems0ConditionsItems0]
+    conditions: [GatewayNetworkingK8sIoV1HTTPRouteStatusParentsItems0ConditionsItems0]
+
     controllerName: str
 
     parentRef: GatewayNetworkingK8sIoV1HTTPRouteStatusParentsItems0ParentRef
 
     check:
-        len(conditions) >= 1 if conditions
-        len(conditions) <= 8 if conditions
+        len(conditions) >= 1
+        len(conditions) <= 8
         len(controllerName) <= 253
         len(controllerName) >= 1
         _regex_match(str(controllerName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*\/[A-Za-z0-9\/\-._~%!$&'()*+,;=:]+$")

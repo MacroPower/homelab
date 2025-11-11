@@ -357,7 +357,7 @@ schema GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicyStatusAncestorsItems0
     ----------
     ancestorRef : GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicyStatusAncestorsItems0AncestorRef, default is Undefined, required
         ancestor ref
-    conditions : [GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicyStatusAncestorsItems0ConditionsItems0], default is Undefined, optional
+    conditions : [GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicyStatusAncestorsItems0ConditionsItems0], default is Undefined, required
         Conditions describes the status of the Policy with respect to the given Ancestor.
     controllerName : str, default is Undefined, required
         ControllerName is a domain/path string that indicates the name of the
@@ -376,12 +376,13 @@ schema GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicyStatusAncestorsItems0
     """
     ancestorRef: GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicyStatusAncestorsItems0AncestorRef
 
-    conditions?: [GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicyStatusAncestorsItems0ConditionsItems0]
+    conditions: [GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicyStatusAncestorsItems0ConditionsItems0]
+
     controllerName: str
 
     check:
-        len(conditions) >= 1 if conditions
-        len(conditions) <= 8 if conditions
+        len(conditions) >= 1
+        len(conditions) <= 8
         len(controllerName) <= 253
         len(controllerName) >= 1
         _regex_match(str(controllerName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*\/[A-Za-z0-9\/\-._~%!$&'()*+,;=:]+$")

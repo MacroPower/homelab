@@ -64,6 +64,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpec:
 
         - envoy.filters.http.ext_authz
 
+        - envoy.filters.http.api_key_auth
+
         - envoy.filters.http.basic_auth
 
         - envoy.filters.http.oauth2
@@ -71,6 +73,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpec:
         - envoy.filters.http.jwt_authn
 
         - envoy.filters.http.stateful_session
+
+        - envoy.filters.http.buffer
 
         - envoy.filters.http.lua
 
@@ -84,7 +88,15 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpec:
 
         - envoy.filters.http.ratelimit
 
+        - envoy.filters.http.grpc_web
+
+        - envoy.filters.http.grpc_stats
+
         - envoy.filters.http.custom_response
+
+        - envoy.filters.http.credential_injector
+
+        - envoy.filters.http.compressor
 
         - envoy.filters.http.router
 
@@ -109,7 +121,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpec:
         If a duplicate listener is detected, the newer listener (based on timestamp) will be rejected and its status will be updated with a "Accepted=False" condition.
     preserveRouteOrder : bool, default is Undefined, optional
         PreserveRouteOrder determines if the order of matching for HTTPRoutes is determined by Gateway-API
-        specification (https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io/v1.HTTPRouteRule)
+        specification (https://gateway-api.sigs.k8s.io/reference/1.4/spec/#httprouterule)
         or preserves the order defined by users in the HTTPRoute's HTTPRouteRule list.
         Default: False
     provider : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProvider, default is Undefined, optional
@@ -152,7 +164,10 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecBackendTLS:
         2. Other Routes: ALPN is disabled.
         3. Backends: proxy uses the appropriate ALPN options for the backend protocol.
         When an empty list is provided, the ALPN TLS extension is disabled.
-        Supported values are:
+
+        Defaults to [h2, http/1.1] if not specified.
+
+        Typical Supported values are:
         - http/1.0
         - http/1.1
         - h2
@@ -318,9 +333,9 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecFilterOrderItems0:
     name : str, default is Undefined, required
         Name of the filter.
     """
-    after?: "envoy.filters.http.health_check" | "envoy.filters.http.fault" | "envoy.filters.http.cors" | "envoy.filters.http.ext_authz" | "envoy.filters.http.api_key_auth" | "envoy.filters.http.basic_auth" | "envoy.filters.http.oauth2" | "envoy.filters.http.jwt_authn" | "envoy.filters.http.stateful_session" | "envoy.filters.http.lua" | "envoy.filters.http.ext_proc" | "envoy.filters.http.wasm" | "envoy.filters.http.rbac" | "envoy.filters.http.local_ratelimit" | "envoy.filters.http.ratelimit" | "envoy.filters.http.custom_response" | "envoy.filters.http.compressor"
-    before?: "envoy.filters.http.health_check" | "envoy.filters.http.fault" | "envoy.filters.http.cors" | "envoy.filters.http.ext_authz" | "envoy.filters.http.api_key_auth" | "envoy.filters.http.basic_auth" | "envoy.filters.http.oauth2" | "envoy.filters.http.jwt_authn" | "envoy.filters.http.stateful_session" | "envoy.filters.http.lua" | "envoy.filters.http.ext_proc" | "envoy.filters.http.wasm" | "envoy.filters.http.rbac" | "envoy.filters.http.local_ratelimit" | "envoy.filters.http.ratelimit" | "envoy.filters.http.custom_response" | "envoy.filters.http.compressor"
-    name: "envoy.filters.http.health_check" | "envoy.filters.http.fault" | "envoy.filters.http.cors" | "envoy.filters.http.ext_authz" | "envoy.filters.http.api_key_auth" | "envoy.filters.http.basic_auth" | "envoy.filters.http.oauth2" | "envoy.filters.http.jwt_authn" | "envoy.filters.http.stateful_session" | "envoy.filters.http.lua" | "envoy.filters.http.ext_proc" | "envoy.filters.http.wasm" | "envoy.filters.http.rbac" | "envoy.filters.http.local_ratelimit" | "envoy.filters.http.ratelimit" | "envoy.filters.http.custom_response" | "envoy.filters.http.compressor"
+    after?: "envoy.filters.http.health_check" | "envoy.filters.http.fault" | "envoy.filters.http.cors" | "envoy.filters.http.ext_authz" | "envoy.filters.http.api_key_auth" | "envoy.filters.http.basic_auth" | "envoy.filters.http.oauth2" | "envoy.filters.http.jwt_authn" | "envoy.filters.http.stateful_session" | "envoy.filters.http.buffer" | "envoy.filters.http.lua" | "envoy.filters.http.ext_proc" | "envoy.filters.http.wasm" | "envoy.filters.http.rbac" | "envoy.filters.http.local_ratelimit" | "envoy.filters.http.ratelimit" | "envoy.filters.http.grpc_web" | "envoy.filters.http.grpc_stats" | "envoy.filters.http.custom_response" | "envoy.filters.http.credential_injector" | "envoy.filters.http.compressor"
+    before?: "envoy.filters.http.health_check" | "envoy.filters.http.fault" | "envoy.filters.http.cors" | "envoy.filters.http.ext_authz" | "envoy.filters.http.api_key_auth" | "envoy.filters.http.basic_auth" | "envoy.filters.http.oauth2" | "envoy.filters.http.jwt_authn" | "envoy.filters.http.stateful_session" | "envoy.filters.http.buffer" | "envoy.filters.http.lua" | "envoy.filters.http.ext_proc" | "envoy.filters.http.wasm" | "envoy.filters.http.rbac" | "envoy.filters.http.local_ratelimit" | "envoy.filters.http.ratelimit" | "envoy.filters.http.grpc_web" | "envoy.filters.http.grpc_stats" | "envoy.filters.http.custom_response" | "envoy.filters.http.credential_injector" | "envoy.filters.http.compressor"
+    name: "envoy.filters.http.health_check" | "envoy.filters.http.fault" | "envoy.filters.http.cors" | "envoy.filters.http.ext_authz" | "envoy.filters.http.api_key_auth" | "envoy.filters.http.basic_auth" | "envoy.filters.http.oauth2" | "envoy.filters.http.jwt_authn" | "envoy.filters.http.stateful_session" | "envoy.filters.http.buffer" | "envoy.filters.http.lua" | "envoy.filters.http.ext_proc" | "envoy.filters.http.wasm" | "envoy.filters.http.rbac" | "envoy.filters.http.local_ratelimit" | "envoy.filters.http.ratelimit" | "envoy.filters.http.grpc_web" | "envoy.filters.http.grpc_stats" | "envoy.filters.http.custom_response" | "envoy.filters.http.credential_injector" | "envoy.filters.http.compressor"
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecLogging:
     r"""
@@ -342,15 +357,33 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProvider:
 
     Attributes
     ----------
+    host : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderHost, default is Undefined, optional
+        host
     kubernetes : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetes, default is Undefined, optional
         kubernetes
     $type : str, default is Undefined, required
         Type is the type of resource provider to use. A resource provider provides
         infrastructure resources for running the data plane, e.g. Envoy proxy, and
-        optional auxiliary control planes. Supported types are "Kubernetes".
+        optional auxiliary control planes. Supported types are "Kubernetes"and "Host".
     """
+    host?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderHost
     kubernetes?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetes
-    $type: "Kubernetes" | "Custom"
+    $type: "Kubernetes" | "Host"
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderHost:
+    r"""
+    Host provides runtime deployment of the data plane as a child process on the
+    host environment.
+    If unspecified and type is "Host", default settings for the custom provider
+    are applied.
+
+    Attributes
+    ----------
+    envoyVersion : str, default is Undefined, optional
+        EnvoyVersion is the version of Envoy to use. If unspecified, the version
+        against which Envoy Gateway is built will be used.
+    """
+    envoyVersion?: str
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetes:
     r"""
@@ -448,7 +481,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the environment variable. Must be a C_IDENTIFIER.
+        Name of the environment variable.
+        May consist of any printable ASCII characters except '='.
     value : str, default is Undefined, optional
         Variable references $(VAR_NAME) are expanded
         using the previously defined environment variables in the container and
@@ -477,6 +511,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
         config map key ref
     fieldRef : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetContainerEnvItems0ValueFromFieldRef, default is Undefined, optional
         field ref
+    fileKeyRef : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetContainerEnvItems0ValueFromFileKeyRef, default is Undefined, optional
+        file key ref
     resourceFieldRef : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetContainerEnvItems0ValueFromResourceFieldRef, default is Undefined, optional
         resource field ref
     secretKeyRef : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetContainerEnvItems0ValueFromSecretKeyRef, default is Undefined, optional
@@ -484,6 +520,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
     """
     configMapKeyRef?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetContainerEnvItems0ValueFromConfigMapKeyRef
     fieldRef?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetContainerEnvItems0ValueFromFieldRef
+    fileKeyRef?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetContainerEnvItems0ValueFromFileKeyRef
     resourceFieldRef?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetContainerEnvItems0ValueFromResourceFieldRef
     secretKeyRef?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetContainerEnvItems0ValueFromSecretKeyRef
 
@@ -523,6 +560,38 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
     """
     apiVersion?: str
     fieldPath: str
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetContainerEnvItems0ValueFromFileKeyRef:
+    r"""
+    FileKeyRef selects a key of the env file.
+    Requires the EnvFiles feature gate to be enabled.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        The key within the env file. An invalid key will prevent the pod from starting.
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+        During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
+    optional : bool, default is Undefined, optional
+        Specify whether the file or its key must be defined. If the file or key
+        does not exist, then the env var is not published.
+        If optional is set to true and the specified key does not exist,
+        the environment variable will not be set in the Pod's containers.
+
+        If optional is set to false and the specified key does not exist,
+        an error will be returned during Pod creation.
+    path : str, default is Undefined, required
+        The path within the volume from which to select the file.
+        Must be relative and may not contain the '..' path or start with '..'.
+    volumeName : str, default is Undefined, required
+        The name of the volume mount containing the env file.
+    """
+    key: str
+
+    optional?: bool = False
+    path: str
+
+    volumeName: str
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetContainerEnvItems0ValueFromResourceFieldRef:
     r"""
@@ -578,7 +647,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -1455,8 +1524,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
         most preferred is the one with the greatest sum of weights, i.e.
         for each node that meets all of the scheduling requirements (resource
         request, requiredDuringScheduling anti-affinity expressions, etc.),
-        compute a sum by iterating through the elements of this field and adding
-        "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the
+        compute a sum by iterating through the elements of this field and subtracting
+        "weight" from the sum if the node has pods which matches the corresponding podAffinityTerm; the
         node(s) with the highest sum are the most preferred.
     requiredDuringSchedulingIgnoredDuringExecution : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
         If the anti-affinity requirements specified by this field are not met at
@@ -2789,15 +2858,13 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
         volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim.
         If specified, the CSI driver will create or update the volume with the attributes defined
         in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName,
-        it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass
-        will be applied to the claim but it's not allowed to reset this field to empty string once it is set.
-        If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass
-        will be set by the persistentvolume controller if it exists.
+        it can be changed after the claim is created. An empty string or nil value indicates that no
+        VolumeAttributesClass will be applied to the claim. If the claim enters an Infeasible error state,
+        this field can be reset to its previous value (including nil) to cancel the modification.
         If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be
         set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource
         exists.
         More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/
-        (Beta) Using this field requires the VolumeAttributesClass feature gate to be enabled (off by default).
     volumeMode : str, default is Undefined, optional
         volumeMode defines what type of volume is required by the claim.
         Value of Filesystem is implied when not included in claim spec.
@@ -3109,13 +3176,11 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
     r"""
     glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime.
     Deprecated: Glusterfs is deprecated and the in-tree glusterfs type is no longer supported.
-    More info: https://examples.k8s.io/volumes/glusterfs/README.md
 
     Attributes
     ----------
     endpoints : str, default is Undefined, required
         endpoints is the endpoint name that details Glusterfs topology.
-        More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
     path : str, default is Undefined, required
         path is the Glusterfs volume path.
         More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
@@ -3193,7 +3258,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
     r"""
     iscsi represents an ISCSI Disk resource that is attached to a
     kubelet's host machine and then exposed to the pod.
-    More info: https://examples.k8s.io/volumes/iscsi/README.md
+    More info: https://kubernetes.io/docs/concepts/storage/volumes/#iscsi
 
     Attributes
     ----------
@@ -3373,6 +3438,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
         config map
     downwardAPI : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodVolumesItems0ProjectedSourcesItems0DownwardAPI, default is Undefined, optional
         downward API
+    podCertificate : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodVolumesItems0ProjectedSourcesItems0PodCertificate, default is Undefined, optional
+        pod certificate
     secret : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodVolumesItems0ProjectedSourcesItems0Secret, default is Undefined, optional
         secret
     serviceAccountToken : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodVolumesItems0ProjectedSourcesItems0ServiceAccountToken, default is Undefined, optional
@@ -3381,6 +3448,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
     clusterTrustBundle?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodVolumesItems0ProjectedSourcesItems0ClusterTrustBundle
     configMap?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodVolumesItems0ProjectedSourcesItems0ConfigMap
     downwardAPI?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodVolumesItems0ProjectedSourcesItems0DownwardAPI
+    podCertificate?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodVolumesItems0ProjectedSourcesItems0PodCertificate
     secret?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodVolumesItems0ProjectedSourcesItems0Secret
     serviceAccountToken?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodVolumesItems0ProjectedSourcesItems0ServiceAccountToken
 
@@ -3595,6 +3663,105 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
     check:
         _regex_match(str(divisor), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if divisor
 
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodVolumesItems0ProjectedSourcesItems0PodCertificate:
+    r"""
+    Projects an auto-rotating credential bundle (private key and certificate
+    chain) that the pod can use either as a TLS client or server.
+
+    Kubelet generates a private key and uses it to send a
+    PodCertificateRequest to the named signer.  Once the signer approves the
+    request and issues a certificate chain, Kubelet writes the key and
+    certificate chain to the pod filesystem.  The pod does not start until
+    certificates have been issued for each podCertificate projected volume
+    source in its spec.
+
+    Kubelet will begin trying to rotate the certificate at the time indicated
+    by the signer using the PodCertificateRequest.Status.BeginRefreshAt
+    timestamp.
+
+    Kubelet can write a single file, indicated by the credentialBundlePath
+    field, or separate files, indicated by the keyPath and
+    certificateChainPath fields.
+
+    The credential bundle is a single file in PEM format.  The first PEM
+    entry is the private key (in PKCS#8 format), and the remaining PEM
+    entries are the certificate chain issued by the signer (typically,
+    signers will return their certificate chain in leaf-to-root order).
+
+    Prefer using the credential bundle format, since your application code
+    can read it atomically.  If you use keyPath and certificateChainPath,
+    your application must make two separate file reads. If these coincide
+    with a certificate rotation, it is possible that the private key and leaf
+    certificate you read may not correspond to each other.  Your application
+    will need to check for this condition, and re-read until they are
+    consistent.
+
+    The named signer controls chooses the format of the certificate it
+    issues; consult the signer implementation's documentation to learn how to
+    use the certificates it issues.
+
+    Attributes
+    ----------
+    certificateChainPath : str, default is Undefined, optional
+        Write the certificate chain at this path in the projected volume.
+
+        Most applications should use credentialBundlePath.  When using keyPath
+        and certificateChainPath, your application needs to check that the key
+        and leaf certificate are consistent, because it is possible to read the
+        files mid-rotation.
+    credentialBundlePath : str, default is Undefined, optional
+        Write the credential bundle at this path in the projected volume.
+
+        The credential bundle is a single file that contains multiple PEM blocks.
+        The first PEM block is a PRIVATE KEY block, containing a PKCS#8 private
+        key.
+
+        The remaining blocks are CERTIFICATE blocks, containing the issued
+        certificate chain from the signer (leaf and any intermediates).
+
+        Using credentialBundlePath lets your Pod's application code make a single
+        atomic read that retrieves a consistent key and certificate chain.  If you
+        project them to separate files, your application code will need to
+        additionally check that the leaf certificate was issued to the key.
+    keyPath : str, default is Undefined, optional
+        Write the key at this path in the projected volume.
+
+        Most applications should use credentialBundlePath.  When using keyPath
+        and certificateChainPath, your application needs to check that the key
+        and leaf certificate are consistent, because it is possible to read the
+        files mid-rotation.
+    keyType : str, default is Undefined, required
+        The type of keypair Kubelet will generate for the pod.
+
+        Valid values are "RSA3072", "RSA4096", "ECDSAP256", "ECDSAP384",
+        "ECDSAP521", and "ED25519".
+    maxExpirationSeconds : int, default is Undefined, optional
+        maxExpirationSeconds is the maximum lifetime permitted for the
+        certificate.
+
+        Kubelet copies this value verbatim into the PodCertificateRequests it
+        generates for this projection.
+
+        If omitted, kube-apiserver will set it to 86400(24 hours). kube-apiserver
+        will reject values shorter than 3600 (1 hour).  The maximum allowable
+        value is 7862400 (91 days).
+
+        The signer implementation is then free to issue a certificate with any
+        lifetime *shorter* than MaxExpirationSeconds, but no shorter than 3600
+        seconds (1 hour).  This constraint is enforced by kube-apiserver.
+        `kubernetes.io` signers will never issue certificates with a lifetime
+        longer than 24 hours.
+    signerName : str, default is Undefined, required
+        Kubelet's generated CSRs will be addressed to this signer.
+    """
+    certificateChainPath?: str
+    credentialBundlePath?: str
+    keyPath?: str
+    keyType: str
+
+    maxExpirationSeconds?: int
+    signerName: str
+
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodVolumesItems0ProjectedSourcesItems0Secret:
     r"""
     secret information about the secret data to project
@@ -3712,7 +3879,6 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
     r"""
     rbd represents a Rados Block Device mount on the host that shares a pod's lifetime.
     Deprecated: RBD is deprecated and the in-tree rbd type is no longer supported.
-    More info: https://examples.k8s.io/volumes/rbd/README.md
 
     Attributes
     ----------
@@ -4006,7 +4172,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
         pod is available (Ready for at least minReadySeconds) the old DaemonSet pod
         on that node is marked deleted. If the old pod becomes unavailable for any
         reason (Ready transitions to false, is evicted, or is drained) an updated
-        pod is immediatedly created on that node without considering surge limits.
+        pod is immediately created on that node without considering surge limits.
         Allowing surge implies the possibility that the resources consumed by the
         daemonset on any given node can double if the readiness check fails, and
         so resource intensive daemonsets should take into account that they may
@@ -4100,7 +4266,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the environment variable. Must be a C_IDENTIFIER.
+        Name of the environment variable.
+        May consist of any printable ASCII characters except '='.
     value : str, default is Undefined, optional
         Variable references $(VAR_NAME) are expanded
         using the previously defined environment variables in the container and
@@ -4129,6 +4296,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
         config map key ref
     fieldRef : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentContainerEnvItems0ValueFromFieldRef, default is Undefined, optional
         field ref
+    fileKeyRef : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentContainerEnvItems0ValueFromFileKeyRef, default is Undefined, optional
+        file key ref
     resourceFieldRef : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentContainerEnvItems0ValueFromResourceFieldRef, default is Undefined, optional
         resource field ref
     secretKeyRef : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentContainerEnvItems0ValueFromSecretKeyRef, default is Undefined, optional
@@ -4136,6 +4305,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
     """
     configMapKeyRef?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentContainerEnvItems0ValueFromConfigMapKeyRef
     fieldRef?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentContainerEnvItems0ValueFromFieldRef
+    fileKeyRef?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentContainerEnvItems0ValueFromFileKeyRef
     resourceFieldRef?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentContainerEnvItems0ValueFromResourceFieldRef
     secretKeyRef?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentContainerEnvItems0ValueFromSecretKeyRef
 
@@ -4175,6 +4345,38 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
     """
     apiVersion?: str
     fieldPath: str
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentContainerEnvItems0ValueFromFileKeyRef:
+    r"""
+    FileKeyRef selects a key of the env file.
+    Requires the EnvFiles feature gate to be enabled.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        The key within the env file. An invalid key will prevent the pod from starting.
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+        During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
+    optional : bool, default is Undefined, optional
+        Specify whether the file or its key must be defined. If the file or key
+        does not exist, then the env var is not published.
+        If optional is set to true and the specified key does not exist,
+        the environment variable will not be set in the Pod's containers.
+
+        If optional is set to false and the specified key does not exist,
+        an error will be returned during Pod creation.
+    path : str, default is Undefined, required
+        The path within the volume from which to select the file.
+        Must be relative and may not contain the '..' path or start with '..'.
+    volumeName : str, default is Undefined, required
+        The name of the volume mount containing the env file.
+    """
+    key: str
+
+    optional?: bool = False
+    path: str
+
+    volumeName: str
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentContainerEnvItems0ValueFromResourceFieldRef:
     r"""
@@ -4230,7 +4432,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -4549,8 +4751,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
         Cannot be updated.
     envFrom : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0EnvFromItems0], default is Undefined, optional
         List of sources to populate environment variables in the container.
-        The keys defined within a source must be a C_IDENTIFIER. All invalid keys
-        will be reported as an event when the container is starting. When a key exists in multiple
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+        When a key exists in multiple
         sources, the value associated with the last source will take precedence.
         Values defined by an Env with a duplicate key will take precedence.
         Cannot be updated.
@@ -4589,10 +4791,10 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
         resources
     restartPolicy : str, default is Undefined, optional
         RestartPolicy defines the restart behavior of individual containers in a pod.
-        This field may only be set for init containers, and the only allowed value is "Always".
-        For non-init containers or when this field is not specified,
+        This overrides the pod-level restart policy. When this field is not specified,
         the restart behavior is defined by the Pod's restart policy and the container type.
-        Setting the RestartPolicy as "Always" for the init container will have the following effect:
+        Additionally, setting the RestartPolicy as "Always" for the init container will
+        have the following effect:
         this init container will be continually restarted on
         exit until all regular containers have terminated. Once all regular
         containers have completed, all init containers with restartPolicy "Always"
@@ -4603,6 +4805,18 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
         container. Instead, the next init container starts immediately after this
         init container is started, or after any startupProbe has successfully
         completed.
+    restartPolicyRules : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0RestartPolicyRulesItems0], default is Undefined, optional
+        Represents a list of rules to be checked to determine if the
+        container should be restarted on exit. The rules are evaluated in
+        order. Once a rule matches a container exit condition, the remaining
+        rules are ignored. If no rule matches the container exit condition,
+        the Container-level restart policy determines the whether the container
+        is restarted or not. Constraints on the rules:
+        - At most 20 rules are allowed.
+        - Rules can have the same action.
+        - Identical rules are not forbidden in validations.
+        When rules are specified, container MUST set RestartPolicy explicitly
+        even it if matches the Pod's RestartPolicy.
     securityContext : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0SecurityContext, default is Undefined, optional
         security context
     startupProbe : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0StartupProbe, default is Undefined, optional
@@ -4664,6 +4878,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
     resizePolicy?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0ResizePolicyItems0]
     resources?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0Resources
     restartPolicy?: str
+    restartPolicyRules?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0RestartPolicyRulesItems0]
     securityContext?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0SecurityContext
     startupProbe?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0StartupProbe
     stdin?: bool
@@ -4684,7 +4899,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
     configMapRef : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0EnvFromItems0ConfigMapRef, default is Undefined, optional
         config map ref
     prefix : str, default is Undefined, optional
-        Optional text to prepend to the name of each environment variable. Must be a C_IDENTIFIER.
+        Optional text to prepend to the name of each environment variable.
+        May consist of any printable ASCII characters except '='.
     secretRef : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0EnvFromItems0SecretRef, default is Undefined, optional
         secret ref
     """
@@ -4735,7 +4951,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the environment variable. Must be a C_IDENTIFIER.
+        Name of the environment variable.
+        May consist of any printable ASCII characters except '='.
     value : str, default is Undefined, optional
         Variable references $(VAR_NAME) are expanded
         using the previously defined environment variables in the container and
@@ -4764,6 +4981,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
         config map key ref
     fieldRef : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0EnvItems0ValueFromFieldRef, default is Undefined, optional
         field ref
+    fileKeyRef : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0EnvItems0ValueFromFileKeyRef, default is Undefined, optional
+        file key ref
     resourceFieldRef : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0EnvItems0ValueFromResourceFieldRef, default is Undefined, optional
         resource field ref
     secretKeyRef : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0EnvItems0ValueFromSecretKeyRef, default is Undefined, optional
@@ -4771,6 +4990,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
     """
     configMapKeyRef?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0EnvItems0ValueFromConfigMapKeyRef
     fieldRef?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0EnvItems0ValueFromFieldRef
+    fileKeyRef?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0EnvItems0ValueFromFileKeyRef
     resourceFieldRef?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0EnvItems0ValueFromResourceFieldRef
     secretKeyRef?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0EnvItems0ValueFromSecretKeyRef
 
@@ -4810,6 +5030,38 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
     """
     apiVersion?: str
     fieldPath: str
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0EnvItems0ValueFromFileKeyRef:
+    r"""
+    FileKeyRef selects a key of the env file.
+    Requires the EnvFiles feature gate to be enabled.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        The key within the env file. An invalid key will prevent the pod from starting.
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+        During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
+    optional : bool, default is Undefined, optional
+        Specify whether the file or its key must be defined. If the file or key
+        does not exist, then the env var is not published.
+        If optional is set to true and the specified key does not exist,
+        the environment variable will not be set in the Pod's containers.
+
+        If optional is set to false and the specified key does not exist,
+        an error will be returned during Pod creation.
+    path : str, default is Undefined, required
+        The path within the volume from which to select the file.
+        Must be relative and may not contain the '..' path or start with '..'.
+    volumeName : str, default is Undefined, required
+        The name of the volume mount containing the env file.
+    """
+    key: str
+
+    optional?: bool = False
+    path: str
+
+    volumeName: str
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0EnvItems0ValueFromResourceFieldRef:
     r"""
@@ -5459,7 +5711,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -5498,6 +5750,44 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
     name: str
 
     request?: str
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0RestartPolicyRulesItems0:
+    r"""
+    ContainerRestartRule describes how a container exit is handled.
+
+    Attributes
+    ----------
+    action : str, default is Undefined, required
+        Specifies the action taken on a container exit if the requirements
+        are satisfied. The only possible value is "Restart" to restart the
+        container.
+    exitCodes : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0RestartPolicyRulesItems0ExitCodes, default is Undefined, optional
+        exit codes
+    """
+    action: str
+
+    exitCodes?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0RestartPolicyRulesItems0ExitCodes
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0RestartPolicyRulesItems0ExitCodes:
+    r"""
+    Represents the exit codes to check on container exits.
+
+    Attributes
+    ----------
+    operator : str, default is Undefined, required
+        Represents the relationship between the container exit code(s) and the
+        specified values. Possible values are:
+        - In: the requirement is satisfied if the container exit code is in the
+          set of specified values.
+        - NotIn: the requirement is satisfied if the container exit code is
+          not in the set of specified values.
+    values : [int], default is Undefined, optional
+        Specifies the set of values to check for container exit codes.
+        At most 255 elements are allowed.
+    """
+    operator: str
+
+    values?: [int]
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0SecurityContext:
     r"""
@@ -6503,8 +6793,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
         most preferred is the one with the greatest sum of weights, i.e.
         for each node that meets all of the scheduling requirements (resource
         request, requiredDuringScheduling anti-affinity expressions, etc.),
-        compute a sum by iterating through the elements of this field and adding
-        "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the
+        compute a sum by iterating through the elements of this field and subtracting
+        "weight" from the sum if the node has pods which matches the corresponding podAffinityTerm; the
         node(s) with the highest sum are the most preferred.
     requiredDuringSchedulingIgnoredDuringExecution : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
         If the anti-affinity requirements specified by this field are not met at
@@ -7837,15 +8127,13 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
         volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim.
         If specified, the CSI driver will create or update the volume with the attributes defined
         in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName,
-        it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass
-        will be applied to the claim but it's not allowed to reset this field to empty string once it is set.
-        If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass
-        will be set by the persistentvolume controller if it exists.
+        it can be changed after the claim is created. An empty string or nil value indicates that no
+        VolumeAttributesClass will be applied to the claim. If the claim enters an Infeasible error state,
+        this field can be reset to its previous value (including nil) to cancel the modification.
         If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be
         set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource
         exists.
         More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/
-        (Beta) Using this field requires the VolumeAttributesClass feature gate to be enabled (off by default).
     volumeMode : str, default is Undefined, optional
         volumeMode defines what type of volume is required by the claim.
         Value of Filesystem is implied when not included in claim spec.
@@ -8157,13 +8445,11 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
     r"""
     glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime.
     Deprecated: Glusterfs is deprecated and the in-tree glusterfs type is no longer supported.
-    More info: https://examples.k8s.io/volumes/glusterfs/README.md
 
     Attributes
     ----------
     endpoints : str, default is Undefined, required
         endpoints is the endpoint name that details Glusterfs topology.
-        More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
     path : str, default is Undefined, required
         path is the Glusterfs volume path.
         More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
@@ -8241,7 +8527,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
     r"""
     iscsi represents an ISCSI Disk resource that is attached to a
     kubelet's host machine and then exposed to the pod.
-    More info: https://examples.k8s.io/volumes/iscsi/README.md
+    More info: https://kubernetes.io/docs/concepts/storage/volumes/#iscsi
 
     Attributes
     ----------
@@ -8421,6 +8707,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
         config map
     downwardAPI : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodVolumesItems0ProjectedSourcesItems0DownwardAPI, default is Undefined, optional
         downward API
+    podCertificate : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodVolumesItems0ProjectedSourcesItems0PodCertificate, default is Undefined, optional
+        pod certificate
     secret : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodVolumesItems0ProjectedSourcesItems0Secret, default is Undefined, optional
         secret
     serviceAccountToken : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodVolumesItems0ProjectedSourcesItems0ServiceAccountToken, default is Undefined, optional
@@ -8429,6 +8717,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
     clusterTrustBundle?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodVolumesItems0ProjectedSourcesItems0ClusterTrustBundle
     configMap?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodVolumesItems0ProjectedSourcesItems0ConfigMap
     downwardAPI?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodVolumesItems0ProjectedSourcesItems0DownwardAPI
+    podCertificate?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodVolumesItems0ProjectedSourcesItems0PodCertificate
     secret?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodVolumesItems0ProjectedSourcesItems0Secret
     serviceAccountToken?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodVolumesItems0ProjectedSourcesItems0ServiceAccountToken
 
@@ -8643,6 +8932,105 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
     check:
         _regex_match(str(divisor), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if divisor
 
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodVolumesItems0ProjectedSourcesItems0PodCertificate:
+    r"""
+    Projects an auto-rotating credential bundle (private key and certificate
+    chain) that the pod can use either as a TLS client or server.
+
+    Kubelet generates a private key and uses it to send a
+    PodCertificateRequest to the named signer.  Once the signer approves the
+    request and issues a certificate chain, Kubelet writes the key and
+    certificate chain to the pod filesystem.  The pod does not start until
+    certificates have been issued for each podCertificate projected volume
+    source in its spec.
+
+    Kubelet will begin trying to rotate the certificate at the time indicated
+    by the signer using the PodCertificateRequest.Status.BeginRefreshAt
+    timestamp.
+
+    Kubelet can write a single file, indicated by the credentialBundlePath
+    field, or separate files, indicated by the keyPath and
+    certificateChainPath fields.
+
+    The credential bundle is a single file in PEM format.  The first PEM
+    entry is the private key (in PKCS#8 format), and the remaining PEM
+    entries are the certificate chain issued by the signer (typically,
+    signers will return their certificate chain in leaf-to-root order).
+
+    Prefer using the credential bundle format, since your application code
+    can read it atomically.  If you use keyPath and certificateChainPath,
+    your application must make two separate file reads. If these coincide
+    with a certificate rotation, it is possible that the private key and leaf
+    certificate you read may not correspond to each other.  Your application
+    will need to check for this condition, and re-read until they are
+    consistent.
+
+    The named signer controls chooses the format of the certificate it
+    issues; consult the signer implementation's documentation to learn how to
+    use the certificates it issues.
+
+    Attributes
+    ----------
+    certificateChainPath : str, default is Undefined, optional
+        Write the certificate chain at this path in the projected volume.
+
+        Most applications should use credentialBundlePath.  When using keyPath
+        and certificateChainPath, your application needs to check that the key
+        and leaf certificate are consistent, because it is possible to read the
+        files mid-rotation.
+    credentialBundlePath : str, default is Undefined, optional
+        Write the credential bundle at this path in the projected volume.
+
+        The credential bundle is a single file that contains multiple PEM blocks.
+        The first PEM block is a PRIVATE KEY block, containing a PKCS#8 private
+        key.
+
+        The remaining blocks are CERTIFICATE blocks, containing the issued
+        certificate chain from the signer (leaf and any intermediates).
+
+        Using credentialBundlePath lets your Pod's application code make a single
+        atomic read that retrieves a consistent key and certificate chain.  If you
+        project them to separate files, your application code will need to
+        additionally check that the leaf certificate was issued to the key.
+    keyPath : str, default is Undefined, optional
+        Write the key at this path in the projected volume.
+
+        Most applications should use credentialBundlePath.  When using keyPath
+        and certificateChainPath, your application needs to check that the key
+        and leaf certificate are consistent, because it is possible to read the
+        files mid-rotation.
+    keyType : str, default is Undefined, required
+        The type of keypair Kubelet will generate for the pod.
+
+        Valid values are "RSA3072", "RSA4096", "ECDSAP256", "ECDSAP384",
+        "ECDSAP521", and "ED25519".
+    maxExpirationSeconds : int, default is Undefined, optional
+        maxExpirationSeconds is the maximum lifetime permitted for the
+        certificate.
+
+        Kubelet copies this value verbatim into the PodCertificateRequests it
+        generates for this projection.
+
+        If omitted, kube-apiserver will set it to 86400(24 hours). kube-apiserver
+        will reject values shorter than 3600 (1 hour).  The maximum allowable
+        value is 7862400 (91 days).
+
+        The signer implementation is then free to issue a certificate with any
+        lifetime *shorter* than MaxExpirationSeconds, but no shorter than 3600
+        seconds (1 hour).  This constraint is enforced by kube-apiserver.
+        `kubernetes.io` signers will never issue certificates with a lifetime
+        longer than 24 hours.
+    signerName : str, default is Undefined, required
+        Kubelet's generated CSRs will be addressed to this signer.
+    """
+    certificateChainPath?: str
+    credentialBundlePath?: str
+    keyPath?: str
+    keyType: str
+
+    maxExpirationSeconds?: int
+    signerName: str
+
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodVolumesItems0ProjectedSourcesItems0Secret:
     r"""
     secret information about the secret data to project
@@ -8760,7 +9148,6 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
     r"""
     rbd represents a Rados Block Device mount on the host that shares a pod's lifetime.
     Deprecated: RBD is deprecated and the in-tree rbd type is no longer supported.
-    More info: https://examples.k8s.io/volumes/rbd/README.md
 
     Attributes
     ----------
@@ -10268,6 +10655,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         If unspecified, an implementation defined default is applied (32768 bytes).
         For example, 20Mi, 1Gi, 256Ki etc.
         Note: that when the suffix is not provided, the value is interpreted as bytes.
+    preconnect : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsConnectionPreconnect, default is Undefined, optional
+        preconnect
     socketBufferLimit : int | str, default is Undefined, optional
         SocketBufferLimit provides configuration for the maximum buffer size in bytes for each socket
         to backend.
@@ -10276,6 +10665,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         Note that when the suffix is not provided, the value is interpreted as bytes.
     """
     bufferLimit?: int | str
+    preconnect?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsConnectionPreconnect
     socketBufferLimit?: int | str
 
     check:
@@ -10283,6 +10673,42 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         _regex_match(str(bufferLimit), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if bufferLimit
         _regex_match(str(socketBufferLimit), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if socketBufferLimit
         _regex_match(str(socketBufferLimit), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if socketBufferLimit
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsConnectionPreconnect:
+    r"""
+    Preconnect configures proactive upstream connections to reduce latency by establishing
+    connections before they’re needed and avoiding connection establishment overhead.
+
+    If unset, Envoy will fetch connections as needed to serve in-flight requests.
+
+    Attributes
+    ----------
+    perEndpointPercent : int, default is Undefined, optional
+        PerEndpointPercent configures how many additional connections to maintain per
+        upstream endpoint, useful for high-QPS or latency sensitive services. Expressed as a
+        percentage of the connections required by active streams
+        (e.g. 100 = preconnect disabled, 105 = 1.05x connections per-endpoint, 200 = 2.00×).
+
+        Allowed value range is between 100-300. When both PerEndpointPercent and
+        PredictivePercent are set, Envoy ensures both are satisfied (max of the two).
+    predictivePercent : int, default is Undefined, optional
+        PredictivePercent configures how many additional connections to maintain
+        across the cluster by anticipating which upstream endpoint the load balancer
+        will select next, useful for low-QPS services. Relies on deterministic
+        loadbalancing and is only supported with Random or RoundRobin.
+        Expressed as a percentage of the connections required by active streams
+        (e.g. 100 = 1.0 (no preconnect), 105 = 1.05× connections across the cluster, 200 = 2.00×).
+
+        Minimum allowed value is 100. When both PerEndpointPercent and PredictivePercent are
+        set Envoy ensures both are satisfied per host (max of the two).
+    """
+    perEndpointPercent?: int
+    predictivePercent?: int
+
+    check:
+        perEndpointPercent <= 300 if perEndpointPercent not in [None, Undefined]
+        perEndpointPercent >= 100 if perEndpointPercent not in [None, Undefined]
+        predictivePercent >= 100 if predictivePercent not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsDNS:
     r"""
@@ -10507,6 +10933,10 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
     consecutiveLocalOriginFailures : int, default is 5, optional
         ConsecutiveLocalOriginFailures sets the number of consecutive local origin failures triggering ejection.
         Parameter takes effect only when split_external_local_origin_errors is set to true.
+    failurePercentageThreshold : int, default is Undefined, optional
+        FailurePercentageThreshold sets the failure percentage threshold for outlier detection.
+        If the failure percentage of a given host is greater than or equal to this value, it will be ejected.
+        Defaults to 85.
     interval : str, default is "3s", optional
         Interval defines the time between passive health checks.
     maxEjectionPercent : int, default is 10, optional
@@ -10516,14 +10946,17 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
     """
     baseEjectionTime?: str = "30s"
     consecutive5XxErrors?: int = 5
-    consecutiveGatewayErrors?: int = 0
+    consecutiveGatewayErrors?: int
     consecutiveLocalOriginFailures?: int = 5
+    failurePercentageThreshold?: int
     interval?: str = "3s"
     maxEjectionPercent?: int = 10
     splitExternalLocalOriginErrors?: bool = False
 
     check:
         _regex_match(str(baseEjectionTime), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if baseEjectionTime
+        failurePercentageThreshold <= 100 if failurePercentageThreshold not in [None, Undefined]
+        failurePercentageThreshold >= 0 if failurePercentageThreshold not in [None, Undefined]
         _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsHttp2:
@@ -10601,18 +11034,22 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         cookie
     header : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsLoadBalancerConsistentHashHeader, default is Undefined, optional
         header
+    headers : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsLoadBalancerConsistentHashHeadersItems0], default is Undefined, optional
+        Headers configures the header hash policy for each header, when the consistent hash type is set to Headers.
     tableSize : int, default is 65537, optional
         The table size for consistent hashing, must be prime number limited to 5000011.
     $type : str, default is Undefined, required
         ConsistentHashType defines the type of input to hash on. Valid Type values are
         "SourceIP",
         "Header",
+        "Headers",
         "Cookie".
     """
     cookie?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsLoadBalancerConsistentHashCookie
     header?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsLoadBalancerConsistentHashHeader
+    headers?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsLoadBalancerConsistentHashHeadersItems0]
     tableSize?: int = 65537
-    $type: "SourceIP" | "Header" | "Cookie"
+    $type: "SourceIP" | "Header" | "Headers" | "Cookie"
 
     check:
         tableSize <= 5000011 if tableSize not in [None, Undefined]
@@ -10647,6 +11084,20 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsLoadBalancerConsistentHashHeader:
     r"""
     Header configures the header hash policy when the consistent hash type is set to Header.
+
+    Deprecated: use Headers instead
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the header to hash.
+    """
+    name: str
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsLoadBalancerConsistentHashHeadersItems0:
+    r"""
+    Header defines the header hashing configuration for consistent hash based
+    load balancing.
 
     Attributes
     ----------
@@ -10727,9 +11178,16 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         force
     minEndpointsThreshold : int, default is Undefined, optional
         MinEndpointsThreshold is the minimum number of total upstream endpoints across all zones required to enable zone-aware routing.
+    percentageEnabled : int, default is Undefined, optional
+        Configures percentage of requests that will be considered for zone aware routing if zone aware routing is configured. If not specified, Envoy defaults to 100%.
     """
     force?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsLoadBalancerZoneAwarePreferLocalForce
     minEndpointsThreshold?: int
+    percentageEnabled?: int
+
+    check:
+        percentageEnabled <= 100 if percentageEnabled not in [None, Undefined]
+        percentageEnabled >= 0 if percentageEnabled not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsLoadBalancerZoneAwarePreferLocalForce:
     r"""
@@ -10897,16 +11355,23 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
     maxConnectionDuration : str, default is Undefined, optional
         The maximum duration of an HTTP connection.
         Default: unlimited.
+    maxStreamDuration : str, default is Undefined, optional
+        MaxStreamDuration is the maximum duration for a stream to complete. This timeout measures the time
+        from when the request is sent until the response stream is fully consumed and does not apply to
+        non-streaming requests.
+        When set to "0s", no max duration is applied and streams can run indefinitely.
     requestTimeout : str, default is Undefined, optional
         RequestTimeout is the time until which entire response is received from the upstream.
     """
     connectionIdleTimeout?: str
     maxConnectionDuration?: str
+    maxStreamDuration?: str
     requestTimeout?: str
 
     check:
         _regex_match(str(connectionIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if connectionIdleTimeout
         _regex_match(str(maxConnectionDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxConnectionDuration
+        _regex_match(str(maxStreamDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxStreamDuration
         _regex_match(str(requestTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if requestTimeout
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsTimeoutTCP:
@@ -11234,6 +11699,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         If unspecified, an implementation defined default is applied (32768 bytes).
         For example, 20Mi, 1Gi, 256Ki etc.
         Note: that when the suffix is not provided, the value is interpreted as bytes.
+    preconnect : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsConnectionPreconnect, default is Undefined, optional
+        preconnect
     socketBufferLimit : int | str, default is Undefined, optional
         SocketBufferLimit provides configuration for the maximum buffer size in bytes for each socket
         to backend.
@@ -11242,6 +11709,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         Note that when the suffix is not provided, the value is interpreted as bytes.
     """
     bufferLimit?: int | str
+    preconnect?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsConnectionPreconnect
     socketBufferLimit?: int | str
 
     check:
@@ -11249,6 +11717,42 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         _regex_match(str(bufferLimit), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if bufferLimit
         _regex_match(str(socketBufferLimit), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if socketBufferLimit
         _regex_match(str(socketBufferLimit), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if socketBufferLimit
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsConnectionPreconnect:
+    r"""
+    Preconnect configures proactive upstream connections to reduce latency by establishing
+    connections before they’re needed and avoiding connection establishment overhead.
+
+    If unset, Envoy will fetch connections as needed to serve in-flight requests.
+
+    Attributes
+    ----------
+    perEndpointPercent : int, default is Undefined, optional
+        PerEndpointPercent configures how many additional connections to maintain per
+        upstream endpoint, useful for high-QPS or latency sensitive services. Expressed as a
+        percentage of the connections required by active streams
+        (e.g. 100 = preconnect disabled, 105 = 1.05x connections per-endpoint, 200 = 2.00×).
+
+        Allowed value range is between 100-300. When both PerEndpointPercent and
+        PredictivePercent are set, Envoy ensures both are satisfied (max of the two).
+    predictivePercent : int, default is Undefined, optional
+        PredictivePercent configures how many additional connections to maintain
+        across the cluster by anticipating which upstream endpoint the load balancer
+        will select next, useful for low-QPS services. Relies on deterministic
+        loadbalancing and is only supported with Random or RoundRobin.
+        Expressed as a percentage of the connections required by active streams
+        (e.g. 100 = 1.0 (no preconnect), 105 = 1.05× connections across the cluster, 200 = 2.00×).
+
+        Minimum allowed value is 100. When both PerEndpointPercent and PredictivePercent are
+        set Envoy ensures both are satisfied per host (max of the two).
+    """
+    perEndpointPercent?: int
+    predictivePercent?: int
+
+    check:
+        perEndpointPercent <= 300 if perEndpointPercent not in [None, Undefined]
+        perEndpointPercent >= 100 if perEndpointPercent not in [None, Undefined]
+        predictivePercent >= 100 if predictivePercent not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsDNS:
     r"""
@@ -11473,6 +11977,10 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
     consecutiveLocalOriginFailures : int, default is 5, optional
         ConsecutiveLocalOriginFailures sets the number of consecutive local origin failures triggering ejection.
         Parameter takes effect only when split_external_local_origin_errors is set to true.
+    failurePercentageThreshold : int, default is Undefined, optional
+        FailurePercentageThreshold sets the failure percentage threshold for outlier detection.
+        If the failure percentage of a given host is greater than or equal to this value, it will be ejected.
+        Defaults to 85.
     interval : str, default is "3s", optional
         Interval defines the time between passive health checks.
     maxEjectionPercent : int, default is 10, optional
@@ -11482,14 +11990,17 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
     """
     baseEjectionTime?: str = "30s"
     consecutive5XxErrors?: int = 5
-    consecutiveGatewayErrors?: int = 0
+    consecutiveGatewayErrors?: int
     consecutiveLocalOriginFailures?: int = 5
+    failurePercentageThreshold?: int
     interval?: str = "3s"
     maxEjectionPercent?: int = 10
     splitExternalLocalOriginErrors?: bool = False
 
     check:
         _regex_match(str(baseEjectionTime), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if baseEjectionTime
+        failurePercentageThreshold <= 100 if failurePercentageThreshold not in [None, Undefined]
+        failurePercentageThreshold >= 0 if failurePercentageThreshold not in [None, Undefined]
         _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsHttp2:
@@ -11567,18 +12078,22 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         cookie
     header : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashHeader, default is Undefined, optional
         header
+    headers : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashHeadersItems0], default is Undefined, optional
+        Headers configures the header hash policy for each header, when the consistent hash type is set to Headers.
     tableSize : int, default is 65537, optional
         The table size for consistent hashing, must be prime number limited to 5000011.
     $type : str, default is Undefined, required
         ConsistentHashType defines the type of input to hash on. Valid Type values are
         "SourceIP",
         "Header",
+        "Headers",
         "Cookie".
     """
     cookie?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashCookie
     header?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashHeader
+    headers?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashHeadersItems0]
     tableSize?: int = 65537
-    $type: "SourceIP" | "Header" | "Cookie"
+    $type: "SourceIP" | "Header" | "Headers" | "Cookie"
 
     check:
         tableSize <= 5000011 if tableSize not in [None, Undefined]
@@ -11613,6 +12128,20 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashHeader:
     r"""
     Header configures the header hash policy when the consistent hash type is set to Header.
+
+    Deprecated: use Headers instead
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the header to hash.
+    """
+    name: str
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashHeadersItems0:
+    r"""
+    Header defines the header hashing configuration for consistent hash based
+    load balancing.
 
     Attributes
     ----------
@@ -11693,9 +12222,16 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         force
     minEndpointsThreshold : int, default is Undefined, optional
         MinEndpointsThreshold is the minimum number of total upstream endpoints across all zones required to enable zone-aware routing.
+    percentageEnabled : int, default is Undefined, optional
+        Configures percentage of requests that will be considered for zone aware routing if zone aware routing is configured. If not specified, Envoy defaults to 100%.
     """
     force?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsLoadBalancerZoneAwarePreferLocalForce
     minEndpointsThreshold?: int
+    percentageEnabled?: int
+
+    check:
+        percentageEnabled <= 100 if percentageEnabled not in [None, Undefined]
+        percentageEnabled >= 0 if percentageEnabled not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsLoadBalancerZoneAwarePreferLocalForce:
     r"""
@@ -11863,16 +12399,23 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
     maxConnectionDuration : str, default is Undefined, optional
         The maximum duration of an HTTP connection.
         Default: unlimited.
+    maxStreamDuration : str, default is Undefined, optional
+        MaxStreamDuration is the maximum duration for a stream to complete. This timeout measures the time
+        from when the request is sent until the response stream is fully consumed and does not apply to
+        non-streaming requests.
+        When set to "0s", no max duration is applied and streams can run indefinitely.
     requestTimeout : str, default is Undefined, optional
         RequestTimeout is the time until which entire response is received from the upstream.
     """
     connectionIdleTimeout?: str
     maxConnectionDuration?: str
+    maxStreamDuration?: str
     requestTimeout?: str
 
     check:
         _regex_match(str(connectionIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if connectionIdleTimeout
         _regex_match(str(maxConnectionDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxConnectionDuration
+        _regex_match(str(maxStreamDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxStreamDuration
         _regex_match(str(requestTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if requestTimeout
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsTimeoutTCP:
@@ -11985,10 +12528,14 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsPrometheusCompre
         The configuration for GZIP compressor.
     $type : str, default is Undefined, required
         CompressorType defines the compressor type to use for compression.
+    zstd : any, default is Undefined, optional
+        The configuration for Zstd compressor.
     """
     brotli?: any
     gzip?: any
-    $type: "Gzip" | "Brotli"
+    $type: "Gzip" | "Brotli" | "Zstd"
+
+    zstd?: any
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0:
     r"""
@@ -12283,6 +12830,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
         If unspecified, an implementation defined default is applied (32768 bytes).
         For example, 20Mi, 1Gi, 256Ki etc.
         Note: that when the suffix is not provided, the value is interpreted as bytes.
+    preconnect : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsConnectionPreconnect, default is Undefined, optional
+        preconnect
     socketBufferLimit : int | str, default is Undefined, optional
         SocketBufferLimit provides configuration for the maximum buffer size in bytes for each socket
         to backend.
@@ -12291,6 +12840,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
         Note that when the suffix is not provided, the value is interpreted as bytes.
     """
     bufferLimit?: int | str
+    preconnect?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsConnectionPreconnect
     socketBufferLimit?: int | str
 
     check:
@@ -12298,6 +12848,42 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
         _regex_match(str(bufferLimit), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if bufferLimit
         _regex_match(str(socketBufferLimit), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if socketBufferLimit
         _regex_match(str(socketBufferLimit), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if socketBufferLimit
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsConnectionPreconnect:
+    r"""
+    Preconnect configures proactive upstream connections to reduce latency by establishing
+    connections before they’re needed and avoiding connection establishment overhead.
+
+    If unset, Envoy will fetch connections as needed to serve in-flight requests.
+
+    Attributes
+    ----------
+    perEndpointPercent : int, default is Undefined, optional
+        PerEndpointPercent configures how many additional connections to maintain per
+        upstream endpoint, useful for high-QPS or latency sensitive services. Expressed as a
+        percentage of the connections required by active streams
+        (e.g. 100 = preconnect disabled, 105 = 1.05x connections per-endpoint, 200 = 2.00×).
+
+        Allowed value range is between 100-300. When both PerEndpointPercent and
+        PredictivePercent are set, Envoy ensures both are satisfied (max of the two).
+    predictivePercent : int, default is Undefined, optional
+        PredictivePercent configures how many additional connections to maintain
+        across the cluster by anticipating which upstream endpoint the load balancer
+        will select next, useful for low-QPS services. Relies on deterministic
+        loadbalancing and is only supported with Random or RoundRobin.
+        Expressed as a percentage of the connections required by active streams
+        (e.g. 100 = 1.0 (no preconnect), 105 = 1.05× connections across the cluster, 200 = 2.00×).
+
+        Minimum allowed value is 100. When both PerEndpointPercent and PredictivePercent are
+        set Envoy ensures both are satisfied per host (max of the two).
+    """
+    perEndpointPercent?: int
+    predictivePercent?: int
+
+    check:
+        perEndpointPercent <= 300 if perEndpointPercent not in [None, Undefined]
+        perEndpointPercent >= 100 if perEndpointPercent not in [None, Undefined]
+        predictivePercent >= 100 if predictivePercent not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsDNS:
     r"""
@@ -12522,6 +13108,10 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
     consecutiveLocalOriginFailures : int, default is 5, optional
         ConsecutiveLocalOriginFailures sets the number of consecutive local origin failures triggering ejection.
         Parameter takes effect only when split_external_local_origin_errors is set to true.
+    failurePercentageThreshold : int, default is Undefined, optional
+        FailurePercentageThreshold sets the failure percentage threshold for outlier detection.
+        If the failure percentage of a given host is greater than or equal to this value, it will be ejected.
+        Defaults to 85.
     interval : str, default is "3s", optional
         Interval defines the time between passive health checks.
     maxEjectionPercent : int, default is 10, optional
@@ -12531,14 +13121,17 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
     """
     baseEjectionTime?: str = "30s"
     consecutive5XxErrors?: int = 5
-    consecutiveGatewayErrors?: int = 0
+    consecutiveGatewayErrors?: int
     consecutiveLocalOriginFailures?: int = 5
+    failurePercentageThreshold?: int
     interval?: str = "3s"
     maxEjectionPercent?: int = 10
     splitExternalLocalOriginErrors?: bool = False
 
     check:
         _regex_match(str(baseEjectionTime), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if baseEjectionTime
+        failurePercentageThreshold <= 100 if failurePercentageThreshold not in [None, Undefined]
+        failurePercentageThreshold >= 0 if failurePercentageThreshold not in [None, Undefined]
         _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsHttp2:
@@ -12616,18 +13209,22 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
         cookie
     header : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashHeader, default is Undefined, optional
         header
+    headers : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashHeadersItems0], default is Undefined, optional
+        Headers configures the header hash policy for each header, when the consistent hash type is set to Headers.
     tableSize : int, default is 65537, optional
         The table size for consistent hashing, must be prime number limited to 5000011.
     $type : str, default is Undefined, required
         ConsistentHashType defines the type of input to hash on. Valid Type values are
         "SourceIP",
         "Header",
+        "Headers",
         "Cookie".
     """
     cookie?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashCookie
     header?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashHeader
+    headers?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashHeadersItems0]
     tableSize?: int = 65537
-    $type: "SourceIP" | "Header" | "Cookie"
+    $type: "SourceIP" | "Header" | "Headers" | "Cookie"
 
     check:
         tableSize <= 5000011 if tableSize not in [None, Undefined]
@@ -12662,6 +13259,20 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashHeader:
     r"""
     Header configures the header hash policy when the consistent hash type is set to Header.
+
+    Deprecated: use Headers instead
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the header to hash.
+    """
+    name: str
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashHeadersItems0:
+    r"""
+    Header defines the header hashing configuration for consistent hash based
+    load balancing.
 
     Attributes
     ----------
@@ -12742,9 +13353,16 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
         force
     minEndpointsThreshold : int, default is Undefined, optional
         MinEndpointsThreshold is the minimum number of total upstream endpoints across all zones required to enable zone-aware routing.
+    percentageEnabled : int, default is Undefined, optional
+        Configures percentage of requests that will be considered for zone aware routing if zone aware routing is configured. If not specified, Envoy defaults to 100%.
     """
     force?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsLoadBalancerZoneAwarePreferLocalForce
     minEndpointsThreshold?: int
+    percentageEnabled?: int
+
+    check:
+        percentageEnabled <= 100 if percentageEnabled not in [None, Undefined]
+        percentageEnabled >= 0 if percentageEnabled not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsLoadBalancerZoneAwarePreferLocalForce:
     r"""
@@ -12912,16 +13530,23 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
     maxConnectionDuration : str, default is Undefined, optional
         The maximum duration of an HTTP connection.
         Default: unlimited.
+    maxStreamDuration : str, default is Undefined, optional
+        MaxStreamDuration is the maximum duration for a stream to complete. This timeout measures the time
+        from when the request is sent until the response stream is fully consumed and does not apply to
+        non-streaming requests.
+        When set to "0s", no max duration is applied and streams can run indefinitely.
     requestTimeout : str, default is Undefined, optional
         RequestTimeout is the time until which entire response is received from the upstream.
     """
     connectionIdleTimeout?: str
     maxConnectionDuration?: str
+    maxStreamDuration?: str
     requestTimeout?: str
 
     check:
         _regex_match(str(connectionIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if connectionIdleTimeout
         _regex_match(str(maxConnectionDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxConnectionDuration
+        _regex_match(str(maxStreamDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxStreamDuration
         _regex_match(str(requestTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if requestTimeout
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsTimeoutTCP:
@@ -13323,6 +13948,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendS
         If unspecified, an implementation defined default is applied (32768 bytes).
         For example, 20Mi, 1Gi, 256Ki etc.
         Note: that when the suffix is not provided, the value is interpreted as bytes.
+    preconnect : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsConnectionPreconnect, default is Undefined, optional
+        preconnect
     socketBufferLimit : int | str, default is Undefined, optional
         SocketBufferLimit provides configuration for the maximum buffer size in bytes for each socket
         to backend.
@@ -13331,6 +13958,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendS
         Note that when the suffix is not provided, the value is interpreted as bytes.
     """
     bufferLimit?: int | str
+    preconnect?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsConnectionPreconnect
     socketBufferLimit?: int | str
 
     check:
@@ -13338,6 +13966,42 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendS
         _regex_match(str(bufferLimit), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if bufferLimit
         _regex_match(str(socketBufferLimit), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if socketBufferLimit
         _regex_match(str(socketBufferLimit), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if socketBufferLimit
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsConnectionPreconnect:
+    r"""
+    Preconnect configures proactive upstream connections to reduce latency by establishing
+    connections before they’re needed and avoiding connection establishment overhead.
+
+    If unset, Envoy will fetch connections as needed to serve in-flight requests.
+
+    Attributes
+    ----------
+    perEndpointPercent : int, default is Undefined, optional
+        PerEndpointPercent configures how many additional connections to maintain per
+        upstream endpoint, useful for high-QPS or latency sensitive services. Expressed as a
+        percentage of the connections required by active streams
+        (e.g. 100 = preconnect disabled, 105 = 1.05x connections per-endpoint, 200 = 2.00×).
+
+        Allowed value range is between 100-300. When both PerEndpointPercent and
+        PredictivePercent are set, Envoy ensures both are satisfied (max of the two).
+    predictivePercent : int, default is Undefined, optional
+        PredictivePercent configures how many additional connections to maintain
+        across the cluster by anticipating which upstream endpoint the load balancer
+        will select next, useful for low-QPS services. Relies on deterministic
+        loadbalancing and is only supported with Random or RoundRobin.
+        Expressed as a percentage of the connections required by active streams
+        (e.g. 100 = 1.0 (no preconnect), 105 = 1.05× connections across the cluster, 200 = 2.00×).
+
+        Minimum allowed value is 100. When both PerEndpointPercent and PredictivePercent are
+        set Envoy ensures both are satisfied per host (max of the two).
+    """
+    perEndpointPercent?: int
+    predictivePercent?: int
+
+    check:
+        perEndpointPercent <= 300 if perEndpointPercent not in [None, Undefined]
+        perEndpointPercent >= 100 if perEndpointPercent not in [None, Undefined]
+        predictivePercent >= 100 if predictivePercent not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsDNS:
     r"""
@@ -13562,6 +14226,10 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendS
     consecutiveLocalOriginFailures : int, default is 5, optional
         ConsecutiveLocalOriginFailures sets the number of consecutive local origin failures triggering ejection.
         Parameter takes effect only when split_external_local_origin_errors is set to true.
+    failurePercentageThreshold : int, default is Undefined, optional
+        FailurePercentageThreshold sets the failure percentage threshold for outlier detection.
+        If the failure percentage of a given host is greater than or equal to this value, it will be ejected.
+        Defaults to 85.
     interval : str, default is "3s", optional
         Interval defines the time between passive health checks.
     maxEjectionPercent : int, default is 10, optional
@@ -13571,14 +14239,17 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendS
     """
     baseEjectionTime?: str = "30s"
     consecutive5XxErrors?: int = 5
-    consecutiveGatewayErrors?: int = 0
+    consecutiveGatewayErrors?: int
     consecutiveLocalOriginFailures?: int = 5
+    failurePercentageThreshold?: int
     interval?: str = "3s"
     maxEjectionPercent?: int = 10
     splitExternalLocalOriginErrors?: bool = False
 
     check:
         _regex_match(str(baseEjectionTime), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if baseEjectionTime
+        failurePercentageThreshold <= 100 if failurePercentageThreshold not in [None, Undefined]
+        failurePercentageThreshold >= 0 if failurePercentageThreshold not in [None, Undefined]
         _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsHttp2:
@@ -13656,18 +14327,22 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendS
         cookie
     header : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsLoadBalancerConsistentHashHeader, default is Undefined, optional
         header
+    headers : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsLoadBalancerConsistentHashHeadersItems0], default is Undefined, optional
+        Headers configures the header hash policy for each header, when the consistent hash type is set to Headers.
     tableSize : int, default is 65537, optional
         The table size for consistent hashing, must be prime number limited to 5000011.
     $type : str, default is Undefined, required
         ConsistentHashType defines the type of input to hash on. Valid Type values are
         "SourceIP",
         "Header",
+        "Headers",
         "Cookie".
     """
     cookie?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsLoadBalancerConsistentHashCookie
     header?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsLoadBalancerConsistentHashHeader
+    headers?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsLoadBalancerConsistentHashHeadersItems0]
     tableSize?: int = 65537
-    $type: "SourceIP" | "Header" | "Cookie"
+    $type: "SourceIP" | "Header" | "Headers" | "Cookie"
 
     check:
         tableSize <= 5000011 if tableSize not in [None, Undefined]
@@ -13702,6 +14377,20 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendS
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsLoadBalancerConsistentHashHeader:
     r"""
     Header configures the header hash policy when the consistent hash type is set to Header.
+
+    Deprecated: use Headers instead
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the header to hash.
+    """
+    name: str
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsLoadBalancerConsistentHashHeadersItems0:
+    r"""
+    Header defines the header hashing configuration for consistent hash based
+    load balancing.
 
     Attributes
     ----------
@@ -13782,9 +14471,16 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendS
         force
     minEndpointsThreshold : int, default is Undefined, optional
         MinEndpointsThreshold is the minimum number of total upstream endpoints across all zones required to enable zone-aware routing.
+    percentageEnabled : int, default is Undefined, optional
+        Configures percentage of requests that will be considered for zone aware routing if zone aware routing is configured. If not specified, Envoy defaults to 100%.
     """
     force?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsLoadBalancerZoneAwarePreferLocalForce
     minEndpointsThreshold?: int
+    percentageEnabled?: int
+
+    check:
+        percentageEnabled <= 100 if percentageEnabled not in [None, Undefined]
+        percentageEnabled >= 0 if percentageEnabled not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsLoadBalancerZoneAwarePreferLocalForce:
     r"""
@@ -13952,16 +14648,23 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendS
     maxConnectionDuration : str, default is Undefined, optional
         The maximum duration of an HTTP connection.
         Default: unlimited.
+    maxStreamDuration : str, default is Undefined, optional
+        MaxStreamDuration is the maximum duration for a stream to complete. This timeout measures the time
+        from when the request is sent until the response stream is fully consumed and does not apply to
+        non-streaming requests.
+        When set to "0s", no max duration is applied and streams can run indefinitely.
     requestTimeout : str, default is Undefined, optional
         RequestTimeout is the time until which entire response is received from the upstream.
     """
     connectionIdleTimeout?: str
     maxConnectionDuration?: str
+    maxStreamDuration?: str
     requestTimeout?: str
 
     check:
         _regex_match(str(connectionIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if connectionIdleTimeout
         _regex_match(str(maxConnectionDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxConnectionDuration
+        _regex_match(str(maxStreamDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxStreamDuration
         _regex_match(str(requestTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if requestTimeout
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsTimeoutTCP:
