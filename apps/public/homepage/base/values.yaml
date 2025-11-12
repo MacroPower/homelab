@@ -10,7 +10,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/gethomepage/homepage
-          tag: v1.6.1
+          tag: v1.7.0
         env:
           LOG_TARGETS: { value: "stdout" }
         resources:
