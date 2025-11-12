@@ -106,9 +106,24 @@ schema GatewayNetworkingK8sIoV1alpha2UDPRouteSpec:
         ParentRef of the Route.
     rules : [GatewayNetworkingK8sIoV1alpha2UDPRouteSpecRulesItems0], default is Undefined, required
         Rules are a list of UDP matchers and actions.
+    useDefaultGateways : str, default is Undefined, optional
+        UseDefaultGateways indicates the default Gateway scope to use for this
+        Route. If unset (the default) or set to None, the Route will not be
+        attached to any default Gateway; if set, it will be attached to any
+        default Gateway supporting the named scope, subject to the usual rules
+        about which Routes a Gateway is allowed to claim.
+
+        Think carefully before using this functionality! The set of default
+        Gateways supporting the requested scope can change over time without
+        any notice to the Route author, and in many situations it will not be
+        appropriate to request a default Gateway for a given Route -- for
+        example, a Route with specific security requirements should almost
+        certainly not use a default Gateway.
     """
     parentRefs?: [GatewayNetworkingK8sIoV1alpha2UDPRouteSpecParentRefsItems0]
     rules: [GatewayNetworkingK8sIoV1alpha2UDPRouteSpecRulesItems0]
+
+    useDefaultGateways?: "All" | "None"
 
     check:
         len(parentRefs) <= 32 if parentRefs
@@ -263,7 +278,7 @@ schema GatewayNetworkingK8sIoV1alpha2UDPRouteSpecRulesItems0:
 
     Attributes
     ----------
-    backendRefs : [GatewayNetworkingK8sIoV1alpha2UDPRouteSpecRulesItems0BackendRefsItems0], default is Undefined, optional
+    backendRefs : [GatewayNetworkingK8sIoV1alpha2UDPRouteSpecRulesItems0BackendRefsItems0], default is Undefined, required
         BackendRefs defines the backend(s) where matching requests should be
         sent. If unspecified or invalid (refers to a nonexistent resource or a
         Service with no endpoints), the underlying implementation MUST actively
@@ -283,12 +298,13 @@ schema GatewayNetworkingK8sIoV1alpha2UDPRouteSpecRulesItems0:
 
         Support: Extended
     """
-    backendRefs?: [GatewayNetworkingK8sIoV1alpha2UDPRouteSpecRulesItems0BackendRefsItems0]
+    backendRefs: [GatewayNetworkingK8sIoV1alpha2UDPRouteSpecRulesItems0BackendRefsItems0]
+
     name?: str
 
     check:
-        len(backendRefs) >= 1 if backendRefs
-        len(backendRefs) <= 16 if backendRefs
+        len(backendRefs) >= 1
+        len(backendRefs) <= 16
         len(name) <= 253 if name
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
@@ -434,7 +450,7 @@ schema GatewayNetworkingK8sIoV1alpha2UDPRouteStatusParentsItems0:
 
     Attributes
     ----------
-    conditions : [GatewayNetworkingK8sIoV1alpha2UDPRouteStatusParentsItems0ConditionsItems0], default is Undefined, optional
+    conditions : [GatewayNetworkingK8sIoV1alpha2UDPRouteStatusParentsItems0ConditionsItems0], default is Undefined, required
         Conditions describes the status of the route with respect to the Gateway.
         Note that the route's availability is also subject to the Gateway's own
         status conditions and listener status.
@@ -471,14 +487,15 @@ schema GatewayNetworkingK8sIoV1alpha2UDPRouteStatusParentsItems0:
     parentRef : GatewayNetworkingK8sIoV1alpha2UDPRouteStatusParentsItems0ParentRef, default is Undefined, required
         parent ref
     """
-    conditions?: [GatewayNetworkingK8sIoV1alpha2UDPRouteStatusParentsItems0ConditionsItems0]
+    conditions: [GatewayNetworkingK8sIoV1alpha2UDPRouteStatusParentsItems0ConditionsItems0]
+
     controllerName: str
 
     parentRef: GatewayNetworkingK8sIoV1alpha2UDPRouteStatusParentsItems0ParentRef
 
     check:
-        len(conditions) >= 1 if conditions
-        len(conditions) <= 8 if conditions
+        len(conditions) >= 1
+        len(conditions) <= 8
         len(controllerName) <= 253
         len(controllerName) >= 1
         _regex_match(str(controllerName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*\/[A-Za-z0-9\/\-._~%!$&'()*+,;=:]+$")

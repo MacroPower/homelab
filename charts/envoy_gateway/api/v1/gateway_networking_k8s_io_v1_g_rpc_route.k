@@ -46,7 +46,7 @@ schema GRPCRoute:
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, optional
         metadata
-    spec : GatewayNetworkingK8sIoV1GRPCRouteSpec, default is Undefined, optional
+    spec : GatewayNetworkingK8sIoV1GRPCRouteSpec, default is Undefined, required
         spec
     status : GatewayNetworkingK8sIoV1GRPCRouteStatus, default is Undefined, optional
         status
@@ -56,7 +56,8 @@ schema GRPCRoute:
     kind: "GRPCRoute" = "GRPCRoute"
 
     metadata?: v1.ObjectMeta
-    spec?: GatewayNetworkingK8sIoV1GRPCRouteSpec
+    spec: GatewayNetworkingK8sIoV1GRPCRouteSpec
+
     status?: GatewayNetworkingK8sIoV1GRPCRouteStatus
 
 schema GatewayNetworkingK8sIoV1GRPCRouteSpec:
@@ -180,10 +181,24 @@ schema GatewayNetworkingK8sIoV1GRPCRouteSpec:
         ParentRef of the Route.
     rules : [GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0], default is Undefined, optional
         Rules are a list of GRPC matchers, filters and actions.
+    useDefaultGateways : str, default is Undefined, optional
+        UseDefaultGateways indicates the default Gateway scope to use for this
+        Route. If unset (the default) or set to None, the Route will not be
+        attached to any default Gateway; if set, it will be attached to any
+        default Gateway supporting the named scope, subject to the usual rules
+        about which Routes a Gateway is allowed to claim.
+
+        Think carefully before using this functionality! The set of default
+        Gateways supporting the requested scope can change over time without
+        any notice to the Route author, and in many situations it will not be
+        appropriate to request a default Gateway for a given Route -- for
+        example, a Route with specific security requirements should almost
+        certainly not use a default Gateway.
     """
     hostnames?: [str]
     parentRefs?: [GatewayNetworkingK8sIoV1GRPCRouteSpecParentRefsItems0]
     rules?: [GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0]
+    useDefaultGateways?: "All" | "None"
 
     check:
         len(hostnames) <= 16 if hostnames
@@ -1765,7 +1780,7 @@ schema GatewayNetworkingK8sIoV1GRPCRouteStatusParentsItems0:
 
     Attributes
     ----------
-    conditions : [GatewayNetworkingK8sIoV1GRPCRouteStatusParentsItems0ConditionsItems0], default is Undefined, optional
+    conditions : [GatewayNetworkingK8sIoV1GRPCRouteStatusParentsItems0ConditionsItems0], default is Undefined, required
         Conditions describes the status of the route with respect to the Gateway.
         Note that the route's availability is also subject to the Gateway's own
         status conditions and listener status.
@@ -1802,14 +1817,15 @@ schema GatewayNetworkingK8sIoV1GRPCRouteStatusParentsItems0:
     parentRef : GatewayNetworkingK8sIoV1GRPCRouteStatusParentsItems0ParentRef, default is Undefined, required
         parent ref
     """
-    conditions?: [GatewayNetworkingK8sIoV1GRPCRouteStatusParentsItems0ConditionsItems0]
+    conditions: [GatewayNetworkingK8sIoV1GRPCRouteStatusParentsItems0ConditionsItems0]
+
     controllerName: str
 
     parentRef: GatewayNetworkingK8sIoV1GRPCRouteStatusParentsItems0ParentRef
 
     check:
-        len(conditions) >= 1 if conditions
-        len(conditions) <= 8 if conditions
+        len(conditions) >= 1
+        len(conditions) <= 8
         len(controllerName) <= 253
         len(controllerName) >= 1
         _regex_match(str(controllerName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*\/[A-Za-z0-9\/\-._~%!$&'()*+,;=:]+$")

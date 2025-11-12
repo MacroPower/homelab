@@ -8,72 +8,57 @@ import k8s.apimachinery.pkg.apis.meta.v1
 
 _regex_match = regex.match
 
-schema GatewayClass:
+schema XMesh:
     r"""
-    GatewayClass describes a class of Gateways available to the user for creating
-    Gateway resources.
-
-    It is recommended that this resource be used as a template for Gateways. This
-    means that a Gateway is based on the state of the GatewayClass at the time it
-    was created and changes to the GatewayClass or associated parameters are not
-    propagated down to existing Gateways. This recommendation is intended to
-    limit the blast radius of changes to GatewayClass or associated parameters.
-    If implementations choose to propagate GatewayClass changes to existing
-    Gateways, that MUST be clearly documented by the implementation.
-
-    Whenever one or more Gateways are using a GatewayClass, implementations SHOULD
-    add the `gateway-exists-finalizer.gateway.networking.k8s.io` finalizer on the
-    associated GatewayClass. This ensures that a GatewayClass associated with a
-    Gateway is not deleted while in use.
-
-    GatewayClass is a Cluster level resource.
+    XMesh defines mesh-wide characteristics of a GAMMA-compliant service mesh.
 
     Attributes
     ----------
-    apiVersion : str, default is "gateway.networking.k8s.io/v1beta1", required
+    apiVersion : str, default is "gateway.networking.x-k8s.io/v1alpha1", required
         APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
-    kind : str, default is "GatewayClass", required
+    kind : str, default is "XMesh", required
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, optional
         metadata
-    spec : GatewayNetworkingK8sIoV1beta1GatewayClassSpec, default is Undefined, required
+    spec : GatewayNetworkingxK8sIoV1alpha1XMeshSpec, default is Undefined, required
         spec
-    status : GatewayNetworkingK8sIoV1beta1GatewayClassStatus, default is Undefined, optional
+    status : GatewayNetworkingxK8sIoV1alpha1XMeshStatus, default is Undefined, optional
         status
     """
-    apiVersion: "gateway.networking.k8s.io/v1beta1" = "gateway.networking.k8s.io/v1beta1"
+    apiVersion: "gateway.networking.x-k8s.io/v1alpha1" = "gateway.networking.x-k8s.io/v1alpha1"
 
-    kind: "GatewayClass" = "GatewayClass"
+    kind: "XMesh" = "XMesh"
 
     metadata?: v1.ObjectMeta
-    spec: GatewayNetworkingK8sIoV1beta1GatewayClassSpec
+    spec: GatewayNetworkingxK8sIoV1alpha1XMeshSpec
 
-    status?: GatewayNetworkingK8sIoV1beta1GatewayClassStatus
+    status?: GatewayNetworkingxK8sIoV1alpha1XMeshStatus
 
-schema GatewayNetworkingK8sIoV1beta1GatewayClassSpec:
+schema GatewayNetworkingxK8sIoV1alpha1XMeshSpec:
     r"""
-    Spec defines the desired state of GatewayClass.
+    Spec defines the desired state of XMesh.
 
     Attributes
     ----------
     controllerName : str, default is Undefined, required
-        ControllerName is the name of the controller that is managing Gateways of
-        this class. The value of this field MUST be a domain prefixed path.
+        ControllerName is the name of a controller that is managing Gateway API
+        resources for mesh traffic management. The value of this field MUST be a
+        domain prefixed path.
 
-        Example: "example.net/gateway-controller".
+        Example: "example.com/awesome-mesh".
 
         This field is not mutable and cannot be empty.
 
         Support: Core
     description : str, default is Undefined, optional
-        Description helps describe a GatewayClass with more details.
-    parametersRef : GatewayNetworkingK8sIoV1beta1GatewayClassSpecParametersRef, default is Undefined, optional
+        Description optionally provides a human-readable description of a Mesh.
+    parametersRef : GatewayNetworkingxK8sIoV1alpha1XMeshSpecParametersRef, default is Undefined, optional
         parameters ref
     """
     controllerName: str
 
     description?: str
-    parametersRef?: GatewayNetworkingK8sIoV1beta1GatewayClassSpecParametersRef
+    parametersRef?: GatewayNetworkingxK8sIoV1alpha1XMeshSpecParametersRef
 
     check:
         len(controllerName) <= 253
@@ -81,24 +66,21 @@ schema GatewayNetworkingK8sIoV1beta1GatewayClassSpec:
         _regex_match(str(controllerName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*\/[A-Za-z0-9\/\-._~%!$&'()*+,;=:]+$")
         len(description) <= 64 if description
 
-schema GatewayNetworkingK8sIoV1beta1GatewayClassSpecParametersRef:
+schema GatewayNetworkingxK8sIoV1alpha1XMeshSpecParametersRef:
     r"""
-    ParametersRef is a reference to a resource that contains the configuration
-    parameters corresponding to the GatewayClass. This is optional if the
-    controller does not require any additional configuration.
+    ParametersRef is an optional reference to a resource that contains
+    implementation-specific configuration for this Mesh. If no
+    implementation-specific parameters are needed, this field MUST be
+    omitted.
 
-    ParametersRef can reference a standard Kubernetes resource, i.e. ConfigMap,
-    or an implementation-specific custom resource. The resource can be
-    cluster-scoped or namespace-scoped.
+    ParametersRef can reference a standard Kubernetes resource, i.e.
+    ConfigMap, or an implementation-specific custom resource. The resource
+    can be cluster-scoped or namespace-scoped.
 
     If the referent cannot be found, refers to an unsupported kind, or when
-    the data within that resource is malformed, the GatewayClass SHOULD be
-    rejected with the "Accepted" status condition set to "False" and an
+    the data within that resource is malformed, the Mesh MUST be rejected
+    with the "Accepted" status condition set to "False" and an
     "InvalidParameters" reason.
-
-    A Gateway for this GatewayClass may provide its own `parametersRef`. When both are specified,
-    the merging behavior is implementation specific.
-    It is generally recommended that GatewayClass provides defaults that can be overridden by a Gateway.
 
     Support: Implementation-specific
 
@@ -135,33 +117,30 @@ schema GatewayNetworkingK8sIoV1beta1GatewayClassSpecParametersRef:
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-schema GatewayNetworkingK8sIoV1beta1GatewayClassStatus:
+schema GatewayNetworkingxK8sIoV1alpha1XMeshStatus:
     r"""
-    Status defines the current state of GatewayClass.
-
-    Implementations MUST populate status on all GatewayClass resources which
-    specify their controller name.
+    Status defines the current state of XMesh.
 
     Attributes
     ----------
-    conditions : [GatewayNetworkingK8sIoV1beta1GatewayClassStatusConditionsItems0], default is [{"message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z"}], optional
+    conditions : [GatewayNetworkingxK8sIoV1alpha1XMeshStatusConditionsItems0], default is [{"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted"}, {"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Programmed"}], optional
         Conditions is the current status from the controller for
-        this GatewayClass.
+        this Mesh.
 
         Controllers should prefer to publish conditions using values
-        of GatewayClassConditionType for the type of each Condition.
-    supportedFeatures : [GatewayNetworkingK8sIoV1beta1GatewayClassStatusSupportedFeaturesItems0], default is Undefined, optional
-        SupportedFeatures is the set of features the GatewayClass support.
+        of MeshConditionType for the type of each Condition.
+    supportedFeatures : [GatewayNetworkingxK8sIoV1alpha1XMeshStatusSupportedFeaturesItems0], default is Undefined, optional
+        SupportedFeatures is the set of features the Mesh support.
         It MUST be sorted in ascending alphabetical order by the Name key.
     """
-    conditions?: [GatewayNetworkingK8sIoV1beta1GatewayClassStatusConditionsItems0] = [{"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted"}]
-    supportedFeatures?: [GatewayNetworkingK8sIoV1beta1GatewayClassStatusSupportedFeaturesItems0]
+    conditions?: [GatewayNetworkingxK8sIoV1alpha1XMeshStatusConditionsItems0] = [{"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted"}, {"reason": "Pending", "status": "Unknown", "type": "Programmed", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller"}]
+    supportedFeatures?: [GatewayNetworkingxK8sIoV1alpha1XMeshStatusSupportedFeaturesItems0]
 
     check:
         len(conditions) <= 8 if conditions
         len(supportedFeatures) <= 64 if supportedFeatures
 
-schema GatewayNetworkingK8sIoV1beta1GatewayClassStatusConditionsItems0:
+schema GatewayNetworkingxK8sIoV1alpha1XMeshStatusConditionsItems0:
     r"""
     Condition contains details for one aspect of the current state of this API Resource.
 
@@ -208,9 +187,9 @@ schema GatewayNetworkingK8sIoV1beta1GatewayClassStatusConditionsItems0:
         len($type) <= 316
         _regex_match(str($type), r"^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$")
 
-schema GatewayNetworkingK8sIoV1beta1GatewayClassStatusSupportedFeaturesItems0:
+schema GatewayNetworkingxK8sIoV1alpha1XMeshStatusSupportedFeaturesItems0:
     r"""
-    gateway networking k8s io v1beta1 gateway class status supported features items0
+    gateway networkingx k8s io v1alpha1 x mesh status supported features items0
 
     Attributes
     ----------

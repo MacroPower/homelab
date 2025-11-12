@@ -10,8 +10,33 @@ _regex_match = regex.match
 
 schema XListenerSet:
     r"""
-    XListenerSet defines a set of additional listeners
-    to attach to an existing Gateway.
+    XListenerSet defines a set of additional listeners to attach to an existing Gateway.
+    This resource provides a mechanism to merge multiple listeners into a single Gateway.
+
+    The parent Gateway must explicitly allow ListenerSet attachment through its
+    AllowedListeners configuration. By default, Gateways do not allow ListenerSet
+    attachment.
+
+    Routes can attach to a ListenerSet by specifying it as a parentRef, and can
+    optionally target specific listeners using the sectionName field.
+
+    Policy Attachment:
+    - Policies that attach to a ListenerSet apply to all listeners defined in that resource
+    - Policies do not impact listeners in the parent Gateway
+    - Different ListenerSets attached to the same Gateway can have different policies
+    - If an implementation cannot apply a policy to specific listeners, it should reject the policy
+
+    ReferenceGrant Semantics:
+    - ReferenceGrants applied to a Gateway are not inherited by child ListenerSets
+    - ReferenceGrants applied to a ListenerSet do not grant permission to the parent Gateway's listeners
+    - A ListenerSet can reference secrets/backends in its own namespace without a ReferenceGrant
+
+    Gateway Integration:
+    - The parent Gateway's status will include an "AttachedListenerSets" condition
+    - This condition will be:
+      - True: when AllowedListeners is set and at least one child ListenerSet is attached
+      - False: when AllowedListeners is set but no valid listeners are attached, or when AllowedListeners is not set or false
+      - Unknown: when no AllowedListeners config is present
 
     Attributes
     ----------
@@ -56,10 +81,10 @@ schema GatewayNetworkingxK8sIoV1alpha1XListenerSetSpec:
 
         1. "parent" Gateway
         2. ListenerSet ordered by creation time (oldest first)
-        3. ListenerSet ordered alphabetically by “{namespace}/{name}”.
+        3. ListenerSet ordered alphabetically by "{namespace}/{name}".
 
         An implementation MAY reject listeners by setting the ListenerEntryStatus
-        `Accepted`` condition to False with the Reason `TooManyListeners`
+        `Accepted` condition to False with the Reason `TooManyListeners`
 
         If a listener has a conflict, this will be reported in the
         Status.ListenerEntryStatus setting the `Conflicted` condition to True.
@@ -119,9 +144,14 @@ schema GatewayNetworkingxK8sIoV1alpha1XListenerSetSpecListenersItems0:
         Name is not required to be unique across a Gateway and ListenerSets.
         Routes can attach to a Listener by having a ListenerSet as a parentRef
         and setting the SectionName
-    port : int, default is Undefined, required
+    port : int, default is Undefined, optional
         Port is the network port. Multiple listeners may use the
         same port, subject to the Listener compatibility rules.
+
+        If the port is not set or specified as zero, the implementation will assign
+        a unique port. If the implementation does not support dynamic port
+        assignment, it MUST set `Accepted` condition to `False` with the
+        `UnsupportedPort` reason.
     $protocol : str, default is Undefined, required
         Protocol specifies the network protocol this listener expects to receive.
     tls : GatewayNetworkingxK8sIoV1alpha1XListenerSetSpecListenersItems0TLS, default is Undefined, optional
@@ -131,8 +161,7 @@ schema GatewayNetworkingxK8sIoV1alpha1XListenerSetSpecListenersItems0:
     hostname?: str
     name: str
 
-    port: int
-
+    port?: int = 0
     $protocol: str
 
     tls?: GatewayNetworkingxK8sIoV1alpha1XListenerSetSpecListenersItems0TLS
@@ -144,8 +173,8 @@ schema GatewayNetworkingxK8sIoV1alpha1XListenerSetSpecListenersItems0:
         len(name) <= 253
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
-        port <= 65535
-        port >= 1
+        port <= 65535 if port not in [None, Undefined]
+        port >= 0 if port not in [None, Undefined]
         len($protocol) <= 255
         len($protocol) >= 1
         _regex_match(str($protocol), r"^[a-zA-Z0-9]([-a-zA-Z0-9]*[a-zA-Z0-9])?$|[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*\/[A-Za-z0-9]+$")
@@ -294,7 +323,7 @@ schema GatewayNetworkingxK8sIoV1alpha1XListenerSetSpecListenersItems0TLS:
     the Protocol field is "HTTPS" or "TLS". It is invalid to set this field
     if the Protocol field is "HTTP", "TCP", or "UDP".
 
-    The association of SNIs to Certificate defined in GatewayTLSConfig is
+    The association of SNIs to Certificate defined in ListenerTLSConfig is
     defined based on the Hostname field for this listener.
 
     The GatewayClass MUST use the longest matching SNI out of all
@@ -327,8 +356,6 @@ schema GatewayNetworkingxK8sIoV1alpha1XListenerSetSpecListenersItems0TLS:
         Support: Core - A single reference to a Kubernetes Secret of type kubernetes.io/tls
 
         Support: Implementation-specific (More than one reference or other resource types)
-    frontendValidation : GatewayNetworkingxK8sIoV1alpha1XListenerSetSpecListenersItems0TLSFrontendValidation, default is Undefined, optional
-        frontend validation
     mode : str, default is "Terminate", optional
         Mode defines the TLS behavior for the TLS session initiated by the client.
         There are two possible modes:
@@ -356,7 +383,6 @@ schema GatewayNetworkingxK8sIoV1alpha1XListenerSetSpecListenersItems0TLS:
         Support: Implementation-specific
     """
     certificateRefs?: [GatewayNetworkingxK8sIoV1alpha1XListenerSetSpecListenersItems0TLSCertificateRefsItems0]
-    frontendValidation?: GatewayNetworkingxK8sIoV1alpha1XListenerSetSpecListenersItems0TLSFrontendValidation
     mode?: "Terminate" | "Passthrough" = "Terminate"
     options?: {str:str}
 
@@ -409,98 +435,6 @@ schema GatewayNetworkingxK8sIoV1alpha1XListenerSetSpecListenersItems0TLSCertific
         len(kind) <= 63 if kind
         len(kind) >= 1 if kind
         _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$") if kind
-        len(name) <= 253
-        len(name) >= 1
-        len(namespace) <= 63 if namespace
-        len(namespace) >= 1 if namespace
-        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
-schema GatewayNetworkingxK8sIoV1alpha1XListenerSetSpecListenersItems0TLSFrontendValidation:
-    r"""
-    FrontendValidation holds configuration information for validating the frontend (client).
-    Setting this field will require clients to send a client certificate
-    required for validation during the TLS handshake. In browsers this may result in a dialog appearing
-    that requests a user to specify the client certificate.
-    The maximum depth of a certificate chain accepted in verification is Implementation specific.
-
-    Support: Extended
-
-    Attributes
-    ----------
-    caCertificateRefs : [GatewayNetworkingxK8sIoV1alpha1XListenerSetSpecListenersItems0TLSFrontendValidationCaCertificateRefsItems0], default is Undefined, optional
-        CACertificateRefs contains one or more references to
-        Kubernetes objects that contain TLS certificates of
-        the Certificate Authorities that can be used
-        as a trust anchor to validate the certificates presented by the client.
-
-        A single CA certificate reference to a Kubernetes ConfigMap
-        has "Core" support.
-        Implementations MAY choose to support attaching multiple CA certificates to
-        a Listener, but this behavior is implementation-specific.
-
-        Support: Core - A single reference to a Kubernetes ConfigMap
-        with the CA certificate in a key named `ca.crt`.
-
-        Support: Implementation-specific (More than one reference, or other kinds
-        of resources).
-
-        References to a resource in a different namespace are invalid UNLESS there
-        is a ReferenceGrant in the target namespace that allows the certificate
-        to be attached. If a ReferenceGrant does not allow this reference, the
-        "ResolvedRefs" condition MUST be set to False for this listener with the
-        "RefNotPermitted" reason.
-    """
-    caCertificateRefs?: [GatewayNetworkingxK8sIoV1alpha1XListenerSetSpecListenersItems0TLSFrontendValidationCaCertificateRefsItems0]
-
-    check:
-        len(caCertificateRefs) >= 1 if caCertificateRefs
-        len(caCertificateRefs) <= 8 if caCertificateRefs
-
-schema GatewayNetworkingxK8sIoV1alpha1XListenerSetSpecListenersItems0TLSFrontendValidationCaCertificateRefsItems0:
-    r"""
-    ObjectReference identifies an API object including its namespace.
-
-    The API object must be valid in the cluster; the Group and Kind must
-    be registered in the cluster for this reference to be valid.
-
-    References to objects with invalid Group and Kind are not valid, and must
-    be rejected by the implementation, with appropriate Conditions set
-    on the containing object.
-
-    Attributes
-    ----------
-    group : str, default is Undefined, required
-        Group is the group of the referent. For example, "gateway.networking.k8s.io".
-        When set to the empty string, core API group is inferred.
-    kind : str, default is Undefined, required
-        Kind is kind of the referent. For example "ConfigMap" or "Service".
-    name : str, default is Undefined, required
-        Name is the name of the referent.
-    namespace : str, default is Undefined, optional
-        Namespace is the namespace of the referenced object. When unspecified, the local
-        namespace is inferred.
-
-        Note that when a namespace different than the local namespace is specified,
-        a ReferenceGrant object is required in the referent namespace to allow that
-        namespace's owner to accept the reference. See the ReferenceGrant
-        documentation for details.
-
-        Support: Core
-    """
-    group: str
-
-    kind: str
-
-    name: str
-
-    namespace?: str
-
-    check:
-        len(group) <= 253
-        _regex_match(str(group), r"^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
-        len(kind) <= 63
-        len(kind) >= 1
-        _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$")
         len(name) <= 253
         len(name) >= 1
         len(namespace) <= 63 if namespace
@@ -563,7 +497,7 @@ schema GatewayNetworkingxK8sIoV1alpha1XListenerSetStatus:
     listeners : [GatewayNetworkingxK8sIoV1alpha1XListenerSetStatusListenersItems0], default is Undefined, optional
         Listeners provide status for each unique listener port defined in the Spec.
     """
-    conditions?: [GatewayNetworkingxK8sIoV1alpha1XListenerSetStatusConditionsItems0] = [{"type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown"}, {"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Programmed"}]
+    conditions?: [GatewayNetworkingxK8sIoV1alpha1XListenerSetStatusConditionsItems0] = [{"reason": "Pending", "status": "Unknown", "type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller"}, {"message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Programmed", "lastTransitionTime": "1970-01-01T00:00:00Z"}]
     listeners?: [GatewayNetworkingxK8sIoV1alpha1XListenerSetStatusListenersItems0]
 
     check:

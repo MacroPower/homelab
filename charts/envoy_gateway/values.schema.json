@@ -559,7 +559,7 @@
               "additionalProperties": true,
               "properties": {
                 "image": {
-                  "default": "docker.io/envoyproxy/gateway:v1.5.4",
+                  "default": "docker.io/envoyproxy/gateway:v1.6.0",
                   "description": "This is the full image name including the hub, repo, and tag.",
                   "required": [],
                   "title": "image",
@@ -590,7 +590,7 @@
               "additionalProperties": true,
               "properties": {
                 "image": {
-                  "default": "docker.io/envoyproxy/ratelimit:e74a664a",
+                  "default": "docker.io/envoyproxy/ratelimit:99d85510",
                   "description": "This is the full image name including the hub, repo, and tag.",
                   "required": [],
                   "title": "image",
@@ -701,6 +701,12 @@
           "description": "If set to PreferClose, the Envoy fleet will prioritize connecting to the Envoy Gateway pods that are topologically closest to them.",
           "required": [],
           "title": "trafficDistribution",
+          "type": "string"
+        },
+        "type": {
+          "default": "ClusterIP",
+          "required": [],
+          "title": "type",
           "type": "string"
         }
       },

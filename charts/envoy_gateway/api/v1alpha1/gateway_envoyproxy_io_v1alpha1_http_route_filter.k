@@ -138,18 +138,21 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponse:
     body : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseBody, default is Undefined, optional
         body
     contentType : str, default is Undefined, optional
-        Content Type of the response. This will be set in the Content-Type header.
+        Content Type of the direct response. This will be set in the Content-Type header.
+    header : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseHeader, default is Undefined, optional
+        header
     statusCode : int, default is Undefined, optional
         Status Code of the HTTP response
         If unset, defaults to 200.
     """
     body?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseBody
     contentType?: str
+    header?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseHeader
     statusCode?: int
 
 schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseBody:
     r"""
-    Body of the Response
+    Body of the direct response.
 
     Attributes
     ----------
@@ -199,6 +202,131 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseBodyValueRef:
         _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$")
         len(name) <= 253
         len(name) >= 1
+
+schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseHeader:
+    r"""
+    Header defines the headers of the direct response.
+
+    Attributes
+    ----------
+    add : [GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseHeaderAddItems0], default is Undefined, optional
+        Add adds the given header(s) (name, value) to the request
+        before the action. It appends to any existing values associated
+        with the header name.
+
+        Input:
+          GET /foo HTTP/1.1
+          my-header: foo
+
+        Config:
+          add:
+          - name: "my-header"
+            value: "bar,baz"
+
+        Output:
+          GET /foo HTTP/1.1
+          my-header: foo,bar,baz
+    remove : [str], default is Undefined, optional
+        Remove the given header(s) from the HTTP request before the action. The
+        value of Remove is a list of HTTP header names. Note that the header
+        names are case-insensitive (see
+        https://datatracker.ietf.org/doc/html/rfc2616#section-4.2).
+
+        Input:
+          GET /foo HTTP/1.1
+          my-header1: foo
+          my-header2: bar
+          my-header3: baz
+
+        Config:
+          remove: ["my-header1", "my-header3"]
+
+        Output:
+          GET /foo HTTP/1.1
+          my-header2: bar
+    set : [GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseHeaderSetItems0], default is Undefined, optional
+        Set overwrites the request with the given header (name, value)
+        before the action.
+
+        Input:
+          GET /foo HTTP/1.1
+          my-header: foo
+
+        Config:
+          set:
+          - name: "my-header"
+            value: "bar"
+
+        Output:
+          GET /foo HTTP/1.1
+          my-header: bar
+    """
+    add?: [GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseHeaderAddItems0]
+    remove?: [str]
+    set?: [GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseHeaderSetItems0]
+
+    check:
+        len(add) <= 16 if add
+        len(remove) <= 16 if remove
+        len(set) <= 16 if set
+
+schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseHeaderAddItems0:
+    r"""
+    HTTPHeader represents an HTTP Header name and value as defined by RFC 7230.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name is the name of the HTTP Header to be matched. Name matching MUST be
+        case-insensitive. (See https://tools.ietf.org/html/rfc7230#section-3.2).
+
+        If multiple entries specify equivalent header names, the first entry with
+        an equivalent name MUST be considered for a match. Subsequent entries
+        with an equivalent header name MUST be ignored. Due to the
+        case-insensitivity of header names, "foo" and "Foo" are considered
+        equivalent.
+    value : str, default is Undefined, required
+        Value is the value of HTTP Header to be matched.
+    """
+    name: str
+
+    value: str
+
+    check:
+        len(name) <= 256
+        len(name) >= 1
+        _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
+        len(value) <= 4096
+        len(value) >= 1
+
+schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseHeaderSetItems0:
+    r"""
+    HTTPHeader represents an HTTP Header name and value as defined by RFC 7230.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name is the name of the HTTP Header to be matched. Name matching MUST be
+        case-insensitive. (See https://tools.ietf.org/html/rfc7230#section-3.2).
+
+        If multiple entries specify equivalent header names, the first entry with
+        an equivalent name MUST be considered for a match. Subsequent entries
+        with an equivalent header name MUST be ignored. Due to the
+        case-insensitivity of header names, "foo" and "Foo" are considered
+        equivalent.
+    value : str, default is Undefined, required
+        Value is the value of HTTP Header to be matched.
+    """
+    name: str
+
+    value: str
+
+    check:
+        len(name) <= 256
+        len(name) >= 1
+        _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
+        len(value) <= 4096
+        len(value) >= 1
 
 schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewrite:
     r"""

@@ -8,41 +8,78 @@ import k8s.apimachinery.pkg.apis.meta.v1
 
 _regex_match = regex.match
 
-schema TCPRoute:
+schema TLSRoute:
     r"""
-    TCPRoute provides a way to route TCP requests. When combined with a Gateway
-    listener, it can be used to forward connections on the port specified by the
-    listener to a set of backends specified by the TCPRoute.
+    The TLSRoute resource is similar to TCPRoute, but can be configured
+    to match against TLS-specific metadata. This allows more flexibility
+    in matching streams for a given TLS listener.
+
+    If you need to forward traffic to a single target for a TLS listener, you
+    could choose to use a TCPRoute with a TLS listener.
 
     Attributes
     ----------
-    apiVersion : str, default is "gateway.networking.k8s.io/v1alpha2", required
+    apiVersion : str, default is "gateway.networking.k8s.io/v1alpha3", required
         APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
-    kind : str, default is "TCPRoute", required
+    kind : str, default is "TLSRoute", required
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, optional
         metadata
-    spec : GatewayNetworkingK8sIoV1alpha2TCPRouteSpec, default is Undefined, required
+    spec : GatewayNetworkingK8sIoV1alpha3TLSRouteSpec, default is Undefined, required
         spec
-    status : GatewayNetworkingK8sIoV1alpha2TCPRouteStatus, default is Undefined, optional
+    status : GatewayNetworkingK8sIoV1alpha3TLSRouteStatus, default is Undefined, optional
         status
     """
-    apiVersion: "gateway.networking.k8s.io/v1alpha2" = "gateway.networking.k8s.io/v1alpha2"
+    apiVersion: "gateway.networking.k8s.io/v1alpha3" = "gateway.networking.k8s.io/v1alpha3"
 
-    kind: "TCPRoute" = "TCPRoute"
+    kind: "TLSRoute" = "TLSRoute"
 
     metadata?: v1.ObjectMeta
-    spec: GatewayNetworkingK8sIoV1alpha2TCPRouteSpec
+    spec: GatewayNetworkingK8sIoV1alpha3TLSRouteSpec
 
-    status?: GatewayNetworkingK8sIoV1alpha2TCPRouteStatus
+    status?: GatewayNetworkingK8sIoV1alpha3TLSRouteStatus
 
-schema GatewayNetworkingK8sIoV1alpha2TCPRouteSpec:
+schema GatewayNetworkingK8sIoV1alpha3TLSRouteSpec:
     r"""
-    Spec defines the desired state of TCPRoute.
+    Spec defines the desired state of TLSRoute.
 
     Attributes
     ----------
-    parentRefs : [GatewayNetworkingK8sIoV1alpha2TCPRouteSpecParentRefsItems0], default is Undefined, optional
+    hostnames : [str], default is Undefined, required
+        Hostnames defines a set of SNI hostnames that should match against the
+        SNI attribute of TLS ClientHello message in TLS handshake. This matches
+        the RFC 1123 definition of a hostname with 2 notable exceptions:
+
+        1. IPs are not allowed in SNI hostnames per RFC 6066.
+        2. A hostname may be prefixed with a wildcard label (`*.`). The wildcard
+           label must appear by itself as the first label.
+
+        If a hostname is specified by both the Listener and TLSRoute, there
+        must be at least one intersecting hostname for the TLSRoute to be
+        attached to the Listener. For example:
+
+        * A Listener with `test.example.com` as the hostname matches TLSRoutes
+          that have specified at least one of `test.example.com` or
+          `*.example.com`.
+        * A Listener with `*.example.com` as the hostname matches TLSRoutes
+          that have specified at least one hostname that matches the Listener
+          hostname. For example, `test.example.com` and `*.example.com` would both
+          match. On the other hand, `example.com` and `test.example.net` would not
+          match.
+
+        If both the Listener and TLSRoute have specified hostnames, any
+        TLSRoute hostnames that do not match the Listener hostname MUST be
+        ignored. For example, if a Listener specified `*.example.com`, and the
+        TLSRoute specified `test.example.com` and `test.example.net`,
+        `test.example.net` must not be considered for a match.
+
+        If both the Listener and TLSRoute have specified hostnames, and none
+        match with the criteria above, then the TLSRoute is not accepted. The
+        implementation must raise an 'Accepted' Condition with a status of
+        `False` in the corresponding RouteParentStatus.
+
+        Support: Core
+    parentRefs : [GatewayNetworkingK8sIoV1alpha3TLSRouteSpecParentRefsItems0], default is Undefined, optional
         ParentRefs references the resources (usually Gateways) that a Route wants
         to be attached to. Note that the referenced parent resource needs to
         allow this for the attachment to be complete. For Gateways, that means
@@ -104,8 +141,8 @@ schema GatewayNetworkingK8sIoV1alpha2TCPRouteSpec:
         connections originating from the same namespace as the Route, for which
         the intended destination of the connections are a Service targeted as a
         ParentRef of the Route.
-    rules : [GatewayNetworkingK8sIoV1alpha2TCPRouteSpecRulesItems0], default is Undefined, required
-        Rules are a list of TCP matchers and actions.
+    rules : [GatewayNetworkingK8sIoV1alpha3TLSRouteSpecRulesItems0], default is Undefined, required
+        Rules are a list of actions.
     useDefaultGateways : str, default is Undefined, optional
         UseDefaultGateways indicates the default Gateway scope to use for this
         Route. If unset (the default) or set to None, the Route will not be
@@ -120,17 +157,24 @@ schema GatewayNetworkingK8sIoV1alpha2TCPRouteSpec:
         example, a Route with specific security requirements should almost
         certainly not use a default Gateway.
     """
-    parentRefs?: [GatewayNetworkingK8sIoV1alpha2TCPRouteSpecParentRefsItems0]
-    rules: [GatewayNetworkingK8sIoV1alpha2TCPRouteSpecRulesItems0]
+    hostnames: [str]
+
+    parentRefs?: [GatewayNetworkingK8sIoV1alpha3TLSRouteSpecParentRefsItems0]
+    rules: [GatewayNetworkingK8sIoV1alpha3TLSRouteSpecRulesItems0]
 
     useDefaultGateways?: "All" | "None"
 
     check:
+        len(hostnames) >= 1
+        len(hostnames) <= 16
+        all hostnames in hostnames {len(hostnames) <= 253 if hostnames not in [None, Undefined]} if hostnames
+        all hostnames in hostnames {len(hostnames) >= 1 if hostnames not in [None, Undefined]} if hostnames
+        all hostnames in hostnames {_regex_match(str(hostnames), r"^(\*\.)?[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if hostnames} if hostnames
         len(parentRefs) <= 32 if parentRefs
         len(rules) >= 1
-        len(rules) <= 16
+        len(rules) <= 1
 
-schema GatewayNetworkingK8sIoV1alpha2TCPRouteSpecParentRefsItems0:
+schema GatewayNetworkingK8sIoV1alpha3TLSRouteSpecParentRefsItems0:
     r"""
     ParentReference identifies an API object (usually a Gateway) that can be considered
     a parent of this resource (usually a route). There are two kinds of parent resources
@@ -272,19 +316,22 @@ schema GatewayNetworkingK8sIoV1alpha2TCPRouteSpecParentRefsItems0:
         len(sectionName) >= 1 if sectionName
         _regex_match(str(sectionName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if sectionName
 
-schema GatewayNetworkingK8sIoV1alpha2TCPRouteSpecRulesItems0:
+schema GatewayNetworkingK8sIoV1alpha3TLSRouteSpecRulesItems0:
     r"""
-    TCPRouteRule is the configuration for a given rule.
+    TLSRouteRule is the configuration for a given rule.
 
     Attributes
     ----------
-    backendRefs : [GatewayNetworkingK8sIoV1alpha2TCPRouteSpecRulesItems0BackendRefsItems0], default is Undefined, required
+    backendRefs : [GatewayNetworkingK8sIoV1alpha3TLSRouteSpecRulesItems0BackendRefsItems0], default is Undefined, required
         BackendRefs defines the backend(s) where matching requests should be
-        sent. If unspecified or invalid (refers to a nonexistent resource or a
-        Service with no endpoints), the underlying implementation MUST actively
-        reject connection attempts to this backend. Connection rejections must
-        respect weight; if an invalid backend is requested to have 80% of
-        connections, then 80% of connections must be rejected instead.
+        sent. If unspecified or invalid (refers to a nonexistent resource or
+        a Service with no endpoints), the rule performs no forwarding; if no
+        filters are specified that would result in a response being sent, the
+        underlying implementation must actively reject request attempts to this
+        backend, by rejecting the connection or returning a 500 status code.
+        Request rejections must respect weight; if an invalid backend is
+        requested to have 80% of requests, then 80% of requests must be rejected
+        instead.
 
         Support: Core for Kubernetes Service
 
@@ -298,7 +345,7 @@ schema GatewayNetworkingK8sIoV1alpha2TCPRouteSpecRulesItems0:
 
         Support: Extended
     """
-    backendRefs: [GatewayNetworkingK8sIoV1alpha2TCPRouteSpecRulesItems0BackendRefsItems0]
+    backendRefs: [GatewayNetworkingK8sIoV1alpha3TLSRouteSpecRulesItems0BackendRefsItems0]
 
     name?: str
 
@@ -309,7 +356,7 @@ schema GatewayNetworkingK8sIoV1alpha2TCPRouteSpecRulesItems0:
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
 
-schema GatewayNetworkingK8sIoV1alpha2TCPRouteSpecRulesItems0BackendRefsItems0:
+schema GatewayNetworkingK8sIoV1alpha3TLSRouteSpecRulesItems0BackendRefsItems0:
     r"""
     BackendRef defines how a Route should forward a request to a Kubernetes
     resource.
@@ -416,13 +463,13 @@ schema GatewayNetworkingK8sIoV1alpha2TCPRouteSpecRulesItems0BackendRefsItems0:
         weight <= 1000000 if weight not in [None, Undefined]
         weight >= 0 if weight not in [None, Undefined]
 
-schema GatewayNetworkingK8sIoV1alpha2TCPRouteStatus:
+schema GatewayNetworkingK8sIoV1alpha3TLSRouteStatus:
     r"""
-    Status defines the current state of TCPRoute.
+    Status defines the current state of TLSRoute.
 
     Attributes
     ----------
-    parents : [GatewayNetworkingK8sIoV1alpha2TCPRouteStatusParentsItems0], default is Undefined, required
+    parents : [GatewayNetworkingK8sIoV1alpha3TLSRouteStatusParentsItems0], default is Undefined, required
         Parents is a list of parent resources (usually Gateways) that are
         associated with the route, and the status of the route with respect to
         each parent. When this route attaches to a parent, the controller that
@@ -438,19 +485,19 @@ schema GatewayNetworkingK8sIoV1alpha2TCPRouteStatus:
         A maximum of 32 Gateways will be represented in this list. An empty list
         means the route has not been attached to any Gateway.
     """
-    parents: [GatewayNetworkingK8sIoV1alpha2TCPRouteStatusParentsItems0]
+    parents: [GatewayNetworkingK8sIoV1alpha3TLSRouteStatusParentsItems0]
 
     check:
         len(parents) <= 32
 
-schema GatewayNetworkingK8sIoV1alpha2TCPRouteStatusParentsItems0:
+schema GatewayNetworkingK8sIoV1alpha3TLSRouteStatusParentsItems0:
     r"""
     RouteParentStatus describes the status of a route with respect to an
     associated Parent.
 
     Attributes
     ----------
-    conditions : [GatewayNetworkingK8sIoV1alpha2TCPRouteStatusParentsItems0ConditionsItems0], default is Undefined, required
+    conditions : [GatewayNetworkingK8sIoV1alpha3TLSRouteStatusParentsItems0ConditionsItems0], default is Undefined, required
         Conditions describes the status of the route with respect to the Gateway.
         Note that the route's availability is also subject to the Gateway's own
         status conditions and listener status.
@@ -484,14 +531,14 @@ schema GatewayNetworkingK8sIoV1alpha2TCPRouteStatusParentsItems0:
         Controllers MUST populate this field when writing status. Controllers should ensure that
         entries to status populated with their ControllerName are cleaned up when they are no
         longer necessary.
-    parentRef : GatewayNetworkingK8sIoV1alpha2TCPRouteStatusParentsItems0ParentRef, default is Undefined, required
+    parentRef : GatewayNetworkingK8sIoV1alpha3TLSRouteStatusParentsItems0ParentRef, default is Undefined, required
         parent ref
     """
-    conditions: [GatewayNetworkingK8sIoV1alpha2TCPRouteStatusParentsItems0ConditionsItems0]
+    conditions: [GatewayNetworkingK8sIoV1alpha3TLSRouteStatusParentsItems0ConditionsItems0]
 
     controllerName: str
 
-    parentRef: GatewayNetworkingK8sIoV1alpha2TCPRouteStatusParentsItems0ParentRef
+    parentRef: GatewayNetworkingK8sIoV1alpha3TLSRouteStatusParentsItems0ParentRef
 
     check:
         len(conditions) >= 1
@@ -500,7 +547,7 @@ schema GatewayNetworkingK8sIoV1alpha2TCPRouteStatusParentsItems0:
         len(controllerName) >= 1
         _regex_match(str(controllerName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*\/[A-Za-z0-9\/\-._~%!$&'()*+,;=:]+$")
 
-schema GatewayNetworkingK8sIoV1alpha2TCPRouteStatusParentsItems0ConditionsItems0:
+schema GatewayNetworkingK8sIoV1alpha3TLSRouteStatusParentsItems0ConditionsItems0:
     r"""
     Condition contains details for one aspect of the current state of this API Resource.
 
@@ -547,7 +594,7 @@ schema GatewayNetworkingK8sIoV1alpha2TCPRouteStatusParentsItems0ConditionsItems0
         len($type) <= 316
         _regex_match(str($type), r"^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$")
 
-schema GatewayNetworkingK8sIoV1alpha2TCPRouteStatusParentsItems0ParentRef:
+schema GatewayNetworkingK8sIoV1alpha3TLSRouteStatusParentsItems0ParentRef:
     r"""
     ParentRef corresponds with a ParentRef in the spec that this
     RouteParentStatus struct describes the status of.

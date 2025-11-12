@@ -68,6 +68,22 @@ schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpec:
           be unique across all targetRef entries in the BackendTLSPolicy.
         * They select different sectionNames in the same target.
 
+        When more than one BackendTLSPolicy selects the same target and
+        sectionName, implementations MUST determine precedence using the
+        following criteria, continuing on ties:
+
+        * The older policy by creation timestamp takes precedence. For
+          example, a policy with a creation timestamp of "2021-07-15
+          01:02:03" MUST be given precedence over a policy with a
+          creation timestamp of "2021-07-15 01:02:04".
+        * The policy appearing first in alphabetical order by {name}.
+          For example, a policy named `bar` is given precedence over a
+          policy named `baz`.
+
+        For any BackendTLSPolicy that does not take precedence, the
+        implementation MUST ensure the `Accepted` Condition is set to
+        `status: False`, with Reason `Conflicted`.
+
         Support: Extended for Kubernetes Service
 
         Support: Implementation-specific for any other resource
@@ -154,8 +170,31 @@ schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidation:
         not both. If CACertificateRefs is empty or unspecified, the configuration for
         WellKnownCACertificates MUST be honored instead if supported by the implementation.
 
-        References to a resource in a different namespace are invalid for the
-        moment, although we will revisit this in the future.
+        A CACertificateRef is invalid if:
+
+        * It refers to a resource that cannot be resolved (e.g., the referenced resource
+          does not exist) or is misconfigured (e.g., a ConfigMap does not contain a key
+          named `ca.crt`). In this case, the Reason must be set to `InvalidCACertificateRef`
+          and the Message of the Condition must indicate which reference is invalid and why.
+
+        * It refers to an unknown or unsupported kind of resource. In this case, the Reason
+          must be set to `InvalidKind` and the Message of the Condition must explain which
+          kind of resource is unknown or unsupported.
+
+        * It refers to a resource in another namespace. This may change in future
+          spec updates.
+
+        Implementations MAY choose to perform further validation of the certificate
+        content (e.g., checking expiry or enforcing specific formats). In such cases,
+        an implementation-specific Reason and Message must be set for the invalid reference.
+
+        In all cases, the implementation MUST ensure the `ResolvedRefs` Condition on
+        the BackendTLSPolicy is set to `status: False`, with a Reason and Message
+        that indicate the cause of the error. Connections using an invalid
+        CACertificateRef MUST fail, and the client MUST receive an HTTP 5xx error
+        response. If ALL CACertificateRefs are invalid, the implementation MUST also
+        ensure the `Accepted` Condition on the BackendTLSPolicy is set to
+        `status: False`, with a Reason `NoValidCACertificate`.
 
         A single CACertificateRef to a Kubernetes ConfigMap kind has "Core" support.
         Implementations MAY choose to support attaching multiple certificates to
@@ -164,16 +203,18 @@ schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidation:
         Support: Core - An optional single reference to a Kubernetes ConfigMap,
         with the CA certificate in a key named `ca.crt`.
 
-        Support: Implementation-specific (More than one reference, or other kinds
-        of resources).
+        Support: Implementation-specific - More than one reference, other kinds
+        of resources, or a single reference that includes multiple certificates.
     hostname : str, default is Undefined, required
         Hostname is used for two purposes in the connection between Gateways and
         backends:
 
         1. Hostname MUST be used as the SNI to connect to the backend (RFC 6066).
-        2. Hostname MUST be used for authentication and MUST match the certificate served by the matching backend, unless SubjectAltNames is specified.
-           authentication and MUST match the certificate served by the matching
-           backend.
+        2. Hostname MUST be used for authentication and MUST match the certificate
+           served by the matching backend, unless SubjectAltNames is specified.
+        3. If SubjectAltNames are specified, Hostname can be used for certificate selection
+           but MUST NOT be used for authentication. If you want to use the value
+           of the Hostname field for authentication, you MUST add it to the SubjectAltNames list.
 
         Support: Core
     subjectAltNames : [GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidationSubjectAltNamesItems0], default is Undefined, optional
@@ -188,10 +229,11 @@ schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidation:
 
         If WellKnownCACertificates is unspecified or empty (""), then CACertificateRefs
         must be specified with at least one entry for a valid configuration. Only one of
-        CACertificateRefs or WellKnownCACertificates may be specified, not both. If an
-        implementation does not support the WellKnownCACertificates field or the value
-        supplied is not supported, the Status Conditions on the Policy MUST be
-        updated to include an Accepted: False Condition with Reason: Invalid.
+        CACertificateRefs or WellKnownCACertificates may be specified, not both.
+        If an implementation does not support the WellKnownCACertificates field, or
+        the supplied value is not recognized, the implementation MUST ensure the
+        `Accepted` Condition on the BackendTLSPolicy is set to `status: False`, with
+        a Reason `Invalid`.
 
         Support: Implementation-specific
     """
@@ -359,7 +401,7 @@ schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatusAncestorsItems0:
     ----------
     ancestorRef : GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatusAncestorsItems0AncestorRef, default is Undefined, required
         ancestor ref
-    conditions : [GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatusAncestorsItems0ConditionsItems0], default is Undefined, optional
+    conditions : [GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatusAncestorsItems0ConditionsItems0], default is Undefined, required
         Conditions describes the status of the Policy with respect to the given Ancestor.
     controllerName : str, default is Undefined, required
         ControllerName is a domain/path string that indicates the name of the
@@ -378,12 +420,13 @@ schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatusAncestorsItems0:
     """
     ancestorRef: GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatusAncestorsItems0AncestorRef
 
-    conditions?: [GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatusAncestorsItems0ConditionsItems0]
+    conditions: [GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatusAncestorsItems0ConditionsItems0]
+
     controllerName: str
 
     check:
-        len(conditions) >= 1 if conditions
-        len(conditions) <= 8 if conditions
+        len(conditions) >= 1
+        len(conditions) <= 8
         len(controllerName) <= 253
         len(controllerName) >= 1
         _regex_match(str(controllerName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*\/[A-Za-z0-9\/\-._~%!$&'()*+,;=:]+$")

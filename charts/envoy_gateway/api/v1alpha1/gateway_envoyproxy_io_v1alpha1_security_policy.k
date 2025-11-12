@@ -258,6 +258,15 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0Prin
         or the proxy protocol.
         You can use the `ClientIPDetection` or the `ProxyProtocol` field in
         the `ClientTrafficPolicy` to configure how the client IP is detected.
+
+        For TCPRoute targets (raw TCP connections), HTTP headers such as
+        X-Forwarded-For are not available. The client IP is obtained from the
+        TCP connection's peer address. If intermediaries (load balancers, NAT)
+        terminate or proxy TCP, the original client IP will only be available
+        if the intermediary preserves the source address (for example by
+        enabling the PROXY protocol or avoiding SNAT). Ensure your L4 proxy is
+        configured to preserve the source IP to enable correct client-IP
+        matching for TCPRoute targets.
     headers : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0PrincipalHeadersItems0], default is Undefined, optional
         Headers authorize the request based on user identity extracted from custom headers.
         If multiple headers are specified, all headers must match for the rule to match.
@@ -369,7 +378,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0Prin
         len(name) <= 253
         len(name) >= 1
         len(values) >= 1
-        len(values) <= 16
+        len(values) <= 128
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecBasicAuth:
     r"""
@@ -521,6 +530,9 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuth:
         This field must be enabled if the headers added or modified by the ExtAuth are used for
         route matching decisions. If the recomputation selects a new route, features targeting
         the new matched route will be applied.
+    timeout : str, default is Undefined, optional
+        Timeout defines the timeout for requests to the external authorization service.
+        If not specified, defaults to 10 seconds.
     """
     bodyToExtAuth?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthBodyToExtAuth
     failOpen?: bool = False
@@ -528,6 +540,10 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuth:
     headersToExtAuth?: [str]
     http?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTP
     recomputeRoute?: bool
+    timeout?: str
+
+    check:
+        _regex_match(str(timeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if timeout
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthBodyToExtAuth:
     r"""
@@ -814,6 +830,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsCo
         If unspecified, an implementation defined default is applied (32768 bytes).
         For example, 20Mi, 1Gi, 256Ki etc.
         Note: that when the suffix is not provided, the value is interpreted as bytes.
+    preconnect : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsConnectionPreconnect, default is Undefined, optional
+        preconnect
     socketBufferLimit : int | str, default is Undefined, optional
         SocketBufferLimit provides configuration for the maximum buffer size in bytes for each socket
         to backend.
@@ -822,6 +840,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsCo
         Note that when the suffix is not provided, the value is interpreted as bytes.
     """
     bufferLimit?: int | str
+    preconnect?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsConnectionPreconnect
     socketBufferLimit?: int | str
 
     check:
@@ -829,6 +848,42 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsCo
         _regex_match(str(bufferLimit), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if bufferLimit
         _regex_match(str(socketBufferLimit), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if socketBufferLimit
         _regex_match(str(socketBufferLimit), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if socketBufferLimit
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsConnectionPreconnect:
+    r"""
+    Preconnect configures proactive upstream connections to reduce latency by establishing
+    connections before they’re needed and avoiding connection establishment overhead.
+
+    If unset, Envoy will fetch connections as needed to serve in-flight requests.
+
+    Attributes
+    ----------
+    perEndpointPercent : int, default is Undefined, optional
+        PerEndpointPercent configures how many additional connections to maintain per
+        upstream endpoint, useful for high-QPS or latency sensitive services. Expressed as a
+        percentage of the connections required by active streams
+        (e.g. 100 = preconnect disabled, 105 = 1.05x connections per-endpoint, 200 = 2.00×).
+
+        Allowed value range is between 100-300. When both PerEndpointPercent and
+        PredictivePercent are set, Envoy ensures both are satisfied (max of the two).
+    predictivePercent : int, default is Undefined, optional
+        PredictivePercent configures how many additional connections to maintain
+        across the cluster by anticipating which upstream endpoint the load balancer
+        will select next, useful for low-QPS services. Relies on deterministic
+        loadbalancing and is only supported with Random or RoundRobin.
+        Expressed as a percentage of the connections required by active streams
+        (e.g. 100 = 1.0 (no preconnect), 105 = 1.05× connections across the cluster, 200 = 2.00×).
+
+        Minimum allowed value is 100. When both PerEndpointPercent and PredictivePercent are
+        set Envoy ensures both are satisfied per host (max of the two).
+    """
+    perEndpointPercent?: int
+    predictivePercent?: int
+
+    check:
+        perEndpointPercent <= 300 if perEndpointPercent not in [None, Undefined]
+        perEndpointPercent >= 100 if perEndpointPercent not in [None, Undefined]
+        predictivePercent >= 100 if predictivePercent not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsDNS:
     r"""
@@ -1053,6 +1108,10 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHe
     consecutiveLocalOriginFailures : int, default is 5, optional
         ConsecutiveLocalOriginFailures sets the number of consecutive local origin failures triggering ejection.
         Parameter takes effect only when split_external_local_origin_errors is set to true.
+    failurePercentageThreshold : int, default is Undefined, optional
+        FailurePercentageThreshold sets the failure percentage threshold for outlier detection.
+        If the failure percentage of a given host is greater than or equal to this value, it will be ejected.
+        Defaults to 85.
     interval : str, default is "3s", optional
         Interval defines the time between passive health checks.
     maxEjectionPercent : int, default is 10, optional
@@ -1062,14 +1121,17 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHe
     """
     baseEjectionTime?: str = "30s"
     consecutive5XxErrors?: int = 5
-    consecutiveGatewayErrors?: int = 0
+    consecutiveGatewayErrors?: int
     consecutiveLocalOriginFailures?: int = 5
+    failurePercentageThreshold?: int
     interval?: str = "3s"
     maxEjectionPercent?: int = 10
     splitExternalLocalOriginErrors?: bool = False
 
     check:
         _regex_match(str(baseEjectionTime), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if baseEjectionTime
+        failurePercentageThreshold <= 100 if failurePercentageThreshold not in [None, Undefined]
+        failurePercentageThreshold >= 0 if failurePercentageThreshold not in [None, Undefined]
         _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHttp2:
@@ -1147,18 +1209,22 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLo
         cookie
     header : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerConsistentHashHeader, default is Undefined, optional
         header
+    headers : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerConsistentHashHeadersItems0], default is Undefined, optional
+        Headers configures the header hash policy for each header, when the consistent hash type is set to Headers.
     tableSize : int, default is 65537, optional
         The table size for consistent hashing, must be prime number limited to 5000011.
     $type : str, default is Undefined, required
         ConsistentHashType defines the type of input to hash on. Valid Type values are
         "SourceIP",
         "Header",
+        "Headers",
         "Cookie".
     """
     cookie?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerConsistentHashCookie
     header?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerConsistentHashHeader
+    headers?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerConsistentHashHeadersItems0]
     tableSize?: int = 65537
-    $type: "SourceIP" | "Header" | "Cookie"
+    $type: "SourceIP" | "Header" | "Headers" | "Cookie"
 
     check:
         tableSize <= 5000011 if tableSize not in [None, Undefined]
@@ -1193,6 +1259,20 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLo
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerConsistentHashHeader:
     r"""
     Header configures the header hash policy when the consistent hash type is set to Header.
+
+    Deprecated: use Headers instead
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the header to hash.
+    """
+    name: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerConsistentHashHeadersItems0:
+    r"""
+    Header defines the header hashing configuration for consistent hash based
+    load balancing.
 
     Attributes
     ----------
@@ -1273,9 +1353,16 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLo
         force
     minEndpointsThreshold : int, default is Undefined, optional
         MinEndpointsThreshold is the minimum number of total upstream endpoints across all zones required to enable zone-aware routing.
+    percentageEnabled : int, default is Undefined, optional
+        Configures percentage of requests that will be considered for zone aware routing if zone aware routing is configured. If not specified, Envoy defaults to 100%.
     """
     force?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerZoneAwarePreferLocalForce
     minEndpointsThreshold?: int
+    percentageEnabled?: int
+
+    check:
+        percentageEnabled <= 100 if percentageEnabled not in [None, Undefined]
+        percentageEnabled >= 0 if percentageEnabled not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerZoneAwarePreferLocalForce:
     r"""
@@ -1443,16 +1530,23 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsTi
     maxConnectionDuration : str, default is Undefined, optional
         The maximum duration of an HTTP connection.
         Default: unlimited.
+    maxStreamDuration : str, default is Undefined, optional
+        MaxStreamDuration is the maximum duration for a stream to complete. This timeout measures the time
+        from when the request is sent until the response stream is fully consumed and does not apply to
+        non-streaming requests.
+        When set to "0s", no max duration is applied and streams can run indefinitely.
     requestTimeout : str, default is Undefined, optional
         RequestTimeout is the time until which entire response is received from the upstream.
     """
     connectionIdleTimeout?: str
     maxConnectionDuration?: str
+    maxStreamDuration?: str
     requestTimeout?: str
 
     check:
         _regex_match(str(connectionIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if connectionIdleTimeout
         _regex_match(str(maxConnectionDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxConnectionDuration
+        _regex_match(str(maxStreamDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxStreamDuration
         _regex_match(str(requestTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if requestTimeout
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsTimeoutTCP:
@@ -1755,6 +1849,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsCo
         If unspecified, an implementation defined default is applied (32768 bytes).
         For example, 20Mi, 1Gi, 256Ki etc.
         Note: that when the suffix is not provided, the value is interpreted as bytes.
+    preconnect : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsConnectionPreconnect, default is Undefined, optional
+        preconnect
     socketBufferLimit : int | str, default is Undefined, optional
         SocketBufferLimit provides configuration for the maximum buffer size in bytes for each socket
         to backend.
@@ -1763,6 +1859,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsCo
         Note that when the suffix is not provided, the value is interpreted as bytes.
     """
     bufferLimit?: int | str
+    preconnect?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsConnectionPreconnect
     socketBufferLimit?: int | str
 
     check:
@@ -1770,6 +1867,42 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsCo
         _regex_match(str(bufferLimit), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if bufferLimit
         _regex_match(str(socketBufferLimit), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if socketBufferLimit
         _regex_match(str(socketBufferLimit), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if socketBufferLimit
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsConnectionPreconnect:
+    r"""
+    Preconnect configures proactive upstream connections to reduce latency by establishing
+    connections before they’re needed and avoiding connection establishment overhead.
+
+    If unset, Envoy will fetch connections as needed to serve in-flight requests.
+
+    Attributes
+    ----------
+    perEndpointPercent : int, default is Undefined, optional
+        PerEndpointPercent configures how many additional connections to maintain per
+        upstream endpoint, useful for high-QPS or latency sensitive services. Expressed as a
+        percentage of the connections required by active streams
+        (e.g. 100 = preconnect disabled, 105 = 1.05x connections per-endpoint, 200 = 2.00×).
+
+        Allowed value range is between 100-300. When both PerEndpointPercent and
+        PredictivePercent are set, Envoy ensures both are satisfied (max of the two).
+    predictivePercent : int, default is Undefined, optional
+        PredictivePercent configures how many additional connections to maintain
+        across the cluster by anticipating which upstream endpoint the load balancer
+        will select next, useful for low-QPS services. Relies on deterministic
+        loadbalancing and is only supported with Random or RoundRobin.
+        Expressed as a percentage of the connections required by active streams
+        (e.g. 100 = 1.0 (no preconnect), 105 = 1.05× connections across the cluster, 200 = 2.00×).
+
+        Minimum allowed value is 100. When both PerEndpointPercent and PredictivePercent are
+        set Envoy ensures both are satisfied per host (max of the two).
+    """
+    perEndpointPercent?: int
+    predictivePercent?: int
+
+    check:
+        perEndpointPercent <= 300 if perEndpointPercent not in [None, Undefined]
+        perEndpointPercent >= 100 if perEndpointPercent not in [None, Undefined]
+        predictivePercent >= 100 if predictivePercent not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsDNS:
     r"""
@@ -1994,6 +2127,10 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHe
     consecutiveLocalOriginFailures : int, default is 5, optional
         ConsecutiveLocalOriginFailures sets the number of consecutive local origin failures triggering ejection.
         Parameter takes effect only when split_external_local_origin_errors is set to true.
+    failurePercentageThreshold : int, default is Undefined, optional
+        FailurePercentageThreshold sets the failure percentage threshold for outlier detection.
+        If the failure percentage of a given host is greater than or equal to this value, it will be ejected.
+        Defaults to 85.
     interval : str, default is "3s", optional
         Interval defines the time between passive health checks.
     maxEjectionPercent : int, default is 10, optional
@@ -2003,14 +2140,17 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHe
     """
     baseEjectionTime?: str = "30s"
     consecutive5XxErrors?: int = 5
-    consecutiveGatewayErrors?: int = 0
+    consecutiveGatewayErrors?: int
     consecutiveLocalOriginFailures?: int = 5
+    failurePercentageThreshold?: int
     interval?: str = "3s"
     maxEjectionPercent?: int = 10
     splitExternalLocalOriginErrors?: bool = False
 
     check:
         _regex_match(str(baseEjectionTime), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if baseEjectionTime
+        failurePercentageThreshold <= 100 if failurePercentageThreshold not in [None, Undefined]
+        failurePercentageThreshold >= 0 if failurePercentageThreshold not in [None, Undefined]
         _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHttp2:
@@ -2088,18 +2228,22 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLo
         cookie
     header : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerConsistentHashHeader, default is Undefined, optional
         header
+    headers : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerConsistentHashHeadersItems0], default is Undefined, optional
+        Headers configures the header hash policy for each header, when the consistent hash type is set to Headers.
     tableSize : int, default is 65537, optional
         The table size for consistent hashing, must be prime number limited to 5000011.
     $type : str, default is Undefined, required
         ConsistentHashType defines the type of input to hash on. Valid Type values are
         "SourceIP",
         "Header",
+        "Headers",
         "Cookie".
     """
     cookie?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerConsistentHashCookie
     header?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerConsistentHashHeader
+    headers?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerConsistentHashHeadersItems0]
     tableSize?: int = 65537
-    $type: "SourceIP" | "Header" | "Cookie"
+    $type: "SourceIP" | "Header" | "Headers" | "Cookie"
 
     check:
         tableSize <= 5000011 if tableSize not in [None, Undefined]
@@ -2134,6 +2278,20 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLo
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerConsistentHashHeader:
     r"""
     Header configures the header hash policy when the consistent hash type is set to Header.
+
+    Deprecated: use Headers instead
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the header to hash.
+    """
+    name: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerConsistentHashHeadersItems0:
+    r"""
+    Header defines the header hashing configuration for consistent hash based
+    load balancing.
 
     Attributes
     ----------
@@ -2214,9 +2372,16 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLo
         force
     minEndpointsThreshold : int, default is Undefined, optional
         MinEndpointsThreshold is the minimum number of total upstream endpoints across all zones required to enable zone-aware routing.
+    percentageEnabled : int, default is Undefined, optional
+        Configures percentage of requests that will be considered for zone aware routing if zone aware routing is configured. If not specified, Envoy defaults to 100%.
     """
     force?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerZoneAwarePreferLocalForce
     minEndpointsThreshold?: int
+    percentageEnabled?: int
+
+    check:
+        percentageEnabled <= 100 if percentageEnabled not in [None, Undefined]
+        percentageEnabled >= 0 if percentageEnabled not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerZoneAwarePreferLocalForce:
     r"""
@@ -2384,16 +2549,23 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsTi
     maxConnectionDuration : str, default is Undefined, optional
         The maximum duration of an HTTP connection.
         Default: unlimited.
+    maxStreamDuration : str, default is Undefined, optional
+        MaxStreamDuration is the maximum duration for a stream to complete. This timeout measures the time
+        from when the request is sent until the response stream is fully consumed and does not apply to
+        non-streaming requests.
+        When set to "0s", no max duration is applied and streams can run indefinitely.
     requestTimeout : str, default is Undefined, optional
         RequestTimeout is the time until which entire response is received from the upstream.
     """
     connectionIdleTimeout?: str
     maxConnectionDuration?: str
+    maxStreamDuration?: str
     requestTimeout?: str
 
     check:
         _regex_match(str(connectionIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if connectionIdleTimeout
         _regex_match(str(maxConnectionDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxConnectionDuration
+        _regex_match(str(maxStreamDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxStreamDuration
         _regex_match(str(requestTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if requestTimeout
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsTimeoutTCP:
@@ -2601,6 +2773,9 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         backend server to which the authorization request will be sent.
     backendSettings : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettings, default is Undefined, optional
         backend settings
+    cacheDuration : str, default is "300s", optional
+        Duration is a string value representing a duration in time. The format is as specified
+        in GEP-2257, a strict subset of the syntax parsed by Golang time.ParseDuration.
     uri : str, default is Undefined, required
         URI is the HTTPS URI to fetch the JWKS. Envoy's system trust bundle is used to validate the server certificate.
         If a custom trust bundle is needed, it can be specified in a BackendTLSConfig resource and target the BackendRefs.
@@ -2608,10 +2783,12 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     backendRef?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendRef
     backendRefs?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendRefsItems0]
     backendSettings?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettings
+    cacheDuration?: str = "300s"
     uri: str
 
     check:
         len(backendRefs) <= 16 if backendRefs
+        _regex_match(str(cacheDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if cacheDuration
         len(uri) <= 253
         len(uri) >= 1
 
@@ -2860,6 +3037,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         If unspecified, an implementation defined default is applied (32768 bytes).
         For example, 20Mi, 1Gi, 256Ki etc.
         Note: that when the suffix is not provided, the value is interpreted as bytes.
+    preconnect : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsConnectionPreconnect, default is Undefined, optional
+        preconnect
     socketBufferLimit : int | str, default is Undefined, optional
         SocketBufferLimit provides configuration for the maximum buffer size in bytes for each socket
         to backend.
@@ -2868,6 +3047,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         Note that when the suffix is not provided, the value is interpreted as bytes.
     """
     bufferLimit?: int | str
+    preconnect?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsConnectionPreconnect
     socketBufferLimit?: int | str
 
     check:
@@ -2875,6 +3055,42 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         _regex_match(str(bufferLimit), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if bufferLimit
         _regex_match(str(socketBufferLimit), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if socketBufferLimit
         _regex_match(str(socketBufferLimit), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if socketBufferLimit
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsConnectionPreconnect:
+    r"""
+    Preconnect configures proactive upstream connections to reduce latency by establishing
+    connections before they’re needed and avoiding connection establishment overhead.
+
+    If unset, Envoy will fetch connections as needed to serve in-flight requests.
+
+    Attributes
+    ----------
+    perEndpointPercent : int, default is Undefined, optional
+        PerEndpointPercent configures how many additional connections to maintain per
+        upstream endpoint, useful for high-QPS or latency sensitive services. Expressed as a
+        percentage of the connections required by active streams
+        (e.g. 100 = preconnect disabled, 105 = 1.05x connections per-endpoint, 200 = 2.00×).
+
+        Allowed value range is between 100-300. When both PerEndpointPercent and
+        PredictivePercent are set, Envoy ensures both are satisfied (max of the two).
+    predictivePercent : int, default is Undefined, optional
+        PredictivePercent configures how many additional connections to maintain
+        across the cluster by anticipating which upstream endpoint the load balancer
+        will select next, useful for low-QPS services. Relies on deterministic
+        loadbalancing and is only supported with Random or RoundRobin.
+        Expressed as a percentage of the connections required by active streams
+        (e.g. 100 = 1.0 (no preconnect), 105 = 1.05× connections across the cluster, 200 = 2.00×).
+
+        Minimum allowed value is 100. When both PerEndpointPercent and PredictivePercent are
+        set Envoy ensures both are satisfied per host (max of the two).
+    """
+    perEndpointPercent?: int
+    predictivePercent?: int
+
+    check:
+        perEndpointPercent <= 300 if perEndpointPercent not in [None, Undefined]
+        perEndpointPercent >= 100 if perEndpointPercent not in [None, Undefined]
+        predictivePercent >= 100 if predictivePercent not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsDNS:
     r"""
@@ -3099,6 +3315,10 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     consecutiveLocalOriginFailures : int, default is 5, optional
         ConsecutiveLocalOriginFailures sets the number of consecutive local origin failures triggering ejection.
         Parameter takes effect only when split_external_local_origin_errors is set to true.
+    failurePercentageThreshold : int, default is Undefined, optional
+        FailurePercentageThreshold sets the failure percentage threshold for outlier detection.
+        If the failure percentage of a given host is greater than or equal to this value, it will be ejected.
+        Defaults to 85.
     interval : str, default is "3s", optional
         Interval defines the time between passive health checks.
     maxEjectionPercent : int, default is 10, optional
@@ -3108,14 +3328,17 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     """
     baseEjectionTime?: str = "30s"
     consecutive5XxErrors?: int = 5
-    consecutiveGatewayErrors?: int = 0
+    consecutiveGatewayErrors?: int
     consecutiveLocalOriginFailures?: int = 5
+    failurePercentageThreshold?: int
     interval?: str = "3s"
     maxEjectionPercent?: int = 10
     splitExternalLocalOriginErrors?: bool = False
 
     check:
         _regex_match(str(baseEjectionTime), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if baseEjectionTime
+        failurePercentageThreshold <= 100 if failurePercentageThreshold not in [None, Undefined]
+        failurePercentageThreshold >= 0 if failurePercentageThreshold not in [None, Undefined]
         _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHttp2:
@@ -3193,18 +3416,22 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         cookie
     header : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerConsistentHashHeader, default is Undefined, optional
         header
+    headers : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerConsistentHashHeadersItems0], default is Undefined, optional
+        Headers configures the header hash policy for each header, when the consistent hash type is set to Headers.
     tableSize : int, default is 65537, optional
         The table size for consistent hashing, must be prime number limited to 5000011.
     $type : str, default is Undefined, required
         ConsistentHashType defines the type of input to hash on. Valid Type values are
         "SourceIP",
         "Header",
+        "Headers",
         "Cookie".
     """
     cookie?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerConsistentHashCookie
     header?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerConsistentHashHeader
+    headers?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerConsistentHashHeadersItems0]
     tableSize?: int = 65537
-    $type: "SourceIP" | "Header" | "Cookie"
+    $type: "SourceIP" | "Header" | "Headers" | "Cookie"
 
     check:
         tableSize <= 5000011 if tableSize not in [None, Undefined]
@@ -3239,6 +3466,20 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerConsistentHashHeader:
     r"""
     Header configures the header hash policy when the consistent hash type is set to Header.
+
+    Deprecated: use Headers instead
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the header to hash.
+    """
+    name: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerConsistentHashHeadersItems0:
+    r"""
+    Header defines the header hashing configuration for consistent hash based
+    load balancing.
 
     Attributes
     ----------
@@ -3319,9 +3560,16 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         force
     minEndpointsThreshold : int, default is Undefined, optional
         MinEndpointsThreshold is the minimum number of total upstream endpoints across all zones required to enable zone-aware routing.
+    percentageEnabled : int, default is Undefined, optional
+        Configures percentage of requests that will be considered for zone aware routing if zone aware routing is configured. If not specified, Envoy defaults to 100%.
     """
     force?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerZoneAwarePreferLocalForce
     minEndpointsThreshold?: int
+    percentageEnabled?: int
+
+    check:
+        percentageEnabled <= 100 if percentageEnabled not in [None, Undefined]
+        percentageEnabled >= 0 if percentageEnabled not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerZoneAwarePreferLocalForce:
     r"""
@@ -3489,16 +3737,23 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     maxConnectionDuration : str, default is Undefined, optional
         The maximum duration of an HTTP connection.
         Default: unlimited.
+    maxStreamDuration : str, default is Undefined, optional
+        MaxStreamDuration is the maximum duration for a stream to complete. This timeout measures the time
+        from when the request is sent until the response stream is fully consumed and does not apply to
+        non-streaming requests.
+        When set to "0s", no max duration is applied and streams can run indefinitely.
     requestTimeout : str, default is Undefined, optional
         RequestTimeout is the time until which entire response is received from the upstream.
     """
     connectionIdleTimeout?: str
     maxConnectionDuration?: str
+    maxStreamDuration?: str
     requestTimeout?: str
 
     check:
         _regex_match(str(connectionIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if connectionIdleTimeout
         _regex_match(str(maxConnectionDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxConnectionDuration
+        _regex_match(str(maxStreamDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxStreamDuration
         _regex_match(str(requestTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if requestTimeout
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsTimeoutTCP:
@@ -3540,6 +3795,13 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidc:
         This means that requests to any subdomain will not require reauthentication after users log in to the parent domain.
     cookieNames : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcCookieNames, default is Undefined, optional
         cookie names
+    csrfTokenTTL : str, default is Undefined, optional
+        CSRFTokenTTL defines how long the CSRF token generated during the OAuth2 authorization flow remains valid.
+
+        This duration determines the lifetime of the CSRF cookie, which is validated against the CSRF token
+        in the "state" parameter when the provider redirects back to the callback endpoint.
+
+        If omitted, Envoy Gateway defaults the token expiration to 10 minutes.
     defaultRefreshTokenTTL : str, default is Undefined, optional
         DefaultRefreshTokenTTL is the default lifetime of the refresh token.
         This field is only used when the exp (expiration time) claim is omitted in
@@ -3558,6 +3820,10 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidc:
         OAuth flow will fail.
     denyRedirect : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcDenyRedirect, default is Undefined, optional
         deny redirect
+    disableTokenEncryption : bool, default is Undefined, optional
+        Disable token encryption. When set to true, both the access token and the ID token will be stored in plain text.
+        This option should only be used in secure environments where token encryption is not required.
+        Default is false (tokens are encrypted).
     forwardAccessToken : bool, default is Undefined, optional
         ForwardAccessToken indicates whether the Envoy should forward the access token
         via the Authorization header Bearer scheme to the upstream.
@@ -3580,13 +3846,13 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidc:
         The redirect URL to be used in the OIDC
         [Authentication Request](https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest).
         If not specified, uses the default redirect URI "%REQ(x-forwarded-proto)%://%REQ(:authority)%/oauth2/callback"
-    refreshToken : bool, default is Undefined, optional
+    refreshToken : bool, default is True, optional
         RefreshToken indicates whether the Envoy should automatically refresh the
         id token and access token when they expire.
         When set to true, the Envoy will use the refresh token to get a new id token
         and access token when they expire.
 
-        If not specified, defaults to false.
+        If not specified, defaults to true.
     resources : [str], default is Undefined, optional
         The OIDC resources to be used in the
         [Authentication Request](https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest).
@@ -3603,22 +3869,25 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidc:
     cookieConfig?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcCookieConfig
     cookieDomain?: str
     cookieNames?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcCookieNames
+    csrfTokenTTL?: str
     defaultRefreshTokenTTL?: str
     defaultTokenTTL?: str
     denyRedirect?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcDenyRedirect
+    disableTokenEncryption?: bool
     forwardAccessToken?: bool
     logoutPath?: str
     passThroughAuthHeader?: bool
     provider: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProvider
 
     redirectURL?: str
-    refreshToken?: bool
+    refreshToken?: bool = True
     resources?: [str]
     scopes?: [str]
 
     check:
         len(clientID) >= 1 if clientID
         _regex_match(str(cookieDomain), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9]))*$") if cookieDomain
+        _regex_match(str(csrfTokenTTL), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if csrfTokenTTL
         _regex_match(str(defaultRefreshTokenTTL), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if defaultRefreshTokenTTL
         _regex_match(str(defaultTokenTTL), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if defaultTokenTTL
 
@@ -4074,6 +4343,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsC
         If unspecified, an implementation defined default is applied (32768 bytes).
         For example, 20Mi, 1Gi, 256Ki etc.
         Note: that when the suffix is not provided, the value is interpreted as bytes.
+    preconnect : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsConnectionPreconnect, default is Undefined, optional
+        preconnect
     socketBufferLimit : int | str, default is Undefined, optional
         SocketBufferLimit provides configuration for the maximum buffer size in bytes for each socket
         to backend.
@@ -4082,6 +4353,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsC
         Note that when the suffix is not provided, the value is interpreted as bytes.
     """
     bufferLimit?: int | str
+    preconnect?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsConnectionPreconnect
     socketBufferLimit?: int | str
 
     check:
@@ -4089,6 +4361,42 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsC
         _regex_match(str(bufferLimit), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if bufferLimit
         _regex_match(str(socketBufferLimit), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if socketBufferLimit
         _regex_match(str(socketBufferLimit), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if socketBufferLimit
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsConnectionPreconnect:
+    r"""
+    Preconnect configures proactive upstream connections to reduce latency by establishing
+    connections before they’re needed and avoiding connection establishment overhead.
+
+    If unset, Envoy will fetch connections as needed to serve in-flight requests.
+
+    Attributes
+    ----------
+    perEndpointPercent : int, default is Undefined, optional
+        PerEndpointPercent configures how many additional connections to maintain per
+        upstream endpoint, useful for high-QPS or latency sensitive services. Expressed as a
+        percentage of the connections required by active streams
+        (e.g. 100 = preconnect disabled, 105 = 1.05x connections per-endpoint, 200 = 2.00×).
+
+        Allowed value range is between 100-300. When both PerEndpointPercent and
+        PredictivePercent are set, Envoy ensures both are satisfied (max of the two).
+    predictivePercent : int, default is Undefined, optional
+        PredictivePercent configures how many additional connections to maintain
+        across the cluster by anticipating which upstream endpoint the load balancer
+        will select next, useful for low-QPS services. Relies on deterministic
+        loadbalancing and is only supported with Random or RoundRobin.
+        Expressed as a percentage of the connections required by active streams
+        (e.g. 100 = 1.0 (no preconnect), 105 = 1.05× connections across the cluster, 200 = 2.00×).
+
+        Minimum allowed value is 100. When both PerEndpointPercent and PredictivePercent are
+        set Envoy ensures both are satisfied per host (max of the two).
+    """
+    perEndpointPercent?: int
+    predictivePercent?: int
+
+    check:
+        perEndpointPercent <= 300 if perEndpointPercent not in [None, Undefined]
+        perEndpointPercent >= 100 if perEndpointPercent not in [None, Undefined]
+        predictivePercent >= 100 if predictivePercent not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsDNS:
     r"""
@@ -4313,6 +4621,10 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsH
     consecutiveLocalOriginFailures : int, default is 5, optional
         ConsecutiveLocalOriginFailures sets the number of consecutive local origin failures triggering ejection.
         Parameter takes effect only when split_external_local_origin_errors is set to true.
+    failurePercentageThreshold : int, default is Undefined, optional
+        FailurePercentageThreshold sets the failure percentage threshold for outlier detection.
+        If the failure percentage of a given host is greater than or equal to this value, it will be ejected.
+        Defaults to 85.
     interval : str, default is "3s", optional
         Interval defines the time between passive health checks.
     maxEjectionPercent : int, default is 10, optional
@@ -4322,14 +4634,17 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsH
     """
     baseEjectionTime?: str = "30s"
     consecutive5XxErrors?: int = 5
-    consecutiveGatewayErrors?: int = 0
+    consecutiveGatewayErrors?: int
     consecutiveLocalOriginFailures?: int = 5
+    failurePercentageThreshold?: int
     interval?: str = "3s"
     maxEjectionPercent?: int = 10
     splitExternalLocalOriginErrors?: bool = False
 
     check:
         _regex_match(str(baseEjectionTime), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if baseEjectionTime
+        failurePercentageThreshold <= 100 if failurePercentageThreshold not in [None, Undefined]
+        failurePercentageThreshold >= 0 if failurePercentageThreshold not in [None, Undefined]
         _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHttp2:
@@ -4407,18 +4722,22 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsL
         cookie
     header : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerConsistentHashHeader, default is Undefined, optional
         header
+    headers : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerConsistentHashHeadersItems0], default is Undefined, optional
+        Headers configures the header hash policy for each header, when the consistent hash type is set to Headers.
     tableSize : int, default is 65537, optional
         The table size for consistent hashing, must be prime number limited to 5000011.
     $type : str, default is Undefined, required
         ConsistentHashType defines the type of input to hash on. Valid Type values are
         "SourceIP",
         "Header",
+        "Headers",
         "Cookie".
     """
     cookie?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerConsistentHashCookie
     header?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerConsistentHashHeader
+    headers?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerConsistentHashHeadersItems0]
     tableSize?: int = 65537
-    $type: "SourceIP" | "Header" | "Cookie"
+    $type: "SourceIP" | "Header" | "Headers" | "Cookie"
 
     check:
         tableSize <= 5000011 if tableSize not in [None, Undefined]
@@ -4453,6 +4772,20 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsL
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerConsistentHashHeader:
     r"""
     Header configures the header hash policy when the consistent hash type is set to Header.
+
+    Deprecated: use Headers instead
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the header to hash.
+    """
+    name: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerConsistentHashHeadersItems0:
+    r"""
+    Header defines the header hashing configuration for consistent hash based
+    load balancing.
 
     Attributes
     ----------
@@ -4533,9 +4866,16 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsL
         force
     minEndpointsThreshold : int, default is Undefined, optional
         MinEndpointsThreshold is the minimum number of total upstream endpoints across all zones required to enable zone-aware routing.
+    percentageEnabled : int, default is Undefined, optional
+        Configures percentage of requests that will be considered for zone aware routing if zone aware routing is configured. If not specified, Envoy defaults to 100%.
     """
     force?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerZoneAwarePreferLocalForce
     minEndpointsThreshold?: int
+    percentageEnabled?: int
+
+    check:
+        percentageEnabled <= 100 if percentageEnabled not in [None, Undefined]
+        percentageEnabled >= 0 if percentageEnabled not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerZoneAwarePreferLocalForce:
     r"""
@@ -4703,16 +5043,23 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsT
     maxConnectionDuration : str, default is Undefined, optional
         The maximum duration of an HTTP connection.
         Default: unlimited.
+    maxStreamDuration : str, default is Undefined, optional
+        MaxStreamDuration is the maximum duration for a stream to complete. This timeout measures the time
+        from when the request is sent until the response stream is fully consumed and does not apply to
+        non-streaming requests.
+        When set to "0s", no max duration is applied and streams can run indefinitely.
     requestTimeout : str, default is Undefined, optional
         RequestTimeout is the time until which entire response is received from the upstream.
     """
     connectionIdleTimeout?: str
     maxConnectionDuration?: str
+    maxStreamDuration?: str
     requestTimeout?: str
 
     check:
         _regex_match(str(connectionIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if connectionIdleTimeout
         _regex_match(str(maxConnectionDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxConnectionDuration
+        _regex_match(str(maxStreamDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxStreamDuration
         _regex_match(str(requestTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if requestTimeout
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsTimeoutTCP:
@@ -4963,8 +5310,38 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicyStatusAncestorsItems0:
     ----------
     ancestorRef : GatewayEnvoyproxyIoV1alpha1SecurityPolicyStatusAncestorsItems0AncestorRef, default is Undefined, required
         ancestor ref
-    conditions : [GatewayEnvoyproxyIoV1alpha1SecurityPolicyStatusAncestorsItems0ConditionsItems0], default is Undefined, optional
+    conditions : [GatewayEnvoyproxyIoV1alpha1SecurityPolicyStatusAncestorsItems0ConditionsItems0], default is Undefined, required
         Conditions describes the status of the Policy with respect to the given Ancestor.
+
+        <gateway:util:excludeFromCRD>
+
+        Notes for implementors:
+
+        Conditions are a listType `map`, which means that they function like a
+        map with a key of the `type` field _in the k8s apiserver_.
+
+        This means that implementations must obey some rules when updating this
+        section.
+
+        * Implementations MUST perform a read-modify-write cycle on this field
+          before modifying it. That is, when modifying this field, implementations
+          must be confident they have fetched the most recent version of this field,
+          and ensure that changes they make are on that recent version.
+        * Implementations MUST NOT remove or reorder Conditions that they are not
+          directly responsible for. For example, if an implementation sees a Condition
+          with type `special.io/SomeField`, it MUST NOT remove, change or update that
+          Condition.
+        * Implementations MUST always _merge_ changes into Conditions of the same Type,
+          rather than creating more than one Condition of the same Type.
+        * Implementations MUST always update the `observedGeneration` field of the
+          Condition to the `metadata.generation` of the Gateway at the time of update creation.
+        * If the `observedGeneration` of a Condition is _greater than_ the value the
+          implementation knows about, then it MUST NOT perform the update on that Condition,
+          but must wait for a future reconciliation and status update. (The assumption is that
+          the implementation's copy of the object is stale and an update will be re-triggered
+          if relevant.)
+
+        </gateway:util:excludeFromCRD>
     controllerName : str, default is Undefined, required
         ControllerName is a domain/path string that indicates the name of the
         controller that wrote this status. This corresponds with the
@@ -4982,12 +5359,13 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicyStatusAncestorsItems0:
     """
     ancestorRef: GatewayEnvoyproxyIoV1alpha1SecurityPolicyStatusAncestorsItems0AncestorRef
 
-    conditions?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicyStatusAncestorsItems0ConditionsItems0]
+    conditions: [GatewayEnvoyproxyIoV1alpha1SecurityPolicyStatusAncestorsItems0ConditionsItems0]
+
     controllerName: str
 
     check:
-        len(conditions) >= 1 if conditions
-        len(conditions) <= 8 if conditions
+        len(conditions) >= 1
+        len(conditions) <= 8
         len(controllerName) <= 253
         len(controllerName) >= 1
         _regex_match(str(controllerName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*\/[A-Za-z0-9\/\-._~%!$&'()*+,;=:]+$")

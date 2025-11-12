@@ -8,122 +8,110 @@ import k8s.apimachinery.pkg.apis.meta.v1
 
 _regex_match = regex.match
 
-schema EnvoyPatchPolicy:
+schema BackendTLSPolicy:
     r"""
-    EnvoyPatchPolicy allows the user to modify the generated Envoy xDS
-    resources by Envoy Gateway using this patch API
+    BackendTLSPolicy provides a way to configure how a Gateway
+    connects to a Backend via TLS.
 
     Attributes
     ----------
-    apiVersion : str, default is "gateway.envoyproxy.io/v1alpha1", required
+    apiVersion : str, default is "gateway.networking.k8s.io/v1", required
         APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
-    kind : str, default is "EnvoyPatchPolicy", required
+    kind : str, default is "BackendTLSPolicy", required
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, optional
         metadata
-    spec : GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicySpec, default is Undefined, required
+    spec : GatewayNetworkingK8sIoV1BackendTLSPolicySpec, default is Undefined, required
         spec
-    status : GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatus, default is Undefined, optional
+    status : GatewayNetworkingK8sIoV1BackendTLSPolicyStatus, default is Undefined, optional
         status
     """
-    apiVersion: "gateway.envoyproxy.io/v1alpha1" = "gateway.envoyproxy.io/v1alpha1"
+    apiVersion: "gateway.networking.k8s.io/v1" = "gateway.networking.k8s.io/v1"
 
-    kind: "EnvoyPatchPolicy" = "EnvoyPatchPolicy"
+    kind: "BackendTLSPolicy" = "BackendTLSPolicy"
 
     metadata?: v1.ObjectMeta
-    spec: GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicySpec
+    spec: GatewayNetworkingK8sIoV1BackendTLSPolicySpec
 
-    status?: GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatus
+    status?: GatewayNetworkingK8sIoV1BackendTLSPolicyStatus
 
-schema GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicySpec:
+schema GatewayNetworkingK8sIoV1BackendTLSPolicySpec:
     r"""
-    Spec defines the desired state of EnvoyPatchPolicy.
+    Spec defines the desired state of BackendTLSPolicy.
 
     Attributes
     ----------
-    jsonPatches : [GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicySpecJSONPatchesItems0], default is Undefined, optional
-        JSONPatch defines the JSONPatch configuration.
-    priority : int, default is Undefined, optional
-        Priority of the EnvoyPatchPolicy.
-        If multiple EnvoyPatchPolicies are applied to the same
-        TargetRef, they will be applied in the ascending order of
-        the priority i.e. int32.min has the highest priority and
-        int32.max has the lowest priority.
-        Defaults to 0.
-    targetRef : GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicySpecTargetRef, default is Undefined, required
-        target ref
-    $type : str, default is Undefined, required
-        Type decides the type of patch.
-        Valid EnvoyPatchType values are "JSONPatch".
+    options : {str:str}, default is Undefined, optional
+        Options are a list of key/value pairs to enable extended TLS
+        configuration for each implementation. For example, configuring the
+        minimum TLS version or supported cipher suites.
+
+        A set of common keys MAY be defined by the API in the future. To avoid
+        any ambiguity, implementation-specific definitions MUST use
+        domain-prefixed names, such as `example.com/my-custom-option`.
+        Un-prefixed names are reserved for key names defined by Gateway API.
+
+        Support: Implementation-specific
+    targetRefs : [GatewayNetworkingK8sIoV1BackendTLSPolicySpecTargetRefsItems0], default is Undefined, required
+        TargetRefs identifies an API object to apply the policy to.
+        Only Services have Extended support. Implementations MAY support
+        additional objects, with Implementation Specific support.
+        Note that this config applies to the entire referenced resource
+        by default, but this default may change in the future to provide
+        a more granular application of the policy.
+
+        TargetRefs must be _distinct_. This means either that:
+
+        * They select different targets. If this is the case, then targetRef
+          entries are distinct. In terms of fields, this means that the
+          multi-part key defined by `group`, `kind`, and `name` must
+          be unique across all targetRef entries in the BackendTLSPolicy.
+        * They select different sectionNames in the same target.
+
+        When more than one BackendTLSPolicy selects the same target and
+        sectionName, implementations MUST determine precedence using the
+        following criteria, continuing on ties:
+
+        * The older policy by creation timestamp takes precedence. For
+          example, a policy with a creation timestamp of "2021-07-15
+          01:02:03" MUST be given precedence over a policy with a
+          creation timestamp of "2021-07-15 01:02:04".
+        * The policy appearing first in alphabetical order by {name}.
+          For example, a policy named `bar` is given precedence over a
+          policy named `baz`.
+
+        For any BackendTLSPolicy that does not take precedence, the
+        implementation MUST ensure the `Accepted` Condition is set to
+        `status: False`, with Reason `Conflicted`.
+
+        Support: Extended for Kubernetes Service
+
+        Support: Implementation-specific for any other resource
+    validation : GatewayNetworkingK8sIoV1BackendTLSPolicySpecValidation, default is Undefined, required
+        validation
     """
-    jsonPatches?: [GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicySpecJSONPatchesItems0]
-    priority?: int
-    targetRef: GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicySpecTargetRef
+    options?: {str:str}
+    targetRefs: [GatewayNetworkingK8sIoV1BackendTLSPolicySpecTargetRefsItems0]
 
-    $type: "JSONPatch"
+    validation: GatewayNetworkingK8sIoV1BackendTLSPolicySpecValidation
 
-schema GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicySpecJSONPatchesItems0:
+    check:
+        all _, options in options {len(options) <= 4096 if options not in [None, Undefined]} if options
+        all _, options in options {len(options) >= 0 if options not in [None, Undefined]} if options
+        len(targetRefs) >= 1
+        len(targetRefs) <= 16
+
+schema GatewayNetworkingK8sIoV1BackendTLSPolicySpecTargetRefsItems0:
     r"""
-    EnvoyJSONPatchConfig defines the configuration for patching a Envoy xDS Resource
-    using JSONPatch semantic
+    LocalPolicyTargetReferenceWithSectionName identifies an API object to apply a
+    direct policy to. This should be used as part of Policy resources that can
+    target single resources. For more information on how this policy attachment
+    mode works, and a sample Policy resource, refer to the policy attachment
+    documentation for Gateway API.
 
-    Attributes
-    ----------
-    name : str, default is Undefined, required
-        Name is the name of the resource
-    operation : GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicySpecJSONPatchesItems0Operation, default is Undefined, required
-        operation
-    $type : str, default is Undefined, required
-        Type is the typed URL of the Envoy xDS Resource
-    """
-    name: str
-
-    operation: GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicySpecJSONPatchesItems0Operation
-
-    $type: "type.googleapis.com/envoy.config.listener.v3.Listener" | "type.googleapis.com/envoy.config.route.v3.RouteConfiguration" | "type.googleapis.com/envoy.config.cluster.v3.Cluster" | "type.googleapis.com/envoy.config.endpoint.v3.ClusterLoadAssignment" | "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.Secret"
-
-schema GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicySpecJSONPatchesItems0Operation:
-    r"""
-    Patch defines the JSON Patch Operation
-
-    Attributes
-    ----------
-    from : str, default is Undefined, optional
-        From is the source location of the value to be copied or moved. Only valid
-        for move or copy operations
-        Refer to https://datatracker.ietf.org/doc/html/rfc6901 for more details.
-    jsonPath : str, default is Undefined, optional
-        JSONPath is a JSONPath expression. Refer to https://datatracker.ietf.org/doc/rfc9535/ for more details.
-        It produces one or more JSONPointer expressions based on the given JSON document.
-        If no JSONPointer is found, it will result in an error.
-        If the 'Path' property is also set, it will be appended to the resulting JSONPointer expressions from the JSONPath evaluation.
-        This is useful when creating a property that does not yet exist in the JSON document.
-        The final JSONPointer expressions specifies the locations in the target document/field where the operation will be applied.
-    op : str, default is Undefined, required
-        Op is the type of operation to perform
-    path : str, default is Undefined, optional
-        Path is a JSONPointer expression. Refer to https://datatracker.ietf.org/doc/html/rfc6901 for more details.
-        It specifies the location of the target document/field where the operation will be performed
-    value : any, default is Undefined, optional
-        Value is the new value of the path location. The value is only used by
-        the `add` and `replace` operations.
-    """
-    from?: str
-    jsonPath?: str
-    op: "add" | "remove" | "replace" | "move" | "copy" | "test"
-
-    path?: str
-    value?: any
-
-schema GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicySpecTargetRef:
-    r"""
-    TargetRef is the name of the Gateway API resource this policy
-    is being attached to.
-    By default, attaching to Gateway is supported and
-    when mergeGateways is enabled it should attach to GatewayClass.
-    This Policy and the TargetRef MUST be in the same namespace
-    for this Policy to have effect and be applied to the Gateway
-    TargetRef
+    Note: This should only be used for direct policy attachment when references
+    to SectionName are actually needed. In all other cases,
+    LocalPolicyTargetReference should be used.
 
     Attributes
     ----------
@@ -133,6 +121,155 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicySpecTargetRef:
         Kind is kind of the target resource.
     name : str, default is Undefined, required
         Name is the name of the target resource.
+    sectionName : str, default is Undefined, optional
+        SectionName is the name of a section within the target resource. When
+        unspecified, this targetRef targets the entire resource. In the following
+        resources, SectionName is interpreted as the following:
+
+        * Gateway: Listener name
+        * HTTPRoute: HTTPRouteRule name
+        * Service: Port name
+
+        If a SectionName is specified, but does not exist on the targeted object,
+        the Policy must fail to attach, and the policy implementation should record
+        a `ResolvedRefs` or similar Condition in the Policy's status.
+    """
+    group: str
+
+    kind: str
+
+    name: str
+
+    sectionName?: str
+
+    check:
+        len(group) <= 253
+        _regex_match(str(group), r"^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(kind) <= 63
+        len(kind) >= 1
+        _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$")
+        len(name) <= 253
+        len(name) >= 1
+        len(sectionName) <= 253 if sectionName
+        len(sectionName) >= 1 if sectionName
+        _regex_match(str(sectionName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if sectionName
+
+schema GatewayNetworkingK8sIoV1BackendTLSPolicySpecValidation:
+    r"""
+    Validation contains backend TLS validation configuration.
+
+    Attributes
+    ----------
+    caCertificateRefs : [GatewayNetworkingK8sIoV1BackendTLSPolicySpecValidationCaCertificateRefsItems0], default is Undefined, optional
+        CACertificateRefs contains one or more references to Kubernetes objects that
+        contain a PEM-encoded TLS CA certificate bundle, which is used to
+        validate a TLS handshake between the Gateway and backend Pod.
+
+        If CACertificateRefs is empty or unspecified, then WellKnownCACertificates must be
+        specified. Only one of CACertificateRefs or WellKnownCACertificates may be specified,
+        not both. If CACertificateRefs is empty or unspecified, the configuration for
+        WellKnownCACertificates MUST be honored instead if supported by the implementation.
+
+        A CACertificateRef is invalid if:
+
+        * It refers to a resource that cannot be resolved (e.g., the referenced resource
+          does not exist) or is misconfigured (e.g., a ConfigMap does not contain a key
+          named `ca.crt`). In this case, the Reason must be set to `InvalidCACertificateRef`
+          and the Message of the Condition must indicate which reference is invalid and why.
+
+        * It refers to an unknown or unsupported kind of resource. In this case, the Reason
+          must be set to `InvalidKind` and the Message of the Condition must explain which
+          kind of resource is unknown or unsupported.
+
+        * It refers to a resource in another namespace. This may change in future
+          spec updates.
+
+        Implementations MAY choose to perform further validation of the certificate
+        content (e.g., checking expiry or enforcing specific formats). In such cases,
+        an implementation-specific Reason and Message must be set for the invalid reference.
+
+        In all cases, the implementation MUST ensure the `ResolvedRefs` Condition on
+        the BackendTLSPolicy is set to `status: False`, with a Reason and Message
+        that indicate the cause of the error. Connections using an invalid
+        CACertificateRef MUST fail, and the client MUST receive an HTTP 5xx error
+        response. If ALL CACertificateRefs are invalid, the implementation MUST also
+        ensure the `Accepted` Condition on the BackendTLSPolicy is set to
+        `status: False`, with a Reason `NoValidCACertificate`.
+
+        A single CACertificateRef to a Kubernetes ConfigMap kind has "Core" support.
+        Implementations MAY choose to support attaching multiple certificates to
+        a backend, but this behavior is implementation-specific.
+
+        Support: Core - An optional single reference to a Kubernetes ConfigMap,
+        with the CA certificate in a key named `ca.crt`.
+
+        Support: Implementation-specific - More than one reference, other kinds
+        of resources, or a single reference that includes multiple certificates.
+    hostname : str, default is Undefined, required
+        Hostname is used for two purposes in the connection between Gateways and
+        backends:
+
+        1. Hostname MUST be used as the SNI to connect to the backend (RFC 6066).
+        2. Hostname MUST be used for authentication and MUST match the certificate
+           served by the matching backend, unless SubjectAltNames is specified.
+        3. If SubjectAltNames are specified, Hostname can be used for certificate selection
+           but MUST NOT be used for authentication. If you want to use the value
+           of the Hostname field for authentication, you MUST add it to the SubjectAltNames list.
+
+        Support: Core
+    subjectAltNames : [GatewayNetworkingK8sIoV1BackendTLSPolicySpecValidationSubjectAltNamesItems0], default is Undefined, optional
+        SubjectAltNames contains one or more Subject Alternative Names.
+        When specified the certificate served from the backend MUST
+        have at least one Subject Alternate Name matching one of the specified SubjectAltNames.
+
+        Support: Extended
+    wellKnownCACertificates : str, default is Undefined, optional
+        WellKnownCACertificates specifies whether system CA certificates may be used in
+        the TLS handshake between the gateway and backend pod.
+
+        If WellKnownCACertificates is unspecified or empty (""), then CACertificateRefs
+        must be specified with at least one entry for a valid configuration. Only one of
+        CACertificateRefs or WellKnownCACertificates may be specified, not both.
+        If an implementation does not support the WellKnownCACertificates field, or
+        the supplied value is not recognized, the implementation MUST ensure the
+        `Accepted` Condition on the BackendTLSPolicy is set to `status: False`, with
+        a Reason `Invalid`.
+
+        Support: Implementation-specific
+    """
+    caCertificateRefs?: [GatewayNetworkingK8sIoV1BackendTLSPolicySpecValidationCaCertificateRefsItems0]
+    hostname: str
+
+    subjectAltNames?: [GatewayNetworkingK8sIoV1BackendTLSPolicySpecValidationSubjectAltNamesItems0]
+    wellKnownCACertificates?: "System"
+
+    check:
+        len(caCertificateRefs) <= 8 if caCertificateRefs
+        len(hostname) <= 253
+        len(hostname) >= 1
+        _regex_match(str(hostname), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(subjectAltNames) <= 5 if subjectAltNames
+
+schema GatewayNetworkingK8sIoV1BackendTLSPolicySpecValidationCaCertificateRefsItems0:
+    r"""
+    LocalObjectReference identifies an API object within the namespace of the
+    referrer.
+    The API object must be valid in the cluster; the Group and Kind must
+    be registered in the cluster for this reference to be valid.
+
+    References to objects with invalid Group and Kind are not valid, and must
+    be rejected by the implementation, with appropriate Conditions set
+    on the containing object.
+
+    Attributes
+    ----------
+    group : str, default is Undefined, required
+        Group is the group of the referent. For example, "gateway.networking.k8s.io".
+        When unspecified or empty string, core API group is inferred.
+    kind : str, default is Undefined, required
+        Kind is kind of the referent. For example "HTTPRoute" or "Service".
+    name : str, default is Undefined, required
+        Name is the name of the referent.
     """
     group: str
 
@@ -149,13 +286,49 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicySpecTargetRef:
         len(name) <= 253
         len(name) >= 1
 
-schema GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatus:
+schema GatewayNetworkingK8sIoV1BackendTLSPolicySpecValidationSubjectAltNamesItems0:
     r"""
-    Status defines the current status of EnvoyPatchPolicy.
+    SubjectAltName represents Subject Alternative Name.
 
     Attributes
     ----------
-    ancestors : [GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatusAncestorsItems0], default is Undefined, required
+    hostname : str, default is Undefined, optional
+        Hostname contains Subject Alternative Name specified in DNS name format.
+        Required when Type is set to Hostname, ignored otherwise.
+
+        Support: Core
+    $type : str, default is Undefined, required
+        Type determines the format of the Subject Alternative Name. Always required.
+
+        Support: Core
+    uri : str, default is Undefined, optional
+        URI contains Subject Alternative Name specified in a full URI format.
+        It MUST include both a scheme (e.g., "http" or "ftp") and a scheme-specific-part.
+        Common values include SPIFFE IDs like "spiffe://mycluster.example.com/ns/myns/sa/svc1sa".
+        Required when Type is set to URI, ignored otherwise.
+
+        Support: Core
+    """
+    hostname?: str
+    $type: "Hostname" | "URI"
+
+    uri?: str
+
+    check:
+        len(hostname) <= 253 if hostname
+        len(hostname) >= 1 if hostname
+        _regex_match(str(hostname), r"^(\*\.)?[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if hostname
+        len(uri) <= 253 if uri
+        len(uri) >= 1 if uri
+        _regex_match(str(uri), r"^(([^:/?#]+):)(//([^/?#]*))([^?#]*)(\?([^#]*))?(#(.*))?") if uri
+
+schema GatewayNetworkingK8sIoV1BackendTLSPolicyStatus:
+    r"""
+    Status defines the current state of BackendTLSPolicy.
+
+    Attributes
+    ----------
+    ancestors : [GatewayNetworkingK8sIoV1BackendTLSPolicyStatusAncestorsItems0], default is Undefined, required
         Ancestors is a list of ancestor resources (usually Gateways) that are
         associated with the policy, and the status of the policy with respect to
         each ancestor. When this policy attaches to a parent, the controller that
@@ -186,12 +359,12 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatus:
         additional Gateways would be able to reference the Service targeted by
         the BackendTLSPolicy.
     """
-    ancestors: [GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatusAncestorsItems0]
+    ancestors: [GatewayNetworkingK8sIoV1BackendTLSPolicyStatusAncestorsItems0]
 
     check:
         len(ancestors) <= 16
 
-schema GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatusAncestorsItems0:
+schema GatewayNetworkingK8sIoV1BackendTLSPolicyStatusAncestorsItems0:
     r"""
     PolicyAncestorStatus describes the status of a route with respect to an
     associated Ancestor.
@@ -226,40 +399,10 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatusAncestorsItems0:
 
     Attributes
     ----------
-    ancestorRef : GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatusAncestorsItems0AncestorRef, default is Undefined, required
+    ancestorRef : GatewayNetworkingK8sIoV1BackendTLSPolicyStatusAncestorsItems0AncestorRef, default is Undefined, required
         ancestor ref
-    conditions : [GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatusAncestorsItems0ConditionsItems0], default is Undefined, required
+    conditions : [GatewayNetworkingK8sIoV1BackendTLSPolicyStatusAncestorsItems0ConditionsItems0], default is Undefined, required
         Conditions describes the status of the Policy with respect to the given Ancestor.
-
-        <gateway:util:excludeFromCRD>
-
-        Notes for implementors:
-
-        Conditions are a listType `map`, which means that they function like a
-        map with a key of the `type` field _in the k8s apiserver_.
-
-        This means that implementations must obey some rules when updating this
-        section.
-
-        * Implementations MUST perform a read-modify-write cycle on this field
-          before modifying it. That is, when modifying this field, implementations
-          must be confident they have fetched the most recent version of this field,
-          and ensure that changes they make are on that recent version.
-        * Implementations MUST NOT remove or reorder Conditions that they are not
-          directly responsible for. For example, if an implementation sees a Condition
-          with type `special.io/SomeField`, it MUST NOT remove, change or update that
-          Condition.
-        * Implementations MUST always _merge_ changes into Conditions of the same Type,
-          rather than creating more than one Condition of the same Type.
-        * Implementations MUST always update the `observedGeneration` field of the
-          Condition to the `metadata.generation` of the Gateway at the time of update creation.
-        * If the `observedGeneration` of a Condition is _greater than_ the value the
-          implementation knows about, then it MUST NOT perform the update on that Condition,
-          but must wait for a future reconciliation and status update. (The assumption is that
-          the implementation's copy of the object is stale and an update will be re-triggered
-          if relevant.)
-
-        </gateway:util:excludeFromCRD>
     controllerName : str, default is Undefined, required
         ControllerName is a domain/path string that indicates the name of the
         controller that wrote this status. This corresponds with the
@@ -275,9 +418,9 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatusAncestorsItems0:
         entries to status populated with their ControllerName are cleaned up when they are no
         longer necessary.
     """
-    ancestorRef: GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatusAncestorsItems0AncestorRef
+    ancestorRef: GatewayNetworkingK8sIoV1BackendTLSPolicyStatusAncestorsItems0AncestorRef
 
-    conditions: [GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatusAncestorsItems0ConditionsItems0]
+    conditions: [GatewayNetworkingK8sIoV1BackendTLSPolicyStatusAncestorsItems0ConditionsItems0]
 
     controllerName: str
 
@@ -288,7 +431,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatusAncestorsItems0:
         len(controllerName) >= 1
         _regex_match(str(controllerName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*\/[A-Za-z0-9\/\-._~%!$&'()*+,;=:]+$")
 
-schema GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatusAncestorsItems0AncestorRef:
+schema GatewayNetworkingK8sIoV1BackendTLSPolicyStatusAncestorsItems0AncestorRef:
     r"""
     AncestorRef corresponds with a ParentRef in the spec that this
     PolicyAncestorStatus struct describes the status of.
@@ -325,7 +468,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatusAncestorsItems0AncestorR
         Gateway has the AllowedRoutes field, and ReferenceGrant provides a
         generic way to enable any other kind of cross-namespace reference.
 
-        <gateway:experimental:description>
+
         ParentRefs from a Route to a Service in the same namespace are "producer"
         routes, which apply default routing rules to inbound connections from
         any namespace to the Service.
@@ -335,7 +478,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatusAncestorsItems0AncestorR
         connections originating from the same namespace as the Route, for which
         the intended destination of the connections are a Service targeted as a
         ParentRef of the Route.
-        </gateway:experimental:description>
+
 
         Support: Core
     port : int, default is Undefined, optional
@@ -350,11 +493,11 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatusAncestorsItems0AncestorR
         and SectionName are specified, the name and port of the selected listener
         must match both specified values.
 
-        <gateway:experimental:description>
+
         When the parent resource is a Service, this targets a specific port in the
         Service spec. When both Port (experimental) and SectionName are specified,
         the name and port of the selected port must match both specified values.
-        </gateway:experimental:description>
+
 
         Implementations MAY choose to support other parent resources.
         Implementations supporting other types of parent resources MUST clearly
@@ -420,7 +563,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatusAncestorsItems0AncestorR
         len(sectionName) >= 1 if sectionName
         _regex_match(str(sectionName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if sectionName
 
-schema GatewayEnvoyproxyIoV1alpha1EnvoyPatchPolicyStatusAncestorsItems0ConditionsItems0:
+schema GatewayNetworkingK8sIoV1BackendTLSPolicyStatusAncestorsItems0ConditionsItems0:
     r"""
     Condition contains details for one aspect of the current state of this API Resource.
 

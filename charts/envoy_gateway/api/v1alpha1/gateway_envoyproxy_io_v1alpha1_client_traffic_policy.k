@@ -142,9 +142,18 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecClientIPDetectionXForwa
     Attributes
     ----------
     numTrustedHops : int, default is Undefined, optional
-        NumTrustedHops controls the number of additional ingress proxy hops from the right side of XFF HTTP
-        headers to trust when determining the origin client's IP address.
-        Only one of NumTrustedHops and TrustedCIDRs must be set.
+        NumTrustedHops specifies how many trusted hops to count from the rightmost side of
+        the X-Forwarded-For (XFF) header when determining the original client’s IP address.
+
+        If NumTrustedHops is set to N, the client IP is taken from the Nth address from the
+        right end of the XFF header.
+
+        Example:
+          XFF = "203.0.113.128, 203.0.113.10, 203.0.113.1"
+          NumTrustedHops = 2
+          → Trusted client address = 203.0.113.10
+
+        Only one of NumTrustedHops or TrustedCIDRs should be configured.
     trustedCIDRs : [str], default is Undefined, optional
         TrustedCIDRs is a list of CIDR ranges to trust when evaluating
         the remote IP address to determine the original client’s IP address.
@@ -207,15 +216,30 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecConnectionConnectionLim
         CloseDelay defines the delay to use before closing connections that are rejected
         once the limit value is reached.
         Default: none.
+    maxConnectionDuration : str, default is Undefined, optional
+        MaxConnectionDuration is the maximum amount of time a connection can remain established
+        (usually via TCP/HTTP Keepalive packets) before being drained and/or closed.
+        If not specified, there is no limit.
+    maxRequestsPerConnection : int, default is Undefined, optional
+        MaxRequestsPerConnection defines the maximum number of requests allowed over a single connection.
+        If not specified, there is no limit. Setting this parameter to 1 will effectively disable keep alive.
+    maxStreamDuration : str, default is Undefined, optional
+        MaxStreamDuration is the maximum amount of time to keep alive an http stream. When the limit is reached
+        the stream will be reset independent of any other timeouts. If not specified, no value is set.
     value : int, default is Undefined, required
         Value of the maximum concurrent connections limit.
         When the limit is reached, incoming connections will be closed after the CloseDelay duration.
     """
     closeDelay?: str
+    maxConnectionDuration?: str
+    maxRequestsPerConnection?: int
+    maxStreamDuration?: str
     value: int
 
     check:
         _regex_match(str(closeDelay), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if closeDelay
+        _regex_match(str(maxConnectionDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxConnectionDuration
+        _regex_match(str(maxStreamDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxStreamDuration
         value >= 1
 
 schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeaders:
@@ -232,14 +256,17 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeaders:
     enableEnvoyHeaders : bool, default is Undefined, optional
         EnableEnvoyHeaders configures Envoy Proxy to add the "X-Envoy-" headers to requests
         and responses.
+    lateResponseHeaders : GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeaders, default is Undefined, optional
+        late response headers
     preserveXRequestID : bool, default is Undefined, optional
         PreserveXRequestID configures Envoy to keep the X-Request-ID header if passed for a request that is edge
         (Edge request is the request from external clients to front Envoy) and not reset it, which is the current Envoy behaviour.
         Defaults to false and cannot be combined with RequestID.
-        Deprecated: use RequestID=Preserve instead
+        Deprecated: use RequestID=PreserveOrGenerate instead
     requestID : str, default is Undefined, optional
         RequestID configures Envoy's behavior for handling the `X-Request-ID` header.
-        Defaults to `Generate` and builds the `X-Request-ID` for every request and ignores pre-existing values from the edge.
+        When omitted default behavior is `Generate` which builds the `X-Request-ID` for every request
+         and ignores pre-existing values from the edge.
         (An "edge request" refers to a request from an external client to the Envoy entrypoint.)
     withUnderscoresAction : str, default is Undefined, optional
         WithUnderscoresAction configures the action to take when an HTTP header with underscores
@@ -250,6 +277,7 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeaders:
     disableRateLimitHeaders?: bool
     earlyRequestHeaders?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHeaders
     enableEnvoyHeaders?: bool
+    lateResponseHeaders?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeaders
     preserveXRequestID?: bool
     requestID?: "PreserveOrGenerate" | "Preserve" | "Generate" | "Disable"
     withUnderscoresAction?: "Allow" | "RejectRequest" | "DropHeader"
@@ -381,6 +409,131 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHead
         len(value) <= 4096
         len(value) >= 1
 
+schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeaders:
+    r"""
+    LateResponseHeaders defines settings for global response header modification.
+
+    Attributes
+    ----------
+    add : [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeadersAddItems0], default is Undefined, optional
+        Add adds the given header(s) (name, value) to the request
+        before the action. It appends to any existing values associated
+        with the header name.
+
+        Input:
+          GET /foo HTTP/1.1
+          my-header: foo
+
+        Config:
+          add:
+          - name: "my-header"
+            value: "bar,baz"
+
+        Output:
+          GET /foo HTTP/1.1
+          my-header: foo,bar,baz
+    remove : [str], default is Undefined, optional
+        Remove the given header(s) from the HTTP request before the action. The
+        value of Remove is a list of HTTP header names. Note that the header
+        names are case-insensitive (see
+        https://datatracker.ietf.org/doc/html/rfc2616#section-4.2).
+
+        Input:
+          GET /foo HTTP/1.1
+          my-header1: foo
+          my-header2: bar
+          my-header3: baz
+
+        Config:
+          remove: ["my-header1", "my-header3"]
+
+        Output:
+          GET /foo HTTP/1.1
+          my-header2: bar
+    set : [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeadersSetItems0], default is Undefined, optional
+        Set overwrites the request with the given header (name, value)
+        before the action.
+
+        Input:
+          GET /foo HTTP/1.1
+          my-header: foo
+
+        Config:
+          set:
+          - name: "my-header"
+            value: "bar"
+
+        Output:
+          GET /foo HTTP/1.1
+          my-header: bar
+    """
+    add?: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeadersAddItems0]
+    remove?: [str]
+    set?: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeadersSetItems0]
+
+    check:
+        len(add) <= 64 if add
+        len(remove) <= 64 if remove
+        len(set) <= 64 if set
+
+schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeadersAddItems0:
+    r"""
+    HTTPHeader represents an HTTP Header name and value as defined by RFC 7230.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name is the name of the HTTP Header to be matched. Name matching MUST be
+        case-insensitive. (See https://tools.ietf.org/html/rfc7230#section-3.2).
+
+        If multiple entries specify equivalent header names, the first entry with
+        an equivalent name MUST be considered for a match. Subsequent entries
+        with an equivalent header name MUST be ignored. Due to the
+        case-insensitivity of header names, "foo" and "Foo" are considered
+        equivalent.
+    value : str, default is Undefined, required
+        Value is the value of HTTP Header to be matched.
+    """
+    name: str
+
+    value: str
+
+    check:
+        len(name) <= 256
+        len(name) >= 1
+        _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
+        len(value) <= 4096
+        len(value) >= 1
+
+schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeadersSetItems0:
+    r"""
+    HTTPHeader represents an HTTP Header name and value as defined by RFC 7230.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name is the name of the HTTP Header to be matched. Name matching MUST be
+        case-insensitive. (See https://tools.ietf.org/html/rfc7230#section-3.2).
+
+        If multiple entries specify equivalent header names, the first entry with
+        an equivalent name MUST be considered for a match. Subsequent entries
+        with an equivalent header name MUST be ignored. Due to the
+        case-insensitivity of header names, "foo" and "Foo" are considered
+        equivalent.
+    value : str, default is Undefined, required
+        Value is the value of HTTP Header to be matched.
+    """
+    name: str
+
+    value: str
+
+    check:
+        len(name) <= 256
+        len(name) >= 1
+        _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
+        len(value) <= 4096
+        len(value) >= 1
+
 schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersXForwardedClientCert:
     r"""
     XForwardedClientCert configures how Envoy Proxy handle the x-forwarded-client-cert (XFCC) HTTP header.
@@ -434,6 +587,12 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp1:
 
     Attributes
     ----------
+    disableSafeMaxConnectionDuration : bool, default is Undefined, optional
+        DisableSafeMaxConnectionDuration controls the close behavior for HTTP/1 connections.
+        By default, connection closure is delayed until the next request arrives after maxConnectionDuration is exceeded.
+        It then adds a Connection: close header and gracefully closes the connection after the response completes.
+        When set to true (disabled), Envoy uses its default drain behavior, closing the connection shortly after maxConnectionDuration elapses.
+        Has no effect unless maxConnectionDuration is set.
     enableTrailers : bool, default is Undefined, optional
         EnableTrailers defines if HTTP/1 trailers should be proxied by Envoy.
     http10 : GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp1Http10, default is Undefined, optional
@@ -442,6 +601,7 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp1:
         PreserveHeaderCase defines if Envoy should preserve the letter case of headers.
         By default, Envoy will lowercase all the headers.
     """
+    disableSafeMaxConnectionDuration?: bool
     enableTrailers?: bool
     http10?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp1Http10
     preserveHeaderCase?: bool
@@ -453,11 +613,18 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp1Http10:
     Attributes
     ----------
     useDefaultHost : bool, default is Undefined, optional
-        UseDefaultHost defines if the HTTP/1.0 request is missing the Host header,
-        then the hostname associated with the listener should be injected into the
-        request.
-        If this is not set and an HTTP/1.0 request arrives without a host, then
-        it will be rejected.
+        UseDefaultHost specifies whether a default Host header should be injected
+        into HTTP/1.0 requests that do not include one.
+
+        When set to true, Envoy Gateway injects the hostname associated with the
+        listener or route into the request, in the following order:
+
+          1. If the targeted listener has a non-wildcard hostname, use that hostname.
+          2. If there is exactly one HTTPRoute with a non-wildcard hostname under
+             the targeted listener, use that hostname.
+
+         Note: Setting this field to true without a non-wildcard hostname makes the
+        ClientTrafficPolicy invalid.
     """
     useDefaultHost?: bool
 
@@ -575,7 +742,10 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLS:
         2. Other Routes: ALPN is disabled.
         3. Backends: proxy uses the appropriate ALPN options for the backend protocol.
         When an empty list is provided, the ALPN TLS extension is disabled.
-        Supported values are:
+
+        Defaults to [h2, http/1.1] if not specified.
+
+        Typical Supported values are:
         - http/1.0
         - http/1.1
         - h2
@@ -645,6 +815,8 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidation:
         An optional list of hex-encoded SHA-256 hashes. If specified, Envoy will
         verify that the SHA-256 of the DER-encoded presented certificate matches
         one of the specified values.
+    crl : GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidationCrl, default is Undefined, optional
+        crl
     optional : bool, default is Undefined, optional
         Optional set to true accepts connections even when a client doesn't present a certificate.
         Defaults to false, which rejects connections without a valid client certificate.
@@ -657,6 +829,7 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidation:
     """
     caCertificateRefs?: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidationCaCertificateRefsItems0]
     certificateHashes?: [str]
+    crl?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidationCrl
     optional?: bool
     spkiHashes?: [str]
     subjectAltNames?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidationSubjectAltNames
@@ -665,6 +838,81 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidation:
         len(caCertificateRefs) <= 8 if caCertificateRefs
 
 schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidationCaCertificateRefsItems0:
+    r"""
+    SecretObjectReference identifies an API object including its namespace,
+    defaulting to Secret.
+
+    The API object must be valid in the cluster; the Group and Kind must
+    be registered in the cluster for this reference to be valid.
+
+    References to objects with invalid Group and Kind are not valid, and must
+    be rejected by the implementation, with appropriate Conditions set
+    on the containing object.
+
+    Attributes
+    ----------
+    group : str, default is Undefined, optional
+        Group is the group of the referent. For example, "gateway.networking.k8s.io".
+        When unspecified or empty string, core API group is inferred.
+    kind : str, default is "Secret", optional
+        Kind is kind of the referent. For example "Secret".
+    name : str, default is Undefined, required
+        Name is the name of the referent.
+    namespace : str, default is Undefined, optional
+        Namespace is the namespace of the referenced object. When unspecified, the local
+        namespace is inferred.
+
+        Note that when a namespace different than the local namespace is specified,
+        a ReferenceGrant object is required in the referent namespace to allow that
+        namespace's owner to accept the reference. See the ReferenceGrant
+        documentation for details.
+
+        Support: Core
+    """
+    group?: str = ""
+    kind?: str = "Secret"
+    name: str
+
+    namespace?: str
+
+    check:
+        len(group) <= 253 if group
+        _regex_match(str(group), r"^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if group
+        len(kind) <= 63 if kind
+        len(kind) >= 1 if kind
+        _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$") if kind
+        len(name) <= 253
+        len(name) >= 1
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidationCrl:
+    r"""
+    Crl specifies the crl configuration that can be used to validate the client initiating the TLS connection
+
+    Attributes
+    ----------
+    onlyVerifyLeafCertificate : bool, default is Undefined, optional
+        If this option is set to true,  Envoy will only verify the certificate at the end of the certificate chain against the CRL.
+        Defaults to false, which will verify the entire certificate chain against the CRL.
+    refs : [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidationCrlRefsItems0], default is Undefined, required
+        Refs contains one or more references to a Kubernetes ConfigMap or a Kubernetes Secret,
+        containing the certificate revocation list in PEM format
+        Expects the content in a key named `ca.crl`.
+
+        References to a resource in different namespace are invalid UNLESS there
+        is a ReferenceGrant in the target namespace that allows the crl
+        to be attached.
+    """
+    onlyVerifyLeafCertificate?: bool
+    refs: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidationCrlRefsItems0]
+
+    check:
+        len(refs) >= 1
+        len(refs) <= 8
+
+schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidationCrlRefsItems0:
     r"""
     SecretObjectReference identifies an API object including its namespace,
     defaulting to Secret.
@@ -1158,8 +1406,38 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicyStatusAncestorsItems0:
     ----------
     ancestorRef : GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicyStatusAncestorsItems0AncestorRef, default is Undefined, required
         ancestor ref
-    conditions : [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicyStatusAncestorsItems0ConditionsItems0], default is Undefined, optional
+    conditions : [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicyStatusAncestorsItems0ConditionsItems0], default is Undefined, required
         Conditions describes the status of the Policy with respect to the given Ancestor.
+
+        <gateway:util:excludeFromCRD>
+
+        Notes for implementors:
+
+        Conditions are a listType `map`, which means that they function like a
+        map with a key of the `type` field _in the k8s apiserver_.
+
+        This means that implementations must obey some rules when updating this
+        section.
+
+        * Implementations MUST perform a read-modify-write cycle on this field
+          before modifying it. That is, when modifying this field, implementations
+          must be confident they have fetched the most recent version of this field,
+          and ensure that changes they make are on that recent version.
+        * Implementations MUST NOT remove or reorder Conditions that they are not
+          directly responsible for. For example, if an implementation sees a Condition
+          with type `special.io/SomeField`, it MUST NOT remove, change or update that
+          Condition.
+        * Implementations MUST always _merge_ changes into Conditions of the same Type,
+          rather than creating more than one Condition of the same Type.
+        * Implementations MUST always update the `observedGeneration` field of the
+          Condition to the `metadata.generation` of the Gateway at the time of update creation.
+        * If the `observedGeneration` of a Condition is _greater than_ the value the
+          implementation knows about, then it MUST NOT perform the update on that Condition,
+          but must wait for a future reconciliation and status update. (The assumption is that
+          the implementation's copy of the object is stale and an update will be re-triggered
+          if relevant.)
+
+        </gateway:util:excludeFromCRD>
     controllerName : str, default is Undefined, required
         ControllerName is a domain/path string that indicates the name of the
         controller that wrote this status. This corresponds with the
@@ -1177,12 +1455,13 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicyStatusAncestorsItems0:
     """
     ancestorRef: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicyStatusAncestorsItems0AncestorRef
 
-    conditions?: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicyStatusAncestorsItems0ConditionsItems0]
+    conditions: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicyStatusAncestorsItems0ConditionsItems0]
+
     controllerName: str
 
     check:
-        len(conditions) >= 1 if conditions
-        len(conditions) <= 8 if conditions
+        len(conditions) >= 1
+        len(conditions) <= 8
         len(controllerName) <= 253
         len(controllerName) >= 1
         _regex_match(str(controllerName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*\/[A-Za-z0-9\/\-._~%!$&'()*+,;=:]+$")

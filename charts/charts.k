@@ -197,7 +197,7 @@ charts: helm.Charts = {
     envoy_gateway: {
         chart = "gateway-helm"
         repoURL = "oci://docker.io/envoyproxy/gateway-helm"
-        targetRevision = "1.5.4"
+        targetRevision = "1.6.0"
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
     }

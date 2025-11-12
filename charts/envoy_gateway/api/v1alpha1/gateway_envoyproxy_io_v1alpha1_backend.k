@@ -161,6 +161,21 @@ schema GatewayEnvoyproxyIoV1alpha1BackendSpecTLS:
 
     Attributes
     ----------
+    alpnProtocols : [str], default is Undefined, optional
+        ALPNProtocols supplies the list of ALPN protocols that should be
+        exposed by the listener or used by the proxy to connect to the backend.
+        Defaults:
+        1. HTTPS Routes: h2 and http/1.1 are enabled in listener context.
+        2. Other Routes: ALPN is disabled.
+        3. Backends: proxy uses the appropriate ALPN options for the backend protocol.
+        When an empty list is provided, the ALPN TLS extension is disabled.
+
+        Defaults to [h2, http/1.1] if not specified.
+
+        Typical Supported values are:
+        - http/1.0
+        - http/1.1
+        - h2
     caCertificateRefs : [GatewayEnvoyproxyIoV1alpha1BackendSpecTLSCaCertificateRefsItems0], default is Undefined, optional
         CACertificateRefs contains one or more references to Kubernetes objects that
         contain TLS certificates of the Certificate Authorities that can be used
@@ -172,9 +187,49 @@ schema GatewayEnvoyproxyIoV1alpha1BackendSpecTLS:
         If CACertificateRefs is empty or unspecified, then WellKnownCACertificates must be
         specified. Only one of CACertificateRefs or WellKnownCACertificates may be specified,
         not both.
+    ciphers : [str], default is Undefined, optional
+        Ciphers specifies the set of cipher suites supported when
+        negotiating TLS 1.0 - 1.2. This setting has no effect for TLS 1.3.
+        In non-FIPS Envoy Proxy builds the default cipher list is:
+        - [ECDHE-ECDSA-AES128-GCM-SHA256|ECDHE-ECDSA-CHACHA20-POLY1305]
+        - [ECDHE-RSA-AES128-GCM-SHA256|ECDHE-RSA-CHACHA20-POLY1305]
+        - ECDHE-ECDSA-AES256-GCM-SHA384
+        - ECDHE-RSA-AES256-GCM-SHA384
+        In builds using BoringSSL FIPS the default cipher list is:
+        - ECDHE-ECDSA-AES128-GCM-SHA256
+        - ECDHE-RSA-AES128-GCM-SHA256
+        - ECDHE-ECDSA-AES256-GCM-SHA384
+        - ECDHE-RSA-AES256-GCM-SHA384
+    clientCertificateRef : GatewayEnvoyproxyIoV1alpha1BackendSpecTLSClientCertificateRef, default is Undefined, optional
+        client certificate ref
+    ecdhCurves : [str], default is Undefined, optional
+        ECDHCurves specifies the set of supported ECDH curves.
+        In non-FIPS Envoy Proxy builds the default curves are:
+        - X25519
+        - P-256
+        In builds using BoringSSL FIPS the default curve is:
+        - P-256
     insecureSkipVerify : bool, default is Undefined, optional
         InsecureSkipVerify indicates whether the upstream's certificate verification
         should be skipped. Defaults to "false".
+    maxVersion : str, default is Undefined, optional
+        Max specifies the maximal TLS protocol version to allow
+        The default is TLS 1.3 if this is not specified.
+    minVersion : str, default is Undefined, optional
+        Min specifies the minimal TLS protocol version to allow.
+        The default is TLS 1.2 if this is not specified.
+    signatureAlgorithms : [str], default is Undefined, optional
+        SignatureAlgorithms specifies which signature algorithms the listener should
+        support.
+    sni : str, default is Undefined, optional
+        SNI is specifies the SNI value used when establishing an upstream TLS connection to the backend.
+
+        Envoy Gateway will use the HTTP host header value for SNI, when all resources referenced in BackendRefs are:
+        1. Backend resources that do not set SNI, or
+        2. Service/ServiceImport resources that do not have a BackendTLSPolicy attached to them
+
+        When a BackendTLSPolicy attaches to a Backend resource, the BackendTLSPolicy's Hostname value takes precedence
+        over this value.
     wellKnownCACertificates : str, default is Undefined, optional
         WellKnownCACertificates specifies whether system CA certificates may be used in
         the TLS handshake between the gateway and backend pod.
@@ -183,12 +238,23 @@ schema GatewayEnvoyproxyIoV1alpha1BackendSpecTLS:
         must be specified with at least one entry for a valid configuration. Only one of
         CACertificateRefs or WellKnownCACertificates may be specified, not both.
     """
+    alpnProtocols?: [str]
     caCertificateRefs?: [GatewayEnvoyproxyIoV1alpha1BackendSpecTLSCaCertificateRefsItems0]
+    ciphers?: [str]
+    clientCertificateRef?: GatewayEnvoyproxyIoV1alpha1BackendSpecTLSClientCertificateRef
+    ecdhCurves?: [str]
     insecureSkipVerify?: bool = False
+    maxVersion?: "Auto" | "1.0" | "1.1" | "1.2" | "1.3"
+    minVersion?: "Auto" | "1.0" | "1.1" | "1.2" | "1.3"
+    signatureAlgorithms?: [str]
+    sni?: str
     wellKnownCACertificates?: "System"
 
     check:
         len(caCertificateRefs) <= 8 if caCertificateRefs
+        len(sni) <= 253 if sni
+        len(sni) >= 1 if sni
+        _regex_match(str(sni), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if sni
 
 schema GatewayEnvoyproxyIoV1alpha1BackendSpecTLSCaCertificateRefsItems0:
     r"""
@@ -225,6 +291,51 @@ schema GatewayEnvoyproxyIoV1alpha1BackendSpecTLSCaCertificateRefsItems0:
         _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$")
         len(name) <= 253
         len(name) >= 1
+
+schema GatewayEnvoyproxyIoV1alpha1BackendSpecTLSClientCertificateRef:
+    r"""
+    ClientCertificateRef defines the reference to a Kubernetes Secret that contains
+    the client certificate and private key for Envoy to use when connecting to
+    backend services and external services, such as ExtAuth, ALS, OpenTelemetry, etc.
+    This secret should be located within the same namespace as the Envoy proxy resource that references it.
+
+    Attributes
+    ----------
+    group : str, default is Undefined, optional
+        Group is the group of the referent. For example, "gateway.networking.k8s.io".
+        When unspecified or empty string, core API group is inferred.
+    kind : str, default is "Secret", optional
+        Kind is kind of the referent. For example "Secret".
+    name : str, default is Undefined, required
+        Name is the name of the referent.
+    namespace : str, default is Undefined, optional
+        Namespace is the namespace of the referenced object. When unspecified, the local
+        namespace is inferred.
+
+        Note that when a namespace different than the local namespace is specified,
+        a ReferenceGrant object is required in the referent namespace to allow that
+        namespace's owner to accept the reference. See the ReferenceGrant
+        documentation for details.
+
+        Support: Core
+    """
+    group?: str = ""
+    kind?: str = "Secret"
+    name: str
+
+    namespace?: str
+
+    check:
+        len(group) <= 253 if group
+        _regex_match(str(group), r"^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if group
+        len(kind) <= 63 if kind
+        len(kind) >= 1 if kind
+        _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$") if kind
+        len(name) <= 253
+        len(name) >= 1
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
 schema GatewayEnvoyproxyIoV1alpha1BackendStatus:
     r"""
