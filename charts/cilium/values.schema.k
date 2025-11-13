@@ -930,7 +930,7 @@ schema ValuesAuthenticationMutualSpireInstallInitImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:2f590fc602ce325cbff2ccfc39499014d039546dc400ef8bbf5c6ffb860632e7"
+    digest : str, optional, default is "sha256:e3652a00a2fabd16ce889f0aa32c38eec347b997e73bd09e69c962ec7f8732ee"
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "docker.io/library/busybox"
@@ -2034,12 +2034,12 @@ schema ValuesClustermeshApiserverImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:0d15efc992a85003759232598bf05fb1a4cd3c9fa28fb96bee1789ffe27cc50d"
+    digest : str, optional, default is "sha256:c240a7cbead5479d9085b5e837977bf6750164167a1c9f956720815d160d447d"
         clustermesh-apiserver-digest
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/clustermesh-apiserver"
-    tag : str, optional, default is "v1.18.3"
+    tag : str, optional, default is "v1.18.4"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -3520,11 +3520,11 @@ schema ValuesEnvoyImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:ca76eb4e9812d114c7f43215a742c00b8bf41200992af0d21b5561d46156fd15"
+    digest : str, optional, default is "sha256:1deb6709afcb5523579bf1abbc3255adf9e354565a88c4a9162c8d9cb1d77ab5"
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/cilium-envoy"
-    tag : str, optional, default is "v1.34.10-1761014632-c360e8557eb41011dfb5210f8fb53fed6c0b3222"
+    tag : str, optional, default is "v1.34.10-1762597008-ff7ae7d623be00078865cff1b0672cc5d9bfc6d5"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -4813,12 +4813,12 @@ schema ValuesHubbleRelayImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:e53e00c47fe4ffb9c086bad0c1c77f23cb968be4385881160683d9e15aa34dc3"
+    digest : str, optional, default is "sha256:6d350cb1c84b847adb152173debef1f774126c69de21a5921a1e6a23b8779723"
         hubble-relay-digest
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/hubble-relay"
-    tag : str, optional, default is "v1.18.3"
+    tag : str, optional, default is "v1.18.4"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -5775,12 +5775,12 @@ schema ValuesImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:5649db451c88d928ea585514746d50d91e6210801b300c897283ea319d68de15"
+    digest : str, optional, default is "sha256:49d87af187eeeb9e9e3ec2bc6bd372261a0b5cb2d845659463ba7cc10fe9e45f"
         cilium-digest
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/cilium"
-    tag : str, optional, default is "v1.18.3"
+    tag : str, optional, default is "v1.18.4"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -6889,19 +6889,19 @@ schema ValuesOperatorImage:
 
     Attributes
     ----------
-    alibabacloudDigest : str, optional, default is "sha256:df8b6830ef0545199cffc5fb9fbf14c9dc8d92093b0e6355d8659705227f89ef"
+    alibabacloudDigest : str, optional, default is "sha256:c57d07e5dde3a1974c5cd5d46596db5ea7264f66e9e4ce98a59236aa88b857f7"
         operator-alibabacloud-digest
-    awsDigest : str, optional, default is "sha256:ef39d61183b3bdf0e235650461b6c4d9ec7aa5f61a6c770f33c47a6bc5165e24"
+    awsDigest : str, optional, default is "sha256:f4c19007a804d37c781d6c8982006c5f1d8a890941036f9ab285e517fd181336"
         operator-aws-digest
-    azureDigest : str, optional, default is "sha256:10a8a83ca6f0b02432c1ca0e67af98a48fdbefb684af44a399f58184ab174143"
+    azureDigest : str, optional, default is "sha256:19e7465ec8b151ec444757b6ce583b7a0d1e5e9fc5e3aef31d90e93019f599ca"
         operator-azure-digest
-    genericDigest : str, optional, default is "sha256:b5a0138e1a38e4437c5215257ff4e35373619501f4877dbaf92c89ecfad81797"
+    genericDigest : str, optional, default is "sha256:1b22b9ff28affdf574378a70dade4ef835b00b080c2ee2418530809dd62c3012"
         operator-generic-digest
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/operator"
     suffix : str, optional, default is ""
-    tag : str, optional, default is "v1.18.3"
+    tag : str, optional, default is "v1.18.4"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -7391,11 +7391,11 @@ schema ValuesPreflightEnvoyImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:ca76eb4e9812d114c7f43215a742c00b8bf41200992af0d21b5561d46156fd15"
+    digest : str, optional, default is "sha256:1deb6709afcb5523579bf1abbc3255adf9e354565a88c4a9162c8d9cb1d77ab5"
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/cilium-envoy"
-    tag : str, optional, default is "v1.34.10-1761014632-c360e8557eb41011dfb5210f8fb53fed6c0b3222"
+    tag : str, optional, default is "v1.34.10-1762597008-ff7ae7d623be00078865cff1b0672cc5d9bfc6d5"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -7412,12 +7412,12 @@ schema ValuesPreflightImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:5649db451c88d928ea585514746d50d91e6210801b300c897283ea319d68de15"
+    digest : str, optional, default is "sha256:49d87af187eeeb9e9e3ec2bc6bd372261a0b5cb2d845659463ba7cc10fe9e45f"
         cilium-digest
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/cilium"
-    tag : str, optional, default is "v1.18.3"
+    tag : str, optional, default is "v1.18.4"
     useDigest : bool, optional, default is True
     """
     [...str]: any
