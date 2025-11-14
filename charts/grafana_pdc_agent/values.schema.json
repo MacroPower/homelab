@@ -220,6 +220,13 @@
           "title": "privileged",
           "type": "boolean"
         },
+        "readOnlyRootFilesystem": {
+          "default": false,
+          "description": "Enable running in a read-only root filesystem.",
+          "required": [],
+          "title": "readOnlyRootFilesystem",
+          "type": "boolean"
+        },
         "runAsNonRoot": {
           "default": true,
           "required": [],
