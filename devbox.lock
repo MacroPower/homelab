@@ -525,51 +525,51 @@
         }
       }
     },
-    "talosctl@1.11.3": {
-      "last_modified": "2025-10-22T20:59:19Z",
-      "resolved": "github:NixOS/nixpkgs/01b6809f7f9d1183a2b3e081f0a1e6f8f415cb09#talosctl",
+    "talosctl@1.11.4": {
+      "last_modified": "2025-11-08T12:28:21Z",
+      "resolved": "github:NixOS/nixpkgs/f6b44b2401525650256b977063dbcf830f762369#talosctl",
       "source": "devbox-search",
-      "version": "1.11.3",
+      "version": "1.11.4",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/dr2bxr5ypd4p44vkppvxxmib9xaw63gw-talosctl-1.11.3",
+              "path": "/nix/store/11v2h4ldb2is2n6hzal1l52zqw6jvfrc-talosctl-1.11.4",
               "default": true
             }
           ],
-          "store_path": "/nix/store/dr2bxr5ypd4p44vkppvxxmib9xaw63gw-talosctl-1.11.3"
+          "store_path": "/nix/store/11v2h4ldb2is2n6hzal1l52zqw6jvfrc-talosctl-1.11.4"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/ikc0b60ic1v06lg16kgvrxigwfnj90ih-talosctl-1.11.3",
+              "path": "/nix/store/2l4sps093b670fcgn7zv9jkfi8wr4fs8-talosctl-1.11.4",
               "default": true
             }
           ],
-          "store_path": "/nix/store/ikc0b60ic1v06lg16kgvrxigwfnj90ih-talosctl-1.11.3"
+          "store_path": "/nix/store/2l4sps093b670fcgn7zv9jkfi8wr4fs8-talosctl-1.11.4"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/7c448k4jm4ha8irny6npwakh4br7pfnq-talosctl-1.11.3",
+              "path": "/nix/store/ahqkcmj5ld2880jmdsa13k8l2lf18qhi-talosctl-1.11.4",
               "default": true
             }
           ],
-          "store_path": "/nix/store/7c448k4jm4ha8irny6npwakh4br7pfnq-talosctl-1.11.3"
+          "store_path": "/nix/store/ahqkcmj5ld2880jmdsa13k8l2lf18qhi-talosctl-1.11.4"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/zz9ml4gjjlb64s7knwnjxmng6h10bbab-talosctl-1.11.3",
+              "path": "/nix/store/cv8qmxnrb9d6zhz4dxs1j9nb6w7w3qx9-talosctl-1.11.4",
               "default": true
             }
           ],
-          "store_path": "/nix/store/zz9ml4gjjlb64s7knwnjxmng6h10bbab-talosctl-1.11.3"
+          "store_path": "/nix/store/cv8qmxnrb9d6zhz4dxs1j9nb6w7w3qx9-talosctl-1.11.4"
         }
       }
     },
