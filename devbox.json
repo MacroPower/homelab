@@ -15,7 +15,7 @@
     "talosctl": "1.11.3",
     "terraform": "1.13.5",
     "natscli": "0.3.0",
-    "kubernetes-helm": "3.19.0",
+    "kubernetes-helm": "3.19.1",
     "auth0-cli": "1.22.0"
   },
   "env": {
