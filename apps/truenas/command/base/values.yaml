@@ -23,7 +23,7 @@ controllers:
       app:
         image:
           repository: ixsystems/truecommand
-          tag: 3.1.0
+          tag: 3.2.0
         env:
           TC_CONFIG_FILE_PATH: {value: /config/config.yaml}
         ports:
