@@ -162,7 +162,7 @@ charts: helm.Charts = {
     grafana_pdc_agent: {
         chart = "pdc-agent"
         repoURL = "https://grafana.github.io/helm-charts"
-        targetRevision = "0.0.1"
+        targetRevision = "0.0.2"
         schemaGenerator = "AUTO"
         values: {
             cluster = "kcl"

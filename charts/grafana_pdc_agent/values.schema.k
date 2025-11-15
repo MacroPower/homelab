@@ -165,12 +165,15 @@ schema ValuesSecurityContext:
     allowPrivilegeEscalation : bool, optional, default is False
     capabilities : ValuesSecurityContextCapabilities, optional
     privileged : bool, optional, default is False
+    readOnlyRootFilesystem : bool, optional, default is False
+        Enable running in a read-only root filesystem.
     runAsNonRoot : bool, optional, default is True
     """
     [...str]: any
     allowPrivilegeEscalation?: bool
     capabilities?: ValuesSecurityContextCapabilities
     privileged?: bool
+    readOnlyRootFilesystem?: bool
     runAsNonRoot?: bool
 
 schema ValuesSecurityContextCapabilities:
