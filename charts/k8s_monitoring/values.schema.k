@@ -3436,6 +3436,8 @@ schema ValuesGlobal:
         Whether to scrape a classic histogram that’s also exposed as a native histogram.
     scrapeInterval : str, optional, default is "60s"
         How frequently to scrape metrics.
+    scrapeNativeHistograms : bool, optional, default is False
+        Whether to scrape native histograms.
     scrapeProtocols : [str], optional
         The protocols to negotiate during a Prometheus metrics scrape, in order of preference.
     scrapeTimeout : str, optional, default is "10s"
@@ -3451,6 +3453,7 @@ schema ValuesGlobal:
     podSecurityContext?: ValuesGlobalPodSecurityContext
     scrapeClassicHistograms?: bool
     scrapeInterval?: str
+    scrapeNativeHistograms?: bool
     scrapeProtocols?: [str]
     scrapeTimeout?: str
 
