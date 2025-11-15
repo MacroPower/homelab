@@ -3726,6 +3726,13 @@
           "title": "scrapeInterval",
           "type": "string"
         },
+        "scrapeNativeHistograms": {
+          "default": false,
+          "description": "Whether to scrape native histograms.",
+          "required": [],
+          "title": "scrapeNativeHistograms",
+          "type": "boolean"
+        },
         "scrapeProtocols": {
           "description": "The protocols to negotiate during a Prometheus metrics scrape, in order of preference.",
           "items": {
