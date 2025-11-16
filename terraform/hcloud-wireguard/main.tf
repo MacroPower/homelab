@@ -66,6 +66,8 @@ resource "hcloud_network" "main" {
   name     = "main"
   ip_range = "10.42.0.0/16"
 
+  # NOTE: Make sure to `ip route del 10.42.0.0/16 dev wg0` on the wg server.
+  # The wireguard interface should only route traffic for the wireguard subnet.
   expose_routes_to_vswitch = true
 }
 
@@ -73,7 +75,7 @@ resource "hcloud_network_subnet" "robot" {
   network_id   = hcloud_network.main.id
   type         = "vswitch"
   network_zone = "eu-central"
-  ip_range     = "10.42.10.0/24"
+  ip_range     = "10.42.2.0/24"
   vswitch_id   = "70675"
 }
 
@@ -81,7 +83,7 @@ resource "hcloud_network_subnet" "wg" {
   network_id   = hcloud_network.main.id
   type         = "cloud"
   network_zone = "eu-central"
-  ip_range     = "10.42.0.0/24"
+  ip_range     = "10.42.1.0/24"
 }
 
 resource "hcloud_server" "wg" {
@@ -100,7 +102,7 @@ resource "hcloud_server" "wg" {
   }
   network {
     network_id = hcloud_network_subnet.wg.network_id
-    ip         = "10.42.0.10"
+    ip         = "10.42.1.10" # 10.42.1.10/24
   }
 }
 
