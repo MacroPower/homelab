@@ -3,7 +3,7 @@
 image:
   # https://hub.docker.com/r/rdavidoff/twitch-channel-points-miner-v2
   repository: rdavidoff/twitch-channel-points-miner-v2
-  tag: "2.0.3"
+  tag: "2.0.4"
 
 podAnnotations:
   reloader.stakater.com/auto: "true"
