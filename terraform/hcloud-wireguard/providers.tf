@@ -16,21 +16,21 @@ terraform {
 }
 
 provider "doppler" {
-  doppler_token = var.doppler_hel_token
-  alias         = "hel"
+  doppler_token = var.doppler_fsn_token
+  alias         = "fsn"
 }
 
-data "doppler_secrets" "hel" {
+data "doppler_secrets" "fsn" {
   project  = "hcloud-wireguard"
-  config   = "hel"
-  provider = doppler.hel
+  config   = "fsn"
+  provider = doppler.fsn
 }
 
 provider "hcloud" {
-  token = data.doppler_secrets.hel.map.HCLOUD_TOKEN
+  token = data.doppler_secrets.fsn.map.HCLOUD_TOKEN
 }
 
 provider "cloudflare" {
-  api_token = data.doppler_secrets.hel.map.CLOUDFLARE_DNS_API_TOKEN
+  api_token = data.doppler_secrets.fsn.map.CLOUDFLARE_DNS_API_TOKEN
   alias     = "dns"
 }

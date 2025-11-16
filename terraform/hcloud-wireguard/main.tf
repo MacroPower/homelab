@@ -32,6 +32,18 @@ resource "hcloud_firewall" "wg" {
   # rule {
   #   direction  = "in"
   #   protocol   = "tcp"
+  #   port       = "22"
+  #   source_ips = ["0.0.0.0/0", "::/0"]
+  # }
+  # rule {
+  #   direction  = "in"
+  #   protocol   = "udp"
+  #   port       = "22"
+  #   source_ips = ["0.0.0.0/0", "::/0"]
+  # }
+  # rule {
+  #   direction  = "in"
+  #   protocol   = "tcp"
   #   port       = "443"
   #   source_ips = ["0.0.0.0/0", "::/0"]
   # }
@@ -93,8 +105,8 @@ resource "hcloud_server" "wg" {
 }
 
 resource "cloudflare_dns_record" "wg_ipv4" {
-  zone_id  = data.doppler_secrets.hel.map.CLOUDFLARE_DNS_ZONE_ID
-  name     = "wg.hel"
+  zone_id  = data.doppler_secrets.fsn.map.CLOUDFLARE_DNS_ZONE_ID
+  name     = "wg.fsn"
   content  = hcloud_server.wg.ipv4_address
   ttl      = 300
   type     = "A"
@@ -103,8 +115,8 @@ resource "cloudflare_dns_record" "wg_ipv4" {
 }
 
 resource "cloudflare_dns_record" "wg_ipv6" {
-  zone_id  = data.doppler_secrets.hel.map.CLOUDFLARE_DNS_ZONE_ID
-  name     = "wg.hel"
+  zone_id  = data.doppler_secrets.fsn.map.CLOUDFLARE_DNS_ZONE_ID
+  name     = "wg.fsn"
   content  = hcloud_server.wg.ipv6_address
   ttl      = 300
   type     = "AAAA"

@@ -1,4 +1,4 @@
-variable "doppler_hel_token" {
+variable "doppler_fsn_token" {
   type      = string
   sensitive = true
 }
