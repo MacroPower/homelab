@@ -1,0 +1,63 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  talos:
+    image: ghcr.io/siderolabs/talos:v1.11.1
+    container_name: talos
+    hostname: krobot01
+    tty: true
+    read_only: true
+    privileged: true
+    restart: always
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_ADMIN
+      - SYS_PTRACE
+      - SYS_RESOURCE
+      - SYSLOG
+    security_opt:
+      - seccomp=unconfined
+    environment:
+      - PLATFORM=container
+    devices:
+      - /dev/kmsg
+    tmpfs:
+      - /run
+      - /system
+      - /tmp
+    volumes:
+      - talos_system_state:/system/state
+      - talos_var:/var
+      - talos_cni:/etc/cni
+      - talos_kubernetes:/etc/kubernetes
+      - talos_libexec:/usr/libexec/kubernetes
+      - talos_opt:/opt
+      - /sys/fs/bpf:/sys/fs/bpf:rshared
+      - /mnt/main/containers/talos/var/openebs/local:/var/openebs/local:rshared
+    networks:
+      shared_macvlan:
+        ipv4_address: "10.42.2.20"
+        mac_address: "e4:83:5e:10:00:ca"
+        priority: 256
+      public_bridge:
+        priority: 1024
+        # 172.17.0.0/12 - size: 24
+        # fdd0::/48 - size: 64
+    dns:
+      - "185.12.64.1"
+      - "185.12.64.2"
+    mem_limit: 32g
+    mem_reservation: 8g
+volumes:
+  talos_system_state: {}
+  talos_var: {}
+  talos_cni: {}
+  talos_kubernetes: {}
+  talos_libexec: {}
+  talos_opt: {}
+networks:
+  shared_macvlan:
+    external: true
+    name: shared_macvlan
+  public_bridge:
+    driver: bridge

@@ -1,0 +1,181 @@
+clusterName: robot
+talosVersion: v1.11.1
+kubernetesVersion: v1.34.1
+endpoint: https://krobot.fsn.macro.network:6443
+cniConfig:
+  name: none
+
+additionalApiServerCertSans:
+  - "10.136.0.1"
+  - "fc42:0:0:88::1"
+
+clusterSvcNets:
+  - 10.136.0.0/16
+  - fc42:0:0:88::/108
+clusterPodNets:
+  - 10.137.0.0/16
+  - fc42:0:0:89::/64
+
+allowSchedulingOnMasters: true
+
+nodes:
+  - hostname: krobot01.fsn.macro.network
+    ipAddress: 10.42.2.20
+    controlPlane: true
+    installDisk: /dev/null
+    nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 1g
+      topology.kubernetes.io/region: fsn
+    networkInterfaces:
+      - deviceSelector:
+          driver: macvlan
+        dhcp: false
+        addresses:
+          - "10.42.2.20/24"
+        mtu: 1400
+        routes:
+          - network: 10.42.0.0/16
+            gateway: "10.42.2.1"
+            metric: 256
+    patches:
+      - |-
+        machine:
+          kubelet:
+            extraMounts:
+              - source: /var/media
+                destination: /var/media
+                type: bind
+                options:
+                  - rbind
+                  - rshared
+                  - rw
+          features:
+            hostDNS:
+              enabled: true
+              forwardKubeDNSToHost: true
+
+controlPlane:
+  certSANs:
+    - krobot.fsn.macro.network
+    - "127.0.0.1"
+  nameservers: &nameservers
+    - "185.12.64.1"
+    - "185.12.64.2"
+  disableSearchDomain: &disableSearchDomain true
+  schematic:
+    customization:
+      extraKernelArgs: &extraKernelArgs []
+  machineFiles:
+    - &spegelCriConfig
+      path: /etc/cri/conf.d/20-customization.part
+      op: create
+      content: |
+        [plugins."io.containerd.cri.v1.images"]
+          discard_unpacked_layers = false
+  patches:
+    - |-
+      - op: replace
+        path: /cluster/apiServer/admissionControl
+        value: []
+    - |-
+      cluster:
+        controllerManager:
+          extraArgs:
+            bind-address: 0.0.0.0
+            ## Node CIDR mask size for IPv4 and IPv6.
+            ## One unique subnet of this size will be cut from the clusterPodNets
+            ## for every node.
+            ##
+            node-cidr-mask-size-ipv4: "20"
+            ## The IPv6 node cidr mask size MUST be within 16 bits of the
+            ## clusterPodNets IPv6cidr. By default, the clusterPodNets IPv6 mask
+            ## size is 48 and the clusterPodNets IPv6 cidr is /64 (48+16).
+            ##
+            node-cidr-mask-size-ipv6: "80"
+            allocate-node-cidrs: "true"
+            feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true,RotateKubeletServerCertificate=true
+            tls-cipher-suites: TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    - |-
+      cluster:
+        etcd:
+          extraArgs:
+            listen-metrics-urls: http://0.0.0.0:2381
+    - |-
+      cluster:
+        scheduler:
+          extraArgs:
+            bind-address: "0.0.0.0"
+            feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true,RotateKubeletServerCertificate=true
+            tls-cipher-suites: TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    - |-
+      cluster:
+        proxy:
+          # Replaced by Cillium.
+          disabled: true
+    - |-
+      cluster:
+        apiServer:
+          extraArgs:
+            max-mutating-requests-inflight: 20
+            max-requests-inflight: 80
+            feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true,RotateKubeletServerCertificate=true
+            tls-cipher-suites: TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    - &machineKubelet |-
+      machine:
+        kubelet:
+          nodeIP:
+            validSubnets:
+              - 10.42.2.0/24
+          extraArgs:
+            feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true,RotateKubeletServerCertificate=true
+            rotate-server-certificates: "true"
+            tls-cipher-suites: TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    - &machineTime |-
+      machine:
+        time:
+          disabled: false
+          servers:
+            - 0.north-america.pool.ntp.org
+            - 1.north-america.pool.ntp.org
+            - 2.north-america.pool.ntp.org
+            - 3.north-america.pool.ntp.org
+    - &machineOpenEBS |-
+      machine:
+        sysctls:
+          vm.nr_hugepages: "1024"
+        kubelet:
+          extraMounts:
+            - source: /var/openebs/local
+              destination: /var/openebs/local
+              type: bind
+              options:
+                - rbind
+                - rshared
+                - rw
+    - &machineDNS |-
+      machine:
+        features:
+          hostDNS:
+            enabled: true
+            forwardKubeDNSToHost: false
+
+worker:
+  certSANs:
+    - "127.0.0.1"
+  nameservers: *nameservers
+  disableSearchDomain: *disableSearchDomain
+  schematic:
+    customization:
+      extraKernelArgs: *extraKernelArgs
+  machineFiles:
+    - *spegelCriConfig
+  patches:
+    - *machineKubelet
+    - *machineTime
+    - *machineOpenEBS
+    - *machineDNS
+    - |-
+      machine:
+        kubelet:
+          extraConfig:
+            maxPods: 250

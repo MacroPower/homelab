@@ -400,6 +400,18 @@ locals {
       mask = 16
       type = "reservation"
     }
+    robot_services = {
+      name = "robot Services"
+      id   = 136
+      mask = 16
+      type = "reservation"
+    }
+    robot_pods = {
+      name = "robot Pods"
+      id   = 137
+      mask = 16
+      type = "reservation"
+    }
   }
 }
 
