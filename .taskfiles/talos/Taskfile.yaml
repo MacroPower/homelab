@@ -5,7 +5,7 @@ version: "3"
 vars:
   TALOS_SCRIPTS_DIR: "{{.ROOT_DIR}}/.taskfiles/talos/scripts"
   EXTRAS_DIR: "{{.ROOT_DIR}}/hack/extra"
-  CLUSTER_DOMAIN: cin.macro.network
+  DEFAULT_CLUSTER_DOMAIN: cin.macro.network
   DOPPLER_PROJECT: talhelper
   TALOS_DIR: "{{.TALOS_DIR}}"
 
@@ -15,6 +15,7 @@ tasks:
     requires:
       vars: [CLUSTER_NAME]
     vars:
+      CLUSTER_DOMAIN: "{{ .CLUSTER_DOMAIN | default .DEFAULT_CLUSTER_DOMAIN }}"
       CLUSTER_ENDPOINT: "k{{.CLUSTER_NAME}}.{{.CLUSTER_DOMAIN}}"
       DOPPLER_CMD: "doppler run -p {{.DOPPLER_PROJECT}} -c {{.CLUSTER_NAME}}"
     dir: &dir "{{.TALOS_DIR}}/{{.CLUSTER_NAME}}"
@@ -37,6 +38,7 @@ tasks:
     requires:
       vars: [CLUSTER_NAME]
     vars:
+      CLUSTER_DOMAIN: "{{ .CLUSTER_DOMAIN | default .DEFAULT_CLUSTER_DOMAIN }}"
       CLUSTER_ENDPOINT: "k{{.CLUSTER_NAME}}.{{.CLUSTER_DOMAIN}}"
       DOPPLER_CMD: "doppler run -p {{.DOPPLER_PROJECT}} -c {{.CLUSTER_NAME}}"
       MODE: '{{.MODE | default "no-reboot"}}'
@@ -59,6 +61,8 @@ tasks:
         NODE: Target node (required)
     requires:
       vars: [CLUSTER_NAME, NODE]
+    vars:
+      CLUSTER_DOMAIN: "{{ .CLUSTER_DOMAIN | default .DEFAULT_CLUSTER_DOMAIN }}"
     dir: *dir
     cmds:
       - task: build
@@ -78,6 +82,7 @@ tasks:
     requires:
       vars: [CLUSTER_NAME]
     vars:
+      CLUSTER_DOMAIN: "{{ .CLUSTER_DOMAIN | default .DEFAULT_CLUSTER_DOMAIN }}"
       CLUSTER_ENDPOINT: "k{{.CLUSTER_NAME}}.{{.CLUSTER_DOMAIN}}"
     dir: *dir
     cmds:
@@ -137,7 +142,7 @@ tasks:
     desc: Bootstrap Talos cluster
     summary: |
       Args:
-        INITIAL_NODE: Node to bootstrap, e.g. kmain01.{{.CLUSTER_DOMAIN}}
+        INITIAL_NODE: Node to bootstrap, e.g. kmain01.{{.DEFAULT_CLUSTER_DOMAIN}}
         RECOVERY_SNAPSHOT: Snapshot to recover from (default: "")
     dir: *dir
     requires:
@@ -189,6 +194,8 @@ tasks:
         NODE: Node to reset (required)
     requires:
       vars: [NODE]
+    vars:
+      CLUSTER_DOMAIN: "{{ .CLUSTER_DOMAIN | default .DEFAULT_CLUSTER_DOMAIN }}"
     cmds:
       - |-
         talosctl reset --graceful=false --reboot \
@@ -207,6 +214,7 @@ tasks:
     requires:
       vars: [CLUSTER_NAME, NODE]
     vars:
+      CLUSTER_DOMAIN: "{{ .CLUSTER_DOMAIN | default .DEFAULT_CLUSTER_DOMAIN }}"
       DOPPLER_CMD: "doppler run -p {{.DOPPLER_PROJECT}} -c {{.CLUSTER_NAME}}"
     cmds:
       - |-
@@ -234,6 +242,7 @@ tasks:
     requires:
       vars: [CLUSTER_NAME, NODE]
     vars:
+      CLUSTER_DOMAIN: "{{ .CLUSTER_DOMAIN | default .DEFAULT_CLUSTER_DOMAIN }}"
       DOPPLER_CMD: "doppler run -p {{.DOPPLER_PROJECT}} -c {{.CLUSTER_NAME}}"
     cmds:
       - |
@@ -272,6 +281,8 @@ tasks:
     dir: *dir
     requires:
       vars: [NODE]
+    vars:
+      CLUSTER_DOMAIN: "{{ .CLUSTER_DOMAIN | default .DEFAULT_CLUSTER_DOMAIN }}"
     cmds:
       - rm -rf {{.NODE}}.{{.CLUSTER_DOMAIN}}/ cluster/
       - defer: unzip support.zip && rm support.zip
@@ -287,6 +298,7 @@ tasks:
     requires:
       vars: [NODE]
     vars:
+      CLUSTER_DOMAIN: "{{ .CLUSTER_DOMAIN | default .DEFAULT_CLUSTER_DOMAIN }}"
       FILENAME: '{{.FILENAME | default "db.snapshot"}}'
     cmds:
       - talosctl etcd snapshot -n {{.NODE}}.{{.CLUSTER_DOMAIN}} -e {{.NODE}}.{{.CLUSTER_DOMAIN}} {{.FILENAME}}
