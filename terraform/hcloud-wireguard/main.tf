@@ -127,7 +127,7 @@ resource "cloudflare_dns_record" "wg_ipv6" {
 }
 
 # TODO: Find some other way to do DNS for the robots.
-resource "cloudflare_dns_record" "robot_ipv4" {
+resource "cloudflare_dns_record" "robot01_ipv4" {
   zone_id  = data.doppler_secrets.fsn.map.CLOUDFLARE_DNS_ZONE_ID
   name     = "robot01.fsn"
   content  = "10.42.2.10"
@@ -137,9 +137,19 @@ resource "cloudflare_dns_record" "robot_ipv4" {
   provider = cloudflare.dns
 }
 
-resource "cloudflare_dns_record" "krobot_ipv4" {
+resource "cloudflare_dns_record" "krobot01_ipv4" {
   zone_id  = data.doppler_secrets.fsn.map.CLOUDFLARE_DNS_ZONE_ID
   name     = "krobot01.fsn"
+  content  = "10.42.2.20"
+  ttl      = 300
+  type     = "A"
+  proxied  = false
+  provider = cloudflare.dns
+}
+
+resource "cloudflare_dns_record" "krobot_ipv4" {
+  zone_id  = data.doppler_secrets.fsn.map.CLOUDFLARE_DNS_ZONE_ID
+  name     = "krobot.fsn"
   content  = "10.42.2.20"
   ttl      = 300
   type     = "A"
