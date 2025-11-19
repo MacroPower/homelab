@@ -1003,7 +1003,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "2.11.10-alpine",
+              "default": "2.12.2-alpine",
               "required": [],
               "title": "tag",
               "type": "string"
