@@ -16,7 +16,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/home-operations/qbittorrent
-          tag: 5.1.3
+          tag: 5.1.4
         env:
           QBT_WEBUI_PORT: {value: &port 8080}
         probes:
