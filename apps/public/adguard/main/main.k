@@ -50,7 +50,7 @@ app = public_adguard_base.app | {
             secretName = "adguard-dns-cert"
             issuerRef: {
                 kind = "ClusterIssuer"
-                name = "cloudflare-issuer"
+                name = "cloudflare-macro-network-issuer"
             }
         }
     }
