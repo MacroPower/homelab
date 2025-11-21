@@ -246,7 +246,7 @@ charts: helm.Charts = {
     volsync: {
         chart = "volsync"
         repoURL = "https://backube.github.io/helm-charts/"
-        targetRevision = "0.13.1"
+        targetRevision = "0.14.0"
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
     }

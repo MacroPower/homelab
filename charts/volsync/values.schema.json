@@ -89,6 +89,54 @@
       "title": "kube-rbac-proxy",
       "type": "object"
     },
+    "kube-rbac-proxy-resources": {
+      "additionalProperties": true,
+      "properties": {
+        "limits": {
+          "additionalProperties": true,
+          "properties": {
+            "cpu": {
+              "default": "500m",
+              "required": [],
+              "title": "cpu",
+              "type": "string"
+            },
+            "memory": {
+              "default": "128Mi",
+              "required": [],
+              "title": "memory",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "limits",
+          "type": "object"
+        },
+        "requests": {
+          "additionalProperties": true,
+          "properties": {
+            "cpu": {
+              "default": "5m",
+              "required": [],
+              "title": "cpu",
+              "type": "string"
+            },
+            "memory": {
+              "default": "64Mi",
+              "required": [],
+              "title": "memory",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "requests",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "kube-rbac-proxy-resources",
+      "type": "object"
+    },
     "manageCRDs": {
       "default": true,
       "required": [],
