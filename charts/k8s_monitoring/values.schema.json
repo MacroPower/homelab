@@ -1240,6 +1240,13 @@
           "title": "config",
           "type": "object"
         },
+        "deliverTracesToApplicationObservability": {
+          "default": true,
+          "description": "Whether Beyla should automatically deliver traces to the Application Observability feature.\nWhen enabled, traces will be sent to the OTLP receiver if Application Observability is configured.\nWhen disabled, only metrics (RED metrics) from the instrumented applications will be collected from Beyla, and\ntraces will not be automatically delivered.",
+          "required": [],
+          "title": "deliverTracesToApplicationObservability",
+          "type": "boolean"
+        },
         "extraDiscoveryRules": {
           "default": "",
           "description": "Rule blocks to be added to the discovery.relabel component for Beyla.\nThese relabeling rules are applied pre-scrape against the targets from service discovery.\nBefore the scrape, any remaining target labels that start with __ (i.e. __meta_kubernetes*) are dropped.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/discovery.relabel/#rule-block))",
@@ -3089,6 +3096,223 @@
       "title": "daemonsetAnnotations",
       "type": "object"
     },
+    "databaseObservability": {
+      "additionalProperties": true,
+      "description": "Capture table, schema, and query information for the Database Observability feature in Grafana Cloud.",
+      "properties": {
+        "allowUpdatePerformanceSchemaSettings": {
+          "description": "Whether to allow updates to performance_schema settings in any collector.",
+          "required": [],
+          "title": "allowUpdatePerformanceSchemaSettings",
+          "type": "boolean"
+        },
+        "collectors": {
+          "additionalProperties": true,
+          "properties": {
+            "explainPlans": {
+              "additionalProperties": true,
+              "description": "Collect explain plans information.",
+              "properties": {
+                "collectInterval": {
+                  "description": "How frequently to collect explain plans information from the database.",
+                  "required": [],
+                  "title": "collectInterval",
+                  "type": "string"
+                },
+                "enabled": {
+                  "description": "Enable collection of explain plans information.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "excludeSchemas": {
+                  "description": "List of schemas to exclude from explain plan collection.",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "excludeSchemas",
+                  "type": "array"
+                },
+                "initialLookback": {
+                  "description": "How far back to look for explain plan queries on the first collection interval.",
+                  "required": [],
+                  "title": "initialLookback",
+                  "type": "string"
+                },
+                "perCollectRatio": {
+                  "description": "Ratio of explain plan queries to collect per collect interval.",
+                  "required": [],
+                  "title": "perCollectRatio",
+                  "type": "number"
+                }
+              },
+              "required": [],
+              "title": "explainPlans",
+              "type": "object"
+            },
+            "locks": {
+              "additionalProperties": true,
+              "properties": {
+                "collectInterval": {
+                  "description": "How frequently to collect lock information from the database.",
+                  "required": [],
+                  "title": "collectInterval",
+                  "type": "string"
+                },
+                "enabled": {
+                  "description": "Enable collection of lock information.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "threshold": {
+                  "description": "Threshold for locks to be considered slow. Locks that exceed this duration are logged.",
+                  "required": [],
+                  "title": "threshold",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "locks",
+              "type": "object"
+            },
+            "queryDetails": {
+              "additionalProperties": true,
+              "description": "Collect queries information.",
+              "properties": {
+                "collectInterval": {
+                  "description": "How frequently to collect query information from the database.",
+                  "required": [],
+                  "title": "collectInterval",
+                  "type": "string"
+                },
+                "enabled": {
+                  "description": "Enable collection of query information.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "queryDetails",
+              "type": "object"
+            },
+            "querySamples": {
+              "additionalProperties": true,
+              "description": "Collect query samples.",
+              "properties": {
+                "autoEnableSetupConsumers": {
+                  "description": "Whether to enable some specific performance_schema.setup_consumers settings.",
+                  "required": [],
+                  "title": "autoEnableSetupConsumers",
+                  "type": "boolean"
+                },
+                "collectInterval": {
+                  "description": "How frequently to collect query samples from the database.",
+                  "required": [],
+                  "title": "collectInterval",
+                  "type": "string"
+                },
+                "disableQueryRedaction": {
+                  "description": "Collect unredacted SQL query text including parameters.",
+                  "required": [],
+                  "title": "disableQueryRedaction",
+                  "type": "boolean"
+                },
+                "enabled": {
+                  "description": "Enable collection of query samples.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "setupConsumersCheckInterval": {
+                  "description": "How frequently to check if setup_consumers are correctly enabled.",
+                  "required": [],
+                  "title": "setupConsumersCheckInterval",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "querySamples",
+              "type": "object"
+            },
+            "schemaDetails": {
+              "additionalProperties": true,
+              "description": "Collect schemas and tables from information_schema.",
+              "properties": {
+                "cacheEnabled": {
+                  "description": "Whether to enable caching of table definitions.",
+                  "required": [],
+                  "title": "cacheEnabled",
+                  "type": "boolean"
+                },
+                "cacheSize": {
+                  "description": "Table definitions cache size.",
+                  "required": [],
+                  "title": "cacheSize",
+                  "type": "integer"
+                },
+                "cacheTTL": {
+                  "description": "Table definitions cache TTL.",
+                  "required": [],
+                  "title": "cacheTTL",
+                  "type": "string"
+                },
+                "collectInterval": {
+                  "description": "How frequently to collect schemas and tables from information_schema.",
+                  "required": [],
+                  "title": "collectInterval",
+                  "type": "string"
+                },
+                "enabled": {
+                  "description": "Enable collection of schemas and tables from information_schema.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "schemaDetails",
+              "type": "object"
+            },
+            "setupConsumers": {
+              "additionalProperties": true,
+              "description": "Collect enabled performance_schema.setup_consumers.",
+              "properties": {
+                "collectInterval": {
+                  "description": "How frequently to collect performance_schema.setup_consumers information from the database.",
+                  "required": [],
+                  "title": "collectInterval",
+                  "type": "string"
+                },
+                "enabled": {
+                  "description": "Enable collection of performance_schema.setup_consumers information.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "setupConsumers",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "collectors",
+          "type": "object"
+        },
+        "enabled": {
+          "description": "Whether to gather table, schema, and query information from the database. Requires exporter to be enabled.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "databaseObservability",
+      "type": "object"
+    },
     "dcgm-exporter": {
       "additionalProperties": true,
       "description": "Scrape metrics/logs from DCGM Exporter",
@@ -3314,14 +3538,73 @@
       "description": "Settings for the Alloy embedded MySQL Exporter",
       "properties": {
         "collectors": {
-          "description": "The list of collectors to enable for the MySQL Exporter ([Documentation](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.exporter.mysql/#supported-collectors)).",
-          "items": {
-            "required": [],
-            "type": "string"
+          "additionalProperties": true,
+          "description": "The list of collectors to enable for the MySQL Exporter ([Documentation](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.exporter.mysql/#supported-collectors)).\nThis used to be a list of collector names. This format is still supported, but the new format will allow for\ncustomization.\ncollectors: [\"heartbeat\", \"mysql.user\"]",
+          "properties": {
+            "heartbeat": {
+              "additionalProperties": true,
+              "properties": {
+                "database": {
+                  "description": "Database to collect heartbeat data from.",
+                  "required": [],
+                  "title": "database",
+                  "type": "string"
+                },
+                "enabled": {
+                  "description": "Enable heartbeat collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "table": {
+                  "description": "Table to collect heartbeat data from.",
+                  "required": [],
+                  "title": "table",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "heartbeat",
+              "type": "object"
+            },
+            "mysqlUser": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable mysql.user collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "privileges": {
+                  "description": "Enable collecting user privileges from mysql.user.",
+                  "required": [],
+                  "title": "privileges",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "mysqlUser",
+              "type": "object"
+            },
+            "perfSchemaEventsStatements": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable perf_schema.eventsstatements collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "perfSchemaEventsStatements",
+              "type": "object"
+            }
           },
           "required": [],
           "title": "collectors",
-          "type": "array"
+          "type": "object"
         },
         "dataSource": {
           "additionalProperties": true,
@@ -7928,6 +8211,30 @@
           "title": "extraMetricProcessingRules",
           "type": "string"
         },
+        "extraVolumes": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "emptyDir": {
+                "additionalProperties": true,
+                "required": [],
+                "title": "emptyDir",
+                "type": "object"
+              },
+              "name": {
+                "default": "configs",
+                "required": [],
+                "title": "name",
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "required": [],
+          "title": "extraVolumes",
+          "type": "array"
+        },
         "jobLabel": {
           "default": "integrations/opencost",
           "description": "The value for the job label.",
@@ -8205,6 +8512,13 @@
             "exporter": {
               "additionalProperties": true,
               "properties": {
+                "cloudProviderApiKey": {
+                  "default": "op3nco57op3Nco57OP3Nco57op3nco57op3Nco57",
+                  "description": "Trial API Key used only with GCP.\nSee https://www.opencost.io/docs/configuration/gcp-opencost for how to set for your environment",
+                  "required": [],
+                  "title": "cloudProviderApiKey",
+                  "type": "string"
+                },
                 "defaultClusterId": {
                   "default": "default-cluster",
                   "description": "Default cluster ID to use if cluster is not set in Prometheus metrics. It should match cluster.name.",
@@ -8215,13 +8529,6 @@
                 "extraEnv": {
                   "additionalProperties": true,
                   "properties": {
-                    "CLOUD_PROVIDER_API_KEY": {
-                      "default": "AIzaSyD29bGxmHAVEOBYtgd8sYM2gM2ekfxQX4U",
-                      "description": "Trial API Key used only with GCP.\nSee https://www.opencost.io/docs/configuration/gcp-opencost for how to set for your environment",
-                      "required": [],
-                      "title": "CLOUD_PROVIDER_API_KEY",
-                      "type": "string"
-                    },
                     "CURRENT_CLUSTER_ID_FILTER_ENABLED": {
                       "default": "true",
                       "required": [],
@@ -8238,6 +8545,36 @@
                   "required": [],
                   "title": "extraEnv",
                   "type": "object"
+                },
+                "extraVolumeMounts": {
+                  "items": {
+                    "additionalProperties": true,
+                    "properties": {
+                      "mountPath": {
+                        "default": "/var/configs",
+                        "required": [],
+                        "title": "mountPath",
+                        "type": "string"
+                      },
+                      "name": {
+                        "default": "configs",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "readOnly": {
+                        "default": false,
+                        "required": [],
+                        "title": "readOnly",
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  "required": [],
+                  "title": "extraVolumeMounts",
+                  "type": "array"
                 }
               },
               "required": [],
@@ -12924,12 +13261,130 @@
       "title": "retryOnFailure",
       "type": "object"
     },
+    "retryOnHttp429": {
+      "description": "Retry when an HTTP 429 status code is received.",
+      "required": [],
+      "title": "retryOnHttp429",
+      "type": "boolean"
+    },
     "revisionHistoryLimit": {
       "default": 10,
       "description": "Number of old history to retain to allow rollback\nDefault Kubernetes value is set to 10",
       "required": [],
       "title": "revisionHistoryLimit",
       "type": "integer"
+    },
+    "scrapeConfigs": {
+      "additionalProperties": true,
+      "description": "Prometheus Operator ScrapeConfigs",
+      "properties": {
+        "enabled": {
+          "default": false,
+          "description": "Enable discovery of Prometheus Operator ScrapeConfig objects.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "excludeNamespaces": {
+          "description": "Which namespaces to not look for ScrapeConfig objects.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "excludeNamespaces",
+          "type": "array"
+        },
+        "extraDiscoveryRules": {
+          "default": "",
+          "description": "Rule blocks to be added to the prometheus.operator.scrapeconfigs component for ScrapeConfigs.\nThese relabeling rules are applied pre-scrape against the targets from service discovery.\nThe relabelings defined in the PodMonitor object are applied first, then these relabelings are applied.\nBefore the scrape, any remaining target labels that start with `__` (i.e. `__meta_kubernetes*`) are dropped.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/discovery/discovery.relabel/#rule-block))",
+          "required": [],
+          "title": "extraDiscoveryRules",
+          "type": "string"
+        },
+        "extraMetricProcessingRules": {
+          "default": "",
+          "description": "Rule blocks to be added to the prometheus.relabel component for ScrapeConfig objects.\nThese relabeling rules are applied post-scrape against the metrics returned from the scraped target, no `__meta*` labels are present.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#rule-block))",
+          "required": [],
+          "title": "extraMetricProcessingRules",
+          "type": "string"
+        },
+        "labelExpressions": {
+          "description": "Complex label selectors to filter which ScrapeConfig objects to use.\nExample: `[{key: \"app.kubernetes.io/name\", operator: \"NotIn\", values: [\"secret-app\", \"admin-app\"]}]`",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "labelExpressions",
+          "type": "array"
+        },
+        "labelSelectors": {
+          "additionalProperties": true,
+          "description": "Label selectors to filter which ScrapeConfig objects to use.\nExample: `app.kubernetes.io/name: my-app`",
+          "required": [],
+          "title": "labelSelectors",
+          "type": "object"
+        },
+        "maxCacheSize": {
+          "default": "",
+          "description": "Sets the max_cache_size for cadvisor prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "required": [],
+          "title": "maxCacheSize",
+          "type": "null"
+        },
+        "metricsTuning": {
+          "additionalProperties": true,
+          "description": "Adjustments to the scraped metrics to filter the amount of data sent to storage.",
+          "properties": {
+            "excludeMetrics": {
+              "description": "Metrics to drop. Can use regular expressions.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "excludeMetrics",
+              "type": "array"
+            },
+            "includeMetrics": {
+              "description": "Metrics to keep. Can use regular expressions.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "includeMetrics",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "metricsTuning",
+          "type": "object"
+        },
+        "namespaces": {
+          "description": "Which namespaces to look for ScrapeConfig objects.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "namespaces",
+          "type": "array"
+        },
+        "scrapeInterval": {
+          "default": "",
+          "description": "The default interval between scraping targets. Used as the default if the target resource doesn’t provide a\nscrape interval.\nOverrides global.scrapeInterval",
+          "required": [],
+          "title": "scrapeInterval",
+          "type": "string"
+        },
+        "scrapeTimeout": {
+          "default": "",
+          "description": "The default timeout for scrape requests. Used as the default if the target resource doesn’t provide a scrape\ntimeout.",
+          "required": [],
+          "title": "scrapeTimeout",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "scrapeConfigs",
+      "type": "object"
     },
     "scrapeInterval": {
       "default": "",
@@ -14125,6 +14580,12 @@
       "required": [],
       "title": "terminationMessageParams",
       "type": "object"
+    },
+    "timeout": {
+      "description": "Timeout for requests made to the URL.",
+      "required": [],
+      "title": "timeout",
+      "type": "string"
     },
     "tls": {
       "additionalProperties": true,

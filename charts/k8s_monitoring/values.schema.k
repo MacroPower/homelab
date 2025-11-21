@@ -118,6 +118,8 @@ schema Values:
         Enabling support for customResourceState, will create a configMap including your config that will be read from kube-state-metrics
     daemonsetAnnotations : ValuesDaemonsetAnnotations, optional
         Annotations to be added to windows exporter daemonset
+    databaseObservability : ValuesDatabaseObservability, optional
+        Capture table, schema, and query information for the Database Observability feature in Grafana Cloud.
     "dcgm-exporter" : ValuesDcgmExporter, optional
         Scrape metrics/logs from DCGM Exporter
     deployAsConfigMap : bool, optional, default is False
@@ -503,9 +505,13 @@ schema Values:
         Specify the container restart policy passed to the Node Export container
         Possible Values: Always (default)|OnFailure|Never
     retryOnFailure : ValuesRetryOnFailure, optional
+    retryOnHttp429 : bool, optional
+        Retry when an HTTP 429 status code is received.
     revisionHistoryLimit : int, optional, default is 10
         Number of old history to retain to allow rollback
         Default Kubernetes value is set to 10
+    scrapeConfigs : ValuesScrapeConfigs, optional
+        Prometheus Operator ScrapeConfigs
     scrapeInterval : str, optional, default is ""
         How frequently to scrape metrics from discovered pods and services. Only used if the `k8s.grafana.com/metrics.scrapeInterval` annotation is not set.
         Overrides global.scrapeInterval
@@ -581,6 +587,8 @@ schema Values:
     terminationMessageParams : ValuesTerminationMessageParams, optional
         Enable or disable container termination message settings
         https://kubernetes.io/docs/tasks/debug/debug-application/determine-reason-pod-failure/
+    timeout : str, optional
+        Timeout for requests made to the URL.
     tls : ValuesTls, optional
     tlsSecret : ValuesTlsSecret, optional
         # tlsSecret refers to an existing secret holding TLS items: client CA certificate, private key and certificate.
@@ -664,6 +672,7 @@ schema Values:
     customLabels?: ValuesCustomLabels
     customResourceState?: ValuesCustomResourceState
     daemonsetAnnotations?: ValuesDaemonsetAnnotations
+    databaseObservability?: ValuesDatabaseObservability
     "dcgm-exporter"?: ValuesDcgmExporter
     deployAsConfigMap?: bool
     destinations?: [any]
@@ -822,7 +831,9 @@ schema Values:
     resources?: ValuesResources
     restartPolicy?: any
     retryOnFailure?: ValuesRetryOnFailure
+    retryOnHttp429?: bool
     revisionHistoryLimit?: int
+    scrapeConfigs?: ValuesScrapeConfigs
     scrapeInterval?: str
     scrapeTimeout?: str
     secret?: ValuesSecret
@@ -852,6 +863,7 @@ schema Values:
     tenantIdKey?: str
     terminationGracePeriodSeconds?: any
     terminationMessageParams?: ValuesTerminationMessageParams
+    timeout?: str
     tls?: ValuesTls
     tlsSecret?: ValuesTlsSecret
     tolerations?: [ValuesTolerationsItems0]
@@ -1635,6 +1647,11 @@ schema ValuesBeyla:
     Attributes
     ----------
     config : ValuesBeylaConfig, optional
+    deliverTracesToApplicationObservability : bool, optional, default is True
+        Whether Beyla should automatically deliver traces to the Application Observability feature.
+        When enabled, traces will be sent to the OTLP receiver if Application Observability is configured.
+        When disabled, only metrics (RED metrics) from the instrumented applications will be collected from Beyla, and
+        traces will not be automatically delivered.
     extraDiscoveryRules : str, optional, default is ""
         Rule blocks to be added to the discovery.relabel component for Beyla.
         These relabeling rules are applied pre-scrape against the targets from service discovery.
@@ -1665,6 +1682,7 @@ schema ValuesBeyla:
     """
     [...str]: any
     config?: ValuesBeylaConfig
+    deliverTracesToApplicationObservability?: bool
     extraDiscoveryRules?: str
     extraMetricProcessingRules?: str
     labelMatchers?: ValuesBeylaLabelMatchers
@@ -3134,6 +3152,169 @@ schema ValuesDaemonsetAnnotations:
     """
     [...str]: any
 
+schema ValuesDatabaseObservability:
+    r"""
+    Capture table, schema, and query information for the Database Observability feature in Grafana Cloud.
+
+    Attributes
+    ----------
+    allowUpdatePerformanceSchemaSettings : bool, optional
+        Whether to allow updates to performance_schema settings in any collector.
+    collectors : ValuesDatabaseObservabilityCollectors, optional
+    enabled : bool, optional
+        Whether to gather table, schema, and query information from the database. Requires exporter to be enabled.
+    """
+    [...str]: any
+    allowUpdatePerformanceSchemaSettings?: bool
+    collectors?: ValuesDatabaseObservabilityCollectors
+    enabled?: bool
+
+schema ValuesDatabaseObservabilityCollectors:
+    r"""
+    ValuesDatabaseObservabilityCollectors
+
+    Attributes
+    ----------
+    explainPlans : ValuesDatabaseObservabilityCollectorsExplainPlans, optional
+        Collect explain plans information.
+    locks : ValuesDatabaseObservabilityCollectorsLocks, optional
+    queryDetails : ValuesDatabaseObservabilityCollectorsQueryDetails, optional
+        Collect queries information.
+    querySamples : ValuesDatabaseObservabilityCollectorsQuerySamples, optional
+        Collect query samples.
+    schemaDetails : ValuesDatabaseObservabilityCollectorsSchemaDetails, optional
+        Collect schemas and tables from information_schema.
+    setupConsumers : ValuesDatabaseObservabilityCollectorsSetupConsumers, optional
+        Collect enabled performance_schema.setup_consumers.
+    """
+    [...str]: any
+    explainPlans?: ValuesDatabaseObservabilityCollectorsExplainPlans
+    locks?: ValuesDatabaseObservabilityCollectorsLocks
+    queryDetails?: ValuesDatabaseObservabilityCollectorsQueryDetails
+    querySamples?: ValuesDatabaseObservabilityCollectorsQuerySamples
+    schemaDetails?: ValuesDatabaseObservabilityCollectorsSchemaDetails
+    setupConsumers?: ValuesDatabaseObservabilityCollectorsSetupConsumers
+
+schema ValuesDatabaseObservabilityCollectorsExplainPlans:
+    r"""
+    Collect explain plans information.
+
+    Attributes
+    ----------
+    collectInterval : str, optional
+        How frequently to collect explain plans information from the database.
+    enabled : bool, optional
+        Enable collection of explain plans information.
+    excludeSchemas : [any], optional
+        List of schemas to exclude from explain plan collection.
+    initialLookback : str, optional
+        How far back to look for explain plan queries on the first collection interval.
+    perCollectRatio : float, optional
+        Ratio of explain plan queries to collect per collect interval.
+    """
+    [...str]: any
+    collectInterval?: str
+    enabled?: bool
+    excludeSchemas?: [any]
+    initialLookback?: str
+    perCollectRatio?: float
+
+schema ValuesDatabaseObservabilityCollectorsLocks:
+    r"""
+    ValuesDatabaseObservabilityCollectorsLocks
+
+    Attributes
+    ----------
+    collectInterval : str, optional
+        How frequently to collect lock information from the database.
+    enabled : bool, optional
+        Enable collection of lock information.
+    threshold : str, optional
+        Threshold for locks to be considered slow. Locks that exceed this duration are logged.
+    """
+    [...str]: any
+    collectInterval?: str
+    enabled?: bool
+    threshold?: str
+
+schema ValuesDatabaseObservabilityCollectorsQueryDetails:
+    r"""
+    Collect queries information.
+
+    Attributes
+    ----------
+    collectInterval : str, optional
+        How frequently to collect query information from the database.
+    enabled : bool, optional
+        Enable collection of query information.
+    """
+    [...str]: any
+    collectInterval?: str
+    enabled?: bool
+
+schema ValuesDatabaseObservabilityCollectorsQuerySamples:
+    r"""
+    Collect query samples.
+
+    Attributes
+    ----------
+    autoEnableSetupConsumers : bool, optional
+        Whether to enable some specific performance_schema.setup_consumers settings.
+    collectInterval : str, optional
+        How frequently to collect query samples from the database.
+    disableQueryRedaction : bool, optional
+        Collect unredacted SQL query text including parameters.
+    enabled : bool, optional
+        Enable collection of query samples.
+    setupConsumersCheckInterval : str, optional
+        How frequently to check if setup_consumers are correctly enabled.
+    """
+    [...str]: any
+    autoEnableSetupConsumers?: bool
+    collectInterval?: str
+    disableQueryRedaction?: bool
+    enabled?: bool
+    setupConsumersCheckInterval?: str
+
+schema ValuesDatabaseObservabilityCollectorsSchemaDetails:
+    r"""
+    Collect schemas and tables from information_schema.
+
+    Attributes
+    ----------
+    cacheEnabled : bool, optional
+        Whether to enable caching of table definitions.
+    cacheSize : int, optional
+        Table definitions cache size.
+    cacheTTL : str, optional
+        Table definitions cache TTL.
+    collectInterval : str, optional
+        How frequently to collect schemas and tables from information_schema.
+    enabled : bool, optional
+        Enable collection of schemas and tables from information_schema.
+    """
+    [...str]: any
+    cacheEnabled?: bool
+    cacheSize?: int
+    cacheTTL?: str
+    collectInterval?: str
+    enabled?: bool
+
+schema ValuesDatabaseObservabilityCollectorsSetupConsumers:
+    r"""
+    Collect enabled performance_schema.setup_consumers.
+
+    Attributes
+    ----------
+    collectInterval : str, optional
+        How frequently to collect performance_schema.setup_consumers information from the database.
+    enabled : bool, optional
+        Enable collection of performance_schema.setup_consumers information.
+    """
+    [...str]: any
+    collectInterval?: str
+    enabled?: bool
+
 schema ValuesDcgmExporter:
     r"""
     Scrape metrics/logs from DCGM Exporter
@@ -3269,17 +3450,83 @@ schema ValuesExporter:
 
     Attributes
     ----------
-    collectors : [str], optional
+    collectors : ValuesExporterCollectors, optional
         The list of collectors to enable for the MySQL Exporter ([Documentation](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.exporter.mysql/#supported-collectors)).
+        This used to be a list of collector names. This format is still supported, but the new format will allow for
+        customization.
+        collectors: ["heartbeat", "mysql.user"]
     dataSource : ValuesExporterDataSource, optional
         The data source to use for the MySQL Exporter.
     dataSourceName : str, optional
         The data source string to use for the MySQL Exporter.
     """
     [...str]: any
-    collectors?: [str]
+    collectors?: ValuesExporterCollectors
     dataSource?: ValuesExporterDataSource
     dataSourceName?: str
+
+schema ValuesExporterCollectors:
+    r"""
+    The list of collectors to enable for the MySQL Exporter ([Documentation](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.exporter.mysql/#supported-collectors)).
+    This used to be a list of collector names. This format is still supported, but the new format will allow for
+    customization.
+    collectors: ["heartbeat", "mysql.user"]
+
+    Attributes
+    ----------
+    heartbeat : ValuesExporterCollectorsHeartbeat, optional
+    mysqlUser : ValuesExporterCollectorsMysqlUser, optional
+    perfSchemaEventsStatements : ValuesExporterCollectorsPerfSchemaEventsStatements, optional
+    """
+    [...str]: any
+    heartbeat?: ValuesExporterCollectorsHeartbeat
+    mysqlUser?: ValuesExporterCollectorsMysqlUser
+    perfSchemaEventsStatements?: ValuesExporterCollectorsPerfSchemaEventsStatements
+
+schema ValuesExporterCollectorsHeartbeat:
+    r"""
+    ValuesExporterCollectorsHeartbeat
+
+    Attributes
+    ----------
+    database : str, optional
+        Database to collect heartbeat data from.
+    enabled : bool, optional
+        Enable heartbeat collector.
+    table : str, optional
+        Table to collect heartbeat data from.
+    """
+    [...str]: any
+    database?: str
+    enabled?: bool
+    table?: str
+
+schema ValuesExporterCollectorsMysqlUser:
+    r"""
+    ValuesExporterCollectorsMysqlUser
+
+    Attributes
+    ----------
+    enabled : bool, optional
+        Enable mysql.user collector.
+    privileges : bool, optional
+        Enable collecting user privileges from mysql.user.
+    """
+    [...str]: any
+    enabled?: bool
+    privileges?: bool
+
+schema ValuesExporterCollectorsPerfSchemaEventsStatements:
+    r"""
+    ValuesExporterCollectorsPerfSchemaEventsStatements
+
+    Attributes
+    ----------
+    enabled : bool, optional
+        Enable perf_schema.eventsstatements collector.
+    """
+    [...str]: any
+    enabled?: bool
 
 schema ValuesExporterDataSource:
     r"""
@@ -5813,6 +6060,7 @@ schema ValuesOpencost:
     extraMetricProcessingRules : str, optional, default is ""
         Rule blocks to be added to the prometheus.relabel component for OpenCost. ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#rule-block))
         These relabeling rules are applied post-scrape against the metrics returned from the scraped target, no __meta* labels are present.
+    extraVolumes : [ValuesOpencostExtraVolumesItems0], optional
     jobLabel : str, optional, default is "integrations/opencost"
         The value for the job label.
     labelMatchers : ValuesOpencostLabelMatchers, optional
@@ -5859,6 +6107,7 @@ schema ValuesOpencost:
     extraContainers?: [any]
     extraDiscoveryRules?: str
     extraMetricProcessingRules?: str
+    extraVolumes?: [ValuesOpencostExtraVolumesItems0]
     jobLabel?: str
     labelMatchers?: ValuesOpencostLabelMatchers
     maxCacheSize?: any
@@ -6352,6 +6601,25 @@ schema ValuesOpencostExporterStartupProbe:
     path?: str
     periodSeconds?: int
 
+schema ValuesOpencostExtraVolumesItems0:
+    r"""
+    ValuesOpencostExtraVolumesItems0
+
+    Attributes
+    ----------
+    emptyDir : ValuesOpencostExtraVolumesItems0EmptyDir, optional
+    name : str, optional, default is "configs"
+    """
+    [...str]: any
+    emptyDir?: ValuesOpencostExtraVolumesItems0EmptyDir
+    name?: str
+
+schema ValuesOpencostExtraVolumesItems0EmptyDir:
+    r"""
+    ValuesOpencostExtraVolumesItems0EmptyDir
+    """
+    [...str]: any
+
 schema ValuesOpencostLabelMatchers:
     r"""
     Label matchers used to select the OpenCost service
@@ -6550,13 +6818,19 @@ schema ValuesOpencostOpencostExporter:
 
     Attributes
     ----------
+    cloudProviderApiKey : str, optional, default is "op3nco57op3Nco57OP3Nco57op3nco57op3Nco57"
+        Trial API Key used only with GCP.
+        See https://www.opencost.io/docs/configuration/gcp-opencost for how to set for your environment
     defaultClusterId : str, optional, default is "default-cluster"
         Default cluster ID to use if cluster is not set in Prometheus metrics. It should match cluster.name.
     extraEnv : ValuesOpencostOpencostExporterExtraEnv, optional
+    extraVolumeMounts : [ValuesOpencostOpencostExporterExtraVolumeMountsItems0], optional
     """
     [...str]: any
+    cloudProviderApiKey?: str
     defaultClusterId?: str
     extraEnv?: ValuesOpencostOpencostExporterExtraEnv
+    extraVolumeMounts?: [ValuesOpencostOpencostExporterExtraVolumeMountsItems0]
 
 schema ValuesOpencostOpencostExporterExtraEnv:
     r"""
@@ -6564,16 +6838,27 @@ schema ValuesOpencostOpencostExporterExtraEnv:
 
     Attributes
     ----------
-    CLOUD_PROVIDER_API_KEY : str, optional, default is "AIzaSyD29bGxmHAVEOBYtgd8sYM2gM2ekfxQX4U"
-        Trial API Key used only with GCP.
-        See https://www.opencost.io/docs/configuration/gcp-opencost for how to set for your environment
     CURRENT_CLUSTER_ID_FILTER_ENABLED : str, optional, default is "true"
     PROM_CLUSTER_ID_LABEL : str, optional, default is "cluster"
     """
     [...str]: any
-    CLOUD_PROVIDER_API_KEY?: str
     CURRENT_CLUSTER_ID_FILTER_ENABLED?: str
     PROM_CLUSTER_ID_LABEL?: str
+
+schema ValuesOpencostOpencostExporterExtraVolumeMountsItems0:
+    r"""
+    ValuesOpencostOpencostExporterExtraVolumeMountsItems0
+
+    Attributes
+    ----------
+    mountPath : str, optional, default is "/var/configs"
+    name : str, optional, default is "configs"
+    readOnly : bool, optional, default is False
+    """
+    [...str]: any
+    mountPath?: str
+    name?: str
+    readOnly?: bool
 
 schema ValuesOpencostOpencostMetrics:
     r"""
@@ -9769,6 +10054,84 @@ schema ValuesRetryOnFailure:
     initialInterval?: str
     maxElapsedTime?: str
     maxInterval?: str
+
+schema ValuesScrapeConfigs:
+    r"""
+    Prometheus Operator ScrapeConfigs
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Enable discovery of Prometheus Operator ScrapeConfig objects.
+    excludeNamespaces : [any], optional
+        Which namespaces to not look for ScrapeConfig objects.
+    extraDiscoveryRules : str, optional, default is ""
+        Rule blocks to be added to the prometheus.operator.scrapeconfigs component for ScrapeConfigs.
+        These relabeling rules are applied pre-scrape against the targets from service discovery.
+        The relabelings defined in the PodMonitor object are applied first, then these relabelings are applied.
+        Before the scrape, any remaining target labels that start with `__` (i.e. `__meta_kubernetes*`) are dropped.
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/discovery/discovery.relabel/#rule-block))
+    extraMetricProcessingRules : str, optional, default is ""
+        Rule blocks to be added to the prometheus.relabel component for ScrapeConfig objects.
+        These relabeling rules are applied post-scrape against the metrics returned from the scraped target, no `__meta*` labels are present.
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#rule-block))
+    labelExpressions : [any], optional
+        Complex label selectors to filter which ScrapeConfig objects to use.
+        Example: `[{key: "app.kubernetes.io/name", operator: "NotIn", values: ["secret-app", "admin-app"]}]`
+    labelSelectors : ValuesScrapeConfigsLabelSelectors, optional
+        Label selectors to filter which ScrapeConfig objects to use.
+        Example: `app.kubernetes.io/name: my-app`
+    maxCacheSize : any, optional, default is ""
+        Sets the max_cache_size for cadvisor prometheus.relabel component.
+        This should be at least 2x-5x your largest scrape target or samples appended rate.
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
+        Overrides global.maxCacheSize
+    metricsTuning : ValuesScrapeConfigsMetricsTuning, optional
+        Adjustments to the scraped metrics to filter the amount of data sent to storage.
+    namespaces : [any], optional
+        Which namespaces to look for ScrapeConfig objects.
+    scrapeInterval : str, optional, default is ""
+        The default interval between scraping targets. Used as the default if the target resource doesn’t provide a
+        scrape interval.
+        Overrides global.scrapeInterval
+    scrapeTimeout : str, optional, default is ""
+        The default timeout for scrape requests. Used as the default if the target resource doesn’t provide a scrape
+        timeout.
+    """
+    [...str]: any
+    enabled?: bool
+    excludeNamespaces?: [any]
+    extraDiscoveryRules?: str
+    extraMetricProcessingRules?: str
+    labelExpressions?: [any]
+    labelSelectors?: ValuesScrapeConfigsLabelSelectors
+    maxCacheSize?: any
+    metricsTuning?: ValuesScrapeConfigsMetricsTuning
+    namespaces?: [any]
+    scrapeInterval?: str
+    scrapeTimeout?: str
+
+schema ValuesScrapeConfigsLabelSelectors:
+    r"""
+    Label selectors to filter which ScrapeConfig objects to use.
+    Example: `app.kubernetes.io/name: my-app`
+    """
+    [...str]: any
+
+schema ValuesScrapeConfigsMetricsTuning:
+    r"""
+    Adjustments to the scraped metrics to filter the amount of data sent to storage.
+
+    Attributes
+    ----------
+    excludeMetrics : [any], optional
+        Metrics to drop. Can use regular expressions.
+    includeMetrics : [any], optional
+        Metrics to keep. Can use regular expressions.
+    """
+    [...str]: any
+    excludeMetrics?: [any]
+    includeMetrics?: [any]
 
 schema ValuesSecret:
     r"""
