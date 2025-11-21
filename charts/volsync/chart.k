@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "volsync"
     repoURL : str, required, default is "https://backube.github.io/helm-charts/"
-    targetRevision : str, optional, default is "0.13.1"
+    targetRevision : str, optional, default is "0.14.0"
     """
     values?: Values | any
     chart: str = "volsync"
     repoURL: str = "https://backube.github.io/helm-charts/"
-    targetRevision?: str = "0.13.1"
+    targetRevision?: str = "0.14.0"
 

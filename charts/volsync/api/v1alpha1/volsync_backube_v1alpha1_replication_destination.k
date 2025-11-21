@@ -126,6 +126,9 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRclone:
         that will be used by the data mover. This should only be used by advanced
         users who want to override the service account normally used by the mover.
         The service account needs to exist in the same namespace as this CR.
+    moverVolumes : [VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0], default is Undefined, optional
+        MoverVolumes are PVCs or Secrets that should additionally be mounted to the mover job pod.
+        This should only be used by advanced users.
     rcloneConfig : str, default is Undefined, optional
         RcloneConfig is the rclone secret name
     rcloneConfigSection : str, default is Undefined, optional
@@ -150,6 +153,7 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRclone:
     moverResources?: VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverResources
     moverSecurityContext?: VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverSecurityContext
     moverServiceAccount?: str
+    moverVolumes?: [VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0]
     rcloneConfig?: str
     rcloneConfigSection?: str
     rcloneDestPath?: str
@@ -440,7 +444,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverAffinityPodAff
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -450,7 +453,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverAffinityPodAff
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -579,7 +581,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverAffinityPodAff
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -589,7 +590,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverAffinityPodAff
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -709,8 +709,8 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverAffinityPodAnt
         most preferred is the one with the greatest sum of weights, i.e.
         for each node that meets all of the scheduling requirements (resource
         request, requiredDuringScheduling anti-affinity expressions, etc.),
-        compute a sum by iterating through the elements of this field and adding
-        "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the
+        compute a sum by iterating through the elements of this field and subtracting
+        "weight" from the sum if the node has pods which matches the corresponding podAffinityTerm; the
         node(s) with the highest sum are the most preferred.
     requiredDuringSchedulingIgnoredDuringExecution : [VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
         If the anti-affinity requirements specified by this field are not met at
@@ -757,7 +757,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverAffinityPodAnt
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -767,7 +766,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverAffinityPodAnt
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -896,7 +894,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverAffinityPodAnt
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -906,7 +903,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverAffinityPodAnt
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -1027,7 +1023,7 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverResources:
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -1297,6 +1293,117 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverSecurityContex
     hostProcess?: bool
     runAsUserName?: str
 
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0:
+    r"""
+    volsync backube v1alpha1 replication destination spec rclone mover volumes items0
+
+    Attributes
+    ----------
+    mountPath : str, default is Undefined, required
+        Path to give the volume when mounting under /mnt in the mover job pod.
+        For example if mountPath is 'my-pvc' then this moverVolume will be mounted in the mover pod
+        at /mnt/my-pvc
+    volumeSource : VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSource, default is Undefined, required
+        volume source
+    """
+    mountPath: str
+
+    volumeSource: VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSource
+
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSource:
+    r"""
+    volumeSource represents the secret or PersistentVolumeClaim that should be mounted to the mover pod.
+
+    Attributes
+    ----------
+    persistentVolumeClaim : VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSourcePersistentVolumeClaim, default is Undefined, optional
+        persistent volume claim
+    secret : VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSourceSecret, default is Undefined, optional
+        secret
+    """
+    persistentVolumeClaim?: VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSourcePersistentVolumeClaim
+    secret?: VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSourceSecret
+
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSourcePersistentVolumeClaim:
+    r"""
+    persistentVolumeClaimVolumeSource represents a reference to a
+    PersistentVolumeClaim in the same namespace.
+    More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
+    nolint:lll
+
+    Attributes
+    ----------
+    claimName : str, default is Undefined, required
+        claimName is the name of a PersistentVolumeClaim in the same namespace as the pod using this volume.
+        More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
+    readOnly : bool, default is Undefined, optional
+        readOnly Will force the ReadOnly setting in VolumeMounts.
+        Default false.
+    """
+    claimName: str
+
+    readOnly?: bool
+
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSourceSecret:
+    r"""
+    secret represents a secret that should populate this volume.
+    More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
+
+    Attributes
+    ----------
+    defaultMode : int, default is Undefined, optional
+        defaultMode is Optional: mode bits used to set permissions on created files by default.
+        Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
+        YAML accepts both octal and decimal values, JSON requires decimal values
+        for mode bits. Defaults to 0644.
+        Directories within the path are not affected by this setting.
+        This might be in conflict with other options that affect the file
+        mode, like fsGroup, and the result can be other mode bits set.
+    items : [VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSourceSecretItemsItems0], default is Undefined, optional
+        items If unspecified, each key-value pair in the Data field of the referenced
+        Secret will be projected into the volume as a file whose name is the
+        key and content is the value. If specified, the listed keys will be
+        projected into the specified paths, and unlisted keys will not be
+        present. If a key is specified which is not present in the Secret,
+        the volume setup will error unless it is marked optional. Paths must be
+        relative and may not contain the '..' path or start with '..'.
+    optional : bool, default is Undefined, optional
+        optional field specify whether the Secret or its keys must be defined
+    secretName : str, default is Undefined, optional
+        secretName is the name of the secret in the pod's namespace to use.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
+    """
+    defaultMode?: int
+    items?: [VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSourceSecretItemsItems0]
+    optional?: bool
+    secretName?: str
+
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSourceSecretItemsItems0:
+    r"""
+    Maps a string key to a path within a volume.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the key to project.
+    mode : int, default is Undefined, optional
+        mode is Optional: mode bits used to set permissions on this file.
+        Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
+        YAML accepts both octal and decimal values, JSON requires decimal values for mode bits.
+        If not specified, the volume defaultMode will be used.
+        This might be in conflict with other options that affect the file
+        mode, like fsGroup, and the result can be other mode bits set.
+    path : str, default is Undefined, required
+        path is the relative path of the file to map the key to.
+        May not be an absolute path.
+        May not contain the path element '..'.
+        May not start with the string '..'.
+    """
+    key: str
+
+    mode?: int
+    path: str
+
 schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRestic:
     r"""
     restic defines the configuration when using Restic-based replication.
@@ -1358,6 +1465,9 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRestic:
         that will be used by the data mover. This should only be used by advanced
         users who want to override the service account normally used by the mover.
         The service account needs to exist in the same namespace as this CR.
+    moverVolumes : [VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0], default is Undefined, optional
+        MoverVolumes are PVCs or Secrets that should additionally be mounted to the mover job pod.
+        This should only be used by advanced users.
     previous : int, default is Undefined, optional
         Previous specifies the number of image to skip before selecting one to restore from
     repository : str, default is Undefined, optional
@@ -1387,6 +1497,7 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRestic:
     moverResources?: VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverResources
     moverSecurityContext?: VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverSecurityContext
     moverServiceAccount?: str
+    moverVolumes?: [VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0]
     previous?: int
     repository?: str
     restoreAsOf?: str
@@ -1678,7 +1789,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverAffinityPodAff
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -1688,7 +1798,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverAffinityPodAff
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -1817,7 +1926,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverAffinityPodAff
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -1827,7 +1935,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverAffinityPodAff
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -1947,8 +2054,8 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverAffinityPodAnt
         most preferred is the one with the greatest sum of weights, i.e.
         for each node that meets all of the scheduling requirements (resource
         request, requiredDuringScheduling anti-affinity expressions, etc.),
-        compute a sum by iterating through the elements of this field and adding
-        "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the
+        compute a sum by iterating through the elements of this field and subtracting
+        "weight" from the sum if the node has pods which matches the corresponding podAffinityTerm; the
         node(s) with the highest sum are the most preferred.
     requiredDuringSchedulingIgnoredDuringExecution : [VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
         If the anti-affinity requirements specified by this field are not met at
@@ -1995,7 +2102,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverAffinityPodAnt
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -2005,7 +2111,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverAffinityPodAnt
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -2134,7 +2239,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverAffinityPodAnt
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -2144,7 +2248,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverAffinityPodAnt
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -2265,7 +2368,7 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverResources:
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -2535,6 +2638,117 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverSecurityContex
     hostProcess?: bool
     runAsUserName?: str
 
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0:
+    r"""
+    volsync backube v1alpha1 replication destination spec restic mover volumes items0
+
+    Attributes
+    ----------
+    mountPath : str, default is Undefined, required
+        Path to give the volume when mounting under /mnt in the mover job pod.
+        For example if mountPath is 'my-pvc' then this moverVolume will be mounted in the mover pod
+        at /mnt/my-pvc
+    volumeSource : VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSource, default is Undefined, required
+        volume source
+    """
+    mountPath: str
+
+    volumeSource: VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSource
+
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSource:
+    r"""
+    volumeSource represents the secret or PersistentVolumeClaim that should be mounted to the mover pod.
+
+    Attributes
+    ----------
+    persistentVolumeClaim : VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSourcePersistentVolumeClaim, default is Undefined, optional
+        persistent volume claim
+    secret : VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSourceSecret, default is Undefined, optional
+        secret
+    """
+    persistentVolumeClaim?: VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSourcePersistentVolumeClaim
+    secret?: VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSourceSecret
+
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSourcePersistentVolumeClaim:
+    r"""
+    persistentVolumeClaimVolumeSource represents a reference to a
+    PersistentVolumeClaim in the same namespace.
+    More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
+    nolint:lll
+
+    Attributes
+    ----------
+    claimName : str, default is Undefined, required
+        claimName is the name of a PersistentVolumeClaim in the same namespace as the pod using this volume.
+        More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
+    readOnly : bool, default is Undefined, optional
+        readOnly Will force the ReadOnly setting in VolumeMounts.
+        Default false.
+    """
+    claimName: str
+
+    readOnly?: bool
+
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSourceSecret:
+    r"""
+    secret represents a secret that should populate this volume.
+    More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
+
+    Attributes
+    ----------
+    defaultMode : int, default is Undefined, optional
+        defaultMode is Optional: mode bits used to set permissions on created files by default.
+        Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
+        YAML accepts both octal and decimal values, JSON requires decimal values
+        for mode bits. Defaults to 0644.
+        Directories within the path are not affected by this setting.
+        This might be in conflict with other options that affect the file
+        mode, like fsGroup, and the result can be other mode bits set.
+    items : [VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSourceSecretItemsItems0], default is Undefined, optional
+        items If unspecified, each key-value pair in the Data field of the referenced
+        Secret will be projected into the volume as a file whose name is the
+        key and content is the value. If specified, the listed keys will be
+        projected into the specified paths, and unlisted keys will not be
+        present. If a key is specified which is not present in the Secret,
+        the volume setup will error unless it is marked optional. Paths must be
+        relative and may not contain the '..' path or start with '..'.
+    optional : bool, default is Undefined, optional
+        optional field specify whether the Secret or its keys must be defined
+    secretName : str, default is Undefined, optional
+        secretName is the name of the secret in the pod's namespace to use.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
+    """
+    defaultMode?: int
+    items?: [VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSourceSecretItemsItems0]
+    optional?: bool
+    secretName?: str
+
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSourceSecretItemsItems0:
+    r"""
+    Maps a string key to a path within a volume.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the key to project.
+    mode : int, default is Undefined, optional
+        mode is Optional: mode bits used to set permissions on this file.
+        Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
+        YAML accepts both octal and decimal values, JSON requires decimal values for mode bits.
+        If not specified, the volume defaultMode will be used.
+        This might be in conflict with other options that affect the file
+        mode, like fsGroup, and the result can be other mode bits set.
+    path : str, default is Undefined, required
+        path is the relative path of the file to map the key to.
+        May not be an absolute path.
+        May not contain the path element '..'.
+        May not start with the string '..'.
+    """
+    key: str
+
+    mode?: int
+    path: str
+
 schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsync:
     r"""
     rsync defines the configuration when using Rsync-based replication.
@@ -2576,7 +2790,7 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsync:
         users who want to override the service account normally used by the mover.
         The service account needs to exist in the same namespace as the ReplicationDestination.
     path : str, default is Undefined, optional
-        path is the remote path to rsync from. Defaults to "/"
+        This field is not used and will be ignored
     port : int, default is Undefined, optional
         port is the SSH port to connect to for replication. Defaults to 22.
     serviceAnnotations : {str:str}, default is Undefined, optional
@@ -2640,7 +2854,7 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncMoverResources:
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -2725,6 +2939,9 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLS:
         that will be used by the data mover. This should only be used by advanced
         users who want to override the service account normally used by the mover.
         The service account needs to exist in the same namespace as this CR.
+    moverVolumes : [VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0], default is Undefined, optional
+        MoverVolumes are PVCs or Secrets that should additionally be mounted to the mover job pod.
+        This should only be used by advanced users.
     serviceAnnotations : {str:str}, default is Undefined, optional
         serviceAnnotations defines annotations that will be added to the
         service created for incoming SSH connections.  If set, these annotations
@@ -2753,6 +2970,7 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLS:
     moverResources?: VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverResources
     moverSecurityContext?: VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverSecurityContext
     moverServiceAccount?: str
+    moverVolumes?: [VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0]
     serviceAnnotations?: {str:str}
     serviceType?: str
     storageClassName?: str
@@ -3024,7 +3242,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverAffinityPodA
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -3034,7 +3251,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverAffinityPodA
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -3163,7 +3379,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverAffinityPodA
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -3173,7 +3388,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverAffinityPodA
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -3293,8 +3507,8 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverAffinityPodA
         most preferred is the one with the greatest sum of weights, i.e.
         for each node that meets all of the scheduling requirements (resource
         request, requiredDuringScheduling anti-affinity expressions, etc.),
-        compute a sum by iterating through the elements of this field and adding
-        "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the
+        compute a sum by iterating through the elements of this field and subtracting
+        "weight" from the sum if the node has pods which matches the corresponding podAffinityTerm; the
         node(s) with the highest sum are the most preferred.
     requiredDuringSchedulingIgnoredDuringExecution : [VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
         If the anti-affinity requirements specified by this field are not met at
@@ -3341,7 +3555,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverAffinityPodA
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -3351,7 +3564,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverAffinityPodA
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -3480,7 +3692,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverAffinityPodA
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -3490,7 +3701,6 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverAffinityPodA
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -3611,7 +3821,7 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverResources:
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -3880,6 +4090,117 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverSecurityCont
     gmsaCredentialSpecName?: str
     hostProcess?: bool
     runAsUserName?: str
+
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0:
+    r"""
+    volsync backube v1alpha1 replication destination spec rsync TLS mover volumes items0
+
+    Attributes
+    ----------
+    mountPath : str, default is Undefined, required
+        Path to give the volume when mounting under /mnt in the mover job pod.
+        For example if mountPath is 'my-pvc' then this moverVolume will be mounted in the mover pod
+        at /mnt/my-pvc
+    volumeSource : VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSource, default is Undefined, required
+        volume source
+    """
+    mountPath: str
+
+    volumeSource: VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSource
+
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSource:
+    r"""
+    volumeSource represents the secret or PersistentVolumeClaim that should be mounted to the mover pod.
+
+    Attributes
+    ----------
+    persistentVolumeClaim : VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSourcePersistentVolumeClaim, default is Undefined, optional
+        persistent volume claim
+    secret : VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSourceSecret, default is Undefined, optional
+        secret
+    """
+    persistentVolumeClaim?: VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSourcePersistentVolumeClaim
+    secret?: VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSourceSecret
+
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSourcePersistentVolumeClaim:
+    r"""
+    persistentVolumeClaimVolumeSource represents a reference to a
+    PersistentVolumeClaim in the same namespace.
+    More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
+    nolint:lll
+
+    Attributes
+    ----------
+    claimName : str, default is Undefined, required
+        claimName is the name of a PersistentVolumeClaim in the same namespace as the pod using this volume.
+        More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
+    readOnly : bool, default is Undefined, optional
+        readOnly Will force the ReadOnly setting in VolumeMounts.
+        Default false.
+    """
+    claimName: str
+
+    readOnly?: bool
+
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSourceSecret:
+    r"""
+    secret represents a secret that should populate this volume.
+    More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
+
+    Attributes
+    ----------
+    defaultMode : int, default is Undefined, optional
+        defaultMode is Optional: mode bits used to set permissions on created files by default.
+        Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
+        YAML accepts both octal and decimal values, JSON requires decimal values
+        for mode bits. Defaults to 0644.
+        Directories within the path are not affected by this setting.
+        This might be in conflict with other options that affect the file
+        mode, like fsGroup, and the result can be other mode bits set.
+    items : [VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSourceSecretItemsItems0], default is Undefined, optional
+        items If unspecified, each key-value pair in the Data field of the referenced
+        Secret will be projected into the volume as a file whose name is the
+        key and content is the value. If specified, the listed keys will be
+        projected into the specified paths, and unlisted keys will not be
+        present. If a key is specified which is not present in the Secret,
+        the volume setup will error unless it is marked optional. Paths must be
+        relative and may not contain the '..' path or start with '..'.
+    optional : bool, default is Undefined, optional
+        optional field specify whether the Secret or its keys must be defined
+    secretName : str, default is Undefined, optional
+        secretName is the name of the secret in the pod's namespace to use.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
+    """
+    defaultMode?: int
+    items?: [VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSourceSecretItemsItems0]
+    optional?: bool
+    secretName?: str
+
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSourceSecretItemsItems0:
+    r"""
+    Maps a string key to a path within a volume.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the key to project.
+    mode : int, default is Undefined, optional
+        mode is Optional: mode bits used to set permissions on this file.
+        Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
+        YAML accepts both octal and decimal values, JSON requires decimal values for mode bits.
+        If not specified, the volume defaultMode will be used.
+        This might be in conflict with other options that affect the file
+        mode, like fsGroup, and the result can be other mode bits set.
+    path : str, default is Undefined, required
+        path is the relative path of the file to map the key to.
+        May not be an absolute path.
+        May not contain the path element '..'.
+        May not start with the string '..'.
+    """
+    key: str
+
+    mode?: int
+    path: str
 
 schema VolsyncBackubeV1alpha1ReplicationDestinationSpecTrigger:
     r"""
