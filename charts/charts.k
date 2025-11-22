@@ -253,7 +253,7 @@ charts: helm.Charts = {
     securecodebox: {
         chart = "operator"
         repoURL = "oci://ghcr.io/securecodebox/helm/operator"
-        targetRevision = "5.1.0"
+        targetRevision = "5.2.0"
         schemaGenerator = "AUTO"
         crdGenerator = "AUTO"
     }
