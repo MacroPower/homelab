@@ -491,9 +491,9 @@ schema ValuesS3:
     Attributes
     ----------
     authType : str, optional, default is "access-secret-key"
-        s3.authType -- Authentication method. Supports access-secret-key (used by most s3 endpoint) and aws-irsa (Used by AWS EKS IAM Role to Kubenetes Service Account Binding. Support for AWS IRSA is considered experimental in the secureCodeBox)
+        s3.authType -- Authentication method. Supports `access-secret-key` (used by most s3 endpoints) and `aws-iam`` (Used by AWS EKS IAM Role to Kubernetes Service Account Binding (IRSA) and EKS Pod Identity Authentication. Support for AWS IRSA is considered experimental in the secureCodeBox)
     awsStsEndpoint : str, optional, default is "https://sts.amazonaws.com"
-        s3.awsStsEndpoint -- STS Endpoint used in AWS IRSA Authentication. Change this to the sts endpoint of your aws region. Only used when s3.authType is set to "aws-irsa"
+        s3.awsStsEndpoint -- STS Endpoint used in AWS IRSA Authentication. Change this to the sts endpoint of your aws region. Only used when s3.authType is set to "aws-iam". Usually not required, even in IRSA or Pod Identity setups as the region gets injected by AWS into the pod.
     bucket : str, optional, default is "my-bucket"
     enabled : bool, optional, default is False
         s3.enabled Enable this and disable minio if you want to directly connect against AWS S3, Google Cloud Storage, DigitalOcean Spaces etc.

@@ -589,14 +589,14 @@
       "properties": {
         "authType": {
           "default": "access-secret-key",
-          "description": "s3.authType -- Authentication method. Supports access-secret-key (used by most s3 endpoint) and aws-irsa (Used by AWS EKS IAM Role to Kubenetes Service Account Binding. Support for AWS IRSA is considered experimental in the secureCodeBox)",
+          "description": "s3.authType -- Authentication method. Supports `access-secret-key` (used by most s3 endpoints) and `aws-iam`` (Used by AWS EKS IAM Role to Kubernetes Service Account Binding (IRSA) and EKS Pod Identity Authentication. Support for AWS IRSA is considered experimental in the secureCodeBox)",
           "required": [],
           "title": "authType",
           "type": "string"
         },
         "awsStsEndpoint": {
           "default": "https://sts.amazonaws.com",
-          "description": "s3.awsStsEndpoint -- STS Endpoint used in AWS IRSA Authentication. Change this to the sts endpoint of your aws region. Only used when s3.authType is set to \"aws-irsa\"",
+          "description": "s3.awsStsEndpoint -- STS Endpoint used in AWS IRSA Authentication. Change this to the sts endpoint of your aws region. Only used when s3.authType is set to \"aws-iam\". Usually not required, even in IRSA or Pod Identity setups as the region gets injected by AWS into the pod.",
           "required": [],
           "title": "awsStsEndpoint",
           "type": "string"
