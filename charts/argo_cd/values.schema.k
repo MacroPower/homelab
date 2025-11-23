@@ -24,6 +24,8 @@ schema Values:
         Configures redis with AUTH (requirepass & masterauth conf params)
     authKey : str, optional, default is "auth"
         Defines the key holding the redis password in existing secret.
+    authSecretAnnotations : ValuesAuthSecretAnnotations, optional
+        Annotations for auth secret
     commitServer : ValuesCommitServer, optional
     configmap : ValuesConfigmap, optional
         # Custom labels for the redis configmap
@@ -181,6 +183,9 @@ schema Values:
         Ref: https://kubernetes.io/docs/tasks/administer-cluster/sysctl-cluster/
         #
     tls : ValuesTls, optional
+    tolerations : [any], optional
+        # -- Tolerations for pod assignment
+        # ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
     topologySpreadConstraints : ValuesTopologySpreadConstraints, optional
         # https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
     """
@@ -191,6 +196,7 @@ schema Values:
     applicationSet?: ValuesApplicationSet
     auth?: bool
     authKey?: str
+    authSecretAnnotations?: ValuesAuthSecretAnnotations
     commitServer?: ValuesCommitServer
     configmap?: ValuesConfigmap
     configmapTest?: ValuesConfigmapTest
@@ -249,6 +255,7 @@ schema Values:
     splitBrainDetection?: ValuesSplitBrainDetection
     sysctlImage?: ValuesSysctlImage
     tls?: ValuesTls
+    tolerations?: [any]
     topologySpreadConstraints?: ValuesTopologySpreadConstraints
 
 schema ValuesAdditionalAffinities:
@@ -988,6 +995,12 @@ schema ValuesApplicationSetServiceLabels:
     """
     [...str]: any
 
+schema ValuesAuthSecretAnnotations:
+    r"""
+    Annotations for auth secret
+    """
+    [...str]: any
+
 schema ValuesCommitServer:
     r"""
     ValuesCommitServer
@@ -1559,9 +1572,6 @@ schema ValuesConfigsCm:
         Ignores update if EndpointSlice is not excluded globally
     "resource.exclusions" : str, optional, default is "### Network resources created by the Kubernetes control plane and excluded to reduce the number of watched events and UI clutter\n- apiGroups:\n  - ''\n  - discovery.k8s.io\n  kinds:\n  - Endpoints\n  - EndpointSlice\n### Internal Kubernetes resources excluded reduce the number of watched events\n- apiGroups:\n  - coordination.k8s.io\n  kinds:\n  - Lease\n### Internal Kubernetes Authz/Authn resources excluded reduce the number of watched events\n- apiGroups:\n  - authentication.k8s.io\n  - authorization.k8s.io\n  kinds:\n  - SelfSubjectReview\n  - TokenReview\n  - LocalSubjectAccessReview\n  - SelfSubjectAccessReview\n  - SelfSubjectRulesReview\n  - SubjectAccessReview\n### Intermediate Certificate Request excluded reduce the number of watched events\n- apiGroups:\n  - certificates.k8s.io\n  kinds:\n  - CertificateSigningRequest\n- apiGroups:\n  - cert-manager.io\n  kinds:\n  - CertificateRequest\n### Cilium internal resources excluded reduce the number of watched events and UI Clutter\n- apiGroups:\n  - cilium.io\n  kinds:\n  - CiliumIdentity\n  - CiliumEndpoint\n  - CiliumEndpointSlice\n### Kyverno intermediate and reporting resources excluded reduce the number of watched events and improve performance\n- apiGroups:\n  - kyverno.io\n  - reports.kyverno.io\n  - wgpolicyk8s.io\n  kinds:\n  - PolicyReport\n  - ClusterPolicyReport\n  - EphemeralReport\n  - ClusterEphemeralReport\n  - AdmissionReport\n  - ClusterAdmissionReport\n  - BackgroundScanReport\n  - ClusterBackgroundScanReport\n  - UpdateRequest\n"
         Resource Exclusion/Inclusion
-    "server.rbac.log.enforce.enable" : bool, optional, default is False
-        Enable logs RBAC enforcement
-        # Ref: https://argo-cd.readthedocs.io/en/latest/operator-manual/upgrading/2.3-2.4/#enable-logs-rbac-enforcement
     "statusbadge.enabled" : bool, optional, default is False
         Enable Status Badge
         # Ref: https://argo-cd.readthedocs.io/en/stable/user-guide/status-badge/
@@ -1586,7 +1596,6 @@ schema ValuesConfigsCm:
     "resource.customizations.ignoreResourceUpdates.autoscaling_HorizontalPodAutoscaler"?: str
     "resource.customizations.ignoreResourceUpdates.discovery.k8s.io_EndpointSlice"?: str
     "resource.exclusions"?: str
-    "server.rbac.log.enforce.enable"?: bool
     "statusbadge.enabled"?: bool
     "timeout.hard.reconciliation"?: str
     "timeout.reconciliation"?: str
@@ -1680,89 +1689,13 @@ schema ValuesConfigsParams:
     ----------
     annotations : ValuesConfigsParamsAnnotations, optional
         Annotations to be added to the argocd-cmd-params-cm ConfigMap
-    "application.namespaces" : str, optional, default is ""
-        Enables [Applications in any namespace]
-        # List of additional namespaces where applications may be created in and reconciled from.
-        # The namespace where Argo CD is installed to will always be allowed.
-        # Set comma-separated list. (e.g. app-team-one, app-team-two)
-    "applicationsetcontroller.enable.progressive.syncs" : bool, optional, default is False
-        Enables use of the Progressive Syncs capability
-    "applicationsetcontroller.namespaces" : str, optional, default is ""
-        A list of glob patterns specifying where to look for ApplicationSet resources. (e.g. `"argocd,argocd-appsets-*"`)
-        # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Appset-Any-Namespace/
-    "applicationsetcontroller.policy" : str, optional, default is "sync"
-        # ApplicationSet Properties
-        Modify how application is synced between the generator and the cluster. One of: `sync`, `create-only`, `create-update`, `create-delete`
-    "controller.ignore.normalizer.jq.timeout" : str, optional, default is "1s"
-        JQ Path expression timeout
-        # By default, the evaluation of a JQPathExpression is limited to one second.
-        # If you encounter a "JQ patch execution timed out" error message due to a complex JQPathExpression
-        # that requires more time to evaluate, you can extend the timeout period.
-    "controller.operation.processors" : int, optional, default is 10
-        Number of application operation processors
-    "controller.repo.server.timeout.seconds" : int, optional, default is 60
-        Repo server RPC call timeout seconds.
-    "controller.self.heal.timeout.seconds" : int, optional, default is 5
-        Specifies timeout between application self heal attempts
-    "controller.status.processors" : int, optional, default is 20
-        # Controller Properties
-        Number of application status processors
-    "controller.sync.timeout.seconds" : int, optional, default is 0
-        Specifies the timeout after which a sync would be terminated. 0 means no timeout
     create : bool, optional, default is True
         Create the argocd-cmd-params-cm configmap
         If false, it is expected the configmap will be created by something else.
-    "hydrator.enabled" : bool, optional, default is False
-        Enable the hydrator feature (hydrator is in Alpha phase)
-    "otlp.address" : str, optional, default is ""
-        # Generic parameters
-        Open-Telemetry collector address: (e.g. "otel-collector:4317")
-    "reposerver.parallelism.limit" : int, optional, default is 0
-        # Repo-server properties
-        Limit on number of concurrent manifests generate requests. Any value less the 1 means no limit.
-    "server.basehref" : str, optional, default is "/"
-        Value for base href in index.html. Used if Argo CD is running behind reverse proxy under subpath different from /
-    "server.disable.auth" : bool, optional, default is False
-        Disable Argo CD RBAC for user authentication
-    "server.enable.gzip" : bool, optional, default is True
-        Enable GZIP compression
-    "server.enable.proxy.extension" : bool, optional, default is False
-        Enable proxy extension feature. (proxy extension is in Alpha phase)
-    "server.insecure" : bool, optional, default is False
-        # Server properties
-        Run server without TLS
-        # NOTE: This value should be set when you generate params by other means as it changes ports used by ingress template.
-    "server.rootpath" : str, optional, default is ""
-        Used if Argo CD is running behind reverse proxy under subpath different from /
-    "server.staticassets" : str, optional, default is "/shared/app"
-        Directory path that contains additional static assets
-    "server.x.frame.options" : str, optional, default is "sameorigin"
-        Set X-Frame-Options header in HTTP responses to value. To disable, set to "".
     """
     [...str]: any
     annotations?: ValuesConfigsParamsAnnotations
-    "application.namespaces"?: str
-    "applicationsetcontroller.enable.progressive.syncs"?: bool
-    "applicationsetcontroller.namespaces"?: str
-    "applicationsetcontroller.policy"?: str
-    "controller.ignore.normalizer.jq.timeout"?: str
-    "controller.operation.processors"?: int
-    "controller.repo.server.timeout.seconds"?: int
-    "controller.self.heal.timeout.seconds"?: int
-    "controller.status.processors"?: int
-    "controller.sync.timeout.seconds"?: int
     create?: bool
-    "hydrator.enabled"?: bool
-    "otlp.address"?: str
-    "reposerver.parallelism.limit"?: int
-    "server.basehref"?: str
-    "server.disable.auth"?: bool
-    "server.enable.gzip"?: bool
-    "server.enable.proxy.extension"?: bool
-    "server.insecure"?: bool
-    "server.rootpath"?: str
-    "server.staticassets"?: str
-    "server.x.frame.options"?: str
 
 schema ValuesConfigsParamsAnnotations:
     r"""
@@ -3475,8 +3408,12 @@ schema ValuesExporterServiceMonitor:
         Set how frequently Prometheus should scrape (default is 30s)
     labels : ValuesExporterServiceMonitorLabels, optional
         Set labels for the ServiceMonitor, use this to define your scrape label for Prometheus Operator
+    metricRelabelings : [any], optional
+        MetricRelabelConfigs to apply to samples after scraping, but before ingestion.
     namespace : str, optional, default is ""
         Set the namespace the ServiceMonitor should be deployed
+    relabelings : [any], optional
+        RelabelConfigs to apply to samples before scraping.
     telemetryPath : str, optional, default is ""
         Set path to redis-exporter telemtery-path (default is /metrics)
     timeout : str, optional, default is ""
@@ -3488,7 +3425,9 @@ schema ValuesExporterServiceMonitor:
     endpointAdditionalProperties?: ValuesExporterServiceMonitorEndpointAdditionalProperties
     interval?: str
     labels?: ValuesExporterServiceMonitorLabels
+    metricRelabelings?: [any]
     namespace?: str
+    relabelings?: [any]
     telemetryPath?: str
     timeout?: str
 
@@ -3842,6 +3781,8 @@ schema ValuesHaproxy:
         # Custom config-haproxy.cfg files used to override default settings. If this file is
         # specified then the config-haproxy.cfg above will be ignored.
         (string) Allows for custom config-haproxy.cfg file to be applied. If this is used then default config will be overwriten
+    deploymentAnnotations : ValuesHaproxyDeploymentAnnotations, optional
+        HAProxy deployment annotations
     deploymentStrategy : ValuesHaproxyDeploymentStrategy, optional
         Deployment strategy for the haproxy deployment
     emptyDir : ValuesHaproxyEmptyDir, optional
@@ -3868,6 +3809,8 @@ schema ValuesHaproxy:
         # Ref: https://github.com/haproxy/haproxy/tree/master/contrib/prometheus-exporter
         #
     networkPolicy : ValuesHaproxyNetworkPolicy, optional
+    podAnnotations : ValuesHaproxyPodAnnotations, optional
+        Annotations to be added to the HAProxy deployment pods
     podDisruptionBudget : ValuesHaproxyPodDisruptionBudget, optional
         Pod Disruption Budget
         ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
@@ -3908,6 +3851,7 @@ schema ValuesHaproxy:
     containerPort?: int
     containerSecurityContext?: ValuesHaproxyContainerSecurityContext
     customConfig?: any
+    deploymentAnnotations?: ValuesHaproxyDeploymentAnnotations
     deploymentStrategy?: ValuesHaproxyDeploymentStrategy
     emptyDir?: ValuesHaproxyEmptyDir
     enabled?: bool
@@ -3920,6 +3864,7 @@ schema ValuesHaproxy:
     lifecycle?: ValuesHaproxyLifecycle
     metrics?: ValuesHaproxyMetrics
     networkPolicy?: ValuesHaproxyNetworkPolicy
+    podAnnotations?: ValuesHaproxyPodAnnotations
     podDisruptionBudget?: ValuesHaproxyPodDisruptionBudget
     priorityClassName?: str
     readOnly?: ValuesHaproxyReadOnly
@@ -3985,6 +3930,12 @@ schema ValuesHaproxyContainerSecurityContextSeccompProfile:
     """
     [...str]: any
     $type?: str
+
+schema ValuesHaproxyDeploymentAnnotations:
+    r"""
+    HAProxy deployment annotations
+    """
+    [...str]: any
 
 schema ValuesHaproxyDeploymentStrategy:
     r"""
@@ -4168,6 +4119,12 @@ schema ValuesHaproxyNetworkPolicyAnnotations:
 schema ValuesHaproxyNetworkPolicyLabels:
     r"""
     Labels for Haproxy NetworkPolicy
+    """
+    [...str]: any
+
+schema ValuesHaproxyPodAnnotations:
+    r"""
+    Annotations to be added to the HAProxy deployment pods
     """
     [...str]: any
 
@@ -4365,7 +4322,7 @@ schema ValuesImage:
         Redis image pull policy
     repository : str, optional, default is "public.ecr.aws/docker/library/redis"
         Redis image repository
-    tag : str, optional, default is "7.2.7-alpine"
+    tag : str, optional, default is "8.2.1-alpine"
         Redis image tag
     """
     [...str]: any
@@ -5613,7 +5570,7 @@ schema ValuesRedisExporterImage:
         Image pull policy for the redis-exporter
     repository : str, optional, default is "ghcr.io/oliver006/redis_exporter"
         Repository to use for the redis-exporter
-    tag : str, optional, default is "v1.79.0"
+    tag : str, optional, default is "v1.80.1"
         Tag to use for the redis-exporter
     """
     [...str]: any
@@ -5864,7 +5821,7 @@ schema ValuesRedisHaImage:
     ----------
     repository : str, optional, default is "ecr-public.aws.com/docker/library/redis"
         Redis repository
-    tag : str, optional, default is "7.2.11-alpine"
+    tag : str, optional, default is "8.2.2-alpine"
         Redis tag
         # Do not upgrade to >= 7.4.0, otherwise you are no longer using an open source version of Redis
     """
@@ -5943,7 +5900,7 @@ schema ValuesRedisImage:
         Redis image pull policy
     repository : str, optional, default is "ecr-public.aws.com/docker/library/redis"
         Redis repository
-    tag : str, optional, default is "7.2.11-alpine"
+    tag : str, optional, default is "8.2.2-alpine"
         Redis tag
         # Do not upgrade to >= 7.4.0, otherwise you are no longer using an open source version of Redis
     """
@@ -8449,6 +8406,9 @@ schema ValuesServerIngressAws:
         Backend protocol version for the AWS ALB gRPC service
         # This tells AWS to send traffic from the ALB using gRPC.
         # For more information: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html#health-check-settings
+    serviceAnnotations : ValuesServerIngressAwsServiceAnnotations, optional
+        Annotations for the AWS ALB gRPC service
+        # Allows adding custom annotations to the gRPC service for integrations like DataDog, Prometheus, etc.
     serviceType : str, optional, default is "NodePort"
         Service type for the AWS ALB gRPC service
         # Can be of type NodePort or ClusterIP depending on which mode you are running.
@@ -8457,7 +8417,15 @@ schema ValuesServerIngressAws:
     """
     [...str]: any
     backendProtocolVersion?: str
+    serviceAnnotations?: ValuesServerIngressAwsServiceAnnotations
     serviceType?: str
+
+schema ValuesServerIngressAwsServiceAnnotations:
+    r"""
+    Annotations for the AWS ALB gRPC service
+    # Allows adding custom annotations to the gRPC service for integrations like DataDog, Prometheus, etc.
+    """
+    [...str]: any
 
 schema ValuesServerIngressGke:
     r"""
@@ -9020,10 +8988,12 @@ schema ValuesSplitBrainDetection:
         Interval between redis sentinel and server split brain checks (in seconds)
     resources : ValuesSplitBrainDetectionResources, optional
         splitBrainDetection resources
+    retryInterval : int, optional, default is 10
     """
     [...str]: any
     interval?: int
     resources?: ValuesSplitBrainDetectionResources
+    retryInterval?: int
 
 schema ValuesSplitBrainDetectionResources:
     r"""
