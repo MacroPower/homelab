@@ -4271,6 +4271,10 @@ schema ValuesGlobalConfig:
     grafana_api_key : str, optional, default is ""
     grafana_dashboard_uid : str, optional, default is ""
     grafana_url : str, optional, default is ""
+    prometheus_rule_custom_labels : ValuesGlobalConfigPrometheusRuleCustomLabels, optional
+        Custom labels to add to PrometheusRule metadata for alert selection
+    prometheus_rule_group_name : str, optional, default is "kubernetes-apps"
+        Custom group name for PrometheusRule alerts managed by Robusta UI
     prometheus_url : str, optional, default is ""
     signing_key : str, optional, default is ""
     """
@@ -4282,12 +4286,20 @@ schema ValuesGlobalConfig:
     grafana_api_key?: str
     grafana_dashboard_uid?: str
     grafana_url?: str
+    prometheus_rule_custom_labels?: ValuesGlobalConfigPrometheusRuleCustomLabels
+    prometheus_rule_group_name?: str
     prometheus_url?: str
     signing_key?: str
 
 schema ValuesGlobalConfigCustomSeverityMap:
     r"""
     ValuesGlobalConfigCustomSeverityMap
+    """
+    [...str]: any
+
+schema ValuesGlobalConfigPrometheusRuleCustomLabels:
+    r"""
+    Custom labels to add to PrometheusRule metadata for alert selection
     """
     [...str]: any
 
@@ -7644,6 +7656,7 @@ schema ValuesKubewatch:
     additional_env_vars : [ValuesKubewatchAdditionalEnvVarsItems0], optional
     annotations : ValuesKubewatchAnnotations, optional
     config : ValuesKubewatchConfig, optional
+    createServiceAccount : bool, optional, default is True
     customServiceAccount : str, optional, default is ""
     image : any, optional, default is "~"
     imageName : str, optional, default is "kubewatch:v2.12.0"
@@ -7663,6 +7676,7 @@ schema ValuesKubewatch:
     additional_env_vars?: [ValuesKubewatchAdditionalEnvVarsItems0]
     annotations?: ValuesKubewatchAnnotations
     config?: ValuesKubewatchConfig
+    createServiceAccount?: bool
     customServiceAccount?: str
     image?: any
     imageName?: str
@@ -7957,7 +7971,7 @@ schema ValuesMcpAddonsAws:
     affinity : ValuesMcpAddonsAwsAffinity, optional
     config : ValuesMcpAddonsAwsConfig, optional
     enabled : bool, optional, default is False
-    image : str, optional, default is "aws-api-mcp-server:1.0.0"
+    image : str, optional, default is "aws-api-mcp-server:1.0.1"
     llmInstructions : str, optional, default is ""
         Custom LLM instructions (optional)
         Leave empty to use default comprehensive instructions
@@ -13265,6 +13279,7 @@ schema ValuesRunner:
     additional_env_vars : [any], optional
     annotations : ValuesRunnerAnnotations, optional
     certificate : str, optional, default is ""
+    createServiceAccount : bool, optional, default is True
     customCRD : [any], optional
     customClusterRoleRules : [any], optional
     customServiceAccount : str, optional, default is ""
@@ -13273,7 +13288,7 @@ schema ValuesRunner:
     hardenedFs : bool, optional, default is False
         Enable hardened filesystem security (read-only root filesystem with writable volume mounts)
     image : any, optional, default is "~"
-    imageName : str, optional, default is "robusta-runner:0.29.1"
+    imageName : str, optional, default is "robusta-runner:0.29.2"
     imagePullPolicy : str, optional, default is "IfNotPresent"
     imagePullSecrets : [any], optional
     log_level : str, optional, default is "INFO"
@@ -13295,6 +13310,7 @@ schema ValuesRunner:
     additional_env_vars?: [any]
     annotations?: ValuesRunnerAnnotations
     certificate?: str
+    createServiceAccount?: bool
     customCRD?: [any]
     customClusterRoleRules?: [any]
     customServiceAccount?: str

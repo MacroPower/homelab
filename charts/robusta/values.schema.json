@@ -4442,6 +4442,20 @@
           "title": "grafana_url",
           "type": "string"
         },
+        "prometheus_rule_custom_labels": {
+          "additionalProperties": true,
+          "description": "Custom labels to add to PrometheusRule metadata for alert selection",
+          "required": [],
+          "title": "prometheus_rule_custom_labels",
+          "type": "object"
+        },
+        "prometheus_rule_group_name": {
+          "default": "kubernetes-apps",
+          "description": "Custom group name for PrometheusRule alerts managed by Robusta UI",
+          "required": [],
+          "title": "prometheus_rule_group_name",
+          "type": "string"
+        },
         "prometheus_url": {
           "default": "",
           "required": [],
@@ -9109,6 +9123,12 @@
           "title": "config",
           "type": "object"
         },
+        "createServiceAccount": {
+          "default": true,
+          "required": [],
+          "title": "createServiceAccount",
+          "type": "boolean"
+        },
         "customServiceAccount": {
           "default": "",
           "required": [],
@@ -9472,7 +9492,7 @@
               "type": "boolean"
             },
             "image": {
-              "default": "aws-api-mcp-server:1.0.0",
+              "default": "aws-api-mcp-server:1.0.1",
               "required": [],
               "title": "image",
               "type": "string"
@@ -16077,6 +16097,12 @@
           "title": "certificate",
           "type": "string"
         },
+        "createServiceAccount": {
+          "default": true,
+          "required": [],
+          "title": "createServiceAccount",
+          "type": "boolean"
+        },
         "customCRD": {
           "items": {
             "required": []
@@ -16129,7 +16155,7 @@
           "type": "null"
         },
         "imageName": {
-          "default": "robusta-runner:0.29.1",
+          "default": "robusta-runner:0.29.2",
           "required": [],
           "title": "imageName",
           "type": "string"
