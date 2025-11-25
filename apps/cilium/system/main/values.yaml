@@ -8,9 +8,6 @@ k8sClientRateLimit:
   qps: 10
   burst: 20
 
-ipv4NativeRoutingCIDR: 10.128.0.0/14
-ipv6NativeRoutingCIDR: fc42:0:0:80::/64
-
 ingressController:
   enabled: true
   loadbalancerMode: shared
@@ -23,8 +20,3 @@ bpf:
     enabled: true
   # https://docs.cilium.io/en/stable/operations/performance/tuning/#ebpf-map-backend-memory
   mapDynamicSizeRatio: 0.08
-
-# https://docs.cilium.io/en/stable/operations/performance/tuning/#bandwidth-manager
-bandwidthManager:
-  enabled: true
-  bbr: true
