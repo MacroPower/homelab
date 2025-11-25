@@ -1,8 +1,5 @@
 # yaml-language-server: $schema=../../../../charts/cilium/values.schema.json
 
-k8sServiceHost: kmgmt.cin.macro.network
-k8sServicePort: 6443
-
 cluster:
   name: mgmt
   id: 1

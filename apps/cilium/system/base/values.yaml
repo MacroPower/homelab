@@ -5,6 +5,10 @@ ipam:
 
 kubeProxyReplacement: true
 
+# KubePrism Endpoint
+k8sServiceHost: localhost
+k8sServicePort: 7445
+
 ipv4:
   enabled: true
 ipv6:
