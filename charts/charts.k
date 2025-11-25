@@ -86,7 +86,7 @@ charts: helm.Charts = {
     dragonfly_operator: {
         chart = "dragonfly-operator"
         repoURL = "oci://ghcr.io/dragonflydb/dragonfly-operator/helm/dragonfly-operator"
-        targetRevision = "v1.3.0"
+        targetRevision = "v1.3.1"
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
     }

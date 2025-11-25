@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "dragonfly-operator"
     repoURL : str, required, default is "oci://ghcr.io/dragonflydb/dragonfly-operator/helm/dragonfly-operator"
-    targetRevision : str, optional, default is "v1.3.0"
+    targetRevision : str, optional, default is "v1.3.1"
     """
     values?: Values | any
     chart: str = "dragonfly-operator"
     repoURL: str = "oci://ghcr.io/dragonflydb/dragonfly-operator/helm/dragonfly-operator"
-    targetRevision?: str = "v1.3.0"
+    targetRevision?: str = "v1.3.1"
 
