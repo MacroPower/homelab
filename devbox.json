@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.11.0/.schema/devbox.schema.json",
   "packages": {
-    "github:budimanjojo/talhelper/v3.0.35": "",
+    "github:budimanjojo/talhelper/v3.0.41": "",
     "github:macropower/nur-packages#kat": "",
     "github:macropower/nur-packages#kclipper": "",
     "github:macropower/nur-packages#kcl-lsp": "",
@@ -9,14 +9,15 @@
     "cilium-cli": "0.18.8",
     "doppler": "3.75.1",
     "go-task": "3.45.5",
-    "git": "2.51.0",
+    "git": "2.51.2",
     "kubeconform": "0.7.0",
     "nodePackages.prettier": "3.5.3",
-    "talosctl": "1.11.4",
+    "talosctl": "1.11.5",
     "terraform": "1.13.5",
     "natscli": "0.3.0",
     "kubernetes-helm": "3.19.1",
-    "auth0-cli": "1.22.0"
+    "auth0-cli": "1.22.0",
+    "go": "1.25.3"
   },
   "env": {
     "KCL_LIB_HOME": "${DEVBOX_PROJECT_ROOT}/.devbox/kcl/lib",
