@@ -49,51 +49,51 @@
         }
       }
     },
-    "auth0-cli@1.22.0": {
-      "last_modified": "2025-10-22T20:59:19Z",
-      "resolved": "github:NixOS/nixpkgs/01b6809f7f9d1183a2b3e081f0a1e6f8f415cb09#auth0-cli",
+    "auth0-cli@1.23.0": {
+      "last_modified": "2025-11-15T07:28:48Z",
+      "resolved": "github:NixOS/nixpkgs/1d4c88323ac36805d09657d13a5273aea1b34f0c#auth0-cli",
       "source": "devbox-search",
-      "version": "1.22.0",
+      "version": "1.23.0",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/5gfdk265ryswpvwbb9x49l30w06pmws2-auth0-cli-1.22.0",
+              "path": "/nix/store/y3sfq4zy197565qbgdqiwrkqrcbb5pak-auth0-cli-1.23.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/5gfdk265ryswpvwbb9x49l30w06pmws2-auth0-cli-1.22.0"
+          "store_path": "/nix/store/y3sfq4zy197565qbgdqiwrkqrcbb5pak-auth0-cli-1.23.0"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/36b1258rqgk5a3vpa9ax64qplywgk511-auth0-cli-1.22.0",
+              "path": "/nix/store/v8sv1747z1v8g6d8jg4gsvng3vzp5wn2-auth0-cli-1.23.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/36b1258rqgk5a3vpa9ax64qplywgk511-auth0-cli-1.22.0"
+          "store_path": "/nix/store/v8sv1747z1v8g6d8jg4gsvng3vzp5wn2-auth0-cli-1.23.0"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/wlrs9g4m24626z34vq1dczj0ki2j3ls1-auth0-cli-1.22.0",
+              "path": "/nix/store/0x4ihw0905x3pimhgchk331imk0vcvl5-auth0-cli-1.23.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/wlrs9g4m24626z34vq1dczj0ki2j3ls1-auth0-cli-1.22.0"
+          "store_path": "/nix/store/0x4ihw0905x3pimhgchk331imk0vcvl5-auth0-cli-1.23.0"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/qnh0r5vfqpk5a1l41kqzjva501y2y3dp-auth0-cli-1.22.0",
+              "path": "/nix/store/vg3zzws6d1j64cxrai0wf66zpdzxdygp-auth0-cli-1.23.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/qnh0r5vfqpk5a1l41kqzjva501y2y3dp-auth0-cli-1.22.0"
+          "store_path": "/nix/store/vg3zzws6d1j64cxrai0wf66zpdzxdygp-auth0-cli-1.23.0"
         }
       }
     },
