@@ -31,3 +31,8 @@ spegel:
   # Talos compatibility
   # https://spegel.dev/docs/getting-started/#talos
   containerdRegistryConfigPath: /etc/cri/conf.d/hosts
+
+service:
+  registry:
+    hostPort: 29021
+    nodePort: 30021
