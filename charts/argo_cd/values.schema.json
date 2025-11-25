@@ -1020,6 +1020,13 @@
       "title": "authKey",
       "type": "string"
     },
+    "authSecretAnnotations": {
+      "additionalProperties": true,
+      "description": "Annotations for auth secret",
+      "required": [],
+      "title": "authSecretAnnotations",
+      "type": "object"
+    },
     "commitServer": {
       "additionalProperties": true,
       "properties": {
@@ -1714,13 +1721,6 @@
               "title": "resource.exclusions",
               "type": "string"
             },
-            "server.rbac.log.enforce.enable": {
-              "default": false,
-              "description": "Enable logs RBAC enforcement\n# Ref: https://argo-cd.readthedocs.io/en/latest/operator-manual/upgrading/2.3-2.4/#enable-logs-rbac-enforcement",
-              "required": [],
-              "title": "server.rbac.log.enforce.enable",
-              "type": "boolean"
-            },
             "statusbadge.enabled": {
               "default": false,
               "description": "Enable Status Badge\n# Ref: https://argo-cd.readthedocs.io/en/stable/user-guide/status-badge/",
@@ -1825,159 +1825,12 @@
               "title": "annotations",
               "type": "object"
             },
-            "application.namespaces": {
-              "default": "",
-              "description": "Enables [Applications in any namespace]\n# List of additional namespaces where applications may be created in and reconciled from.\n# The namespace where Argo CD is installed to will always be allowed.\n# Set comma-separated list. (e.g. app-team-one, app-team-two)",
-              "required": [],
-              "title": "application.namespaces",
-              "type": "string"
-            },
-            "applicationsetcontroller.enable.progressive.syncs": {
-              "default": false,
-              "description": "Enables use of the Progressive Syncs capability",
-              "required": [],
-              "title": "applicationsetcontroller.enable.progressive.syncs",
-              "type": "boolean"
-            },
-            "applicationsetcontroller.namespaces": {
-              "default": "",
-              "description": "A list of glob patterns specifying where to look for ApplicationSet resources. (e.g. `\"argocd,argocd-appsets-*\"`)\n# For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Appset-Any-Namespace/",
-              "required": [],
-              "title": "applicationsetcontroller.namespaces",
-              "type": "string"
-            },
-            "applicationsetcontroller.policy": {
-              "default": "sync",
-              "description": "# ApplicationSet Properties\nModify how application is synced between the generator and the cluster. One of: `sync`, `create-only`, `create-update`, `create-delete`",
-              "required": [],
-              "title": "applicationsetcontroller.policy",
-              "type": "string"
-            },
-            "controller.ignore.normalizer.jq.timeout": {
-              "default": "1s",
-              "description": "JQ Path expression timeout\n# By default, the evaluation of a JQPathExpression is limited to one second.\n# If you encounter a \"JQ patch execution timed out\" error message due to a complex JQPathExpression\n# that requires more time to evaluate, you can extend the timeout period.",
-              "required": [],
-              "title": "controller.ignore.normalizer.jq.timeout",
-              "type": "string"
-            },
-            "controller.operation.processors": {
-              "default": 10,
-              "description": "Number of application operation processors",
-              "required": [],
-              "title": "controller.operation.processors",
-              "type": "integer"
-            },
-            "controller.repo.server.timeout.seconds": {
-              "default": 60,
-              "description": "Repo server RPC call timeout seconds.",
-              "required": [],
-              "title": "controller.repo.server.timeout.seconds",
-              "type": "integer"
-            },
-            "controller.self.heal.timeout.seconds": {
-              "default": 5,
-              "description": "Specifies timeout between application self heal attempts",
-              "required": [],
-              "title": "controller.self.heal.timeout.seconds",
-              "type": "integer"
-            },
-            "controller.status.processors": {
-              "default": 20,
-              "description": "# Controller Properties\nNumber of application status processors",
-              "required": [],
-              "title": "controller.status.processors",
-              "type": "integer"
-            },
-            "controller.sync.timeout.seconds": {
-              "default": 0,
-              "description": "Specifies the timeout after which a sync would be terminated. 0 means no timeout",
-              "required": [],
-              "title": "controller.sync.timeout.seconds",
-              "type": "integer"
-            },
             "create": {
               "default": true,
               "description": "Create the argocd-cmd-params-cm configmap\nIf false, it is expected the configmap will be created by something else.",
               "required": [],
               "title": "create",
               "type": "boolean"
-            },
-            "hydrator.enabled": {
-              "default": false,
-              "description": "Enable the hydrator feature (hydrator is in Alpha phase)",
-              "required": [],
-              "title": "hydrator.enabled",
-              "type": "boolean"
-            },
-            "otlp.address": {
-              "default": "",
-              "description": "# Generic parameters\nOpen-Telemetry collector address: (e.g. \"otel-collector:4317\")",
-              "required": [],
-              "title": "otlp.address",
-              "type": "string"
-            },
-            "reposerver.parallelism.limit": {
-              "default": 0,
-              "description": "# Repo-server properties\nLimit on number of concurrent manifests generate requests. Any value less the 1 means no limit.",
-              "required": [],
-              "title": "reposerver.parallelism.limit",
-              "type": "integer"
-            },
-            "server.basehref": {
-              "default": "/",
-              "description": "Value for base href in index.html. Used if Argo CD is running behind reverse proxy under subpath different from /",
-              "required": [],
-              "title": "server.basehref",
-              "type": "string"
-            },
-            "server.disable.auth": {
-              "default": false,
-              "description": "Disable Argo CD RBAC for user authentication",
-              "required": [],
-              "title": "server.disable.auth",
-              "type": "boolean"
-            },
-            "server.enable.gzip": {
-              "default": true,
-              "description": "Enable GZIP compression",
-              "required": [],
-              "title": "server.enable.gzip",
-              "type": "boolean"
-            },
-            "server.enable.proxy.extension": {
-              "default": false,
-              "description": "Enable proxy extension feature. (proxy extension is in Alpha phase)",
-              "required": [],
-              "title": "server.enable.proxy.extension",
-              "type": "boolean"
-            },
-            "server.insecure": {
-              "default": false,
-              "description": "# Server properties\nRun server without TLS\n# NOTE: This value should be set when you generate params by other means as it changes ports used by ingress template.",
-              "required": [],
-              "title": "server.insecure",
-              "type": "boolean"
-            },
-            "server.rootpath": {
-              "default": "",
-              "description": "Used if Argo CD is running behind reverse proxy under subpath different from /",
-              "required": [],
-              "title": "server.rootpath",
-              "type": "string"
-            },
-            "server.staticassets": {
-              "default": "/shared/app",
-              "description": "Directory path that contains additional static assets",
-              "required": [],
-              "title": "server.staticassets",
-              "type": "string"
-            },
-            "server.x.frame.options": {
-              "default": "sameorigin",
-              "description": "Set X-Frame-Options header in HTTP responses to value. To disable, set to \"\".",
-              "required": [],
-              "title": "server.x.frame.options",
-              "type": "string"
             }
           },
           "required": [],
@@ -4244,12 +4097,30 @@
               "title": "labels",
               "type": "object"
             },
+            "metricRelabelings": {
+              "description": "MetricRelabelConfigs to apply to samples after scraping, but before ingestion.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "metricRelabelings",
+              "type": "array"
+            },
             "namespace": {
               "default": "",
               "description": "Set the namespace the ServiceMonitor should be deployed",
               "required": [],
               "title": "namespace",
               "type": "string"
+            },
+            "relabelings": {
+              "description": "RelabelConfigs to apply to samples before scraping.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "relabelings",
+              "type": "array"
             },
             "telemetryPath": {
               "default": "",
@@ -4836,6 +4707,13 @@
           "title": "customConfig",
           "type": "null"
         },
+        "deploymentAnnotations": {
+          "additionalProperties": true,
+          "description": "HAProxy deployment annotations",
+          "required": [],
+          "title": "deploymentAnnotations",
+          "type": "object"
+        },
         "deploymentStrategy": {
           "additionalProperties": true,
           "description": "Deployment strategy for the haproxy deployment",
@@ -5092,6 +4970,13 @@
           },
           "required": [],
           "title": "networkPolicy",
+          "type": "object"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "description": "Annotations to be added to the HAProxy deployment pods",
+          "required": [],
+          "title": "podAnnotations",
           "type": "object"
         },
         "podDisruptionBudget": {
@@ -5424,7 +5309,7 @@
           "type": "string"
         },
         "tag": {
-          "default": "7.2.7-alpine",
+          "default": "8.2.1-alpine",
           "description": "Redis image tag",
           "required": [],
           "title": "tag",
@@ -6881,7 +6766,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.79.0",
+                  "default": "v1.80.1",
                   "description": "Tag to use for the redis-exporter",
                   "required": [],
                   "title": "tag",
@@ -7051,7 +6936,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "7.2.11-alpine",
+              "default": "8.2.2-alpine",
               "description": "Redis tag\n# Do not upgrade to \u003e= 7.4.0, otherwise you are no longer using an open source version of Redis",
               "required": [],
               "title": "tag",
@@ -7931,7 +7816,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "7.2.11-alpine",
+              "default": "8.2.2-alpine",
               "description": "Redis tag\n# Do not upgrade to \u003e= 7.4.0, otherwise you are no longer using an open source version of Redis",
               "required": [],
               "title": "tag",
@@ -10523,6 +10408,13 @@
                   "title": "backendProtocolVersion",
                   "type": "string"
                 },
+                "serviceAnnotations": {
+                  "additionalProperties": true,
+                  "description": "Annotations for the AWS ALB gRPC service\n# Allows adding custom annotations to the gRPC service for integrations like DataDog, Prometheus, etc.",
+                  "required": [],
+                  "title": "serviceAnnotations",
+                  "type": "object"
+                },
                 "serviceType": {
                   "default": "NodePort",
                   "description": "Service type for the AWS ALB gRPC service\n# Can be of type NodePort or ClusterIP depending on which mode you are running.\n# Instance mode needs type NodePort, IP mode needs type ClusterIP\n# Ref: https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/how-it-works/#ingress-traffic",
@@ -11482,6 +11374,12 @@
           "required": [],
           "title": "resources",
           "type": "object"
+        },
+        "retryInterval": {
+          "default": 10,
+          "required": [],
+          "title": "retryInterval",
+          "type": "integer"
         }
       },
       "required": [],
@@ -11590,6 +11488,15 @@
       "required": [],
       "title": "tls",
       "type": "object"
+    },
+    "tolerations": {
+      "description": "# -- Tolerations for pod assignment\n# ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "tolerations",
+      "type": "array"
     },
     "topologySpreadConstraints": {
       "additionalProperties": true,
