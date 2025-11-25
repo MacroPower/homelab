@@ -3,8 +3,8 @@
   extends: [
     "config:recommended",
     ":disableRateLimiting",
-    ":separateMajorReleases",
-    ":automergeDisabled",
+    ":separateMultipleMajorReleases",
+    ":automergePatch",
   ],
   customManagers: [
     {
