@@ -8,6 +8,9 @@ k8sClientRateLimit:
   qps: 10
   burst: 20
 
+ipv4NativeRoutingCIDR: 10.128.0.0/14
+ipv6NativeRoutingCIDR: fc42:0:0:80::/64
+
 ingressController:
   enabled: true
   loadbalancerMode: shared

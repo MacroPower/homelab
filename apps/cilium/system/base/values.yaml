@@ -49,8 +49,6 @@ updateStrategy:
 autoDirectNodeRoutes: true
 directRoutingSkipUnreachable: true
 routingMode: native
-ipv4NativeRoutingCIDR: 10.0.0.0/8
-ipv6NativeRoutingCIDR: fc42::/56
 
 bgpControlPlane:
   enabled: true
