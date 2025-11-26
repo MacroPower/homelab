@@ -17,7 +17,7 @@
     "natscli": "0.3.0",
     "kubernetes-helm": "3.19.1",
     "auth0-cli": "1.23.0",
-    "go": "1.25.3"
+    "go": "1.25.4"
   },
   "env": {
     "KCL_LIB_HOME": "${DEVBOX_PROJECT_ROOT}/.devbox/kcl/lib",
