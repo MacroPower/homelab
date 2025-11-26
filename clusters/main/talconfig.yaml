@@ -318,6 +318,7 @@ nodes:
 controlPlane:
   certSANs:
     - kmain.cin.macro.network
+    - localhost
     - "127.0.0.1"
   nameservers: &nameservers
     - "10.10.0.1"

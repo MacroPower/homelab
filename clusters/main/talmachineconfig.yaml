@@ -2,8 +2,8 @@ machine:
   kubelet:
     nodeIP:
       validSubnets:
-        - 10.10.0.0/16
-        - fc42:0:0:a::/64
+        - 10.0.0.0/8
+        - fc42::/56
     extraArgs:
       feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true,RotateKubeletServerCertificate=true
       rotate-server-certificates: "true"
