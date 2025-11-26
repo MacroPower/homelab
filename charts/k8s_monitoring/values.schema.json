@@ -382,7 +382,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "0.1.1",
+                  "default": "0.1.2",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -440,6 +440,70 @@
               "description": "Set the resource field for the Helm Hook that ensures that Alloy instances are removed during uninstall.",
               "required": [],
               "title": "resources",
+              "type": "object"
+            },
+            "securityContext": {
+              "additionalProperties": true,
+              "description": "Default security context to apply to the container. This can also be set to `null` to remove the security\ncontext entirely. Also, `runAsUser` can be set to `null` to remove it.",
+              "properties": {
+                "allowPrivilegeEscalation": {
+                  "default": false,
+                  "required": [],
+                  "title": "allowPrivilegeEscalation",
+                  "type": "boolean"
+                },
+                "capabilities": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "drop": {
+                      "items": {
+                        "required": [],
+                        "type": "string"
+                      },
+                      "required": [],
+                      "title": "drop",
+                      "type": "array"
+                    }
+                  },
+                  "required": [],
+                  "title": "capabilities",
+                  "type": "object"
+                },
+                "readOnlyRootFilesystem": {
+                  "default": true,
+                  "required": [],
+                  "title": "readOnlyRootFilesystem",
+                  "type": "boolean"
+                },
+                "runAsNonRoot": {
+                  "default": true,
+                  "required": [],
+                  "title": "runAsNonRoot",
+                  "type": "boolean"
+                },
+                "runAsUser": {
+                  "default": 4242,
+                  "required": [],
+                  "title": "runAsUser",
+                  "type": "integer"
+                },
+                "seccompProfile": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "type": {
+                      "default": "RuntimeDefault",
+                      "required": [],
+                      "title": "type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "seccompProfile",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "securityContext",
               "type": "object"
             },
             "tolerations": {
@@ -3610,6 +3674,12 @@
           "additionalProperties": true,
           "description": "The data source to use for the MySQL Exporter.",
           "properties": {
+            "allowFallbackToPlaintext": {
+              "description": "The TLS setting to use. Options are none, \"true\", \"false\", \"skip-verify\", \"preferred\". See the\n[driver documentation](https://github.com/go-sql-driver/mysql#tls) for details.",
+              "required": [],
+              "title": "allowFallbackToPlaintext",
+              "type": "boolean"
+            },
             "auth": {
               "additionalProperties": true,
               "properties": {
@@ -3670,6 +3740,12 @@
               "description": "The MySQL protocol type.",
               "required": [],
               "title": "protocol",
+              "type": "string"
+            },
+            "tls": {
+              "description": "The TLS setting to use. Options are none, \"true\", \"false\", \"skip-verify\", \"preferred\". See the\n[driver documentation](https://github.com/go-sql-driver/mysql#tls) for details.",
+              "required": [],
+              "title": "tls",
               "type": "string"
             }
           },
@@ -13701,6 +13777,94 @@
       "required": [],
       "title": "sendNativeHistograms",
       "type": "boolean"
+    },
+    "sendingQueue": {
+      "additionalProperties": true,
+      "properties": {
+        "batch": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "description": "Should a batch mechanism be used with the sending queue?",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "flushTimeout": {
+              "description": "Time after which a batch will be sent regardless of its size. Must be a non-zero value.",
+              "required": [],
+              "title": "flushTimeout",
+              "type": "string"
+            },
+            "maxSize": {
+              "description": "The maximum size of a batch, enables batch splitting.",
+              "required": [],
+              "title": "maxSize",
+              "type": "null"
+            },
+            "minSize": {
+              "description": "The minimum size of a batch, enables batch splitting.",
+              "required": [],
+              "title": "minSize",
+              "type": "null"
+            },
+            "sizer": {
+              "description": "How the queue and batching is measured. Overrides the sizer set at the sendingQueue level for batching.\nValid options are \"bytes\" or \"items\".",
+              "required": [],
+              "title": "sizer",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "batch",
+          "type": "object"
+        },
+        "blockOnOverflow": {
+          "description": "The behavior when the component’s TotalSize limit is reached",
+          "required": [],
+          "title": "blockOnOverflow",
+          "type": "null"
+        },
+        "enabled": {
+          "description": "Enables a buffer before sending data to the client.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "numConsumers": {
+          "description": "Number of readers to send batches written to the queue in parallel.",
+          "required": [],
+          "title": "numConsumers",
+          "type": "null"
+        },
+        "queueSize": {
+          "description": "Maximum number of unwritten batches allowed in the queue at the same time.",
+          "required": [],
+          "title": "queueSize",
+          "type": "null"
+        },
+        "sizer": {
+          "description": "How the queue and batching is measured.",
+          "required": [],
+          "title": "sizer",
+          "type": "string"
+        },
+        "storage": {
+          "description": "Handler from an otelcol.storage component to use to enable a persistent queue mechanism.\nTo use this, create a storage component in extraConfig and reference it here.",
+          "required": [],
+          "title": "storage",
+          "type": "string"
+        },
+        "waitForResult": {
+          "description": "Determines if incoming requests are blocked until the request is processed or not.",
+          "required": [],
+          "title": "waitForResult",
+          "type": "null"
+        }
+      },
+      "required": [],
+      "title": "sendingQueue",
+      "type": "object"
     },
     "service": {
       "additionalProperties": true,
