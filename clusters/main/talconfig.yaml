@@ -314,10 +314,6 @@ nodes:
                   - rbind
                   - rshared
                   - rw
-          features:
-            hostDNS:
-              enabled: true
-              forwardKubeDNSToHost: true
 
 controlPlane:
   certSANs:
