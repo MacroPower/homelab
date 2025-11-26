@@ -541,6 +541,7 @@ schema Values:
         configured above.
     sendNativeHistograms : bool, optional
         Whether native histograms should be sent.
+    sendingQueue : ValuesSendingQueue, optional
     service : ValuesService, optional
         # Service configuration
     serviceAccount : ValuesServiceAccount, optional
@@ -845,6 +846,7 @@ schema Values:
     selfMonitor?: ValuesSelfMonitor
     selfReporting?: ValuesSelfReporting
     sendNativeHistograms?: bool
+    sendingQueue?: ValuesSendingQueue
     service?: ValuesService
     serviceAccount?: ValuesServiceAccount
     serviceMonitor?: ValuesServiceMonitor
@@ -1101,6 +1103,9 @@ schema ValuesAlloyOperatorWaitForAlloyRemoval:
         the Alloy Operator
     resources : ValuesAlloyOperatorWaitForAlloyRemovalResources, optional
         Set the resource field for the Helm Hook that ensures that Alloy instances are removed during uninstall.
+    securityContext : ValuesAlloyOperatorWaitForAlloyRemovalSecurityContext, optional
+        Default security context to apply to the container. This can also be set to `null` to remove the security
+        context entirely. Also, `runAsUser` can be set to `null` to remove it.
     tolerations : [any], optional
         Tolerations to apply to the Helm Hook that ensures that Alloy instances are removed during uninstall.
     """
@@ -1111,6 +1116,7 @@ schema ValuesAlloyOperatorWaitForAlloyRemoval:
     podAnnotations?: ValuesAlloyOperatorWaitForAlloyRemovalPodAnnotations
     podLabels?: ValuesAlloyOperatorWaitForAlloyRemovalPodLabels
     resources?: ValuesAlloyOperatorWaitForAlloyRemovalResources
+    securityContext?: ValuesAlloyOperatorWaitForAlloyRemovalSecurityContext
     tolerations?: [any]
 
 schema ValuesAlloyOperatorWaitForAlloyRemovalImage:
@@ -1124,7 +1130,7 @@ schema ValuesAlloyOperatorWaitForAlloyRemovalImage:
     pullSecrets : [any], optional
     registry : str, optional, default is "ghcr.io"
     repository : str, optional, default is "grafana/helm-chart-toolbox-kubectl"
-    tag : str, optional, default is "0.1.1"
+    tag : str, optional, default is "0.1.2"
     """
     [...str]: any
     digest?: str
@@ -1171,6 +1177,50 @@ schema ValuesAlloyOperatorWaitForAlloyRemovalResources:
     Set the resource field for the Helm Hook that ensures that Alloy instances are removed during uninstall.
     """
     [...str]: any
+
+schema ValuesAlloyOperatorWaitForAlloyRemovalSecurityContext:
+    r"""
+    Default security context to apply to the container. This can also be set to `null` to remove the security
+    context entirely. Also, `runAsUser` can be set to `null` to remove it.
+
+    Attributes
+    ----------
+    allowPrivilegeEscalation : bool, optional, default is False
+    capabilities : ValuesAlloyOperatorWaitForAlloyRemovalSecurityContextCapabilities, optional
+    readOnlyRootFilesystem : bool, optional, default is True
+    runAsNonRoot : bool, optional, default is True
+    runAsUser : int, optional, default is 4242
+    seccompProfile : ValuesAlloyOperatorWaitForAlloyRemovalSecurityContextSeccompProfile, optional
+    """
+    [...str]: any
+    allowPrivilegeEscalation?: bool
+    capabilities?: ValuesAlloyOperatorWaitForAlloyRemovalSecurityContextCapabilities
+    readOnlyRootFilesystem?: bool
+    runAsNonRoot?: bool
+    runAsUser?: int
+    seccompProfile?: ValuesAlloyOperatorWaitForAlloyRemovalSecurityContextSeccompProfile
+
+schema ValuesAlloyOperatorWaitForAlloyRemovalSecurityContextCapabilities:
+    r"""
+    ValuesAlloyOperatorWaitForAlloyRemovalSecurityContextCapabilities
+
+    Attributes
+    ----------
+    drop : [str], optional
+    """
+    [...str]: any
+    drop?: [str]
+
+schema ValuesAlloyOperatorWaitForAlloyRemovalSecurityContextSeccompProfile:
+    r"""
+    ValuesAlloyOperatorWaitForAlloyRemovalSecurityContextSeccompProfile
+
+    Attributes
+    ----------
+    $type : str, optional, default is "RuntimeDefault"
+    """
+    [...str]: any
+    $type?: str
 
 schema ValuesAlloyProfiles:
     r"""
@@ -3534,6 +3584,9 @@ schema ValuesExporterDataSource:
 
     Attributes
     ----------
+    allowFallbackToPlaintext : bool, optional
+        The TLS setting to use. Options are none, "true", "false", "skip-verify", "preferred". See the
+        [driver documentation](https://github.com/go-sql-driver/mysql#tls) for details.
     auth : ValuesExporterDataSourceAuth, optional
     host : str, optional
         The MySQL host to connect to.
@@ -3541,12 +3594,17 @@ schema ValuesExporterDataSource:
         The MySQL port to connect to.
     $protocol : str, optional
         The MySQL protocol type.
+    tls : str, optional
+        The TLS setting to use. Options are none, "true", "false", "skip-verify", "preferred". See the
+        [driver documentation](https://github.com/go-sql-driver/mysql#tls) for details.
     """
     [...str]: any
+    allowFallbackToPlaintext?: bool
     auth?: ValuesExporterDataSourceAuth
     host?: str
     port?: int
     $protocol?: str
+    tls?: str
 
 schema ValuesExporterDataSourceAuth:
     r"""
@@ -10324,6 +10382,64 @@ schema ValuesSelfReporting:
     destinations?: [any]
     enabled?: bool
     scrapeInterval?: str
+
+schema ValuesSendingQueue:
+    r"""
+    ValuesSendingQueue
+
+    Attributes
+    ----------
+    batch : ValuesSendingQueueBatch, optional
+    blockOnOverflow : any, optional
+        The behavior when the component’s TotalSize limit is reached
+    enabled : bool, optional
+        Enables a buffer before sending data to the client.
+    numConsumers : any, optional
+        Number of readers to send batches written to the queue in parallel.
+    queueSize : any, optional
+        Maximum number of unwritten batches allowed in the queue at the same time.
+    sizer : str, optional
+        How the queue and batching is measured.
+    storage : str, optional
+        Handler from an otelcol.storage component to use to enable a persistent queue mechanism.
+        To use this, create a storage component in extraConfig and reference it here.
+    waitForResult : any, optional
+        Determines if incoming requests are blocked until the request is processed or not.
+    """
+    [...str]: any
+    batch?: ValuesSendingQueueBatch
+    blockOnOverflow?: any
+    enabled?: bool
+    numConsumers?: any
+    queueSize?: any
+    sizer?: str
+    storage?: str
+    waitForResult?: any
+
+schema ValuesSendingQueueBatch:
+    r"""
+    ValuesSendingQueueBatch
+
+    Attributes
+    ----------
+    enabled : bool, optional
+        Should a batch mechanism be used with the sending queue?
+    flushTimeout : str, optional
+        Time after which a batch will be sent regardless of its size. Must be a non-zero value.
+    maxSize : any, optional
+        The maximum size of a batch, enables batch splitting.
+    minSize : any, optional
+        The minimum size of a batch, enables batch splitting.
+    sizer : str, optional
+        How the queue and batching is measured. Overrides the sizer set at the sendingQueue level for batching.
+        Valid options are "bytes" or "items".
+    """
+    [...str]: any
+    enabled?: bool
+    flushTimeout?: str
+    maxSize?: any
+    minSize?: any
+    sizer?: str
 
 schema ValuesService:
     r"""
