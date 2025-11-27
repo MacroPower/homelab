@@ -299,7 +299,7 @@ nodes:
         routes: *routes
     patches:
       - *machine10G
-      - |-
+      - &machineNAS |-
         machine:
           kubelet:
             extraConfig:
@@ -314,6 +314,30 @@ nodes:
                   - rbind
                   - rshared
                   - rw
+
+  - hostname: krobot01.fsn.macro.network
+    ipAddress: 10.42.2.20
+    controlPlane: false
+    installDisk: /dev/null
+    nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 1g
+      topology.kubernetes.io/region: fsn
+    networkInterfaces:
+      - deviceSelector:
+          driver: macvlan
+        dhcp: false
+        addresses:
+          - "10.42.2.20/24"
+        mtu: 1400
+        routes:
+          - network: 10.42.0.0/16
+            gateway: "10.42.2.1"
+            metric: 256
+    patches:
+      - *machineNAS
+    nameservers:
+      - "185.12.64.1"
+      - "185.12.64.2"
 
 controlPlane:
   certSANs:
