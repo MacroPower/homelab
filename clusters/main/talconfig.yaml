@@ -23,7 +23,7 @@ nodes:
     installDisk: &rk1Disk /dev/nvme0n1
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
-      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/region: cin
       topology.kubernetes.io/zone: az01
     networkInterfaces:
       - deviceSelector: &rk1NetDevice
@@ -69,7 +69,7 @@ nodes:
     installDisk: *rk1Disk
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
-      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/region: cin
       topology.kubernetes.io/zone: az02
     networkInterfaces:
       - deviceSelector: *rk1NetDevice
@@ -93,7 +93,7 @@ nodes:
     installDisk: *rk1Disk
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
-      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/region: cin
       topology.kubernetes.io/zone: az03
     networkInterfaces:
       - deviceSelector: *rk1NetDevice
@@ -117,7 +117,7 @@ nodes:
     installDisk: *rk1Disk
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
-      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/region: cin
       topology.kubernetes.io/zone: az01
       bgp.kube.macro.network/peer-group: main
     networkInterfaces:
@@ -142,7 +142,7 @@ nodes:
     installDisk: *rk1Disk
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
-      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/region: cin
       topology.kubernetes.io/zone: az02
       bgp.kube.macro.network/peer-group: main
     networkInterfaces:
@@ -167,7 +167,7 @@ nodes:
     installDisk: *rk1Disk
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 1g
-      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/region: cin
       topology.kubernetes.io/zone: az03
       bgp.kube.macro.network/peer-group: main
     networkInterfaces:
@@ -192,7 +192,7 @@ nodes:
     installDisk: &M11SDVdisk /dev/nvme0n1
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 10g
-      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/region: cin
       topology.kubernetes.io/zone: az01
       bgp.kube.macro.network/peer-group: main
     networkInterfaces:
@@ -232,7 +232,7 @@ nodes:
     installDisk: *M11SDVdisk
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 10g
-      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/region: cin
       topology.kubernetes.io/zone: az02
       bgp.kube.macro.network/peer-group: main
     networkInterfaces:
@@ -259,7 +259,7 @@ nodes:
     installDisk: *M11SDVdisk
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 10g
-      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/region: cin
       topology.kubernetes.io/zone: az03
       bgp.kube.macro.network/peer-group: main
     networkInterfaces:
@@ -286,7 +286,8 @@ nodes:
     installDisk: /dev/null
     nodeLabels:
       feature.node.kubernetes.io/network.max-link-speed: 10g
-      topology.kubernetes.io/region: rack01
+      topology.kubernetes.io/region: cin
+      topology.kubernetes.io/zone: "0"
       node-role.kubernetes.io/storage: ""
     networkInterfaces:
       - deviceSelector:
@@ -299,7 +300,7 @@ nodes:
         routes: *routes
     patches:
       - *machine10G
-      - |-
+      - &machineNAS |-
         machine:
           kubelet:
             extraConfig:
@@ -314,6 +315,35 @@ nodes:
                   - rbind
                   - rshared
                   - rw
+
+  - hostname: krobot01.fsn.macro.network
+    ipAddress: 10.42.2.20
+    controlPlane: false
+    installDisk: /dev/null
+    nodeLabels:
+      feature.node.kubernetes.io/network.max-link-speed: 1g
+      topology.kubernetes.io/region: fsn
+      topology.kubernetes.io/zone: "0"
+      node-role.kubernetes.io/storage: ""
+    networkInterfaces:
+      - deviceSelector:
+          driver: macvlan
+        dhcp: false
+        addresses:
+          - "10.42.2.20/24"
+        mtu: 1400
+        routes:
+          - network: 10.10.0.0/16
+            gateway: "10.42.2.1"
+            metric: 256
+          - network: 10.42.0.0/16
+            gateway: "10.42.2.1"
+            metric: 256
+    patches:
+      - *machineNAS
+    nameservers:
+      - "185.12.64.1"
+      - "185.12.64.2"
 
 controlPlane:
   certSANs:

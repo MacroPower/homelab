@@ -1,5 +1,0 @@
-cluster/
-clusterconfig/
-*.macro.network/
-kubernetesResources/
-support.zip
