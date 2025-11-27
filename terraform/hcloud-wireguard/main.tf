@@ -86,6 +86,12 @@ resource "hcloud_network_subnet" "wg" {
   ip_range     = "10.42.1.0/24"
 }
 
+resource "hcloud_network_route" "lab_wg" {
+  network_id  = hcloud_network.main.id
+  destination = "10.10.0.0/16"
+  gateway     = "10.42.1.10"
+}
+
 resource "hcloud_server" "wg" {
   name        = "wireguard"
   image       = "wireguard"
