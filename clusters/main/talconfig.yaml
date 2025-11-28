@@ -120,6 +120,7 @@ nodes:
       topology.kubernetes.io/region: cin
       topology.kubernetes.io/zone: az01
       bgp.kube.macro.network/peer-group: main
+      node-role.kubernetes.io/worker: ""
     networkInterfaces:
       - deviceSelector: *rk1NetDevice
         dhcp: false
@@ -145,6 +146,7 @@ nodes:
       topology.kubernetes.io/region: cin
       topology.kubernetes.io/zone: az02
       bgp.kube.macro.network/peer-group: main
+      node-role.kubernetes.io/worker: ""
     networkInterfaces:
       - deviceSelector: *rk1NetDevice
         dhcp: false
@@ -170,6 +172,7 @@ nodes:
       topology.kubernetes.io/region: cin
       topology.kubernetes.io/zone: az03
       bgp.kube.macro.network/peer-group: main
+      node-role.kubernetes.io/worker: ""
     networkInterfaces:
       - deviceSelector: *rk1NetDevice
         dhcp: false
@@ -195,6 +198,7 @@ nodes:
       topology.kubernetes.io/region: cin
       topology.kubernetes.io/zone: az01
       bgp.kube.macro.network/peer-group: main
+      node-role.kubernetes.io/worker: ""
     networkInterfaces:
       - deviceSelector: &M11SDVNetDevice
           driver: mlx4_core
@@ -235,6 +239,7 @@ nodes:
       topology.kubernetes.io/region: cin
       topology.kubernetes.io/zone: az02
       bgp.kube.macro.network/peer-group: main
+      node-role.kubernetes.io/worker: ""
     networkInterfaces:
       - deviceSelector: *M11SDVNetDevice
         dhcp: false
@@ -262,6 +267,7 @@ nodes:
       topology.kubernetes.io/region: cin
       topology.kubernetes.io/zone: az03
       bgp.kube.macro.network/peer-group: main
+      node-role.kubernetes.io/worker: ""
     networkInterfaces:
       - deviceSelector: *M11SDVNetDevice
         dhcp: false
