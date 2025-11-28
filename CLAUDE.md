@@ -27,7 +27,6 @@ KCL is a CNCF Sandbox project that provides:
 ```
 
 ## Key Tools & Commands
-- **#kat**: Primary tool for rendering KCL to YAML files for inspection (`mcp_kat_list_resources` and `mcp_kat_get_resource`)
 - **task kcl:chart:update**: Updates KCL chart definitions based on `charts/charts.k`
 - **task**: Primary command runner (see `task -l` for all available tasks)
 
@@ -39,7 +38,6 @@ KCL is a CNCF Sandbox project that provides:
 - **ApplicationSets**: Multi-cluster application deployment via `.tenant.yaml` and `.app.yaml` files
 
 ## Development Workflow
-- IMPORTANT: To render manifests, use the #kat mcp tools.
 - IMPORTANT: If you update `charts/charts.k`, make sure to run `task kcl:chart:update` to re-generate files.
 
 ## KCL Application Overview
