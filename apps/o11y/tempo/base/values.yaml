@@ -51,6 +51,7 @@ gateway:
 memcached:
   enabled: true
   replicas: 1
+  extraArgs: []
 
 metricsGenerator:
   enabled: true
