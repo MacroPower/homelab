@@ -412,6 +412,7 @@ schema ValuesCertificates:
 
     Attributes
     ----------
+    ca : ValuesCertificatesCa, optional
     commonName : str, optional, default is "SeaweedFS CA"
     duration : str, optional, default is "2160h"
     externalCertificates : ValuesCertificatesExternalCertificates, optional
@@ -421,12 +422,26 @@ schema ValuesCertificates:
     renewBefore : str, optional, default is "360h"
     """
     [...str]: any
+    ca?: ValuesCertificatesCa
     commonName?: str
     duration?: str
     externalCertificates?: ValuesCertificatesExternalCertificates
     ipAddresses?: [any]
     keyAlgorithm?: str
     keySize?: int
+    renewBefore?: str
+
+schema ValuesCertificatesCa:
+    r"""
+    ValuesCertificatesCa
+
+    Attributes
+    ----------
+    duration : str, optional, default is "87600h"
+    renewBefore : str, optional, default is "720h"
+    """
+    [...str]: any
+    duration?: str
     renewBefore?: str
 
 schema ValuesCertificatesExternalCertificates:
@@ -851,7 +866,7 @@ schema ValuesFilerIngress:
     Attributes
     ----------
     annotations : ValuesFilerIngressAnnotations, optional
-    className : str, optional, default is "nginx"
+    className : str, optional, default is ""
     enabled : bool, optional, default is False
     host : str, optional, default is "seaweedfs.cluster.local"
         host: false for "*" hostname
@@ -869,33 +884,8 @@ schema ValuesFilerIngress:
 schema ValuesFilerIngressAnnotations:
     r"""
     ValuesFilerIngressAnnotations
-
-    Attributes
-    ----------
-    "nginx.ingress.kubernetes.io/auth-realm" : str, optional, default is "Authentication Required - SW-Filer"
-    "nginx.ingress.kubernetes.io/auth-secret" : str, optional, default is "default/ingress-basic-auth-secret"
-    "nginx.ingress.kubernetes.io/auth-type" : str, optional, default is "basic"
-    "nginx.ingress.kubernetes.io/backend-protocol" : str, optional, default is "GRPC"
-    "nginx.ingress.kubernetes.io/configuration-snippet" : str, optional, default is "sub_filter '<head>' '<head> <base href=\"/sw-filer/\">'; #add base url\nsub_filter '=\"/' '=\"./';                               #make absolute paths to relative\nsub_filter '=/' '=./';\nsub_filter '/seaweedfsstatic' './seaweedfsstatic';\nsub_filter_once off;\n"
-    "nginx.ingress.kubernetes.io/enable-rewrite-log" : str, optional, default is "true"
-    "nginx.ingress.kubernetes.io/force-ssl-redirect" : str, optional, default is "false"
-    "nginx.ingress.kubernetes.io/rewrite-target" : str, optional, default is "/$1"
-    "nginx.ingress.kubernetes.io/service-upstream" : str, optional, default is "true"
-    "nginx.ingress.kubernetes.io/ssl-redirect" : str, optional, default is "false"
-    "nginx.ingress.kubernetes.io/use-regex" : str, optional, default is "true"
     """
     [...str]: any
-    "nginx.ingress.kubernetes.io/auth-realm"?: str
-    "nginx.ingress.kubernetes.io/auth-secret"?: str
-    "nginx.ingress.kubernetes.io/auth-type"?: str
-    "nginx.ingress.kubernetes.io/backend-protocol"?: str
-    "nginx.ingress.kubernetes.io/configuration-snippet"?: str
-    "nginx.ingress.kubernetes.io/enable-rewrite-log"?: str
-    "nginx.ingress.kubernetes.io/force-ssl-redirect"?: str
-    "nginx.ingress.kubernetes.io/rewrite-target"?: str
-    "nginx.ingress.kubernetes.io/service-upstream"?: str
-    "nginx.ingress.kubernetes.io/ssl-redirect"?: str
-    "nginx.ingress.kubernetes.io/use-regex"?: str
 
 schema ValuesFilerLivenessProbe:
     r"""
@@ -1126,9 +1116,13 @@ schema ValuesGlobalCertificates:
     Attributes
     ----------
     alphacrds : bool, optional, default is False
+    duration : str, optional, default is "87600h"
+    renewBefore : str, optional, default is "720h"
     """
     [...str]: any
     alphacrds?: bool
+    duration?: str
+    renewBefore?: str
 
 schema ValuesGlobalExtraEnvironmentVars:
     r"""
@@ -1479,13 +1473,28 @@ schema ValuesMasterIngress:
     Attributes
     ----------
     annotations : ValuesMasterIngressAnnotations, optional
-    className : str, optional, default is "nginx"
+    className : str, optional, default is ""
     enabled : bool, optional, default is False
     host : str, optional, default is "master.seaweedfs.local"
         host: false for "*" hostname
     path : str, optional, default is "/sw-master/?(.*)"
     pathType : str, optional, default is "ImplementationSpecific"
     tls : [any], optional
+        nginx.ingress.kubernetes.io/auth-type: "basic"
+        nginx.ingress.kubernetes.io/auth-secret: "default/ingress-basic-auth-secret"
+        nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required - SW-Master'
+        nginx.ingress.kubernetes.io/service-upstream: "true"
+        nginx.ingress.kubernetes.io/rewrite-target: /$1
+        nginx.ingress.kubernetes.io/use-regex: "true"
+        nginx.ingress.kubernetes.io/enable-rewrite-log: "true"
+        nginx.ingress.kubernetes.io/ssl-redirect: "false"
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+        nginx.ingress.kubernetes.io/configuration-snippet: |
+          sub_filter '<head>' '<head> <base href="/sw-master/">'; #add base url
+          sub_filter '="/' '="./';                                #make absolute paths to relative
+          sub_filter '=/' '=./';
+          sub_filter '/seaweedfsstatic' './seaweedfsstatic';
+          sub_filter_once off;
     """
     [...str]: any
     annotations?: ValuesMasterIngressAnnotations
@@ -1499,31 +1508,8 @@ schema ValuesMasterIngress:
 schema ValuesMasterIngressAnnotations:
     r"""
     ValuesMasterIngressAnnotations
-
-    Attributes
-    ----------
-    "nginx.ingress.kubernetes.io/auth-realm" : str, optional, default is "Authentication Required - SW-Master"
-    "nginx.ingress.kubernetes.io/auth-secret" : str, optional, default is "default/ingress-basic-auth-secret"
-    "nginx.ingress.kubernetes.io/auth-type" : str, optional, default is "basic"
-    "nginx.ingress.kubernetes.io/configuration-snippet" : str, optional, default is "sub_filter '<head>' '<head> <base href=\"/sw-master/\">'; #add base url\nsub_filter '=\"/' '=\"./';                                #make absolute paths to relative\nsub_filter '=/' '=./';\nsub_filter '/seaweedfsstatic' './seaweedfsstatic';\nsub_filter_once off;\n"
-    "nginx.ingress.kubernetes.io/enable-rewrite-log" : str, optional, default is "true"
-    "nginx.ingress.kubernetes.io/force-ssl-redirect" : str, optional, default is "false"
-    "nginx.ingress.kubernetes.io/rewrite-target" : str, optional, default is "/$1"
-    "nginx.ingress.kubernetes.io/service-upstream" : str, optional, default is "true"
-    "nginx.ingress.kubernetes.io/ssl-redirect" : str, optional, default is "false"
-    "nginx.ingress.kubernetes.io/use-regex" : str, optional, default is "true"
     """
     [...str]: any
-    "nginx.ingress.kubernetes.io/auth-realm"?: str
-    "nginx.ingress.kubernetes.io/auth-secret"?: str
-    "nginx.ingress.kubernetes.io/auth-type"?: str
-    "nginx.ingress.kubernetes.io/configuration-snippet"?: str
-    "nginx.ingress.kubernetes.io/enable-rewrite-log"?: str
-    "nginx.ingress.kubernetes.io/force-ssl-redirect"?: str
-    "nginx.ingress.kubernetes.io/rewrite-target"?: str
-    "nginx.ingress.kubernetes.io/service-upstream"?: str
-    "nginx.ingress.kubernetes.io/ssl-redirect"?: str
-    "nginx.ingress.kubernetes.io/use-regex"?: str
 
 schema ValuesMasterLivenessProbe:
     r"""
@@ -1830,7 +1816,7 @@ schema ValuesS3Ingress:
     ----------
     annotations : ValuesS3IngressAnnotations, optional
         additional ingress annotations for the s3 endpoint
-    className : str, optional, default is "nginx"
+    className : str, optional, default is ""
     enabled : bool, optional, default is False
     host : str, optional, default is "seaweedfs.cluster.local"
         host: false for "*" hostname
