@@ -339,6 +339,12 @@ locals {
         "lab",
       ]
     }
+    # hcloud = {
+    #   name = "HCloud"
+    #   id   = 42
+    #   mask = 16
+    #   type = "reservation"
+    # }
     k8s_seedbox_services = {
       name = "seedbox Services"
       id   = 43
@@ -374,42 +380,6 @@ locals {
       name = "kmain Pods"
       id   = 128
       mask = 14
-      type = "reservation"
-    }
-    nas01_services = {
-      name = "nas01 Services"
-      id   = 132
-      mask = 16
-      type = "reservation"
-    }
-    nas01_pods = {
-      name = "nas01 Pods"
-      id   = 133
-      mask = 16
-      type = "reservation"
-    }
-    nas02_services = {
-      name = "nas02 Services"
-      id   = 134
-      mask = 16
-      type = "reservation"
-    }
-    nas02_pods = {
-      name = "nas02 Pods"
-      id   = 135
-      mask = 16
-      type = "reservation"
-    }
-    robot_services = {
-      name = "robot Services"
-      id   = 136
-      mask = 16
-      type = "reservation"
-    }
-    robot_pods = {
-      name = "robot Pods"
-      id   = 137
-      mask = 16
       type = "reservation"
     }
   }
@@ -464,16 +434,18 @@ resource "unifi_device" "agg0101" {
     port_profile_id = module.unifi.port_profile[local.unifi_clients.kmain09.profile].id
   }
   port_override {
-    number          = 21
-    name            = "SFP+ 21"
-    op_mode         = "aggregate"
-    port_profile_id = module.unifi.port_profile[local.unifi_clients.nas01.profile].id
+    number            = 21
+    name              = "SFP+ 21"
+    op_mode           = "aggregate"
+    port_profile_id   = module.unifi.port_profile[local.unifi_clients.nas01.profile].id
+    aggregate_members = [21, 22]
   }
   port_override {
     number            = 25
     name              = "SFP+ 25"
     op_mode           = "aggregate"
     native_network_id = module.unifi.default_network_id
+    aggregate_members = [25, 26]
   }
   port_override {
     number          = 27
@@ -542,6 +514,7 @@ resource "unifi_device" "sw0101" {
     name              = "SFP+ 1"
     op_mode           = "aggregate"
     native_network_id = module.unifi.default_network_id
+    aggregate_members = [25, 26]
   }
 }
 
