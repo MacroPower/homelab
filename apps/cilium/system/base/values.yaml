@@ -46,9 +46,8 @@ updateStrategy:
 ## Routing configuration.
 ## See https://docs.cilium.io/en/stable/network/concepts/routing/
 ##
-autoDirectNodeRoutes: true
-directRoutingSkipUnreachable: true
-routingMode: native
+routingMode: tunnel
+tunnelProtocol: vxlan
 
 bgpControlPlane:
   enabled: true
@@ -61,7 +60,7 @@ wellKnownIdentities:
 
 loadBalancer:
   algorithm: maglev
-  mode: dsr
+  mode: snat
   serviceTopology: true
   l7:
     backend: envoy
