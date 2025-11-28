@@ -5,7 +5,7 @@
 Address = 2a01:4f8:c010:945c:ac1e::1/120,10.42.1.1/24
 ListenPort = 51820
 PrivateKey = [REDACTED]
-MTU = 1300
+MTU = 1450
 PostUp = nft add rule inet filter forward oifname "%i" accept || true
 PreDown =
 PostDown =
