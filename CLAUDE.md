@@ -1,9 +1,12 @@
----
-description: 'Instructions for writing KCL code following idiomatic practices and community standards'
-applyTo: '**/*.k,**/kcl.mod,**/kcl.sum'
----
+# Agent Instructions
 
-# KCL Development Instructions
+## Overview
+This is a multi-cluster Kubernetes homelab managed through GitOps using ArgoCD, with a unique KCL-based configuration system replacing traditional YAML/Helm patterns.
+
+**Key Architecture Patterns:**
+- **KCL-first Configuration**: Uses [KCL](https://www.kcl-lang.io/) as the primary configuration language through a custom `konfig` library, not raw YAML
+- **Multi-cluster GitOps**: ArgoCD ApplicationSets deploy applications across multiple environments (mgmt, home, nas01, etc.)
+- **Tenant-based Organization**: Applications are organized by "tenants" (argo, kube, o11y, etc.) with shared configuration
 
 KCL is a CNCF Sandbox project that provides:
 - **Type Safety**: Strong typing with schema validation
@@ -12,10 +15,35 @@ KCL is a CNCF Sandbox project that provides:
 - **Policy Constraints**: Built-in validation and policy enforcement
 - **Multi-language Integration**: Can generate YAML, JSON, and integrate with various tools
 
-## Project Architecture Overview
+## Directory Structure
+```
+├── apps/        # KCL-based applications
+├── appsets/     # ArgoCD ApplicationSets
+├── bootstrap/   # KCL cluster bootstrapping files
+├── konfig/      # KCL library for Kubernetes abstractions
+├── charts/      # Helm chart KCL wrappers (auto-generated)
+├── clusters/    # Talos cluster configurations
+└── terraform/   # Terraform for infrastructure
+```
 
+## Key Tools & Commands
+- **#kat**: Primary tool for rendering KCL to YAML files for inspection (`mcp_kat_list_resources` and `mcp_kat_get_resource`)
+- **task kcl:chart:update**: Updates KCL chart definitions based on `charts/charts.k`
+- **task**: Primary command runner (see `task -l` for all available tasks)
+
+## Infrastructure Boundaries
+- **Terraform**: Cloud infrastructure (Hetzner Cloud, networking)
+- **Talos**: Immutable Kubernetes OS on bare metal
+- **ArgoCD**: Application lifecycle management
+- **KCL/Konfig**: Application configuration abstraction
+- **ApplicationSets**: Multi-cluster application deployment via `.tenant.yaml` and `.app.yaml` files
+
+## Development Workflow
+- IMPORTANT: To render manifests, use the #kat mcp tools.
+- IMPORTANT: If you update `charts/charts.k`, make sure to run `task kcl:chart:update` to re-generate files.
+
+## KCL Application Overview
 This homelab uses a **KCL-first configuration approach** with a custom `konfig` library for Kubernetes abstractions:
-
 ```
 ├── apps/                   # Current KCL-based applications
 │   ├── argo/               # Tenant: ArgoCD apps
@@ -35,7 +63,6 @@ This homelab uses a **KCL-first configuration approach** with a custom `konfig` 
 ## KCL Language Fundamentals
 
 ### Basic Syntax
-
 ```kcl
 # Variables and basic types
 name = "nginx"
@@ -55,7 +82,6 @@ image = "nginx:${version}"
 ```
 
 ### Schema Definitions
-
 ```kcl
 # Define a schema (similar to a class/struct)
 schema Container:
@@ -82,7 +108,6 @@ webContainer = Container {
 ```
 
 ### List and Dict Comprehensions
-
 ```kcl
 # List comprehensions (Python-like syntax)
 numbers = [1, 2, 3, 4, 5]
@@ -98,7 +123,6 @@ matrix = [[x, y] for x in range(3) if x % 2 == 0 for y in range(3) if y > x]
 ```
 
 ### Conditional Expressions and Control Flow
-
 ```kcl
 # Ternary operator
 environment = "prod"
@@ -118,7 +142,6 @@ schema App:
 ```
 
 ### Import System
-
 ```kcl
 # Import modules
 import yaml
@@ -136,9 +159,7 @@ import konfig.files as kutils
 ## Development Workflow
 
 ### 1. Creating New Applications
-
 Use the project's task automation:
-
 ```bash
 # Create a new application with environments
 task kcl:create-app TENANT=kube APP=myapp ENV=mgmt,main
@@ -150,15 +171,12 @@ task kcl:create-app TENANT=kube APP=myapp ENV=mgmt,main
 ```
 
 ### 2. Development and Testing
-
 Use the #kat agent tools for rendering and validation.
 
 ### 3. Helm Chart Integration
-
 When using Helm charts, they're auto-generated as KCL wrappers.
 
 First, update ./charts/charts.k, then run:
-
 ```bash
 # Update chart definitions
 task kcl:chart:update
@@ -167,7 +185,6 @@ task kcl:chart:update
 ```
 
 ### 4. Package Management
-
 ```toml
 # kcl.mod - Package definition
 [package]
