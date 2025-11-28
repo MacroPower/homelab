@@ -465,6 +465,26 @@
     "certificates": {
       "additionalProperties": true,
       "properties": {
+        "ca": {
+          "additionalProperties": true,
+          "properties": {
+            "duration": {
+              "default": "87600h",
+              "required": [],
+              "title": "duration",
+              "type": "string"
+            },
+            "renewBefore": {
+              "default": "720h",
+              "required": [],
+              "title": "renewBefore",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "ca",
+          "type": "object"
+        },
         "commonName": {
           "default": "SeaweedFS CA",
           "required": [],
@@ -870,80 +890,12 @@
           "properties": {
             "annotations": {
               "additionalProperties": true,
-              "properties": {
-                "nginx.ingress.kubernetes.io/auth-realm": {
-                  "default": "Authentication Required - SW-Filer",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/auth-realm",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/auth-secret": {
-                  "default": "default/ingress-basic-auth-secret",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/auth-secret",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/auth-type": {
-                  "default": "basic",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/auth-type",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/backend-protocol": {
-                  "default": "GRPC",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/backend-protocol",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/configuration-snippet": {
-                  "default": "sub_filter '\u003chead\u003e' '\u003chead\u003e \u003cbase href=\"/sw-filer/\"\u003e'; #add base url\nsub_filter '=\"/' '=\"./';                               #make absolute paths to relative\nsub_filter '=/' '=./';\nsub_filter '/seaweedfsstatic' './seaweedfsstatic';\nsub_filter_once off;\n",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/configuration-snippet",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/enable-rewrite-log": {
-                  "default": "true",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/enable-rewrite-log",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/force-ssl-redirect": {
-                  "default": "false",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/force-ssl-redirect",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/rewrite-target": {
-                  "default": "/$1",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/rewrite-target",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/service-upstream": {
-                  "default": "true",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/service-upstream",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/ssl-redirect": {
-                  "default": "false",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/ssl-redirect",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/use-regex": {
-                  "default": "true",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/use-regex",
-                  "type": "string"
-                }
-              },
               "required": [],
               "title": "annotations",
               "type": "object"
             },
             "className": {
-              "default": "nginx",
+              "default": "",
               "required": [],
               "title": "className",
               "type": "string"
@@ -1407,6 +1359,18 @@
               "required": [],
               "title": "alphacrds",
               "type": "boolean"
+            },
+            "duration": {
+              "default": "87600h",
+              "required": [],
+              "title": "duration",
+              "type": "string"
+            },
+            "renewBefore": {
+              "default": "720h",
+              "required": [],
+              "title": "renewBefore",
+              "type": "string"
             }
           },
           "required": [],
@@ -1792,74 +1756,12 @@
           "properties": {
             "annotations": {
               "additionalProperties": true,
-              "properties": {
-                "nginx.ingress.kubernetes.io/auth-realm": {
-                  "default": "Authentication Required - SW-Master",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/auth-realm",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/auth-secret": {
-                  "default": "default/ingress-basic-auth-secret",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/auth-secret",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/auth-type": {
-                  "default": "basic",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/auth-type",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/configuration-snippet": {
-                  "default": "sub_filter '\u003chead\u003e' '\u003chead\u003e \u003cbase href=\"/sw-master/\"\u003e'; #add base url\nsub_filter '=\"/' '=\"./';                                #make absolute paths to relative\nsub_filter '=/' '=./';\nsub_filter '/seaweedfsstatic' './seaweedfsstatic';\nsub_filter_once off;\n",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/configuration-snippet",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/enable-rewrite-log": {
-                  "default": "true",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/enable-rewrite-log",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/force-ssl-redirect": {
-                  "default": "false",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/force-ssl-redirect",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/rewrite-target": {
-                  "default": "/$1",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/rewrite-target",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/service-upstream": {
-                  "default": "true",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/service-upstream",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/ssl-redirect": {
-                  "default": "false",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/ssl-redirect",
-                  "type": "string"
-                },
-                "nginx.ingress.kubernetes.io/use-regex": {
-                  "default": "true",
-                  "required": [],
-                  "title": "nginx.ingress.kubernetes.io/use-regex",
-                  "type": "string"
-                }
-              },
               "required": [],
               "title": "annotations",
               "type": "object"
             },
             "className": {
-              "default": "nginx",
+              "default": "",
               "required": [],
               "title": "className",
               "type": "string"
@@ -1890,6 +1792,7 @@
               "type": "string"
             },
             "tls": {
+              "description": "nginx.ingress.kubernetes.io/auth-type: \"basic\"\nnginx.ingress.kubernetes.io/auth-secret: \"default/ingress-basic-auth-secret\"\nnginx.ingress.kubernetes.io/auth-realm: 'Authentication Required - SW-Master'\nnginx.ingress.kubernetes.io/service-upstream: \"true\"\nnginx.ingress.kubernetes.io/rewrite-target: /$1\nnginx.ingress.kubernetes.io/use-regex: \"true\"\nnginx.ingress.kubernetes.io/enable-rewrite-log: \"true\"\nnginx.ingress.kubernetes.io/ssl-redirect: \"false\"\nnginx.ingress.kubernetes.io/force-ssl-redirect: \"false\"\nnginx.ingress.kubernetes.io/configuration-snippet: |\n  sub_filter '\u003chead\u003e' '\u003chead\u003e \u003cbase href=\"/sw-master/\"\u003e'; #add base url\n  sub_filter '=\"/' '=\"./';                                #make absolute paths to relative\n  sub_filter '=/' '=./';\n  sub_filter '/seaweedfsstatic' './seaweedfsstatic';\n  sub_filter_once off;",
               "items": {
                 "required": []
               },
@@ -2373,7 +2276,7 @@
               "type": "object"
             },
             "className": {
-              "default": "nginx",
+              "default": "",
               "required": [],
               "title": "className",
               "type": "string"
