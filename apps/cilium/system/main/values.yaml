@@ -22,4 +22,4 @@ bpf:
   distributedLRU:
     enabled: true
   # https://docs.cilium.io/en/stable/operations/performance/tuning/#ebpf-map-backend-memory
-  mapDynamicSizeRatio: 0.08
+  mapDynamicSizeRatio: 0.02
