@@ -16,18 +16,14 @@ cluster:
           defaults:
             audit: restricted
             audit-version: latest
-            enforce: baseline
+            enforce: privileged
             enforce-version: latest
-            warn: restricted
+            warn: baseline
             warn-version: latest
           exemptions:
             namespaces:
               - cilium-system
               - cilium-tetragon
-              - kube-openebs
-              - kube-spegel
-              - o11y-k8s-monitoring
-              - public-adguard
             runtimeClasses: []
             usernames: []
   controllerManager:
