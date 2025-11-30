@@ -15,17 +15,17 @@ storage:
   trace:
     backend: s3
 
-global:
-  extraArgs:
-    - -config.expand-env=true
-
 distributor:
   replicas: 3
   maxUnavailable: 2
+  extraArgs:
+    - -config.expand-env=true
 
 ingester:
   replicas: 3
   maxUnavailable: 2
+  extraArgs:
+    - -config.expand-env=true
   persistence:
     enabled: true
     storageClass: openebs-hostpath
@@ -33,10 +33,14 @@ ingester:
 
 compactor:
   replicas: 1
+  extraArgs:
+    - -config.expand-env=true
 
 querier:
   replicas: 3
   maxUnavailable: 2
+  extraArgs:
+    - -config.expand-env=true
 
 queryFrontend:
   replicas: 2
@@ -47,6 +51,8 @@ queryFrontend:
 gateway:
   enabled: true
   replicas: 2
+  extraArgs:
+    - -config.expand-env=true
 
 memcached:
   enabled: true
