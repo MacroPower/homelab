@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "mimir-distributed"
     repoURL : str, required, default is "https://grafana.github.io/helm-charts"
-    targetRevision : str, optional, default is "5.8.0"
+    targetRevision : str, optional, default is "6.0.5"
     """
     values?: Values | any
     chart: str = "mimir-distributed"
     repoURL: str = "https://grafana.github.io/helm-charts"
-    targetRevision?: str = "5.8.0"
+    targetRevision?: str = "6.0.5"
 
