@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "crossplane"
     repoURL : str, required, default is "https://charts.crossplane.io/stable"
-    targetRevision : str, optional, default is "2.1.1"
+    targetRevision : str, optional, default is "2.1.3"
     """
     values?: Values | any
     chart: str = "crossplane"
     repoURL: str = "https://charts.crossplane.io/stable"
-    targetRevision?: str = "2.1.1"
+    targetRevision?: str = "2.1.3"
 
