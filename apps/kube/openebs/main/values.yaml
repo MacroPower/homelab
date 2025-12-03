@@ -4,6 +4,9 @@ engines:
   local:
     zfs:
       enabled: true
+  replicated:
+    mayastor:
+      enabled: true
 
 zfs-localpv:
   zfsNode:
@@ -14,3 +17,52 @@ zfs-localpv:
     csi:
       volumeSnapshots:
         enabled: true
+
+# Mayastor io-engine configuration
+io_engine:
+  cpuCount: "2"
+  logLevel: info
+  nodeSelector:
+    openebs.io/engine: mayastor
+    kubernetes.io/arch: amd64
+  resources:
+    limits:
+      hugepages-2Mi: 2Gi
+      memory: 1Gi
+    requests:
+      hugepages-2Mi: 2Gi
+      memory: 1Gi
+
+mayastor:
+  crds:
+    enabled: true
+    csi:
+      volumeSnapshots:
+        enabled: true
+  io_engine:
+    cpuCount: "2"
+  storageClass:
+    enabled: true
+    nameSuffix: mayastor
+    default: false
+    allowVolumeExpansion: true
+    parameters:
+      protocol: nvmf
+      repl: 2
+  etcd:
+    podAntiAffinityPreset: soft
+    nodeSelector:
+      kubernetes.io/arch: amd64
+    persistence:
+      enabled: true
+      size: "2Gi"
+      storageClass: openebs-zfs-etcd
+  loki:
+    enabled: false
+  alloy:
+    enabled: false
+  localpv-provisioner:
+    enabled: false
+  obs:
+    callhome:
+      enabled: false

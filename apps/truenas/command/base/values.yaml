@@ -106,8 +106,8 @@ configMaps:
 persistence:
   data:
     type: persistentVolumeClaim
-    size: 50Gi
-    storageClass: openebs-hostpath
+    size: 10Gi
+    storageClass: openebs-mayastor
     accessMode: ReadWriteOnce
     globalMounts:
       - path: /data

@@ -116,10 +116,42 @@ _zfsPostgresStorageClass = storagev1.StorageClass {
     volumeBindingMode = "WaitForFirstConsumer"
 }
 
+_zfsEtcdStorageClass = storagev1.StorageClass {
+    metadata: {
+        name = "openebs-zfs-etcd"
+    }
+    provisioner = "zfs.csi.openebs.io"
+    parameters = {
+        poolname = "tank"
+        fstype = "xfs"
+        volblocksize = "8k"
+    }
+    reclaimPolicy = "Retain"
+    volumeBindingMode = "WaitForFirstConsumer"
+}
+
+_mayastorHosts = ["kmain07", "kmain08", "kmain09"]
+
+_diskPools = {"diskPool_${hostname}": {
+    apiVersion = "openebs.io/v1beta3"
+    kind = "DiskPool"
+    metadata: {
+        name = "pool-${hostname}"
+        annotations = {
+            "argocd.argoproj.io/sync-options": "SkipDryRunOnMissingResource=true"
+        }
+    }
+    spec = {
+        node = hostname
+        disks = ["aio:///dev/disk/by-partlabel/r-mayastor-pool"]
+    }
+} for hostname in _mayastorHosts}
+
 app = kube_openebs_base.app | {
     charts.openebs.values = _values | openebs.Values {}
     extraResources: {
         zfsPoolManager = _zfsPoolManager
         zfsPostgresStorageClass = _zfsPostgresStorageClass
-    }
+        zfsEtcdStorageClass = _zfsEtcdStorageClass
+    } | _diskPools
 }

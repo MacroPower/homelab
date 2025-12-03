@@ -199,6 +199,7 @@ nodes:
       topology.kubernetes.io/zone: az01
       bgp.kube.macro.network/peer-group: main
       node-role.kubernetes.io/worker: ""
+      openebs.io/engine: mayastor
     networkInterfaces:
       - deviceSelector: &M11SDVNetDevice
           driver: mlx4_core
@@ -220,10 +221,12 @@ nodes:
       - *fixedEphemeral
     extraManifests:
       - *zfsPool
+      - &mayastorPool manifests/volume-mayastor-pool.yaml
     patches:
       - &machine10G |-
         machine:
           sysctls:
+            vm.nr_hugepages: 1024
             net.core.rmem_max: 67108864
             net.core.wmem_max: 67108864
             net.ipv4.tcp_mtu_probing: 1
@@ -240,6 +243,7 @@ nodes:
       topology.kubernetes.io/zone: az02
       bgp.kube.macro.network/peer-group: main
       node-role.kubernetes.io/worker: ""
+      openebs.io/engine: mayastor
     networkInterfaces:
       - deviceSelector: *M11SDVNetDevice
         dhcp: false
@@ -255,6 +259,7 @@ nodes:
       - *fixedEphemeral
     extraManifests:
       - *zfsPool
+      - *mayastorPool
     patches:
       - *machine10G
 
@@ -268,6 +273,7 @@ nodes:
       topology.kubernetes.io/zone: az03
       bgp.kube.macro.network/peer-group: main
       node-role.kubernetes.io/worker: ""
+      openebs.io/engine: mayastor
     networkInterfaces:
       - deviceSelector: *M11SDVNetDevice
         dhcp: false
@@ -283,6 +289,7 @@ nodes:
       - *fixedEphemeral
     extraManifests:
       - *zfsPool
+      - *mayastorPool
     patches:
       - *machine10G
 
