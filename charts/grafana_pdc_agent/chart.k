@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional, default is {cluster = "kcl", hostedGrafanaId = "0", tokenSecretName = "kcl"}
     chart : str, required, default is "pdc-agent"
     repoURL : str, required, default is "https://grafana.github.io/helm-charts"
-    targetRevision : str, optional, default is "0.0.2"
+    targetRevision : str, optional, default is "0.0.3"
     """
     values?: Values | any = {cluster = "kcl", hostedGrafanaId = "0", tokenSecretName = "kcl"}
     chart: str = "pdc-agent"
     repoURL: str = "https://grafana.github.io/helm-charts"
-    targetRevision?: str = "0.0.2"
+    targetRevision?: str = "0.0.3"
 

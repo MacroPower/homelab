@@ -238,6 +238,49 @@
       "title": "securityContext",
       "type": "object"
     },
+    "serviceAccount": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations applied to created service account",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "automountServiceAccountToken": {
+          "default": false,
+          "description": "Automount API credentials for the Service Account. Disabled by default as the agent does not need Kubernetes API access",
+          "required": [],
+          "title": "automountServiceAccountToken",
+          "type": "boolean"
+        },
+        "create": {
+          "default": false,
+          "description": "Toggle to create ServiceAccount",
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "labels": {
+          "additionalProperties": true,
+          "description": "Labels applied to created service account",
+          "required": [],
+          "title": "labels",
+          "type": "object"
+        },
+        "name": {
+          "default": "pdc-agent",
+          "description": "Service account name",
+          "required": [],
+          "title": "name",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "serviceAccount",
+      "type": "object"
+    },
     "tokenSecretName": {
       "default": "",
       "description": "secretName Expects a secret with key `token` which contains the Access Policy token you generated",

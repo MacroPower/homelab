@@ -46,6 +46,7 @@ schema Values:
         This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
     resources : ValuesResources, optional
     securityContext : ValuesSecurityContext, optional
+    serviceAccount : ValuesServiceAccount, optional
     tokenSecretName : str, optional, default is ""
         secretName Expects a secret with key `token` which contains the Access Policy token you generated
     tolerations : [any], optional
@@ -70,6 +71,7 @@ schema Values:
     replicaCount?: int
     resources?: ValuesResources
     securityContext?: ValuesSecurityContext
+    serviceAccount?: ValuesServiceAccount
     tokenSecretName?: str
     tolerations?: [any]
 
@@ -186,4 +188,40 @@ schema ValuesSecurityContextCapabilities:
     """
     [...str]: any
     drop?: [str]
+
+schema ValuesServiceAccount:
+    r"""
+    ValuesServiceAccount
+
+    Attributes
+    ----------
+    annotations : ValuesServiceAccountAnnotations, optional
+        Annotations applied to created service account
+    automountServiceAccountToken : bool, optional, default is False
+        Automount API credentials for the Service Account. Disabled by default as the agent does not need Kubernetes API access
+    create : bool, optional, default is False
+        Toggle to create ServiceAccount
+    labels : ValuesServiceAccountLabels, optional
+        Labels applied to created service account
+    name : str, optional, default is "pdc-agent"
+        Service account name
+    """
+    [...str]: any
+    annotations?: ValuesServiceAccountAnnotations
+    automountServiceAccountToken?: bool
+    create?: bool
+    labels?: ValuesServiceAccountLabels
+    name?: str
+
+schema ValuesServiceAccountAnnotations:
+    r"""
+    Annotations applied to created service account
+    """
+    [...str]: any
+
+schema ValuesServiceAccountLabels:
+    r"""
+    Labels applied to created service account
+    """
+    [...str]: any
 
