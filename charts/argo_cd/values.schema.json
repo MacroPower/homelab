@@ -10119,7 +10119,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v0.0.8",
+                  "default": "v0.0.9",
                   "description": "Tag to use for extension installer image",
                   "required": [],
                   "title": "tag",
