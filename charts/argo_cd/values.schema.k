@@ -8128,7 +8128,7 @@ schema ValuesServerExtensionsImage:
         Image pull policy for extensions
     repository : str, optional, default is "quay.io/argoprojlabs/argocd-extension-installer"
         Repository to use for extension installer image
-    tag : str, optional, default is "v0.0.8"
+    tag : str, optional, default is "v0.0.9"
         Tag to use for extension installer image
     """
     [...str]: any
