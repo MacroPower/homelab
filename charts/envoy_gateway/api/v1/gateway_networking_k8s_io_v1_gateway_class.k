@@ -144,7 +144,7 @@ schema GatewayNetworkingK8sIoV1GatewayClassStatus:
 
     Attributes
     ----------
-    conditions : [GatewayNetworkingK8sIoV1GatewayClassStatusConditionsItems0], default is [{"type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown"}], optional
+    conditions : [GatewayNetworkingK8sIoV1GatewayClassStatusConditionsItems0], default is [{"reason": "Pending", "status": "Unknown", "type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller"}], optional
         Conditions is the current status from the controller for
         this GatewayClass.
 
@@ -154,7 +154,7 @@ schema GatewayNetworkingK8sIoV1GatewayClassStatus:
         SupportedFeatures is the set of features the GatewayClass support.
         It MUST be sorted in ascending alphabetical order by the Name key.
     """
-    conditions?: [GatewayNetworkingK8sIoV1GatewayClassStatusConditionsItems0] = [{"status": "Unknown", "type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending"}]
+    conditions?: [GatewayNetworkingK8sIoV1GatewayClassStatusConditionsItems0] = [{"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted"}]
     supportedFeatures?: [GatewayNetworkingK8sIoV1GatewayClassStatusSupportedFeaturesItems0]
 
     check:
