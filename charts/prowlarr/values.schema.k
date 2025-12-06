@@ -223,6 +223,8 @@ schema ValuesControllersAdditionalProperties:
         Labels to set on the item.
     pod : ValuesControllersAdditionalPropertiesPod, optional
         Pod-level options for this controller.
+    podDisruptionBudget : ValuesControllersAdditionalPropertiesPodDisruptionBudget, optional
+        PodDisruptionBudget Policy for this controller.
     prefix : str, optional
         Prefix to prepend to the resource name. Mutually exclusive with forceRename.
     replicas : int, optional, default is 1
@@ -254,6 +256,7 @@ schema ValuesControllersAdditionalProperties:
     job?: ValuesControllersAdditionalPropertiesJob
     labels?: any
     pod?: ValuesControllersAdditionalPropertiesPod
+    podDisruptionBudget?: ValuesControllersAdditionalPropertiesPodDisruptionBudget
     prefix?: str
     replicas?: int
     revisionHistoryLimit?: int
@@ -3954,6 +3957,18 @@ schema ValuesControllersAdditionalPropertiesPodAffinityPodAntiAffinityRequiredDu
     """
     [...str]: str
 
+schema ValuesControllersAdditionalPropertiesPodDisruptionBudget:
+    r"""
+    PodDisruptionBudget Policy for this controller.
+
+    Attributes
+    ----------
+    maxUnavailable : int | str, optional
+    minAvailable : int | str, optional
+    """
+    maxUnavailable?: int | str
+    minAvailable?: int | str
+
 schema ValuesControllersAdditionalPropertiesPodDnsConfig:
     r"""
     Specifies the DNS parameters of a pod. Parameters specified here will be merged to the generated DNS configuration based on DNSPolicy.
@@ -6487,6 +6502,8 @@ schema ValuesRouteAdditionalPropertiesRulesItems0:
     matches : [ValuesRouteAdditionalPropertiesRulesItems0MatchesItems0], optional
         Matches define conditions used for matching the rule against incoming requests. Each match is independent, i.e. this rule will be matched
         if **any** one of the matches is satisfied.
+    name : str, optional
+        Optional name of the route rule. This name must be unique within a Route if it is set.
     sessionPersistence : ValuesRouteAdditionalPropertiesRulesItems0SessionPersistence, optional
         SessionPersistence defines the desired state of SessionPersistence.
     timeouts : ValuesRouteAdditionalPropertiesRulesItems0Timeouts, optional
@@ -6495,6 +6512,7 @@ schema ValuesRouteAdditionalPropertiesRulesItems0:
     backendRefs?: [ValuesRouteAdditionalPropertiesRulesItems0BackendRefsItems0]
     filters?: [ValuesRouteAdditionalPropertiesRulesItems0FiltersItems0]
     matches?: [ValuesRouteAdditionalPropertiesRulesItems0MatchesItems0]
+    name?: str
     sessionPersistence?: ValuesRouteAdditionalPropertiesRulesItems0SessionPersistence
     timeouts?: ValuesRouteAdditionalPropertiesRulesItems0Timeouts
 
@@ -6533,6 +6551,8 @@ schema ValuesRouteAdditionalPropertiesRulesItems0FiltersItems0:
 
     Attributes
     ----------
+    cors : any, optional
+        EXPERIMENTAL: HTTPCORSFilter defines a filter that that configures Cross-Origin Request Sharing (CORS).
     extensionRef : ValuesRouteAdditionalPropertiesRulesItems0FiltersItems0ExtensionRef, optional
         ExtensionRef is an optional, implementation-specific extension to the
         "filter" behavior.  For example, resource "myroutefilter" in group
@@ -6542,6 +6562,8 @@ schema ValuesRouteAdditionalPropertiesRulesItems0FiltersItems0:
         This filter can be used multiple times within the same rule.
 
         Support: Implementation-specific
+    externalAuth : any, optional
+        EXPERIMENTAL: HTTPExternalAuthFilter defines a filter that modifies requests by sending request details to an external authorization server.
     requestHeaderModifier : ValuesRouteAdditionalPropertiesRulesItems0FiltersItems0RequestHeaderModifier, optional
         RequestHeaderModifier defines a schema for a filter that modifies request
         headers.
@@ -6569,7 +6591,7 @@ schema ValuesRouteAdditionalPropertiesRulesItems0FiltersItems0:
         headers.
 
         Support: Extended
-    $type : "ResponseHeaderModifier" | "RequestHeaderModifier" | "RequestMirror" | "ExtensionRef" | "RequestHeaderModifier" | "ResponseHeaderModifier" | "RequestMirror" | "RequestRedirect" | "URLRewrite" | "ExtensionRef", optional
+    $type : "ResponseHeaderModifier" | "RequestHeaderModifier" | "RequestMirror" | "ExtensionRef" | "RequestHeaderModifier" | "ResponseHeaderModifier" | "RequestMirror" | "RequestRedirect" | "URLRewrite" | "ExtensionRef" | "CORS" | "ExternalAuth", optional
         Type identifies the type of filter to apply. As with other API fields,
         types are classified into three conformance levels:
 
@@ -6607,12 +6629,14 @@ schema ValuesRouteAdditionalPropertiesRulesItems0FiltersItems0:
 
         Support: Extended
     """
+    cors?: any
     extensionRef?: ValuesRouteAdditionalPropertiesRulesItems0FiltersItems0ExtensionRef
+    externalAuth?: any
     requestHeaderModifier?: ValuesRouteAdditionalPropertiesRulesItems0FiltersItems0RequestHeaderModifier
     requestMirror?: ValuesRouteAdditionalPropertiesRulesItems0FiltersItems0RequestMirror
     requestRedirect?: ValuesRouteAdditionalPropertiesRulesItems0FiltersItems0RequestRedirect
     responseHeaderModifier?: ValuesRouteAdditionalPropertiesRulesItems0FiltersItems0ResponseHeaderModifier
-    $type?: "ResponseHeaderModifier" | "RequestHeaderModifier" | "RequestMirror" | "ExtensionRef" | "RequestHeaderModifier" | "ResponseHeaderModifier" | "RequestMirror" | "RequestRedirect" | "URLRewrite" | "ExtensionRef"
+    $type?: "ResponseHeaderModifier" | "RequestHeaderModifier" | "RequestMirror" | "ExtensionRef" | "RequestHeaderModifier" | "ResponseHeaderModifier" | "RequestMirror" | "RequestRedirect" | "URLRewrite" | "ExtensionRef" | "CORS" | "ExternalAuth"
     urlRewrite?: ValuesRouteAdditionalPropertiesRulesItems0FiltersItems0UrlRewrite
 
 schema ValuesRouteAdditionalPropertiesRulesItems0FiltersItems0ExtensionRef:
