@@ -107,17 +107,36 @@ envoyGatewayIngress = networkpolicy.NetworkPolicy {
     name = "envoy-gateway-ingress"
     ingress = [
         {
-            fromEndpoints = [
-                {
-                    matchExpressions = [
-                        {
-                            key = "k8s:io.kubernetes.pod.namespace"
-                            operator = "In"
-                            values = ["envoy-gateway"]
-                        }
-                    ]
-                }
-            ]
+            fromEndpoints = [{
+                matchExpressions = [{
+                    key = "k8s:io.kubernetes.pod.namespace"
+                    operator = "In"
+                    values = ["envoy-gateway"]
+                }]
+            }]
+        }
+    ]
+}
+
+envoyGatewayHTTPIngress = networkpolicy.NetworkPolicy {
+    name = "envoy-gateway-http-ingress"
+    ingress = [
+        {
+            fromEndpoints = [{
+                matchExpressions = [{
+                    key = "k8s:io.kubernetes.pod.namespace"
+                    operator = "In"
+                    values = ["envoy-gateway"]
+                }]
+            }]
+            toPorts = [{
+                ports = [{
+                    port = "1"
+                    endPort = 65535
+                    protocol = "TCP"
+                }]
+                rules.http = [{}]
+            }]
         }
     ]
 }
@@ -142,18 +161,9 @@ internetIPv4Egress = networkpolicy.NetworkPolicy {
 
 internetIPv6Egress = networkpolicy.NetworkPolicy {
     name = "internet-ipv6-egress"
-    egress = [
-        {
-            toCIDRSet = [
-                {
-                    cidr = "2000::/3"
-                    except = [
-                        "fc00::/7"
-                    ]
-                }
-            ]
-        }
-    ]
+    egress = [{
+        toCIDRSet = [{cidr = "2000::/3"}]
+    }]
 }
 
 openMetricsIngress = networkpolicy.NetworkPolicy {
