@@ -69,8 +69,6 @@ bpf:
   masquerade: true
   # https://docs.cilium.io/en/stable/operations/performance/tuning/#netkit-device-mode
   datapathMode: netkit
-  # https://github.com/siderolabs/talos/issues/9043
-  hostLegacyRouting: true
   events:
     default:
       rateLimit: 10000
