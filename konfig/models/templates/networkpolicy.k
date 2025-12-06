@@ -65,29 +65,18 @@ kubeDNSEgress = networkpolicy.NetworkPolicy {
     name = "kube-dns-egress"
     egress = [
         {
-            toEndpoints = [
-                {
-                    matchLabels = {
-                        "io.kubernetes.pod.namespace": "kube-system"
-                        "k8s-app": "kube-dns"
-                    }
+            toEndpoints = [{
+                matchLabels = {
+                    "io.kubernetes.pod.namespace": "kube-system"
+                    "k8s-app": "kube-dns"
                 }
-            ]
-            toPorts = [
-                {
-                    ports = [
-                        {
-                            port = "53"
-                            protocol = "ANY"
-                        }
-                    ]
-                    rules.dns = [
-                        {
-                            matchPattern = "*"
-                        }
-                    ]
-                }
-            ]
+            }]
+            toPorts = [{
+                ports = [{
+                    port = "53"
+                    protocol = "ANY"
+                }]
+            }]
         }
     ]
 }
