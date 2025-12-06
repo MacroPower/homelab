@@ -315,6 +315,9 @@ nodes:
       - *machine10G
       - &machineNAS |-
         machine:
+          features:
+            hostDNS:
+              forwardKubeDNSToHost: true
           kubelet:
             extraConfig:
               registerWithTaints:

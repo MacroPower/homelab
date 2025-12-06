@@ -32,7 +32,8 @@ machine:
   features:
     hostDNS:
       enabled: true
-      forwardKubeDNSToHost: true
+      resolveMemberNames: true
+      forwardKubeDNSToHost: false
     kubePrism:
       enabled: true
       port: 7445
