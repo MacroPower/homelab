@@ -11,6 +11,8 @@ schema Values:
     ----------
     affinity : ValuesAffinity, optional
          not required, but left in as a choice
+    annotations : ValuesAnnotations, optional
+        custom deployment annotations
     cluster : str, optional, default is ""
         For these values, see https://grafana.com/docs/grafana-cloud/connect-externally-hosted/private-data-source-connect/configure-pdc/#pdc-connection-steps
         The cluster where your Hosted Grafana stack is running
@@ -54,6 +56,7 @@ schema Values:
     """
     [...str]: any
     affinity?: ValuesAffinity
+    annotations?: ValuesAnnotations
     cluster?: str
     debug?: bool
     extraArgs?: [any]
@@ -78,6 +81,12 @@ schema Values:
 schema ValuesAffinity:
     r"""
      not required, but left in as a choice
+    """
+    [...str]: any
+
+schema ValuesAnnotations:
+    r"""
+    custom deployment annotations
     """
     [...str]: any
 
