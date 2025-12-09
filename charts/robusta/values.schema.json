@@ -9618,6 +9618,189 @@
           "required": [],
           "title": "aws",
           "type": "object"
+        },
+        "mariadb": {
+          "additionalProperties": true,
+          "properties": {
+            "affinity": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "config": {
+              "additionalProperties": true,
+              "properties": {
+                "database": {
+                  "default": "",
+                  "required": [],
+                  "title": "database",
+                  "type": "string"
+                },
+                "host": {
+                  "default": "",
+                  "required": [],
+                  "title": "host",
+                  "type": "string"
+                },
+                "maxPoolSize": {
+                  "default": "5",
+                  "required": [],
+                  "title": "maxPoolSize",
+                  "type": "string"
+                },
+                "namespace": {
+                  "default": "",
+                  "required": [],
+                  "title": "namespace",
+                  "type": "string"
+                },
+                "password": {
+                  "default": "",
+                  "required": [],
+                  "title": "password",
+                  "type": "string"
+                },
+                "port": {
+                  "default": "3306",
+                  "required": [],
+                  "title": "port",
+                  "type": "string"
+                },
+                "readOnlyMode": {
+                  "default": true,
+                  "required": [],
+                  "title": "readOnlyMode",
+                  "type": "boolean"
+                },
+                "useSSL": {
+                  "default": true,
+                  "required": [],
+                  "title": "useSSL",
+                  "type": "boolean"
+                },
+                "username": {
+                  "default": "",
+                  "required": [],
+                  "title": "username",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "config",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "image": {
+              "default": "mariadb-http-mcp-minimal:1.0.3",
+              "required": [],
+              "title": "image",
+              "type": "string"
+            },
+            "llmInstructions": {
+              "default": "",
+              "description": "Custom LLM instructions (optional). Leave empty to use default instructions",
+              "required": [],
+              "title": "llmInstructions",
+              "type": "string"
+            },
+            "networkPolicy": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "networkPolicy",
+              "type": "object"
+            },
+            "nodeSelector": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "nodeSelector",
+              "type": "object"
+            },
+            "registry": {
+              "default": "me-west1-docker.pkg.dev/robusta-development/development",
+              "required": [],
+              "title": "registry",
+              "type": "string"
+            },
+            "resources": {
+              "additionalProperties": true,
+              "properties": {
+                "limits": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "cpu": {
+                      "default": "500m",
+                      "required": [],
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "512Mi",
+                      "required": [],
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "cpu": {
+                      "default": "250m",
+                      "required": [],
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "256Mi",
+                      "required": [],
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            },
+            "tolerations": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "tolerations",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "mariadb",
+          "type": "object"
         }
       },
       "required": [],
@@ -16155,7 +16338,7 @@
           "type": "null"
         },
         "imageName": {
-          "default": "robusta-runner:0.29.2",
+          "default": "robusta-runner:0.30.0",
           "required": [],
           "title": "imageName",
           "type": "string"

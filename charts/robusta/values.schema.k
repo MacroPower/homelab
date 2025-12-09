@@ -7958,9 +7958,11 @@ schema ValuesMcpAddons:
     Attributes
     ----------
     aws : ValuesMcpAddonsAws, optional
+    mariadb : ValuesMcpAddonsMariadb, optional
     """
     [...str]: any
     aws?: ValuesMcpAddonsAws
+    mariadb?: ValuesMcpAddonsMariadb
 
 schema ValuesMcpAddonsAws:
     r"""
@@ -8095,6 +8097,133 @@ schema ValuesMcpAddonsAwsServiceAccountAnnotations:
     ValuesMcpAddonsAwsServiceAccountAnnotations
     """
     [...str]: any
+
+schema ValuesMcpAddonsMariadb:
+    r"""
+    ValuesMcpAddonsMariadb
+
+    Attributes
+    ----------
+    affinity : ValuesMcpAddonsMariadbAffinity, optional
+    annotations : ValuesMcpAddonsMariadbAnnotations, optional
+    config : ValuesMcpAddonsMariadbConfig, optional
+    enabled : bool, optional, default is False
+    image : str, optional, default is "mariadb-http-mcp-minimal:1.0.3"
+    llmInstructions : str, optional, default is ""
+        Custom LLM instructions (optional). Leave empty to use default instructions
+    networkPolicy : ValuesMcpAddonsMariadbNetworkPolicy, optional
+    nodeSelector : ValuesMcpAddonsMariadbNodeSelector, optional
+    registry : str, optional, default is "me-west1-docker.pkg.dev/robusta-development/development"
+    resources : ValuesMcpAddonsMariadbResources, optional
+    tolerations : [any], optional
+    """
+    [...str]: any
+    affinity?: ValuesMcpAddonsMariadbAffinity
+    annotations?: ValuesMcpAddonsMariadbAnnotations
+    config?: ValuesMcpAddonsMariadbConfig
+    enabled?: bool
+    image?: str
+    llmInstructions?: str
+    networkPolicy?: ValuesMcpAddonsMariadbNetworkPolicy
+    nodeSelector?: ValuesMcpAddonsMariadbNodeSelector
+    registry?: str
+    resources?: ValuesMcpAddonsMariadbResources
+    tolerations?: [any]
+
+schema ValuesMcpAddonsMariadbAffinity:
+    r"""
+    ValuesMcpAddonsMariadbAffinity
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsMariadbAnnotations:
+    r"""
+    ValuesMcpAddonsMariadbAnnotations
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsMariadbConfig:
+    r"""
+    ValuesMcpAddonsMariadbConfig
+
+    Attributes
+    ----------
+    database : str, optional, default is ""
+    host : str, optional, default is ""
+    maxPoolSize : str, optional, default is "5"
+    namespace : str, optional, default is ""
+    password : str, optional, default is ""
+    port : str, optional, default is "3306"
+    readOnlyMode : bool, optional, default is True
+    useSSL : bool, optional, default is True
+    username : str, optional, default is ""
+    """
+    [...str]: any
+    database?: str
+    host?: str
+    maxPoolSize?: str
+    namespace?: str
+    password?: str
+    port?: str
+    readOnlyMode?: bool
+    useSSL?: bool
+    username?: str
+
+schema ValuesMcpAddonsMariadbNetworkPolicy:
+    r"""
+    ValuesMcpAddonsMariadbNetworkPolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMcpAddonsMariadbNodeSelector:
+    r"""
+    ValuesMcpAddonsMariadbNodeSelector
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsMariadbResources:
+    r"""
+    ValuesMcpAddonsMariadbResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsMariadbResourcesLimits, optional
+    requests : ValuesMcpAddonsMariadbResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsMariadbResourcesLimits
+    requests?: ValuesMcpAddonsMariadbResourcesRequests
+
+schema ValuesMcpAddonsMariadbResourcesLimits:
+    r"""
+    ValuesMcpAddonsMariadbResourcesLimits
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "500m"
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsMariadbResourcesRequests:
+    r"""
+    ValuesMcpAddonsMariadbResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "250m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
 
 schema ValuesMcpServers:
     r"""
@@ -13288,7 +13417,7 @@ schema ValuesRunner:
     hardenedFs : bool, optional, default is False
         Enable hardened filesystem security (read-only root filesystem with writable volume mounts)
     image : any, optional, default is "~"
-    imageName : str, optional, default is "robusta-runner:0.29.2"
+    imageName : str, optional, default is "robusta-runner:0.30.0"
     imagePullPolicy : str, optional, default is "IfNotPresent"
     imagePullSecrets : [any], optional
     log_level : str, optional, default is "INFO"
