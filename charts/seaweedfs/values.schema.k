@@ -73,7 +73,7 @@ schema ValuesAllInOne:
 
     Attributes
     ----------
-    affinity : str, optional, default is "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          app.kubernetes.io/name: {{ template \"seaweedfs.name\" . }}\n          app.kubernetes.io/instance: {{ .Release.Name }}\n          app.kubernetes.io/component: master\n      topologyKey: kubernetes.io/hostname\n"
+    affinity : str, optional, default is "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          app.kubernetes.io/name: {{ template \"seaweedfs.name\" . }}\n          app.kubernetes.io/instance: {{ .Release.Name }}\n          app.kubernetes.io/component: seaweedfs-all-in-one\n      topologyKey: kubernetes.io/hostname\n"
         Scheduling configuration
         Affinity Settings
         Commenting out or setting as empty the affinity variable, will allow
@@ -92,6 +92,12 @@ schema ValuesAllInOne:
     dataCenter : str, optional, default is ""
     disableHttp : bool, optional, default is False
     enabled : bool, optional, default is False
+    extraArgs : [any], optional
+        Custom command line arguments to add to the server command
+        Example to fix IPv6 metrics connectivity issues:
+        extraArgs: ["-metricsIp", "0.0.0.0"]
+        Example with multiple args:
+        extraArgs: ["-customFlag", "value", "-anotherFlag"]
     extraEnvironmentVars : ValuesAllInOneExtraEnvironmentVars, optional
         Additional resources
     extraVolumeMounts : str, optional, default is ""
@@ -105,7 +111,7 @@ schema ValuesAllInOne:
     metricsIp : str, optional, default is ""
     metricsPort : int, optional, default is 9324
     nodeSelector : str, optional, default is ""
-        nodeSelector labels for master pod assignment, formatted as a muli-line string.
+        nodeSelector labels for pod assignment, formatted as a muli-line string.
         ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
     podAnnotations : ValuesAllInOnePodAnnotations, optional
     podLabels : ValuesAllInOnePodLabels, optional
@@ -119,31 +125,56 @@ schema ValuesAllInOne:
           runAsGroup: 3000
           fsGroup: 2000
     priorityClassName : str, optional, default is ""
-        Used to assign priority to master pods
+        Used to assign priority to pods
         ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
     rack : str, optional, default is ""
     readinessProbe : ValuesAllInOneReadinessProbe, optional
         Health checks
+    replicas : int, optional, default is 1
     resources : ValuesAllInOneResources, optional
         Resource management
     restartPolicy : str, optional, default is "Always"
     s3 : ValuesAllInOneS3, optional
-        Service configuration
+        S3 gateway configuration
+        Note: Most parameters below default to null, which means they inherit from
+        the global s3.* settings. Set explicit values here to override for allInOne only.
+    secretExtraEnvironmentVars : ValuesAllInOneSecretExtraEnvironmentVars, optional
+        Secret environment variables (for database credentials, etc.)
+        Example:
+        secretExtraEnvironmentVars:
+          WEED_POSTGRES_USERNAME:
+            secretKeyRef:
+              name: postgres-credentials
+              key: username
+          WEED_POSTGRES_PASSWORD:
+            secretKeyRef:
+              name: postgres-credentials
+              key: password
     service : ValuesAllInOneService, optional
         Service settings
     serviceAccountName : str, optional, default is ""
         Used to assign a service account.
         ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
     sftp : ValuesAllInOneSftp, optional
+        SFTP server configuration
+        Note: Most parameters below default to null, which means they inherit from
+        the global sftp.* settings. Set explicit values here to override for allInOne only.
     sidecars : str, optional, default is ""
     tolerations : str, optional, default is ""
-        Toleration Settings for master pods
+        Toleration Settings for pods
         This should be a multi-line string matching the Toleration array
         in a PodSpec.
     topologySpreadConstraints : str, optional, default is ""
         Topology Spread Constraints Settings
         This should map directly to the value of the topologySpreadConstraints
         for a PodSpec. By Default no constraints are set.
+    updateStrategy : ValuesAllInOneUpdateStrategy, optional
+        Update strategy configuration
+        type: Recreate or RollingUpdate
+        For single replica, Recreate is recommended to avoid data conflicts.
+        For multiple replicas with RollingUpdate, you MUST use shared storage
+        (e.g., data.type: persistentVolumeClaim with ReadWriteMany access mode)
+        to avoid data loss or inconsistency between pods.
     whiteList : str, optional, default is ""
     """
     [...str]: any
@@ -154,6 +185,7 @@ schema ValuesAllInOne:
     dataCenter?: str
     disableHttp?: bool
     enabled?: bool
+    extraArgs?: [any]
     extraEnvironmentVars?: ValuesAllInOneExtraEnvironmentVars
     extraVolumeMounts?: str
     extraVolumes?: str
@@ -171,15 +203,18 @@ schema ValuesAllInOne:
     priorityClassName?: str
     rack?: str
     readinessProbe?: ValuesAllInOneReadinessProbe
+    replicas?: int
     resources?: ValuesAllInOneResources
     restartPolicy?: str
     s3?: ValuesAllInOneS3
+    secretExtraEnvironmentVars?: ValuesAllInOneSecretExtraEnvironmentVars
     service?: ValuesAllInOneService
     serviceAccountName?: str
     sftp?: ValuesAllInOneSftp
     sidecars?: str
     tolerations?: str
     topologySpreadConstraints?: str
+    updateStrategy?: ValuesAllInOneUpdateStrategy
     whiteList?: str
 
 schema ValuesAllInOneAnnotations:
@@ -206,18 +241,30 @@ schema ValuesAllInOneData:
 
     Attributes
     ----------
+    accessModes : [any], optional
+        accessModes for the PVC. Default is ["ReadWriteOnce"].
+        For multi-replica deployments, use ["ReadWriteMany"] with a compatible storage class.
+    annotations : ValuesAllInOneDataAnnotations, optional
     claimName : str, optional, default is "seaweedfs-data-pvc"
     hostPathPrefix : str, optional, default is "/mnt/data"
-    size : str, optional, default is ""
-    storageClass : str, optional, default is ""
+    size : any, optional, default is "null"
+    storageClass : any, optional, default is "null"
     $type : str, optional, default is "emptyDir"
     """
     [...str]: any
+    accessModes?: [any]
+    annotations?: ValuesAllInOneDataAnnotations
     claimName?: str
     hostPathPrefix?: str
-    size?: str
-    storageClass?: str
+    size?: any
+    storageClass?: any
     $type?: str
+
+schema ValuesAllInOneDataAnnotations:
+    r"""
+    ValuesAllInOneDataAnnotations
+    """
+    [...str]: any
 
 schema ValuesAllInOneExtraEnvironmentVars:
     r"""
@@ -236,7 +283,6 @@ schema ValuesAllInOneLivenessProbe:
     httpGet : ValuesAllInOneLivenessProbeHttpGet, optional
     initialDelaySeconds : int, optional, default is 20
     periodSeconds : int, optional, default is 30
-    scheme : str, optional, default is "HTTP"
     successThreshold : int, optional, default is 1
     timeoutSeconds : int, optional, default is 5
     """
@@ -246,7 +292,6 @@ schema ValuesAllInOneLivenessProbe:
     httpGet?: ValuesAllInOneLivenessProbeHttpGet
     initialDelaySeconds?: int
     periodSeconds?: int
-    scheme?: str
     successThreshold?: int
     timeoutSeconds?: int
 
@@ -258,10 +303,12 @@ schema ValuesAllInOneLivenessProbeHttpGet:
     ----------
     path : str, optional, default is "/cluster/status"
     port : int, optional, default is 9333
+    scheme : str, optional, default is "HTTP"
     """
     [...str]: any
     path?: str
     port?: int
+    scheme?: str
 
 schema ValuesAllInOnePodAnnotations:
     r"""
@@ -299,7 +346,6 @@ schema ValuesAllInOneReadinessProbe:
     httpGet : ValuesAllInOneReadinessProbeHttpGet, optional
     initialDelaySeconds : int, optional, default is 10
     periodSeconds : int, optional, default is 15
-    scheme : str, optional, default is "HTTP"
     successThreshold : int, optional, default is 1
     timeoutSeconds : int, optional, default is 5
     """
@@ -309,7 +355,6 @@ schema ValuesAllInOneReadinessProbe:
     httpGet?: ValuesAllInOneReadinessProbeHttpGet
     initialDelaySeconds?: int
     periodSeconds?: int
-    scheme?: str
     successThreshold?: int
     timeoutSeconds?: int
 
@@ -321,10 +366,12 @@ schema ValuesAllInOneReadinessProbeHttpGet:
     ----------
     path : str, optional, default is "/cluster/status"
     port : int, optional, default is 9333
+    scheme : str, optional, default is "HTTP"
     """
     [...str]: any
     path?: str
     port?: int
+    scheme?: str
 
 schema ValuesAllInOneResources:
     r"""
@@ -367,14 +414,46 @@ schema ValuesAllInOneResourcesRequests:
 
 schema ValuesAllInOneS3:
     r"""
-    Service configuration
+    S3 gateway configuration
+    Note: Most parameters below default to null, which means they inherit from
+    the global s3.* settings. Set explicit values here to override for allInOne only.
 
     Attributes
     ----------
+    auditLogConfig : any, optional, default is "null"
+    domainName : any, optional, default is "null"
+    enableAuth : bool, optional, default is False
     enabled : bool, optional, default is False
+    existingConfigSecret : any, optional, default is "null"
+        Set to the name of an existing kubernetes Secret with the s3 json config file
+        should have a secret key called seaweedfs_s3_config with an inline json config
+    httpsPort : any, optional, default is "null"
+    port : any, optional, default is "null"
     """
     [...str]: any
+    auditLogConfig?: any
+    domainName?: any
+    enableAuth?: bool
     enabled?: bool
+    existingConfigSecret?: any
+    httpsPort?: any
+    port?: any
+
+schema ValuesAllInOneSecretExtraEnvironmentVars:
+    r"""
+    Secret environment variables (for database credentials, etc.)
+    Example:
+    secretExtraEnvironmentVars:
+      WEED_POSTGRES_USERNAME:
+        secretKeyRef:
+          name: postgres-credentials
+          key: username
+      WEED_POSTGRES_PASSWORD:
+        secretKeyRef:
+          name: postgres-credentials
+          key: password
+    """
+    [...str]: any
 
 schema ValuesAllInOneService:
     r"""
@@ -383,10 +462,12 @@ schema ValuesAllInOneService:
     Attributes
     ----------
     annotations : ValuesAllInOneServiceAnnotations, optional
+    internalTrafficPolicy : str, optional, default is "Cluster"
     $type : str, optional, default is "ClusterIP"
     """
     [...str]: any
     annotations?: ValuesAllInOneServiceAnnotations
+    internalTrafficPolicy?: str
     $type?: str
 
 schema ValuesAllInOneServiceAnnotations:
@@ -397,14 +478,58 @@ schema ValuesAllInOneServiceAnnotations:
 
 schema ValuesAllInOneSftp:
     r"""
-    ValuesAllInOneSftp
+    SFTP server configuration
+    Note: Most parameters below default to null, which means they inherit from
+    the global sftp.* settings. Set explicit values here to override for allInOne only.
 
     Attributes
     ----------
+    authMethods : any, optional, default is "null"
+    bannerMessage : any, optional, default is "null"
+    clientAliveCountMax : any, optional, default is "null"
+    clientAliveInterval : any, optional, default is "null"
+    enableAuth : bool, optional, default is False
     enabled : bool, optional, default is False
+    existingConfigSecret : any, optional, default is "null"
+        Set to the name of an existing kubernetes Secret with the sftp json config file
+    existingSshConfigSecret : any, optional, default is "null"
+        Set to the name of an existing kubernetes Secret with the SSH keys
+    hostKeysFolder : any, optional, default is "null"
+    loginGraceTime : any, optional, default is "null"
+    maxAuthTries : any, optional, default is "null"
+    port : any, optional, default is "null"
+    sshPrivateKey : any, optional, default is "null"
     """
     [...str]: any
+    authMethods?: any
+    bannerMessage?: any
+    clientAliveCountMax?: any
+    clientAliveInterval?: any
+    enableAuth?: bool
     enabled?: bool
+    existingConfigSecret?: any
+    existingSshConfigSecret?: any
+    hostKeysFolder?: any
+    loginGraceTime?: any
+    maxAuthTries?: any
+    port?: any
+    sshPrivateKey?: any
+
+schema ValuesAllInOneUpdateStrategy:
+    r"""
+    Update strategy configuration
+    type: Recreate or RollingUpdate
+    For single replica, Recreate is recommended to avoid data conflicts.
+    For multiple replicas with RollingUpdate, you MUST use shared storage
+    (e.g., data.type: persistentVolumeClaim with ReadWriteMany access mode)
+    to avoid data loss or inconsistency between pods.
+
+    Attributes
+    ----------
+    $type : str, optional, default is "Recreate"
+    """
+    [...str]: any
+    $type?: str
 
 schema ValuesCertificates:
     r"""
@@ -1020,8 +1145,6 @@ schema ValuesFilerS3:
 
     Attributes
     ----------
-    allowEmptyFolder : bool, optional, default is False
-        allow empty folders
     auditLogConfig : ValuesFilerS3AuditLogConfig, optional
     domainName : str, optional, default is ""
         Suffix of the host name, {bucket}.{domainName}
@@ -1036,7 +1159,6 @@ schema ValuesFilerS3:
     port : int, optional, default is 8333
     """
     [...str]: any
-    allowEmptyFolder?: bool
     auditLogConfig?: ValuesFilerS3AuditLogConfig
     domainName?: str
     enableAuth?: bool
@@ -1656,8 +1778,6 @@ schema ValuesS3:
 
     Attributes
     ----------
-    allowEmptyFolder : bool, optional, default is True
-        allow empty folders
     annotations : ValuesS3Annotations, optional
         Annotations to be added to the s3 resources
     auditLogConfig : ValuesS3AuditLogConfig, optional
@@ -1678,9 +1798,10 @@ schema ValuesS3:
     existingConfigSecret : any, optional, default is "null"
         set to the name of an existing kubernetes Secret with the s3 json config file
         should have a secret key called seaweedfs_s3_config with an inline json config
-    extraArgs : [str], optional
+    extraArgs : [any], optional
         Custom command line arguments to add to the s3 command
-        Example to fix connection idle seconds:
+        Default idleTimeout is 120 seconds. Example to customize:
+        extraArgs: ["-idleTimeout=300"]
     extraEnvironmentVars : any, optional, default is ""
     extraVolumeMounts : str, optional, default is ""
     extraVolumes : str, optional, default is ""
@@ -1749,7 +1870,6 @@ schema ValuesS3:
         in a PodSpec.
     """
     [...str]: any
-    allowEmptyFolder?: bool
     annotations?: ValuesS3Annotations
     auditLogConfig?: ValuesS3AuditLogConfig
     bindAddress?: str
@@ -1758,7 +1878,7 @@ schema ValuesS3:
     enableAuth?: bool
     enabled?: bool
     existingConfigSecret?: any
-    extraArgs?: [str]
+    extraArgs?: [any]
     extraEnvironmentVars?: any
     extraVolumeMounts?: str
     extraVolumes?: str
@@ -2252,7 +2372,7 @@ schema ValuesVolume:
     logs : ValuesVolumeLogs, optional
     metricsIp : str, optional, default is ""
     metricsPort : int, optional, default is 9327
-    minFreeSpacePercent : int, optional, default is 7
+    minFreeSpacePercent : int, optional, default is 1
         minimum free disk space(in percents). If free disk space lower this value - all volumes marks as ReadOnly
     nodeSelector : str, optional, default is ""
         nodeSelector labels for server pod assignment, formatted as a muli-line string.
