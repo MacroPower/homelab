@@ -7,7 +7,7 @@
       "description": "All-in-one deployment configuration",
       "properties": {
         "affinity": {
-          "default": "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          app.kubernetes.io/name: {{ template \"seaweedfs.name\" . }}\n          app.kubernetes.io/instance: {{ .Release.Name }}\n          app.kubernetes.io/component: master\n      topologyKey: kubernetes.io/hostname\n",
+          "default": "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          app.kubernetes.io/name: {{ template \"seaweedfs.name\" . }}\n          app.kubernetes.io/instance: {{ .Release.Name }}\n          app.kubernetes.io/component: seaweedfs-all-in-one\n      topologyKey: kubernetes.io/hostname\n",
           "description": "Scheduling configuration\nAffinity Settings\nCommenting out or setting as empty the affinity variable, will allow\ndeployment to single node services such as Minikube",
           "required": [],
           "title": "affinity",
@@ -30,6 +30,21 @@
           "additionalProperties": true,
           "description": "Storage configuration",
           "properties": {
+            "accessModes": {
+              "description": "accessModes for the PVC. Default is [\"ReadWriteOnce\"].\nFor multi-replica deployments, use [\"ReadWriteMany\"] with a compatible storage class.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "accessModes",
+              "type": "array"
+            },
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
             "claimName": {
               "default": "seaweedfs-data-pvc",
               "required": [],
@@ -43,16 +58,16 @@
               "type": "string"
             },
             "size": {
-              "default": "",
+              "default": "null",
               "required": [],
               "title": "size",
-              "type": "string"
+              "type": "null"
             },
             "storageClass": {
-              "default": "",
+              "default": "null",
               "required": [],
               "title": "storageClass",
-              "type": "string"
+              "type": "null"
             },
             "type": {
               "default": "emptyDir",
@@ -82,6 +97,15 @@
           "required": [],
           "title": "enabled",
           "type": "boolean"
+        },
+        "extraArgs": {
+          "description": "Custom command line arguments to add to the server command\nExample to fix IPv6 metrics connectivity issues:\nextraArgs: [\"-metricsIp\", \"0.0.0.0\"]\nExample with multiple args:\nextraArgs: [\"-customFlag\", \"value\", \"-anotherFlag\"]",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraArgs",
+          "type": "array"
         },
         "extraEnvironmentVars": {
           "additionalProperties": true,
@@ -150,6 +174,12 @@
                   "required": [],
                   "title": "port",
                   "type": "integer"
+                },
+                "scheme": {
+                  "default": "HTTP",
+                  "required": [],
+                  "title": "scheme",
+                  "type": "string"
                 }
               },
               "required": [],
@@ -167,12 +197,6 @@
               "required": [],
               "title": "periodSeconds",
               "type": "integer"
-            },
-            "scheme": {
-              "default": "HTTP",
-              "required": [],
-              "title": "scheme",
-              "type": "string"
             },
             "successThreshold": {
               "default": 1,
@@ -211,7 +235,7 @@
         },
         "nodeSelector": {
           "default": "",
-          "description": "nodeSelector labels for master pod assignment, formatted as a muli-line string.\nref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector",
+          "description": "nodeSelector labels for pod assignment, formatted as a muli-line string.\nref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector",
           "required": [],
           "title": "nodeSelector",
           "type": "string"
@@ -237,7 +261,7 @@
         },
         "priorityClassName": {
           "default": "",
-          "description": "Used to assign priority to master pods\nref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/",
+          "description": "Used to assign priority to pods\nref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/",
           "required": [],
           "title": "priorityClassName",
           "type": "string"
@@ -278,6 +302,12 @@
                   "required": [],
                   "title": "port",
                   "type": "integer"
+                },
+                "scheme": {
+                  "default": "HTTP",
+                  "required": [],
+                  "title": "scheme",
+                  "type": "string"
                 }
               },
               "required": [],
@@ -296,12 +326,6 @@
               "title": "periodSeconds",
               "type": "integer"
             },
-            "scheme": {
-              "default": "HTTP",
-              "required": [],
-              "title": "scheme",
-              "type": "string"
-            },
             "successThreshold": {
               "default": 1,
               "required": [],
@@ -318,6 +342,12 @@
           "required": [],
           "title": "readinessProbe",
           "type": "object"
+        },
+        "replicas": {
+          "default": 1,
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
         },
         "resources": {
           "additionalProperties": true,
@@ -376,17 +406,61 @@
         },
         "s3": {
           "additionalProperties": true,
-          "description": "Service configuration",
+          "description": "S3 gateway configuration\nNote: Most parameters below default to null, which means they inherit from\nthe global s3.* settings. Set explicit values here to override for allInOne only.",
           "properties": {
+            "auditLogConfig": {
+              "default": "null",
+              "required": [],
+              "title": "auditLogConfig",
+              "type": "null"
+            },
+            "domainName": {
+              "default": "null",
+              "required": [],
+              "title": "domainName",
+              "type": "null"
+            },
+            "enableAuth": {
+              "default": false,
+              "required": [],
+              "title": "enableAuth",
+              "type": "boolean"
+            },
             "enabled": {
               "default": false,
               "required": [],
               "title": "enabled",
               "type": "boolean"
+            },
+            "existingConfigSecret": {
+              "default": "null",
+              "description": "Set to the name of an existing kubernetes Secret with the s3 json config file\nshould have a secret key called seaweedfs_s3_config with an inline json config",
+              "required": [],
+              "title": "existingConfigSecret",
+              "type": "null"
+            },
+            "httpsPort": {
+              "default": "null",
+              "required": [],
+              "title": "httpsPort",
+              "type": "null"
+            },
+            "port": {
+              "default": "null",
+              "required": [],
+              "title": "port",
+              "type": "null"
             }
           },
           "required": [],
           "title": "s3",
+          "type": "object"
+        },
+        "secretExtraEnvironmentVars": {
+          "additionalProperties": true,
+          "description": "Secret environment variables (for database credentials, etc.)\nExample:\nsecretExtraEnvironmentVars:\n  WEED_POSTGRES_USERNAME:\n    secretKeyRef:\n      name: postgres-credentials\n      key: username\n  WEED_POSTGRES_PASSWORD:\n    secretKeyRef:\n      name: postgres-credentials\n      key: password",
+          "required": [],
+          "title": "secretExtraEnvironmentVars",
           "type": "object"
         },
         "service": {
@@ -398,6 +472,12 @@
               "required": [],
               "title": "annotations",
               "type": "object"
+            },
+            "internalTrafficPolicy": {
+              "default": "Cluster",
+              "required": [],
+              "title": "internalTrafficPolicy",
+              "type": "string"
             },
             "type": {
               "default": "ClusterIP",
@@ -419,12 +499,87 @@
         },
         "sftp": {
           "additionalProperties": true,
+          "description": "SFTP server configuration\nNote: Most parameters below default to null, which means they inherit from\nthe global sftp.* settings. Set explicit values here to override for allInOne only.",
           "properties": {
+            "authMethods": {
+              "default": "null",
+              "required": [],
+              "title": "authMethods",
+              "type": "null"
+            },
+            "bannerMessage": {
+              "default": "null",
+              "required": [],
+              "title": "bannerMessage",
+              "type": "null"
+            },
+            "clientAliveCountMax": {
+              "default": "null",
+              "required": [],
+              "title": "clientAliveCountMax",
+              "type": "null"
+            },
+            "clientAliveInterval": {
+              "default": "null",
+              "required": [],
+              "title": "clientAliveInterval",
+              "type": "null"
+            },
+            "enableAuth": {
+              "default": false,
+              "required": [],
+              "title": "enableAuth",
+              "type": "boolean"
+            },
             "enabled": {
               "default": false,
               "required": [],
               "title": "enabled",
               "type": "boolean"
+            },
+            "existingConfigSecret": {
+              "default": "null",
+              "description": "Set to the name of an existing kubernetes Secret with the sftp json config file",
+              "required": [],
+              "title": "existingConfigSecret",
+              "type": "null"
+            },
+            "existingSshConfigSecret": {
+              "default": "null",
+              "description": "Set to the name of an existing kubernetes Secret with the SSH keys",
+              "required": [],
+              "title": "existingSshConfigSecret",
+              "type": "null"
+            },
+            "hostKeysFolder": {
+              "default": "null",
+              "required": [],
+              "title": "hostKeysFolder",
+              "type": "null"
+            },
+            "loginGraceTime": {
+              "default": "null",
+              "required": [],
+              "title": "loginGraceTime",
+              "type": "null"
+            },
+            "maxAuthTries": {
+              "default": "null",
+              "required": [],
+              "title": "maxAuthTries",
+              "type": "null"
+            },
+            "port": {
+              "default": "null",
+              "required": [],
+              "title": "port",
+              "type": "null"
+            },
+            "sshPrivateKey": {
+              "default": "null",
+              "required": [],
+              "title": "sshPrivateKey",
+              "type": "null"
             }
           },
           "required": [],
@@ -439,7 +594,7 @@
         },
         "tolerations": {
           "default": "",
-          "description": "Toleration Settings for master pods\nThis should be a multi-line string matching the Toleration array\nin a PodSpec.",
+          "description": "Toleration Settings for pods\nThis should be a multi-line string matching the Toleration array\nin a PodSpec.",
           "required": [],
           "title": "tolerations",
           "type": "string"
@@ -450,6 +605,21 @@
           "required": [],
           "title": "topologySpreadConstraints",
           "type": "string"
+        },
+        "updateStrategy": {
+          "additionalProperties": true,
+          "description": "Update strategy configuration\ntype: Recreate or RollingUpdate\nFor single replica, Recreate is recommended to avoid data conflicts.\nFor multiple replicas with RollingUpdate, you MUST use shared storage\n(e.g., data.type: persistentVolumeClaim with ReadWriteMany access mode)\nto avoid data loss or inconsistency between pods.",
+          "properties": {
+            "type": {
+              "default": "Recreate",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "updateStrategy",
+          "type": "object"
         },
         "whiteList": {
           "default": "",
@@ -1221,13 +1391,6 @@
         "s3": {
           "additionalProperties": true,
           "properties": {
-            "allowEmptyFolder": {
-              "default": false,
-              "description": "allow empty folders",
-              "required": [],
-              "title": "allowEmptyFolder",
-              "type": "boolean"
-            },
             "auditLogConfig": {
               "additionalProperties": true,
               "required": [],
@@ -2164,13 +2327,6 @@
     "s3": {
       "additionalProperties": true,
       "properties": {
-        "allowEmptyFolder": {
-          "default": true,
-          "description": "allow empty folders",
-          "required": [],
-          "title": "allowEmptyFolder",
-          "type": "boolean"
-        },
         "annotations": {
           "additionalProperties": true,
           "description": "Annotations to be added to the s3 resources",
@@ -2225,10 +2381,9 @@
           "type": "null"
         },
         "extraArgs": {
-          "description": "Custom command line arguments to add to the s3 command\nExample to fix connection idle seconds:",
+          "description": "Custom command line arguments to add to the s3 command\nDefault idleTimeout is 120 seconds. Example to customize:\nextraArgs: [\"-idleTimeout=300\"]",
           "items": {
-            "required": [],
-            "type": "string"
+            "required": []
           },
           "required": [],
           "title": "extraArgs",
@@ -3186,7 +3341,7 @@
           "type": "integer"
         },
         "minFreeSpacePercent": {
-          "default": 7,
+          "default": 1,
           "description": "minimum free disk space(in percents). If free disk space lower this value - all volumes marks as ReadOnly",
           "required": [],
           "title": "minFreeSpacePercent",
