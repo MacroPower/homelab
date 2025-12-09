@@ -852,7 +852,7 @@ schema ValuesGlobal:
         matching labels.
         For more information, see [Assigning Pods to Nodes](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/).
 
-        If a component-specific nodeSelector is also set, it will take precedence.
+        If a component-specific nodeSelector is also set, it will be merged and take precedence.
         +docs:property
     podSecurityPolicy : ValuesGlobalPodSecurityPolicy, optional
     priorityClassName : str, optional, default is ""
@@ -913,7 +913,7 @@ schema ValuesGlobalNodeSelector:
     matching labels.
     For more information, see [Assigning Pods to Nodes](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/).
 
-    If a component-specific nodeSelector is also set, it will take precedence.
+    If a component-specific nodeSelector is also set, it will be merged and take precedence.
     +docs:property
     """
     [...str]: any
