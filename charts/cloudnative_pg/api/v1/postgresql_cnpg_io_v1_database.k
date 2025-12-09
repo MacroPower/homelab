@@ -65,6 +65,8 @@ schema PostgresqlCnpgIoV1DatabaseSpec:
         Ensure the PostgreSQL database is `present` or `absent` - defaults to "present".
     extensions : [PostgresqlCnpgIoV1DatabaseSpecExtensionsItems0], default is Undefined, optional
         The list of extensions to be managed in the database
+    fdws : [PostgresqlCnpgIoV1DatabaseSpecFdwsItems0], default is Undefined, optional
+        The list of foreign data wrappers to be managed in the database
     icuLocale : str, default is Undefined, optional
         Maps to the `ICU_LOCALE` parameter of `CREATE DATABASE`. This
         setting cannot be changed. Specifies the ICU locale when the ICU
@@ -101,6 +103,8 @@ schema PostgresqlCnpgIoV1DatabaseSpec:
         The role name of the user who owns the database inside PostgreSQL.
     schemas : [PostgresqlCnpgIoV1DatabaseSpecSchemasItems0], default is Undefined, optional
         The list of schemas to be managed in the database
+    servers : [PostgresqlCnpgIoV1DatabaseSpecServersItems0], default is Undefined, optional
+        The list of foreign servers to be managed in the database
     tablespace : str, default is Undefined, optional
         Maps to the `TABLESPACE` parameter of `CREATE DATABASE`.
         Maps to the `SET TABLESPACE` command of `ALTER DATABASE`.
@@ -122,6 +126,7 @@ schema PostgresqlCnpgIoV1DatabaseSpec:
     encoding?: str
     ensure?: "present" | "absent" = "present"
     extensions?: [PostgresqlCnpgIoV1DatabaseSpecExtensionsItems0]
+    fdws?: [PostgresqlCnpgIoV1DatabaseSpecFdwsItems0]
     icuLocale?: str
     icuRules?: str
     isTemplate?: bool
@@ -134,6 +139,7 @@ schema PostgresqlCnpgIoV1DatabaseSpec:
     owner: str
 
     schemas?: [PostgresqlCnpgIoV1DatabaseSpecSchemasItems0]
+    servers?: [PostgresqlCnpgIoV1DatabaseSpecServersItems0]
     tablespace?: str
     template?: str
 
@@ -159,12 +165,12 @@ schema PostgresqlCnpgIoV1DatabaseSpecExtensionsItems0:
     Attributes
     ----------
     ensure : str, default is "present", optional
-        Specifies whether an extension/schema should be present or absent in
-        the database. If set to `present`, the extension/schema will be
-        created if it does not exist. If set to `absent`, the
-        extension/schema will be removed if it exists.
+        Specifies whether an object (e.g schema) should be present or absent
+        in the database. If set to `present`, the object will be created if
+        it does not exist. If set to `absent`, the extension/schema will be
+        removed if it exists.
     name : str, default is Undefined, required
-        Name of the extension/schema
+        Name of the object (extension, schema, FDW, server)
     $schema : str, default is Undefined, optional
         The name of the schema in which to install the extension's objects,
         in case the extension allows its contents to be relocated. If not
@@ -182,6 +188,80 @@ schema PostgresqlCnpgIoV1DatabaseSpecExtensionsItems0:
     $schema?: str
     version?: str
 
+schema PostgresqlCnpgIoV1DatabaseSpecFdwsItems0:
+    r"""
+    FDWSpec configures an Foreign Data Wrapper in a database
+
+    Attributes
+    ----------
+    ensure : str, default is "present", optional
+        Specifies whether an object (e.g schema) should be present or absent
+        in the database. If set to `present`, the object will be created if
+        it does not exist. If set to `absent`, the extension/schema will be
+        removed if it exists.
+    handler : str, default is Undefined, optional
+        Name of the handler function (e.g., "postgres_fdw_handler").
+        This will be empty if no handler is specified. In that case,
+        the default handler is registered when the FDW extension is created.
+    name : str, default is Undefined, required
+        Name of the object (extension, schema, FDW, server)
+    options : [PostgresqlCnpgIoV1DatabaseSpecFdwsItems0OptionsItems0], default is Undefined, optional
+        Options specifies the configuration options for the FDW.
+    owner : str, default is Undefined, optional
+        Owner specifies the database role that will own the Foreign Data Wrapper.
+        The role must have superuser privileges in the target database.
+    usage : [PostgresqlCnpgIoV1DatabaseSpecFdwsItems0UsageItems0], default is Undefined, optional
+        List of roles for which `USAGE` privileges on the FDW are granted or revoked.
+    validator : str, default is Undefined, optional
+        Name of the validator function (e.g., "postgres_fdw_validator").
+        This will be empty if no validator is specified. In that case,
+        the default validator is registered when the FDW extension is created.
+    """
+    ensure?: "present" | "absent" = "present"
+    handler?: str
+    name: str
+
+    options?: [PostgresqlCnpgIoV1DatabaseSpecFdwsItems0OptionsItems0]
+    owner?: str
+    usage?: [PostgresqlCnpgIoV1DatabaseSpecFdwsItems0UsageItems0]
+    validator?: str
+
+schema PostgresqlCnpgIoV1DatabaseSpecFdwsItems0OptionsItems0:
+    r"""
+    OptionSpec holds the name, value and the ensure field for an option
+
+    Attributes
+    ----------
+    ensure : str, default is "present", optional
+        Specifies whether an option should be present or absent in
+        the database. If set to `present`, the option will be
+        created if it does not exist. If set to `absent`, the
+        option will be removed if it exists.
+    name : str, default is Undefined, required
+        Name of the option
+    value : str, default is Undefined, required
+        Value of the option
+    """
+    ensure?: "present" | "absent" = "present"
+    name: str
+
+    value: str
+
+schema PostgresqlCnpgIoV1DatabaseSpecFdwsItems0UsageItems0:
+    r"""
+    UsageSpec configures a usage for a foreign data wrapper
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the usage
+    $type : str, default is "grant", optional
+        The type of usage
+    """
+    name: str
+
+    $type?: "grant" | "revoke" = "grant"
+
 schema PostgresqlCnpgIoV1DatabaseSpecSchemasItems0:
     r"""
     SchemaSpec configures a schema in a database
@@ -189,12 +269,12 @@ schema PostgresqlCnpgIoV1DatabaseSpecSchemasItems0:
     Attributes
     ----------
     ensure : str, default is "present", optional
-        Specifies whether an extension/schema should be present or absent in
-        the database. If set to `present`, the extension/schema will be
-        created if it does not exist. If set to `absent`, the
-        extension/schema will be removed if it exists.
+        Specifies whether an object (e.g schema) should be present or absent
+        in the database. If set to `present`, the object will be created if
+        it does not exist. If set to `absent`, the extension/schema will be
+        removed if it exists.
     name : str, default is Undefined, required
-        Name of the extension/schema
+        Name of the object (extension, schema, FDW, server)
     owner : str, default is Undefined, optional
         The role name of the user who owns the schema inside PostgreSQL.
         It maps to the `AUTHORIZATION` parameter of `CREATE SCHEMA` and the
@@ -204,6 +284,71 @@ schema PostgresqlCnpgIoV1DatabaseSpecSchemasItems0:
     name: str
 
     owner?: str
+
+schema PostgresqlCnpgIoV1DatabaseSpecServersItems0:
+    r"""
+    ServerSpec configures a server of a foreign data wrapper
+
+    Attributes
+    ----------
+    ensure : str, default is "present", optional
+        Specifies whether an object (e.g schema) should be present or absent
+        in the database. If set to `present`, the object will be created if
+        it does not exist. If set to `absent`, the extension/schema will be
+        removed if it exists.
+    fdw : str, default is Undefined, required
+        The name of the Foreign Data Wrapper (FDW)
+    name : str, default is Undefined, required
+        Name of the object (extension, schema, FDW, server)
+    options : [PostgresqlCnpgIoV1DatabaseSpecServersItems0OptionsItems0], default is Undefined, optional
+        Options specifies the configuration options for the server
+        (key is the option name, value is the option value).
+    usage : [PostgresqlCnpgIoV1DatabaseSpecServersItems0UsageItems0], default is Undefined, optional
+        List of roles for which `USAGE` privileges on the server are granted or revoked.
+    """
+    ensure?: "present" | "absent" = "present"
+    fdw: str
+
+    name: str
+
+    options?: [PostgresqlCnpgIoV1DatabaseSpecServersItems0OptionsItems0]
+    usage?: [PostgresqlCnpgIoV1DatabaseSpecServersItems0UsageItems0]
+
+schema PostgresqlCnpgIoV1DatabaseSpecServersItems0OptionsItems0:
+    r"""
+    OptionSpec holds the name, value and the ensure field for an option
+
+    Attributes
+    ----------
+    ensure : str, default is "present", optional
+        Specifies whether an option should be present or absent in
+        the database. If set to `present`, the option will be
+        created if it does not exist. If set to `absent`, the
+        option will be removed if it exists.
+    name : str, default is Undefined, required
+        Name of the option
+    value : str, default is Undefined, required
+        Value of the option
+    """
+    ensure?: "present" | "absent" = "present"
+    name: str
+
+    value: str
+
+schema PostgresqlCnpgIoV1DatabaseSpecServersItems0UsageItems0:
+    r"""
+    UsageSpec configures a usage for a foreign data wrapper
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the usage
+    $type : str, default is "grant", optional
+        The type of usage
+    """
+    name: str
+
+    $type?: "grant" | "revoke" = "grant"
 
 schema PostgresqlCnpgIoV1DatabaseStatus:
     r"""
@@ -217,6 +362,8 @@ schema PostgresqlCnpgIoV1DatabaseStatus:
         Applied is true if the database was reconciled correctly
     extensions : [PostgresqlCnpgIoV1DatabaseStatusExtensionsItems0], default is Undefined, optional
         Extensions is the status of the managed extensions
+    fdws : [PostgresqlCnpgIoV1DatabaseStatusFdwsItems0], default is Undefined, optional
+        FDWs is the status of the managed FDWs
     message : str, default is Undefined, optional
         Message is the reconciliation output message
     observedGeneration : int, default is Undefined, optional
@@ -224,12 +371,16 @@ schema PostgresqlCnpgIoV1DatabaseStatus:
         desired state that was synchronized
     schemas : [PostgresqlCnpgIoV1DatabaseStatusSchemasItems0], default is Undefined, optional
         Schemas is the status of the managed schemas
+    servers : [PostgresqlCnpgIoV1DatabaseStatusServersItems0], default is Undefined, optional
+        Servers is the status of the managed servers
     """
     applied?: bool
     extensions?: [PostgresqlCnpgIoV1DatabaseStatusExtensionsItems0]
+    fdws?: [PostgresqlCnpgIoV1DatabaseStatusFdwsItems0]
     message?: str
     observedGeneration?: int
     schemas?: [PostgresqlCnpgIoV1DatabaseStatusSchemasItems0]
+    servers?: [PostgresqlCnpgIoV1DatabaseStatusServersItems0]
 
 schema PostgresqlCnpgIoV1DatabaseStatusExtensionsItems0:
     r"""
@@ -250,7 +401,45 @@ schema PostgresqlCnpgIoV1DatabaseStatusExtensionsItems0:
     message?: str
     name: str
 
+schema PostgresqlCnpgIoV1DatabaseStatusFdwsItems0:
+    r"""
+    DatabaseObjectStatus is the status of the managed database objects
+
+    Attributes
+    ----------
+    applied : bool, default is Undefined, required
+        True of the object has been installed successfully in
+        the database
+    message : str, default is Undefined, optional
+        Message is the object reconciliation message
+    name : str, default is Undefined, required
+        The name of the object
+    """
+    applied: bool
+
+    message?: str
+    name: str
+
 schema PostgresqlCnpgIoV1DatabaseStatusSchemasItems0:
+    r"""
+    DatabaseObjectStatus is the status of the managed database objects
+
+    Attributes
+    ----------
+    applied : bool, default is Undefined, required
+        True of the object has been installed successfully in
+        the database
+    message : str, default is Undefined, optional
+        Message is the object reconciliation message
+    name : str, default is Undefined, required
+        The name of the object
+    """
+    applied: bool
+
+    message?: str
+    name: str
+
+schema PostgresqlCnpgIoV1DatabaseStatusServersItems0:
     r"""
     DatabaseObjectStatus is the status of the managed database objects
 
