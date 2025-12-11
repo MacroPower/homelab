@@ -55,7 +55,7 @@
           "type": "string"
         },
         "tag": {
-          "default": "v1.4.10",
+          "default": "v1.4.11",
           "required": [],
           "title": "tag",
           "type": "string"
@@ -196,7 +196,7 @@
                   "type": "string"
                 },
                 "version": {
-                  "default": "v1.4.10",
+                  "default": "v1.4.11",
                   "required": [],
                   "title": "version",
                   "type": "string"
