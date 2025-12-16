@@ -7525,7 +7525,7 @@ schema ValuesServer:
         # Argo CD server Horizontal Pod Autoscaler
     backendTLSPolicy : ValuesServerBackendTlspolicy, optional
         Gateway API BackendTLSPolicy configuration
-        NOTE: BackendTLSPolicy is in EXPERIMENTAL status (v1alpha3)
+        NOTE: BackendTLSPolicy support is in EXPERIMENTAL status
         Required for HTTPS backends when using Gateway API
         Not all Gateway controllers support this resource (e.g., Cilium does not support it yet)
     certificate : ValuesServerCertificate, optional
@@ -7755,7 +7755,7 @@ schema ValuesServerAutoscalingBehavior:
 schema ValuesServerBackendTlspolicy:
     r"""
     Gateway API BackendTLSPolicy configuration
-    NOTE: BackendTLSPolicy is in EXPERIMENTAL status (v1alpha3)
+    NOTE: BackendTLSPolicy support is in EXPERIMENTAL status
     Required for HTTPS backends when using Gateway API
     Not all Gateway controllers support this resource (e.g., Cilium does not support it yet)
 

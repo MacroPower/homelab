@@ -9617,7 +9617,7 @@
         },
         "backendTLSPolicy": {
           "additionalProperties": true,
-          "description": "Gateway API BackendTLSPolicy configuration\nNOTE: BackendTLSPolicy is in EXPERIMENTAL status (v1alpha3)\nRequired for HTTPS backends when using Gateway API\nNot all Gateway controllers support this resource (e.g., Cilium does not support it yet)",
+          "description": "Gateway API BackendTLSPolicy configuration\nNOTE: BackendTLSPolicy support is in EXPERIMENTAL status\nRequired for HTTPS backends when using Gateway API\nNot all Gateway controllers support this resource (e.g., Cilium does not support it yet)",
           "properties": {
             "annotations": {
               "additionalProperties": true,
