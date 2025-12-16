@@ -51,7 +51,7 @@ schema ValuesImage:
     pullPolicy : str, optional, default is "IfNotPresent"
         digest: sha256:1234567
     repository : str, optional, default is "ghcr.io/stakater/reloader"
-    tag : str, optional, default is "v1.4.11"
+    tag : str, optional, default is "v1.4.12"
     """
     [...str]: any
     name?: str
@@ -340,7 +340,7 @@ schema ValuesReloaderDeploymentLabels:
     ----------
     group : str, optional, default is "com.stakater.platform"
     provider : str, optional, default is "stakater"
-    version : str, optional, default is "v1.4.11"
+    version : str, optional, default is "v1.4.12"
     """
     [...str]: any
     group?: str
