@@ -9,6 +9,7 @@ schema Values:
 
     Attributes
     ----------
+    admin : ValuesAdmin, optional
     allInOne : ValuesAllInOne, optional
         All-in-one deployment configuration
     certificates : ValuesCertificates, optional
@@ -51,8 +52,10 @@ schema Values:
             nodeSelector: |
              topology.kubernetes.io/zone: dc3
 
+    worker : ValuesWorker, optional
     """
     [...str]: any
+    admin?: ValuesAdmin
     allInOne?: ValuesAllInOne
     certificates?: ValuesCertificates
     cosi?: ValuesCosi
@@ -66,6 +69,363 @@ schema Values:
     sftp?: ValuesSftp
     volume?: ValuesVolume
     volumes?: ValuesVolumes
+    worker?: ValuesWorker
+
+schema ValuesAdmin:
+    r"""
+    ValuesAdmin
+
+    Attributes
+    ----------
+    affinity : str, optional, default is "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          app.kubernetes.io/name: {{ template \"seaweedfs.name\" . }}\n          app.kubernetes.io/instance: {{ .Release.Name }}\n          app.kubernetes.io/component: admin\n      topologyKey: kubernetes.io/hostname\n"
+        Affinity Settings
+        Commenting out or setting as empty the affinity variable, will allow
+        deployment to single node services such as Minikube
+    annotations : ValuesAdminAnnotations, optional
+    containerSecurityContext : ValuesAdminContainerSecurityContext, optional
+    data : ValuesAdminData, optional
+        Storage configuration
+    dataDir : str, optional, default is ""
+        Data directory for admin configuration and maintenance data
+    enabled : bool, optional, default is False
+    extraArgs : [any], optional
+        Custom command line arguments to add to the admin command
+        Example: ["-customFlag", "value", "-anotherFlag"]
+    extraEnvironmentVars : ValuesAdminExtraEnvironmentVars, optional
+    extraVolumeMounts : str, optional, default is ""
+    extraVolumes : str, optional, default is ""
+    grpcPort : int, optional, default is 33646
+    imageOverride : any, optional, default is "null"
+    ingress : ValuesAdminIngress, optional
+    initContainers : str, optional, default is ""
+    livenessProbe : ValuesAdminLivenessProbe, optional
+        Health checks
+    loggingOverrideLevel : any, optional, default is "null"
+    logs : ValuesAdminLogs, optional
+    masters : str, optional, default is ""
+        Master servers to connect to
+        If empty, uses global.masterServer or auto-discovers from master statefulset
+    metricsPort : int, optional, default is 9327
+    nodeSelector : str, optional, default is ""
+    podAnnotations : ValuesAdminPodAnnotations, optional
+    podLabels : ValuesAdminPodLabels, optional
+    podManagementPolicy : str, optional, default is "Parallel"
+        # Set podManagementPolicy
+    podSecurityContext : ValuesAdminPodSecurityContext, optional
+    port : int, optional, default is 23646
+    priorityClassName : str, optional, default is ""
+    readinessProbe : ValuesAdminReadinessProbe, optional
+    replicas : int, optional, default is 1
+    resources : ValuesAdminResources, optional
+    restartPolicy : any, optional, default is "null"
+    secret : ValuesAdminSecret, optional
+        Admin authentication
+    service : ValuesAdminService, optional
+    serviceAccountName : str, optional, default is ""
+    serviceMonitor : ValuesAdminServiceMonitor, optional
+        ServiceMonitor annotations (separate from pod/deployment annotations)
+    sidecars : [any], optional
+        Additional resources
+    tolerations : str, optional, default is ""
+    topologySpreadConstraints : str, optional, default is ""
+        Topology Spread Constraints Settings
+        This should map directly to the value of the topologySpreadConstraints
+        for a PodSpec. By Default no constraints are set.
+    """
+    [...str]: any
+    affinity?: str
+    annotations?: ValuesAdminAnnotations
+    containerSecurityContext?: ValuesAdminContainerSecurityContext
+    data?: ValuesAdminData
+    dataDir?: str
+    enabled?: bool
+    extraArgs?: [any]
+    extraEnvironmentVars?: ValuesAdminExtraEnvironmentVars
+    extraVolumeMounts?: str
+    extraVolumes?: str
+    grpcPort?: int
+    imageOverride?: any
+    ingress?: ValuesAdminIngress
+    initContainers?: str
+    livenessProbe?: ValuesAdminLivenessProbe
+    loggingOverrideLevel?: any
+    logs?: ValuesAdminLogs
+    masters?: str
+    metricsPort?: int
+    nodeSelector?: str
+    podAnnotations?: ValuesAdminPodAnnotations
+    podLabels?: ValuesAdminPodLabels
+    podManagementPolicy?: str
+    podSecurityContext?: ValuesAdminPodSecurityContext
+    port?: int
+    priorityClassName?: str
+    readinessProbe?: ValuesAdminReadinessProbe
+    replicas?: int
+    resources?: ValuesAdminResources
+    restartPolicy?: any
+    secret?: ValuesAdminSecret
+    service?: ValuesAdminService
+    serviceAccountName?: str
+    serviceMonitor?: ValuesAdminServiceMonitor
+    sidecars?: [any]
+    tolerations?: str
+    topologySpreadConstraints?: str
+
+schema ValuesAdminAnnotations:
+    r"""
+    ValuesAdminAnnotations
+    """
+    [...str]: any
+
+schema ValuesAdminContainerSecurityContext:
+    r"""
+    ValuesAdminContainerSecurityContext
+    """
+    [...str]: any
+
+schema ValuesAdminData:
+    r"""
+    Storage configuration
+
+    Attributes
+    ----------
+    annotations : ValuesAdminDataAnnotations, optional
+    claimName : str, optional, default is ""
+    hostPathPrefix : str, optional, default is "/storage"
+    size : str, optional, default is "10Gi"
+    storageClass : str, optional, default is ""
+    $type : str, optional, default is "emptyDir"
+    """
+    [...str]: any
+    annotations?: ValuesAdminDataAnnotations
+    claimName?: str
+    hostPathPrefix?: str
+    size?: str
+    storageClass?: str
+    $type?: str
+
+schema ValuesAdminDataAnnotations:
+    r"""
+    ValuesAdminDataAnnotations
+    """
+    [...str]: any
+
+schema ValuesAdminExtraEnvironmentVars:
+    r"""
+    ValuesAdminExtraEnvironmentVars
+    """
+    [...str]: any
+
+schema ValuesAdminIngress:
+    r"""
+    ValuesAdminIngress
+
+    Attributes
+    ----------
+    annotations : ValuesAdminIngressAnnotations, optional
+    className : str, optional, default is "nginx"
+    enabled : bool, optional, default is False
+    host : str, optional, default is "admin.seaweedfs.local"
+        host: false for "*" hostname
+    path : str, optional, default is "/"
+    pathType : str, optional, default is "Prefix"
+    tls : [any], optional
+    """
+    [...str]: any
+    annotations?: ValuesAdminIngressAnnotations
+    className?: str
+    enabled?: bool
+    host?: str
+    path?: str
+    pathType?: str
+    tls?: [any]
+
+schema ValuesAdminIngressAnnotations:
+    r"""
+    ValuesAdminIngressAnnotations
+    """
+    [...str]: any
+
+schema ValuesAdminLivenessProbe:
+    r"""
+    Health checks
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    failureThreshold : int, optional, default is 5
+    httpGet : ValuesAdminLivenessProbeHttpGet, optional
+    initialDelaySeconds : int, optional, default is 20
+    periodSeconds : int, optional, default is 60
+    successThreshold : int, optional, default is 1
+    timeoutSeconds : int, optional, default is 10
+    """
+    [...str]: any
+    enabled?: bool
+    failureThreshold?: int
+    httpGet?: ValuesAdminLivenessProbeHttpGet
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+
+schema ValuesAdminLivenessProbeHttpGet:
+    r"""
+    ValuesAdminLivenessProbeHttpGet
+
+    Attributes
+    ----------
+    path : str, optional, default is "/health"
+    scheme : str, optional, default is "HTTP"
+    """
+    [...str]: any
+    path?: str
+    scheme?: str
+
+schema ValuesAdminLogs:
+    r"""
+    ValuesAdminLogs
+
+    Attributes
+    ----------
+    annotations : ValuesAdminLogsAnnotations, optional
+    claimName : str, optional, default is ""
+    hostPathPrefix : str, optional, default is "/storage"
+    size : str, optional, default is "5Gi"
+    storageClass : str, optional, default is ""
+    $type : str, optional, default is "emptyDir"
+    """
+    [...str]: any
+    annotations?: ValuesAdminLogsAnnotations
+    claimName?: str
+    hostPathPrefix?: str
+    size?: str
+    storageClass?: str
+    $type?: str
+
+schema ValuesAdminLogsAnnotations:
+    r"""
+    ValuesAdminLogsAnnotations
+    """
+    [...str]: any
+
+schema ValuesAdminPodAnnotations:
+    r"""
+    ValuesAdminPodAnnotations
+    """
+    [...str]: any
+
+schema ValuesAdminPodLabels:
+    r"""
+    ValuesAdminPodLabels
+    """
+    [...str]: any
+
+schema ValuesAdminPodSecurityContext:
+    r"""
+    ValuesAdminPodSecurityContext
+    """
+    [...str]: any
+
+schema ValuesAdminReadinessProbe:
+    r"""
+    ValuesAdminReadinessProbe
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    failureThreshold : int, optional, default is 3
+    httpGet : ValuesAdminReadinessProbeHttpGet, optional
+    initialDelaySeconds : int, optional, default is 15
+    periodSeconds : int, optional, default is 15
+    successThreshold : int, optional, default is 1
+    timeoutSeconds : int, optional, default is 10
+    """
+    [...str]: any
+    enabled?: bool
+    failureThreshold?: int
+    httpGet?: ValuesAdminReadinessProbeHttpGet
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+
+schema ValuesAdminReadinessProbeHttpGet:
+    r"""
+    ValuesAdminReadinessProbeHttpGet
+
+    Attributes
+    ----------
+    path : str, optional, default is "/health"
+    scheme : str, optional, default is "HTTP"
+    """
+    [...str]: any
+    path?: str
+    scheme?: str
+
+schema ValuesAdminResources:
+    r"""
+    ValuesAdminResources
+    """
+    [...str]: any
+
+schema ValuesAdminSecret:
+    r"""
+    Admin authentication
+
+    Attributes
+    ----------
+    adminPassword : str, optional, default is ""
+    adminUser : str, optional, default is "admin"
+    existingSecret : str, optional, default is ""
+        Name of an existing secret containing admin credentials. If set, adminUser and adminPassword below are ignored.
+    pwKey : str, optional, default is ""
+        Key in the existing secret for the admin password. Required if existingSecret is set.
+    userKey : str, optional, default is ""
+        Key in the existing secret for the admin username. Required if existingSecret is set.
+    """
+    [...str]: any
+    adminPassword?: str
+    adminUser?: str
+    existingSecret?: str
+    pwKey?: str
+    userKey?: str
+
+schema ValuesAdminService:
+    r"""
+    ValuesAdminService
+
+    Attributes
+    ----------
+    annotations : ValuesAdminServiceAnnotations, optional
+    $type : str, optional, default is "ClusterIP"
+    """
+    [...str]: any
+    annotations?: ValuesAdminServiceAnnotations
+    $type?: str
+
+schema ValuesAdminServiceAnnotations:
+    r"""
+    ValuesAdminServiceAnnotations
+    """
+    [...str]: any
+
+schema ValuesAdminServiceMonitor:
+    r"""
+    ServiceMonitor annotations (separate from pod/deployment annotations)
+
+    Attributes
+    ----------
+    annotations : ValuesAdminServiceMonitorAnnotations, optional
+    """
+    [...str]: any
+    annotations?: ValuesAdminServiceMonitorAnnotations
+
+schema ValuesAdminServiceMonitorAnnotations:
+    r"""
+    ValuesAdminServiceMonitorAnnotations
+    """
+    [...str]: any
 
 schema ValuesAllInOne:
     r"""
@@ -2680,6 +3040,296 @@ schema ValuesVolumes:
         nodeSelector: |
          topology.kubernetes.io/zone: dc3
 
+    """
+    [...str]: any
+
+schema ValuesWorker:
+    r"""
+    ValuesWorker
+
+    Attributes
+    ----------
+    adminServer : str, optional, default is ""
+        Admin server to connect to
+        Format: "host:port" or auto-discover from admin service
+    affinity : str, optional, default is "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          app.kubernetes.io/name: {{ template \"seaweedfs.name\" . }}\n          app.kubernetes.io/instance: {{ .Release.Name }}\n          app.kubernetes.io/component: worker\n      topologyKey: kubernetes.io/hostname\n"
+        Affinity Settings
+        Commenting out or setting as empty the affinity variable, will allow
+        deployment to single node services such as Minikube
+    annotations : ValuesWorkerAnnotations, optional
+    capabilities : str, optional, default is "vacuum,balance,erasure_coding"
+        Worker capabilities - comma-separated list
+        Available: vacuum, balance, erasure_coding
+        Default: "vacuum,balance,erasure_coding" (all capabilities)
+    containerSecurityContext : ValuesWorkerContainerSecurityContext, optional
+    data : ValuesWorkerData, optional
+        Storage configuration for working directory
+        Note: Workers use Deployment, so use "emptyDir", "hostPath", or "existingClaim"
+        Do NOT use "persistentVolumeClaim" - use "existingClaim" with pre-provisioned PVC instead
+    enabled : bool, optional, default is False
+    extraArgs : [any], optional
+        Custom command line arguments to add to the worker command
+        Example: ["-customFlag", "value", "-anotherFlag"]
+    extraEnvironmentVars : ValuesWorkerExtraEnvironmentVars, optional
+    extraVolumeMounts : str, optional, default is ""
+    extraVolumes : str, optional, default is ""
+    imageOverride : any, optional, default is "null"
+    initContainers : str, optional, default is ""
+    livenessProbe : ValuesWorkerLivenessProbe, optional
+        Health checks for worker pods
+        Since workers do not have an HTTP endpoint, a tcpSocket probe on the metrics port is recommended.
+    loggingOverrideLevel : any, optional, default is "null"
+    logs : ValuesWorkerLogs, optional
+    maxConcurrent : int, optional, default is 3
+        Maximum number of concurrent tasks
+    metricsPort : int, optional, default is 9327
+    nodeSelector : str, optional, default is ""
+    podAnnotations : ValuesWorkerPodAnnotations, optional
+    podLabels : ValuesWorkerPodLabels, optional
+    podSecurityContext : ValuesWorkerPodSecurityContext, optional
+    priorityClassName : str, optional, default is ""
+    readinessProbe : ValuesWorkerReadinessProbe, optional
+    replicas : int, optional, default is 1
+    resources : ValuesWorkerResources, optional
+    restartPolicy : any, optional, default is "null"
+    serviceAccountName : str, optional, default is ""
+    serviceMonitor : ValuesWorkerServiceMonitor, optional
+        ServiceMonitor annotations (separate from pod/deployment annotations)
+    sidecars : [any], optional
+        Additional resources
+    tolerations : str, optional, default is ""
+    topologySpreadConstraints : str, optional, default is ""
+        Topology Spread Constraints Settings
+        This should map directly to the value of the topologySpreadConstraints
+        for a PodSpec. By Default no constraints are set.
+    workingDir : str, optional, default is "/tmp/seaweedfs-worker"
+        Working directory for task execution
+    """
+    [...str]: any
+    adminServer?: str
+    affinity?: str
+    annotations?: ValuesWorkerAnnotations
+    capabilities?: str
+    containerSecurityContext?: ValuesWorkerContainerSecurityContext
+    data?: ValuesWorkerData
+    enabled?: bool
+    extraArgs?: [any]
+    extraEnvironmentVars?: ValuesWorkerExtraEnvironmentVars
+    extraVolumeMounts?: str
+    extraVolumes?: str
+    imageOverride?: any
+    initContainers?: str
+    livenessProbe?: ValuesWorkerLivenessProbe
+    loggingOverrideLevel?: any
+    logs?: ValuesWorkerLogs
+    maxConcurrent?: int
+    metricsPort?: int
+    nodeSelector?: str
+    podAnnotations?: ValuesWorkerPodAnnotations
+    podLabels?: ValuesWorkerPodLabels
+    podSecurityContext?: ValuesWorkerPodSecurityContext
+    priorityClassName?: str
+    readinessProbe?: ValuesWorkerReadinessProbe
+    replicas?: int
+    resources?: ValuesWorkerResources
+    restartPolicy?: any
+    serviceAccountName?: str
+    serviceMonitor?: ValuesWorkerServiceMonitor
+    sidecars?: [any]
+    tolerations?: str
+    topologySpreadConstraints?: str
+    workingDir?: str
+
+schema ValuesWorkerAnnotations:
+    r"""
+    ValuesWorkerAnnotations
+    """
+    [...str]: any
+
+schema ValuesWorkerContainerSecurityContext:
+    r"""
+    ValuesWorkerContainerSecurityContext
+    """
+    [...str]: any
+
+schema ValuesWorkerData:
+    r"""
+    Storage configuration for working directory
+    Note: Workers use Deployment, so use "emptyDir", "hostPath", or "existingClaim"
+    Do NOT use "persistentVolumeClaim" - use "existingClaim" with pre-provisioned PVC instead
+
+    Attributes
+    ----------
+    claimName : str, optional, default is ""
+    hostPathPrefix : str, optional, default is "/storage"
+    $type : str, optional, default is "emptyDir"
+    """
+    [...str]: any
+    claimName?: str
+    hostPathPrefix?: str
+    $type?: str
+
+schema ValuesWorkerExtraEnvironmentVars:
+    r"""
+    ValuesWorkerExtraEnvironmentVars
+    """
+    [...str]: any
+
+schema ValuesWorkerLivenessProbe:
+    r"""
+    Health checks for worker pods
+    Since workers do not have an HTTP endpoint, a tcpSocket probe on the metrics port is recommended.
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    failureThreshold : int, optional, default is 5
+    initialDelaySeconds : int, optional, default is 30
+    periodSeconds : int, optional, default is 60
+    successThreshold : int, optional, default is 1
+    tcpSocket : ValuesWorkerLivenessProbeTcpSocket, optional
+    timeoutSeconds : int, optional, default is 10
+    """
+    [...str]: any
+    enabled?: bool
+    failureThreshold?: int
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    tcpSocket?: ValuesWorkerLivenessProbeTcpSocket
+    timeoutSeconds?: int
+
+schema ValuesWorkerLivenessProbeTcpSocket:
+    r"""
+    ValuesWorkerLivenessProbeTcpSocket
+
+    Attributes
+    ----------
+    port : str, optional, default is "metrics"
+    """
+    [...str]: any
+    port?: str
+
+schema ValuesWorkerLogs:
+    r"""
+    ValuesWorkerLogs
+
+    Attributes
+    ----------
+    claimName : str, optional, default is ""
+    hostPathPrefix : str, optional, default is "/storage"
+    $type : str, optional, default is "emptyDir"
+    """
+    [...str]: any
+    claimName?: str
+    hostPathPrefix?: str
+    $type?: str
+
+schema ValuesWorkerPodAnnotations:
+    r"""
+    ValuesWorkerPodAnnotations
+    """
+    [...str]: any
+
+schema ValuesWorkerPodLabels:
+    r"""
+    ValuesWorkerPodLabels
+    """
+    [...str]: any
+
+schema ValuesWorkerPodSecurityContext:
+    r"""
+    ValuesWorkerPodSecurityContext
+    """
+    [...str]: any
+
+schema ValuesWorkerReadinessProbe:
+    r"""
+    ValuesWorkerReadinessProbe
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    failureThreshold : int, optional, default is 3
+    initialDelaySeconds : int, optional, default is 20
+    periodSeconds : int, optional, default is 15
+    successThreshold : int, optional, default is 1
+    tcpSocket : ValuesWorkerReadinessProbeTcpSocket, optional
+    timeoutSeconds : int, optional, default is 10
+    """
+    [...str]: any
+    enabled?: bool
+    failureThreshold?: int
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    tcpSocket?: ValuesWorkerReadinessProbeTcpSocket
+    timeoutSeconds?: int
+
+schema ValuesWorkerReadinessProbeTcpSocket:
+    r"""
+    ValuesWorkerReadinessProbeTcpSocket
+
+    Attributes
+    ----------
+    port : str, optional, default is "metrics"
+    """
+    [...str]: any
+    port?: str
+
+schema ValuesWorkerResources:
+    r"""
+    ValuesWorkerResources
+
+    Attributes
+    ----------
+    limits : ValuesWorkerResourcesLimits, optional
+    requests : ValuesWorkerResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesWorkerResourcesLimits
+    requests?: ValuesWorkerResourcesRequests
+
+schema ValuesWorkerResourcesLimits:
+    r"""
+    ValuesWorkerResourcesLimits
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "2"
+    memory : str, optional, default is "2Gi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesWorkerResourcesRequests:
+    r"""
+    ValuesWorkerResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "500m"
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesWorkerServiceMonitor:
+    r"""
+    ServiceMonitor annotations (separate from pod/deployment annotations)
+
+    Attributes
+    ----------
+    annotations : ValuesWorkerServiceMonitorAnnotations, optional
+    """
+    [...str]: any
+    annotations?: ValuesWorkerServiceMonitorAnnotations
+
+schema ValuesWorkerServiceMonitorAnnotations:
+    r"""
+    ValuesWorkerServiceMonitorAnnotations
     """
     [...str]: any
 

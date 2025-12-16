@@ -114,7 +114,7 @@ charts: helm.Charts = {
     seaweedfs: {
         chart = "seaweedfs"
         repoURL = "https://seaweedfs.github.io/seaweedfs/helm"
-        targetRevision = "4.0.402"
+        targetRevision = "4.0.403"
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
     }

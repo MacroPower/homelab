@@ -2,6 +2,547 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "additionalProperties": true,
   "properties": {
+    "admin": {
+      "additionalProperties": true,
+      "properties": {
+        "affinity": {
+          "default": "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          app.kubernetes.io/name: {{ template \"seaweedfs.name\" . }}\n          app.kubernetes.io/instance: {{ .Release.Name }}\n          app.kubernetes.io/component: admin\n      topologyKey: kubernetes.io/hostname\n",
+          "description": "Affinity Settings\nCommenting out or setting as empty the affinity variable, will allow\ndeployment to single node services such as Minikube",
+          "required": [],
+          "title": "affinity",
+          "type": "string"
+        },
+        "annotations": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "containerSecurityContext": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "containerSecurityContext",
+          "type": "object"
+        },
+        "data": {
+          "additionalProperties": true,
+          "description": "Storage configuration",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "claimName": {
+              "default": "",
+              "required": [],
+              "title": "claimName",
+              "type": "string"
+            },
+            "hostPathPrefix": {
+              "default": "/storage",
+              "required": [],
+              "title": "hostPathPrefix",
+              "type": "string"
+            },
+            "size": {
+              "default": "10Gi",
+              "required": [],
+              "title": "size",
+              "type": "string"
+            },
+            "storageClass": {
+              "default": "",
+              "required": [],
+              "title": "storageClass",
+              "type": "string"
+            },
+            "type": {
+              "default": "emptyDir",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "data",
+          "type": "object"
+        },
+        "dataDir": {
+          "default": "",
+          "description": "Data directory for admin configuration and maintenance data",
+          "required": [],
+          "title": "dataDir",
+          "type": "string"
+        },
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraArgs": {
+          "description": "Custom command line arguments to add to the admin command\nExample: [\"-customFlag\", \"value\", \"-anotherFlag\"]",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraArgs",
+          "type": "array"
+        },
+        "extraEnvironmentVars": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "extraEnvironmentVars",
+          "type": "object"
+        },
+        "extraVolumeMounts": {
+          "default": "",
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "string"
+        },
+        "extraVolumes": {
+          "default": "",
+          "required": [],
+          "title": "extraVolumes",
+          "type": "string"
+        },
+        "grpcPort": {
+          "default": 33646,
+          "required": [],
+          "title": "grpcPort",
+          "type": "integer"
+        },
+        "imageOverride": {
+          "default": "null",
+          "required": [],
+          "title": "imageOverride",
+          "type": "null"
+        },
+        "ingress": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "className": {
+              "default": "nginx",
+              "required": [],
+              "title": "className",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "host": {
+              "default": "admin.seaweedfs.local",
+              "description": "host: false for \"*\" hostname",
+              "required": [],
+              "title": "host",
+              "type": "string"
+            },
+            "path": {
+              "default": "/",
+              "required": [],
+              "title": "path",
+              "type": "string"
+            },
+            "pathType": {
+              "default": "Prefix",
+              "required": [],
+              "title": "pathType",
+              "type": "string"
+            },
+            "tls": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "tls",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "ingress",
+          "type": "object"
+        },
+        "initContainers": {
+          "default": "",
+          "required": [],
+          "title": "initContainers",
+          "type": "string"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "description": "Health checks",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 5,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/health",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "scheme": {
+                  "default": "HTTP",
+                  "required": [],
+                  "title": "scheme",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 20,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 60,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
+        "loggingOverrideLevel": {
+          "default": "null",
+          "required": [],
+          "title": "loggingOverrideLevel",
+          "type": "null"
+        },
+        "logs": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "claimName": {
+              "default": "",
+              "required": [],
+              "title": "claimName",
+              "type": "string"
+            },
+            "hostPathPrefix": {
+              "default": "/storage",
+              "required": [],
+              "title": "hostPathPrefix",
+              "type": "string"
+            },
+            "size": {
+              "default": "5Gi",
+              "required": [],
+              "title": "size",
+              "type": "string"
+            },
+            "storageClass": {
+              "default": "",
+              "required": [],
+              "title": "storageClass",
+              "type": "string"
+            },
+            "type": {
+              "default": "emptyDir",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "logs",
+          "type": "object"
+        },
+        "masters": {
+          "default": "",
+          "description": "Master servers to connect to\nIf empty, uses global.masterServer or auto-discovers from master statefulset",
+          "required": [],
+          "title": "masters",
+          "type": "string"
+        },
+        "metricsPort": {
+          "default": 9327,
+          "required": [],
+          "title": "metricsPort",
+          "type": "integer"
+        },
+        "nodeSelector": {
+          "default": "",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "string"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "podAnnotations",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "podLabels",
+          "type": "object"
+        },
+        "podManagementPolicy": {
+          "default": "Parallel",
+          "description": "# Set podManagementPolicy",
+          "required": [],
+          "title": "podManagementPolicy",
+          "type": "string"
+        },
+        "podSecurityContext": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "podSecurityContext",
+          "type": "object"
+        },
+        "port": {
+          "default": 23646,
+          "required": [],
+          "title": "port",
+          "type": "integer"
+        },
+        "priorityClassName": {
+          "default": "",
+          "required": [],
+          "title": "priorityClassName",
+          "type": "string"
+        },
+        "readinessProbe": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 3,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/health",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "scheme": {
+                  "default": "HTTP",
+                  "required": [],
+                  "title": "scheme",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 15,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 15,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "readinessProbe",
+          "type": "object"
+        },
+        "replicas": {
+          "default": 1,
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "restartPolicy": {
+          "default": "null",
+          "required": [],
+          "title": "restartPolicy",
+          "type": "null"
+        },
+        "secret": {
+          "additionalProperties": true,
+          "description": "Admin authentication",
+          "properties": {
+            "adminPassword": {
+              "default": "",
+              "required": [],
+              "title": "adminPassword",
+              "type": "string"
+            },
+            "adminUser": {
+              "default": "admin",
+              "required": [],
+              "title": "adminUser",
+              "type": "string"
+            },
+            "existingSecret": {
+              "default": "",
+              "description": "Name of an existing secret containing admin credentials. If set, adminUser and adminPassword below are ignored.",
+              "required": [],
+              "title": "existingSecret",
+              "type": "string"
+            },
+            "pwKey": {
+              "default": "",
+              "description": "Key in the existing secret for the admin password. Required if existingSecret is set.",
+              "required": [],
+              "title": "pwKey",
+              "type": "string"
+            },
+            "userKey": {
+              "default": "",
+              "description": "Key in the existing secret for the admin username. Required if existingSecret is set.",
+              "required": [],
+              "title": "userKey",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "secret",
+          "type": "object"
+        },
+        "service": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "type": {
+              "default": "ClusterIP",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "service",
+          "type": "object"
+        },
+        "serviceAccountName": {
+          "default": "",
+          "required": [],
+          "title": "serviceAccountName",
+          "type": "string"
+        },
+        "serviceMonitor": {
+          "additionalProperties": true,
+          "description": "ServiceMonitor annotations (separate from pod/deployment annotations)",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "serviceMonitor",
+          "type": "object"
+        },
+        "sidecars": {
+          "description": "Additional resources",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "sidecars",
+          "type": "array"
+        },
+        "tolerations": {
+          "default": "",
+          "required": [],
+          "title": "tolerations",
+          "type": "string"
+        },
+        "topologySpreadConstraints": {
+          "default": "",
+          "description": "Topology Spread Constraints Settings\nThis should map directly to the value of the topologySpreadConstraints\nfor a PodSpec. By Default no constraints are set.",
+          "required": [],
+          "title": "topologySpreadConstraints",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "admin",
+      "type": "object"
+    },
     "allInOne": {
       "additionalProperties": true,
       "description": "All-in-one deployment configuration",
@@ -3568,6 +4109,421 @@
       "description": "Map of named volume groups for topology-aware deployments.\nEach key inherits all fields from the `volume` section but can override\nthem locally—for example, replicas, nodeSelector, dataCenter, etc.\nTo switch entirely to this scheme, set `volume.enabled: false`\nand define one entry per zone/data-center under `volumes`.\n\nvolumes:\n  dc1:\n    replicas: 2\n    dataCenter: \"dc1\"\n    nodeSelector: |\n     topology.kubernetes.io/zone: dc1\n  dc2:\n    replicas: 2\n    dataCenter: \"dc2\"\n    nodeSelector: |\n     topology.kubernetes.io/zone: dc2\n  dc3:\n    replicas: 2\n    dataCenter: \"dc3\"\n    nodeSelector: |\n     topology.kubernetes.io/zone: dc3\n",
       "required": [],
       "title": "volumes",
+      "type": "object"
+    },
+    "worker": {
+      "additionalProperties": true,
+      "properties": {
+        "adminServer": {
+          "default": "",
+          "description": "Admin server to connect to\nFormat: \"host:port\" or auto-discover from admin service",
+          "required": [],
+          "title": "adminServer",
+          "type": "string"
+        },
+        "affinity": {
+          "default": "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          app.kubernetes.io/name: {{ template \"seaweedfs.name\" . }}\n          app.kubernetes.io/instance: {{ .Release.Name }}\n          app.kubernetes.io/component: worker\n      topologyKey: kubernetes.io/hostname\n",
+          "description": "Affinity Settings\nCommenting out or setting as empty the affinity variable, will allow\ndeployment to single node services such as Minikube",
+          "required": [],
+          "title": "affinity",
+          "type": "string"
+        },
+        "annotations": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "capabilities": {
+          "default": "vacuum,balance,erasure_coding",
+          "description": "Worker capabilities - comma-separated list\nAvailable: vacuum, balance, erasure_coding\nDefault: \"vacuum,balance,erasure_coding\" (all capabilities)",
+          "required": [],
+          "title": "capabilities",
+          "type": "string"
+        },
+        "containerSecurityContext": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "containerSecurityContext",
+          "type": "object"
+        },
+        "data": {
+          "additionalProperties": true,
+          "description": "Storage configuration for working directory\nNote: Workers use Deployment, so use \"emptyDir\", \"hostPath\", or \"existingClaim\"\nDo NOT use \"persistentVolumeClaim\" - use \"existingClaim\" with pre-provisioned PVC instead",
+          "properties": {
+            "claimName": {
+              "default": "",
+              "required": [],
+              "title": "claimName",
+              "type": "string"
+            },
+            "hostPathPrefix": {
+              "default": "/storage",
+              "required": [],
+              "title": "hostPathPrefix",
+              "type": "string"
+            },
+            "type": {
+              "default": "emptyDir",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "data",
+          "type": "object"
+        },
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraArgs": {
+          "description": "Custom command line arguments to add to the worker command\nExample: [\"-customFlag\", \"value\", \"-anotherFlag\"]",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraArgs",
+          "type": "array"
+        },
+        "extraEnvironmentVars": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "extraEnvironmentVars",
+          "type": "object"
+        },
+        "extraVolumeMounts": {
+          "default": "",
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "string"
+        },
+        "extraVolumes": {
+          "default": "",
+          "required": [],
+          "title": "extraVolumes",
+          "type": "string"
+        },
+        "imageOverride": {
+          "default": "null",
+          "required": [],
+          "title": "imageOverride",
+          "type": "null"
+        },
+        "initContainers": {
+          "default": "",
+          "required": [],
+          "title": "initContainers",
+          "type": "string"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "description": "Health checks for worker pods\nSince workers do not have an HTTP endpoint, a tcpSocket probe on the metrics port is recommended.",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 5,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "default": 30,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 60,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "tcpSocket": {
+              "additionalProperties": true,
+              "properties": {
+                "port": {
+                  "default": "metrics",
+                  "required": [],
+                  "title": "port",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "tcpSocket",
+              "type": "object"
+            },
+            "timeoutSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
+        "loggingOverrideLevel": {
+          "default": "null",
+          "required": [],
+          "title": "loggingOverrideLevel",
+          "type": "null"
+        },
+        "logs": {
+          "additionalProperties": true,
+          "properties": {
+            "claimName": {
+              "default": "",
+              "required": [],
+              "title": "claimName",
+              "type": "string"
+            },
+            "hostPathPrefix": {
+              "default": "/storage",
+              "required": [],
+              "title": "hostPathPrefix",
+              "type": "string"
+            },
+            "type": {
+              "default": "emptyDir",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "logs",
+          "type": "object"
+        },
+        "maxConcurrent": {
+          "default": 3,
+          "description": "Maximum number of concurrent tasks",
+          "required": [],
+          "title": "maxConcurrent",
+          "type": "integer"
+        },
+        "metricsPort": {
+          "default": 9327,
+          "required": [],
+          "title": "metricsPort",
+          "type": "integer"
+        },
+        "nodeSelector": {
+          "default": "",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "string"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "podAnnotations",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "podLabels",
+          "type": "object"
+        },
+        "podSecurityContext": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "podSecurityContext",
+          "type": "object"
+        },
+        "priorityClassName": {
+          "default": "",
+          "required": [],
+          "title": "priorityClassName",
+          "type": "string"
+        },
+        "readinessProbe": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 3,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "default": 20,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 15,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "tcpSocket": {
+              "additionalProperties": true,
+              "properties": {
+                "port": {
+                  "default": "metrics",
+                  "required": [],
+                  "title": "port",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "tcpSocket",
+              "type": "object"
+            },
+            "timeoutSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "readinessProbe",
+          "type": "object"
+        },
+        "replicas": {
+          "default": 1,
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "properties": {
+            "limits": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "2",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "2Gi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "500m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "512Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "restartPolicy": {
+          "default": "null",
+          "required": [],
+          "title": "restartPolicy",
+          "type": "null"
+        },
+        "serviceAccountName": {
+          "default": "",
+          "required": [],
+          "title": "serviceAccountName",
+          "type": "string"
+        },
+        "serviceMonitor": {
+          "additionalProperties": true,
+          "description": "ServiceMonitor annotations (separate from pod/deployment annotations)",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "serviceMonitor",
+          "type": "object"
+        },
+        "sidecars": {
+          "description": "Additional resources",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "sidecars",
+          "type": "array"
+        },
+        "tolerations": {
+          "default": "",
+          "required": [],
+          "title": "tolerations",
+          "type": "string"
+        },
+        "topologySpreadConstraints": {
+          "default": "",
+          "description": "Topology Spread Constraints Settings\nThis should map directly to the value of the topologySpreadConstraints\nfor a PodSpec. By Default no constraints are set.",
+          "required": [],
+          "title": "topologySpreadConstraints",
+          "type": "string"
+        },
+        "workingDir": {
+          "default": "/tmp/seaweedfs-worker",
+          "description": "Working directory for task execution",
+          "required": [],
+          "title": "workingDir",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "worker",
       "type": "object"
     }
   },
