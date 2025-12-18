@@ -40,6 +40,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteSpec:
 
     Attributes
     ----------
+    active_time_intervals : [str], default is Undefined, optional
+        active time intervals
     continue : bool, default is Undefined, optional
         continue
     group_by : [str], default is Undefined, optional
@@ -67,6 +69,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteSpec:
     routes : any, default is Undefined, optional
         routes, mutually exclusive with RouteSelector
     """
+    active_time_intervals?: [str]
     continue?: bool
     group_by?: [str]
     group_interval?: str
