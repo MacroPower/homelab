@@ -953,7 +953,7 @@ schema ValuesContainerImage:
     pullPolicy : any, optional, default is ""
     registry : any, optional, default is ""
     repository : str, optional, default is "nats"
-    tag : str, optional, default is "2.11.10-alpine"
+    tag : str, optional, default is "2.12.3-alpine"
     """
     [...str]: any
     digest?: any
@@ -1579,7 +1579,7 @@ schema ValuesPromExporterImage:
     pullPolicy : any, optional, default is ""
     registry : any, optional, default is ""
     repository : str, optional, default is "natsio/prometheus-nats-exporter"
-    tag : str, optional, default is "0.17.3"
+    tag : str, optional, default is "0.18.0"
     """
     [...str]: any
     digest?: any
@@ -1670,7 +1670,7 @@ schema ValuesReloaderImage:
     pullPolicy : any, optional, default is ""
     registry : any, optional, default is ""
     repository : str, optional, default is "natsio/nats-server-config-reloader"
-    tag : str, optional, default is "0.20.1"
+    tag : str, optional, default is "0.21.1"
     """
     [...str]: any
     digest?: any
