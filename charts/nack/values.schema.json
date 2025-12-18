@@ -84,7 +84,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "0.20.1",
+              "default": "0.21.1",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -256,6 +256,13 @@
       "required": [],
       "title": "tolerations",
       "type": "array"
+    },
+    "useLegacyNames": {
+      "default": true,
+      "description": "Use legacy naming and labels for backwards compatibility with existing installations.\nWhen true: uses .Release.Name for resource names and simple labels (app, chart)\nWhen false: uses .Chart.Name for resource names and modern Kubernetes labels (app.kubernetes.io/*)\nSet to false when using NACK as a subchart to avoid naming collisions and use standard labels.",
+      "required": [],
+      "title": "useLegacyNames",
+      "type": "boolean"
     }
   },
   "required": [],
