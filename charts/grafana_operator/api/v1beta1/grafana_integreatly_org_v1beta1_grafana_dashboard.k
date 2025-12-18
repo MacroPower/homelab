@@ -72,7 +72,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpec:
         jsonnet lib
     plugins : [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecPluginsItems0], default is Undefined, optional
         plugins
-    resyncPeriod : str, default is "10m0s", optional
+    resyncPeriod : str, default is Undefined, optional
         How often the resource is synced, defaults to 10m0s if not set
     suspend : bool, default is Undefined, optional
         Suspend pauses synchronizing attempts and tells the operator to ignore changes
@@ -101,7 +101,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpec:
     jsonnet?: str
     jsonnetLib?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecJsonnetLib
     plugins?: [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecPluginsItems0]
-    resyncPeriod?: str = "10m0s"
+    resyncPeriod?: str
     suspend?: bool
     uid?: str
     url?: str
