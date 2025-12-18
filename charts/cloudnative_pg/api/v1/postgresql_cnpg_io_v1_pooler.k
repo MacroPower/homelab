@@ -261,6 +261,10 @@ schema PostgresqlCnpgIoV1PoolerSpecPgbouncer:
         no automatic CNPG Cluster integration will be triggered.
     authQuerySecret : PostgresqlCnpgIoV1PoolerSpecPgbouncerAuthQuerySecret, default is Undefined, optional
         auth query secret
+    clientCASecret : PostgresqlCnpgIoV1PoolerSpecPgbouncerClientCASecret, default is Undefined, optional
+        client c a secret
+    clientTLSSecret : PostgresqlCnpgIoV1PoolerSpecPgbouncerClientTLSSecret, default is Undefined, optional
+        client TLS secret
     parameters : {str:str}, default is Undefined, optional
         Additional parameters to be passed to PgBouncer - please check
         the CNPG documentation for a list of options you can configure
@@ -274,13 +278,21 @@ schema PostgresqlCnpgIoV1PoolerSpecPgbouncer:
         to the pg_hba.conf file)
     poolMode : str, default is "session", optional
         The pool mode. Default: `session`.
+    serverCASecret : PostgresqlCnpgIoV1PoolerSpecPgbouncerServerCASecret, default is Undefined, optional
+        server c a secret
+    serverTLSSecret : PostgresqlCnpgIoV1PoolerSpecPgbouncerServerTLSSecret, default is Undefined, optional
+        server TLS secret
     """
     authQuery?: str
     authQuerySecret?: PostgresqlCnpgIoV1PoolerSpecPgbouncerAuthQuerySecret
+    clientCASecret?: PostgresqlCnpgIoV1PoolerSpecPgbouncerClientCASecret
+    clientTLSSecret?: PostgresqlCnpgIoV1PoolerSpecPgbouncerClientTLSSecret
     parameters?: {str:str}
     paused?: bool = False
     pg_hba?: [str]
     poolMode?: "session" | "transaction" = "session"
+    serverCASecret?: PostgresqlCnpgIoV1PoolerSpecPgbouncerServerCASecret
+    serverTLSSecret?: PostgresqlCnpgIoV1PoolerSpecPgbouncerServerTLSSecret
 
 schema PostgresqlCnpgIoV1PoolerSpecPgbouncerAuthQuerySecret:
     r"""
@@ -288,6 +300,57 @@ schema PostgresqlCnpgIoV1PoolerSpecPgbouncerAuthQuerySecret:
     query. In case it is specified, also an AuthQuery
     (e.g. "SELECT usename, passwd FROM pg_catalog.pg_shadow WHERE usename=$1")
     has to be specified and no automatic CNPG Cluster integration will be triggered.
+
+    Deprecated.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the referent.
+    """
+    name: str
+
+schema PostgresqlCnpgIoV1PoolerSpecPgbouncerClientCASecret:
+    r"""
+    ClientCASecret provides PgBouncer’s client_tls_ca_file, the root
+    CA for validating client certificates
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the referent.
+    """
+    name: str
+
+schema PostgresqlCnpgIoV1PoolerSpecPgbouncerClientTLSSecret:
+    r"""
+    ClientTLSSecret provides PgBouncer’s client_tls_key_file (private key)
+    and client_tls_cert_file (certificate) used to accept client connections
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the referent.
+    """
+    name: str
+
+schema PostgresqlCnpgIoV1PoolerSpecPgbouncerServerCASecret:
+    r"""
+    ServerCASecret provides PgBouncer’s server_tls_ca_file, the root
+    CA for validating PostgreSQL certificates
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the referent.
+    """
+    name: str
+
+schema PostgresqlCnpgIoV1PoolerSpecPgbouncerServerTLSSecret:
+    r"""
+    ServerTLSSecret, when pointing to a TLS secret, provides pgbouncer's
+    `server_tls_key_file` and `server_tls_cert_file`, used when
+    authenticating against PostgreSQL.
 
     Attributes
     ----------
@@ -8746,6 +8809,8 @@ schema PostgresqlCnpgIoV1PoolerStatusSecrets:
     ----------
     clientCA : PostgresqlCnpgIoV1PoolerStatusSecretsClientCA, default is Undefined, optional
         client c a
+    clientTLS : PostgresqlCnpgIoV1PoolerStatusSecretsClientTLS, default is Undefined, optional
+        client TLS
     pgBouncerSecrets : PostgresqlCnpgIoV1PoolerStatusSecretsPgBouncerSecrets, default is Undefined, optional
         pg bouncer secrets
     serverCA : PostgresqlCnpgIoV1PoolerStatusSecretsServerCA, default is Undefined, optional
@@ -8754,6 +8819,7 @@ schema PostgresqlCnpgIoV1PoolerStatusSecrets:
         server TLS
     """
     clientCA?: PostgresqlCnpgIoV1PoolerStatusSecretsClientCA
+    clientTLS?: PostgresqlCnpgIoV1PoolerStatusSecretsClientTLS
     pgBouncerSecrets?: PostgresqlCnpgIoV1PoolerStatusSecretsPgBouncerSecrets
     serverCA?: PostgresqlCnpgIoV1PoolerStatusSecretsServerCA
     serverTLS?: PostgresqlCnpgIoV1PoolerStatusSecretsServerTLS
@@ -8761,6 +8827,20 @@ schema PostgresqlCnpgIoV1PoolerStatusSecrets:
 schema PostgresqlCnpgIoV1PoolerStatusSecretsClientCA:
     r"""
     The client CA secret version
+
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        The name of the secret
+    version : str, default is Undefined, optional
+        The ResourceVersion of the secret
+    """
+    name?: str
+    version?: str
+
+schema PostgresqlCnpgIoV1PoolerStatusSecretsClientTLS:
+    r"""
+    The client TLS secret version
 
     Attributes
     ----------
