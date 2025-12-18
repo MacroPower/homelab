@@ -661,6 +661,13 @@
               "title": "storageClass",
               "type": "null"
             },
+            "volumeAttributesClassName": {
+              "default": "null",
+              "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+              "required": [],
+              "title": "volumeAttributesClassName",
+              "type": "null"
+            },
             "volumeClaimsEnabled": {
               "default": true,
               "description": "Enable volume claims in pod spec",
@@ -738,6 +745,13 @@
               "required": [],
               "title": "labels",
               "type": "object"
+            },
+            "trafficDistribution": {
+              "default": "",
+              "description": "trafficDistribution for backend Service",
+              "required": [],
+              "title": "trafficDistribution",
+              "type": "string"
             },
             "type": {
               "default": "ClusterIP",
@@ -1446,6 +1460,13 @@
                     "required": [],
                     "title": "storageClass",
                     "type": "null"
+                  },
+                  "volumeAttributesClassName": {
+                    "default": "null",
+                    "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+                    "required": [],
+                    "title": "volumeAttributesClassName",
+                    "type": "null"
                   }
                 },
                 "required": [],
@@ -1895,6 +1916,13 @@
                     "description": "  -- Storage class to be used.\n  If defined, storageClassName: \u003cstorageClass\u003e.\n  If set to \"-\", storageClassName: \"\", which disables dynamic provisioning.\n  If empty or set to null, no storageClassName spec is\n  set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).",
                     "required": [],
                     "title": "storageClass",
+                    "type": "null"
+                  },
+                  "volumeAttributesClassName": {
+                    "default": "null",
+                    "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+                    "required": [],
+                    "title": "volumeAttributesClassName",
                     "type": "null"
                   }
                 },
@@ -2418,6 +2446,13 @@
                   "required": [],
                   "title": "storageSize",
                   "type": "string"
+                },
+                "volumeAttributesClassName": {
+                  "default": "null",
+                  "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+                  "required": [],
+                  "title": "volumeAttributesClassName",
+                  "type": "null"
                 }
               },
               "required": [],
@@ -2651,6 +2686,13 @@
               "required": [],
               "title": "storageSize",
               "type": "string"
+            },
+            "volumeAttributesClassName": {
+              "default": "null",
+              "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+              "required": [],
+              "title": "volumeAttributesClassName",
+              "type": "null"
             }
           },
           "required": [],
@@ -3094,6 +3136,13 @@
                     "description": "  -- Storage class to be used.\n  If defined, storageClassName: \u003cstorageClass\u003e.\n  If set to \"-\", storageClassName: \"\", which disables dynamic provisioning.\n  If empty or set to null, no storageClassName spec is\n  set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).",
                     "required": [],
                     "title": "storageClass",
+                    "type": "null"
+                  },
+                  "volumeAttributesClassName": {
+                    "default": "null",
+                    "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+                    "required": [],
+                    "title": "volumeAttributesClassName",
                     "type": "null"
                   }
                 },
@@ -4062,7 +4111,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "3.5.4",
+              "default": "3.6.3",
               "description": "Docker image tag",
               "required": [],
               "title": "tag",
@@ -4304,7 +4353,7 @@
           "type": "boolean"
         },
         "version": {
-          "default": "3.5.4",
+          "default": "3.6.1",
           "description": "Default version of GEL to deploy",
           "required": [],
           "title": "version",
@@ -5485,6 +5534,13 @@
               "title": "port",
               "type": "integer"
             },
+            "trafficDistribution": {
+              "default": "",
+              "description": "trafficDistribution for gateway service",
+              "required": [],
+              "title": "trafficDistribution",
+              "type": "string"
+            },
             "type": {
               "default": "ClusterIP",
               "description": "Type of the gateway service",
@@ -6016,6 +6072,13 @@
               "title": "storageClass",
               "type": "null"
             },
+            "volumeAttributesClassName": {
+              "default": "null",
+              "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+              "required": [],
+              "title": "volumeAttributesClassName",
+              "type": "null"
+            },
             "whenDeleted": {
               "default": "Retain",
               "required": [],
@@ -6113,6 +6176,13 @@
           "required": [],
           "title": "topologySpreadConstraints",
           "type": "array"
+        },
+        "trafficDistribution": {
+          "default": "",
+          "description": "trafficDistribution for index-gateway service",
+          "required": [],
+          "title": "trafficDistribution",
+          "type": "string"
         },
         "updateStrategy": {
           "additionalProperties": true,
@@ -6505,6 +6575,13 @@
                     "required": [],
                     "title": "storageClass",
                     "type": "null"
+                  },
+                  "volumeAttributesClassName": {
+                    "default": "null",
+                    "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+                    "required": [],
+                    "title": "volumeAttributesClassName",
+                    "type": "null"
                   }
                 },
                 "required": [],
@@ -6602,21 +6679,21 @@
         },
         "serviceAnnotations": {
           "additionalProperties": true,
-          "description": "Annotations for ingestor service",
+          "description": "Annotations for ingester service",
           "required": [],
           "title": "serviceAnnotations",
           "type": "object"
         },
         "serviceLabels": {
           "additionalProperties": true,
-          "description": "The name of the PriorityClass for ingester pods\nLabels for ingestor service",
+          "description": "The name of the PriorityClass for ingester pods\nLabels for ingester service",
           "required": [],
           "title": "serviceLabels",
           "type": "object"
         },
         "serviceType": {
           "default": "ClusterIP",
-          "description": "Service type for ingestor service",
+          "description": "Service type for ingester service",
           "required": [],
           "title": "serviceType",
           "type": "string"
@@ -6701,6 +6778,13 @@
           "required": [],
           "title": "topologySpreadConstraints",
           "type": "array"
+        },
+        "trafficDistribution": {
+          "default": "",
+          "description": "trafficDistribution for ingester service",
+          "required": [],
+          "title": "trafficDistribution",
+          "type": "string"
         },
         "updateStrategy": {
           "additionalProperties": true,
@@ -7316,7 +7400,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "3.5.7",
+              "default": "3.6.3",
               "description": "Overrides the image tag whose default is the chart's appVersion",
               "required": [],
               "title": "tag",
@@ -7479,6 +7563,12 @@
               "required": [],
               "title": "fsGroup",
               "type": "integer"
+            },
+            "fsGroupChangePolicy": {
+              "default": "OnRootMismatch",
+              "required": [],
+              "title": "fsGroupChangePolicy",
+              "type": "string"
             },
             "runAsGroup": {
               "default": 10001,
@@ -7718,6 +7808,21 @@
           },
           "required": [],
           "title": "server",
+          "type": "object"
+        },
+        "service": {
+          "additionalProperties": true,
+          "properties": {
+            "trafficDistribution": {
+              "default": "",
+              "description": "trafficDistribution for services\nRef: https://kubernetes.io/docs/concepts/services-networking/service/#traffic-distribution",
+              "required": [],
+              "title": "trafficDistribution",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "service",
           "type": "object"
         },
         "serviceAnnotations": {
@@ -9391,7 +9496,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v0.15.3",
+              "default": "v0.15.4",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -11381,6 +11486,13 @@
                     "required": [],
                     "title": "storageClass",
                     "type": "null"
+                  },
+                  "volumeAttributesClassName": {
+                    "default": "null",
+                    "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+                    "required": [],
+                    "title": "volumeAttributesClassName",
+                    "type": "null"
                   }
                 },
                 "required": [],
@@ -12213,6 +12325,13 @@
           "required": [],
           "title": "topologySpreadConstraints",
           "type": "array"
+        },
+        "trafficDistribution": {
+          "default": "",
+          "description": "trafficDistribution for querier service",
+          "required": [],
+          "title": "trafficDistribution",
+          "type": "string"
         }
       },
       "required": [],
@@ -12614,6 +12733,13 @@
           "required": [],
           "title": "topologySpreadConstraints",
           "type": "array"
+        },
+        "trafficDistribution": {
+          "default": "",
+          "description": "trafficDistribution for query-frontend service",
+          "required": [],
+          "title": "trafficDistribution",
+          "type": "string"
         }
       },
       "required": [],
@@ -12910,6 +13036,13 @@
           "required": [],
           "title": "topologySpreadConstraints",
           "type": "array"
+        },
+        "trafficDistribution": {
+          "default": "",
+          "description": "trafficDistribution for query-scheduler service",
+          "required": [],
+          "title": "trafficDistribution",
+          "type": "string"
         }
       },
       "required": [],
@@ -13293,6 +13426,13 @@
               "required": [],
               "title": "storageClass",
               "type": "null"
+            },
+            "volumeAttributesClassName": {
+              "default": "null",
+              "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+              "required": [],
+              "title": "volumeAttributesClassName",
+              "type": "null"
             }
           },
           "required": [],
@@ -13365,6 +13505,13 @@
               "title": "labels",
               "type": "object"
             },
+            "trafficDistribution": {
+              "default": "",
+              "description": "trafficDistribution for read service",
+              "required": [],
+              "title": "trafficDistribution",
+              "type": "string"
+            },
             "type": {
               "default": "ClusterIP",
               "description": "Service Type for read Service",
@@ -13375,6 +13522,13 @@
           },
           "required": [],
           "title": "service",
+          "type": "object"
+        },
+        "startupProbe": {
+          "additionalProperties": true,
+          "description": "statup probe for the read pods. If empty, applies no startupProbe",
+          "required": [],
+          "title": "startupProbe",
           "type": "object"
         },
         "targetModule": {
@@ -13652,6 +13806,13 @@
               "required": [],
               "title": "storageSize",
               "type": "string"
+            },
+            "volumeAttributesClassName": {
+              "default": "null",
+              "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+              "required": [],
+              "title": "volumeAttributesClassName",
+              "type": "null"
             }
           },
           "required": [],
@@ -14206,6 +14367,13 @@
               "required": [],
               "title": "storageClass",
               "type": "null"
+            },
+            "volumeAttributesClassName": {
+              "default": "null",
+              "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+              "required": [],
+              "title": "volumeAttributesClassName",
+              "type": "null"
             }
           },
           "required": [],
@@ -14574,7 +14742,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "1.30.10",
+              "default": "1.30.9",
               "description": "Docker image tag",
               "required": [],
               "title": "tag",
@@ -15190,6 +15358,13 @@
               "title": "labels",
               "type": "object"
             },
+            "trafficDistribution": {
+              "default": "",
+              "description": "trafficDistribution single binary Service",
+              "required": [],
+              "title": "trafficDistribution",
+              "type": "string"
+            },
             "type": {
               "default": "ClusterIP",
               "description": "Service Type for single binary Service",
@@ -15753,6 +15928,13 @@
           "title": "failurePolicy",
           "type": "string"
         },
+        "objectSelector": {
+          "additionalProperties": true,
+          "description": "objectSelector to filter which objects the webhooks apply to.",
+          "required": [],
+          "title": "objectSelector",
+          "type": "object"
+        },
         "selfSignedCertSecretName": {
           "default": "certificate",
           "description": "Secret resource name for the TLS certificate to be used with the webhooks",
@@ -16179,6 +16361,13 @@
               "title": "storageClass",
               "type": "null"
             },
+            "volumeAttributesClassName": {
+              "default": "null",
+              "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+              "required": [],
+              "title": "volumeAttributesClassName",
+              "type": "null"
+            },
             "volumeClaimsEnabled": {
               "default": true,
               "description": "Enable volume claims in pod spec",
@@ -16256,6 +16445,13 @@
               "required": [],
               "title": "labels",
               "type": "object"
+            },
+            "trafficDistribution": {
+              "default": "",
+              "description": "trafficDistribution for write service",
+              "required": [],
+              "title": "trafficDistribution",
+              "type": "string"
             },
             "type": {
               "default": "ClusterIP",
