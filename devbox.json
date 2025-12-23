@@ -12,7 +12,7 @@
     "git": "2.51.2",
     "kubeconform": "0.7.0",
     "nodePackages.prettier": "3.5.3",
-    "talosctl": "1.11.5",
+    "talosctl": "1.11.6",
     "terraform": "1.13.5",
     "natscli": "0.3.0",
     "kubernetes-helm": "3.19.1",
