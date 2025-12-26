@@ -83,6 +83,8 @@ schema Values:
     coreDns : ValuesCoreDns, optional
         # Component scraping coreDns. Use either this or kubeDns
         #
+    crdPermissions : ValuesCrdPermissions, optional
+        CRD permissions for common Kubernetes operators and tools
     crds : ValuesCrds, optional
         # Install Prometheus Operator CRDs
         #
@@ -574,6 +576,7 @@ schema Values:
     containerSecurityContext?: ValuesContainerSecurityContext
     containers?: [any]
     coreDns?: ValuesCoreDns
+    crdPermissions?: ValuesCrdPermissions
     crds?: ValuesCrds
     createConfigmap?: bool
     createServiceAccount?: bool
@@ -2847,6 +2850,33 @@ schema ValuesCoreDnsServiceMonitorSelector:
     ValuesCoreDnsServiceMonitorSelector
     """
     [...str]: any
+
+schema ValuesCrdPermissions:
+    r"""
+    CRD permissions for common Kubernetes operators and tools
+
+    Attributes
+    ----------
+    argo : bool, optional, default is True
+    crossplane : bool, optional, default is True
+    externalSecrets : bool, optional, default is True
+    flux : bool, optional, default is True
+    gatewayApi : bool, optional, default is True
+    istio : bool, optional, default is True
+    kafka : bool, optional, default is True
+    keda : bool, optional, default is True
+    velero : bool, optional, default is True
+    """
+    [...str]: any
+    argo?: bool
+    crossplane?: bool
+    externalSecrets?: bool
+    flux?: bool
+    gatewayApi?: bool
+    istio?: bool
+    kafka?: bool
+    keda?: bool
+    velero?: bool
 
 schema ValuesCrds:
     r"""
@@ -7958,9 +7988,11 @@ schema ValuesMcpAddons:
     Attributes
     ----------
     aws : ValuesMcpAddonsAws, optional
+    mariadb : ValuesMcpAddonsMariadb, optional
     """
     [...str]: any
     aws?: ValuesMcpAddonsAws
+    mariadb?: ValuesMcpAddonsMariadb
 
 schema ValuesMcpAddonsAws:
     r"""
@@ -8095,6 +8127,133 @@ schema ValuesMcpAddonsAwsServiceAccountAnnotations:
     ValuesMcpAddonsAwsServiceAccountAnnotations
     """
     [...str]: any
+
+schema ValuesMcpAddonsMariadb:
+    r"""
+    ValuesMcpAddonsMariadb
+
+    Attributes
+    ----------
+    affinity : ValuesMcpAddonsMariadbAffinity, optional
+    annotations : ValuesMcpAddonsMariadbAnnotations, optional
+    config : ValuesMcpAddonsMariadbConfig, optional
+    enabled : bool, optional, default is False
+    image : str, optional, default is "mariadb-http-mcp-minimal:1.0.3"
+    llmInstructions : str, optional, default is ""
+        Custom LLM instructions (optional). Leave empty to use default instructions
+    networkPolicy : ValuesMcpAddonsMariadbNetworkPolicy, optional
+    nodeSelector : ValuesMcpAddonsMariadbNodeSelector, optional
+    registry : str, optional, default is "me-west1-docker.pkg.dev/robusta-development/development"
+    resources : ValuesMcpAddonsMariadbResources, optional
+    tolerations : [any], optional
+    """
+    [...str]: any
+    affinity?: ValuesMcpAddonsMariadbAffinity
+    annotations?: ValuesMcpAddonsMariadbAnnotations
+    config?: ValuesMcpAddonsMariadbConfig
+    enabled?: bool
+    image?: str
+    llmInstructions?: str
+    networkPolicy?: ValuesMcpAddonsMariadbNetworkPolicy
+    nodeSelector?: ValuesMcpAddonsMariadbNodeSelector
+    registry?: str
+    resources?: ValuesMcpAddonsMariadbResources
+    tolerations?: [any]
+
+schema ValuesMcpAddonsMariadbAffinity:
+    r"""
+    ValuesMcpAddonsMariadbAffinity
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsMariadbAnnotations:
+    r"""
+    ValuesMcpAddonsMariadbAnnotations
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsMariadbConfig:
+    r"""
+    ValuesMcpAddonsMariadbConfig
+
+    Attributes
+    ----------
+    database : str, optional, default is ""
+    host : str, optional, default is ""
+    maxPoolSize : str, optional, default is "5"
+    namespace : str, optional, default is ""
+    password : str, optional, default is ""
+    port : str, optional, default is "3306"
+    readOnlyMode : bool, optional, default is True
+    useSSL : bool, optional, default is True
+    username : str, optional, default is ""
+    """
+    [...str]: any
+    database?: str
+    host?: str
+    maxPoolSize?: str
+    namespace?: str
+    password?: str
+    port?: str
+    readOnlyMode?: bool
+    useSSL?: bool
+    username?: str
+
+schema ValuesMcpAddonsMariadbNetworkPolicy:
+    r"""
+    ValuesMcpAddonsMariadbNetworkPolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMcpAddonsMariadbNodeSelector:
+    r"""
+    ValuesMcpAddonsMariadbNodeSelector
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsMariadbResources:
+    r"""
+    ValuesMcpAddonsMariadbResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsMariadbResourcesLimits, optional
+    requests : ValuesMcpAddonsMariadbResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsMariadbResourcesLimits
+    requests?: ValuesMcpAddonsMariadbResourcesRequests
+
+schema ValuesMcpAddonsMariadbResourcesLimits:
+    r"""
+    ValuesMcpAddonsMariadbResourcesLimits
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "500m"
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsMariadbResourcesRequests:
+    r"""
+    ValuesMcpAddonsMariadbResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "250m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
 
 schema ValuesMcpServers:
     r"""
@@ -13279,6 +13438,8 @@ schema ValuesRunner:
     additional_env_vars : [any], optional
     annotations : ValuesRunnerAnnotations, optional
     certificate : str, optional, default is ""
+    crdPermissions : ValuesRunnerCrdPermissions, optional
+        CRD permissions for common Kubernetes operators and tools
     createServiceAccount : bool, optional, default is True
     customCRD : [any], optional
     customClusterRoleRules : [any], optional
@@ -13288,7 +13449,7 @@ schema ValuesRunner:
     hardenedFs : bool, optional, default is False
         Enable hardened filesystem security (read-only root filesystem with writable volume mounts)
     image : any, optional, default is "~"
-    imageName : str, optional, default is "robusta-runner:0.29.2"
+    imageName : str, optional, default is "robusta-runner:0.31.0"
     imagePullPolicy : str, optional, default is "IfNotPresent"
     imagePullSecrets : [any], optional
     log_level : str, optional, default is "INFO"
@@ -13310,6 +13471,7 @@ schema ValuesRunner:
     additional_env_vars?: [any]
     annotations?: ValuesRunnerAnnotations
     certificate?: str
+    crdPermissions?: ValuesRunnerCrdPermissions
     createServiceAccount?: bool
     customCRD?: [any]
     customClusterRoleRules?: [any]
@@ -13339,6 +13501,33 @@ schema ValuesRunnerAnnotations:
     ValuesRunnerAnnotations
     """
     [...str]: any
+
+schema ValuesRunnerCrdPermissions:
+    r"""
+    CRD permissions for common Kubernetes operators and tools
+
+    Attributes
+    ----------
+    argo : bool, optional, default is True
+    crossplane : bool, optional, default is True
+    externalSecrets : bool, optional, default is True
+    flux : bool, optional, default is True
+    gatewayApi : bool, optional, default is True
+    istio : bool, optional, default is True
+    kafka : bool, optional, default is True
+    keda : bool, optional, default is True
+    velero : bool, optional, default is True
+    """
+    [...str]: any
+    argo?: bool
+    crossplane?: bool
+    externalSecrets?: bool
+    flux?: bool
+    gatewayApi?: bool
+    istio?: bool
+    kafka?: bool
+    keda?: bool
+    velero?: bool
 
 schema ValuesRunnerResources:
     r"""
