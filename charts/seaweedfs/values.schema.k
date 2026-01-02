@@ -2299,7 +2299,7 @@ schema ValuesS3Ingress:
     className : str, optional, default is ""
     enabled : bool, optional, default is False
     host : str, optional, default is "seaweedfs.cluster.local"
-        host: false for "*" hostname
+        host: false for "*" hostname, or an array for multiple hostnames
     path : str, optional, default is "/"
     pathType : str, optional, default is "Prefix"
     tls : [any], optional
@@ -2716,6 +2716,9 @@ schema ValuesVolume:
     fileSizeLimitMB : any, optional, default is "null"
         limit file size to avoid out of memory, default 256mb
     grpcPort : int, optional, default is 18080
+    id : any, optional, default is "null"
+        Stable identifier for the volume server, independent of IP address
+        Useful for Kubernetes environments with hostPath volumes to maintain stable identity
     idx : ValuesVolumeIdx, optional
         same applies to "logs"
     imageOverride : any, optional, default is "null"
@@ -2814,6 +2817,7 @@ schema ValuesVolume:
     extraVolumes?: str
     fileSizeLimitMB?: any
     grpcPort?: int
+    id?: any
     idx?: ValuesVolumeIdx
     imageOverride?: any
     imagesFixOrientation?: bool
@@ -3051,7 +3055,6 @@ schema ValuesWorker:
     ----------
     adminServer : str, optional, default is ""
         Admin server to connect to
-        Format: "host:port" or auto-discover from admin service
     affinity : str, optional, default is "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          app.kubernetes.io/name: {{ template \"seaweedfs.name\" . }}\n          app.kubernetes.io/instance: {{ .Release.Name }}\n          app.kubernetes.io/component: worker\n      topologyKey: kubernetes.io/hostname\n"
         Affinity Settings
         Commenting out or setting as empty the affinity variable, will allow
@@ -3077,7 +3080,7 @@ schema ValuesWorker:
     initContainers : str, optional, default is ""
     livenessProbe : ValuesWorkerLivenessProbe, optional
         Health checks for worker pods
-        Since workers do not have an HTTP endpoint, a tcpSocket probe on the metrics port is recommended.
+        Workers expose /health (liveness) and /ready (readiness) endpoints on the metricsPort
     loggingOverrideLevel : any, optional, default is "null"
     logs : ValuesWorkerLogs, optional
     maxConcurrent : int, optional, default is 3
@@ -3178,36 +3181,38 @@ schema ValuesWorkerExtraEnvironmentVars:
 schema ValuesWorkerLivenessProbe:
     r"""
     Health checks for worker pods
-    Since workers do not have an HTTP endpoint, a tcpSocket probe on the metrics port is recommended.
+    Workers expose /health (liveness) and /ready (readiness) endpoints on the metricsPort
 
     Attributes
     ----------
     enabled : bool, optional, default is True
     failureThreshold : int, optional, default is 5
+    httpGet : ValuesWorkerLivenessProbeHttpGet, optional
     initialDelaySeconds : int, optional, default is 30
     periodSeconds : int, optional, default is 60
     successThreshold : int, optional, default is 1
-    tcpSocket : ValuesWorkerLivenessProbeTcpSocket, optional
     timeoutSeconds : int, optional, default is 10
     """
     [...str]: any
     enabled?: bool
     failureThreshold?: int
+    httpGet?: ValuesWorkerLivenessProbeHttpGet
     initialDelaySeconds?: int
     periodSeconds?: int
     successThreshold?: int
-    tcpSocket?: ValuesWorkerLivenessProbeTcpSocket
     timeoutSeconds?: int
 
-schema ValuesWorkerLivenessProbeTcpSocket:
+schema ValuesWorkerLivenessProbeHttpGet:
     r"""
-    ValuesWorkerLivenessProbeTcpSocket
+    ValuesWorkerLivenessProbeHttpGet
 
     Attributes
     ----------
+    path : str, optional, default is "/health"
     port : str, optional, default is "metrics"
     """
     [...str]: any
+    path?: str
     port?: str
 
 schema ValuesWorkerLogs:
@@ -3251,30 +3256,32 @@ schema ValuesWorkerReadinessProbe:
     ----------
     enabled : bool, optional, default is True
     failureThreshold : int, optional, default is 3
+    httpGet : ValuesWorkerReadinessProbeHttpGet, optional
     initialDelaySeconds : int, optional, default is 20
     periodSeconds : int, optional, default is 15
     successThreshold : int, optional, default is 1
-    tcpSocket : ValuesWorkerReadinessProbeTcpSocket, optional
     timeoutSeconds : int, optional, default is 10
     """
     [...str]: any
     enabled?: bool
     failureThreshold?: int
+    httpGet?: ValuesWorkerReadinessProbeHttpGet
     initialDelaySeconds?: int
     periodSeconds?: int
     successThreshold?: int
-    tcpSocket?: ValuesWorkerReadinessProbeTcpSocket
     timeoutSeconds?: int
 
-schema ValuesWorkerReadinessProbeTcpSocket:
+schema ValuesWorkerReadinessProbeHttpGet:
     r"""
-    ValuesWorkerReadinessProbeTcpSocket
+    ValuesWorkerReadinessProbeHttpGet
 
     Attributes
     ----------
+    path : str, optional, default is "/ready"
     port : str, optional, default is "metrics"
     """
     [...str]: any
+    path?: str
     port?: str
 
 schema ValuesWorkerResources:

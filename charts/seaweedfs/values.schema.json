@@ -2985,7 +2985,7 @@
             },
             "host": {
               "default": "seaweedfs.cluster.local",
-              "description": "host: false for \"*\" hostname",
+              "description": "host: false for \"*\" hostname, or an array for multiple hostnames",
               "required": [],
               "title": "host",
               "type": "string"
@@ -3753,6 +3753,13 @@
           "title": "grpcPort",
           "type": "integer"
         },
+        "id": {
+          "default": "null",
+          "description": "Stable identifier for the volume server, independent of IP address\nUseful for Kubernetes environments with hostPath volumes to maintain stable identity",
+          "required": [],
+          "title": "id",
+          "type": "null"
+        },
         "idx": {
           "additionalProperties": true,
           "description": "same applies to \"logs\"",
@@ -4116,7 +4123,7 @@
       "properties": {
         "adminServer": {
           "default": "",
-          "description": "Admin server to connect to\nFormat: \"host:port\" or auto-discover from admin service",
+          "description": "Admin server to connect to",
           "required": [],
           "title": "adminServer",
           "type": "string"
@@ -4221,7 +4228,7 @@
         },
         "livenessProbe": {
           "additionalProperties": true,
-          "description": "Health checks for worker pods\nSince workers do not have an HTTP endpoint, a tcpSocket probe on the metrics port is recommended.",
+          "description": "Health checks for worker pods\nWorkers expose /health (liveness) and /ready (readiness) endpoints on the metricsPort",
           "properties": {
             "enabled": {
               "default": true,
@@ -4234,6 +4241,26 @@
               "required": [],
               "title": "failureThreshold",
               "type": "integer"
+            },
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/health",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "port": {
+                  "default": "metrics",
+                  "required": [],
+                  "title": "port",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
             },
             "initialDelaySeconds": {
               "default": 30,
@@ -4252,20 +4279,6 @@
               "required": [],
               "title": "successThreshold",
               "type": "integer"
-            },
-            "tcpSocket": {
-              "additionalProperties": true,
-              "properties": {
-                "port": {
-                  "default": "metrics",
-                  "required": [],
-                  "title": "port",
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "title": "tcpSocket",
-              "type": "object"
             },
             "timeoutSeconds": {
               "default": 10,
@@ -4368,6 +4381,26 @@
               "title": "failureThreshold",
               "type": "integer"
             },
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/ready",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "port": {
+                  "default": "metrics",
+                  "required": [],
+                  "title": "port",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
             "initialDelaySeconds": {
               "default": 20,
               "required": [],
@@ -4385,20 +4418,6 @@
               "required": [],
               "title": "successThreshold",
               "type": "integer"
-            },
-            "tcpSocket": {
-              "additionalProperties": true,
-              "properties": {
-                "port": {
-                  "default": "metrics",
-                  "required": [],
-                  "title": "port",
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "title": "tcpSocket",
-              "type": "object"
             },
             "timeoutSeconds": {
               "default": 10,
