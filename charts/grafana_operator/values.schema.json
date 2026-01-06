@@ -16,6 +16,13 @@
       "title": "affinity",
       "type": "object"
     },
+    "annotations": {
+      "additionalProperties": true,
+      "description": "deployment annotations",
+      "required": [],
+      "title": "annotations",
+      "type": "object"
+    },
     "clusterDomain": {
       "default": "",
       "description": "Sets the `CLUSTER_DOMAIN` environment variable,\nit defines how internal Kubernetes services managed by the operator are addressed.\nBy default, this is empty, and internal services are addressed without a cluster domain specified, i.e., a\nrelative domain name that will resolve regardless of if a custom domain is configured for the cluster. If you\nwish to have services addressed using their FQDNs, you can specify the cluster domain explicitly, e.g., \"cluster.local\"\nfor the default Kubernetes configuration.",
@@ -67,6 +74,13 @@
       "title": "dashboard",
       "type": "object"
     },
+    "defaultResyncPeriod": {
+      "default": "10m",
+      "description": "Sets the global default resyncPeriod for all resources.\nUseful when you want to either lower or raise the duration between reconciliations.",
+      "required": [],
+      "title": "defaultResyncPeriod",
+      "type": "string"
+    },
     "enforceCacheLabels": {
       "default": "safe",
       "description": "Sets the `ENFORCE_CACHE_LABELS` environment variable,\nAllows to tweak how caching of various Kubernetes resources works inside the operator.\nValid values are \"off\", \"safe\", and \"all\".\nWhen set to \"off\", all resources are cached (including Deployments, Services, Ingresses, and any other native resources that the operator interacts with), which results in much higher memory usage (essentially, grows with cluster size).\nWhen set to `safe`, ConfigMaps and Secrets are not cached, all other native resources are cached only when they have `app.kubernetes.io/managed-by: grafana-operator` label. The label is automatically set on all resources that are created/owned by the operator (applicable to any mode).\nWhen set to `all`, only resources that have `app.kubernetes.io/managed-by: grafana-operator` are cached. The caveat is that ConfigMaps and Secrets can be seen by the operator only if they have the label. Thus, usage of this mode requires more careful planning.",
@@ -92,6 +106,24 @@
       "title": "extraObjects",
       "type": "array"
     },
+    "extraVolumeMounts": {
+      "description": "extra container volume mounts",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraVolumeMounts",
+      "type": "array"
+    },
+    "extraVolumes": {
+      "description": "extra pod volumes",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraVolumes",
+      "type": "array"
+    },
     "fullnameOverride": {
       "default": "",
       "description": "Overrides the fully qualified app name.",
@@ -101,10 +133,25 @@
     },
     "global": {
       "additionalProperties": true,
-      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "properties": {
+        "imageRegistry": {
+          "default": "null",
+          "description": "Overrides the Docker registry globally for all images",
+          "required": [],
+          "title": "imageRegistry",
+          "type": "null"
+        }
+      },
       "required": [],
       "title": "global",
       "type": "object"
+    },
+    "hostUsers": {
+      "default": true,
+      "description": "Set to false to opt-in to use user namespaces",
+      "required": [],
+      "title": "hostUsers",
+      "type": "boolean"
     },
     "image": {
       "additionalProperties": true,
@@ -116,8 +163,15 @@
           "title": "pullPolicy",
           "type": "string"
         },
+        "registry": {
+          "default": "ghcr.io",
+          "description": "grafana operator image registry",
+          "required": [],
+          "title": "registry",
+          "type": "string"
+        },
         "repository": {
-          "default": "ghcr.io/grafana/grafana-operator",
+          "default": "grafana/grafana-operator",
           "description": "grafana operator image repository",
           "required": [],
           "title": "repository",
@@ -151,12 +205,63 @@
       "title": "isOpenShift",
       "type": "boolean"
     },
+    "kubeAuth": {
+      "additionalProperties": true,
+      "properties": {
+        "audience": {
+          "default": "operator.grafana.com",
+          "description": "Ensures token is invalid against the kubernetes API preventing misuse",
+          "required": [],
+          "title": "audience",
+          "type": "string"
+        },
+        "expirationSeconds": {
+          "default": 3600,
+          "description": "The frequency with which kubernetes will rotate the token, should never be less than 300",
+          "required": [],
+          "title": "expirationSeconds",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "kubeAuth",
+      "type": "object"
+    },
     "leaderElect": {
       "default": true,
       "description": "This is recommended in most scenarios, even when only running a single instance of the operator.",
       "required": [],
       "title": "leaderElect",
       "type": "boolean"
+    },
+    "livenessProbe": {
+      "additionalProperties": true,
+      "description": "pod livenessProbe",
+      "properties": {
+        "httpGet": {
+          "additionalProperties": true,
+          "properties": {
+            "path": {
+              "default": "/healthz",
+              "required": [],
+              "title": "path",
+              "type": "string"
+            },
+            "port": {
+              "default": 8081,
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "httpGet",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "livenessProbe",
+      "type": "object"
     },
     "logging": {
       "additionalProperties": true,
@@ -197,6 +302,13 @@
     "metricsService": {
       "additionalProperties": true,
       "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "annotations on the metrics service",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
         "metricsPort": {
           "default": 9090,
           "description": "metrics service port",
@@ -292,6 +404,35 @@
       },
       "required": [],
       "title": "rbac",
+      "type": "object"
+    },
+    "readinessProbe": {
+      "additionalProperties": true,
+      "description": "pod livenessProbe",
+      "properties": {
+        "httpGet": {
+          "additionalProperties": true,
+          "properties": {
+            "path": {
+              "default": "/readyz",
+              "required": [],
+              "title": "path",
+              "type": "string"
+            },
+            "port": {
+              "default": 8081,
+              "required": [],
+              "title": "port",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "httpGet",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "readinessProbe",
       "type": "object"
     },
     "replicas": {

@@ -50,7 +50,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpec:
         UID of the folder in which the current folder should be created
     permissions : str, default is Undefined, optional
         Raw json with folder permissions, potentially exported from Grafana
-    resyncPeriod : str, default is "10m0s", optional
+    resyncPeriod : str, default is Undefined, optional
         How often the resource is synced, defaults to 10m0s if not set
     suspend : bool, default is Undefined, optional
         Suspend pauses synchronizing attempts and tells the operator to ignore changes
@@ -65,7 +65,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaFolderSpec:
     parentFolderRef?: str
     parentFolderUID?: str
     permissions?: str
-    resyncPeriod?: str = "10m0s"
+    resyncPeriod?: str
     suspend?: bool
     title?: str
     uid?: str
@@ -124,7 +124,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaFolderStatus:
     NoMatchingInstances : bool, default is Undefined, optional
         The folder instanceSelector can't find matching grafana instances
     conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaFolderStatusConditionsItems0], default is Undefined, optional
-        Results when synchonizing resource with Grafana instances
+        Results when synchronizing resource with Grafana instances
     hash : str, default is Undefined, optional
         hash
     lastResync : str, default is Undefined, optional

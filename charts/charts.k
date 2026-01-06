@@ -51,7 +51,7 @@ charts: helm.Charts = {
     grafana_operator: {
         chart = "grafana-operator"
         repoURL = "oci://ghcr.io/grafana/helm-charts/grafana-operator"
-        targetRevision = "v5.20.0"
+        targetRevision = "5.21.4"
         schemaGenerator = "AUTO"
         values: {
             rbac: {

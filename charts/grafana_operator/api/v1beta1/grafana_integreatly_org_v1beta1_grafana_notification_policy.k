@@ -46,7 +46,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpec:
         Whether to enable or disable editing of the notification policy in Grafana UI
     instanceSelector : GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecInstanceSelector, default is Undefined, required
         instance selector
-    resyncPeriod : str, default is "10m0s", optional
+    resyncPeriod : str, default is Undefined, optional
         How often the resource is synced, defaults to 10m0s if not set
     route : GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRoute, default is Undefined, required
         route
@@ -57,7 +57,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpec:
     editable?: bool
     instanceSelector: GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecInstanceSelector
 
-    resyncPeriod?: str = "10m0s"
+    resyncPeriod?: str
     route: GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRoute
 
     suspend?: bool
@@ -111,8 +111,10 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRoute:
 
     Attributes
     ----------
+    active_time_intervals : [str], default is Undefined, optional
+        Deprecated: Never worked on the top level route node
     continue : bool, default is Undefined, optional
-        continue
+        Deprecated: Never worked on the top level route node
     group_by : [str], default is Undefined, optional
         group by
     group_interval : str, default is Undefined, optional
@@ -120,15 +122,15 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRoute:
     group_wait : str, default is Undefined, optional
         group wait
     match_re : {str:str}, default is Undefined, optional
-        match re
+        Deprecated: Never worked on the top level route node
     matchers : [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRouteMatchersItems0], default is Undefined, optional
-        matchers
+        Deprecated: Never worked on the top level route node
     mute_time_intervals : [str], default is Undefined, optional
-        mute time intervals
+        Deprecated: Never worked on the top level route node
     object_matchers : [[str]], default is Undefined, optional
-        object matchers
+        Deprecated: Never worked on the top level route node
     provenance : str, default is Undefined, optional
-        provenance
+        Deprecated: Does nothing
     receiver : str, default is Undefined, required
         receiver
     repeat_interval : str, default is Undefined, optional
@@ -138,6 +140,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicySpecRoute:
     routes : any, default is Undefined, optional
         routes, mutually exclusive with RouteSelector
     """
+    active_time_intervals?: [str]
     continue?: bool
     group_by?: [str]
     group_interval?: str
@@ -225,7 +228,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyStatus:
     Attributes
     ----------
     conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyStatusConditionsItems0], default is Undefined, optional
-        Results when synchonizing resource with Grafana instances
+        Results when synchronizing resource with Grafana instances
     discoveredRoutes : [str], default is Undefined, optional
         discovered routes
     lastResync : str, default is Undefined, optional

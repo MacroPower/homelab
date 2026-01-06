@@ -45,7 +45,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaServiceAccountSpec:
         Whether the service account is disabled
     name : str, default is Undefined, required
         Name of the service account in Grafana
-    resyncPeriod : str, default is "10m0s", optional
+    resyncPeriod : str, default is Undefined, optional
         How often the resource is synced, defaults to 10m0s if not set
     role : str, default is Undefined, required
         Role of the service account (Viewer, Editor, Admin)
@@ -59,7 +59,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaServiceAccountSpec:
     isDisabled?: bool = False
     name: str
 
-    resyncPeriod?: str = "10m0s"
+    resyncPeriod?: str
     role: "Viewer" | "Editor" | "Admin"
 
     suspend?: bool = False
@@ -101,7 +101,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaServiceAccountStatus:
     account : GrafanaIntegreatlyOrgV1beta1GrafanaServiceAccountStatusAccount, default is Undefined, optional
         account
     conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaServiceAccountStatusConditionsItems0], default is Undefined, optional
-        Results when synchonizing resource with Grafana instances
+        Results when synchronizing resource with Grafana instances
     lastResync : str, default is Undefined, optional
         Last time the resource was synchronized with Grafana instances
     """
