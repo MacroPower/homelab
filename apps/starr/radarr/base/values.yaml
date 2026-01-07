@@ -23,7 +23,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/home-operations/radarr
-          tag: "5.28.0.10205"
+          tag: "6.1.1.10317"
         env:
           RADARR__SERVER__PORT: { value: &port 7878 }
           RADARR__APP__INSTANCENAME: { value: Radarr }
