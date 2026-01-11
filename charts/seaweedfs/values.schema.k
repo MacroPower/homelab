@@ -105,7 +105,6 @@ schema ValuesAdmin:
     masters : str, optional, default is ""
         Master servers to connect to
         If empty, uses global.masterServer or auto-discovers from master statefulset
-    metricsPort : int, optional, default is 9327
     nodeSelector : str, optional, default is ""
     podAnnotations : ValuesAdminPodAnnotations, optional
     podLabels : ValuesAdminPodLabels, optional
@@ -151,7 +150,6 @@ schema ValuesAdmin:
     loggingOverrideLevel?: any
     logs?: ValuesAdminLogs
     masters?: str
-    metricsPort?: int
     nodeSelector?: str
     podAnnotations?: ValuesAdminPodAnnotations
     podLabels?: ValuesAdminPodLabels

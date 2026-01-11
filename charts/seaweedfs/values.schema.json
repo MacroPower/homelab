@@ -302,12 +302,6 @@
           "title": "masters",
           "type": "string"
         },
-        "metricsPort": {
-          "default": 9327,
-          "required": [],
-          "title": "metricsPort",
-          "type": "integer"
-        },
         "nodeSelector": {
           "default": "",
           "required": [],
