@@ -141,7 +141,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpec:
     filterOrder?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecFilterOrderItems0]
     ipFamily?: "IPv4" | "IPv6" | "DualStack"
     logging?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecLogging
-    luaValidation?: "Strict" | "Disabled"
+    luaValidation?: "Strict" | "InsecureSyntax" | "Disabled"
     mergeGateways?: bool
     preserveRouteOrder?: bool
     provider?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProvider

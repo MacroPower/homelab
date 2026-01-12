@@ -178,7 +178,7 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpec:
     hostnames?: [str]
     parentRefs?: [GatewayNetworkingK8sIoV1HTTPRouteSpecParentRefsItems0]
     rules?: [GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0] = [{"matches": [{
-        "path": {"value": "/", "type": "PathPrefix"}
+        "path": {"type": "PathPrefix", "value": "/"}
     }]}]
     useDefaultGateways?: "All" | "None"
 
@@ -413,7 +413,7 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0:
         this configuration error.
 
         Support: Core
-    matches : [GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0MatchesItems0], default is [{"path": {"type": "PathPrefix", "value": "/"}}], optional
+    matches : [GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0MatchesItems0], default is [{"path": {"value": "/", "type": "PathPrefix"}}], optional
         Matches define conditions used for matching the rule against incoming
         HTTP requests. Each match is independent, i.e. this rule will be matched
         if **any** one of the matches is satisfied.
