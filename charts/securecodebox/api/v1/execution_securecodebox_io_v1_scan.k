@@ -1197,6 +1197,7 @@ schema ExecutionSecurecodeboxIoV1ScanSpecInitContainersItems0:
         readiness probe
     resizePolicy : [ExecutionSecurecodeboxIoV1ScanSpecInitContainersItems0ResizePolicyItems0], default is Undefined, optional
         Resources resize policy for the container.
+        This field cannot be set on ephemeral containers.
     resources : ExecutionSecurecodeboxIoV1ScanSpecInitContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
@@ -2552,7 +2553,7 @@ schema ExecutionSecurecodeboxIoV1ScanSpecTolerationsItems0:
         If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
         Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
         Exists is equivalent to wildcard for value, so that a pod can
         tolerate all taints of a particular category.
     tolerationSeconds : int, default is Undefined, optional
@@ -3210,6 +3211,9 @@ schema ExecutionSecurecodeboxIoV1ScanSpecVolumesItems0EphemeralVolumeClaimTempla
 schema ExecutionSecurecodeboxIoV1ScanSpecVolumesItems0EphemeralVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
+    Users are allowed to specify resource requirements
+    that are lower than previous value but must still be higher than capacity recorded in the
+    status field of the claim.
 
     Attributes
     ----------
@@ -3895,6 +3899,12 @@ schema ExecutionSecurecodeboxIoV1ScanSpecVolumesItems0ProjectedSourcesItems0PodC
         If omitted, kube-apiserver will set it to 86400(24 hours).
     signerName : str, default is Undefined, required
         Kubelet's generated CSRs will be addressed to this signer.
+    userAnnotations : {str:str}, default is Undefined, optional
+        userAnnotations allow pod authors to pass additional information to
+        the signer implementation.  Kubernetes does not restrict or validate this
+        metadata in any way.
+
+        These values are copied verbatim into the `spec.
     """
     certificateChainPath?: str
     credentialBundlePath?: str
@@ -3903,6 +3913,8 @@ schema ExecutionSecurecodeboxIoV1ScanSpecVolumesItems0ProjectedSourcesItems0PodC
 
     maxExpirationSeconds?: int
     signerName: str
+
+    userAnnotations?: {str:str}
 
 schema ExecutionSecurecodeboxIoV1ScanSpecVolumesItems0ProjectedSourcesItems0Secret:
     r"""
