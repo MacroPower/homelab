@@ -1,5 +1,5 @@
 {
-  "$id": "https://raw.githubusercontent.com/bjw-s-labs/helm-charts/common-4.5.0/charts/library/common/values.schema.json",
+  "$id": "https://raw.githubusercontent.com/bjw-s-labs/helm-charts/common-4.6.2/charts/library/common/values.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema",
   "properties": {
     "configMaps": {
@@ -7284,6 +7284,15 @@
                         "required": [],
                         "type": "array"
                       },
+                      "supplementalGroupsPolicy": {
+                        "description": "Defines how supplemental groups of the the first process in each container are calculated. Valid values are \"Merge\" and \"Strict\". If not specified, \"Merge\" is used. Note that this field cannot be set when spec.os.name is windows.",
+                        "enum": [
+                          "Merge",
+                          "Strict"
+                        ],
+                        "required": [],
+                        "type": "string"
+                      },
                       "sysctls": {
                         "description": "Sysctls hold a list of namespaced sysctls used for the pod. Pods with unsupported sysctls (by the container runtime) might fail to launch. Note that this field cannot be set when spec.os.name is windows.",
                         "items": {
@@ -9097,6 +9106,15 @@
               },
               "required": [],
               "type": "array"
+            },
+            "supplementalGroupsPolicy": {
+              "description": "Defines how supplemental groups of the the first process in each container are calculated. Valid values are \"Merge\" and \"Strict\". If not specified, \"Merge\" is used. Note that this field cannot be set when spec.os.name is windows.",
+              "enum": [
+                "Merge",
+                "Strict"
+              ],
+              "required": [],
+              "type": "string"
             },
             "sysctls": {
               "description": "Sysctls hold a list of namespaced sysctls used for the pod. Pods with unsupported sysctls (by the container runtime) might fail to launch. Note that this field cannot be set when spec.os.name is windows.",
@@ -13888,6 +13906,11 @@
               },
               "forceRename": {
                 "required": []
+              },
+              "jobLabel": {
+                "description": "The label to use to retrieve the job name from the target service's metadata. Defaults to the ServiceMonitor's 'metadata.name'. Helm templates can be used.",
+                "required": [],
+                "type": "string"
               },
               "labels": {
                 "additionalProperties": {

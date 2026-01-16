@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "app-template"
     repoURL : str, required, default is "oci://ghcr.io/bjw-s-labs/helm/app-template"
-    targetRevision : str, optional, default is "4.5.0"
+    targetRevision : str, optional, default is "4.6.2"
     """
     values?: Values | any
     chart: str = "app-template"
     repoURL: str = "oci://ghcr.io/bjw-s-labs/helm/app-template"
-    targetRevision?: str = "4.5.0"
+    targetRevision?: str = "4.6.2"
 
