@@ -55,6 +55,11 @@ schema Values:
         Node tolerations for server scheduling to nodes with taints
         Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 
+    useLegacyNames : bool, optional, default is True
+        Use legacy naming and labels for backwards compatibility with existing installations.
+        When true: uses .Release.Name for resource names and simple labels (app, chart)
+        When false: uses .Chart.Name for resource names and modern Kubernetes labels (app.kubernetes.io/*)
+        Set to false when using NACK as a subchart to avoid naming collisions and use standard labels.
     """
     [...str]: any
     additionalVolumeMounts?: [any]
@@ -76,6 +81,7 @@ schema Values:
     securityContext?: ValuesSecurityContext
     serviceAccountName?: str
     tolerations?: [any]
+    useLegacyNames?: bool
 
 schema ValuesAffinity:
     r"""
@@ -135,7 +141,7 @@ schema ValuesJetstreamImage:
     ----------
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "natsio/jetstream-controller"
-    tag : str, optional, default is "0.20.1"
+    tag : str, optional, default is "0.21.1"
     """
     [...str]: any
     pullPolicy?: str
