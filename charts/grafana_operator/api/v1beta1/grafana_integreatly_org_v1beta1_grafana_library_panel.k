@@ -70,7 +70,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpec:
         jsonnet lib
     plugins : [GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecPluginsItems0], default is Undefined, optional
         plugins
-    resyncPeriod : str, default is "10m0s", optional
+    resyncPeriod : str, default is Undefined, optional
         How often the resource is synced, defaults to 10m0s if not set
     suspend : bool, default is Undefined, optional
         Suspend pauses synchronizing attempts and tells the operator to ignore changes
@@ -98,7 +98,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpec:
     jsonnet?: str
     jsonnetLib?: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecJsonnetLib
     plugins?: [GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecPluginsItems0]
-    resyncPeriod?: str = "10m0s"
+    resyncPeriod?: str
     suspend?: bool
     uid?: str
     url?: str
@@ -450,7 +450,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelStatus:
     Attributes
     ----------
     conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelStatusConditionsItems0], default is Undefined, optional
-        Results when synchonizing resource with Grafana instances
+        Results when synchronizing resource with Grafana instances
     contentCache : str, default is Undefined, optional
         content cache
     contentTimestamp : str, default is Undefined, optional

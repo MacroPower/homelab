@@ -14,12 +14,12 @@ schema Chart(helm.Chart):
     values : Values | any, optional, default is {rbac = {create = False}}
     chart : str, required, default is "grafana-operator"
     repoURL : str, required, default is "oci://ghcr.io/grafana/helm-charts/grafana-operator"
-    targetRevision : str, optional, default is "v5.20.0"
+    targetRevision : str, optional, default is "5.21.4"
     """
     values?: Values | any = {
         rbac = {create = False}
     }
     chart: str = "grafana-operator"
     repoURL: str = "oci://ghcr.io/grafana/helm-charts/grafana-operator"
-    targetRevision?: str = "v5.20.0"
+    targetRevision?: str = "5.21.4"
 
