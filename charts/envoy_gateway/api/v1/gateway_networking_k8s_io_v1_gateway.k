@@ -1252,7 +1252,7 @@ schema GatewayNetworkingK8sIoV1GatewayStatus:
         Listeners provide status for each unique listener port defined in the Spec.
     """
     addresses?: [GatewayNetworkingK8sIoV1GatewayStatusAddressesItems0]
-    conditions?: [GatewayNetworkingK8sIoV1GatewayStatusConditionsItems0] = [{"message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z"}, {"message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Programmed", "lastTransitionTime": "1970-01-01T00:00:00Z"}]
+    conditions?: [GatewayNetworkingK8sIoV1GatewayStatusConditionsItems0] = [{"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted"}, {"reason": "Pending", "status": "Unknown", "type": "Programmed", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller"}]
     listeners?: [GatewayNetworkingK8sIoV1GatewayStatusListenersItems0]
 
     check:

@@ -497,7 +497,7 @@ schema GatewayNetworkingxK8sIoV1alpha1XListenerSetStatus:
     listeners : [GatewayNetworkingxK8sIoV1alpha1XListenerSetStatusListenersItems0], default is Undefined, optional
         Listeners provide status for each unique listener port defined in the Spec.
     """
-    conditions?: [GatewayNetworkingxK8sIoV1alpha1XListenerSetStatusConditionsItems0] = [{"status": "Unknown", "type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending"}, {"message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Programmed", "lastTransitionTime": "1970-01-01T00:00:00Z"}]
+    conditions?: [GatewayNetworkingxK8sIoV1alpha1XListenerSetStatusConditionsItems0] = [{"status": "Unknown", "type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending"}, {"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Programmed"}]
     listeners?: [GatewayNetworkingxK8sIoV1alpha1XListenerSetStatusListenersItems0]
 
     check:
