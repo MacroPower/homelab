@@ -559,7 +559,7 @@
               "additionalProperties": true,
               "properties": {
                 "image": {
-                  "default": "docker.io/envoyproxy/gateway:v1.6.2",
+                  "default": "docker.io/envoyproxy/gateway:v1.6.3",
                   "description": "This is the full image name including the hub, repo, and tag.",
                   "required": [],
                   "title": "image",
@@ -590,7 +590,7 @@
               "additionalProperties": true,
               "properties": {
                 "image": {
-                  "default": "docker.io/envoyproxy/ratelimit:99d85510",
+                  "default": "docker.io/envoyproxy/ratelimit:3fb70258",
                   "description": "This is the full image name including the hub, repo, and tag.",
                   "required": [],
                   "title": "image",

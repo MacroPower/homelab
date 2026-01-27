@@ -413,7 +413,7 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0:
         this configuration error.
 
         Support: Core
-    matches : [GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0MatchesItems0], default is [{"path": {"value": "/", "type": "PathPrefix"}}], optional
+    matches : [GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0MatchesItems0], default is [{"path": {"type": "PathPrefix", "value": "/"}}], optional
         Matches define conditions used for matching the rule against incoming
         HTTP requests. Each match is independent, i.e. this rule will be matched
         if **any** one of the matches is satisfied.
