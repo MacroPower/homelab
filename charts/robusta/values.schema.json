@@ -2569,6 +2569,69 @@
       "title": "coreDns",
       "type": "object"
     },
+    "crdPermissions": {
+      "additionalProperties": true,
+      "description": "CRD permissions for common Kubernetes operators and tools",
+      "properties": {
+        "argo": {
+          "default": true,
+          "required": [],
+          "title": "argo",
+          "type": "boolean"
+        },
+        "crossplane": {
+          "default": true,
+          "required": [],
+          "title": "crossplane",
+          "type": "boolean"
+        },
+        "externalSecrets": {
+          "default": true,
+          "required": [],
+          "title": "externalSecrets",
+          "type": "boolean"
+        },
+        "flux": {
+          "default": true,
+          "required": [],
+          "title": "flux",
+          "type": "boolean"
+        },
+        "gatewayApi": {
+          "default": true,
+          "required": [],
+          "title": "gatewayApi",
+          "type": "boolean"
+        },
+        "istio": {
+          "default": true,
+          "required": [],
+          "title": "istio",
+          "type": "boolean"
+        },
+        "kafka": {
+          "default": true,
+          "required": [],
+          "title": "kafka",
+          "type": "boolean"
+        },
+        "keda": {
+          "default": true,
+          "required": [],
+          "title": "keda",
+          "type": "boolean"
+        },
+        "velero": {
+          "default": true,
+          "required": [],
+          "title": "velero",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "crdPermissions",
+      "type": "object"
+    },
     "crds": {
       "additionalProperties": true,
       "description": "# Install Prometheus Operator CRDs\n#",
@@ -4013,12 +4076,6 @@
       "title": "enablePlatformPlaybooks",
       "type": "boolean"
     },
-    "enablePostProcessing": {
-      "default": false,
-      "required": [],
-      "title": "enablePostProcessing",
-      "type": "boolean"
-    },
     "enablePrometheusStack": {
       "default": false,
       "description": "install prometheus, alert-manager, and grafana along with Robusta?",
@@ -4037,12 +4094,6 @@
       "default": true,
       "required": [],
       "title": "enableServiceMonitors",
-      "type": "boolean"
-    },
-    "enableTelemetry": {
-      "default": true,
-      "required": [],
-      "title": "enableTelemetry",
       "type": "boolean"
     },
     "enabledManagedConfiguration": {
@@ -5337,6 +5388,12 @@
       "required": [],
       "title": "image",
       "type": "object"
+    },
+    "imagePullPolicy": {
+      "default": "IfNotPresent",
+      "required": [],
+      "title": "imagePullPolicy",
+      "type": "string"
     },
     "imagePullSecrets": {
       "items": {
@@ -9504,6 +9561,40 @@
               "title": "llmInstructions",
               "type": "string"
             },
+            "multiAccount": {
+              "additionalProperties": true,
+              "description": "Multi-account configuration\nWhen multiAccount.profiles is defined, the chart will use EKS token projection",
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "image": {
+                  "default": "multi-aws-api-mcp-server:2.0.0",
+                  "required": [],
+                  "title": "image",
+                  "type": "string"
+                },
+                "llm_account_descriptions": {
+                  "default": "",
+                  "required": [],
+                  "title": "llm_account_descriptions",
+                  "type": "string"
+                },
+                "profiles": {
+                  "additionalProperties": true,
+                  "description": "See docs/data-sources/builtin-toolsets/aws.md for configuration examples",
+                  "required": [],
+                  "title": "profiles",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "multiAccount",
+              "type": "object"
+            },
             "networkPolicy": {
               "additionalProperties": true,
               "description": "Network policy to restrict access to MCP server",
@@ -9617,6 +9708,991 @@
           },
           "required": [],
           "title": "aws",
+          "type": "object"
+        },
+        "azure": {
+          "additionalProperties": true,
+          "description": "Azure MCP Server Configuration",
+          "properties": {
+            "additionalEnvVars": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "additionalEnvVars",
+              "type": "array"
+            },
+            "affinity": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
+            "config": {
+              "additionalProperties": true,
+              "properties": {
+                "authMethod": {
+                  "default": "workload-identity",
+                  "required": [],
+                  "title": "authMethod",
+                  "type": "string"
+                },
+                "clientId": {
+                  "default": "",
+                  "required": [],
+                  "title": "clientId",
+                  "type": "string"
+                },
+                "enableSecurityPolicy": {
+                  "default": false,
+                  "required": [],
+                  "title": "enableSecurityPolicy",
+                  "type": "boolean"
+                },
+                "namespace": {
+                  "default": "",
+                  "required": [],
+                  "title": "namespace",
+                  "type": "string"
+                },
+                "readOnlyMode": {
+                  "default": false,
+                  "required": [],
+                  "title": "readOnlyMode",
+                  "type": "boolean"
+                },
+                "subscriptionId": {
+                  "default": "",
+                  "required": [],
+                  "title": "subscriptionId",
+                  "type": "string"
+                },
+                "tenantId": {
+                  "default": "",
+                  "required": [],
+                  "title": "tenantId",
+                  "type": "string"
+                },
+                "timeout": {
+                  "default": "120",
+                  "required": [],
+                  "title": "timeout",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "config",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "image": {
+              "default": "azure-cli-mcp:1.0.1",
+              "required": [],
+              "title": "image",
+              "type": "string"
+            },
+            "imagePullPolicy": {
+              "default": "IfNotPresent",
+              "required": [],
+              "title": "imagePullPolicy",
+              "type": "string"
+            },
+            "llmInstructions": {
+              "default": "",
+              "description": "Custom LLM instructions (optional) - leave empty to use default",
+              "required": [],
+              "title": "llmInstructions",
+              "type": "string"
+            },
+            "networkPolicy": {
+              "additionalProperties": true,
+              "properties": {
+                "additionalEgressRules": {
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "additionalEgressRules",
+                  "type": "array"
+                },
+                "additionalIngressRules": {
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "additionalIngressRules",
+                  "type": "array"
+                },
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "networkPolicy",
+              "type": "object"
+            },
+            "nodeSelector": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "nodeSelector",
+              "type": "object"
+            },
+            "registry": {
+              "default": "me-west1-docker.pkg.dev/robusta-development/development",
+              "required": [],
+              "title": "registry",
+              "type": "string"
+            },
+            "resources": {
+              "additionalProperties": true,
+              "properties": {
+                "limits": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "memory": {
+                      "default": "512Mi",
+                      "required": [],
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "cpu": {
+                      "default": "100m",
+                      "required": [],
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "256Mi",
+                      "required": [],
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            },
+            "secretName": {
+              "default": "azure-mcp-creds",
+              "description": "Secret name for service principal authentication (if using service-principal auth)",
+              "required": [],
+              "title": "secretName",
+              "type": "string"
+            },
+            "service": {
+              "additionalProperties": true,
+              "properties": {
+                "port": {
+                  "default": 8000,
+                  "required": [],
+                  "title": "port",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "service",
+              "type": "object"
+            },
+            "serviceAccount": {
+              "additionalProperties": true,
+              "description": "Service account configuration for Azure Workload Identity",
+              "properties": {
+                "annotations": {
+                  "additionalProperties": true,
+                  "required": [],
+                  "title": "annotations",
+                  "type": "object"
+                },
+                "create": {
+                  "default": true,
+                  "required": [],
+                  "title": "create",
+                  "type": "boolean"
+                },
+                "name": {
+                  "default": "azure-api-mcp-sa",
+                  "required": [],
+                  "title": "name",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "serviceAccount",
+              "type": "object"
+            },
+            "tolerations": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "tolerations",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "azure",
+          "type": "object"
+        },
+        "gcp": {
+          "additionalProperties": true,
+          "description": "Google Cloud Platform MCP addon - provides access to GCP services\nDocker images and deployment scripts: https://github.com/robusta-dev/holmes-mcp-integrations/tree/master/servers/gcp\n\nAUTHENTICATION:\nThe recommended method is using a service account key file:\n1. Create a service account key:\n   gcloud iam service-accounts keys create key.json \\\n     --iam-account=YOUR_SA\n2. Create a Kubernetes secret:\n   kubectl create secret generic gcp-sa-key \\\n     --from-file=key.json=key.json -n YOUR_NAMESPACE\n3. Set serviceAccountKey.secretName below to \"gcp-sa-key\"\n\nMULTI-PROJECT SUPPORT:\nThe gcloud MCP can query multiple GCP projects. To enable:\n1. Grant the service account permissions in all target projects:\n   gcloud projects add-iam-policy-binding PROJECT_ID \\\n     --member=\"serviceAccount:SA_EMAIL\" --role=\"roles/viewer\"\n2. Holmes will automatically query across projects when you specify --project flag",
+          "properties": {
+            "config": {
+              "additionalProperties": true,
+              "properties": {
+                "namespace": {
+                  "default": "",
+                  "required": [],
+                  "title": "namespace",
+                  "type": "string"
+                },
+                "project": {
+                  "default": "",
+                  "required": [],
+                  "title": "project",
+                  "type": "string"
+                },
+                "projectNumber": {
+                  "default": "",
+                  "required": [],
+                  "title": "projectNumber",
+                  "type": "string"
+                },
+                "region": {
+                  "default": "us-central1",
+                  "required": [],
+                  "title": "region",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "config",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "gcloud": {
+              "additionalProperties": true,
+              "description": "Individual MCP server toggles and configurations\ngcloud MCP - General GCP management via gcloud CLI",
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "image": {
+                  "default": "gcloud-cli-mcp:1.0.7",
+                  "required": [],
+                  "title": "image",
+                  "type": "string"
+                },
+                "port": {
+                  "default": 8000,
+                  "required": [],
+                  "title": "port",
+                  "type": "integer"
+                },
+                "resources": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "limits": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "memory": {
+                          "default": "1Gi",
+                          "required": [],
+                          "title": "memory",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "title": "limits",
+                      "type": "object"
+                    },
+                    "requests": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "cpu": {
+                          "default": "100m",
+                          "required": [],
+                          "title": "cpu",
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "256Mi",
+                          "required": [],
+                          "title": "memory",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "title": "requests",
+                      "type": "object"
+                    }
+                  },
+                  "required": [],
+                  "title": "resources",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "gcloud",
+              "type": "object"
+            },
+            "imagePullPolicy": {
+              "default": "IfNotPresent",
+              "required": [],
+              "title": "imagePullPolicy",
+              "type": "string"
+            },
+            "llmInstructions": {
+              "additionalProperties": true,
+              "description": "Custom LLM instructions (optional) - These will override the default instructions for each of the gcp MCPs\nLeave empty to use default instructions",
+              "properties": {
+                "gcloud": {
+                  "default": "",
+                  "required": [],
+                  "title": "gcloud",
+                  "type": "string"
+                },
+                "observability": {
+                  "default": "",
+                  "required": [],
+                  "title": "observability",
+                  "type": "string"
+                },
+                "storage": {
+                  "default": "",
+                  "required": [],
+                  "title": "storage",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "llmInstructions",
+              "type": "object"
+            },
+            "networkPolicy": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "networkPolicy",
+              "type": "object"
+            },
+            "observability": {
+              "additionalProperties": true,
+              "description": "Observability MCP - Cloud Logging, Monitoring, Trace, Error Reporting",
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "image": {
+                  "default": "gcloud-observability-mcp:1.0.0",
+                  "required": [],
+                  "title": "image",
+                  "type": "string"
+                },
+                "port": {
+                  "default": 8001,
+                  "required": [],
+                  "title": "port",
+                  "type": "integer"
+                },
+                "resources": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "limits": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "memory": {
+                          "default": "512Mi",
+                          "required": [],
+                          "title": "memory",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "title": "limits",
+                      "type": "object"
+                    },
+                    "requests": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "cpu": {
+                          "default": "100m",
+                          "required": [],
+                          "title": "cpu",
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "256Mi",
+                          "required": [],
+                          "title": "memory",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "title": "requests",
+                      "type": "object"
+                    }
+                  },
+                  "required": [],
+                  "title": "resources",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "observability",
+              "type": "object"
+            },
+            "registry": {
+              "default": "me-west1-docker.pkg.dev/robusta-development/development",
+              "description": "Container registry for GCP MCP images\nBuild images from: https://github.com/robusta-dev/holmes-mcp-integrations/tree/master/servers/gcp",
+              "required": [],
+              "title": "registry",
+              "type": "string"
+            },
+            "serviceAccount": {
+              "additionalProperties": true,
+              "description": "Kubernetes service account (for Workload Identity - currently not working with gcloud CLI)",
+              "properties": {
+                "annotations": {
+                  "additionalProperties": true,
+                  "required": [],
+                  "title": "annotations",
+                  "type": "object"
+                },
+                "create": {
+                  "default": true,
+                  "required": [],
+                  "title": "create",
+                  "type": "boolean"
+                },
+                "name": {
+                  "default": "gcp-mcp-sa",
+                  "required": [],
+                  "title": "name",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "serviceAccount",
+              "type": "object"
+            },
+            "serviceAccountKey": {
+              "additionalProperties": true,
+              "description": "Service account key authentication (recommended)",
+              "properties": {
+                "secretName": {
+                  "default": "",
+                  "required": [],
+                  "title": "secretName",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "serviceAccountKey",
+              "type": "object"
+            },
+            "storage": {
+              "additionalProperties": true,
+              "description": "Storage MCP - Cloud Storage operations",
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "image": {
+                  "default": "gcloud-storage-mcp:1.0.0",
+                  "required": [],
+                  "title": "image",
+                  "type": "string"
+                },
+                "port": {
+                  "default": 8002,
+                  "required": [],
+                  "title": "port",
+                  "type": "integer"
+                },
+                "resources": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "limits": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "memory": {
+                          "default": "512Mi",
+                          "required": [],
+                          "title": "memory",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "title": "limits",
+                      "type": "object"
+                    },
+                    "requests": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "cpu": {
+                          "default": "100m",
+                          "required": [],
+                          "title": "cpu",
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "256Mi",
+                          "required": [],
+                          "title": "memory",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "title": "requests",
+                      "type": "object"
+                    }
+                  },
+                  "required": [],
+                  "title": "resources",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "storage",
+              "type": "object"
+            },
+            "workloadIdentity": {
+              "additionalProperties": true,
+              "description": "Workload Identity configuration (works for observability/storage MCPs, not gcloud)",
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "workloadIdentity",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "gcp",
+          "type": "object"
+        },
+        "github": {
+          "additionalProperties": true,
+          "description": "GitHub MCP Server Configuration\nProvides access to GitHub repositories, pull requests, issues, and GitHub Actions\nUses a prebuilt image that bundles GitHub MCP server with Supergateway for HTTP transport\n\nAUTHENTICATION:\nCreate a GitHub Personal Access Token (PAT) with appropriate permissions:\n- repo: Full control of private repositories (or public_repo for public only)\n- workflow: Update GitHub Action workflows (for CI/CD debugging)\nThen create a Kubernetes secret:\n  kubectl create secret generic github-mcp-token --from-literal=token=\u003cYOUR_GITHUB_PAT\u003e -n \u003cNAMESPACE\u003e\n\nGITHUB ENTERPRISE:\nSet config.host to your GitHub Enterprise hostname (e.g., \"github.mycompany.com\")\n\nCUSTOM IMAGE (optional):\nTo build your own image, see: https://github.com/robusta-dev/holmes-mcp-integrations/tree/master/servers/github",
+          "properties": {
+            "affinity": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
+            "auth": {
+              "additionalProperties": true,
+              "description": "Authentication - PAT from Kubernetes secret",
+              "properties": {
+                "secretKey": {
+                  "default": "token",
+                  "required": [],
+                  "title": "secretKey",
+                  "type": "string"
+                },
+                "secretName": {
+                  "default": "",
+                  "required": [],
+                  "title": "secretName",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "auth",
+              "type": "object"
+            },
+            "config": {
+              "additionalProperties": true,
+              "properties": {
+                "customCACert": {
+                  "additionalProperties": true,
+                  "description": "Custom CA certificate bundle for GitHub Enterprise with internal CA",
+                  "properties": {
+                    "enabled": {
+                      "default": false,
+                      "required": [],
+                      "title": "enabled",
+                      "type": "boolean"
+                    },
+                    "secretKey": {
+                      "default": "ca.crt",
+                      "required": [],
+                      "title": "secretKey",
+                      "type": "string"
+                    },
+                    "secretName": {
+                      "default": "github-ca-cert",
+                      "required": [],
+                      "title": "secretName",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "customCACert",
+                  "type": "object"
+                },
+                "host": {
+                  "default": "",
+                  "description": "GitHub Enterprise hostname (leave empty for github.com)\nExample: \"https://github.mycompany.com\"",
+                  "required": [],
+                  "title": "host",
+                  "type": "string"
+                },
+                "tools": {
+                  "default": "",
+                  "description": "Individual tools to enable (comma-separated, optional)\nUse this for fine-grained control. Leave empty to use all tools from enabled toolsets.\nExample: \"get_file_contents,list_commits,list_workflow_runs\"",
+                  "required": [],
+                  "title": "tools",
+                  "type": "string"
+                },
+                "toolsets": {
+                  "default": "repos,issues,pull_requests,actions",
+                  "description": "Toolsets to enable (comma-separated list of toolset names)\nAvailable: repos, issues, pull_requests, actions, code_security, users, context, etc.\nDefault: repos, issues, pull_requests, actions (covers most investigation needs)",
+                  "required": [],
+                  "title": "toolsets",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "config",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "image": {
+              "default": "github-mcp:1.0.0",
+              "required": [],
+              "title": "image",
+              "type": "string"
+            },
+            "imagePullPolicy": {
+              "default": "IfNotPresent",
+              "required": [],
+              "title": "imagePullPolicy",
+              "type": "string"
+            },
+            "llmInstructions": {
+              "default": "",
+              "description": "Custom LLM instructions (optional) - leave empty to use default",
+              "required": [],
+              "title": "llmInstructions",
+              "type": "string"
+            },
+            "networkPolicy": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "networkPolicy",
+              "type": "object"
+            },
+            "nodeSelector": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "nodeSelector",
+              "type": "object"
+            },
+            "registry": {
+              "default": "me-west1-docker.pkg.dev/robusta-development/development",
+              "required": [],
+              "title": "registry",
+              "type": "string"
+            },
+            "resources": {
+              "additionalProperties": true,
+              "properties": {
+                "limits": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "memory": {
+                      "default": "512Mi",
+                      "required": [],
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "cpu": {
+                      "default": "100m",
+                      "required": [],
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "256Mi",
+                      "required": [],
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            },
+            "tolerations": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "tolerations",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "github",
+          "type": "object"
+        },
+        "mariadb": {
+          "additionalProperties": true,
+          "properties": {
+            "affinity": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "config": {
+              "additionalProperties": true,
+              "properties": {
+                "database": {
+                  "default": "",
+                  "required": [],
+                  "title": "database",
+                  "type": "string"
+                },
+                "host": {
+                  "default": "",
+                  "required": [],
+                  "title": "host",
+                  "type": "string"
+                },
+                "maxPoolSize": {
+                  "default": "5",
+                  "required": [],
+                  "title": "maxPoolSize",
+                  "type": "string"
+                },
+                "namespace": {
+                  "default": "",
+                  "required": [],
+                  "title": "namespace",
+                  "type": "string"
+                },
+                "password": {
+                  "default": "",
+                  "required": [],
+                  "title": "password",
+                  "type": "string"
+                },
+                "port": {
+                  "default": "3306",
+                  "required": [],
+                  "title": "port",
+                  "type": "string"
+                },
+                "readOnlyMode": {
+                  "default": true,
+                  "required": [],
+                  "title": "readOnlyMode",
+                  "type": "boolean"
+                },
+                "useSSL": {
+                  "default": true,
+                  "required": [],
+                  "title": "useSSL",
+                  "type": "boolean"
+                },
+                "username": {
+                  "default": "",
+                  "required": [],
+                  "title": "username",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "config",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "image": {
+              "default": "mariadb-http-mcp-minimal:1.0.5",
+              "required": [],
+              "title": "image",
+              "type": "string"
+            },
+            "llmInstructions": {
+              "default": "",
+              "description": "Custom LLM instructions (optional). Leave empty to use default instructions",
+              "required": [],
+              "title": "llmInstructions",
+              "type": "string"
+            },
+            "networkPolicy": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "networkPolicy",
+              "type": "object"
+            },
+            "nodeSelector": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "nodeSelector",
+              "type": "object"
+            },
+            "registry": {
+              "default": "me-west1-docker.pkg.dev/robusta-development/development",
+              "required": [],
+              "title": "registry",
+              "type": "string"
+            },
+            "resources": {
+              "additionalProperties": true,
+              "properties": {
+                "limits": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "cpu": {
+                      "default": "500m",
+                      "required": [],
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "512Mi",
+                      "required": [],
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "cpu": {
+                      "default": "250m",
+                      "required": [],
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "256Mi",
+                      "required": [],
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            },
+            "tolerations": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "tolerations",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "mariadb",
           "type": "object"
         }
       },
@@ -10428,12 +11504,6 @@
       "required": [],
       "title": "podSecurityPolicy",
       "type": "object"
-    },
-    "postProcessingPrompt": {
-      "default": "builtin://generic_post_processing.jinja2",
-      "required": [],
-      "title": "postProcessingPrompt",
-      "type": "string"
     },
     "priorityBuiltinPlaybooks": {
       "description": "priority builtin playbooks for running before all playbooks",
@@ -16097,6 +17167,69 @@
           "title": "certificate",
           "type": "string"
         },
+        "crdPermissions": {
+          "additionalProperties": true,
+          "description": "CRD permissions for common Kubernetes operators and tools",
+          "properties": {
+            "argo": {
+              "default": true,
+              "required": [],
+              "title": "argo",
+              "type": "boolean"
+            },
+            "crossplane": {
+              "default": true,
+              "required": [],
+              "title": "crossplane",
+              "type": "boolean"
+            },
+            "externalSecrets": {
+              "default": true,
+              "required": [],
+              "title": "externalSecrets",
+              "type": "boolean"
+            },
+            "flux": {
+              "default": true,
+              "required": [],
+              "title": "flux",
+              "type": "boolean"
+            },
+            "gatewayApi": {
+              "default": true,
+              "required": [],
+              "title": "gatewayApi",
+              "type": "boolean"
+            },
+            "istio": {
+              "default": true,
+              "required": [],
+              "title": "istio",
+              "type": "boolean"
+            },
+            "kafka": {
+              "default": true,
+              "required": [],
+              "title": "kafka",
+              "type": "boolean"
+            },
+            "keda": {
+              "default": true,
+              "required": [],
+              "title": "keda",
+              "type": "boolean"
+            },
+            "velero": {
+              "default": true,
+              "required": [],
+              "title": "velero",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "crdPermissions",
+          "type": "object"
+        },
         "createServiceAccount": {
           "default": true,
           "required": [],
@@ -16155,7 +17288,7 @@
           "type": "null"
         },
         "imageName": {
-          "default": "robusta-runner:0.29.2",
+          "default": "robusta-runner:0.32.0",
           "required": [],
           "title": "imageName",
           "type": "string"
@@ -16293,7 +17426,7 @@
           "type": "boolean"
         },
         "sentry_dsn": {
-          "default": "https://4f1a66f025c60830fec303a094dcdf94@o1120648.ingest.sentry.io/6156573",
+          "default": "",
           "required": [],
           "title": "sentry_dsn",
           "type": "string"
@@ -16483,7 +17616,7 @@
       "type": "object"
     },
     "sentryDSN": {
-      "default": "https://51f9cd9bd2fdee16144db08fc423cd3b@o1120648.ingest.us.sentry.io/4508799804702720",
+      "default": "https://aa95c183188a6ddf134ebfffe85fd108@o4510692373299200.ingest.de.sentry.io/4510707946094672",
       "required": [],
       "title": "sentryDSN",
       "type": "string"
@@ -18948,6 +20081,48 @@
     "toolsets": {
       "additionalProperties": true,
       "properties": {
+        "bash": {
+          "additionalProperties": true,
+          "properties": {
+            "config": {
+              "additionalProperties": true,
+              "properties": {
+                "include_default_allow_deny_list": {
+                  "default": true,
+                  "required": [],
+                  "title": "include_default_allow_deny_list",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "config",
+              "type": "object"
+            },
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "bash",
+          "type": "object"
+        },
+        "connectivity_check": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "connectivity_check",
+          "type": "object"
+        },
         "internet": {
           "additionalProperties": true,
           "properties": {
@@ -19016,6 +20191,20 @@
           },
           "required": [],
           "title": "robusta",
+          "type": "object"
+        },
+        "runbook": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "runbook",
           "type": "object"
         }
       },
