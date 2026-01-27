@@ -2104,13 +2104,13 @@
               "type": "string"
             },
             "WEED_CLUSTER_SW_FILER": {
-              "default": "seaweedfs-filer-client.seaweedfs:8888",
+              "default": "{{ include \"seaweedfs.cluster.filerAddress\" . }}",
               "required": [],
               "title": "WEED_CLUSTER_SW_FILER",
               "type": "string"
             },
             "WEED_CLUSTER_SW_MASTER": {
-              "default": "seaweedfs-master.seaweedfs:9333",
+              "default": "{{ include \"seaweedfs.cluster.masterAddress\" . }}",
               "required": [],
               "title": "WEED_CLUSTER_SW_MASTER",
               "type": "string"

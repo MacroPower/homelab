@@ -1611,8 +1611,8 @@ schema ValuesGlobalExtraEnvironmentVars:
     Attributes
     ----------
     WEED_CLUSTER_DEFAULT : str, optional, default is "sw"
-    WEED_CLUSTER_SW_FILER : str, optional, default is "seaweedfs-filer-client.seaweedfs:8888"
-    WEED_CLUSTER_SW_MASTER : str, optional, default is "seaweedfs-master.seaweedfs:9333"
+    WEED_CLUSTER_SW_FILER : str, optional, default is "{{ include \"seaweedfs.cluster.filerAddress\" . }}"
+    WEED_CLUSTER_SW_MASTER : str, optional, default is "{{ include \"seaweedfs.cluster.masterAddress\" . }}"
     """
     [...str]: any
     WEED_CLUSTER_DEFAULT?: str
