@@ -228,7 +228,7 @@ charts: helm.Charts = {
     robusta: {
         chart = "robusta"
         repoURL = "https://robusta-charts.storage.googleapis.com"
-        targetRevision = "0.29.2"
+        targetRevision = "0.32.0"
         schemaGenerator = "AUTO"
         values: {
             clusterName = "kcl"

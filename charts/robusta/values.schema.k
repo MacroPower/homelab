@@ -83,6 +83,8 @@ schema Values:
     coreDns : ValuesCoreDns, optional
         # Component scraping coreDns. Use either this or kubeDns
         #
+    crdPermissions : ValuesCrdPermissions, optional
+        CRD permissions for common Kubernetes operators and tools
     crds : ValuesCrds, optional
         # Install Prometheus Operator CRDs
         #
@@ -152,14 +154,12 @@ schema Values:
     enablePlatformPlaybooks : bool, optional, default is False
         additional builtin playbooks to enable when using Robusta UI
         these are disabled by default without the UI because they are spammy when sent to slack
-    enablePostProcessing : bool, optional, default is False
     enablePrometheusStack : bool, optional, default is False
         install prometheus, alert-manager, and grafana along with Robusta?
     enableServiceLinks : bool, optional, default is True
         Inject Kubernetes services as environment variables.
         See https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/#environment-variables
     enableServiceMonitors : bool, optional, default is True
-    enableTelemetry : bool, optional, default is True
     enabledManagedConfiguration : bool, optional, default is False
     endpoints : [any], optional
         for deployments that have node_exporter deployed outside of the cluster, list
@@ -262,6 +262,7 @@ schema Values:
         Default values for prometheus-node-exporter.
         This is a YAML-formatted file.
         Declare variables to be passed into your templates.
+    imagePullPolicy : str, optional, default is "IfNotPresent"
     imagePullSecrets : [any], optional
     imageRenderer : ValuesImageRenderer, optional
         # Add a seperate remote image renderer deployment/service
@@ -413,7 +414,6 @@ schema Values:
         # Specify if a Pod Security Policy for kube-state-metrics must be created
         # Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/
         #
-    postProcessingPrompt : str, optional, default is "builtin://generic_post_processing.jinja2"
     priorityBuiltinPlaybooks : [ValuesPriorityBuiltinPlaybooksItems0], optional
         priority builtin playbooks for running before all playbooks
     priorityClassName : str, optional, default is ""
@@ -474,7 +474,7 @@ schema Values:
         Enable self metrics configuration for service and Service Monitor
         Default values for telemetry configuration can be overridden
         If you set telemetryNodePort, you must also set service.type to NodePort
-    sentryDSN : str, optional, default is "https://51f9cd9bd2fdee16144db08fc423cd3b@o1120648.ingest.us.sentry.io/4508799804702720"
+    sentryDSN : str, optional, default is "https://aa95c183188a6ddf134ebfffe85fd108@o4510692373299200.ingest.de.sentry.io/4510707946094672"
     service : ValuesService, optional
         # Service configuration
     serviceAccount : ValuesServiceAccount, optional
@@ -574,6 +574,7 @@ schema Values:
     containerSecurityContext?: ValuesContainerSecurityContext
     containers?: [any]
     coreDns?: ValuesCoreDns
+    crdPermissions?: ValuesCrdPermissions
     crds?: ValuesCrds
     createConfigmap?: bool
     createServiceAccount?: bool
@@ -599,11 +600,9 @@ schema Values:
     enableHolmesGPT?: bool
     enableKubeBackwardCompatibility?: bool
     enablePlatformPlaybooks?: bool
-    enablePostProcessing?: bool
     enablePrometheusStack?: bool
     enableServiceLinks?: bool
     enableServiceMonitors?: bool
-    enableTelemetry?: bool
     enabledManagedConfiguration?: bool
     endpoints?: [any]
     env?: ValuesEnv
@@ -642,6 +641,7 @@ schema Values:
     hostRootFsMount?: ValuesHostRootFsMount
     hostSysFsMount?: ValuesHostSysFsMount
     image?: ValuesImage
+    imagePullPolicy?: str
     imagePullSecrets?: [any]
     imageRenderer?: ValuesImageRenderer
     ingress?: ValuesIngress
@@ -698,7 +698,6 @@ schema Values:
     podLabels?: ValuesPodLabels
     podPortName?: str
     podSecurityPolicy?: ValuesPodSecurityPolicy
-    postProcessingPrompt?: str
     priorityBuiltinPlaybooks?: [ValuesPriorityBuiltinPlaybooksItems0]
     priorityClassName?: str
     prometheus?: ValuesPrometheus
@@ -2847,6 +2846,33 @@ schema ValuesCoreDnsServiceMonitorSelector:
     ValuesCoreDnsServiceMonitorSelector
     """
     [...str]: any
+
+schema ValuesCrdPermissions:
+    r"""
+    CRD permissions for common Kubernetes operators and tools
+
+    Attributes
+    ----------
+    argo : bool, optional, default is True
+    crossplane : bool, optional, default is True
+    externalSecrets : bool, optional, default is True
+    flux : bool, optional, default is True
+    gatewayApi : bool, optional, default is True
+    istio : bool, optional, default is True
+    kafka : bool, optional, default is True
+    keda : bool, optional, default is True
+    velero : bool, optional, default is True
+    """
+    [...str]: any
+    argo?: bool
+    crossplane?: bool
+    externalSecrets?: bool
+    flux?: bool
+    gatewayApi?: bool
+    istio?: bool
+    kafka?: bool
+    keda?: bool
+    velero?: bool
 
 schema ValuesCrds:
     r"""
@@ -7958,9 +7984,53 @@ schema ValuesMcpAddons:
     Attributes
     ----------
     aws : ValuesMcpAddonsAws, optional
+    azure : ValuesMcpAddonsAzure, optional
+        Azure MCP Server Configuration
+    gcp : ValuesMcpAddonsGcp, optional
+        Google Cloud Platform MCP addon - provides access to GCP services
+        Docker images and deployment scripts: https://github.com/robusta-dev/holmes-mcp-integrations/tree/master/servers/gcp
+
+        AUTHENTICATION:
+        The recommended method is using a service account key file:
+        1. Create a service account key:
+           gcloud iam service-accounts keys create key.json \
+             --iam-account=YOUR_SA
+        2. Create a Kubernetes secret:
+           kubectl create secret generic gcp-sa-key \
+             --from-file=key.json=key.json -n YOUR_NAMESPACE
+        3. Set serviceAccountKey.secretName below to "gcp-sa-key"
+
+        MULTI-PROJECT SUPPORT:
+        The gcloud MCP can query multiple GCP projects. To enable:
+        1. Grant the service account permissions in all target projects:
+           gcloud projects add-iam-policy-binding PROJECT_ID \
+             --member="serviceAccount:SA_EMAIL" --role="roles/viewer"
+        2. Holmes will automatically query across projects when you specify --project flag
+    github : ValuesMcpAddonsGithub, optional
+        GitHub MCP Server Configuration
+        Provides access to GitHub repositories, pull requests, issues, and GitHub Actions
+        Uses a prebuilt image that bundles GitHub MCP server with Supergateway for HTTP transport
+
+        AUTHENTICATION:
+        Create a GitHub Personal Access Token (PAT) with appropriate permissions:
+        - repo: Full control of private repositories (or public_repo for public only)
+        - workflow: Update GitHub Action workflows (for CI/CD debugging)
+        Then create a Kubernetes secret:
+          kubectl create secret generic github-mcp-token --from-literal=token=<YOUR_GITHUB_PAT> -n <NAMESPACE>
+
+        GITHUB ENTERPRISE:
+        Set config.host to your GitHub Enterprise hostname (e.g., "github.mycompany.com")
+
+        CUSTOM IMAGE (optional):
+        To build your own image, see: https://github.com/robusta-dev/holmes-mcp-integrations/tree/master/servers/github
+    mariadb : ValuesMcpAddonsMariadb, optional
     """
     [...str]: any
     aws?: ValuesMcpAddonsAws
+    azure?: ValuesMcpAddonsAzure
+    gcp?: ValuesMcpAddonsGcp
+    github?: ValuesMcpAddonsGithub
+    mariadb?: ValuesMcpAddonsMariadb
 
 schema ValuesMcpAddonsAws:
     r"""
@@ -7976,6 +8046,9 @@ schema ValuesMcpAddonsAws:
         Custom LLM instructions (optional)
         Leave empty to use default comprehensive instructions
         Set to override the default investigation patterns and guidelines
+    multiAccount : ValuesMcpAddonsAwsMultiAccount, optional
+        Multi-account configuration
+        When multiAccount.profiles is defined, the chart will use EKS token projection
     networkPolicy : ValuesMcpAddonsAwsNetworkPolicy, optional
         Network policy to restrict access to MCP server
     nodeSelector : ValuesMcpAddonsAwsNodeSelector, optional
@@ -7991,6 +8064,7 @@ schema ValuesMcpAddonsAws:
     enabled?: bool
     image?: str
     llmInstructions?: str
+    multiAccount?: ValuesMcpAddonsAwsMultiAccount
     networkPolicy?: ValuesMcpAddonsAwsNetworkPolicy
     nodeSelector?: ValuesMcpAddonsAwsNodeSelector
     registry?: str
@@ -8018,6 +8092,31 @@ schema ValuesMcpAddonsAwsConfig:
     namespace?: str
     readOnlyMode?: bool
     region?: str
+
+schema ValuesMcpAddonsAwsMultiAccount:
+    r"""
+    Multi-account configuration
+    When multiAccount.profiles is defined, the chart will use EKS token projection
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+    image : str, optional, default is "multi-aws-api-mcp-server:2.0.0"
+    llm_account_descriptions : str, optional, default is ""
+    profiles : ValuesMcpAddonsAwsMultiAccountProfiles, optional
+        See docs/data-sources/builtin-toolsets/aws.md for configuration examples
+    """
+    [...str]: any
+    enabled?: bool
+    image?: str
+    llm_account_descriptions?: str
+    profiles?: ValuesMcpAddonsAwsMultiAccountProfiles
+
+schema ValuesMcpAddonsAwsMultiAccountProfiles:
+    r"""
+    See docs/data-sources/builtin-toolsets/aws.md for configuration examples
+    """
+    [...str]: any
 
 schema ValuesMcpAddonsAwsNetworkPolicy:
     r"""
@@ -8095,6 +8194,772 @@ schema ValuesMcpAddonsAwsServiceAccountAnnotations:
     ValuesMcpAddonsAwsServiceAccountAnnotations
     """
     [...str]: any
+
+schema ValuesMcpAddonsAzure:
+    r"""
+    Azure MCP Server Configuration
+
+    Attributes
+    ----------
+    additionalEnvVars : [any], optional
+    affinity : ValuesMcpAddonsAzureAffinity, optional
+    config : ValuesMcpAddonsAzureConfig, optional
+    enabled : bool, optional, default is False
+    image : str, optional, default is "azure-cli-mcp:1.0.1"
+    imagePullPolicy : str, optional, default is "IfNotPresent"
+    llmInstructions : str, optional, default is ""
+        Custom LLM instructions (optional) - leave empty to use default
+    networkPolicy : ValuesMcpAddonsAzureNetworkPolicy, optional
+    nodeSelector : ValuesMcpAddonsAzureNodeSelector, optional
+    registry : str, optional, default is "me-west1-docker.pkg.dev/robusta-development/development"
+    resources : ValuesMcpAddonsAzureResources, optional
+    secretName : str, optional, default is "azure-mcp-creds"
+        Secret name for service principal authentication (if using service-principal auth)
+    service : ValuesMcpAddonsAzureService, optional
+    serviceAccount : ValuesMcpAddonsAzureServiceAccount, optional
+        Service account configuration for Azure Workload Identity
+    tolerations : [any], optional
+    """
+    [...str]: any
+    additionalEnvVars?: [any]
+    affinity?: ValuesMcpAddonsAzureAffinity
+    config?: ValuesMcpAddonsAzureConfig
+    enabled?: bool
+    image?: str
+    imagePullPolicy?: str
+    llmInstructions?: str
+    networkPolicy?: ValuesMcpAddonsAzureNetworkPolicy
+    nodeSelector?: ValuesMcpAddonsAzureNodeSelector
+    registry?: str
+    resources?: ValuesMcpAddonsAzureResources
+    secretName?: str
+    service?: ValuesMcpAddonsAzureService
+    serviceAccount?: ValuesMcpAddonsAzureServiceAccount
+    tolerations?: [any]
+
+schema ValuesMcpAddonsAzureAffinity:
+    r"""
+    ValuesMcpAddonsAzureAffinity
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsAzureConfig:
+    r"""
+    ValuesMcpAddonsAzureConfig
+
+    Attributes
+    ----------
+    authMethod : str, optional, default is "workload-identity"
+    clientId : str, optional, default is ""
+    enableSecurityPolicy : bool, optional, default is False
+    namespace : str, optional, default is ""
+    readOnlyMode : bool, optional, default is False
+    subscriptionId : str, optional, default is ""
+    tenantId : str, optional, default is ""
+    timeout : str, optional, default is "120"
+    """
+    [...str]: any
+    authMethod?: str
+    clientId?: str
+    enableSecurityPolicy?: bool
+    namespace?: str
+    readOnlyMode?: bool
+    subscriptionId?: str
+    tenantId?: str
+    timeout?: str
+
+schema ValuesMcpAddonsAzureNetworkPolicy:
+    r"""
+    ValuesMcpAddonsAzureNetworkPolicy
+
+    Attributes
+    ----------
+    additionalEgressRules : [any], optional
+    additionalIngressRules : [any], optional
+    enabled : bool, optional, default is False
+    """
+    [...str]: any
+    additionalEgressRules?: [any]
+    additionalIngressRules?: [any]
+    enabled?: bool
+
+schema ValuesMcpAddonsAzureNodeSelector:
+    r"""
+    ValuesMcpAddonsAzureNodeSelector
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsAzureResources:
+    r"""
+    ValuesMcpAddonsAzureResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsAzureResourcesLimits, optional
+    requests : ValuesMcpAddonsAzureResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsAzureResourcesLimits
+    requests?: ValuesMcpAddonsAzureResourcesRequests
+
+schema ValuesMcpAddonsAzureResourcesLimits:
+    r"""
+    ValuesMcpAddonsAzureResourcesLimits
+
+    Attributes
+    ----------
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    memory?: str
+
+schema ValuesMcpAddonsAzureResourcesRequests:
+    r"""
+    ValuesMcpAddonsAzureResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "100m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsAzureService:
+    r"""
+    ValuesMcpAddonsAzureService
+
+    Attributes
+    ----------
+    port : int, optional, default is 8000
+    """
+    [...str]: any
+    port?: int
+
+schema ValuesMcpAddonsAzureServiceAccount:
+    r"""
+    Service account configuration for Azure Workload Identity
+
+    Attributes
+    ----------
+    annotations : ValuesMcpAddonsAzureServiceAccountAnnotations, optional
+    create : bool, optional, default is True
+    name : str, optional, default is "azure-api-mcp-sa"
+    """
+    [...str]: any
+    annotations?: ValuesMcpAddonsAzureServiceAccountAnnotations
+    create?: bool
+    name?: str
+
+schema ValuesMcpAddonsAzureServiceAccountAnnotations:
+    r"""
+    ValuesMcpAddonsAzureServiceAccountAnnotations
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsGcp:
+    r"""
+    Google Cloud Platform MCP addon - provides access to GCP services
+    Docker images and deployment scripts: https://github.com/robusta-dev/holmes-mcp-integrations/tree/master/servers/gcp
+
+    AUTHENTICATION:
+    The recommended method is using a service account key file:
+    1. Create a service account key:
+       gcloud iam service-accounts keys create key.json \
+         --iam-account=YOUR_SA
+    2. Create a Kubernetes secret:
+       kubectl create secret generic gcp-sa-key \
+         --from-file=key.json=key.json -n YOUR_NAMESPACE
+    3. Set serviceAccountKey.secretName below to "gcp-sa-key"
+
+    MULTI-PROJECT SUPPORT:
+    The gcloud MCP can query multiple GCP projects. To enable:
+    1. Grant the service account permissions in all target projects:
+       gcloud projects add-iam-policy-binding PROJECT_ID \
+         --member="serviceAccount:SA_EMAIL" --role="roles/viewer"
+    2. Holmes will automatically query across projects when you specify --project flag
+
+    Attributes
+    ----------
+    config : ValuesMcpAddonsGcpConfig, optional
+    enabled : bool, optional, default is False
+    gcloud : ValuesMcpAddonsGcpGcloud, optional
+        Individual MCP server toggles and configurations
+        gcloud MCP - General GCP management via gcloud CLI
+    imagePullPolicy : str, optional, default is "IfNotPresent"
+    llmInstructions : ValuesMcpAddonsGcpLlmInstructions, optional
+        Custom LLM instructions (optional) - These will override the default instructions for each of the gcp MCPs
+        Leave empty to use default instructions
+    networkPolicy : ValuesMcpAddonsGcpNetworkPolicy, optional
+    observability : ValuesMcpAddonsGcpObservability, optional
+        Observability MCP - Cloud Logging, Monitoring, Trace, Error Reporting
+    registry : str, optional, default is "me-west1-docker.pkg.dev/robusta-development/development"
+        Container registry for GCP MCP images
+        Build images from: https://github.com/robusta-dev/holmes-mcp-integrations/tree/master/servers/gcp
+    serviceAccount : ValuesMcpAddonsGcpServiceAccount, optional
+        Kubernetes service account (for Workload Identity - currently not working with gcloud CLI)
+    serviceAccountKey : ValuesMcpAddonsGcpServiceAccountKey, optional
+        Service account key authentication (recommended)
+    storage : ValuesMcpAddonsGcpStorage, optional
+        Storage MCP - Cloud Storage operations
+    workloadIdentity : ValuesMcpAddonsGcpWorkloadIdentity, optional
+        Workload Identity configuration (works for observability/storage MCPs, not gcloud)
+    """
+    [...str]: any
+    config?: ValuesMcpAddonsGcpConfig
+    enabled?: bool
+    gcloud?: ValuesMcpAddonsGcpGcloud
+    imagePullPolicy?: str
+    llmInstructions?: ValuesMcpAddonsGcpLlmInstructions
+    networkPolicy?: ValuesMcpAddonsGcpNetworkPolicy
+    observability?: ValuesMcpAddonsGcpObservability
+    registry?: str
+    serviceAccount?: ValuesMcpAddonsGcpServiceAccount
+    serviceAccountKey?: ValuesMcpAddonsGcpServiceAccountKey
+    storage?: ValuesMcpAddonsGcpStorage
+    workloadIdentity?: ValuesMcpAddonsGcpWorkloadIdentity
+
+schema ValuesMcpAddonsGcpConfig:
+    r"""
+    ValuesMcpAddonsGcpConfig
+
+    Attributes
+    ----------
+    namespace : str, optional, default is ""
+    project : str, optional, default is ""
+    projectNumber : str, optional, default is ""
+    region : str, optional, default is "us-central1"
+    """
+    [...str]: any
+    namespace?: str
+    project?: str
+    projectNumber?: str
+    region?: str
+
+schema ValuesMcpAddonsGcpGcloud:
+    r"""
+    Individual MCP server toggles and configurations
+    gcloud MCP - General GCP management via gcloud CLI
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    image : str, optional, default is "gcloud-cli-mcp:1.0.7"
+    port : int, optional, default is 8000
+    resources : ValuesMcpAddonsGcpGcloudResources, optional
+    """
+    [...str]: any
+    enabled?: bool
+    image?: str
+    port?: int
+    resources?: ValuesMcpAddonsGcpGcloudResources
+
+schema ValuesMcpAddonsGcpGcloudResources:
+    r"""
+    ValuesMcpAddonsGcpGcloudResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsGcpGcloudResourcesLimits, optional
+    requests : ValuesMcpAddonsGcpGcloudResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsGcpGcloudResourcesLimits
+    requests?: ValuesMcpAddonsGcpGcloudResourcesRequests
+
+schema ValuesMcpAddonsGcpGcloudResourcesLimits:
+    r"""
+    ValuesMcpAddonsGcpGcloudResourcesLimits
+
+    Attributes
+    ----------
+    memory : str, optional, default is "1Gi"
+    """
+    [...str]: any
+    memory?: str
+
+schema ValuesMcpAddonsGcpGcloudResourcesRequests:
+    r"""
+    ValuesMcpAddonsGcpGcloudResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "100m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsGcpLlmInstructions:
+    r"""
+    Custom LLM instructions (optional) - These will override the default instructions for each of the gcp MCPs
+    Leave empty to use default instructions
+
+    Attributes
+    ----------
+    gcloud : str, optional, default is ""
+    observability : str, optional, default is ""
+    storage : str, optional, default is ""
+    """
+    [...str]: any
+    gcloud?: str
+    observability?: str
+    storage?: str
+
+schema ValuesMcpAddonsGcpNetworkPolicy:
+    r"""
+    ValuesMcpAddonsGcpNetworkPolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMcpAddonsGcpObservability:
+    r"""
+    Observability MCP - Cloud Logging, Monitoring, Trace, Error Reporting
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    image : str, optional, default is "gcloud-observability-mcp:1.0.0"
+    port : int, optional, default is 8001
+    resources : ValuesMcpAddonsGcpObservabilityResources, optional
+    """
+    [...str]: any
+    enabled?: bool
+    image?: str
+    port?: int
+    resources?: ValuesMcpAddonsGcpObservabilityResources
+
+schema ValuesMcpAddonsGcpObservabilityResources:
+    r"""
+    ValuesMcpAddonsGcpObservabilityResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsGcpObservabilityResourcesLimits, optional
+    requests : ValuesMcpAddonsGcpObservabilityResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsGcpObservabilityResourcesLimits
+    requests?: ValuesMcpAddonsGcpObservabilityResourcesRequests
+
+schema ValuesMcpAddonsGcpObservabilityResourcesLimits:
+    r"""
+    ValuesMcpAddonsGcpObservabilityResourcesLimits
+
+    Attributes
+    ----------
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    memory?: str
+
+schema ValuesMcpAddonsGcpObservabilityResourcesRequests:
+    r"""
+    ValuesMcpAddonsGcpObservabilityResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "100m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsGcpServiceAccount:
+    r"""
+    Kubernetes service account (for Workload Identity - currently not working with gcloud CLI)
+
+    Attributes
+    ----------
+    annotations : ValuesMcpAddonsGcpServiceAccountAnnotations, optional
+    create : bool, optional, default is True
+    name : str, optional, default is "gcp-mcp-sa"
+    """
+    [...str]: any
+    annotations?: ValuesMcpAddonsGcpServiceAccountAnnotations
+    create?: bool
+    name?: str
+
+schema ValuesMcpAddonsGcpServiceAccountAnnotations:
+    r"""
+    ValuesMcpAddonsGcpServiceAccountAnnotations
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsGcpServiceAccountKey:
+    r"""
+    Service account key authentication (recommended)
+
+    Attributes
+    ----------
+    secretName : str, optional, default is ""
+    """
+    [...str]: any
+    secretName?: str
+
+schema ValuesMcpAddonsGcpStorage:
+    r"""
+    Storage MCP - Cloud Storage operations
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    image : str, optional, default is "gcloud-storage-mcp:1.0.0"
+    port : int, optional, default is 8002
+    resources : ValuesMcpAddonsGcpStorageResources, optional
+    """
+    [...str]: any
+    enabled?: bool
+    image?: str
+    port?: int
+    resources?: ValuesMcpAddonsGcpStorageResources
+
+schema ValuesMcpAddonsGcpStorageResources:
+    r"""
+    ValuesMcpAddonsGcpStorageResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsGcpStorageResourcesLimits, optional
+    requests : ValuesMcpAddonsGcpStorageResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsGcpStorageResourcesLimits
+    requests?: ValuesMcpAddonsGcpStorageResourcesRequests
+
+schema ValuesMcpAddonsGcpStorageResourcesLimits:
+    r"""
+    ValuesMcpAddonsGcpStorageResourcesLimits
+
+    Attributes
+    ----------
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    memory?: str
+
+schema ValuesMcpAddonsGcpStorageResourcesRequests:
+    r"""
+    ValuesMcpAddonsGcpStorageResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "100m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsGcpWorkloadIdentity:
+    r"""
+    Workload Identity configuration (works for observability/storage MCPs, not gcloud)
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMcpAddonsGithub:
+    r"""
+    GitHub MCP Server Configuration
+    Provides access to GitHub repositories, pull requests, issues, and GitHub Actions
+    Uses a prebuilt image that bundles GitHub MCP server with Supergateway for HTTP transport
+
+    AUTHENTICATION:
+    Create a GitHub Personal Access Token (PAT) with appropriate permissions:
+    - repo: Full control of private repositories (or public_repo for public only)
+    - workflow: Update GitHub Action workflows (for CI/CD debugging)
+    Then create a Kubernetes secret:
+      kubectl create secret generic github-mcp-token --from-literal=token=<YOUR_GITHUB_PAT> -n <NAMESPACE>
+
+    GITHUB ENTERPRISE:
+    Set config.host to your GitHub Enterprise hostname (e.g., "github.mycompany.com")
+
+    CUSTOM IMAGE (optional):
+    To build your own image, see: https://github.com/robusta-dev/holmes-mcp-integrations/tree/master/servers/github
+
+    Attributes
+    ----------
+    affinity : ValuesMcpAddonsGithubAffinity, optional
+    auth : ValuesMcpAddonsGithubAuth, optional
+        Authentication - PAT from Kubernetes secret
+    config : ValuesMcpAddonsGithubConfig, optional
+    enabled : bool, optional, default is False
+    image : str, optional, default is "github-mcp:1.0.0"
+    imagePullPolicy : str, optional, default is "IfNotPresent"
+    llmInstructions : str, optional, default is ""
+        Custom LLM instructions (optional) - leave empty to use default
+    networkPolicy : ValuesMcpAddonsGithubNetworkPolicy, optional
+    nodeSelector : ValuesMcpAddonsGithubNodeSelector, optional
+    registry : str, optional, default is "me-west1-docker.pkg.dev/robusta-development/development"
+    resources : ValuesMcpAddonsGithubResources, optional
+    tolerations : [any], optional
+    """
+    [...str]: any
+    affinity?: ValuesMcpAddonsGithubAffinity
+    auth?: ValuesMcpAddonsGithubAuth
+    config?: ValuesMcpAddonsGithubConfig
+    enabled?: bool
+    image?: str
+    imagePullPolicy?: str
+    llmInstructions?: str
+    networkPolicy?: ValuesMcpAddonsGithubNetworkPolicy
+    nodeSelector?: ValuesMcpAddonsGithubNodeSelector
+    registry?: str
+    resources?: ValuesMcpAddonsGithubResources
+    tolerations?: [any]
+
+schema ValuesMcpAddonsGithubAffinity:
+    r"""
+    ValuesMcpAddonsGithubAffinity
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsGithubAuth:
+    r"""
+    Authentication - PAT from Kubernetes secret
+
+    Attributes
+    ----------
+    secretKey : str, optional, default is "token"
+    secretName : str, optional, default is ""
+    """
+    [...str]: any
+    secretKey?: str
+    secretName?: str
+
+schema ValuesMcpAddonsGithubConfig:
+    r"""
+    ValuesMcpAddonsGithubConfig
+
+    Attributes
+    ----------
+    customCACert : ValuesMcpAddonsGithubConfigCustomCacert, optional
+        Custom CA certificate bundle for GitHub Enterprise with internal CA
+    host : str, optional, default is ""
+        GitHub Enterprise hostname (leave empty for github.com)
+        Example: "https://github.mycompany.com"
+    tools : str, optional, default is ""
+        Individual tools to enable (comma-separated, optional)
+        Use this for fine-grained control. Leave empty to use all tools from enabled toolsets.
+        Example: "get_file_contents,list_commits,list_workflow_runs"
+    toolsets : str, optional, default is "repos,issues,pull_requests,actions"
+        Toolsets to enable (comma-separated list of toolset names)
+        Available: repos, issues, pull_requests, actions, code_security, users, context, etc.
+        Default: repos, issues, pull_requests, actions (covers most investigation needs)
+    """
+    [...str]: any
+    customCACert?: ValuesMcpAddonsGithubConfigCustomCacert
+    host?: str
+    tools?: str
+    toolsets?: str
+
+schema ValuesMcpAddonsGithubConfigCustomCacert:
+    r"""
+    Custom CA certificate bundle for GitHub Enterprise with internal CA
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+    secretKey : str, optional, default is "ca.crt"
+    secretName : str, optional, default is "github-ca-cert"
+    """
+    [...str]: any
+    enabled?: bool
+    secretKey?: str
+    secretName?: str
+
+schema ValuesMcpAddonsGithubNetworkPolicy:
+    r"""
+    ValuesMcpAddonsGithubNetworkPolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMcpAddonsGithubNodeSelector:
+    r"""
+    ValuesMcpAddonsGithubNodeSelector
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsGithubResources:
+    r"""
+    ValuesMcpAddonsGithubResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsGithubResourcesLimits, optional
+    requests : ValuesMcpAddonsGithubResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsGithubResourcesLimits
+    requests?: ValuesMcpAddonsGithubResourcesRequests
+
+schema ValuesMcpAddonsGithubResourcesLimits:
+    r"""
+    ValuesMcpAddonsGithubResourcesLimits
+
+    Attributes
+    ----------
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    memory?: str
+
+schema ValuesMcpAddonsGithubResourcesRequests:
+    r"""
+    ValuesMcpAddonsGithubResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "100m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsMariadb:
+    r"""
+    ValuesMcpAddonsMariadb
+
+    Attributes
+    ----------
+    affinity : ValuesMcpAddonsMariadbAffinity, optional
+    annotations : ValuesMcpAddonsMariadbAnnotations, optional
+    config : ValuesMcpAddonsMariadbConfig, optional
+    enabled : bool, optional, default is False
+    image : str, optional, default is "mariadb-http-mcp-minimal:1.0.5"
+    llmInstructions : str, optional, default is ""
+        Custom LLM instructions (optional). Leave empty to use default instructions
+    networkPolicy : ValuesMcpAddonsMariadbNetworkPolicy, optional
+    nodeSelector : ValuesMcpAddonsMariadbNodeSelector, optional
+    registry : str, optional, default is "me-west1-docker.pkg.dev/robusta-development/development"
+    resources : ValuesMcpAddonsMariadbResources, optional
+    tolerations : [any], optional
+    """
+    [...str]: any
+    affinity?: ValuesMcpAddonsMariadbAffinity
+    annotations?: ValuesMcpAddonsMariadbAnnotations
+    config?: ValuesMcpAddonsMariadbConfig
+    enabled?: bool
+    image?: str
+    llmInstructions?: str
+    networkPolicy?: ValuesMcpAddonsMariadbNetworkPolicy
+    nodeSelector?: ValuesMcpAddonsMariadbNodeSelector
+    registry?: str
+    resources?: ValuesMcpAddonsMariadbResources
+    tolerations?: [any]
+
+schema ValuesMcpAddonsMariadbAffinity:
+    r"""
+    ValuesMcpAddonsMariadbAffinity
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsMariadbAnnotations:
+    r"""
+    ValuesMcpAddonsMariadbAnnotations
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsMariadbConfig:
+    r"""
+    ValuesMcpAddonsMariadbConfig
+
+    Attributes
+    ----------
+    database : str, optional, default is ""
+    host : str, optional, default is ""
+    maxPoolSize : str, optional, default is "5"
+    namespace : str, optional, default is ""
+    password : str, optional, default is ""
+    port : str, optional, default is "3306"
+    readOnlyMode : bool, optional, default is True
+    useSSL : bool, optional, default is True
+    username : str, optional, default is ""
+    """
+    [...str]: any
+    database?: str
+    host?: str
+    maxPoolSize?: str
+    namespace?: str
+    password?: str
+    port?: str
+    readOnlyMode?: bool
+    useSSL?: bool
+    username?: str
+
+schema ValuesMcpAddonsMariadbNetworkPolicy:
+    r"""
+    ValuesMcpAddonsMariadbNetworkPolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMcpAddonsMariadbNodeSelector:
+    r"""
+    ValuesMcpAddonsMariadbNodeSelector
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsMariadbResources:
+    r"""
+    ValuesMcpAddonsMariadbResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsMariadbResourcesLimits, optional
+    requests : ValuesMcpAddonsMariadbResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsMariadbResourcesLimits
+    requests?: ValuesMcpAddonsMariadbResourcesRequests
+
+schema ValuesMcpAddonsMariadbResourcesLimits:
+    r"""
+    ValuesMcpAddonsMariadbResourcesLimits
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "500m"
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsMariadbResourcesRequests:
+    r"""
+    ValuesMcpAddonsMariadbResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "250m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
 
 schema ValuesMcpServers:
     r"""
@@ -13279,6 +14144,8 @@ schema ValuesRunner:
     additional_env_vars : [any], optional
     annotations : ValuesRunnerAnnotations, optional
     certificate : str, optional, default is ""
+    crdPermissions : ValuesRunnerCrdPermissions, optional
+        CRD permissions for common Kubernetes operators and tools
     createServiceAccount : bool, optional, default is True
     customCRD : [any], optional
     customClusterRoleRules : [any], optional
@@ -13288,7 +14155,7 @@ schema ValuesRunner:
     hardenedFs : bool, optional, default is False
         Enable hardened filesystem security (read-only root filesystem with writable volume mounts)
     image : any, optional, default is "~"
-    imageName : str, optional, default is "robusta-runner:0.29.2"
+    imageName : str, optional, default is "robusta-runner:0.32.0"
     imagePullPolicy : str, optional, default is "IfNotPresent"
     imagePullSecrets : [any], optional
     log_level : str, optional, default is "INFO"
@@ -13298,7 +14165,7 @@ schema ValuesRunner:
     revisionHistoryLimit : int, optional, default is 10
     securityContext : ValuesRunnerSecurityContext, optional
     sendAdditionalTelemetry : bool, optional, default is False
-    sentry_dsn : str, optional, default is "https://4f1a66f025c60830fec303a094dcdf94@o1120648.ingest.sentry.io/6156573"
+    sentry_dsn : str, optional, default is ""
     service : ValuesRunnerService, optional
         k8s service config
     serviceMonitor : ValuesRunnerServiceMonitor, optional
@@ -13310,6 +14177,7 @@ schema ValuesRunner:
     additional_env_vars?: [any]
     annotations?: ValuesRunnerAnnotations
     certificate?: str
+    crdPermissions?: ValuesRunnerCrdPermissions
     createServiceAccount?: bool
     customCRD?: [any]
     customClusterRoleRules?: [any]
@@ -13339,6 +14207,33 @@ schema ValuesRunnerAnnotations:
     ValuesRunnerAnnotations
     """
     [...str]: any
+
+schema ValuesRunnerCrdPermissions:
+    r"""
+    CRD permissions for common Kubernetes operators and tools
+
+    Attributes
+    ----------
+    argo : bool, optional, default is True
+    crossplane : bool, optional, default is True
+    externalSecrets : bool, optional, default is True
+    flux : bool, optional, default is True
+    gatewayApi : bool, optional, default is True
+    istio : bool, optional, default is True
+    kafka : bool, optional, default is True
+    keda : bool, optional, default is True
+    velero : bool, optional, default is True
+    """
+    [...str]: any
+    argo?: bool
+    crossplane?: bool
+    externalSecrets?: bool
+    flux?: bool
+    gatewayApi?: bool
+    istio?: bool
+    kafka?: bool
+    keda?: bool
+    velero?: bool
 
 schema ValuesRunnerResources:
     r"""
@@ -15629,18 +16524,59 @@ schema ValuesToolsets:
 
     Attributes
     ----------
+    bash : ValuesToolsetsBash, optional
+    connectivity_check : ValuesToolsetsConnectivityCheck, optional
     internet : ValuesToolsetsInternet, optional
     "kubernetes/core" : ValuesToolsetsKubernetescore, optional
     "kubernetes/logs" : ValuesToolsetsKuberneteslogs, optional
     "prometheus/metrics" : ValuesToolsetsPrometheusmetrics, optional
     robusta : ValuesToolsetsRobusta, optional
+    runbook : ValuesToolsetsRunbook, optional
     """
     [...str]: any
+    bash?: ValuesToolsetsBash
+    connectivity_check?: ValuesToolsetsConnectivityCheck
     internet?: ValuesToolsetsInternet
     "kubernetes/core"?: ValuesToolsetsKubernetescore
     "kubernetes/logs"?: ValuesToolsetsKuberneteslogs
     "prometheus/metrics"?: ValuesToolsetsPrometheusmetrics
     robusta?: ValuesToolsetsRobusta
+    runbook?: ValuesToolsetsRunbook
+
+schema ValuesToolsetsBash:
+    r"""
+    ValuesToolsetsBash
+
+    Attributes
+    ----------
+    config : ValuesToolsetsBashConfig, optional
+    enabled : bool, optional, default is True
+    """
+    [...str]: any
+    config?: ValuesToolsetsBashConfig
+    enabled?: bool
+
+schema ValuesToolsetsBashConfig:
+    r"""
+    ValuesToolsetsBashConfig
+
+    Attributes
+    ----------
+    include_default_allow_deny_list : bool, optional, default is True
+    """
+    [...str]: any
+    include_default_allow_deny_list?: bool
+
+schema ValuesToolsetsConnectivityCheck:
+    r"""
+    ValuesToolsetsConnectivityCheck
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    """
+    [...str]: any
+    enabled?: bool
 
 schema ValuesToolsetsInternet:
     r"""
@@ -15689,6 +16625,17 @@ schema ValuesToolsetsPrometheusmetrics:
 schema ValuesToolsetsRobusta:
     r"""
     ValuesToolsetsRobusta
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesToolsetsRunbook:
+    r"""
+    ValuesToolsetsRunbook
 
     Attributes
     ----------
