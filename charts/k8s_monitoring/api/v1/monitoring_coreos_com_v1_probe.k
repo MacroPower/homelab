@@ -55,10 +55,15 @@ schema MonitoringCoreosComV1ProbeSpec:
     convertClassicHistogramsToNHCB : bool, default is Undefined, optional
         convertClassicHistogramsToNHCB defines whether to convert all scraped classic histograms into a native histogram with custom buckets.
         It requires Prometheus >= v3.0.0.
+    enableHttp2 : bool, default is Undefined, optional
+        enableHttp2 can be used to disable HTTP2.
     fallbackScrapeProtocol : str, default is Undefined, optional
         fallbackScrapeProtocol defines the protocol to use if a scrape returns blank, unparseable, or otherwise invalid Content-Type.
 
         It requires Prometheus >= v3.0.0.
+    followRedirects : bool, default is Undefined, optional
+        followRedirects defines whether the client should follow HTTP 3xx
+        redirects.
     interval : str, default is Undefined, optional
         interval at which targets are probed using the configured prober.
         If not specified Prometheus' global scrape interval is used.
@@ -109,6 +114,9 @@ schema MonitoringCoreosComV1ProbeSpec:
         It requires Prometheus >= v2.45.0.
 
         Notice: `scrapeClassicHistograms` corresponds to the `always_scrape_classic_histograms` field in the Prometheus configuration.
+    scrapeNativeHistograms : bool, default is Undefined, optional
+        scrapeNativeHistograms defines whether to enable scraping of native histograms.
+        It requires Prometheus >= v3.8.0.
     scrapeProtocols : [str], default is Undefined, optional
         scrapeProtocols defines the protocols to negotiate during a scrape. It tells clients the
         protocols supported by Prometheus in order of preference (from most to least preferred).
@@ -131,7 +139,9 @@ schema MonitoringCoreosComV1ProbeSpec:
     basicAuth?: MonitoringCoreosComV1ProbeSpecBasicAuth
     bearerTokenSecret?: MonitoringCoreosComV1ProbeSpecBearerTokenSecret
     convertClassicHistogramsToNHCB?: bool
+    enableHttp2?: bool
     fallbackScrapeProtocol?: "PrometheusProto" | "OpenMetricsText0.0.1" | "OpenMetricsText1.0.0" | "PrometheusText0.0.4" | "PrometheusText1.0.0"
+    followRedirects?: bool
     interval?: str
     jobName?: str
     keepDroppedTargets?: int
@@ -148,6 +158,7 @@ schema MonitoringCoreosComV1ProbeSpec:
     sampleLimit?: int
     scrapeClass?: str
     scrapeClassicHistograms?: bool
+    scrapeNativeHistograms?: bool
     scrapeProtocols?: [str]
     scrapeTimeout?: str
     targetLimit?: int
@@ -163,7 +174,10 @@ schema MonitoringCoreosComV1ProbeSpec:
 
 schema MonitoringCoreosComV1ProbeSpecAuthorization:
     r"""
-    authorization section for this endpoint
+    authorization configures the Authorization header credentials used by
+    the client.
+
+    Cannot be set at the same time as `basicAuth`, `bearerTokenSecret` or `oauth2`.
 
     Attributes
     ----------
@@ -203,8 +217,10 @@ schema MonitoringCoreosComV1ProbeSpecAuthorizationCredentials:
 
 schema MonitoringCoreosComV1ProbeSpecBasicAuth:
     r"""
-    basicAuth allow an endpoint to authenticate over basic authentication.
-    More info: https://prometheus.io/docs/operating/configuration/#endpoint
+    basicAuth defines the Basic Authentication credentials used by the
+    client.
+
+    Cannot be set at the same time as `authorization`, `bearerTokenSecret` or `oauth2`.
 
     Attributes
     ----------
@@ -264,9 +280,14 @@ schema MonitoringCoreosComV1ProbeSpecBasicAuthUsername:
 
 schema MonitoringCoreosComV1ProbeSpecBearerTokenSecret:
     r"""
-    bearerTokenSecret defines the secret to mount to read bearer token for scraping targets. The secret
-    needs to be in the same namespace as the probe and accessible by
-    the Prometheus Operator.
+    bearerTokenSecret defines a key of a Secret containing the bearer token
+    used by the client for authentication. The secret needs to be in the
+    same namespace as the custom resource and readable by the Prometheus
+    Operator.
+
+    Cannot be set at the same time as `authorization`, `basicAuth` or `oauth2`.
+
+    Deprecated: use `authorization` instead.
 
     Attributes
     ----------
@@ -337,7 +358,11 @@ schema MonitoringCoreosComV1ProbeSpecMetricRelabelingsItems0:
 
 schema MonitoringCoreosComV1ProbeSpecOauth2:
     r"""
-    oauth2 for the URL. Only valid in Prometheus versions 2.27.0 and newer.
+    oauth2 defines the OAuth2 settings used by the client.
+
+    It requires Prometheus >= 2.27.0.
+
+    Cannot be set at the same time as `authorization`, `basicAuth` or `bearerTokenSecret`.
 
     Attributes
     ----------
@@ -713,22 +738,25 @@ schema MonitoringCoreosComV1ProbeSpecProber:
     proxyUrl : str, default is Undefined, optional
         proxyUrl defines the HTTP proxy server to use.
     scheme : str, default is Undefined, optional
-        scheme defines the HTTP scheme to use for scraping.
-        `http` and `https` are the expected values unless you rewrite the `__scheme__` label via relabeling.
-        If empty, Prometheus uses the default value `http`.
+        scheme defines the HTTP scheme to use when scraping the prober.
     url : str, default is Undefined, required
-        url defines the mandatory URL of the prober.
+        url defines the address of the prober.
+
+        Unlike what the name indicates, the value should be in the form of
+        `address:port` without any scheme which should be specified in the
+        `scheme` field.
     """
     noProxy?: str
     path?: str = "/probe"
     proxyConnectHeader?: {str:[MonitoringCoreosComV1ProbeSpecProberProxyConnectHeaderItems0]}
     proxyFromEnvironment?: bool
     proxyUrl?: str
-    scheme?: "http" | "https"
+    scheme?: "http" | "https" | "HTTP" | "HTTPS"
     url: str
 
     check:
         _regex_match(str(proxyUrl), r"^(http|https|socks5)://.+$") if proxyUrl
+        len(url) >= 1
 
 schema MonitoringCoreosComV1ProbeSpecProberProxyConnectHeaderItems0:
     r"""
@@ -754,7 +782,7 @@ schema MonitoringCoreosComV1ProbeSpecProberProxyConnectHeaderItems0:
 
 schema MonitoringCoreosComV1ProbeSpecTLSConfig:
     r"""
-    tlsConfig defines the TLS configuration to use when scraping the endpoint.
+    tlsConfig defines the TLS configuration used by the client.
 
     Attributes
     ----------
