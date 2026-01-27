@@ -173,10 +173,18 @@ schema MonitoringCoreosComV1AlertmanagerSpec:
     logLevel : str, default is Undefined, optional
         logLevel for Alertmanager to be configured with.
     minReadySeconds : int, default is Undefined, optional
-        minReadySeconds defines the minimum number of seconds for which a newly created pod should be ready
-        without any of its container crashing for it to be considered available.
+        minReadySeconds defines the minimum number of seconds for which a newly
+        created pod should be ready without any of its container crashing for it
+        to be considered available.
 
         If unset, pods will be considered available as soon as they are ready.
+
+        When the Alertmanager version is greater than or equal to v0.30.0, the
+        duration is also used to delay the first flush of the aggregation
+        groups. This delay helps ensuring that all alerts have been resent by
+        the Prometheus instances to Alertmanager after a roll-out. It is
+        possible to override this behavior passing a custom value via
+        `.spec.additionalArgs`.
     nodeSelector : {str:str}, default is Undefined, optional
         nodeSelector defines which Nodes the Pods are scheduled on.
     paused : bool, default is Undefined, optional
@@ -184,6 +192,16 @@ schema MonitoringCoreosComV1AlertmanagerSpec:
         going to be performed, except for delete actions.
     persistentVolumeClaimRetentionPolicy : MonitoringCoreosComV1AlertmanagerSpecPersistentVolumeClaimRetentionPolicy, default is Undefined, optional
         persistent volume claim retention policy
+    podManagementPolicy : str, default is Undefined, optional
+        podManagementPolicy defines the policy for creating/deleting pods when
+        scaling up and down.
+
+        Unlike the default StatefulSet behavior, the default policy is
+        `Parallel` to avoid manual intervention in case a pod gets stuck during
+        a rollout.
+
+        Note that updating this value implies the recreation of the StatefulSet
+        which incurs a service outage.
     podMetadata : MonitoringCoreosComV1AlertmanagerSpecPodMetadata, default is Undefined, optional
         pod metadata
     portName : str, default is "web", optional
@@ -242,6 +260,8 @@ schema MonitoringCoreosComV1AlertmanagerSpec:
         tolerations defines the pod's tolerations.
     topologySpreadConstraints : [MonitoringCoreosComV1AlertmanagerSpecTopologySpreadConstraintsItems0], default is Undefined, optional
         topologySpreadConstraints defines the Pod's topology spread constraints.
+    updateStrategy : MonitoringCoreosComV1AlertmanagerSpecUpdateStrategy, default is Undefined, optional
+        update strategy
     version : str, default is Undefined, optional
         version the cluster should be on.
     volumeMounts : [MonitoringCoreosComV1AlertmanagerSpecVolumeMountsItems0], default is Undefined, optional
@@ -293,6 +313,7 @@ schema MonitoringCoreosComV1AlertmanagerSpec:
     nodeSelector?: {str:str}
     paused?: bool
     persistentVolumeClaimRetentionPolicy?: MonitoringCoreosComV1AlertmanagerSpecPersistentVolumeClaimRetentionPolicy
+    podManagementPolicy?: "OrderedReady" | "Parallel"
     podMetadata?: MonitoringCoreosComV1AlertmanagerSpecPodMetadata
     portName?: str = "web"
     priorityClassName?: str
@@ -310,6 +331,7 @@ schema MonitoringCoreosComV1AlertmanagerSpec:
     terminationGracePeriodSeconds?: int
     tolerations?: [MonitoringCoreosComV1AlertmanagerSpecTolerationsItems0]
     topologySpreadConstraints?: [MonitoringCoreosComV1AlertmanagerSpecTopologySpreadConstraintsItems0]
+    updateStrategy?: MonitoringCoreosComV1AlertmanagerSpecUpdateStrategy
     version?: str
     volumeMounts?: [MonitoringCoreosComV1AlertmanagerSpecVolumeMountsItems0]
     volumes?: [MonitoringCoreosComV1AlertmanagerSpecVolumesItems0]
@@ -2540,7 +2562,7 @@ schema MonitoringCoreosComV1AlertmanagerSpecAlertmanagerConfigurationGlobalVicto
 
 schema MonitoringCoreosComV1AlertmanagerSpecAlertmanagerConfigurationGlobalWebex:
     r"""
-    webex defines the default configuration for Jira.
+    webex defines the default configuration for Webex.
 
     Attributes
     ----------
@@ -7346,6 +7368,44 @@ schema MonitoringCoreosComV1AlertmanagerSpecTopologySpreadConstraintsItems0Label
     operator: str
 
     values?: [str]
+
+schema MonitoringCoreosComV1AlertmanagerSpecUpdateStrategy:
+    r"""
+    updateStrategy indicates the strategy that will be employed to update
+    Pods in the StatefulSet when a revision is made to statefulset's Pod
+    Template.
+
+    The default strategy is RollingUpdate.
+
+    Attributes
+    ----------
+    rollingUpdate : MonitoringCoreosComV1AlertmanagerSpecUpdateStrategyRollingUpdate, default is Undefined, optional
+        rolling update
+    $type : str, default is Undefined, required
+        type indicates the type of the StatefulSetUpdateStrategy.
+
+        Default is RollingUpdate.
+    """
+    rollingUpdate?: MonitoringCoreosComV1AlertmanagerSpecUpdateStrategyRollingUpdate
+    $type: "OnDelete" | "RollingUpdate"
+
+schema MonitoringCoreosComV1AlertmanagerSpecUpdateStrategyRollingUpdate:
+    r"""
+    rollingUpdate is used to communicate parameters when type is RollingUpdate.
+
+    Attributes
+    ----------
+    maxUnavailable : int | str, default is Undefined, optional
+        maxUnavailable is the maximum number of pods that can be unavailable
+        during the update. The value can be an absolute number (ex: 5) or a
+        percentage of desired pods (ex: 10%). Absolute number is calculated from
+        percentage by rounding up. This can not be 0.  Defaults to 1. This field
+        is alpha-level and is only honored by servers that enable the
+        MaxUnavailableStatefulSet feature. The field applies to all pods in the
+        range 0 to Replicas-1.  That means if there is any unavailable pod in
+        the range 0 to Replicas-1, it will be counted towards MaxUnavailable.
+    """
+    maxUnavailable?: int | str
 
 schema MonitoringCoreosComV1AlertmanagerSpecVolumeMountsItems0:
     r"""
