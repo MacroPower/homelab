@@ -2,7 +2,7 @@ terraform {
   required_providers {
     doppler = {
       source  = "DopplerHQ/doppler"
-      version = "1.21.0"
+      version = "1.21.1"
     }
     hcloud = {
       source  = "hetznercloud/hcloud"
