@@ -32,6 +32,34 @@
       "title": "crds",
       "type": "object"
     },
+    "createAggregateRoles": {
+      "default": true,
+      "description": "Create aggregated cluster roles for view, edit, and admin",
+      "required": [],
+      "title": "createAggregateRoles",
+      "type": "boolean"
+    },
+    "deploymentAnnotations": {
+      "additionalProperties": true,
+      "description": "Additional annotations to add to deployments",
+      "required": [],
+      "title": "deploymentAnnotations",
+      "type": "object"
+    },
+    "deploymentLabels": {
+      "additionalProperties": true,
+      "description": "Additional labels to add to deployments",
+      "required": [],
+      "title": "deploymentLabels",
+      "type": "object"
+    },
+    "dragonflyImage": {
+      "default": "",
+      "description": "Default dragonfly image to use",
+      "required": [],
+      "title": "dragonflyImage",
+      "type": "string"
+    },
     "fullnameOverride": {
       "default": "",
       "required": [],
@@ -331,6 +359,12 @@
       "title": "nameOverride",
       "type": "string"
     },
+    "namespaceOverride": {
+      "default": "",
+      "required": [],
+      "title": "namespaceOverride",
+      "type": "string"
+    },
     "podAnnotations": {
       "additionalProperties": true,
       "properties": {
@@ -396,7 +430,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v0.13.1",
+              "default": "v0.20.2",
               "description": "Overrides the image tag whose default is the chart appVersion.",
               "required": [],
               "title": "tag",
