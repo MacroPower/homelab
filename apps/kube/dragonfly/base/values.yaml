@@ -3,7 +3,7 @@
 manager:
   image:
     repository: docker.dragonflydb.io/dragonflydb/operator
-    tag: v1.3.1
+    tag: v1.4.0
 
 serviceMonitor:
   # When set true then use a ServiceMonitor to configure scraping
