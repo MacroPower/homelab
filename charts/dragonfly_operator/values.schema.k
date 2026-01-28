@@ -13,12 +13,21 @@ schema Values:
         Additional labels to add to all resources
     crds : ValuesCrds, optional
         # Custom resource configuration
+    createAggregateRoles : bool, optional, default is True
+        Create aggregated cluster roles for view, edit, and admin
+    deploymentAnnotations : ValuesDeploymentAnnotations, optional
+        Additional annotations to add to deployments
+    deploymentLabels : ValuesDeploymentLabels, optional
+        Additional labels to add to deployments
+    dragonflyImage : str, optional, default is ""
+        Default dragonfly image to use
     fullnameOverride : str, optional, default is ""
     global : ValuesGlobal, optional
         Global values are values that can be accessed from any chart or subchart by exactly the same name.
     grafanaDashboard : ValuesGrafanaDashboard, optional
     manager : ValuesManager, optional
     nameOverride : str, optional, default is ""
+    namespaceOverride : str, optional, default is ""
     podAnnotations : ValuesPodAnnotations, optional
     podLabels : ValuesPodLabels, optional
     podSecurityContext : ValuesPodSecurityContext, optional
@@ -32,11 +41,16 @@ schema Values:
     [...str]: any
     additionalLabels?: ValuesAdditionalLabels
     crds?: ValuesCrds
+    createAggregateRoles?: bool
+    deploymentAnnotations?: ValuesDeploymentAnnotations
+    deploymentLabels?: ValuesDeploymentLabels
+    dragonflyImage?: str
     fullnameOverride?: str
     global?: ValuesGlobal
     grafanaDashboard?: ValuesGrafanaDashboard
     manager?: ValuesManager
     nameOverride?: str
+    namespaceOverride?: str
     podAnnotations?: ValuesPodAnnotations
     podLabels?: ValuesPodLabels
     podSecurityContext?: ValuesPodSecurityContext
@@ -67,6 +81,18 @@ schema ValuesCrds:
     [...str]: any
     install?: bool
     keep?: bool
+
+schema ValuesDeploymentAnnotations:
+    r"""
+    Additional annotations to add to deployments
+    """
+    [...str]: any
+
+schema ValuesDeploymentLabels:
+    r"""
+    Additional labels to add to deployments
+    """
+    [...str]: any
 
 schema ValuesGlobal:
     r"""
@@ -365,7 +391,7 @@ schema ValuesRbacProxyImage:
     ----------
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/brancz/kube-rbac-proxy"
-    tag : str, optional, default is "v0.13.1"
+    tag : str, optional, default is "v0.20.2"
         Overrides the image tag whose default is the chart appVersion.
     """
     [...str]: any
