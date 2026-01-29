@@ -22,6 +22,13 @@
               "title": "merge",
               "type": "object"
             },
+            "noAdvertise": {
+              "default": true,
+              "description": "set to false to allow cluster nodes to advertise their addresses\nso that clients can reconnect without extra DNS lookups.\nNote: in case clients have external connectivity make sure to define the `advertise` section as well.\nIf clients are behind a load balancer it is best to leave this as is.",
+              "required": [],
+              "title": "noAdvertise",
+              "type": "boolean"
+            },
             "patch": {
               "items": {
                 "required": []
@@ -1003,7 +1010,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "2.11.10-alpine",
+              "default": "2.12.4-alpine",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -1260,7 +1267,7 @@
                   "type": "object"
                 },
                 "tag": {
-                  "default": "0.19.2",
+                  "default": "0.19.3",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -1641,8 +1648,8 @@
       "description": "stateful set -\u003e pod template",
       "properties": {
         "configChecksumAnnotation": {
-          "default": true,
-          "description": "adds a hash of the ConfigMap as a pod annotation\nthis will cause the StatefulSet to roll when the ConfigMap is updated",
+          "default": false,
+          "description": "adds a hash of the ConfigMap as a pod annotation\nthis will cause the StatefulSet to roll when the ConfigMap is updated\nset to true to force pod rollouts on config changes instead of using the reloader for hot updates",
           "required": [],
           "title": "configChecksumAnnotation",
           "type": "boolean"
@@ -1725,7 +1732,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "0.17.3",
+              "default": "0.18.0",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -1856,7 +1863,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "0.20.1",
+              "default": "0.21.1",
               "required": [],
               "title": "tag",
               "type": "string"
