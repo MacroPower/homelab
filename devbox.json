@@ -16,7 +16,7 @@
     "terraform": "1.13.5",
     "opentofu": "1.11.4",
     "spacectl": "1.18.0",
-    "natscli": "0.3.0",
+    "natscli": "0.3.1",
     "kubernetes-helm": "3.19.1",
     "auth0-cli": "1.23.0",
     "go": "1.25.5"
