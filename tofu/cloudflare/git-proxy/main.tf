@@ -18,10 +18,38 @@ resource "cloudflare_workers_script" "git_proxy" {
   main_module    = "worker.js"
 }
 
-# Bind custom domain to the worker
-resource "cloudflare_workers_custom_domain" "git_proxy" {
+# Bind custom domains to the worker
+resource "cloudflare_workers_custom_domain" "go" {
+  account_id = local.account_id
+  zone_id    = local.zone_id
+  hostname   = "go.jacobcolvin.com"
+  service    = cloudflare_workers_script.git_proxy.script_name
+}
+
+resource "cloudflare_workers_custom_domain" "tap" {
+  account_id = local.account_id
+  zone_id    = local.zone_id
+  hostname   = "tap.jacobcolvin.com"
+  service    = cloudflare_workers_script.git_proxy.script_name
+}
+
+resource "cloudflare_workers_custom_domain" "git" {
   account_id = local.account_id
   zone_id    = local.zone_id
   hostname   = "git.jacobcolvin.com"
+  service    = cloudflare_workers_script.git_proxy.script_name
+}
+
+resource "cloudflare_workers_custom_domain" "nur" {
+  account_id = local.account_id
+  zone_id    = local.zone_id
+  hostname   = "nur.jacobcolvin.com"
+  service    = cloudflare_workers_script.git_proxy.script_name
+}
+
+resource "cloudflare_workers_custom_domain" "oci" {
+  account_id = local.account_id
+  zone_id    = local.zone_id
+  hostname   = "oci.jacobcolvin.com"
   service    = cloudflare_workers_script.git_proxy.script_name
 }

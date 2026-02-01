@@ -764,6 +764,54 @@
           "store_path": "/nix/store/2h17mx1m5jfp7j6ik7iwlkxhxhxhgzvw-terraform-1.13.5"
         }
       }
+    },
+    "wrangler@4.61.0": {
+      "last_modified": "2026-01-30T02:32:49Z",
+      "resolved": "github:NixOS/nixpkgs/6308c3b21396534d8aaeac46179c14c439a89b8a#wrangler",
+      "source": "devbox-search",
+      "version": "4.61.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/93wi0vf1mlawr6n03dgvxi250vgky3dh-wrangler-4.61.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/93wi0vf1mlawr6n03dgvxi250vgky3dh-wrangler-4.61.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/pakwj42crgqm0frzp9blz131nz8yanzx-wrangler-4.61.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/pakwj42crgqm0frzp9blz131nz8yanzx-wrangler-4.61.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/5ra6z268kfz21zfqvc2mflarp7d2qjww-wrangler-4.61.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/5ra6z268kfz21zfqvc2mflarp7d2qjww-wrangler-4.61.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/395fqn38pjpj749rxw6hbzg8rvbm1hb4-wrangler-4.61.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/395fqn38pjpj749rxw6hbzg8rvbm1hb4-wrangler-4.61.0"
+        }
+      }
     }
   }
 }
