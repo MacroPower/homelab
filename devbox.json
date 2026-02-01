@@ -12,7 +12,7 @@
     "git": "2.51.2",
     "kubeconform": "0.7.0",
     "nodePackages.prettier": "3.5.3",
-    "talosctl": "1.11.6",
+    "talosctl": "1.12.2",
     "terraform": "1.13.5",
     "opentofu": "1.11.4",
     "spacectl": "1.18.0",
