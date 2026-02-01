@@ -193,6 +193,18 @@
         }
       }
     },
+    "git+https://nur.jacobcolvin.com#kat": {
+      "last_modified": "2025-11-30T23:00:28Z",
+      "resolved": "git+https://nur.jacobcolvin.com?ref=refs%2Fheads%2Fmain&rev=19926cd01a431289f3f65febb623918c698d10d3#kat"
+    },
+    "git+https://nur.jacobcolvin.com#kcl-lsp": {
+      "last_modified": "2025-11-30T23:00:28Z",
+      "resolved": "git+https://nur.jacobcolvin.com?ref=refs%2Fheads%2Fmain&rev=19926cd01a431289f3f65febb623918c698d10d3#kcl-lsp"
+    },
+    "git+https://nur.jacobcolvin.com#kclipper": {
+      "last_modified": "2025-11-30T23:00:28Z",
+      "resolved": "git+https://nur.jacobcolvin.com?ref=refs%2Fheads%2Fmain&rev=19926cd01a431289f3f65febb623918c698d10d3#kclipper"
+    },
     "git@2.51.2": {
       "last_modified": "2025-11-23T21:50:36Z",
       "resolved": "github:NixOS/nixpkgs/ee09932cedcef15aaf476f9343d1dea2cb77e261#git",
@@ -272,18 +284,6 @@
     "github:budimanjojo/talhelper/v3.0.41": {
       "last_modified": "2025-11-24T04:51:03Z",
       "resolved": "github:budimanjojo/talhelper/0574f072ee800297268dc77d9a6c4a8ceac9695a?lastModified=1763959863&narHash=sha256-m9BHf535wNSfDhttNKezwetf1tbblh01i00xP%2FOAuh0%3D"
-    },
-    "github:macropower/nur-packages#kat": {
-      "last_modified": "2025-11-30T23:00:28Z",
-      "resolved": "github:macropower/nur-packages/19926cd01a431289f3f65febb623918c698d10d3?lastModified=1764543628&narHash=sha256-Ogpmtiq5G7jwpq1DF0PbfIkUI4RxcQrbu4Lpy3IQ%2FIk%3D#kat"
-    },
-    "github:macropower/nur-packages#kcl-lsp": {
-      "last_modified": "2025-08-31T20:04:57Z",
-      "resolved": "github:macropower/nur-packages/1976c17814e5715ccb96a6b2d0f09b323e04980b?lastModified=1756670697&narHash=sha256-wkST8QG%2F%2BgndVJZ8zkK3jdDjJBCMcMhUFagOUuvQbpE%3D#kcl-lsp"
-    },
-    "github:macropower/nur-packages#kclipper": {
-      "last_modified": "2025-11-25T16:58:09Z",
-      "resolved": "github:macropower/nur-packages/b08d7a7aa1452c4cad430c5ca5e475c01cdf7887?lastModified=1764089889&narHash=sha256-oboPXWC%2BUa4AXoNI6TAn%2FW%2FO9E8n0rNu5c3wzhAowqE%3D#kclipper"
     },
     "go-task@3.45.5": {
       "last_modified": "2026-01-23T17:20:52Z",
@@ -762,6 +762,54 @@
             }
           ],
           "store_path": "/nix/store/2h17mx1m5jfp7j6ik7iwlkxhxhxhgzvw-terraform-1.13.5"
+        }
+      }
+    },
+    "wrangler@4.61.0": {
+      "last_modified": "2026-01-30T02:32:49Z",
+      "resolved": "github:NixOS/nixpkgs/6308c3b21396534d8aaeac46179c14c439a89b8a#wrangler",
+      "source": "devbox-search",
+      "version": "4.61.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/93wi0vf1mlawr6n03dgvxi250vgky3dh-wrangler-4.61.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/93wi0vf1mlawr6n03dgvxi250vgky3dh-wrangler-4.61.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/pakwj42crgqm0frzp9blz131nz8yanzx-wrangler-4.61.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/pakwj42crgqm0frzp9blz131nz8yanzx-wrangler-4.61.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/5ra6z268kfz21zfqvc2mflarp7d2qjww-wrangler-4.61.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/5ra6z268kfz21zfqvc2mflarp7d2qjww-wrangler-4.61.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/395fqn38pjpj749rxw6hbzg8rvbm1hb4-wrangler-4.61.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/395fqn38pjpj749rxw6hbzg8rvbm1hb4-wrangler-4.61.0"
         }
       }
     }
