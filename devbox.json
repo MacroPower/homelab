@@ -9,7 +9,7 @@
     "cilium-cli": "0.18.8",
     "doppler": "3.75.2",
     "go-task": "3.45.5",
-    "git": "2.51.2",
+    "git": "2.52.0",
     "kubeconform": "0.7.0",
     "nodePackages.prettier": "3.5.3",
     "talosctl": "1.11.6",
