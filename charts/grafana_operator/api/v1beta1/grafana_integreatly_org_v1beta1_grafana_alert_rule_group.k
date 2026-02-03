@@ -55,7 +55,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpec:
         interval
     name : str, default is Undefined, optional
         Name of the alert rule group. If not specified, the resource name will be used.
-    resyncPeriod : str, default is "10m0s", optional
+    resyncPeriod : str, default is Undefined, optional
         How often the resource is synced, defaults to 10m0s if not set
     rules : [GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0], default is Undefined, required
         rules
@@ -71,7 +71,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpec:
     interval: str
 
     name?: str
-    resyncPeriod?: str = "10m0s"
+    resyncPeriod?: str
     rules: [GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0]
 
     suspend?: bool
@@ -177,6 +177,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0:
     uid: str
 
     check:
+        _regex_match(str($for), r"^([0-9]+(\.[0-9]+)?(s|m|h|d|w))+$")
         len(title) <= 190
         len(title) >= 1
         len(uid) <= 40
@@ -269,7 +270,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupStatus:
     Attributes
     ----------
     conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupStatusConditionsItems0], default is Undefined, optional
-        Results when synchonizing resource with Grafana instances
+        Results when synchronizing resource with Grafana instances
     lastResync : str, default is Undefined, optional
         Last time the resource was synchronized with Grafana instances
     """

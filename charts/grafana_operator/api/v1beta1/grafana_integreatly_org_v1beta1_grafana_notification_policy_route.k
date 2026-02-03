@@ -40,6 +40,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteSpec:
 
     Attributes
     ----------
+    active_time_intervals : [str], default is Undefined, optional
+        active time intervals
     continue : bool, default is Undefined, optional
         continue
     group_by : [str], default is Undefined, optional
@@ -57,7 +59,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteSpec:
     object_matchers : [[str]], default is Undefined, optional
         object matchers
     provenance : str, default is Undefined, optional
-        provenance
+        Deprecated: Does nothing
     receiver : str, default is Undefined, required
         receiver
     repeat_interval : str, default is Undefined, optional
@@ -67,6 +69,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteSpec:
     routes : any, default is Undefined, optional
         routes, mutually exclusive with RouteSelector
     """
+    active_time_intervals?: [str]
     continue?: bool
     group_by?: [str]
     group_interval?: str
@@ -154,7 +157,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteStatus:
     Attributes
     ----------
     conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationPolicyRouteStatusConditionsItems0], default is Undefined, optional
-        Results when synchonizing resource with Grafana instances
+        Results when synchronizing resource with Grafana instances
     lastResync : str, default is Undefined, optional
         Last time the resource was synchronized with Grafana instances
     """
