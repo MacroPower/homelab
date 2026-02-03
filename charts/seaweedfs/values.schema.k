@@ -2724,6 +2724,7 @@ schema ValuesVolume:
         Adjust jpg orientation when uploading.
     index : any, optional, default is "null"
         Choose [memory|leveldb|leveldbMedium|leveldbLarge] mode for memory~performance balance., default memory
+    ingress : ValuesVolumeIngress, optional
     initContainers : str, optional, default is ""
     ipBind : str, optional, default is "0.0.0.0"
     livenessProbe : ValuesVolumeLivenessProbe, optional
@@ -2820,6 +2821,7 @@ schema ValuesVolume:
     imageOverride?: any
     imagesFixOrientation?: bool
     index?: any
+    ingress?: ValuesVolumeIngress
     initContainers?: str
     ipBind?: str
     livenessProbe?: ValuesVolumeLivenessProbe
@@ -2889,6 +2891,38 @@ schema ValuesVolumeIdx:
     same applies to "logs"
     """
     [...str]: any
+
+schema ValuesVolumeIngress:
+    r"""
+    ValuesVolumeIngress
+
+    Attributes
+    ----------
+    annotations : ValuesVolumeIngressAnnotations, optional
+    className : str, optional, default is ""
+    enabled : bool, optional, default is False
+    host : str, optional, default is "volume.seaweedfs.local"
+    path : str, optional, default is "/"
+    pathType : str, optional, default is "Prefix"
+    """
+    [...str]: any
+    annotations?: ValuesVolumeIngressAnnotations
+    className?: str
+    enabled?: bool
+    host?: str
+    path?: str
+    pathType?: str
+
+schema ValuesVolumeIngressAnnotations:
+    r"""
+    ValuesVolumeIngressAnnotations
+
+    Attributes
+    ----------
+    "nginx.ingress.kubernetes.io/app-root" : str, optional, default is "/ui/index.html"
+    """
+    [...str]: any
+    "nginx.ingress.kubernetes.io/app-root"?: str
 
 schema ValuesVolumeLivenessProbe:
     r"""

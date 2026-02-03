@@ -3781,6 +3781,58 @@
           "title": "index",
           "type": "null"
         },
+        "ingress": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "properties": {
+                "nginx.ingress.kubernetes.io/app-root": {
+                  "default": "/ui/index.html",
+                  "required": [],
+                  "title": "nginx.ingress.kubernetes.io/app-root",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "className": {
+              "default": "",
+              "required": [],
+              "title": "className",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "host": {
+              "default": "volume.seaweedfs.local",
+              "required": [],
+              "title": "host",
+              "type": "string"
+            },
+            "path": {
+              "default": "/",
+              "required": [],
+              "title": "path",
+              "type": "string"
+            },
+            "pathType": {
+              "default": "Prefix",
+              "required": [],
+              "title": "pathType",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "ingress",
+          "type": "object"
+        },
         "initContainers": {
           "default": "",
           "required": [],
