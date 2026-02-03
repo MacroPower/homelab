@@ -875,6 +875,22 @@
           "title": "podAnnotations",
           "type": "object"
         },
+        "podDisruptionBudget": {
+          "additionalProperties": true,
+          "description": "Pod Disruption Budget configuration",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable PodDisruptionBudget for compactor",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podDisruptionBudget",
+          "type": "object"
+        },
         "podLabels": {
           "additionalProperties": true,
           "description": "Labels for compactor pods",
@@ -969,7 +985,7 @@
       "type": "object"
     },
     "config": {
-      "default": "multitenancy_enabled: {{ .Values.multitenancyEnabled }}\n\nusage_report:\n  reporting_enabled: {{ .Values.reportingEnabled }}\n\n{{- if .Values.enterprise.enabled }}\nlicense:\n  path: \"/license/license.jwt\"\n\nadmin_api:\n  leader_election:\n    enabled: true\n    ring:\n      kvstore:\n        store: \"memberlist\"\n\nauth:\n  type: enterprise\n\nhttp_api_prefix: {{get .Values.tempo.structuredConfig \"http_api_prefix\"}}\n\nadmin_client:\n  storage:\n    backend: {{.Values.storage.admin.backend}}\n    {{- if eq .Values.storage.admin.backend \"s3\"}}\n    s3:\n      {{- toYaml .Values.storage.admin.s3 | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"gcs\"}}\n    gcs:\n      {{- toYaml .Values.storage.admin.gcs | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"azure\"}}\n    azure:\n      {{- toYaml .Values.storage.admin.azure | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"swift\"}}\n    swift:\n      {{- toYaml .Values.storage.admin.swift | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"filesystem\"}}\n    filesystem:\n      {{- toYaml .Values.storage.admin.filesystem | nindent 6}}\n    {{- end}}\n{{- end }}\n\n{{- if and .Values.enterprise.enabled .Values.enterpriseGateway.useDefaultProxyURLs }}\ngateway:\n  proxy:\n    admin_api:\n      url: http://{{ template \"tempo.fullname\" . }}-admin-api.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    compactor:\n      url: http://{{ template \"tempo.fullname\" . }}-compactor.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    default:\n      url: http://{{ template \"tempo.fullname\" . }}-admin-api.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    distributor:\n      url: http://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n      otlp/grpc:\n        url: h2c://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:4317\n      otlp/http:\n        url: http://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:4318\n    ingester:\n      url: http://{{ template \"tempo.fullname\" . }}-ingester.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    querier:\n      url: http://{{ template \"tempo.fullname\" . }}-querier.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    query_frontend:\n      url: http://{{ template \"tempo.fullname\" . }}-query-frontend.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}{{get .Values.tempo.structuredConfig \"http_api_prefix\"}}\n{{else}}\n{{- if and .Values.enterprise.enabled .Values.enterpriseGateway.proxy }}\ngateway:\n  proxy: {{- toYaml .Values.enterpriseGateway.proxy | nindent 6 }}\n{{- end }}\n{{- end }}\n\ncompactor:\n  compaction:\n    block_retention: {{ .Values.compactor.config.compaction.block_retention }}\n    compacted_block_retention: {{ .Values.compactor.config.compaction.compacted_block_retention }}\n    compaction_window: {{ .Values.compactor.config.compaction.compaction_window }}\n    v2_in_buffer_bytes: {{ .Values.compactor.config.compaction.v2_in_buffer_bytes }}\n    v2_out_buffer_bytes: {{ .Values.compactor.config.compaction.v2_out_buffer_bytes }}\n    max_compaction_objects: {{ .Values.compactor.config.compaction.max_compaction_objects }}\n    max_block_bytes: {{ .Values.compactor.config.compaction.max_block_bytes }}\n    retention_concurrency: {{ .Values.compactor.config.compaction.retention_concurrency }}\n    v2_prefetch_traces_count: {{ .Values.compactor.config.compaction.v2_prefetch_traces_count }}\n    max_time_per_tenant: {{ .Values.compactor.config.compaction.max_time_per_tenant }}\n    compaction_cycle: {{ .Values.compactor.config.compaction.compaction_cycle }}\n  ring:\n    kvstore:\n      store: memberlist\n{{- if and .Values.enterprise.enabled .Values.enterpriseFederationFrontend.enabled }}\nfederation:\n  proxy_targets:\n    {{- toYaml .Values.enterpriseFederationFrontend.proxy_targets | nindent 6 }}\n{{- end }}\n{{- if .Values.metricsGenerator.enabled }}\nmetrics_generator:\n  ring:\n    kvstore:\n      store: memberlist\n  processor:\n    {{- toYaml .Values.metricsGenerator.config.processor | nindent 6 }}\n  storage:\n    {{- toYaml .Values.metricsGenerator.config.storage | nindent 6 }}\n  traces_storage:\n    {{- toYaml .Values.metricsGenerator.config.traces_storage | nindent 6 }}\n  registry:\n    {{- toYaml .Values.metricsGenerator.config.registry | nindent 6 }}\n  metrics_ingestion_time_range_slack: {{ .Values.metricsGenerator.config.metrics_ingestion_time_range_slack }}\n{{- end }}\ndistributor:\n  {{- if .Values.distributor.config.cost_attribution.enabled }}\n  usage:\n    cost_attribution:\n      enabled: {{ .Values.distributor.config.cost_attribution.enabled }}\n      max_cardinality: {{ .Values.distributor.config.cost_attribution.max_cardinality }}\n      stale_duration: {{ .Values.distributor.config.cost_attribution.stale_duration }}\n  {{- end }}\n  ring:\n    kvstore:\n      store: memberlist\n  receivers:\n    {{- if  or (.Values.traces.jaeger.thriftCompact.enabled) (.Values.traces.jaeger.thriftBinary.enabled) (.Values.traces.jaeger.thriftHttp.enabled) (.Values.traces.jaeger.grpc.enabled) }}\n    jaeger:\n      protocols:\n        {{- if .Values.traces.jaeger.thriftCompact.enabled }}\n        thrift_compact:\n          {{- $mergedJaegerThriftCompactConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:6831\") .Values.traces.jaeger.thriftCompact.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftCompactConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.thriftBinary.enabled }}\n        thrift_binary:\n          {{- $mergedJaegerThriftBinaryConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:6832\") .Values.traces.jaeger.thriftBinary.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftBinaryConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.thriftHttp.enabled }}\n        thrift_http:\n          {{- $mergedJaegerThriftHttpConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:14268\") .Values.traces.jaeger.thriftHttp.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftHttpConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.grpc.enabled }}\n        grpc:\n          {{- $mergedJaegerGrpcConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:14250\") .Values.traces.jaeger.grpc.receiverConfig }}\n          {{- toYaml $mergedJaegerGrpcConfig | nindent 10 }}\n        {{- end }}\n    {{- end }}\n    {{- if .Values.traces.zipkin.enabled }}\n    zipkin:\n      {{- $mergedZipkinReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:9411\") .Values.traces.zipkin.receiverConfig }}\n      {{- toYaml $mergedZipkinReceiverConfig | nindent 6 }}\n    {{- end }}\n    {{- if or (.Values.traces.otlp.http.enabled) (.Values.traces.otlp.grpc.enabled) }}\n    otlp:\n      protocols:\n        {{- if .Values.traces.otlp.http.enabled }}\n        http:\n          {{- $mergedOtlpHttpReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:4318\") .Values.traces.otlp.http.receiverConfig }}\n          {{- toYaml $mergedOtlpHttpReceiverConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.otlp.grpc.enabled }}\n        grpc:\n          {{- $mergedOtlpGrpcReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:4317\") .Values.traces.otlp.grpc.receiverConfig }}\n          {{- toYaml $mergedOtlpGrpcReceiverConfig | nindent 10 }}\n        {{- end }}\n    {{- end }}\n    {{- if .Values.traces.opencensus.enabled }}\n    opencensus:\n      {{- $mergedOpencensusReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:55678\") .Values.traces.opencensus.receiverConfig }}\n      {{- toYaml $mergedOpencensusReceiverConfig | nindent 6 }}\n    {{- end }}\n    {{- if .Values.traces.kafka }}\n    kafka:\n      {{- toYaml .Values.traces.kafka | nindent 6 }}\n    {{- end }}\n  {{- if .Values.distributor.config.log_discarded_spans.enabled }}\n  log_discarded_spans:\n    enabled: {{ .Values.distributor.config.log_discarded_spans.enabled }}\n    include_all_attributes: {{ .Values.distributor.config.log_discarded_spans.include_all_attributes }}\n    filter_by_status_error: {{ .Values.distributor.config.log_discarded_spans.filter_by_status_error }}\n  {{- end }}\n  {{- if or .Values.distributor.config.log_received_traces .Values.distributor.config.log_received_spans.enabled }}\n  log_received_spans:\n    enabled: {{ or .Values.distributor.config.log_received_traces .Values.distributor.config.log_received_spans.enabled }}\n    include_all_attributes: {{ .Values.distributor.config.log_received_spans.include_all_attributes }}\n    filter_by_status_error: {{ .Values.distributor.config.log_received_spans.filter_by_status_error }}\n  {{- end }}\n  {{- if .Values.distributor.config.extend_writes }}\n  extend_writes: {{ .Values.distributor.config.extend_writes }}\n  {{- end }}\n  {{- if .Values.distributor.config.max_attribute_bytes }}\n  max_attribute_bytes: {{ .Values.distributor.config.max_attribute_bytes }}\n  {{- end }}\nquerier:\n  frontend_worker:\n    frontend_address: {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend-discovery\") }}:9095\n    {{- if .Values.querier.config.frontend_worker.grpc_client_config }}\n    grpc_client_config:\n      {{- toYaml .Values.querier.config.frontend_worker.grpc_client_config | nindent 6 }}\n    {{- end }}\n  trace_by_id:\n    query_timeout: {{ .Values.querier.config.trace_by_id.query_timeout }}\n  search:\n    query_timeout: {{ .Values.querier.config.search.query_timeout }}\n  max_concurrent_queries: {{ .Values.querier.config.max_concurrent_queries }}\nquery_frontend:\n  mcp_server:\n    enabled: {{ .Values.queryFrontend.mcp_server.enabled }}\n  max_outstanding_per_tenant: {{ .Values.queryFrontend.config.max_outstanding_per_tenant }}\n  max_retries: {{ .Values.queryFrontend.config.max_retries }}\n  search:\n    target_bytes_per_job: {{ .Values.queryFrontend.config.search.target_bytes_per_job }}\n    concurrent_jobs: {{ .Values.queryFrontend.config.search.concurrent_jobs }}\n    max_spans_per_span_set: {{ .Values.queryFrontend.config.search.max_spans_per_span_set }}\n  trace_by_id:\n    query_shards: {{ .Values.queryFrontend.config.trace_by_id.query_shards }}\n  metrics:\n    concurrent_jobs:  {{ .Values.queryFrontend.config.metrics.concurrent_jobs }}\n    target_bytes_per_job:  {{ .Values.queryFrontend.config.metrics.target_bytes_per_job }}\n    max_duration: {{ .Values.queryFrontend.config.metrics.max_duration }}\n    query_backend_after: {{ .Values.queryFrontend.config.metrics.query_backend_after }}\n    interval: {{ .Values.queryFrontend.config.metrics.interval }}\n    duration_slo: {{ .Values.queryFrontend.config.metrics.duration_slo }}\n    throughput_bytes_slo: {{ .Values.queryFrontend.config.metrics.throughput_bytes_slo }}\ningester:\n  lifecycler:\n    ring:\n      replication_factor: {{ .Values.ingester.config.replication_factor }}\n      {{- if .Values.ingester.zoneAwareReplication.enabled }}\n      zone_awareness_enabled: true\n      {{- end }}\n      kvstore:\n        store: memberlist\n    tokens_file_path: /var/tempo/tokens.json\n  {{- if .Values.ingester.config.trace_idle_period }}\n  trace_idle_period: {{ .Values.ingester.config.trace_idle_period }}\n  {{- end }}\n  {{- if .Values.ingester.config.flush_check_period }}\n  flush_check_period: {{ .Values.ingester.config.flush_check_period }}\n  {{- end }}\n  {{- if .Values.ingester.config.max_block_bytes }}\n  max_block_bytes: {{ .Values.ingester.config.max_block_bytes }}\n  {{- end }}\n  {{- if .Values.ingester.config.max_block_duration }}\n  max_block_duration: {{ .Values.ingester.config.max_block_duration }}\n  {{- end }}\n  {{- if .Values.ingester.config.complete_block_timeout }}\n  complete_block_timeout: {{ .Values.ingester.config.complete_block_timeout }}\n  {{- end }}\n  {{- if .Values.ingester.config.flush_all_on_shutdown }}\n  flush_all_on_shutdown: {{ .Values.ingester.config.flush_all_on_shutdown }}\n  {{- end }}\nmemberlist:\n  {{- with .Values.memberlist }}\n    {{- toYaml . | nindent 2 }}\n  {{- end }}\n  join_members:\n    - dns+{{ include \"tempo.fullname\" . }}-gossip-ring:{{ .Values.memberlist.bind_port }}\noverrides:\n  {{- toYaml .Values.overrides | nindent 2 }}\nserver:\n  http_listen_port: {{ .Values.server.httpListenPort }}\n  log_level: {{ .Values.server.logLevel }}\n  log_format: {{ .Values.server.logFormat }}\n  grpc_server_max_recv_msg_size: {{ .Values.server.grpc_server_max_recv_msg_size }}\n  grpc_server_max_send_msg_size: {{ .Values.server.grpc_server_max_send_msg_size }}\n  http_server_read_timeout: {{ .Values.server.http_server_read_timeout }}\n  http_server_write_timeout: {{ .Values.server.http_server_write_timeout }}\ncache:\n{{- toYaml .Values.cache | nindent 2}}\nstorage:\n  trace:\n    {{- if .Values.storage.trace.block.version }}\n    block:\n      version: {{.Values.storage.trace.block.version}}\n      {{- if .Values.storage.trace.block.dedicated_columns}}\n      parquet_dedicated_columns:\n        {{ .Values.storage.trace.block.dedicated_columns | toYaml | nindent 8}}\n      {{- end }}\n    {{- end }}\n    pool:\n      max_workers: {{ .Values.storage.trace.pool.max_workers }}\n      queue_depth: {{ .Values.storage.trace.pool.queue_depth }}\n    backend: {{.Values.storage.trace.backend}}\n    {{- if eq .Values.storage.trace.backend \"s3\"}}\n    s3:\n      {{- toYaml .Values.storage.trace.s3 | nindent 6}}\n    {{- end }}\n    {{- if eq .Values.storage.trace.backend \"gcs\"}}\n    gcs:\n      {{- toYaml .Values.storage.trace.gcs | nindent 6}}\n    {{- end }}\n    {{- if eq .Values.storage.trace.backend \"azure\"}}\n    azure:\n      {{- toYaml .Values.storage.trace.azure | nindent 6}}\n    {{- end }}\n    blocklist_poll: 5m\n    local:\n      path: /var/tempo/traces\n    wal:\n      path: /var/tempo/wal\n    search:\n      {{- toYaml .Values.storage.trace.search | nindent 6}}\n\n    {{- if .Values.storage.trace.blocklist_poll }}\n    blocklist_poll: {{ .Values.storage.trace.blocklist_poll }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_concurrency }}\n    blocklist_poll_concurrency: {{ .Values.storage.trace.blocklist_poll_concurrency }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_fallback }}\n    blocklist_poll_fallback: {{ .Values.storage.trace.blocklist_poll_fallback }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_tenant_index_builders }}\n    blocklist_poll_tenant_index_builders: {{ .Values.storage.trace.blocklist_poll_tenant_index_builders }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_stale_tenant_index }}\n    blocklist_poll_stale_tenant_index: {{ .Values.storage.trace.blocklist_poll_stale_tenant_index }}\n    {{- end }}\n    {{- if .Values.storage.trace.empty_tenant_deletion_age }}\n    empty_tenant_deletion_age: {{ .Values.storage.trace.empty_tenant_deletion_age }}\n    {{- end }}\n    {{- if .Values.storage.trace.empty_tenant_deletion_enabled }}\n    empty_tenant_deletion_enabled: {{ .Values.storage.trace.empty_tenant_deletion_enabled }}\n    {{- end }}\n",
+      "default": "multitenancy_enabled: {{ .Values.multitenancyEnabled }}\n\nstream_over_http_enabled: {{ .Values.streamOverHTTPEnabled }}\n\nusage_report:\n  reporting_enabled: {{ .Values.reportingEnabled }}\n\n{{- if .Values.enterprise.enabled }}\nlicense:\n  path: \"/license/license.jwt\"\n\nadmin_api:\n  leader_election:\n    enabled: true\n    ring:\n      kvstore:\n        store: \"memberlist\"\n\nauth:\n  type: enterprise\n\nhttp_api_prefix: {{get .Values.tempo.structuredConfig \"http_api_prefix\"}}\n\nadmin_client:\n  storage:\n    backend: {{.Values.storage.admin.backend}}\n    {{- if eq .Values.storage.admin.backend \"s3\"}}\n    s3:\n      {{- toYaml .Values.storage.admin.s3 | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"gcs\"}}\n    gcs:\n      {{- toYaml .Values.storage.admin.gcs | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"azure\"}}\n    azure:\n      {{- toYaml .Values.storage.admin.azure | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"swift\"}}\n    swift:\n      {{- toYaml .Values.storage.admin.swift | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"filesystem\"}}\n    filesystem:\n      {{- toYaml .Values.storage.admin.filesystem | nindent 6}}\n    {{- end}}\n{{- end }}\n\n{{- if and .Values.enterprise.enabled .Values.enterpriseGateway.useDefaultProxyURLs }}\ngateway:\n  proxy:\n    admin_api:\n      url: http://{{ template \"tempo.fullname\" . }}-admin-api.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    compactor:\n      url: http://{{ template \"tempo.fullname\" . }}-compactor.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    default:\n      url: http://{{ template \"tempo.fullname\" . }}-admin-api.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    distributor:\n      url: http://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n      otlp/grpc:\n        url: h2c://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:4317\n      otlp/http:\n        url: http://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:4318\n    ingester:\n      url: http://{{ template \"tempo.fullname\" . }}-ingester.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    querier:\n      url: http://{{ template \"tempo.fullname\" . }}-querier.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    query_frontend:\n      url: http://{{ template \"tempo.fullname\" . }}-query-frontend.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}{{get .Values.tempo.structuredConfig \"http_api_prefix\"}}\n{{else}}\n{{- if and .Values.enterprise.enabled .Values.enterpriseGateway.proxy }}\ngateway:\n  proxy: {{- toYaml .Values.enterpriseGateway.proxy | nindent 6 }}\n{{- end }}\n{{- end }}\n\ncompactor:\n  compaction:\n    block_retention: {{ .Values.compactor.config.compaction.block_retention }}\n    compacted_block_retention: {{ .Values.compactor.config.compaction.compacted_block_retention }}\n    compaction_window: {{ .Values.compactor.config.compaction.compaction_window }}\n    v2_in_buffer_bytes: {{ .Values.compactor.config.compaction.v2_in_buffer_bytes }}\n    v2_out_buffer_bytes: {{ .Values.compactor.config.compaction.v2_out_buffer_bytes }}\n    max_compaction_objects: {{ .Values.compactor.config.compaction.max_compaction_objects }}\n    max_block_bytes: {{ .Values.compactor.config.compaction.max_block_bytes }}\n    retention_concurrency: {{ .Values.compactor.config.compaction.retention_concurrency }}\n    v2_prefetch_traces_count: {{ .Values.compactor.config.compaction.v2_prefetch_traces_count }}\n    max_time_per_tenant: {{ .Values.compactor.config.compaction.max_time_per_tenant }}\n    compaction_cycle: {{ .Values.compactor.config.compaction.compaction_cycle }}\n  ring:\n    kvstore:\n      store: memberlist\n{{- if and .Values.enterprise.enabled .Values.enterpriseFederationFrontend.enabled }}\nfederation:\n  proxy_targets:\n    {{- toYaml .Values.enterpriseFederationFrontend.proxy_targets | nindent 6 }}\n{{- end }}\n{{- if .Values.metricsGenerator.enabled }}\nmetrics_generator:\n  ring:\n    kvstore:\n      store: memberlist\n  processor:\n    {{- toYaml .Values.metricsGenerator.config.processor | nindent 6 }}\n  storage:\n    {{- toYaml .Values.metricsGenerator.config.storage | nindent 6 }}\n  traces_storage:\n    {{- toYaml .Values.metricsGenerator.config.traces_storage | nindent 6 }}\n  registry:\n    {{- toYaml .Values.metricsGenerator.config.registry | nindent 6 }}\n  metrics_ingestion_time_range_slack: {{ .Values.metricsGenerator.config.metrics_ingestion_time_range_slack }}\n{{- end }}\ndistributor:\n  {{- if .Values.distributor.config.cost_attribution.enabled }}\n  usage:\n    cost_attribution:\n      enabled: {{ .Values.distributor.config.cost_attribution.enabled }}\n      max_cardinality: {{ .Values.distributor.config.cost_attribution.max_cardinality }}\n      stale_duration: {{ .Values.distributor.config.cost_attribution.stale_duration }}\n  {{- end }}\n  ring:\n    kvstore:\n      store: memberlist\n  receivers:\n    {{- if  or (.Values.traces.jaeger.thriftCompact.enabled) (.Values.traces.jaeger.thriftBinary.enabled) (.Values.traces.jaeger.thriftHttp.enabled) (.Values.traces.jaeger.grpc.enabled) }}\n    jaeger:\n      protocols:\n        {{- if .Values.traces.jaeger.thriftCompact.enabled }}\n        thrift_compact:\n          {{- $mergedJaegerThriftCompactConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:6831\") .Values.traces.jaeger.thriftCompact.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftCompactConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.thriftBinary.enabled }}\n        thrift_binary:\n          {{- $mergedJaegerThriftBinaryConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:6832\") .Values.traces.jaeger.thriftBinary.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftBinaryConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.thriftHttp.enabled }}\n        thrift_http:\n          {{- $mergedJaegerThriftHttpConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:14268\") .Values.traces.jaeger.thriftHttp.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftHttpConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.grpc.enabled }}\n        grpc:\n          {{- $mergedJaegerGrpcConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:14250\") .Values.traces.jaeger.grpc.receiverConfig }}\n          {{- toYaml $mergedJaegerGrpcConfig | nindent 10 }}\n        {{- end }}\n    {{- end }}\n    {{- if .Values.traces.zipkin.enabled }}\n    zipkin:\n      {{- $mergedZipkinReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:9411\") .Values.traces.zipkin.receiverConfig }}\n      {{- toYaml $mergedZipkinReceiverConfig | nindent 6 }}\n    {{- end }}\n    {{- if or (.Values.traces.otlp.http.enabled) (.Values.traces.otlp.grpc.enabled) }}\n    otlp:\n      protocols:\n        {{- if .Values.traces.otlp.http.enabled }}\n        http:\n          {{- $mergedOtlpHttpReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:4318\") .Values.traces.otlp.http.receiverConfig }}\n          {{- toYaml $mergedOtlpHttpReceiverConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.otlp.grpc.enabled }}\n        grpc:\n          {{- $mergedOtlpGrpcReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:4317\") .Values.traces.otlp.grpc.receiverConfig }}\n          {{- toYaml $mergedOtlpGrpcReceiverConfig | nindent 10 }}\n        {{- end }}\n    {{- end }}\n    {{- if .Values.traces.opencensus.enabled }}\n    opencensus:\n      {{- $mergedOpencensusReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:55678\") .Values.traces.opencensus.receiverConfig }}\n      {{- toYaml $mergedOpencensusReceiverConfig | nindent 6 }}\n    {{- end }}\n    {{- if .Values.traces.kafka }}\n    kafka:\n      {{- toYaml .Values.traces.kafka | nindent 6 }}\n    {{- end }}\n  {{- if .Values.distributor.config.log_discarded_spans.enabled }}\n  log_discarded_spans:\n    enabled: {{ .Values.distributor.config.log_discarded_spans.enabled }}\n    include_all_attributes: {{ .Values.distributor.config.log_discarded_spans.include_all_attributes }}\n    filter_by_status_error: {{ .Values.distributor.config.log_discarded_spans.filter_by_status_error }}\n  {{- end }}\n  {{- if or .Values.distributor.config.log_received_traces .Values.distributor.config.log_received_spans.enabled }}\n  log_received_spans:\n    enabled: {{ or .Values.distributor.config.log_received_traces .Values.distributor.config.log_received_spans.enabled }}\n    include_all_attributes: {{ .Values.distributor.config.log_received_spans.include_all_attributes }}\n    filter_by_status_error: {{ .Values.distributor.config.log_received_spans.filter_by_status_error }}\n  {{- end }}\n  {{- if .Values.distributor.config.extend_writes }}\n  extend_writes: {{ .Values.distributor.config.extend_writes }}\n  {{- end }}\n  {{- if .Values.distributor.config.max_attribute_bytes }}\n  max_attribute_bytes: {{ .Values.distributor.config.max_attribute_bytes }}\n  {{- end }}\nquerier:\n  frontend_worker:\n    frontend_address: {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend-discovery\") }}:9095\n    {{- if .Values.querier.config.frontend_worker.grpc_client_config }}\n    grpc_client_config:\n      {{- toYaml .Values.querier.config.frontend_worker.grpc_client_config | nindent 6 }}\n    {{- end }}\n  trace_by_id:\n    query_timeout: {{ .Values.querier.config.trace_by_id.query_timeout }}\n  search:\n    query_timeout: {{ .Values.querier.config.search.query_timeout }}\n  max_concurrent_queries: {{ .Values.querier.config.max_concurrent_queries }}\nquery_frontend:\n  {{- if not .Values.enterprise.enabled }}\n  mcp_server:\n    enabled: {{ .Values.queryFrontend.mcp_server.enabled }}\n  {{- end }}\n  max_outstanding_per_tenant: {{ .Values.queryFrontend.config.max_outstanding_per_tenant }}\n  max_retries: {{ .Values.queryFrontend.config.max_retries }}\n  search:\n    target_bytes_per_job: {{ .Values.queryFrontend.config.search.target_bytes_per_job }}\n    concurrent_jobs: {{ .Values.queryFrontend.config.search.concurrent_jobs }}\n    max_spans_per_span_set: {{ .Values.queryFrontend.config.search.max_spans_per_span_set }}\n  trace_by_id:\n    query_shards: {{ .Values.queryFrontend.config.trace_by_id.query_shards }}\n  metrics:\n    concurrent_jobs:  {{ .Values.queryFrontend.config.metrics.concurrent_jobs }}\n    target_bytes_per_job:  {{ .Values.queryFrontend.config.metrics.target_bytes_per_job }}\n    max_duration: {{ .Values.queryFrontend.config.metrics.max_duration }}\n    query_backend_after: {{ .Values.queryFrontend.config.metrics.query_backend_after }}\n    interval: {{ .Values.queryFrontend.config.metrics.interval }}\n    duration_slo: {{ .Values.queryFrontend.config.metrics.duration_slo }}\n    throughput_bytes_slo: {{ .Values.queryFrontend.config.metrics.throughput_bytes_slo }}\ningester:\n  lifecycler:\n    ring:\n      replication_factor: {{ .Values.ingester.config.replication_factor }}\n      {{- if .Values.ingester.zoneAwareReplication.enabled }}\n      zone_awareness_enabled: true\n      {{- end }}\n      kvstore:\n        store: memberlist\n    tokens_file_path: /var/tempo/tokens.json\n  {{- if .Values.ingester.config.trace_idle_period }}\n  trace_idle_period: {{ .Values.ingester.config.trace_idle_period }}\n  {{- end }}\n  {{- if .Values.ingester.config.flush_check_period }}\n  flush_check_period: {{ .Values.ingester.config.flush_check_period }}\n  {{- end }}\n  {{- if .Values.ingester.config.max_block_bytes }}\n  max_block_bytes: {{ .Values.ingester.config.max_block_bytes }}\n  {{- end }}\n  {{- if .Values.ingester.config.max_block_duration }}\n  max_block_duration: {{ .Values.ingester.config.max_block_duration }}\n  {{- end }}\n  {{- if .Values.ingester.config.complete_block_timeout }}\n  complete_block_timeout: {{ .Values.ingester.config.complete_block_timeout }}\n  {{- end }}\n  {{- if .Values.ingester.config.flush_all_on_shutdown }}\n  flush_all_on_shutdown: {{ .Values.ingester.config.flush_all_on_shutdown }}\n  {{- end }}\nmemberlist:\n  {{- with .Values.memberlist }}\n    {{- toYaml . | nindent 2 }}\n  {{- end }}\n  join_members:\n    - dns+{{ include \"tempo.fullname\" . }}-gossip-ring:{{ .Values.memberlist.bind_port }}\noverrides:\n  {{- toYaml .Values.overrides | nindent 2 }}\nserver:\n  http_listen_port: {{ .Values.server.httpListenPort }}\n  log_level: {{ .Values.server.logLevel }}\n  log_format: {{ .Values.server.logFormat }}\n  grpc_server_max_recv_msg_size: {{ .Values.server.grpc_server_max_recv_msg_size }}\n  grpc_server_max_send_msg_size: {{ .Values.server.grpc_server_max_send_msg_size }}\n  http_server_read_timeout: {{ .Values.server.http_server_read_timeout }}\n  http_server_write_timeout: {{ .Values.server.http_server_write_timeout }}\ncache:\n{{- toYaml .Values.cache | nindent 2}}\nstorage:\n  trace:\n    {{- if .Values.storage.trace.block.version }}\n    block:\n      version: {{.Values.storage.trace.block.version}}\n      {{- if .Values.storage.trace.block.dedicated_columns}}\n      parquet_dedicated_columns:\n        {{ .Values.storage.trace.block.dedicated_columns | toYaml | nindent 8}}\n      {{- end }}\n    {{- end }}\n    pool:\n      max_workers: {{ .Values.storage.trace.pool.max_workers }}\n      queue_depth: {{ .Values.storage.trace.pool.queue_depth }}\n    backend: {{.Values.storage.trace.backend}}\n    {{- if eq .Values.storage.trace.backend \"s3\"}}\n    s3:\n      {{- toYaml .Values.storage.trace.s3 | nindent 6}}\n    {{- end }}\n    {{- if eq .Values.storage.trace.backend \"gcs\"}}\n    gcs:\n      {{- toYaml .Values.storage.trace.gcs | nindent 6}}\n    {{- end }}\n    {{- if eq .Values.storage.trace.backend \"azure\"}}\n    azure:\n      {{- toYaml .Values.storage.trace.azure | nindent 6}}\n    {{- end }}\n    blocklist_poll: 5m\n    local:\n      path: /var/tempo/traces\n    wal:\n      path: /var/tempo/wal\n    search:\n      {{- toYaml .Values.storage.trace.search | nindent 6}}\n\n    {{- if .Values.storage.trace.blocklist_poll }}\n    blocklist_poll: {{ .Values.storage.trace.blocklist_poll }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_concurrency }}\n    blocklist_poll_concurrency: {{ .Values.storage.trace.blocklist_poll_concurrency }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_fallback }}\n    blocklist_poll_fallback: {{ .Values.storage.trace.blocklist_poll_fallback }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_tenant_index_builders }}\n    blocklist_poll_tenant_index_builders: {{ .Values.storage.trace.blocklist_poll_tenant_index_builders }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_stale_tenant_index }}\n    blocklist_poll_stale_tenant_index: {{ .Values.storage.trace.blocklist_poll_stale_tenant_index }}\n    {{- end }}\n    {{- if .Values.storage.trace.empty_tenant_deletion_age }}\n    empty_tenant_deletion_age: {{ .Values.storage.trace.empty_tenant_deletion_age }}\n    {{- end }}\n    {{- if .Values.storage.trace.empty_tenant_deletion_enabled }}\n    empty_tenant_deletion_enabled: {{ .Values.storage.trace.empty_tenant_deletion_enabled }}\n    {{- end }}\n",
       "required": [],
       "title": "config",
       "type": "string"
@@ -1528,6 +1544,22 @@
           "title": "podAnnotations",
           "type": "object"
         },
+        "podDisruptionBudget": {
+          "additionalProperties": true,
+          "description": "Pod Disruption Budget configuration",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable PodDisruptionBudget for distributor",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podDisruptionBudget",
+          "type": "object"
+        },
         "podLabels": {
           "additionalProperties": true,
           "description": "Labels for distributor pods",
@@ -1919,6 +1951,22 @@
           "description": "Annotations for federation-frontend pods",
           "required": [],
           "title": "podAnnotations",
+          "type": "object"
+        },
+        "podDisruptionBudget": {
+          "additionalProperties": true,
+          "description": "Pod Disruption Budget configuration",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable PodDisruptionBudget for enterprise-federation-frontend",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podDisruptionBudget",
           "type": "object"
         },
         "podLabels": {
@@ -2843,7 +2891,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "1.27-alpine",
+              "default": "1.29-alpine",
               "description": "The gateway image tag",
               "required": [],
               "title": "tag",
@@ -3008,7 +3056,7 @@
           "additionalProperties": true,
           "properties": {
             "file": {
-              "default": "worker_processes  5;  ## Default: 1\nerror_log  /dev/stderr;\npid        /tmp/nginx.pid;\nworker_rlimit_nofile 8192;\n\nevents {\n  worker_connections  4096;  ## Default: 1024\n}\n\nhttp {\n  client_body_temp_path /tmp/client_temp;\n  proxy_temp_path       /tmp/proxy_temp_path;\n  fastcgi_temp_path     /tmp/fastcgi_temp;\n  uwsgi_temp_path       /tmp/uwsgi_temp;\n  scgi_temp_path        /tmp/scgi_temp;\n\n  proxy_http_version    1.1;\n\n  default_type application/octet-stream;\n  log_format   {{ .Values.gateway.nginxConfig.logFormat }}\n\n  {{- if .Values.gateway.verboseLogging }}\n  access_log   /dev/stderr  main;\n  {{- else }}\n\n  map $status $loggable {\n    ~^[23]  0;\n    default 1;\n  }\n  access_log   /dev/stderr  main  if=$loggable;\n  {{- end }}\n\n  sendfile     on;\n  tcp_nopush   on;\n  {{- if .Values.gateway.nginxConfig.resolver }}\n  resolver {{ .Values.gateway.nginxConfig.resolver }};\n  {{- else }}\n  resolver {{ .Values.global.dnsService }}.{{ .Values.global.dnsNamespace }}.svc.{{ .Values.global.clusterDomain }};\n  {{- end }}\n\n  {{- with .Values.gateway.nginxConfig.httpSnippet }}\n  {{ . | nindent 2 }}\n  {{- end }}\n\n  server {\n    listen             8080;\n\n    {{- if .Values.gateway.basicAuth.enabled }}\n    auth_basic           \"Tempo\";\n    auth_basic_user_file /etc/nginx/secrets/.htpasswd;\n    {{- end }}\n\n    location = / {\n      return 200 'OK';\n      auth_basic off;\n    }\n\n    location = /jaeger/api/traces {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:14268/api/traces;\n    }\n\n    location = /zipkin/spans {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:9411/spans;\n    }\n\n    location = /v1/traces {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:4318/v1/traces;\n    }\n\n    location = /otlp/v1/traces {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:4318/v1/traces;\n    }\n\n    location ^~ /api {\n      set $query_frontend {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$query_frontend:3200$request_uri;\n    }\n\n    location = /flush {\n      set $ingester {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"ingester\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$ingester:3200$request_uri;\n    }\n\n    location = /shutdown {\n      set $ingester {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"ingester\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$ingester:3200$request_uri;\n    }\n\n    location = /distributor/ring {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:3200$request_uri;\n    }\n\n    location = /ingester/ring {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:3200$request_uri;\n    }\n\n    location = /compactor/ring {\n      set $compactor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"compactor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$compactor:3200$request_uri;\n    }\n\n    {{- with .Values.gateway.nginxConfig.serverSnippet }}\n    {{ . | nindent 4 }}\n    {{- end }}\n  }\n\n  {{- if .Values.traces.otlp.grpc.enabled }}\n  # OTLP gRPC\n  server {\n    listen               {{ .Values.traces.otlp.grpc.port }} http2;\n\n    {{- if .Values.gateway.basicAuth.enabled }}\n    auth_basic           \"Tempo\";\n    auth_basic_user_file /etc/nginx/secrets/.htpasswd;\n    {{- end }}\n\n    location = /opentelemetry.proto.collector.trace.v1.TraceService/Export {\n      grpc_pass          grpc://{{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}:{{ .Values.traces.otlp.grpc.port }};\n    }\n\n    location ~ /opentelemetry {\n      grpc_pass          grpc://{{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}:{{ .Values.traces.otlp.grpc.port }};\n    }\n\n    {{- with .Values.gateway.nginxConfig.serverSnippet }}\n    {{ . | nindent 4 }}\n    {{- end }}\n  }\n  {{- end }}\n}\n",
+              "default": "worker_processes  5;  ## Default: 1\nerror_log  /dev/stderr;\npid        /tmp/nginx.pid;\nworker_rlimit_nofile 8192;\n\nevents {\n  worker_connections  4096;  ## Default: 1024\n}\n\nhttp {\n  client_body_temp_path /tmp/client_temp;\n  proxy_temp_path       /tmp/proxy_temp_path;\n  fastcgi_temp_path     /tmp/fastcgi_temp;\n  uwsgi_temp_path       /tmp/uwsgi_temp;\n  scgi_temp_path        /tmp/scgi_temp;\n\n  proxy_http_version    1.1;\n\n  default_type application/octet-stream;\n  log_format   {{ .Values.gateway.nginxConfig.logFormat }}\n\n  {{- if .Values.gateway.verboseLogging }}\n  access_log   /dev/stderr  main;\n  {{- else }}\n\n  map $status $loggable {\n    ~^[23]  0;\n    default 1;\n  }\n  access_log   /dev/stderr  main  if=$loggable;\n  {{- end }}\n\n  sendfile     on;\n  tcp_nopush   on;\n  {{- if .Values.gateway.nginxConfig.resolver }}\n  resolver {{ .Values.gateway.nginxConfig.resolver }};\n  {{- else }}\n  resolver {{ .Values.global.dnsService }}.{{ .Values.global.dnsNamespace }}.svc.{{ .Values.global.clusterDomain }};\n  {{- end }}\n\n  {{- with .Values.gateway.nginxConfig.httpSnippet }}\n  {{ . | nindent 2 }}\n  {{- end }}\n\n  server {\n    listen             8080;\n\n    {{- if .Values.streamOverHTTPEnabled }}\n    http2 on;\n    location /tempopb.StreamingQuerier/ {\n      set $query_frontend {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      grpc_pass   grpc://$query_frontend:3200;\n    }\n    {{- end }}\n\n    {{- if .Values.gateway.basicAuth.enabled }}\n    auth_basic           \"Tempo\";\n    auth_basic_user_file /etc/nginx/secrets/.htpasswd;\n    {{- end }}\n\n    location = / {\n      return 200 'OK';\n      auth_basic off;\n    }\n\n    location = /jaeger/api/traces {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:14268/api/traces;\n    }\n\n    location = /zipkin/spans {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:9411/spans;\n    }\n\n    location = /v1/traces {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:4318/v1/traces;\n    }\n\n    location = /otlp/v1/traces {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:4318/v1/traces;\n    }\n\n    location ^~ /api {\n      set $query_frontend {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$query_frontend:3200$request_uri;\n    }\n\n    location = /flush {\n      set $ingester {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"ingester\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$ingester:3200$request_uri;\n    }\n\n    location = /shutdown {\n      set $ingester {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"ingester\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$ingester:3200$request_uri;\n    }\n\n    location = /distributor/ring {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:3200$request_uri;\n    }\n\n    location = /ingester/ring {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:3200$request_uri;\n    }\n\n    location = /compactor/ring {\n      set $compactor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"compactor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$compactor:3200$request_uri;\n    }\n\n    {{- with .Values.gateway.nginxConfig.serverSnippet }}\n    {{ . | nindent 4 }}\n    {{- end }}\n  }\n\n  {{- if .Values.traces.otlp.grpc.enabled }}\n  # OTLP gRPC\n  server {\n    listen               {{ .Values.traces.otlp.grpc.port }} http2;\n\n    {{- if .Values.gateway.basicAuth.enabled }}\n    auth_basic           \"Tempo\";\n    auth_basic_user_file /etc/nginx/secrets/.htpasswd;\n    {{- end }}\n\n    location = /opentelemetry.proto.collector.trace.v1.TraceService/Export {\n      grpc_pass          grpc://{{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}:{{ .Values.traces.otlp.grpc.port }};\n    }\n\n    location ~ /opentelemetry {\n      grpc_pass          grpc://{{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}:{{ .Values.traces.otlp.grpc.port }};\n    }\n\n    {{- with .Values.gateway.nginxConfig.serverSnippet }}\n    {{ . | nindent 4 }}\n    {{- end }}\n  }\n  {{- end }}\n}\n",
               "description": "Config file contents for Nginx. Passed through the `tpl` function to allow templating",
               "required": [],
               "title": "file",
@@ -3059,6 +3107,22 @@
           "description": "Annotations for gateway pods",
           "required": [],
           "title": "podAnnotations",
+          "type": "object"
+        },
+        "podDisruptionBudget": {
+          "additionalProperties": true,
+          "description": "Pod Disruption Budget configuration",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable PodDisruptionBudget for gateway",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podDisruptionBudget",
           "type": "object"
         },
         "podLabels": {
@@ -3363,6 +3427,13 @@
       "title": "hostAliases",
       "type": "array"
     },
+    "hostNetwork": {
+      "default": false,
+      "description": "Enable or disable the use of host networking for the pod.\nWhen true, the pod will use the node's network namespace",
+      "required": [],
+      "title": "hostNetwork",
+      "type": "boolean"
+    },
     "ignoreChartChecksums": {
       "default": false,
       "description": "# Typically the deployment/statefulset includes checksums of secrets/config,\n# So that when these change on a subsequent helm install, the deployment/statefulset\n# is restarted. This can result in unnecessary restarts under GitOps tooling such as\n# flux, so set to \"true\" to disable this behaviour.",
@@ -3391,7 +3462,7 @@
           "type": "array"
         },
         "registry": {
-          "default": "",
+          "default": "docker.io",
           "description": "Image registry",
           "required": [],
           "title": "registry",
@@ -3691,6 +3762,13 @@
               "title": "annotations",
               "type": "object"
             },
+            "enableStatefulSetRecreationForSizeChange": {
+              "default": false,
+              "description": "Enable StatefulSetRecreation for changes to PVC size",
+              "required": [],
+              "title": "enableStatefulSetRecreationForSizeChange",
+              "type": "boolean"
+            },
             "enabled": {
               "default": false,
               "description": "Enable creating PVCs which is required when using boltdb-shipper",
@@ -3765,6 +3843,22 @@
           "description": "Annotations for ingester pods",
           "required": [],
           "title": "podAnnotations",
+          "type": "object"
+        },
+        "podDisruptionBudget": {
+          "additionalProperties": true,
+          "description": "Pod Disruption Budget configuration",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable PodDisruptionBudget for ingester",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podDisruptionBudget",
           "type": "object"
         },
         "podLabels": {
@@ -4876,6 +4970,22 @@
           "title": "podAnnotations",
           "type": "object"
         },
+        "podDisruptionBudget": {
+          "additionalProperties": true,
+          "description": "Pod Disruption Budget configuration",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable PodDisruptionBudget for memcached",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podDisruptionBudget",
+          "type": "object"
+        },
         "podLabels": {
           "additionalProperties": true,
           "description": "Labels for memcached pods",
@@ -5808,6 +5918,13 @@
               "title": "annotations",
               "type": "object"
             },
+            "enableStatefulSetRecreationForSizeChange": {
+              "default": false,
+              "description": "Enable StatefulSetRecreation for changes to PVC size.\nThis means that the StatefulSet will be deleted, recreated (with the same name) and rolled when a change to the\nPVC size is detected. That way the PVC can be resized without manual intervention.",
+              "required": [],
+              "title": "enableStatefulSetRecreationForSizeChange",
+              "type": "boolean"
+            },
             "enabled": {
               "default": false,
               "description": "Enable creating PVCs if you have kind set to StatefulSet. This disables using local disk or memory configured in walEmptyDir",
@@ -5874,6 +5991,22 @@
           "description": "Annotations for metrics-generator pods",
           "required": [],
           "title": "podAnnotations",
+          "type": "object"
+        },
+        "podDisruptionBudget": {
+          "additionalProperties": true,
+          "description": "Pod Disruption Budget configuration",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable PodDisruptionBudget for metrics-generator",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podDisruptionBudget",
           "type": "object"
         },
         "podLabels": {
@@ -6924,6 +7057,22 @@
           "title": "podAnnotations",
           "type": "object"
         },
+        "podDisruptionBudget": {
+          "additionalProperties": true,
+          "description": "Pod Disruption Budget configuration",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable PodDisruptionBudget for querier",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podDisruptionBudget",
+          "type": "object"
+        },
         "podLabels": {
           "additionalProperties": true,
           "description": "Labels for querier pods",
@@ -7448,6 +7597,22 @@
           "description": "Annotations for query-frontend pods",
           "required": [],
           "title": "podAnnotations",
+          "type": "object"
+        },
+        "podDisruptionBudget": {
+          "additionalProperties": true,
+          "description": "Pod Disruption Budget configuration",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable PodDisruptionBudget for query-frontend",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podDisruptionBudget",
           "type": "object"
         },
         "podLabels": {
@@ -8319,6 +8484,13 @@
       "title": "storage",
       "type": "object"
     },
+    "streamOverHTTPEnabled": {
+      "default": false,
+      "description": "Enable streaming over HTTP for tempo and Tempo gateway(nginx)",
+      "required": [],
+      "title": "streamOverHTTPEnabled",
+      "type": "boolean"
+    },
     "tempo": {
       "additionalProperties": true,
       "properties": {
@@ -9097,6 +9269,13 @@
           "required": [],
           "title": "failurePolicy",
           "type": "string"
+        },
+        "objectSelector": {
+          "additionalProperties": true,
+          "description": "objectSelector to filter which objects the webhooks apply to.",
+          "required": [],
+          "title": "objectSelector",
+          "type": "object"
         },
         "selfSignedCertSecretName": {
           "default": "certificate",

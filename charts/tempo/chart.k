@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "tempo-distributed"
     repoURL : str, required, default is "https://grafana.github.io/helm-charts"
-    targetRevision : str, optional, default is "1.57.1"
+    targetRevision : str, optional, default is "1.61.3"
     """
     values?: Values | any
     chart: str = "tempo-distributed"
     repoURL: str = "https://grafana.github.io/helm-charts"
-    targetRevision?: str = "1.57.1"
+    targetRevision?: str = "1.61.3"
 
