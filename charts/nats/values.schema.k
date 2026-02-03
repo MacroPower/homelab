@@ -207,6 +207,11 @@ schema ValuesConfigCluster:
     merge : ValuesConfigClusterMerge, optional
         merge or patch the cluster config
         https://docs.nats.io/running-a-nats-service/configuration/clustering/cluster_config
+    noAdvertise : bool, optional, default is True
+        set to false to allow cluster nodes to advertise their addresses
+        so that clients can reconnect without extra DNS lookups.
+        Note: in case clients have external connectivity make sure to define the `advertise` section as well.
+        If clients are behind a load balancer it is best to leave this as is.
     patch : [any], optional
     port : int, optional, default is 6222
     replicas : int, optional, default is 3
@@ -218,6 +223,7 @@ schema ValuesConfigCluster:
     [...str]: any
     enabled?: bool
     merge?: ValuesConfigClusterMerge
+    noAdvertise?: bool
     patch?: [any]
     port?: int
     replicas?: int
@@ -953,7 +959,7 @@ schema ValuesContainerImage:
     pullPolicy : any, optional, default is ""
     registry : any, optional, default is ""
     repository : str, optional, default is "nats"
-    tag : str, optional, default is "2.11.10-alpine"
+    tag : str, optional, default is "2.12.4-alpine"
     """
     [...str]: any
     digest?: any
@@ -1203,7 +1209,7 @@ schema ValuesNatsBoxContainerImage:
     registry : any, optional, default is ""
     repository : str, optional, default is "natsio/nats-box"
     resources : ValuesNatsBoxContainerImageResources, optional
-    tag : str, optional, default is "0.19.2"
+    tag : str, optional, default is "0.19.3"
     """
     [...str]: any
     digest?: any
@@ -1485,9 +1491,10 @@ schema ValuesPodTemplate:
 
     Attributes
     ----------
-    configChecksumAnnotation : bool, optional, default is True
+    configChecksumAnnotation : bool, optional, default is False
         adds a hash of the ConfigMap as a pod annotation
         this will cause the StatefulSet to roll when the ConfigMap is updated
+        set to true to force pod rollouts on config changes instead of using the reloader for hot updates
     merge : ValuesPodTemplateMerge, optional
         merge or patch the pod template
         https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#pod-v1-core
@@ -1579,7 +1586,7 @@ schema ValuesPromExporterImage:
     pullPolicy : any, optional, default is ""
     registry : any, optional, default is ""
     repository : str, optional, default is "natsio/prometheus-nats-exporter"
-    tag : str, optional, default is "0.17.3"
+    tag : str, optional, default is "0.18.0"
     """
     [...str]: any
     digest?: any
@@ -1670,7 +1677,7 @@ schema ValuesReloaderImage:
     pullPolicy : any, optional, default is ""
     registry : any, optional, default is ""
     repository : str, optional, default is "natsio/nats-server-config-reloader"
-    tag : str, optional, default is "0.20.1"
+    tag : str, optional, default is "0.21.1"
     """
     [...str]: any
     digest?: any
