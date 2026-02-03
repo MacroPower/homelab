@@ -128,7 +128,7 @@
       "additionalProperties": true,
       "properties": {
         "digest": {
-          "default": "sha256:44548375366edbc8ffaa04e9f0087b939de45aaddad4493fb8b7216d3a8ad572",
+          "default": "sha256:82f5dd969ed74e3a9cfd6284045099a161778a0d85f9e01a234a62f15eb9d696",
           "description": "Image digest.",
           "required": [],
           "title": "digest",
@@ -607,13 +607,6 @@
           "required": [],
           "title": "registryFilters",
           "type": "array"
-        },
-        "resolveLatestTag": {
-          "default": true,
-          "description": "When true latest tags will be resolved to digests.",
-          "required": [],
-          "title": "resolveLatestTag",
-          "type": "boolean"
         },
         "resolveTags": {
           "default": true,

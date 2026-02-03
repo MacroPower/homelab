@@ -180,7 +180,7 @@ schema ValuesImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:44548375366edbc8ffaa04e9f0087b939de45aaddad4493fb8b7216d3a8ad572"
+    digest : str, optional, default is "sha256:82f5dd969ed74e3a9cfd6284045099a161778a0d85f9e01a234a62f15eb9d696"
         Image digest.
     pullPolicy : str, optional, default is "IfNotPresent"
         Image Pull Policy.
@@ -496,8 +496,6 @@ schema ValuesSpegel:
         When true existing mirror configuration will be kept and Spegel will prepend it's configuration.
     registryFilters : [any], optional
         Regular expressions to filter out tags/registries. If empty, all registries/tags are resolved.
-    resolveLatestTag : bool, optional, default is True
-        When true latest tags will be resolved to digests.
     resolveTags : bool, optional, default is True
         When true Spegel will resolve tags to digests.
     """
@@ -515,7 +513,6 @@ schema ValuesSpegel:
     mirroredRegistries?: [any]
     prependExisting?: bool
     registryFilters?: [any]
-    resolveLatestTag?: bool
     resolveTags?: bool
 
 schema ValuesTolerationsItems0:
