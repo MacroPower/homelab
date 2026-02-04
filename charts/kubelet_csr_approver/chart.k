@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "kubelet-csr-approver"
     repoURL : str, required, default is "https://postfinance.github.io/kubelet-csr-approver"
-    targetRevision : str, optional, default is "1.2.12"
+    targetRevision : str, optional, default is "1.2.13"
     """
     values?: Values | any
     chart: str = "kubelet-csr-approver"
     repoURL: str = "https://postfinance.github.io/kubelet-csr-approver"
-    targetRevision?: str = "1.2.12"
+    targetRevision?: str = "1.2.13"
 
