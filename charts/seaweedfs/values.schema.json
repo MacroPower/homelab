@@ -2949,6 +2949,13 @@
           "title": "httpsPort",
           "type": "integer"
         },
+        "icebergPort": {
+          "default": "null",
+          "description": "Iceberg catalog REST port (Apache Iceberg REST Catalog API)\nSet to a port number to enable, or 0/null to disable",
+          "required": [],
+          "title": "icebergPort",
+          "type": "null"
+        },
         "imageOverride": {
           "default": "null",
           "required": [],

@@ -2165,6 +2165,9 @@ schema ValuesS3:
     extraVolumes : str, optional, default is ""
     httpsPort : int, optional, default is 0
         add additional https port
+    icebergPort : any, optional, default is "null"
+        Iceberg catalog REST port (Apache Iceberg REST Catalog API)
+        Set to a port number to enable, or 0/null to disable
     imageOverride : any, optional, default is "null"
     ingress : ValuesS3Ingress, optional
     initContainers : str, optional, default is ""
@@ -2241,6 +2244,7 @@ schema ValuesS3:
     extraVolumeMounts?: str
     extraVolumes?: str
     httpsPort?: int
+    icebergPort?: any
     imageOverride?: any
     ingress?: ValuesS3Ingress
     initContainers?: str
