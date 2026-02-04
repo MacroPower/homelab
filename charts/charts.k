@@ -4,7 +4,7 @@ charts: helm.Charts = {
     kubelet_csr_approver: {
         chart = "kubelet-csr-approver"
         repoURL = "https://postfinance.github.io/kubelet-csr-approver"
-        targetRevision = "1.2.12"
+        targetRevision = "1.2.13"
         schemaGenerator = "AUTO"
     }
     cilium: {
