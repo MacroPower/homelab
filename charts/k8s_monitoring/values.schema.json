@@ -1313,17 +1313,82 @@
         },
         "extraDiscoveryRules": {
           "default": "",
-          "description": "Rule blocks to be added to the discovery.relabel component for Beyla.\nThese relabeling rules are applied pre-scrape against the targets from service discovery.\nBefore the scrape, any remaining target labels that start with __ (i.e. __meta_kubernetes*) are dropped.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/discovery.relabel/#rule-block))",
+          "description": "Rule blocks to be added to the discovery.relabel component for Beyla.\nThese relabeling rules are applied pre-scrape against the targets from service discovery.\nBefore the scrape, any remaining target labels that start with __ (i.e. __meta_kubernetes*) are dropped.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/discovery/discovery.relabel/#rule-block))",
           "required": [],
           "title": "extraDiscoveryRules",
           "type": "string"
         },
         "extraMetricProcessingRules": {
           "default": "",
-          "description": "Rule blocks to be added to the prometheus.relabel component for Beyla. ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus.relabel/#rule-block))\nThese relabeling rules are applied post-scrape against the metrics returned from the scraped target, no __meta* labels are present.",
+          "description": "Rule blocks to be added to the prometheus.relabel component for Beyla. ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#rule-block))\nThese relabeling rules are applied post-scrape against the metrics returned from the scraped target, no __meta* labels are present.",
           "required": [],
           "title": "extraMetricProcessingRules",
           "type": "string"
+        },
+        "k8sCache": {
+          "additionalProperties": true,
+          "description": "Beyla Kubernetes cache settings.",
+          "properties": {
+            "replicas": {
+              "default": 1,
+              "description": "Use 1 replica per 50 nodes as a starting point.",
+              "required": [],
+              "title": "replicas",
+              "type": "integer"
+            },
+            "resources": {
+              "additionalProperties": true,
+              "properties": {
+                "limits": {
+                  "additionalProperties": true,
+                  "description": "Generous limits to allow for startup spike.",
+                  "properties": {
+                    "cpu": {
+                      "default": "3.0",
+                      "required": [],
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "2Gi",
+                      "required": [],
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "cpu": {
+                      "default": "0.1",
+                      "required": [],
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "256Mi",
+                      "required": [],
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "k8sCache",
+          "type": "object"
         },
         "labelMatchers": {
           "additionalProperties": true,
@@ -1342,7 +1407,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for the prometheus.relabel component for Beyla.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus.relabel/#arguments))\nOverrides metrics.maxCacheSize",
+          "description": "Sets the max_cache_size for the prometheus.relabel component for Beyla.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides metrics.maxCacheSize",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -2070,6 +2135,13 @@
               "required": [],
               "title": "labels",
               "type": "array"
+            },
+            "overrides": {
+              "additionalProperties": true,
+              "description": "Add overrides for keys in the log body.\nExample: `overrides: { \"service_key\": \"service.name\" }`",
+              "required": [],
+              "title": "overrides",
+              "type": "object"
             },
             "process": {
               "default": false,
@@ -3102,6 +3174,22 @@
       "title": "crds",
       "type": "object"
     },
+    "cri": {
+      "additionalProperties": true,
+      "description": "CRI stage processing settings.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/loki/loki.process/#stagecri))",
+      "properties": {
+        "maxPartialLines": {
+          "default": 100,
+          "description": "Maximum number of partial lines to hold in memory before forcing a merge.\nIncrease this value if logs are being lost due to partial line limits.",
+          "required": [],
+          "title": "maxPartialLines",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "cri",
+      "type": "object"
+    },
     "customLabels": {
       "additionalProperties": true,
       "description": "# Additional labels to add to all resources",
@@ -3169,6 +3257,30 @@
           "required": [],
           "title": "allowUpdatePerformanceSchemaSettings",
           "type": "boolean"
+        },
+        "cloudProvider": {
+          "additionalProperties": true,
+          "description": "Cloud provider configuration for the database.",
+          "properties": {
+            "aws": {
+              "additionalProperties": true,
+              "description": "AWS configuration.",
+              "properties": {
+                "arn": {
+                  "description": "ARN of the AWS RDS instance.",
+                  "required": [],
+                  "title": "arn",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "aws",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "cloudProvider",
+          "type": "object"
         },
         "collectors": {
           "additionalProperties": true,
@@ -3394,6 +3506,13 @@
       "title": "dcgm-exporter",
       "type": "object"
     },
+    "defaultLogFormat": {
+      "default": "cri",
+      "description": "Default parsing format if it cannot be determined from container UID. Options are `null`, `cri`, or `docker`.",
+      "required": [],
+      "title": "defaultLogFormat",
+      "type": "string"
+    },
     "deployAsConfigMap": {
       "default": false,
       "required": [],
@@ -3424,8 +3543,8 @@
       "type": "object"
     },
     "dnsPolicy": {
-      "default": "ClusterFirst",
-      "description": "# dnsPolicy allows to change the default DNS configuration for the pod\n# Ref: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy",
+      "default": "",
+      "description": "DNS policy for prometheus-node-exporter pods\nWhen hostNetwork is true, you typically want \"Default\" or \"ClusterFirstWithHostNet\"\nRef: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy",
       "required": [],
       "title": "dnsPolicy",
       "type": "string"
@@ -3503,6 +3622,13 @@
           "title": "namespaces",
           "type": "array"
         },
+        "sampleRate": {
+          "default": 19,
+          "description": "Sample rate for eBPF profiling. This controls how frequently samples are collected.",
+          "required": [],
+          "title": "sampleRate",
+          "type": "integer"
+        },
         "targetingScheme": {
           "default": "annotation",
           "description": "How to target pods for collecting profiles with eBPF. Options are `all` and `annotation`. If using `all`, all\nKubernetes pods will be targeted for collecting profiles, and you can exclude certain pods by setting the\n`profiles.grafana.com/cpu.ebpf.enabled=\"false\"` annotation on that pod. If using `annotation`, only pods with the\n`profiles.grafana.com/cpu.ebpf.enabled=\"true\"` annotation will have profiles collected with eBPF.",
@@ -3522,6 +3648,7 @@
       "type": "string"
     },
     "enabled": {
+      "default": true,
       "description": "Enable this Alloy instance.",
       "required": [],
       "title": "enabled",
@@ -3599,12 +3726,86 @@
     },
     "exporter": {
       "additionalProperties": true,
-      "description": "Settings for the Alloy embedded MySQL Exporter",
+      "description": "Settings for the Alloy embedded PostgreSQL Exporter",
       "properties": {
+        "autoDiscovery": {
+          "additionalProperties": true,
+          "properties": {
+            "databaseAllowList": {
+              "description": "List of databases to filter out, meaning all other databases will be scraped.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "databaseAllowList",
+              "type": "array"
+            },
+            "databaseDenyList": {
+              "description": "Whether to automatically discover other databases.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "databaseDenyList",
+              "type": "array"
+            },
+            "enabled": {
+              "description": "Whether to automatically discover other databases.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "autoDiscovery",
+          "type": "object"
+        },
         "collectors": {
           "additionalProperties": true,
-          "description": "The list of collectors to enable for the MySQL Exporter ([Documentation](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.exporter.mysql/#supported-collectors)).\nThis used to be a list of collector names. This format is still supported, but the new format will allow for\ncustomization.\ncollectors: [\"heartbeat\", \"mysql.user\"]",
+          "description": "The list of collectors to enable for the PostgreSQL Exporter\n([Documentation](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.exporter.postgres/#supported-collectors)).\nThis used to be a list of collector names. This format is still supported, but the new format will allow for\ncustomization.\ncollectors: [\"heartbeat\", \"PostgreSQL.user\"]",
           "properties": {
+            "buffercacheSummary": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the buffercache_summary collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "buffercacheSummary",
+              "type": "object"
+            },
+            "database": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the database collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "database",
+              "type": "object"
+            },
+            "databaseWraparound": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the database_wraparound collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "databaseWraparound",
+              "type": "object"
+            },
             "heartbeat": {
               "additionalProperties": true,
               "properties": {
@@ -3629,6 +3830,34 @@
               },
               "required": [],
               "title": "heartbeat",
+              "type": "object"
+            },
+            "locks": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the locks collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "locks",
+              "type": "object"
+            },
+            "longRunningTransactions": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the long_running_transactions collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "longRunningTransactions",
               "type": "object"
             },
             "mysqlUser": {
@@ -3664,15 +3893,257 @@
               "required": [],
               "title": "perfSchemaEventsStatements",
               "type": "object"
+            },
+            "postmaster": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the postmaster collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "postmaster",
+              "type": "object"
+            },
+            "processIdle": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the process_idle collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "processIdle",
+              "type": "object"
+            },
+            "replication": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the replication collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "replication",
+              "type": "object"
+            },
+            "replicationSlot": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the replication_slot collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "replicationSlot",
+              "type": "object"
+            },
+            "statActivityAutovacuum": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the stat_activity_autovacuum collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "statActivityAutovacuum",
+              "type": "object"
+            },
+            "statBGWriter": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the stat_bgwriter collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "statBGWriter",
+              "type": "object"
+            },
+            "statCheckpointer": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the stat_checkpointer collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "statCheckpointer",
+              "type": "object"
+            },
+            "statDatabase": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the stat_database collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "statDatabase",
+              "type": "object"
+            },
+            "statProgressVacuum": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the stat_progress_vacuum collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "statProgressVacuum",
+              "type": "object"
+            },
+            "statStatements": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the stat_statements collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "includeQuery": {
+                  "description": "Enable the selection of query ID and SQL statement.",
+                  "required": [],
+                  "title": "includeQuery",
+                  "type": "boolean"
+                },
+                "queryLength": {
+                  "description": "Maximum length of the statement query text.",
+                  "required": [],
+                  "title": "queryLength",
+                  "type": "null"
+                }
+              },
+              "required": [],
+              "title": "statStatements",
+              "type": "object"
+            },
+            "statUserTables": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the stat_user_tables collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "statUserTables",
+              "type": "object"
+            },
+            "statWALReceiver": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the stat_wal_receiver collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "statWALReceiver",
+              "type": "object"
+            },
+            "statioUserIndexes": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the statio_user_indexes collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "statioUserIndexes",
+              "type": "object"
+            },
+            "statioUserTables": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the statio_user_tables collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "statioUserTables",
+              "type": "object"
+            },
+            "wal": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the wal collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "wal",
+              "type": "object"
+            },
+            "xlogLocation": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "description": "Enable the xlog_location collector.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "xlogLocation",
+              "type": "object"
             }
           },
           "required": [],
           "title": "collectors",
           "type": "object"
         },
+        "customQueriesConfigPath": {
+          "description": "Path to YAML file containing custom queries to expose as metrics.",
+          "required": [],
+          "title": "customQueriesConfigPath",
+          "type": "string"
+        },
         "dataSource": {
           "additionalProperties": true,
-          "description": "The data source to use for the MySQL Exporter.",
+          "description": "The data source to use for the PostgreSQL Exporter.",
           "properties": {
             "allowFallbackToPlaintext": {
               "description": "The TLS setting to use. Options are none, \"true\", \"false\", \"skip-verify\", \"preferred\". See the\n[driver documentation](https://github.com/go-sql-driver/mysql#tls) for details.",
@@ -3684,7 +4155,7 @@
               "additionalProperties": true,
               "properties": {
                 "password": {
-                  "description": "The password to use for the MySQL connection.",
+                  "description": "The password to use for the PostgreSQL connection.",
                   "required": [],
                   "title": "password",
                   "type": "string"
@@ -3702,7 +4173,7 @@
                   "type": "string"
                 },
                 "username": {
-                  "description": "The username to use for the MySQL connection.",
+                  "description": "The username to use for the PostgreSQL connection.",
                   "required": [],
                   "title": "username",
                   "type": "string"
@@ -3724,22 +4195,34 @@
               "title": "auth",
               "type": "object"
             },
+            "database": {
+              "description": "The PostgreSQL database to access.",
+              "required": [],
+              "title": "database",
+              "type": "string"
+            },
             "host": {
-              "description": "The MySQL host to connect to.",
+              "description": "The PostgreSQL host to connect to.",
               "required": [],
               "title": "host",
               "type": "string"
             },
             "port": {
-              "description": "The MySQL port to connect to.",
+              "description": "The PostgreSQL port to connect to.",
               "required": [],
               "title": "port",
               "type": "integer"
             },
             "protocol": {
-              "description": "The MySQL protocol type.",
+              "description": "The PostgreSQL protocol type.",
               "required": [],
               "title": "protocol",
+              "type": "string"
+            },
+            "sslmode": {
+              "description": "The SSL mode setting to use. Options are none, \"verify-full\", \"verify-ca\", \"require\", \"prefer\", \"allow\", and\n\"disable\". See the [documentation](https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-PROTECTION)\nfor details.",
+              "required": [],
+              "title": "sslmode",
               "type": "string"
             },
             "tls": {
@@ -3754,10 +4237,28 @@
           "type": "object"
         },
         "dataSourceName": {
-          "description": "The data source string to use for the MySQL Exporter.",
+          "description": "The data source string to use for the PostgreSQL Exporter.",
           "required": [],
           "title": "dataSourceName",
           "type": "string"
+        },
+        "dataSourceNameFrom": {
+          "description": "The raw access for the data source string to use for the PostgreSQL Exporter. Use this to get the data source\nfrom other Alloy components.",
+          "required": [],
+          "title": "dataSourceNameFrom",
+          "type": "string"
+        },
+        "disableDefaultMetrics": {
+          "description": "When true, only exposes metrics supplied from `customQueriesConfigPath`.",
+          "required": [],
+          "title": "disableDefaultMetrics",
+          "type": "boolean"
+        },
+        "disableSettingsMetrics": {
+          "description": "Disables collection of metrics from pg_settings.",
+          "required": [],
+          "title": "disableSettingsMetrics",
+          "type": "boolean"
         }
       },
       "required": [],
@@ -3910,6 +4411,13 @@
       "required": [],
       "title": "extraLabelsFrom",
       "type": "object"
+    },
+    "extraLogProcessingRules": {
+      "default": "",
+      "description": "Rule blocks to be added to the loki.relabel component for pod logs.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/loki/loki.relabel/#rule))\nThis value is templated so that you can refer to other values from this file.",
+      "required": [],
+      "title": "extraLogProcessingRules",
+      "type": "string"
     },
     "extraLogProcessingStages": {
       "default": "",
@@ -4206,6 +4714,13 @@
       "title": "hostSysFsMount",
       "type": "object"
     },
+    "hostUsers": {
+      "default": "~",
+      "description": "hostUsers should be `true` or `~` if hostNetwork is true\nfor more information on the limitations of hostUsers\nsee https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/#limitations",
+      "required": [],
+      "title": "hostUsers",
+      "type": "null"
+    },
     "image": {
       "additionalProperties": true,
       "description": "Default values for prometheus-node-exporter.\nThis is a YAML-formatted file.\nDeclare variables to be passed into your templates.",
@@ -4291,6 +4806,13 @@
       "required": [],
       "title": "includeLevels",
       "type": "array"
+    },
+    "includePodMetadataLabels": {
+      "default": true,
+      "description": "Preserve discovered pod metadata labels for use by downstream components. Required for setting these standard labels:\n`namespace`, `node`, `pod`, `container`.",
+      "required": [],
+      "title": "includePodMetadataLabels",
+      "type": "boolean"
     },
     "includeReasons": {
       "description": "List of event reasons to include (`[]` means allow all event reasons). e.g. `[\"Failed\"]`",
@@ -4403,6 +4925,98 @@
       },
       "required": [],
       "title": "integrations",
+      "type": "object"
+    },
+    "istio": {
+      "additionalProperties": true,
+      "description": "Scrape metrics/logs from Istio sidecar and service.",
+      "properties": {
+        "instances": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "instances",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "istio",
+      "type": "object"
+    },
+    "istiodMetrics": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "description": "Whether to enable metrics collection from Istio .",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraMetricProcessingRules": {
+          "description": "Rule blocks to be added to the prometheus.relabel component for MySQL metrics.\nThese relabeling rules are applied post-scrape against the metrics returned from the scraped target, no `__meta*` labels are present.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#rule-block))",
+          "required": [],
+          "title": "extraMetricProcessingRules",
+          "type": "string"
+        },
+        "maxCacheSize": {
+          "description": "Sets the max_cache_size for prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "required": [],
+          "title": "maxCacheSize",
+          "type": "null"
+        },
+        "namespace": {
+          "required": [],
+          "title": "namespace",
+          "type": "string"
+        },
+        "scrapeInterval": {
+          "description": "How frequently to scrape metrics from MySQL Exporter.",
+          "required": [],
+          "title": "scrapeInterval",
+          "type": "null"
+        },
+        "scrapeTimeout": {
+          "description": "The timeout for scraping metrics from MySQL Exporter.",
+          "required": [],
+          "title": "scrapeTimeout",
+          "type": "string"
+        },
+        "serviceName": {
+          "required": [],
+          "title": "serviceName",
+          "type": "string"
+        },
+        "tuning": {
+          "additionalProperties": true,
+          "description": "Adjustments to the scraped metrics to filter the amount of data sent to storage.",
+          "properties": {
+            "excludeMetrics": {
+              "description": "Metrics to drop. Can use regular expressions.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "excludeMetrics",
+              "type": "array"
+            },
+            "includeMetrics": {
+              "description": "Metrics to keep. Can use regular expressions.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "includeMetrics",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "tuning",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "istiodMetrics",
       "type": "object"
     },
     "java": {
@@ -4996,6 +5610,13 @@
           "required": [],
           "title": "bearerTokenFile",
           "type": "string"
+        },
+        "checkForPotentialServiceMonitorConflicts": {
+          "default": true,
+          "description": "During install, warn about potential pre-existing ServiceMonitors that may exist and cause metric duplication.",
+          "required": [],
+          "title": "checkForPotentialServiceMonitorConflicts",
+          "type": "boolean"
         },
         "deploy": {
           "default": true,
@@ -5617,7 +6238,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v0.20.0",
+              "default": "v0.20.2",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -6325,13 +6946,13 @@
         },
         "labelSelectors": {
           "additionalProperties": true,
-          "description": "Discover MySQL instances based on label selectors. At least one is required.",
+          "description": "Discover PostgreSQL instances based on label selectors. At least one is required.",
           "required": [],
           "title": "labelSelectors",
           "type": "object"
         },
         "namespaces": {
-          "description": "The namespaces to look for MySQL instances in.\nWill automatically look for MySQL instances in all namespaces unless specified here",
+          "description": "The namespaces to look for PostgreSQL instances in.\nWill automatically look for PostgreSQL instances in all namespaces unless specified here",
           "items": {
             "required": []
           },
@@ -6497,6 +7118,32 @@
       "title": "metricDenylist",
       "type": "array"
     },
+    "metricEnrichment": {
+      "additionalProperties": true,
+      "properties": {
+        "namespaceLabels": {
+          "description": "Finds kubernetes namespace labels and adds them as labels to matching metrics.\nApplies to metrics that contain the following labels: `namespace`. Note that this can greatly increase the resource\nutilization of Alloy.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "namespaceLabels",
+          "type": "array"
+        },
+        "podLabels": {
+          "description": "Finds kubernetes pod labels and adds them as labels to matching pod metrics.\nApplies to metrics that contain the following labels: `namespace`, `pod`. Note that this can greatly increase the\nresource utilization of Alloy.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "podLabels",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "metricEnrichment",
+      "type": "object"
+    },
     "metricLabelsAllowlist": {
       "description": "Comma-separated list of additional Kubernetes label keys that will be used in the resource's\nlabels metric. By default the metric contains only name and namespace labels.\nTo include additional labels, provide a list of resource names in their plural form and Kubernetes\nlabel keys you would like to allow for them (Example: '=namespaces=[k8s-label-1,k8s-label-n,...],pods=[app],...)'.\nA single '*' can be provided per resource instead to allow any labels, but that has\nsevere performance implications (Example: '=pods=[*]').",
       "items": {
@@ -6507,7 +7154,7 @@
       "type": "array"
     },
     "metricProcessingRules": {
-      "description": "Rule blocks to apply to all metrics. Uses the [write_relabel_config block](https://grafana.com/docs/alloy/latest/reference/components/prometheus.remote_write/#write_relabel_config-block)\nof the prometheus.remote_write component. Format:\nwrite_relabel_config {\n  source_labels = [\"...\"]\n  action = \"...\"\n  ...\n}",
+      "description": "Rule blocks to apply to all metrics. Uses the\n[write_relabel_config block](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.remote_write/#write_relabel_config-block)\nof the prometheus.remote_write component. Format:\nwrite_relabel_config {\n  source_labels = [\"...\"]\n  action = \"...\"\n  ...\n}",
       "required": [],
       "title": "metricProcessingRules",
       "type": "string"
@@ -6524,7 +7171,7 @@
           "type": "boolean"
         },
         "extraMetricProcessingRules": {
-          "description": "Rule blocks to be added to the prometheus.relabel component for MySQL metrics.\nThese relabeling rules are applied post-scrape against the metrics returned from the scraped target, no `__meta*` labels are present.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#rule-block))",
+          "description": "Rule blocks to be added to the prometheus.relabel component for PostgreSQL metrics.\nThese relabeling rules are applied post-scrape against the metrics returned from the scraped target, no `__meta*` labels are present.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#rule-block))",
           "required": [],
           "title": "extraMetricProcessingRules",
           "type": "string"
@@ -6555,7 +7202,7 @@
           "type": "object"
         },
         "maxCacheSize": {
-          "description": "Sets the max_cache_size for prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "description": "Sets the max_cache_size for prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -6710,6 +7357,13 @@
       "required": [],
       "title": "minBackoffPeriod",
       "type": "string"
+    },
+    "minReadySeconds": {
+      "default": 0,
+      "description": "Minimum number of seconds for which a newly created DaemonSet pod should be ready\nwithout any of its containers crashing, for it to be considered available.\nref: https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/#min-ready-seconds",
+      "required": [],
+      "title": "minReadySeconds",
+      "type": "integer"
     },
     "modelServer": {
       "additionalProperties": true,
@@ -7023,7 +7677,7 @@
           },
           "required": [],
           "title": "egress",
-          "type": "object"
+          "type": "array"
         },
         "enabled": {
           "default": false,
@@ -7174,6 +7828,13 @@
           "required": [],
           "title": "bearerTokenFile",
           "type": "string"
+        },
+        "checkForPotentialServiceMonitorConflicts": {
+          "default": true,
+          "description": "During install, warn about potential pre-existing ServiceMonitors that may exist and cause metric duplication.",
+          "required": [],
+          "title": "checkForPotentialServiceMonitorConflicts",
+          "type": "boolean"
         },
         "deploy": {
           "default": true,
@@ -7397,6 +8058,13 @@
       "title": "nodeAnnotations",
       "type": "object"
     },
+    "nodeFilter": {
+      "default": false,
+      "description": "Only choose the pods on the same pod as the Alloy instance. Requires the Alloy instance to use DaemonSet and will\nAutomatically set the environment variable NODE_NAME to the Alloy Pod's current cluster node.",
+      "required": [],
+      "title": "nodeFilter",
+      "type": "boolean"
+    },
     "nodeLabels": {
       "additionalProperties": true,
       "description": "Log labels to set with values copied from the Kubernetes Node labels.\nOnly used for \"filelog\" gather method.\nFormat: `\u003clog_label\u003e: \u003ckubernetes_node_label\u003e`.",
@@ -7508,6 +8176,13 @@
       "required": [],
       "title": "nodeSelectors",
       "type": "object"
+    },
+    "onlyGatherNewLogLines": {
+      "default": false,
+      "description": "Only gather new log lines since this was deployed. Do not gather historical log lines.",
+      "required": [],
+      "title": "onlyGatherNewLogLines",
+      "type": "boolean"
     },
     "openTelemetryConversion": {
       "additionalProperties": true,
@@ -9700,6 +10375,13 @@
       "title": "opencost",
       "type": "object"
     },
+    "otelAnnotations": {
+      "default": false,
+      "description": "Whether to automatically set the recommended OpenTelemetry\n[resource attributes](https://opentelemetry.io/docs/specs/semconv/non-normative/k8s-attributes/).\nOnly used for \"filelog\" gather method.",
+      "required": [],
+      "title": "otelAnnotations",
+      "type": "boolean"
+    },
     "ownNamespaceOnly": {
       "default": false,
       "description": "Restrict the Alloy Operator to its own namespace only. Overrides the `namespaces` setting.",
@@ -9915,6 +10597,38 @@
       "title": "podLogs",
       "type": "object"
     },
+    "podLogsObjects": {
+      "additionalProperties": true,
+      "description": "PodLogs Objects\nRequires a destination that supports logs.\nTo see the valid options, please see the [PodLogs Objects feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs-objects).",
+      "properties": {
+        "collector": {
+          "default": "alloy-logs",
+          "description": "Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.",
+          "required": [],
+          "title": "collector",
+          "type": "string"
+        },
+        "destinations": {
+          "description": "The destinations where logs will be sent. If empty, all logs-capable destinations will be used.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "destinations",
+          "type": "array"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Enable gathering Kubernetes Pod logs via PodLogs objects.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "podLogsObjects",
+      "type": "object"
+    },
     "podLogsViaKubernetesApi": {
       "additionalProperties": true,
       "description": "Pod logs via Kubernetes API.\nRequires a destination that supports logs.\nTo see the valid options, please see the [Pod Logs via Kubernetes API feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs-via-kubernetes-api).",
@@ -10063,43 +10777,11 @@
       "additionalProperties": true,
       "description": "Holds pod-level security attributes and common container settings",
       "properties": {
-        "fsGroup": {
-          "default": 1000,
-          "required": [],
-          "title": "fsGroup",
-          "type": "integer"
-        },
-        "runAsGroup": {
-          "default": 1000,
-          "required": [],
-          "title": "runAsGroup",
-          "type": "integer"
-        },
         "runAsNonRoot": {
           "default": true,
           "required": [],
           "title": "runAsNonRoot",
           "type": "boolean"
-        },
-        "runAsUser": {
-          "default": 1000,
-          "required": [],
-          "title": "runAsUser",
-          "type": "integer"
-        },
-        "seccompProfile": {
-          "additionalProperties": true,
-          "properties": {
-            "type": {
-              "default": "RuntimeDefault",
-              "required": [],
-              "title": "type",
-              "type": "string"
-            }
-          },
-          "required": [],
-          "title": "seccompProfile",
-          "type": "object"
         }
       },
       "required": [],
@@ -10155,6 +10837,23 @@
       "required": [],
       "title": "port",
       "type": "integer"
+    },
+    "postgresql": {
+      "additionalProperties": true,
+      "description": "Scrape metrics/logs from PostgreSQL",
+      "properties": {
+        "instances": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "instances",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "postgresql",
+      "type": "object"
     },
     "pprof": {
       "additionalProperties": true,
@@ -10685,7 +11384,7 @@
           "additionalProperties": true,
           "properties": {
             "annotations": {
-              "description": "Kubernetes annotations to extract and add to the attributes of the received telemetry data in the form of a\nlist of otelcol.processor.k8sattributes extract \u003e annotation blocks. See the\n[Alloy documentation](https://grafana.com/docs/agent/latest/flow/reference/components/otelcol.processor.k8sattributes/#annotation-block)\nfor details on how to configure annotation blocks.",
+              "description": "Kubernetes annotations to extract and add to the attributes of the received telemetry data in the form of a\nlist of otelcol.processor.k8sattributes extract \u003e annotation blocks. See the\n[Alloy documentation](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.processor.k8sattributes/#annotation)\nfor details on how to configure annotation blocks.",
               "items": {
                 "required": []
               },
@@ -10741,7 +11440,7 @@
               "type": "object"
             },
             "labels": {
-              "description": "Kubernetes labels to extract and add to the attributes of the received telemetry data in the form of a list of\notelcol.processor.k8sattributes extract \u003e label blocks. See the\n[Alloy documentation](https://grafana.com/docs/agent/latest/flow/reference/components/otelcol.processor.k8sattributes/#extract-label-block)\nfor details on how to configure label blocks.",
+              "description": "Kubernetes labels to extract and add to the attributes of the received telemetry data in the form of a list of\notelcol.processor.k8sattributes extract \u003e label blocks. See the\n[Alloy documentation](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.processor.k8sattributes/#label-extract)\nfor details on how to configure label blocks.",
               "items": {
                 "required": []
               },
@@ -10758,6 +11457,13 @@
               "required": [],
               "title": "metadata",
               "type": "array"
+            },
+            "otelAnnotations": {
+              "default": false,
+              "description": "Whether to automatically set the recommended OpenTelemetry\n[resource attributes](https://opentelemetry.io/docs/specs/semconv/non-normative/k8s-attributes/).",
+              "required": [],
+              "title": "otelAnnotations",
+              "type": "boolean"
             },
             "passthrough": {
               "default": false,
@@ -12365,11 +13071,23 @@
       "title": "prometheusScrape",
       "type": "boolean"
     },
+    "protobufMessage": {
+      "description": "The protobuf message format to use for remote write. Must be `prometheus.WriteRequest` or experimental\n`io.prometheus.write.v2.Request`.",
+      "required": [],
+      "title": "protobufMessage",
+      "type": "string"
+    },
     "protocol": {
       "description": "The protocol for the OTLP destination.\nOptions are \"grpc\" (default), \"http\".",
       "required": [],
       "title": "protocol",
       "type": "string"
+    },
+    "protocolValidation": {
+      "description": "Validate that the protocol matches known OTLP destinations, like Grafana Cloud's OTLP Gateway or Tempo endpoints.",
+      "required": [],
+      "title": "protocolValidation",
+      "type": "boolean"
     },
     "proxyConnectHeader": {
       "additionalProperties": true,
@@ -12526,7 +13244,7 @@
           "type": "boolean"
         },
         "extraClusterRoleRules": {
-          "description": "Extra custer roles to be created for Belya",
+          "description": "Extra cluster roles to be created for Beyla",
           "items": {
             "required": []
           },
@@ -13262,6 +13980,12 @@
       "title": "remoteConfig",
       "type": "object"
     },
+    "remoteWriteProtocol": {
+      "description": "Shortcut for setting the `protobufMessage`. Valid options are 1 (default) or 2, which sets `protobufMessage` to\n`io.prometheus.write.v2.Request`.",
+      "required": [],
+      "title": "remoteWriteProtocol",
+      "type": "integer"
+    },
     "replicaCount": {
       "default": 1,
       "description": "How many replicas to use for the Alloy Operator Deployment.",
@@ -13575,12 +14299,33 @@
           "title": "allowlist",
           "type": "array"
         },
+        "enableEntropy": {
+          "default": false,
+          "description": "Enable entropy-based filtering.",
+          "required": [],
+          "title": "enableEntropy",
+          "type": "boolean"
+        },
         "enabled": {
           "default": false,
           "description": "Enable secret filtering.",
           "required": [],
           "title": "enabled",
           "type": "boolean"
+        },
+        "gitleaksConfigPath": {
+          "default": "",
+          "description": "Path to the custom gitleaks.toml file.",
+          "required": [],
+          "title": "gitleaksConfigPath",
+          "type": "string"
+        },
+        "gitleaksConfigPathFrom": {
+          "default": "",
+          "description": "Raw path to the custom gitleaks.toml file. Use this to reference an Alloy component",
+          "required": [],
+          "title": "gitleaksConfigPathFrom",
+          "type": "string"
         },
         "includeGeneric": {
           "default": false,
@@ -13589,12 +14334,26 @@
           "title": "includeGeneric",
           "type": "boolean"
         },
+        "inclusionSelector": {
+          "default": "",
+          "description": "Loki selector to send processed logs to the secret filter. Anything not matching will be excluded.\nExample: `{app==\"payment-processor\"}`. If empty, all pod logs will be sent through the secret filter.",
+          "required": [],
+          "title": "inclusionSelector",
+          "type": "string"
+        },
         "partialMask": {
           "default": 0,
           "description": "Show the first N characters of the secret.",
           "required": [],
           "title": "partialMask",
           "type": "integer"
+        },
+        "redactWith": {
+          "default": "",
+          "description": "String to use to redact secrets.",
+          "required": [],
+          "title": "redactWith",
+          "type": "null"
         }
       },
       "required": [],
@@ -14541,6 +15300,89 @@
       "required": [],
       "title": "sidecarHostVolumeMounts",
       "type": "array"
+    },
+    "sidecarMetrics": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "description": "Whether to enable metrics collection from Istio sidecar containers.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraMetricProcessingRules": {
+          "description": "Rule blocks to be added to the prometheus.relabel component for MySQL metrics.\nThese relabeling rules are applied post-scrape against the metrics returned from the scraped target, no `__meta*` labels are present.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#rule-block))",
+          "required": [],
+          "title": "extraMetricProcessingRules",
+          "type": "string"
+        },
+        "labelSelectors": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "labelSelectors",
+          "type": "object"
+        },
+        "maxCacheSize": {
+          "description": "Sets the max_cache_size for prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "required": [],
+          "title": "maxCacheSize",
+          "type": "null"
+        },
+        "scrapeInterval": {
+          "description": "How frequently to scrape metrics from Istio sidecar containers.",
+          "required": [],
+          "title": "scrapeInterval",
+          "type": "null"
+        },
+        "scrapeTimeout": {
+          "description": "The timeout for scraping metrics from Istio sidecar containers.",
+          "required": [],
+          "title": "scrapeTimeout",
+          "type": "string"
+        },
+        "sidecarContainerName": {
+          "description": "The name of the Istio sidecar container.",
+          "required": [],
+          "title": "sidecarContainerName",
+          "type": "string"
+        },
+        "tuning": {
+          "additionalProperties": true,
+          "description": "Adjustments to the scraped metrics to filter the amount of data sent to storage.",
+          "properties": {
+            "excludeMetrics": {
+              "description": "Metrics to drop. Can use regular expressions.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "excludeMetrics",
+              "type": "array"
+            },
+            "includeMetrics": {
+              "description": "Metrics to keep. Can use regular expressions.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "includeMetrics",
+              "type": "array"
+            },
+            "useDefaultAllowList": {
+              "description": "Filter the list of metrics from Grafana Alloy to the minimal set required for the Grafana Alloy integration.",
+              "required": [],
+              "title": "useDefaultAllowList",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "tuning",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "sidecarMetrics",
+      "type": "object"
     },
     "sidecarVolumeMount": {
       "description": "# Volume for sidecar containers\n#",

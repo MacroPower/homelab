@@ -114,6 +114,9 @@ schema MonitoringCoreosComV1PodMonitorSpec:
         It requires Prometheus >= v2.45.0.
 
         Notice: `scrapeClassicHistograms` corresponds to the `always_scrape_classic_histograms` field in the Prometheus configuration.
+    scrapeNativeHistograms : bool, default is Undefined, optional
+        scrapeNativeHistograms defines whether to enable scraping of native histograms.
+        It requires Prometheus >= v3.8.0.
     scrapeProtocols : [str], default is Undefined, optional
         scrapeProtocols defines the protocols to negotiate during a scrape. It tells clients the
         protocols supported by Prometheus in order of preference (from most to least preferred).
@@ -151,6 +154,7 @@ schema MonitoringCoreosComV1PodMonitorSpec:
     sampleLimit?: int
     scrapeClass?: str
     scrapeClassicHistograms?: bool
+    scrapeNativeHistograms?: bool
     scrapeProtocols?: [str]
     selector: MonitoringCoreosComV1PodMonitorSpecSelector
 
@@ -251,9 +255,27 @@ schema MonitoringCoreosComV1PodMonitorSpecPodMetricsEndpointsItems0:
     port : str, default is Undefined, optional
         port defines the `Pod` port name which exposes the endpoint.
 
+        If the pod doesn't expose a port with the same name, it will result
+        in no targets being discovered.
+
+        If a `Pod` has multiple `Port`s with the same name (which is not
+        recommended), one target instance per unique port number will be
+        generated.
+
         It takes precedence over the `portNumber` and `targetPort` fields.
     portNumber : int, default is Undefined, optional
         portNumber defines the `Pod` port number which exposes the endpoint.
+
+        The `Pod` must declare the specified `Port` in its spec or the
+        target will be dropped by Prometheus.
+
+        This cannot be used to enable scraping of an undeclared port.
+        To scrape targets on a port which isn't exposed, you need to use
+        relabeling to override the `__address__` label (but beware of
+        duplicate targets if the `Pod` has other declared ports).
+
+        In practice Prometheus will select targets for which the
+        matches the target's __meta_kubernetes_pod_container_port_number.
     proxyConnectHeader : {str:[MonitoringCoreosComV1PodMonitorSpecPodMetricsEndpointsItems0ProxyConnectHeaderItems0]}, default is Undefined, optional
         proxyConnectHeader optionally specifies headers to send to
         proxies during CONNECT requests.
@@ -276,11 +298,6 @@ schema MonitoringCoreosComV1PodMonitorSpecPodMetricsEndpointsItems0:
         More info: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config
     scheme : str, default is Undefined, optional
         scheme defines the HTTP scheme to use for scraping.
-
-        `http` and `https` are the expected values unless you rewrite the
-        `__scheme__` label via relabeling.
-
-        If empty, Prometheus uses the default value `http`.
     scrapeTimeout : str, default is Undefined, optional
         scrapeTimeout defines the timeout after which Prometheus considers the scrape to be failed.
 
@@ -321,7 +338,7 @@ schema MonitoringCoreosComV1PodMonitorSpecPodMetricsEndpointsItems0:
     proxyFromEnvironment?: bool
     proxyUrl?: str
     relabelings?: [MonitoringCoreosComV1PodMonitorSpecPodMetricsEndpointsItems0RelabelingsItems0]
-    scheme?: "http" | "https"
+    scheme?: "http" | "https" | "HTTP" | "HTTPS"
     scrapeTimeout?: str
     targetPort?: int | str
     tlsConfig?: MonitoringCoreosComV1PodMonitorSpecPodMetricsEndpointsItems0TLSConfig
