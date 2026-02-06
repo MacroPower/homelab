@@ -41,12 +41,21 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpec:
         credential injection
     directResponse : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponse, default is Undefined, optional
         direct response
+    matches : [GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecMatchesItems0], default is Undefined, optional
+        Matches defines additional matching criteria for the HTTPRoute rule.
+        As with HTTPRouteRule.Matches, the rule is matched if any one match applies.
+        When both HTTPRouteRule.Matches and HTTPRouteFilter.Matches are set, the
+        effective matching is the logical AND of the two sets.
     urlRewrite : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewrite, default is Undefined, optional
         url rewrite
     """
     credentialInjection?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecCredentialInjection
     directResponse?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponse
+    matches?: [GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecMatchesItems0]
     urlRewrite?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewrite
+
+    check:
+        len(matches) <= 8 if matches
 
 schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecCredentialInjection:
     r"""
@@ -325,6 +334,47 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseHeaderSetItem
         len(name) <= 256
         len(name) >= 1
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
+        len(value) <= 4096
+        len(value) >= 1
+
+schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecMatchesItems0:
+    r"""
+    HTTPRouteMatchFilter defines additional matching criteria for the HTTPRoute rule.
+    At least one matcher must be specified.
+
+    Attributes
+    ----------
+    cookies : [GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecMatchesItems0CookiesItems0], default is Undefined, optional
+        Cookies is a list of cookie matchers evaluated against the HTTP request.
+        All specified matchers must match.
+    """
+    cookies?: [GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecMatchesItems0CookiesItems0]
+
+    check:
+        len(cookies) >= 1 if cookies
+        len(cookies) <= 16 if cookies
+
+schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecMatchesItems0CookiesItems0:
+    r"""
+    HTTPCookieMatch defines how to match a single cookie.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name is the cookie name to evaluate.
+    $type : str, default is "Exact", optional
+        Type specifies how to match against the value of the cookie.
+    value : str, default is Undefined, required
+        Value is the cookie value to be matched.
+    """
+    name: str
+
+    $type?: "Exact" | "RegularExpression" = "Exact"
+    value: str
+
+    check:
+        len(name) <= 256
+        len(name) >= 1
         len(value) <= 4096
         len(value) >= 1
 
