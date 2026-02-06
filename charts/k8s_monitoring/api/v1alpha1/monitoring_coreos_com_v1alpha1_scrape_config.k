@@ -180,7 +180,6 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpec:
         scalewaySDConfigs defines a list of Scaleway instances and baremetal service discovery configurations.
     scheme : str, default is Undefined, optional
         scheme defines the protocol scheme used for requests.
-        If empty, Prometheus uses HTTP by default.
     scrapeClass : str, default is Undefined, optional
         scrapeClass defines the scrape class to apply.
     scrapeClassicHistograms : bool, default is Undefined, optional
@@ -190,6 +189,9 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpec:
         Notice: `scrapeClassicHistograms` corresponds to the `always_scrape_classic_histograms` field in the Prometheus configuration.
     scrapeInterval : str, default is Undefined, optional
         scrapeInterval defines the interval between consecutive scrapes.
+    scrapeNativeHistograms : bool, default is Undefined, optional
+        scrapeNativeHistograms defines whether to enable scraping of native histograms.
+        It requires Prometheus >= v3.8.0.
     scrapeProtocols : [str], default is Undefined, optional
         scrapeProtocols defines the protocols to negotiate during a scrape. It tells clients the
         protocols supported by Prometheus in order of preference (from most to least preferred).
@@ -261,10 +263,11 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpec:
     relabelings?: [MonitoringCoreosComV1alpha1ScrapeConfigSpecRelabelingsItems0]
     sampleLimit?: int
     scalewaySDConfigs?: [MonitoringCoreosComV1alpha1ScrapeConfigSpecScalewaySDConfigsItems0]
-    scheme?: "HTTP" | "HTTPS"
+    scheme?: "http" | "https" | "HTTP" | "HTTPS"
     scrapeClass?: str
     scrapeClassicHistograms?: bool
     scrapeInterval?: str
+    scrapeNativeHistograms?: bool
     scrapeProtocols?: [str]
     scrapeTimeout?: str
     staticConfigs?: [MonitoringCoreosComV1alpha1ScrapeConfigSpecStaticConfigsItems0]
@@ -1185,7 +1188,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecConsulSDConfigsItems0:
         refreshInterval defines the time after which the provided names are refreshed.
         If not set, Prometheus uses its default value.
     scheme : str, default is Undefined, optional
-        scheme defines the HTTP Scheme default "http"
+        scheme defines the HTTP Scheme.
     server : str, default is Undefined, required
         server defines the consul server address. A valid string consisting of a hostname or IP followed by an optional port number.
     services : [str], default is Undefined, optional
@@ -1218,7 +1221,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecConsulSDConfigsItems0:
     proxyFromEnvironment?: bool
     proxyUrl?: str
     refreshInterval?: str
-    scheme?: "HTTP" | "HTTPS"
+    scheme?: "http" | "https" | "HTTP" | "HTTPS"
     server: str
 
     services?: [str]
