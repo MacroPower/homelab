@@ -8,7 +8,7 @@
     "argocd": "3.1.9",
     "cilium-cli": "0.18.8",
     "doppler": "3.75.2",
-    "go-task": "3.45.5",
+    "go-task": "3.48.0",
     "git": "2.51.2",
     "kubeconform": "0.7.0",
     "nodePackages.prettier": "3.5.3",
