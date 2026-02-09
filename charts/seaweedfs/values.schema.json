@@ -2949,6 +2949,58 @@
           "title": "httpsPort",
           "type": "integer"
         },
+        "icebergIngress": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "className": {
+              "default": "",
+              "required": [],
+              "title": "className",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "host": {
+              "default": "seaweedfs-iceberg.cluster.local",
+              "required": [],
+              "title": "host",
+              "type": "string"
+            },
+            "path": {
+              "default": "/",
+              "required": [],
+              "title": "path",
+              "type": "string"
+            },
+            "pathType": {
+              "default": "Prefix",
+              "required": [],
+              "title": "pathType",
+              "type": "string"
+            },
+            "tls": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "tls",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "icebergIngress",
+          "type": "object"
+        },
         "icebergPort": {
           "default": "null",
           "description": "Iceberg catalog REST port (Apache Iceberg REST Catalog API)\nSet to a port number to enable, or 0/null to disable",

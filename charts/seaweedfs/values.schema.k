@@ -2165,6 +2165,7 @@ schema ValuesS3:
     extraVolumes : str, optional, default is ""
     httpsPort : int, optional, default is 0
         add additional https port
+    icebergIngress : ValuesS3IcebergIngress, optional
     icebergPort : any, optional, default is "null"
         Iceberg catalog REST port (Apache Iceberg REST Catalog API)
         Set to a port number to enable, or 0/null to disable
@@ -2244,6 +2245,7 @@ schema ValuesS3:
     extraVolumeMounts?: str
     extraVolumes?: str
     httpsPort?: int
+    icebergIngress?: ValuesS3IcebergIngress
     icebergPort?: any
     imageOverride?: any
     ingress?: ValuesS3Ingress
@@ -2287,6 +2289,35 @@ schema ValuesS3ContainerSecurityContext:
       enabled: true
       runAsUser: 2000
       allowPrivilegeEscalation: false
+    """
+    [...str]: any
+
+schema ValuesS3IcebergIngress:
+    r"""
+    ValuesS3IcebergIngress
+
+    Attributes
+    ----------
+    annotations : ValuesS3IcebergIngressAnnotations, optional
+    className : str, optional, default is ""
+    enabled : bool, optional, default is False
+    host : str, optional, default is "seaweedfs-iceberg.cluster.local"
+    path : str, optional, default is "/"
+    pathType : str, optional, default is "Prefix"
+    tls : [any], optional
+    """
+    [...str]: any
+    annotations?: ValuesS3IcebergIngressAnnotations
+    className?: str
+    enabled?: bool
+    host?: str
+    path?: str
+    pathType?: str
+    tls?: [any]
+
+schema ValuesS3IcebergIngressAnnotations:
+    r"""
+    ValuesS3IcebergIngressAnnotations
     """
     [...str]: any
 
