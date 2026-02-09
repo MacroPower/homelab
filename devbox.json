@@ -20,7 +20,7 @@
     "kubernetes-helm": "3.19.1",
     "auth0-cli": "1.23.0",
     "go": "1.25.5",
-    "wrangler": "4.61.1"
+    "wrangler": "4.62.0"
   },
   "env": {
     "KCL_LIB_HOME": "${DEVBOX_PROJECT_ROOT}/.devbox/kcl/lib",
