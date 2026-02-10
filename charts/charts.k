@@ -121,7 +121,7 @@ charts: helm.Charts = {
     loki: {
         chart = "loki"
         repoURL = "https://grafana.github.io/helm-charts"
-        targetRevision = "6.46.0"
+        targetRevision = "6.53.0"
         schemaGenerator = "VALUE-INFERENCE"
         crdGenerator = "NONE"
     }
