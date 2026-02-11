@@ -13,6 +13,8 @@ schema Values:
         Affinity settings for `Pod` [scheduling](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/). If an explicit label selector is not provided for pod affinity or pod anti-affinity one will be created from the pod selector labels.
     annotationFilter : str, optional
         Filter resources queried for endpoints by annotation selector.
+    annotationPrefix : str, optional
+        Annotation prefix for external-dns annotations (useful for split horizon DNS with multiple instances).
     automountServiceAccountToken : bool, optional
         Set this to `false` to [opt out of API credential automounting](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#opt-out-of-api-credential-automounting) for the `Pod`.
     commonLabels : ValuesCommonLabels, optional
@@ -117,6 +119,7 @@ schema Values:
     [...str]: any
     affinity?: ValuesAffinity
     annotationFilter?: str
+    annotationPrefix?: str
     automountServiceAccountToken?: bool
     commonLabels?: ValuesCommonLabels
     deploymentAnnotations?: ValuesDeploymentAnnotations
@@ -505,20 +508,20 @@ schema ValuesProviderWebhookServiceMonitor:
 
     Attributes
     ----------
-    bearerTokenFile : any, optional
-    interval : any, optional
+    bearerTokenFile : str, optional
+    interval : str, optional
     metricRelabelings : any, optional
     relabelings : any, optional
-    scheme : any, optional
-    scrapeTimeout : any, optional
+    scheme : str, optional
+    scrapeTimeout : str, optional
     tlsConfig : ValuesProviderWebhookServiceMonitorTlsConfig, optional
     """
-    bearerTokenFile?: any
-    interval?: any
+    bearerTokenFile?: str
+    interval?: str
     metricRelabelings?: any
     relabelings?: any
-    scheme?: any
-    scrapeTimeout?: any
+    scheme?: str
+    scrapeTimeout?: str
     tlsConfig?: ValuesProviderWebhookServiceMonitorTlsConfig
 
 schema ValuesProviderWebhookServiceMonitorTlsConfig:
