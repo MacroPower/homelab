@@ -272,16 +272,33 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0Prin
         If multiple headers are specified, all headers must match for the rule to match.
     jwt : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0PrincipalJwt, default is Undefined, optional
         jwt
+    sourceCIDRs : [str], default is Undefined, optional
+        SourceCIDRs are the IP CIDR ranges of the source (L4 peer IP).
+        Valid examples are "192.168.1.0/24" or "2001:db8::/64"
+
+        If multiple CIDR ranges are specified, one of the CIDR ranges must match
+        the source IP for the rule to match.
+
+        The source IP is the IP address of the peer that connected to Envoy.
+        This IP is obtained from the TCP connection's peer address and is not
+        affected by X-Forwarded-For or other IP detection headers.
+        If intermediaries (load balancers, NAT) terminate or proxy TCP,
+        the original client IP will only be available if the intermediary
+        preserves the source address (for example by enabling the PROXY protocol
+        or avoiding SNAT).
     """
     clientCIDRs?: [str]
     headers?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0PrincipalHeadersItems0]
     jwt?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0PrincipalJwt
+    sourceCIDRs?: [str]
 
     check:
         len(clientCIDRs) >= 1 if clientCIDRs
         all clientCIDRs in clientCIDRs {_regex_match(str(clientCIDRs), r"((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/([0-9]+))|((([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/([0-9]+))") if clientCIDRs} if clientCIDRs
         len(headers) >= 1 if headers
         len(headers) <= 256 if headers
+        len(sourceCIDRs) >= 1 if sourceCIDRs
+        all sourceCIDRs in sourceCIDRs {_regex_match(str(sourceCIDRs), r"((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/([0-9]+))|((([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/([0-9]+))") if sourceCIDRs} if sourceCIDRs
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0PrincipalHeadersItems0:
     r"""
@@ -328,8 +345,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0Prin
     scopes : [str], default is Undefined, optional
         Scopes are a special type of claim in a JWT token that represents the permissions of the client.
 
-        The value of the scopes field should be a space delimited string that is expected in the scope parameter,
-        as defined in RFC 6749: https://datatracker.ietf.org/doc/html/rfc6749#page-23.
+        The value of the scopes field should be a space delimited string that is expected in the
+        scope (or scp) claim, as defined in RFC 6749: https://datatracker.ietf.org/doc/html/rfc6749#page-23.
 
         If multiple scopes are specified, all scopes must match for the rule to match.
     """
@@ -502,6 +519,12 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuth:
     ----------
     bodyToExtAuth : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthBodyToExtAuth, default is Undefined, optional
         body to ext auth
+    contextExtensions : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthContextExtensionsItems0], default is Undefined, optional
+        ContextExtensions are analogous to http_request.headers, however these
+        contents will not be sent to the upstream server. This provides an
+        extension mechanism for sending additional information to the auth server
+        without modifying the proto definition. It maps to the internal opaque
+        context in the filter chain.
     failOpen : bool, default is Undefined, optional
         FailOpen is a switch used to control the behavior when a response from the External Authorization service cannot be obtained.
         If FailOpen is set to true, the system allows the traffic to pass through.
@@ -535,6 +558,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuth:
         If not specified, defaults to 10 seconds.
     """
     bodyToExtAuth?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthBodyToExtAuth
+    contextExtensions?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthContextExtensionsItems0]
     failOpen?: bool = False
     grpc?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpc
     headersToExtAuth?: [str]
@@ -561,6 +585,66 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthBodyToExtAuth:
 
     check:
         maxRequestBytes >= 1
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthContextExtensionsItems0:
+    r"""
+    ContextExtension is analogous to http_request.headers, however these
+    contents will not be sent to the upstream server. This provides an
+    extension mechanism for sending additional information to the auth server
+    without modifying the proto definition. It maps to the internal opaque
+    context in the filter chain.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the context extension.
+    $type : str, default is "Value", required
+        Type is the type of method to use to read the ContextExtension value.
+        Valid values are Value and ValueRef, default is Value.
+    value : str, default is Undefined, optional
+        Value of the context extension.
+    valueRef : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthContextExtensionsItems0ValueRef, default is Undefined, optional
+        value ref
+    """
+    name: str
+
+    $type: "Value" | "ValueRef" = "Value"
+
+    value?: str
+    valueRef?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthContextExtensionsItems0ValueRef
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthContextExtensionsItems0ValueRef:
+    r"""
+    ValueRef for the context extension's value.
+
+    Attributes
+    ----------
+    group : str, default is Undefined, required
+        Group is the group of the referent. For example, "gateway.networking.k8s.io".
+        When unspecified or empty string, core API group is inferred.
+    key : str, default is Undefined, required
+        The key to select.
+    kind : str, default is Undefined, required
+        Kind is kind of the referent. For example "HTTPRoute" or "Service".
+    name : str, default is Undefined, required
+        Name is the name of the referent.
+    """
+    group: str
+
+    key: str
+
+    kind: str
+
+    name: str
+
+    check:
+        len(group) <= 253
+        _regex_match(str(group), r"^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(kind) <= 63
+        len(kind) >= 1
+        _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$")
+        len(name) <= 253
+        len(name) >= 1
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpc:
     r"""
@@ -701,6 +785,20 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendRefsItems0
         case, the port number is the service port number, not the target port.
         For other resources, destination port might be derived from the referent
         resource or this field.
+    weight : int, default is 1, optional
+        Weight specifies the proportion of requests forwarded to the referenced
+        backend. This is computed as weight/(sum of all weights in this
+        BackendRefs list). For non-zero values, there may be some epsilon from
+        the exact proportion defined here depending on the precision an
+        implementation supports. Weight is not a percentage and the sum of
+        weights does not need to equal 100.
+
+        If only one backend is specified and it has a weight greater than 0, 100%
+        of the traffic is forwarded to that backend. If weight is set to 0, no
+        traffic should be forwarded for this entry. If unspecified, weight
+        defaults to 1.
+
+        Support for this field varies based on the context where used.
     """
     fallback?: bool
     group?: str = ""
@@ -709,6 +807,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendRefsItems0
 
     namespace?: str
     port?: int
+    weight?: int = 1
 
     check:
         len(group) <= 253 if group
@@ -723,6 +822,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendRefsItems0
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
         port <= 65535 if port not in [None, Undefined]
         port >= 1 if port not in [None, Undefined]
+        weight <= 1000000 if weight not in [None, Undefined]
+        weight >= 0 if weight not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettings:
     r"""
@@ -1211,6 +1312,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLo
         header
     headers : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerConsistentHashHeadersItems0], default is Undefined, optional
         Headers configures the header hash policy for each header, when the consistent hash type is set to Headers.
+    queryParams : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerConsistentHashQueryParamsItems0], default is Undefined, optional
+        QueryParams configures the query parameter hash policy when the consistent hash type is set to QueryParams.
     tableSize : int, default is 65537, optional
         The table size for consistent hashing, must be prime number limited to 5000011.
     $type : str, default is Undefined, required
@@ -1219,12 +1322,14 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLo
         "Header",
         "Headers",
         "Cookie".
+        "QueryParams".
     """
     cookie?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerConsistentHashCookie
     header?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerConsistentHashHeader
     headers?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerConsistentHashHeadersItems0]
+    queryParams?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerConsistentHashQueryParamsItems0]
     tableSize?: int = 65537
-    $type: "SourceIP" | "Header" | "Headers" | "Cookie"
+    $type: "SourceIP" | "Header" | "Headers" | "Cookie" | "QueryParams"
 
     check:
         tableSize <= 5000011 if tableSize not in [None, Undefined]
@@ -1278,6 +1383,18 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLo
     ----------
     name : str, default is Undefined, required
         Name of the header to hash.
+    """
+    name: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerConsistentHashQueryParamsItems0:
+    r"""
+    QueryParam defines the query parameter name hashing configuration for consistent hash based
+    load balancing.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the query param to hash.
     """
     name: str
 
@@ -1720,6 +1837,20 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendRefsItems0
         case, the port number is the service port number, not the target port.
         For other resources, destination port might be derived from the referent
         resource or this field.
+    weight : int, default is 1, optional
+        Weight specifies the proportion of requests forwarded to the referenced
+        backend. This is computed as weight/(sum of all weights in this
+        BackendRefs list). For non-zero values, there may be some epsilon from
+        the exact proportion defined here depending on the precision an
+        implementation supports. Weight is not a percentage and the sum of
+        weights does not need to equal 100.
+
+        If only one backend is specified and it has a weight greater than 0, 100%
+        of the traffic is forwarded to that backend. If weight is set to 0, no
+        traffic should be forwarded for this entry. If unspecified, weight
+        defaults to 1.
+
+        Support for this field varies based on the context where used.
     """
     fallback?: bool
     group?: str = ""
@@ -1728,6 +1859,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendRefsItems0
 
     namespace?: str
     port?: int
+    weight?: int = 1
 
     check:
         len(group) <= 253 if group
@@ -1742,6 +1874,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendRefsItems0
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
         port <= 65535 if port not in [None, Undefined]
         port >= 1 if port not in [None, Undefined]
+        weight <= 1000000 if weight not in [None, Undefined]
+        weight >= 0 if weight not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettings:
     r"""
@@ -2230,6 +2364,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLo
         header
     headers : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerConsistentHashHeadersItems0], default is Undefined, optional
         Headers configures the header hash policy for each header, when the consistent hash type is set to Headers.
+    queryParams : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerConsistentHashQueryParamsItems0], default is Undefined, optional
+        QueryParams configures the query parameter hash policy when the consistent hash type is set to QueryParams.
     tableSize : int, default is 65537, optional
         The table size for consistent hashing, must be prime number limited to 5000011.
     $type : str, default is Undefined, required
@@ -2238,12 +2374,14 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLo
         "Header",
         "Headers",
         "Cookie".
+        "QueryParams".
     """
     cookie?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerConsistentHashCookie
     header?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerConsistentHashHeader
     headers?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerConsistentHashHeadersItems0]
+    queryParams?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerConsistentHashQueryParamsItems0]
     tableSize?: int = 65537
-    $type: "SourceIP" | "Header" | "Headers" | "Cookie"
+    $type: "SourceIP" | "Header" | "Headers" | "Cookie" | "QueryParams"
 
     check:
         tableSize <= 5000011 if tableSize not in [None, Undefined]
@@ -2297,6 +2435,18 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLo
     ----------
     name : str, default is Undefined, required
         Name of the header to hash.
+    """
+    name: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerConsistentHashQueryParamsItems0:
+    r"""
+    QueryParam defines the query parameter name hashing configuration for consistent hash based
+    load balancing.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the query param to hash.
     """
     name: str
 
@@ -2908,6 +3058,20 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         case, the port number is the service port number, not the target port.
         For other resources, destination port might be derived from the referent
         resource or this field.
+    weight : int, default is 1, optional
+        Weight specifies the proportion of requests forwarded to the referenced
+        backend. This is computed as weight/(sum of all weights in this
+        BackendRefs list). For non-zero values, there may be some epsilon from
+        the exact proportion defined here depending on the precision an
+        implementation supports. Weight is not a percentage and the sum of
+        weights does not need to equal 100.
+
+        If only one backend is specified and it has a weight greater than 0, 100%
+        of the traffic is forwarded to that backend. If weight is set to 0, no
+        traffic should be forwarded for this entry. If unspecified, weight
+        defaults to 1.
+
+        Support for this field varies based on the context where used.
     """
     fallback?: bool
     group?: str = ""
@@ -2916,6 +3080,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
 
     namespace?: str
     port?: int
+    weight?: int = 1
 
     check:
         len(group) <= 253 if group
@@ -2930,6 +3095,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
         port <= 65535 if port not in [None, Undefined]
         port >= 1 if port not in [None, Undefined]
+        weight <= 1000000 if weight not in [None, Undefined]
+        weight >= 0 if weight not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettings:
     r"""
@@ -3418,6 +3585,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         header
     headers : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerConsistentHashHeadersItems0], default is Undefined, optional
         Headers configures the header hash policy for each header, when the consistent hash type is set to Headers.
+    queryParams : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerConsistentHashQueryParamsItems0], default is Undefined, optional
+        QueryParams configures the query parameter hash policy when the consistent hash type is set to QueryParams.
     tableSize : int, default is 65537, optional
         The table size for consistent hashing, must be prime number limited to 5000011.
     $type : str, default is Undefined, required
@@ -3426,12 +3595,14 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         "Header",
         "Headers",
         "Cookie".
+        "QueryParams".
     """
     cookie?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerConsistentHashCookie
     header?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerConsistentHashHeader
     headers?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerConsistentHashHeadersItems0]
+    queryParams?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerConsistentHashQueryParamsItems0]
     tableSize?: int = 65537
-    $type: "SourceIP" | "Header" | "Headers" | "Cookie"
+    $type: "SourceIP" | "Header" | "Headers" | "Cookie" | "QueryParams"
 
     check:
         tableSize <= 5000011 if tableSize not in [None, Undefined]
@@ -3485,6 +3656,18 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     ----------
     name : str, default is Undefined, required
         Name of the header to hash.
+    """
+    name: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerConsistentHashQueryParamsItems0:
+    r"""
+    QueryParam defines the query parameter name hashing configuration for consistent hash based
+    load balancing.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the query param to hash.
     """
     name: str
 
@@ -4214,6 +4397,20 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendRefsItems
         case, the port number is the service port number, not the target port.
         For other resources, destination port might be derived from the referent
         resource or this field.
+    weight : int, default is 1, optional
+        Weight specifies the proportion of requests forwarded to the referenced
+        backend. This is computed as weight/(sum of all weights in this
+        BackendRefs list). For non-zero values, there may be some epsilon from
+        the exact proportion defined here depending on the precision an
+        implementation supports. Weight is not a percentage and the sum of
+        weights does not need to equal 100.
+
+        If only one backend is specified and it has a weight greater than 0, 100%
+        of the traffic is forwarded to that backend. If weight is set to 0, no
+        traffic should be forwarded for this entry. If unspecified, weight
+        defaults to 1.
+
+        Support for this field varies based on the context where used.
     """
     fallback?: bool
     group?: str = ""
@@ -4222,6 +4419,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendRefsItems
 
     namespace?: str
     port?: int
+    weight?: int = 1
 
     check:
         len(group) <= 253 if group
@@ -4236,6 +4434,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendRefsItems
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
         port <= 65535 if port not in [None, Undefined]
         port >= 1 if port not in [None, Undefined]
+        weight <= 1000000 if weight not in [None, Undefined]
+        weight >= 0 if weight not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettings:
     r"""
@@ -4724,6 +4924,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsL
         header
     headers : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerConsistentHashHeadersItems0], default is Undefined, optional
         Headers configures the header hash policy for each header, when the consistent hash type is set to Headers.
+    queryParams : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerConsistentHashQueryParamsItems0], default is Undefined, optional
+        QueryParams configures the query parameter hash policy when the consistent hash type is set to QueryParams.
     tableSize : int, default is 65537, optional
         The table size for consistent hashing, must be prime number limited to 5000011.
     $type : str, default is Undefined, required
@@ -4732,12 +4934,14 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsL
         "Header",
         "Headers",
         "Cookie".
+        "QueryParams".
     """
     cookie?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerConsistentHashCookie
     header?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerConsistentHashHeader
     headers?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerConsistentHashHeadersItems0]
+    queryParams?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerConsistentHashQueryParamsItems0]
     tableSize?: int = 65537
-    $type: "SourceIP" | "Header" | "Headers" | "Cookie"
+    $type: "SourceIP" | "Header" | "Headers" | "Cookie" | "QueryParams"
 
     check:
         tableSize <= 5000011 if tableSize not in [None, Undefined]
@@ -4791,6 +4995,18 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsL
     ----------
     name : str, default is Undefined, required
         Name of the header to hash.
+    """
+    name: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerConsistentHashQueryParamsItems0:
+    r"""
+    QueryParam defines the query parameter name hashing configuration for consistent hash based
+    load balancing.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the query param to hash.
     """
     name: str
 

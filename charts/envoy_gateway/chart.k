@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "gateway-helm"
     repoURL : str, required, default is "oci://docker.io/envoyproxy/gateway-helm"
-    targetRevision : str, optional, default is "1.6.4"
+    targetRevision : str, optional, default is "1.7.0"
     """
     values?: Values | any
     chart: str = "gateway-helm"
     repoURL: str = "oci://docker.io/envoyproxy/gateway-helm"
-    targetRevision?: str = "1.6.4"
+    targetRevision?: str = "1.7.0"
 

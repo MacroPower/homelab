@@ -66,6 +66,16 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpec:
         path
     proxyProtocol : GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecProxyProtocol, default is Undefined, optional
         proxy protocol
+    scheme : str, default is Undefined, optional
+        Scheme configures how the :scheme pseudo-header is set for requests forwarded to backends.
+
+        - Preserve (default): Preserves the :scheme from the original client request.
+          Use this when backends need to know the original client scheme for URL generation or redirects.
+
+        - MatchBackend: Sets the :scheme to match the backend transport protocol.
+          If the backend uses TLS, the scheme is "https", otherwise "http".
+          Use this when backends require the scheme to match the actual transport protocol,
+          such as strictly HTTPS services that validate the :scheme header.
     targetRef : GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetRef, default is Undefined, optional
         target ref
     targetRefs : [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetRefsItems0], default is Undefined, optional
@@ -90,6 +100,7 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpec:
     http3?: any
     path?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecPath
     proxyProtocol?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecProxyProtocol
+    scheme?: "Preserve" | "MatchBackend"
     targetRef?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetRef
     targetRefs?: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetRefsItems0]
     targetSelectors?: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetSelectorsItems0]
@@ -307,6 +318,23 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHead
         Output:
           GET /foo HTTP/1.1
           my-header: foo,bar,baz
+    addIfAbsent : [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHeadersAddIfAbsentItems0], default is Undefined, optional
+        AddIfAbsent adds the given header(s) (name, value) to the request/response
+        only if the header does not already exist. Unlike Add which appends to
+        existing values, this is a no-op if the header is already present.
+
+        Input:
+          GET /foo HTTP/1.1
+          my-header: foo
+
+        Config:
+          addIfAbsent:
+          - name: "my-header"
+            value: "bar"
+
+        Output:
+          GET /foo HTTP/1.1
+          my-header: foo
     remove : [str], default is Undefined, optional
         Remove the given header(s) from the HTTP request before the action. The
         value of Remove is a list of HTTP header names. Note that the header
@@ -325,6 +353,9 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHead
         Output:
           GET /foo HTTP/1.1
           my-header2: bar
+    removeOnMatch : [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHeadersRemoveOnMatchItems0], default is Undefined, optional
+        RemoveOnMatch removes headers whose names match the specified string matchers.
+        Matching is performed on the header name (case-insensitive).
     set : [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHeadersSetItems0], default is Undefined, optional
         Set overwrites the request with the given header (name, value)
         before the action.
@@ -343,13 +374,51 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHead
           my-header: bar
     """
     add?: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHeadersAddItems0]
+    addIfAbsent?: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHeadersAddIfAbsentItems0]
     remove?: [str]
+    removeOnMatch?: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHeadersRemoveOnMatchItems0]
     set?: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHeadersSetItems0]
 
     check:
+        len(add) >= 1 if add
         len(add) <= 64 if add
+        len(addIfAbsent) >= 1 if addIfAbsent
+        len(addIfAbsent) <= 64 if addIfAbsent
+        len(remove) >= 1 if remove
         len(remove) <= 64 if remove
+        len(removeOnMatch) >= 1 if removeOnMatch
+        len(removeOnMatch) <= 64 if removeOnMatch
+        len(set) >= 1 if set
         len(set) <= 64 if set
+
+schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHeadersAddIfAbsentItems0:
+    r"""
+    HTTPHeader represents an HTTP Header name and value as defined by RFC 7230.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name is the name of the HTTP Header to be matched. Name matching MUST be
+        case-insensitive. (See https://tools.ietf.org/html/rfc7230#section-3.2).
+
+        If multiple entries specify equivalent header names, the first entry with
+        an equivalent name MUST be considered for a match. Subsequent entries
+        with an equivalent header name MUST be ignored. Due to the
+        case-insensitivity of header names, "foo" and "Foo" are considered
+        equivalent.
+    value : str, default is Undefined, required
+        Value is the value of HTTP Header to be matched.
+    """
+    name: str
+
+    value: str
+
+    check:
+        len(name) <= 256
+        len(name) >= 1
+        _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
+        len(value) <= 4096
+        len(value) >= 1
 
 schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHeadersAddItems0:
     r"""
@@ -378,6 +447,26 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHead
         len(name) >= 1
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
+        len(value) >= 1
+
+schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHeadersRemoveOnMatchItems0:
+    r"""
+    StringMatch defines how to match any strings.
+    This is a general purpose match condition that can be used by other EG APIs
+    that need to match against a string.
+
+    Attributes
+    ----------
+    $type : str, default is "Exact", optional
+        Type specifies how to match against a string.
+    value : str, default is Undefined, required
+        Value specifies the string value that the match must have.
+    """
+    $type?: "Exact" | "Prefix" | "Suffix" | "RegularExpression" = "Exact"
+    value: str
+
+    check:
+        len(value) <= 1024
         len(value) >= 1
 
 schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHeadersSetItems0:
@@ -432,6 +521,23 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHead
         Output:
           GET /foo HTTP/1.1
           my-header: foo,bar,baz
+    addIfAbsent : [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeadersAddIfAbsentItems0], default is Undefined, optional
+        AddIfAbsent adds the given header(s) (name, value) to the request/response
+        only if the header does not already exist. Unlike Add which appends to
+        existing values, this is a no-op if the header is already present.
+
+        Input:
+          GET /foo HTTP/1.1
+          my-header: foo
+
+        Config:
+          addIfAbsent:
+          - name: "my-header"
+            value: "bar"
+
+        Output:
+          GET /foo HTTP/1.1
+          my-header: foo
     remove : [str], default is Undefined, optional
         Remove the given header(s) from the HTTP request before the action. The
         value of Remove is a list of HTTP header names. Note that the header
@@ -450,6 +556,9 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHead
         Output:
           GET /foo HTTP/1.1
           my-header2: bar
+    removeOnMatch : [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeadersRemoveOnMatchItems0], default is Undefined, optional
+        RemoveOnMatch removes headers whose names match the specified string matchers.
+        Matching is performed on the header name (case-insensitive).
     set : [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeadersSetItems0], default is Undefined, optional
         Set overwrites the request with the given header (name, value)
         before the action.
@@ -468,13 +577,51 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHead
           my-header: bar
     """
     add?: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeadersAddItems0]
+    addIfAbsent?: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeadersAddIfAbsentItems0]
     remove?: [str]
+    removeOnMatch?: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeadersRemoveOnMatchItems0]
     set?: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeadersSetItems0]
 
     check:
+        len(add) >= 1 if add
         len(add) <= 64 if add
+        len(addIfAbsent) >= 1 if addIfAbsent
+        len(addIfAbsent) <= 64 if addIfAbsent
+        len(remove) >= 1 if remove
         len(remove) <= 64 if remove
+        len(removeOnMatch) >= 1 if removeOnMatch
+        len(removeOnMatch) <= 64 if removeOnMatch
+        len(set) >= 1 if set
         len(set) <= 64 if set
+
+schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeadersAddIfAbsentItems0:
+    r"""
+    HTTPHeader represents an HTTP Header name and value as defined by RFC 7230.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name is the name of the HTTP Header to be matched. Name matching MUST be
+        case-insensitive. (See https://tools.ietf.org/html/rfc7230#section-3.2).
+
+        If multiple entries specify equivalent header names, the first entry with
+        an equivalent name MUST be considered for a match. Subsequent entries
+        with an equivalent header name MUST be ignored. Due to the
+        case-insensitivity of header names, "foo" and "Foo" are considered
+        equivalent.
+    value : str, default is Undefined, required
+        Value is the value of HTTP Header to be matched.
+    """
+    name: str
+
+    value: str
+
+    check:
+        len(name) <= 256
+        len(name) >= 1
+        _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
+        len(value) <= 4096
+        len(value) >= 1
 
 schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeadersAddItems0:
     r"""
@@ -503,6 +650,26 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHead
         len(name) >= 1
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
+        len(value) >= 1
+
+schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeadersRemoveOnMatchItems0:
+    r"""
+    StringMatch defines how to match any strings.
+    This is a general purpose match condition that can be used by other EG APIs
+    that need to match against a string.
+
+    Attributes
+    ----------
+    $type : str, default is "Exact", optional
+        Type specifies how to match against a string.
+    value : str, default is Undefined, required
+        Value specifies the string value that the match must have.
+    """
+    $type?: "Exact" | "Prefix" | "Suffix" | "RegularExpression" = "Exact"
+    value: str
+
+    check:
+        len(value) <= 1024
         len(value) >= 1
 
 schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHeadersSetItems0:
