@@ -766,9 +766,6 @@ schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0BackendRefsItems0FiltersI
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
-
-        Must consist of printable US-ASCII characters, optionally separated
-        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
     """
     name: str
 
@@ -780,7 +777,6 @@ schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0BackendRefsItems0FiltersI
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
         len(value) >= 1
-        _regex_match(str(value), r"^[!-~]+([\t ]?[!-~]+)*$")
 
 schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0BackendRefsItems0FiltersItems0RequestHeaderModifierSetItems0:
     r"""
@@ -799,9 +795,6 @@ schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0BackendRefsItems0FiltersI
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
-
-        Must consist of printable US-ASCII characters, optionally separated
-        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
     """
     name: str
 
@@ -813,7 +806,6 @@ schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0BackendRefsItems0FiltersI
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
         len(value) >= 1
-        _regex_match(str(value), r"^[!-~]+([\t ]?[!-~]+)*$")
 
 schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0BackendRefsItems0FiltersItems0RequestMirror:
     r"""
@@ -1045,9 +1037,6 @@ schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0BackendRefsItems0FiltersI
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
-
-        Must consist of printable US-ASCII characters, optionally separated
-        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
     """
     name: str
 
@@ -1059,7 +1048,6 @@ schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0BackendRefsItems0FiltersI
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
         len(value) >= 1
-        _regex_match(str(value), r"^[!-~]+([\t ]?[!-~]+)*$")
 
 schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0BackendRefsItems0FiltersItems0ResponseHeaderModifierSetItems0:
     r"""
@@ -1078,9 +1066,6 @@ schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0BackendRefsItems0FiltersI
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
-
-        Must consist of printable US-ASCII characters, optionally separated
-        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
     """
     name: str
 
@@ -1092,7 +1077,6 @@ schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0BackendRefsItems0FiltersI
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
         len(value) >= 1
-        _regex_match(str(value), r"^[!-~]+([\t ]?[!-~]+)*$")
 
 schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0FiltersItems0:
     r"""
@@ -1268,9 +1252,6 @@ schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0FiltersItems0RequestHeade
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
-
-        Must consist of printable US-ASCII characters, optionally separated
-        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
     """
     name: str
 
@@ -1282,7 +1263,6 @@ schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0FiltersItems0RequestHeade
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
         len(value) >= 1
-        _regex_match(str(value), r"^[!-~]+([\t ]?[!-~]+)*$")
 
 schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0FiltersItems0RequestHeaderModifierSetItems0:
     r"""
@@ -1301,9 +1281,6 @@ schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0FiltersItems0RequestHeade
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
-
-        Must consist of printable US-ASCII characters, optionally separated
-        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
     """
     name: str
 
@@ -1315,7 +1292,6 @@ schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0FiltersItems0RequestHeade
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
         len(value) >= 1
-        _regex_match(str(value), r"^[!-~]+([\t ]?[!-~]+)*$")
 
 schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0FiltersItems0RequestMirror:
     r"""
@@ -1547,9 +1523,6 @@ schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0FiltersItems0ResponseHead
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
-
-        Must consist of printable US-ASCII characters, optionally separated
-        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
     """
     name: str
 
@@ -1561,7 +1534,6 @@ schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0FiltersItems0ResponseHead
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
         len(value) >= 1
-        _regex_match(str(value), r"^[!-~]+([\t ]?[!-~]+)*$")
 
 schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0FiltersItems0ResponseHeaderModifierSetItems0:
     r"""
@@ -1580,9 +1552,6 @@ schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0FiltersItems0ResponseHead
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
-
-        Must consist of printable US-ASCII characters, optionally separated
-        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
     """
     name: str
 
@@ -1594,7 +1563,6 @@ schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0FiltersItems0ResponseHead
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
         len(value) >= 1
-        _regex_match(str(value), r"^[!-~]+([\t ]?[!-~]+)*$")
 
 schema GatewayNetworkingK8sIoV1GRPCRouteSpecRulesItems0MatchesItems0:
     r"""

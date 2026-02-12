@@ -133,7 +133,7 @@ schema GatewayNetworkingxK8sIoV1alpha1XMeshStatus:
         SupportedFeatures is the set of features the Mesh support.
         It MUST be sorted in ascending alphabetical order by the Name key.
     """
-    conditions?: [GatewayNetworkingxK8sIoV1alpha1XMeshStatusConditionsItems0] = [{"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted"}, {"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Programmed"}]
+    conditions?: [GatewayNetworkingxK8sIoV1alpha1XMeshStatusConditionsItems0] = [{"message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z"}, {"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Programmed"}]
     supportedFeatures?: [GatewayNetworkingxK8sIoV1alpha1XMeshStatusSupportedFeaturesItems0]
 
     check:
