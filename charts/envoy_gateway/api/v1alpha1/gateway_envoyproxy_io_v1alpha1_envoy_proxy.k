@@ -56,11 +56,15 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpec:
         If unspecified, the default filter order is applied.
         Default filter order is:
 
+        - envoy.filters.http.custom_response
+
         - envoy.filters.http.health_check
 
         - envoy.filters.http.fault
 
         - envoy.filters.http.cors
+
+        - envoy.filters.http.header_mutation
 
         - envoy.filters.http.ext_authz
 
@@ -91,8 +95,6 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpec:
         - envoy.filters.http.grpc_web
 
         - envoy.filters.http.grpc_stats
-
-        - envoy.filters.http.custom_response
 
         - envoy.filters.http.credential_injector
 
@@ -333,9 +335,9 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecFilterOrderItems0:
     name : str, default is Undefined, required
         Name of the filter.
     """
-    after?: "envoy.filters.http.health_check" | "envoy.filters.http.fault" | "envoy.filters.http.cors" | "envoy.filters.http.ext_authz" | "envoy.filters.http.api_key_auth" | "envoy.filters.http.basic_auth" | "envoy.filters.http.oauth2" | "envoy.filters.http.jwt_authn" | "envoy.filters.http.stateful_session" | "envoy.filters.http.buffer" | "envoy.filters.http.lua" | "envoy.filters.http.ext_proc" | "envoy.filters.http.wasm" | "envoy.filters.http.rbac" | "envoy.filters.http.local_ratelimit" | "envoy.filters.http.ratelimit" | "envoy.filters.http.grpc_web" | "envoy.filters.http.grpc_stats" | "envoy.filters.http.custom_response" | "envoy.filters.http.credential_injector" | "envoy.filters.http.compressor"
-    before?: "envoy.filters.http.health_check" | "envoy.filters.http.fault" | "envoy.filters.http.cors" | "envoy.filters.http.ext_authz" | "envoy.filters.http.api_key_auth" | "envoy.filters.http.basic_auth" | "envoy.filters.http.oauth2" | "envoy.filters.http.jwt_authn" | "envoy.filters.http.stateful_session" | "envoy.filters.http.buffer" | "envoy.filters.http.lua" | "envoy.filters.http.ext_proc" | "envoy.filters.http.wasm" | "envoy.filters.http.rbac" | "envoy.filters.http.local_ratelimit" | "envoy.filters.http.ratelimit" | "envoy.filters.http.grpc_web" | "envoy.filters.http.grpc_stats" | "envoy.filters.http.custom_response" | "envoy.filters.http.credential_injector" | "envoy.filters.http.compressor"
-    name: "envoy.filters.http.health_check" | "envoy.filters.http.fault" | "envoy.filters.http.cors" | "envoy.filters.http.ext_authz" | "envoy.filters.http.api_key_auth" | "envoy.filters.http.basic_auth" | "envoy.filters.http.oauth2" | "envoy.filters.http.jwt_authn" | "envoy.filters.http.stateful_session" | "envoy.filters.http.buffer" | "envoy.filters.http.lua" | "envoy.filters.http.ext_proc" | "envoy.filters.http.wasm" | "envoy.filters.http.rbac" | "envoy.filters.http.local_ratelimit" | "envoy.filters.http.ratelimit" | "envoy.filters.http.grpc_web" | "envoy.filters.http.grpc_stats" | "envoy.filters.http.custom_response" | "envoy.filters.http.credential_injector" | "envoy.filters.http.compressor"
+    after?: "envoy.filters.http.custom_response" | "envoy.filters.http.health_check" | "envoy.filters.http.fault" | "envoy.filters.http.cors" | "envoy.filters.http.header_mutation" | "envoy.filters.http.ext_authz" | "envoy.filters.http.api_key_auth" | "envoy.filters.http.basic_auth" | "envoy.filters.http.oauth2" | "envoy.filters.http.jwt_authn" | "envoy.filters.http.stateful_session" | "envoy.filters.http.buffer" | "envoy.filters.http.lua" | "envoy.filters.http.ext_proc" | "envoy.filters.http.wasm" | "envoy.filters.http.rbac" | "envoy.filters.http.local_ratelimit" | "envoy.filters.http.ratelimit" | "envoy.filters.http.grpc_web" | "envoy.filters.http.grpc_stats" | "envoy.filters.http.credential_injector" | "envoy.filters.http.compressor" | "envoy.filters.http.dynamic_forward_proxy"
+    before?: "envoy.filters.http.custom_response" | "envoy.filters.http.health_check" | "envoy.filters.http.fault" | "envoy.filters.http.cors" | "envoy.filters.http.header_mutation" | "envoy.filters.http.ext_authz" | "envoy.filters.http.api_key_auth" | "envoy.filters.http.basic_auth" | "envoy.filters.http.oauth2" | "envoy.filters.http.jwt_authn" | "envoy.filters.http.stateful_session" | "envoy.filters.http.buffer" | "envoy.filters.http.lua" | "envoy.filters.http.ext_proc" | "envoy.filters.http.wasm" | "envoy.filters.http.rbac" | "envoy.filters.http.local_ratelimit" | "envoy.filters.http.ratelimit" | "envoy.filters.http.grpc_web" | "envoy.filters.http.grpc_stats" | "envoy.filters.http.credential_injector" | "envoy.filters.http.compressor" | "envoy.filters.http.dynamic_forward_proxy"
+    name: "envoy.filters.http.custom_response" | "envoy.filters.http.health_check" | "envoy.filters.http.fault" | "envoy.filters.http.cors" | "envoy.filters.http.header_mutation" | "envoy.filters.http.ext_authz" | "envoy.filters.http.api_key_auth" | "envoy.filters.http.basic_auth" | "envoy.filters.http.oauth2" | "envoy.filters.http.jwt_authn" | "envoy.filters.http.stateful_session" | "envoy.filters.http.buffer" | "envoy.filters.http.lua" | "envoy.filters.http.ext_proc" | "envoy.filters.http.wasm" | "envoy.filters.http.rbac" | "envoy.filters.http.local_ratelimit" | "envoy.filters.http.ratelimit" | "envoy.filters.http.grpc_web" | "envoy.filters.http.grpc_stats" | "envoy.filters.http.credential_injector" | "envoy.filters.http.compressor" | "envoy.filters.http.dynamic_forward_proxy"
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecLogging:
     r"""
