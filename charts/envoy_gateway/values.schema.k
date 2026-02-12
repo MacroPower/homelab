@@ -523,7 +523,7 @@ schema ValuesGlobalImagesEnvoyGateway:
 
     Attributes
     ----------
-    image : str, optional, default is "docker.io/envoyproxy/gateway:v1.6.4"
+    image : str, optional, default is "docker.io/envoyproxy/gateway:v1.7.0"
         This is the full image name including the hub, repo, and tag.
     pullPolicy : str, optional, default is "IfNotPresent"
         Specify image pull policy if default behavior isn't desired.
@@ -601,6 +601,9 @@ schema ValuesService:
     trafficDistribution : str, optional, default is ""
         If set to PreferClose, the Envoy fleet will prioritize connecting to the Envoy Gateway pods that are topologically closest to them.
     $type : str, optional, default is "ClusterIP"
+        Service type. Can be set to LoadBalancer with specific IP, e.g.:
+        type: LoadBalancer
+        loadBalancerIP: 10.236.90.20
     """
     [...str]: any
     annotations?: ValuesServiceAnnotations
