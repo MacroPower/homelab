@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "nack"
     repoURL : str, required, default is "https://nats-io.github.io/k8s/helm/charts/"
-    targetRevision : str, optional, default is "0.30.0"
+    targetRevision : str, optional, default is "0.33.2"
     """
     values?: Values | any
     chart: str = "nack"
     repoURL: str = "https://nats-io.github.io/k8s/helm/charts/"
-    targetRevision?: str = "0.30.0"
+    targetRevision?: str = "0.33.2"
 

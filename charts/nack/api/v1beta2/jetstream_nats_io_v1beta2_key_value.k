@@ -53,6 +53,8 @@ schema JetstreamNatsIoV1beta2KeyValueSpec:
         The number of historical values to keep per key.
     jsDomain : str, default is Undefined, optional
         The JetStream domain to use for the KV store.
+    limitMarkerTtl : int, default is Undefined, optional
+        LimitMarkerTTL is how long the bucket keeps markers when keys are removed by the TTL setting, 0 meaning markers are not supported
     maxBytes : int, default is Undefined, optional
         The maximum size of the KV Store in bytes.
     maxValueSize : int, default is Undefined, optional
@@ -91,6 +93,7 @@ schema JetstreamNatsIoV1beta2KeyValueSpec:
     description?: str
     history?: int
     jsDomain?: str
+    limitMarkerTtl?: int
     maxBytes?: int
     maxValueSize?: int
     mirror?: JetstreamNatsIoV1beta2KeyValueSpecMirror

@@ -20,14 +20,8 @@ schema Values:
         Configure a container security context
         ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
     global : ValuesGlobal, optional
-        Global values are values that can be accessed from any chart or subchart by exactly the same name.
     imagePullSecrets : [any], optional
     jetstream : ValuesJetstream, optional
-        ##############################
-                                    #
-         NACK JetStream Controller  #
-                                    #
-        ##############################
     nameOverride : str, optional, default is ""
     namespaceOverride : str, optional, default is ""
     namespaced : bool, optional, default is False
@@ -55,6 +49,11 @@ schema Values:
         Node tolerations for server scheduling to nodes with taints
         Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 
+    useLegacyNames : bool, optional, default is True
+        Use legacy naming and labels for backwards compatibility with existing installations.
+        When true: uses .Release.Name for resource names and simple labels (app, chart)
+        When false: uses .Chart.Name for resource names and modern Kubernetes labels (app.kubernetes.io/*)
+        Set to false when using NACK as a subchart to avoid naming collisions and use standard labels.
     """
     [...str]: any
     additionalVolumeMounts?: [any]
@@ -76,6 +75,7 @@ schema Values:
     securityContext?: ValuesSecurityContext
     serviceAccountName?: str
     tolerations?: [any]
+    useLegacyNames?: bool
 
 schema ValuesAffinity:
     r"""
@@ -93,25 +93,33 @@ schema ValuesContainerSecurityContext:
 
 schema ValuesGlobal:
     r"""
-    Global values are values that can be accessed from any chart or subchart by exactly the same name.
+    ValuesGlobal
+
+    Attributes
+    ----------
+    labels : ValuesGlobalLabels, optional
+        global labels will be applied to all resources deployed by the chart
+    """
+    [...str]: any
+    labels?: ValuesGlobalLabels
+
+schema ValuesGlobalLabels:
+    r"""
+    global labels will be applied to all resources deployed by the chart
     """
     [...str]: any
 
 schema ValuesJetstream:
     r"""
-    ##############################
-                                #
-     NACK JetStream Controller  #
-                                #
-    ##############################
+    ValuesJetstream
 
     Attributes
     ----------
     additionalArgs : [any], optional
         Additional arguments to pass to the controller process
+    controlLoop : bool, optional, default is False
         Enable controller-runtime backend
-        additionalArgs:
-        - --control-loop
+        See https://github.com/nats-io/nack/blob/50d1f5/README.md#controller-modes
     enabled : bool, optional, default is True
     image : ValuesJetstreamImage, optional
     nats : ValuesJetstreamNats, optional
@@ -122,6 +130,7 @@ schema ValuesJetstream:
     """
     [...str]: any
     additionalArgs?: [any]
+    controlLoop?: bool
     enabled?: bool
     image?: ValuesJetstreamImage
     nats?: ValuesJetstreamNats
@@ -135,7 +144,7 @@ schema ValuesJetstreamImage:
     ----------
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "natsio/jetstream-controller"
-    tag : str, optional, default is "0.20.1"
+    tag : str, optional, default is "0.22.2"
     """
     [...str]: any
     pullPolicy?: str
