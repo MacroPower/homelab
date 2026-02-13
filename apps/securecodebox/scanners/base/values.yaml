@@ -13,7 +13,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/home-operations/webhook
-          tag: 2.8.2
+          tag: 2.8.3
         env:
           WEBHOOK__PORT: { value: &port 80 }
         securityContext:
