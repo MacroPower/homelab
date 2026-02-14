@@ -51,7 +51,7 @@ schema ValuesImage:
     pullPolicy : str, optional, default is "IfNotPresent"
         digest: sha256:1234567
     repository : str, optional, default is "ghcr.io/stakater/reloader"
-    tag : str, optional, default is "v1.4.12"
+    tag : str, optional, default is "v1.4.13"
     """
     [...str]: any
     name?: str
@@ -84,6 +84,7 @@ schema ValuesReloader:
             configmap: "my.company.com/configmap"
             secret: "my.company.com/secret"
     deployment : ValuesReloaderDeployment, optional
+    enableCSIIntegration : bool, optional, default is False
     enableHA : bool, optional, default is False
         Set to true to enable leadership election allowing you to run multiple replicas
     enableMetricsByNamespace : bool, optional, default is False
@@ -135,6 +136,7 @@ schema ValuesReloader:
     autoReloadAll?: bool
     custom_annotations?: ValuesReloaderCustomAnnotations
     deployment?: ValuesReloaderDeployment
+    enableCSIIntegration?: bool
     enableHA?: bool
     enableMetricsByNamespace?: bool
     enablePProf?: bool
@@ -340,7 +342,7 @@ schema ValuesReloaderDeploymentLabels:
     ----------
     group : str, optional, default is "com.stakater.platform"
     provider : str, optional, default is "stakater"
-    version : str, optional, default is "v1.4.12"
+    version : str, optional, default is "v1.4.13"
     """
     [...str]: any
     group?: str

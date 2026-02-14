@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "reloader"
     repoURL : str, required, default is "https://stakater.github.io/stakater-charts"
-    targetRevision : str, optional, default is "2.2.7"
+    targetRevision : str, optional, default is "2.2.8"
     """
     values?: Values | any
     chart: str = "reloader"
     repoURL: str = "https://stakater.github.io/stakater-charts"
-    targetRevision?: str = "2.2.7"
+    targetRevision?: str = "2.2.8"
 

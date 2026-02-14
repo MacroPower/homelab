@@ -55,7 +55,7 @@
           "type": "string"
         },
         "tag": {
-          "default": "v1.4.12",
+          "default": "v1.4.13",
           "required": [],
           "title": "tag",
           "type": "string"
@@ -196,7 +196,7 @@
                   "type": "string"
                 },
                 "version": {
-                  "default": "v1.4.12",
+                  "default": "v1.4.13",
                   "required": [],
                   "title": "version",
                   "type": "string"
@@ -338,6 +338,12 @@
           "required": [],
           "title": "deployment",
           "type": "object"
+        },
+        "enableCSIIntegration": {
+          "default": false,
+          "required": [],
+          "title": "enableCSIIntegration",
+          "type": "boolean"
         },
         "enableHA": {
           "default": false,
