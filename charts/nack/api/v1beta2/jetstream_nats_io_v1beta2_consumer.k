@@ -95,6 +95,8 @@ schema JetstreamNatsIoV1beta2ConsumerSpec:
         opt start seq
     optStartTime : str, default is Undefined, optional
         Time format must be RFC3339.
+    pauseUntil : str, default is Undefined, optional
+        RFC3339 timestamp until which the consumer should be paused.
     pinnedTtl : str, default is Undefined, optional
         TTL for pinned client when using pinned_client priority policy.
     preventDelete : bool, default is Undefined, optional
@@ -128,7 +130,7 @@ schema JetstreamNatsIoV1beta2ConsumerSpec:
     backoff?: [str]
     creds?: str = ""
     deliverGroup?: str
-    deliverPolicy?: "all" | "last" | "new" | "byStartSequence" | "byStartTime" = "all"
+    deliverPolicy?: "all" | "last" | "new" | "byStartSequence" | "byStartTime" | "lastPerSubject" = "all"
     deliverSubject?: str
     description?: str
     durableName?: str
@@ -150,6 +152,7 @@ schema JetstreamNatsIoV1beta2ConsumerSpec:
     nkey?: str = ""
     optStartSeq?: int
     optStartTime?: str
+    pauseUntil?: str = ""
     pinnedTtl?: str = ""
     preventDelete?: bool = False
     preventUpdate?: bool = False

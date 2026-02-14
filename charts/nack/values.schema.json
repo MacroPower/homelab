@@ -36,7 +36,15 @@
     },
     "global": {
       "additionalProperties": true,
-      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "properties": {
+        "labels": {
+          "additionalProperties": true,
+          "description": "global labels will be applied to all resources deployed by the chart",
+          "required": [],
+          "title": "labels",
+          "type": "object"
+        }
+      },
       "required": [],
       "title": "global",
       "type": "object"
@@ -51,16 +59,22 @@
     },
     "jetstream": {
       "additionalProperties": true,
-      "description": "##############################\n                            #\n NACK JetStream Controller  #\n                            #\n##############################",
       "properties": {
         "additionalArgs": {
-          "description": "Additional arguments to pass to the controller process\nEnable controller-runtime backend\nadditionalArgs:\n- --control-loop",
+          "description": "Additional arguments to pass to the controller process",
           "items": {
             "required": []
           },
           "required": [],
           "title": "additionalArgs",
           "type": "array"
+        },
+        "controlLoop": {
+          "default": false,
+          "description": "Enable controller-runtime backend\nSee https://github.com/nats-io/nack/blob/50d1f5/README.md#controller-modes",
+          "required": [],
+          "title": "controlLoop",
+          "type": "boolean"
         },
         "enabled": {
           "default": true,
@@ -84,7 +98,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "0.20.1",
+              "default": "0.22.2",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -256,6 +270,13 @@
       "required": [],
       "title": "tolerations",
       "type": "array"
+    },
+    "useLegacyNames": {
+      "default": true,
+      "description": "Use legacy naming and labels for backwards compatibility with existing installations.\nWhen true: uses .Release.Name for resource names and simple labels (app, chart)\nWhen false: uses .Chart.Name for resource names and modern Kubernetes labels (app.kubernetes.io/*)\nSet to false when using NACK as a subchart to avoid naming collisions and use standard labels.",
+      "required": [],
+      "title": "useLegacyNames",
+      "type": "boolean"
     }
   },
   "required": [],
