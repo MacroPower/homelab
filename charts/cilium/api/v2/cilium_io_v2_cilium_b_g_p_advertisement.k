@@ -53,14 +53,17 @@ schema CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0:
         AdvertisementType defines type of advertisement which has to be advertised.
     attributes : CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Attributes, default is Undefined, optional
         attributes
+    interface : CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Interface, default is Undefined, optional
+        interface
     selector : CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Selector, default is Undefined, optional
         selector
     service : CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Service, default is Undefined, optional
         service
     """
-    advertisementType: "PodCIDR" | "CiliumPodIPPool" | "Service"
+    advertisementType: "PodCIDR" | "CiliumPodIPPool" | "Service" | "Interface"
 
     attributes?: CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Attributes
+    interface?: CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Interface
     selector?: CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Selector
     service?: CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Service
 
@@ -102,6 +105,18 @@ schema CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0AttributesCommuni
     check:
         all large in large {_regex_match(str(large), r"^([0-9]|[1-9][0-9]{1,8}|[1-3][0-9]{9}|4[01][0-9]{8}|42[0-8][0-9]{7}|429[0-3][0-9]{6}|4294[0-8][0-9]{5}|42949[0-5][0-9]{4}|429496[0-6][0-9]{3}|4294967[01][0-9]{2}|42949672[0-8][0-9]|429496729[0-5]):([0-9]|[1-9][0-9]{1,8}|[1-3][0-9]{9}|4[01][0-9]{8}|42[0-8][0-9]{7}|429[0-3][0-9]{6}|4294[0-8][0-9]{5}|42949[0-5][0-9]{4}|429496[0-6][0-9]{3}|4294967[01][0-9]{2}|42949672[0-8][0-9]|429496729[0-5]):([0-9]|[1-9][0-9]{1,8}|[1-3][0-9]{9}|4[01][0-9]{8}|42[0-8][0-9]{7}|429[0-3][0-9]{6}|4294[0-8][0-9]{5}|42949[0-5][0-9]{4}|429496[0-6][0-9]{3}|4294967[01][0-9]{2}|42949672[0-8][0-9]|429496729[0-5])$") if large} if large
         all standard in standard {_regex_match(str(standard), r"^([0-9]|[1-9][0-9]{1,8}|[1-3][0-9]{9}|4[01][0-9]{8}|42[0-8][0-9]{7}|429[0-3][0-9]{6}|4294[0-8][0-9]{5}|42949[0-5][0-9]{4}|429496[0-6][0-9]{3}|4294967[01][0-9]{2}|42949672[0-8][0-9]|429496729[0-5])$|^([0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]):([0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$") if standard} if standard
+
+schema CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Interface:
+    r"""
+    Interface defines configuration options for the "Interface" advertisementType.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of local interface of whose IP addresses will be advertised via BGP.
+        Each IP address applied on the interface is advertised as a /32 prefix (for IPv4) or a /128 prefix (for IPv6).
+    """
+    name: str
 
 schema CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Selector:
     r"""
@@ -151,7 +166,7 @@ schema CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0SelectorMatchExpr
 
 schema CiliumIoV2CiliumBGPAdvertisementSpecAdvertisementsItems0Service:
     r"""
-    Service defines configuration options for advertisementType service.
+    Service defines configuration options for the "Service" advertisementType.
 
     Attributes
     ----------
