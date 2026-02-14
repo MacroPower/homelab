@@ -411,7 +411,7 @@
                       "description": "init container image of SPIRE agent and server",
                       "properties": {
                         "digest": {
-                          "default": "sha256:2383baad1860bbe9d8a7a843775048fd07d8afe292b94bd876df64a69aae7cb1",
+                          "default": "sha256:b3255e7dfbcd10cb367af0d409747d511aeb66dfac98cf30e97e87e4207dd76f",
                           "required": [],
                           "title": "digest",
                           "type": "string"
@@ -1346,7 +1346,7 @@
           "additionalProperties": true,
           "properties": {
             "digest": {
-              "default": "sha256:2825dbfa6f89cbed882fd1d81e46a56c087e35885825139923aa29eb8aec47a9",
+              "default": "sha256:19921f48ee7e2295ea4dca955878a6cd8d70e6d4219d08f688e866ece9d95d4d",
               "required": [],
               "title": "digest",
               "type": "string"
@@ -1373,7 +1373,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v0.3.1",
+              "default": "v0.3.2",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -1789,7 +1789,7 @@
               "description": "Clustermesh API server image.",
               "properties": {
                 "digest": {
-                  "default": "sha256:8ee142912a0e261850c0802d9256ddbe3729e1cd35c6bea2d93077f334c3cf3b",
+                  "default": "sha256:3d4512153afc5d8ceda3517f9b243619b55a67f9abaebcc92c4be2df94d43cfa",
                   "description": "clustermesh-apiserver-digest",
                   "required": [],
                   "title": "digest",
@@ -1817,7 +1817,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.18.6",
+                  "default": "v1.18.7",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -3894,7 +3894,7 @@
           "description": "Envoy container image.",
           "properties": {
             "digest": {
-              "default": "sha256:81398e449f2d3d0a6a70527e4f641aaa685d3156bea0bb30712fae3fd8822b86",
+              "default": "sha256:da85124deeb42c8e56e55e9e6e155740f5df00e1064759a244bc246c3addb45d",
               "required": [],
               "title": "digest",
               "type": "string"
@@ -3921,7 +3921,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.35.9-1767794330-db497dd19e346b39d81d7b5c0dedf6c812bcc5c9",
+              "default": "v1.35.9-1770554954-8ce3bb4eca04188f4a0a1bfbd0a06a40f90883de",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -5623,7 +5623,7 @@
               "description": "Hubble-relay container image.",
               "properties": {
                 "digest": {
-                  "default": "sha256:fb6135e34c31e5f175cb5e75f86cea52ef2ff12b49bcefb7088ed93f5009eb8e",
+                  "default": "sha256:9bb9b2b1a4f4bef12a77738756cfbf970daa701e536e42f0a9c64a621bc7c9d5",
                   "description": "hubble-relay-digest",
                   "required": [],
                   "title": "digest",
@@ -5651,7 +5651,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.18.6",
+                  "default": "v1.18.7",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -5680,6 +5680,35 @@
               "required": [],
               "title": "listenPort",
               "type": "string"
+            },
+            "logOptions": {
+              "additionalProperties": true,
+              "description": "Logging configuration for hubble-relay.",
+              "properties": {
+                "format": {
+                  "default": "~",
+                  "description": "Log format for hubble-relay. Valid values are: text, text-ts, json, json-ts.",
+                  "required": [],
+                  "title": "format",
+                  "type": [
+                    "null",
+                    "string"
+                  ]
+                },
+                "level": {
+                  "default": "~",
+                  "description": "Log level for hubble-relay. Valid values are: debug, info, warn, error.",
+                  "required": [],
+                  "title": "level",
+                  "type": [
+                    "null",
+                    "string"
+                  ]
+                }
+              },
+              "required": [],
+              "title": "logOptions",
+              "type": "object"
             },
             "nodeSelector": {
               "additionalProperties": true,
@@ -7016,7 +7045,7 @@
       "description": "Agent container image.",
       "properties": {
         "digest": {
-          "default": "sha256:42ec562a5ff6c8a860c0639f5a7611685e253fd9eb2d2fcdade693724c9166a4",
+          "default": "sha256:99b029a0a7c2224dac8c1cc3b6b3ba52af00e2ff981d927e84260ee781e9753c",
           "description": "cilium-digest",
           "required": [],
           "title": "digest",
@@ -7044,7 +7073,7 @@
           "type": "string"
         },
         "tag": {
-          "default": "v1.18.6",
+          "default": "v1.18.7",
           "required": [],
           "title": "tag",
           "type": "string"
@@ -8610,28 +8639,28 @@
           "description": "cilium-operator image.",
           "properties": {
             "alibabacloudDigest": {
-              "default": "sha256:212c4cbe27da3772bcb952b8f8cbaa0b0eef72488b52edf90ad2b32072a3ca4c",
+              "default": "sha256:ca3f0dd26a4b447524dce51ee8ef82485a08187b840c21ce4a1398c02b5174a0",
               "description": "operator-alibabacloud-digest",
               "required": [],
               "title": "alibabacloudDigest",
               "type": "string"
             },
             "awsDigest": {
-              "default": "sha256:47dbc1a5bd483fec170dab7fb0bf2cca3585a4893675b0324d41d97bac8be5eb",
+              "default": "sha256:fe56a6289afea7f6420f8de0218710ccaaa7af891df5fc180ddd33e6c7509b45",
               "description": "operator-aws-digest",
               "required": [],
               "title": "awsDigest",
               "type": "string"
             },
             "azureDigest": {
-              "default": "sha256:a57aff47aeb32eccfedaa2a49d1af984d996d6d6de79609c232e0c4cf9ce97a1",
+              "default": "sha256:5fb753344c84ab0989d525f789738c874f3fa8f07fbb5cfce06034d027c9728f",
               "description": "operator-azure-digest",
               "required": [],
               "title": "azureDigest",
               "type": "string"
             },
             "genericDigest": {
-              "default": "sha256:34a827ce9ed021c8adf8f0feca131f53b3c54a3ef529053d871d0347ec4d69af",
+              "default": "sha256:244306c5e7c6b73dc7193424f46ed8a0530767b03f03baac80dd717a3a3f0ad7",
               "description": "operator-generic-digest",
               "required": [],
               "title": "genericDigest",
@@ -8665,7 +8694,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.18.6",
+              "default": "v1.18.7",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -9309,7 +9338,7 @@
               "description": "Envoy pre-flight image.",
               "properties": {
                 "digest": {
-                  "default": "sha256:81398e449f2d3d0a6a70527e4f641aaa685d3156bea0bb30712fae3fd8822b86",
+                  "default": "sha256:da85124deeb42c8e56e55e9e6e155740f5df00e1064759a244bc246c3addb45d",
                   "required": [],
                   "title": "digest",
                   "type": "string"
@@ -9336,7 +9365,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.35.9-1767794330-db497dd19e346b39d81d7b5c0dedf6c812bcc5c9",
+                  "default": "v1.35.9-1770554954-8ce3bb4eca04188f4a0a1bfbd0a06a40f90883de",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -9389,7 +9418,7 @@
           "description": "Cilium pre-flight image.",
           "properties": {
             "digest": {
-              "default": "sha256:42ec562a5ff6c8a860c0639f5a7611685e253fd9eb2d2fcdade693724c9166a4",
+              "default": "sha256:99b029a0a7c2224dac8c1cc3b6b3ba52af00e2ff981d927e84260ee781e9753c",
               "description": "cilium-digest",
               "required": [],
               "title": "digest",
@@ -9417,7 +9446,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.18.6",
+              "default": "v1.18.7",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -10652,7 +10681,7 @@
     },
     "underlayProtocol": {
       "default": "",
-      "description": "IP family for the underlay.",
+      "description": "IP family for the underlay.\nPossible values:\n  - \"ipv4\"\n  - \"ipv6\"",
       "required": [],
       "title": "underlayProtocol",
       "type": "string"

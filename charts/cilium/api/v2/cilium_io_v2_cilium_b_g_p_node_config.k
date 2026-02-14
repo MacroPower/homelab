@@ -137,7 +137,7 @@ schema CiliumIoV2CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0AutoDiscove
         mode is the mode of the auto-discovery.
     """
     defaultGateway?: CiliumIoV2CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0AutoDiscoveryDefaultGateway
-    mode: str
+    mode: "DefaultGateway"
 
 schema CiliumIoV2CiliumBGPNodeConfigSpecBgpInstancesItems0PeersItems0AutoDiscoveryDefaultGateway:
     r"""

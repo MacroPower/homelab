@@ -53,12 +53,15 @@ schema CiliumIoV2alpha1CiliumEndpointSliceEndpointsItems0:
         swagger:model NamedPorts
     networking : CiliumIoV2alpha1CiliumEndpointSliceEndpointsItems0Networking, default is Undefined, optional
         networking
+    "service-account" : str, default is Undefined, optional
+        ServiceAccount is the service account of the endpoint.
     """
     encryption?: CiliumIoV2alpha1CiliumEndpointSliceEndpointsItems0Encryption
     id?: int
     name?: str
     "named-ports"?: [CiliumIoV2alpha1CiliumEndpointSliceEndpointsItems0NamedPortsItems0]
     networking?: CiliumIoV2alpha1CiliumEndpointSliceEndpointsItems0Networking
+    "service-account"?: str
 
 schema CiliumIoV2alpha1CiliumEndpointSliceEndpointsItems0Encryption:
     r"""

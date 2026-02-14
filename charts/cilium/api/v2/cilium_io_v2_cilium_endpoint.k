@@ -57,6 +57,8 @@ schema CiliumIoV2CiliumEndpointStatus:
         networking
     policy : CiliumIoV2CiliumEndpointStatusPolicy, default is Undefined, optional
         policy
+    "service-account" : str, default is Undefined, optional
+        ServiceAccount is the service account associated with the endpoint
     state : str, default is Undefined, optional
         State is the state of the endpoint.
     """
@@ -70,6 +72,7 @@ schema CiliumIoV2CiliumEndpointStatus:
     "named-ports"?: [CiliumIoV2CiliumEndpointStatusNamedPortsItems0]
     networking?: CiliumIoV2CiliumEndpointStatusNetworking
     policy?: CiliumIoV2CiliumEndpointStatusPolicy
+    "service-account"?: str
     state?: "creating" | "waiting-for-identity" | "not-ready" | "waiting-to-regenerate" | "regenerating" | "restoring" | "ready" | "disconnecting" | "disconnected" | "invalid"
 
 schema CiliumIoV2CiliumEndpointStatusControllersItems0:

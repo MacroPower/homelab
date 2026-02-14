@@ -99,9 +99,6 @@ schema CiliumIoV2alpha1CiliumBGPPeerConfigSpecFamiliesItems0Advertisements:
 
     If not specified, no advertisements are sent for this family.
 
-    This field is ignored in CiliumBGPNeighbor which is used in CiliumBGPPeeringPolicy.
-    Use CiliumBGPPeeringPolicy advertisement options instead.
-
     Attributes
     ----------
     matchExpressions : [CiliumIoV2alpha1CiliumBGPPeerConfigSpecFamiliesItems0AdvertisementsMatchExpressionsItems0], default is Undefined, optional
