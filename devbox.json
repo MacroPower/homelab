@@ -19,7 +19,7 @@
     "natscli": "0.3.1",
     "kubernetes-helm": "3.19.1",
     "auth0-cli": "1.23.0",
-    "go": "1.25.5",
+    "go": "1.26.0",
     "wrangler": "4.61.1"
   },
   "env": {
