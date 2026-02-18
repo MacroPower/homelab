@@ -1318,18 +1318,369 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySource:
 
     Attributes
     ----------
+    directory : ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceDirectory, default is Undefined, optional
+        directory
+    helm : ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceHelm, default is Undefined, optional
+        helm
+    kustomize : ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceKustomize, default is Undefined, optional
+        kustomize
     path : str, default is Undefined, required
         Path is a directory path within the Git repository where the manifests are located
+    plugin : ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourcePlugin, default is Undefined, optional
+        plugin
     repoURL : str, default is Undefined, required
         RepoURL is the URL to the git repository that contains the application manifests
     targetRevision : str, default is Undefined, required
         TargetRevision defines the revision of the source to hydrate
     """
+    directory?: ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceDirectory
+    helm?: ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceHelm
+    kustomize?: ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceKustomize
     path: str
 
+    plugin?: ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourcePlugin
     repoURL: str
 
     targetRevision: str
+
+schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceDirectory:
+    r"""
+    Directory specifies path/directory specific options
+
+    Attributes
+    ----------
+    exclude : str, default is Undefined, optional
+        Exclude contains a glob pattern to match paths against that should be explicitly excluded from being used during manifest generation
+    include : str, default is Undefined, optional
+        Include contains a glob pattern to match paths against that should be explicitly included during manifest generation
+    jsonnet : ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceDirectoryJsonnet, default is Undefined, optional
+        jsonnet
+    recurse : bool, default is Undefined, optional
+        Recurse specifies whether to scan a directory recursively for manifests
+    """
+    exclude?: str
+    include?: str
+    jsonnet?: ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceDirectoryJsonnet
+    recurse?: bool
+
+schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceDirectoryJsonnet:
+    r"""
+    Jsonnet holds options specific to Jsonnet
+
+    Attributes
+    ----------
+    extVars : [ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceDirectoryJsonnetExtVarsItems0], default is Undefined, optional
+        ExtVars is a list of Jsonnet External Variables
+    libs : [str], default is Undefined, optional
+        Additional library search dirs
+    tlas : [ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceDirectoryJsonnetTlasItems0], default is Undefined, optional
+        TLAS is a list of Jsonnet Top-level Arguments
+    """
+    extVars?: [ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceDirectoryJsonnetExtVarsItems0]
+    libs?: [str]
+    tlas?: [ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceDirectoryJsonnetTlasItems0]
+
+schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceDirectoryJsonnetExtVarsItems0:
+    r"""
+    JsonnetVar represents a variable to be passed to jsonnet during manifest generation
+
+    Attributes
+    ----------
+    code : bool, default is Undefined, optional
+        code
+    name : str, default is Undefined, required
+        name
+    value : str, default is Undefined, required
+        value
+    """
+    code?: bool
+    name: str
+
+    value: str
+
+schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceDirectoryJsonnetTlasItems0:
+    r"""
+    JsonnetVar represents a variable to be passed to jsonnet during manifest generation
+
+    Attributes
+    ----------
+    code : bool, default is Undefined, optional
+        code
+    name : str, default is Undefined, required
+        name
+    value : str, default is Undefined, required
+        value
+    """
+    code?: bool
+    name: str
+
+    value: str
+
+schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceHelm:
+    r"""
+    Helm specifies helm specific options
+
+    Attributes
+    ----------
+    apiVersions : [str], default is Undefined, optional
+        APIVersions specifies the Kubernetes resource API versions to pass to Helm when templating manifests. By default,
+        Argo CD uses the API versions of the target cluster. The format is [group/]version/kind.
+    fileParameters : [ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceHelmFileParametersItems0], default is Undefined, optional
+        FileParameters are file parameters to the helm template
+    ignoreMissingValueFiles : bool, default is Undefined, optional
+        IgnoreMissingValueFiles prevents helm template from failing when valueFiles do not exist locally by not appending them to helm template --values
+    kubeVersion : str, default is Undefined, optional
+        KubeVersion specifies the Kubernetes API version to pass to Helm when templating manifests. By default, Argo CD
+        uses the Kubernetes version of the target cluster.
+    namespace : str, default is Undefined, optional
+        Namespace is an optional namespace to template with. If left empty, defaults to the app's destination namespace.
+    parameters : [ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceHelmParametersItems0], default is Undefined, optional
+        Parameters is a list of Helm parameters which are passed to the helm template command upon manifest generation
+    passCredentials : bool, default is Undefined, optional
+        PassCredentials pass credentials to all domains (Helm's --pass-credentials)
+    releaseName : str, default is Undefined, optional
+        ReleaseName is the Helm release name to use. If omitted it will use the application name
+    skipCrds : bool, default is Undefined, optional
+        SkipCrds skips custom resource definition installation step (Helm's --skip-crds)
+    skipSchemaValidation : bool, default is Undefined, optional
+        SkipSchemaValidation skips JSON schema validation (Helm's --skip-schema-validation)
+    skipTests : bool, default is Undefined, optional
+        SkipTests skips test manifest installation step (Helm's --skip-tests).
+    valueFiles : [str], default is Undefined, optional
+        ValuesFiles is a list of Helm value files to use when generating a template
+    values : str, default is Undefined, optional
+        Values specifies Helm values to be passed to helm template, typically defined as a block. ValuesObject takes precedence over Values, so use one or the other.
+    valuesObject : any, default is Undefined, optional
+        ValuesObject specifies Helm values to be passed to helm template, defined as a map. This takes precedence over Values.
+    version : str, default is Undefined, optional
+        Version is the Helm version to use for templating ("3")
+    """
+    apiVersions?: [str]
+    fileParameters?: [ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceHelmFileParametersItems0]
+    ignoreMissingValueFiles?: bool
+    kubeVersion?: str
+    namespace?: str
+    parameters?: [ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceHelmParametersItems0]
+    passCredentials?: bool
+    releaseName?: str
+    skipCrds?: bool
+    skipSchemaValidation?: bool
+    skipTests?: bool
+    valueFiles?: [str]
+    values?: str
+    valuesObject?: any
+    version?: str
+
+schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceHelmFileParametersItems0:
+    r"""
+    HelmFileParameter is a file parameter that's passed to helm template during manifest generation
+
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        Name is the name of the Helm parameter
+    path : str, default is Undefined, optional
+        Path is the path to the file containing the values for the Helm parameter
+    """
+    name?: str
+    path?: str
+
+schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceHelmParametersItems0:
+    r"""
+    HelmParameter is a parameter that's passed to helm template during manifest generation
+
+    Attributes
+    ----------
+    forceString : bool, default is Undefined, optional
+        ForceString determines whether to tell Helm to interpret booleans and numbers as strings
+    name : str, default is Undefined, optional
+        Name is the name of the Helm parameter
+    value : str, default is Undefined, optional
+        Value is the value for the Helm parameter
+    """
+    forceString?: bool
+    name?: str
+    value?: str
+
+schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceKustomize:
+    r"""
+    Kustomize specifies kustomize specific options
+
+    Attributes
+    ----------
+    apiVersions : [str], default is Undefined, optional
+        APIVersions specifies the Kubernetes resource API versions to pass to Helm when templating manifests. By default,
+        Argo CD uses the API versions of the target cluster. The format is [group/]version/kind.
+    commonAnnotations : {str:str}, default is Undefined, optional
+        CommonAnnotations is a list of additional annotations to add to rendered manifests
+    commonAnnotationsEnvsubst : bool, default is Undefined, optional
+        CommonAnnotationsEnvsubst specifies whether to apply env variables substitution for annotation values
+    commonLabels : {str:str}, default is Undefined, optional
+        CommonLabels is a list of additional labels to add to rendered manifests
+    components : [str], default is Undefined, optional
+        Components specifies a list of kustomize components to add to the kustomization before building
+    forceCommonAnnotations : bool, default is Undefined, optional
+        ForceCommonAnnotations specifies whether to force applying common annotations to resources for Kustomize apps
+    forceCommonLabels : bool, default is Undefined, optional
+        ForceCommonLabels specifies whether to force applying common labels to resources for Kustomize apps
+    ignoreMissingComponents : bool, default is Undefined, optional
+        IgnoreMissingComponents prevents kustomize from failing when components do not exist locally by not appending them to kustomization file
+    images : [str], default is Undefined, optional
+        Images is a list of Kustomize image override specifications
+    kubeVersion : str, default is Undefined, optional
+        KubeVersion specifies the Kubernetes API version to pass to Helm when templating manifests. By default, Argo CD
+        uses the Kubernetes version of the target cluster.
+    labelIncludeTemplates : bool, default is Undefined, optional
+        LabelIncludeTemplates specifies whether to apply common labels to resource templates or not
+    labelWithoutSelector : bool, default is Undefined, optional
+        LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
+    namePrefix : str, default is Undefined, optional
+        NamePrefix is a prefix appended to resources for Kustomize apps
+    nameSuffix : str, default is Undefined, optional
+        NameSuffix is a suffix appended to resources for Kustomize apps
+    namespace : str, default is Undefined, optional
+        Namespace sets the namespace that Kustomize adds to all resources
+    patches : [ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceKustomizePatchesItems0], default is Undefined, optional
+        Patches is a list of Kustomize patches
+    replicas : [ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceKustomizeReplicasItems0], default is Undefined, optional
+        Replicas is a list of Kustomize Replicas override specifications
+    version : str, default is Undefined, optional
+        Version controls which version of Kustomize to use for rendering manifests
+    """
+    apiVersions?: [str]
+    commonAnnotations?: {str:str}
+    commonAnnotationsEnvsubst?: bool
+    commonLabels?: {str:str}
+    components?: [str]
+    forceCommonAnnotations?: bool
+    forceCommonLabels?: bool
+    ignoreMissingComponents?: bool
+    images?: [str]
+    kubeVersion?: str
+    labelIncludeTemplates?: bool
+    labelWithoutSelector?: bool
+    namePrefix?: str
+    nameSuffix?: str
+    namespace?: str
+    patches?: [ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceKustomizePatchesItems0]
+    replicas?: [ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceKustomizeReplicasItems0]
+    version?: str
+
+schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceKustomizePatchesItems0:
+    r"""
+    argoproj io v1alpha1 application spec source hydrator dry source kustomize patches items0
+
+    Attributes
+    ----------
+    options : {str:bool}, default is Undefined, optional
+        options
+    patch : str, default is Undefined, optional
+        patch
+    path : str, default is Undefined, optional
+        path
+    target : ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceKustomizePatchesItems0Target, default is Undefined, optional
+        target
+    """
+    options?: {str:bool}
+    patch?: str
+    path?: str
+    target?: ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceKustomizePatchesItems0Target
+
+schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceKustomizePatchesItems0Target:
+    r"""
+    argoproj io v1alpha1 application spec source hydrator dry source kustomize patches items0 target
+
+    Attributes
+    ----------
+    annotationSelector : str, default is Undefined, optional
+        annotation selector
+    group : str, default is Undefined, optional
+        group
+    kind : str, default is Undefined, optional
+        kind
+    labelSelector : str, default is Undefined, optional
+        label selector
+    name : str, default is Undefined, optional
+        name
+    namespace : str, default is Undefined, optional
+        namespace
+    version : str, default is Undefined, optional
+        version
+    """
+    annotationSelector?: str
+    group?: str
+    kind?: str
+    labelSelector?: str
+    name?: str
+    namespace?: str
+    version?: str
+
+schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceKustomizeReplicasItems0:
+    r"""
+    argoproj io v1alpha1 application spec source hydrator dry source kustomize replicas items0
+
+    Attributes
+    ----------
+    count : int | str, default is Undefined, required
+        Number of replicas
+    name : str, default is Undefined, required
+        Name of Deployment or StatefulSet
+    """
+    count: int | str
+
+    name: str
+
+schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourcePlugin:
+    r"""
+    Plugin specifies config management plugin specific options
+
+    Attributes
+    ----------
+    env : [ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourcePluginEnvItems0], default is Undefined, optional
+        Env is a list of environment variable entries
+    name : str, default is Undefined, optional
+        name
+    parameters : [ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourcePluginParametersItems0], default is Undefined, optional
+        parameters
+    """
+    env?: [ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourcePluginEnvItems0]
+    name?: str
+    parameters?: [ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourcePluginParametersItems0]
+
+schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourcePluginEnvItems0:
+    r"""
+    EnvEntry represents an entry in the application's environment
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name is the name of the variable, usually expressed in uppercase
+    value : str, default is Undefined, required
+        Value is the value of the variable
+    """
+    name: str
+
+    value: str
+
+schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourcePluginParametersItems0:
+    r"""
+    argoproj io v1alpha1 application spec source hydrator dry source plugin parameters items0
+
+    Attributes
+    ----------
+    array : [str], default is Undefined, optional
+        Array is the value of an array type parameter.
+    $map : {str:str}, default is Undefined, optional
+        Map is the value of a map type parameter.
+    name : str, default is Undefined, optional
+        Name is the name identifying a parameter.
+    string : str, default is Undefined, optional
+        String_ is the value of a string type parameter.
+    """
+    array?: [str]
+    $map?: {str:str}
+    name?: str
+    string?: str
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorHydrateTo:
     r"""
@@ -4868,18 +5219,369 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHy
 
     Attributes
     ----------
+    directory : ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceDirectory, default is Undefined, optional
+        directory
+    helm : ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceHelm, default is Undefined, optional
+        helm
+    kustomize : ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceKustomize, default is Undefined, optional
+        kustomize
     path : str, default is Undefined, required
         Path is a directory path within the Git repository where the manifests are located
+    plugin : ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourcePlugin, default is Undefined, optional
+        plugin
     repoURL : str, default is Undefined, required
         RepoURL is the URL to the git repository that contains the application manifests
     targetRevision : str, default is Undefined, required
         TargetRevision defines the revision of the source to hydrate
     """
+    directory?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceDirectory
+    helm?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceHelm
+    kustomize?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceKustomize
     path: str
 
+    plugin?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourcePlugin
     repoURL: str
 
     targetRevision: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceDirectory:
+    r"""
+    Directory specifies path/directory specific options
+
+    Attributes
+    ----------
+    exclude : str, default is Undefined, optional
+        Exclude contains a glob pattern to match paths against that should be explicitly excluded from being used during manifest generation
+    include : str, default is Undefined, optional
+        Include contains a glob pattern to match paths against that should be explicitly included during manifest generation
+    jsonnet : ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceDirectoryJsonnet, default is Undefined, optional
+        jsonnet
+    recurse : bool, default is Undefined, optional
+        Recurse specifies whether to scan a directory recursively for manifests
+    """
+    exclude?: str
+    include?: str
+    jsonnet?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceDirectoryJsonnet
+    recurse?: bool
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceDirectoryJsonnet:
+    r"""
+    Jsonnet holds options specific to Jsonnet
+
+    Attributes
+    ----------
+    extVars : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceDirectoryJsonnetExtVarsItems0], default is Undefined, optional
+        ExtVars is a list of Jsonnet External Variables
+    libs : [str], default is Undefined, optional
+        Additional library search dirs
+    tlas : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceDirectoryJsonnetTlasItems0], default is Undefined, optional
+        TLAS is a list of Jsonnet Top-level Arguments
+    """
+    extVars?: [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceDirectoryJsonnetExtVarsItems0]
+    libs?: [str]
+    tlas?: [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceDirectoryJsonnetTlasItems0]
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceDirectoryJsonnetExtVarsItems0:
+    r"""
+    JsonnetVar represents a variable to be passed to jsonnet during manifest generation
+
+    Attributes
+    ----------
+    code : bool, default is Undefined, optional
+        code
+    name : str, default is Undefined, required
+        name
+    value : str, default is Undefined, required
+        value
+    """
+    code?: bool
+    name: str
+
+    value: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceDirectoryJsonnetTlasItems0:
+    r"""
+    JsonnetVar represents a variable to be passed to jsonnet during manifest generation
+
+    Attributes
+    ----------
+    code : bool, default is Undefined, optional
+        code
+    name : str, default is Undefined, required
+        name
+    value : str, default is Undefined, required
+        value
+    """
+    code?: bool
+    name: str
+
+    value: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceHelm:
+    r"""
+    Helm specifies helm specific options
+
+    Attributes
+    ----------
+    apiVersions : [str], default is Undefined, optional
+        APIVersions specifies the Kubernetes resource API versions to pass to Helm when templating manifests. By default,
+        Argo CD uses the API versions of the target cluster. The format is [group/]version/kind.
+    fileParameters : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceHelmFileParametersItems0], default is Undefined, optional
+        FileParameters are file parameters to the helm template
+    ignoreMissingValueFiles : bool, default is Undefined, optional
+        IgnoreMissingValueFiles prevents helm template from failing when valueFiles do not exist locally by not appending them to helm template --values
+    kubeVersion : str, default is Undefined, optional
+        KubeVersion specifies the Kubernetes API version to pass to Helm when templating manifests. By default, Argo CD
+        uses the Kubernetes version of the target cluster.
+    namespace : str, default is Undefined, optional
+        Namespace is an optional namespace to template with. If left empty, defaults to the app's destination namespace.
+    parameters : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceHelmParametersItems0], default is Undefined, optional
+        Parameters is a list of Helm parameters which are passed to the helm template command upon manifest generation
+    passCredentials : bool, default is Undefined, optional
+        PassCredentials pass credentials to all domains (Helm's --pass-credentials)
+    releaseName : str, default is Undefined, optional
+        ReleaseName is the Helm release name to use. If omitted it will use the application name
+    skipCrds : bool, default is Undefined, optional
+        SkipCrds skips custom resource definition installation step (Helm's --skip-crds)
+    skipSchemaValidation : bool, default is Undefined, optional
+        SkipSchemaValidation skips JSON schema validation (Helm's --skip-schema-validation)
+    skipTests : bool, default is Undefined, optional
+        SkipTests skips test manifest installation step (Helm's --skip-tests).
+    valueFiles : [str], default is Undefined, optional
+        ValuesFiles is a list of Helm value files to use when generating a template
+    values : str, default is Undefined, optional
+        Values specifies Helm values to be passed to helm template, typically defined as a block. ValuesObject takes precedence over Values, so use one or the other.
+    valuesObject : any, default is Undefined, optional
+        ValuesObject specifies Helm values to be passed to helm template, defined as a map. This takes precedence over Values.
+    version : str, default is Undefined, optional
+        Version is the Helm version to use for templating ("3")
+    """
+    apiVersions?: [str]
+    fileParameters?: [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceHelmFileParametersItems0]
+    ignoreMissingValueFiles?: bool
+    kubeVersion?: str
+    namespace?: str
+    parameters?: [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceHelmParametersItems0]
+    passCredentials?: bool
+    releaseName?: str
+    skipCrds?: bool
+    skipSchemaValidation?: bool
+    skipTests?: bool
+    valueFiles?: [str]
+    values?: str
+    valuesObject?: any
+    version?: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceHelmFileParametersItems0:
+    r"""
+    HelmFileParameter is a file parameter that's passed to helm template during manifest generation
+
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        Name is the name of the Helm parameter
+    path : str, default is Undefined, optional
+        Path is the path to the file containing the values for the Helm parameter
+    """
+    name?: str
+    path?: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceHelmParametersItems0:
+    r"""
+    HelmParameter is a parameter that's passed to helm template during manifest generation
+
+    Attributes
+    ----------
+    forceString : bool, default is Undefined, optional
+        ForceString determines whether to tell Helm to interpret booleans and numbers as strings
+    name : str, default is Undefined, optional
+        Name is the name of the Helm parameter
+    value : str, default is Undefined, optional
+        Value is the value for the Helm parameter
+    """
+    forceString?: bool
+    name?: str
+    value?: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceKustomize:
+    r"""
+    Kustomize specifies kustomize specific options
+
+    Attributes
+    ----------
+    apiVersions : [str], default is Undefined, optional
+        APIVersions specifies the Kubernetes resource API versions to pass to Helm when templating manifests. By default,
+        Argo CD uses the API versions of the target cluster. The format is [group/]version/kind.
+    commonAnnotations : {str:str}, default is Undefined, optional
+        CommonAnnotations is a list of additional annotations to add to rendered manifests
+    commonAnnotationsEnvsubst : bool, default is Undefined, optional
+        CommonAnnotationsEnvsubst specifies whether to apply env variables substitution for annotation values
+    commonLabels : {str:str}, default is Undefined, optional
+        CommonLabels is a list of additional labels to add to rendered manifests
+    components : [str], default is Undefined, optional
+        Components specifies a list of kustomize components to add to the kustomization before building
+    forceCommonAnnotations : bool, default is Undefined, optional
+        ForceCommonAnnotations specifies whether to force applying common annotations to resources for Kustomize apps
+    forceCommonLabels : bool, default is Undefined, optional
+        ForceCommonLabels specifies whether to force applying common labels to resources for Kustomize apps
+    ignoreMissingComponents : bool, default is Undefined, optional
+        IgnoreMissingComponents prevents kustomize from failing when components do not exist locally by not appending them to kustomization file
+    images : [str], default is Undefined, optional
+        Images is a list of Kustomize image override specifications
+    kubeVersion : str, default is Undefined, optional
+        KubeVersion specifies the Kubernetes API version to pass to Helm when templating manifests. By default, Argo CD
+        uses the Kubernetes version of the target cluster.
+    labelIncludeTemplates : bool, default is Undefined, optional
+        LabelIncludeTemplates specifies whether to apply common labels to resource templates or not
+    labelWithoutSelector : bool, default is Undefined, optional
+        LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
+    namePrefix : str, default is Undefined, optional
+        NamePrefix is a prefix appended to resources for Kustomize apps
+    nameSuffix : str, default is Undefined, optional
+        NameSuffix is a suffix appended to resources for Kustomize apps
+    namespace : str, default is Undefined, optional
+        Namespace sets the namespace that Kustomize adds to all resources
+    patches : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceKustomizePatchesItems0], default is Undefined, optional
+        Patches is a list of Kustomize patches
+    replicas : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceKustomizeReplicasItems0], default is Undefined, optional
+        Replicas is a list of Kustomize Replicas override specifications
+    version : str, default is Undefined, optional
+        Version controls which version of Kustomize to use for rendering manifests
+    """
+    apiVersions?: [str]
+    commonAnnotations?: {str:str}
+    commonAnnotationsEnvsubst?: bool
+    commonLabels?: {str:str}
+    components?: [str]
+    forceCommonAnnotations?: bool
+    forceCommonLabels?: bool
+    ignoreMissingComponents?: bool
+    images?: [str]
+    kubeVersion?: str
+    labelIncludeTemplates?: bool
+    labelWithoutSelector?: bool
+    namePrefix?: str
+    nameSuffix?: str
+    namespace?: str
+    patches?: [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceKustomizePatchesItems0]
+    replicas?: [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceKustomizeReplicasItems0]
+    version?: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceKustomizePatchesItems0:
+    r"""
+    argoproj io v1alpha1 application status source hydrator current operation source hydrator dry source kustomize patches items0
+
+    Attributes
+    ----------
+    options : {str:bool}, default is Undefined, optional
+        options
+    patch : str, default is Undefined, optional
+        patch
+    path : str, default is Undefined, optional
+        path
+    target : ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceKustomizePatchesItems0Target, default is Undefined, optional
+        target
+    """
+    options?: {str:bool}
+    patch?: str
+    path?: str
+    target?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceKustomizePatchesItems0Target
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceKustomizePatchesItems0Target:
+    r"""
+    argoproj io v1alpha1 application status source hydrator current operation source hydrator dry source kustomize patches items0 target
+
+    Attributes
+    ----------
+    annotationSelector : str, default is Undefined, optional
+        annotation selector
+    group : str, default is Undefined, optional
+        group
+    kind : str, default is Undefined, optional
+        kind
+    labelSelector : str, default is Undefined, optional
+        label selector
+    name : str, default is Undefined, optional
+        name
+    namespace : str, default is Undefined, optional
+        namespace
+    version : str, default is Undefined, optional
+        version
+    """
+    annotationSelector?: str
+    group?: str
+    kind?: str
+    labelSelector?: str
+    name?: str
+    namespace?: str
+    version?: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceKustomizeReplicasItems0:
+    r"""
+    argoproj io v1alpha1 application status source hydrator current operation source hydrator dry source kustomize replicas items0
+
+    Attributes
+    ----------
+    count : int | str, default is Undefined, required
+        Number of replicas
+    name : str, default is Undefined, required
+        Name of Deployment or StatefulSet
+    """
+    count: int | str
+
+    name: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourcePlugin:
+    r"""
+    Plugin specifies config management plugin specific options
+
+    Attributes
+    ----------
+    env : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourcePluginEnvItems0], default is Undefined, optional
+        Env is a list of environment variable entries
+    name : str, default is Undefined, optional
+        name
+    parameters : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourcePluginParametersItems0], default is Undefined, optional
+        parameters
+    """
+    env?: [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourcePluginEnvItems0]
+    name?: str
+    parameters?: [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourcePluginParametersItems0]
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourcePluginEnvItems0:
+    r"""
+    EnvEntry represents an entry in the application's environment
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name is the name of the variable, usually expressed in uppercase
+    value : str, default is Undefined, required
+        Value is the value of the variable
+    """
+    name: str
+
+    value: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourcePluginParametersItems0:
+    r"""
+    argoproj io v1alpha1 application status source hydrator current operation source hydrator dry source plugin parameters items0
+
+    Attributes
+    ----------
+    array : [str], default is Undefined, optional
+        Array is the value of an array type parameter.
+    $map : {str:str}, default is Undefined, optional
+        Map is the value of a map type parameter.
+    name : str, default is Undefined, optional
+        Name is the name identifying a parameter.
+    string : str, default is Undefined, optional
+        String_ is the value of a string type parameter.
+    """
+    array?: [str]
+    $map?: {str:str}
+    name?: str
+    string?: str
 
 schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorHydrateTo:
     r"""
@@ -4956,18 +5658,369 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationS
 
     Attributes
     ----------
+    directory : ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceDirectory, default is Undefined, optional
+        directory
+    helm : ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceHelm, default is Undefined, optional
+        helm
+    kustomize : ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceKustomize, default is Undefined, optional
+        kustomize
     path : str, default is Undefined, required
         Path is a directory path within the Git repository where the manifests are located
+    plugin : ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourcePlugin, default is Undefined, optional
+        plugin
     repoURL : str, default is Undefined, required
         RepoURL is the URL to the git repository that contains the application manifests
     targetRevision : str, default is Undefined, required
         TargetRevision defines the revision of the source to hydrate
     """
+    directory?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceDirectory
+    helm?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceHelm
+    kustomize?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceKustomize
     path: str
 
+    plugin?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourcePlugin
     repoURL: str
 
     targetRevision: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceDirectory:
+    r"""
+    Directory specifies path/directory specific options
+
+    Attributes
+    ----------
+    exclude : str, default is Undefined, optional
+        Exclude contains a glob pattern to match paths against that should be explicitly excluded from being used during manifest generation
+    include : str, default is Undefined, optional
+        Include contains a glob pattern to match paths against that should be explicitly included during manifest generation
+    jsonnet : ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceDirectoryJsonnet, default is Undefined, optional
+        jsonnet
+    recurse : bool, default is Undefined, optional
+        Recurse specifies whether to scan a directory recursively for manifests
+    """
+    exclude?: str
+    include?: str
+    jsonnet?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceDirectoryJsonnet
+    recurse?: bool
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceDirectoryJsonnet:
+    r"""
+    Jsonnet holds options specific to Jsonnet
+
+    Attributes
+    ----------
+    extVars : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceDirectoryJsonnetExtVarsItems0], default is Undefined, optional
+        ExtVars is a list of Jsonnet External Variables
+    libs : [str], default is Undefined, optional
+        Additional library search dirs
+    tlas : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceDirectoryJsonnetTlasItems0], default is Undefined, optional
+        TLAS is a list of Jsonnet Top-level Arguments
+    """
+    extVars?: [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceDirectoryJsonnetExtVarsItems0]
+    libs?: [str]
+    tlas?: [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceDirectoryJsonnetTlasItems0]
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceDirectoryJsonnetExtVarsItems0:
+    r"""
+    JsonnetVar represents a variable to be passed to jsonnet during manifest generation
+
+    Attributes
+    ----------
+    code : bool, default is Undefined, optional
+        code
+    name : str, default is Undefined, required
+        name
+    value : str, default is Undefined, required
+        value
+    """
+    code?: bool
+    name: str
+
+    value: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceDirectoryJsonnetTlasItems0:
+    r"""
+    JsonnetVar represents a variable to be passed to jsonnet during manifest generation
+
+    Attributes
+    ----------
+    code : bool, default is Undefined, optional
+        code
+    name : str, default is Undefined, required
+        name
+    value : str, default is Undefined, required
+        value
+    """
+    code?: bool
+    name: str
+
+    value: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceHelm:
+    r"""
+    Helm specifies helm specific options
+
+    Attributes
+    ----------
+    apiVersions : [str], default is Undefined, optional
+        APIVersions specifies the Kubernetes resource API versions to pass to Helm when templating manifests. By default,
+        Argo CD uses the API versions of the target cluster. The format is [group/]version/kind.
+    fileParameters : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceHelmFileParametersItems0], default is Undefined, optional
+        FileParameters are file parameters to the helm template
+    ignoreMissingValueFiles : bool, default is Undefined, optional
+        IgnoreMissingValueFiles prevents helm template from failing when valueFiles do not exist locally by not appending them to helm template --values
+    kubeVersion : str, default is Undefined, optional
+        KubeVersion specifies the Kubernetes API version to pass to Helm when templating manifests. By default, Argo CD
+        uses the Kubernetes version of the target cluster.
+    namespace : str, default is Undefined, optional
+        Namespace is an optional namespace to template with. If left empty, defaults to the app's destination namespace.
+    parameters : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceHelmParametersItems0], default is Undefined, optional
+        Parameters is a list of Helm parameters which are passed to the helm template command upon manifest generation
+    passCredentials : bool, default is Undefined, optional
+        PassCredentials pass credentials to all domains (Helm's --pass-credentials)
+    releaseName : str, default is Undefined, optional
+        ReleaseName is the Helm release name to use. If omitted it will use the application name
+    skipCrds : bool, default is Undefined, optional
+        SkipCrds skips custom resource definition installation step (Helm's --skip-crds)
+    skipSchemaValidation : bool, default is Undefined, optional
+        SkipSchemaValidation skips JSON schema validation (Helm's --skip-schema-validation)
+    skipTests : bool, default is Undefined, optional
+        SkipTests skips test manifest installation step (Helm's --skip-tests).
+    valueFiles : [str], default is Undefined, optional
+        ValuesFiles is a list of Helm value files to use when generating a template
+    values : str, default is Undefined, optional
+        Values specifies Helm values to be passed to helm template, typically defined as a block. ValuesObject takes precedence over Values, so use one or the other.
+    valuesObject : any, default is Undefined, optional
+        ValuesObject specifies Helm values to be passed to helm template, defined as a map. This takes precedence over Values.
+    version : str, default is Undefined, optional
+        Version is the Helm version to use for templating ("3")
+    """
+    apiVersions?: [str]
+    fileParameters?: [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceHelmFileParametersItems0]
+    ignoreMissingValueFiles?: bool
+    kubeVersion?: str
+    namespace?: str
+    parameters?: [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceHelmParametersItems0]
+    passCredentials?: bool
+    releaseName?: str
+    skipCrds?: bool
+    skipSchemaValidation?: bool
+    skipTests?: bool
+    valueFiles?: [str]
+    values?: str
+    valuesObject?: any
+    version?: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceHelmFileParametersItems0:
+    r"""
+    HelmFileParameter is a file parameter that's passed to helm template during manifest generation
+
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        Name is the name of the Helm parameter
+    path : str, default is Undefined, optional
+        Path is the path to the file containing the values for the Helm parameter
+    """
+    name?: str
+    path?: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceHelmParametersItems0:
+    r"""
+    HelmParameter is a parameter that's passed to helm template during manifest generation
+
+    Attributes
+    ----------
+    forceString : bool, default is Undefined, optional
+        ForceString determines whether to tell Helm to interpret booleans and numbers as strings
+    name : str, default is Undefined, optional
+        Name is the name of the Helm parameter
+    value : str, default is Undefined, optional
+        Value is the value for the Helm parameter
+    """
+    forceString?: bool
+    name?: str
+    value?: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceKustomize:
+    r"""
+    Kustomize specifies kustomize specific options
+
+    Attributes
+    ----------
+    apiVersions : [str], default is Undefined, optional
+        APIVersions specifies the Kubernetes resource API versions to pass to Helm when templating manifests. By default,
+        Argo CD uses the API versions of the target cluster. The format is [group/]version/kind.
+    commonAnnotations : {str:str}, default is Undefined, optional
+        CommonAnnotations is a list of additional annotations to add to rendered manifests
+    commonAnnotationsEnvsubst : bool, default is Undefined, optional
+        CommonAnnotationsEnvsubst specifies whether to apply env variables substitution for annotation values
+    commonLabels : {str:str}, default is Undefined, optional
+        CommonLabels is a list of additional labels to add to rendered manifests
+    components : [str], default is Undefined, optional
+        Components specifies a list of kustomize components to add to the kustomization before building
+    forceCommonAnnotations : bool, default is Undefined, optional
+        ForceCommonAnnotations specifies whether to force applying common annotations to resources for Kustomize apps
+    forceCommonLabels : bool, default is Undefined, optional
+        ForceCommonLabels specifies whether to force applying common labels to resources for Kustomize apps
+    ignoreMissingComponents : bool, default is Undefined, optional
+        IgnoreMissingComponents prevents kustomize from failing when components do not exist locally by not appending them to kustomization file
+    images : [str], default is Undefined, optional
+        Images is a list of Kustomize image override specifications
+    kubeVersion : str, default is Undefined, optional
+        KubeVersion specifies the Kubernetes API version to pass to Helm when templating manifests. By default, Argo CD
+        uses the Kubernetes version of the target cluster.
+    labelIncludeTemplates : bool, default is Undefined, optional
+        LabelIncludeTemplates specifies whether to apply common labels to resource templates or not
+    labelWithoutSelector : bool, default is Undefined, optional
+        LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
+    namePrefix : str, default is Undefined, optional
+        NamePrefix is a prefix appended to resources for Kustomize apps
+    nameSuffix : str, default is Undefined, optional
+        NameSuffix is a suffix appended to resources for Kustomize apps
+    namespace : str, default is Undefined, optional
+        Namespace sets the namespace that Kustomize adds to all resources
+    patches : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceKustomizePatchesItems0], default is Undefined, optional
+        Patches is a list of Kustomize patches
+    replicas : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceKustomizeReplicasItems0], default is Undefined, optional
+        Replicas is a list of Kustomize Replicas override specifications
+    version : str, default is Undefined, optional
+        Version controls which version of Kustomize to use for rendering manifests
+    """
+    apiVersions?: [str]
+    commonAnnotations?: {str:str}
+    commonAnnotationsEnvsubst?: bool
+    commonLabels?: {str:str}
+    components?: [str]
+    forceCommonAnnotations?: bool
+    forceCommonLabels?: bool
+    ignoreMissingComponents?: bool
+    images?: [str]
+    kubeVersion?: str
+    labelIncludeTemplates?: bool
+    labelWithoutSelector?: bool
+    namePrefix?: str
+    nameSuffix?: str
+    namespace?: str
+    patches?: [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceKustomizePatchesItems0]
+    replicas?: [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceKustomizeReplicasItems0]
+    version?: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceKustomizePatchesItems0:
+    r"""
+    argoproj io v1alpha1 application status source hydrator last successful operation source hydrator dry source kustomize patches items0
+
+    Attributes
+    ----------
+    options : {str:bool}, default is Undefined, optional
+        options
+    patch : str, default is Undefined, optional
+        patch
+    path : str, default is Undefined, optional
+        path
+    target : ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceKustomizePatchesItems0Target, default is Undefined, optional
+        target
+    """
+    options?: {str:bool}
+    patch?: str
+    path?: str
+    target?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceKustomizePatchesItems0Target
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceKustomizePatchesItems0Target:
+    r"""
+    argoproj io v1alpha1 application status source hydrator last successful operation source hydrator dry source kustomize patches items0 target
+
+    Attributes
+    ----------
+    annotationSelector : str, default is Undefined, optional
+        annotation selector
+    group : str, default is Undefined, optional
+        group
+    kind : str, default is Undefined, optional
+        kind
+    labelSelector : str, default is Undefined, optional
+        label selector
+    name : str, default is Undefined, optional
+        name
+    namespace : str, default is Undefined, optional
+        namespace
+    version : str, default is Undefined, optional
+        version
+    """
+    annotationSelector?: str
+    group?: str
+    kind?: str
+    labelSelector?: str
+    name?: str
+    namespace?: str
+    version?: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceKustomizeReplicasItems0:
+    r"""
+    argoproj io v1alpha1 application status source hydrator last successful operation source hydrator dry source kustomize replicas items0
+
+    Attributes
+    ----------
+    count : int | str, default is Undefined, required
+        Number of replicas
+    name : str, default is Undefined, required
+        Name of Deployment or StatefulSet
+    """
+    count: int | str
+
+    name: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourcePlugin:
+    r"""
+    Plugin specifies config management plugin specific options
+
+    Attributes
+    ----------
+    env : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourcePluginEnvItems0], default is Undefined, optional
+        Env is a list of environment variable entries
+    name : str, default is Undefined, optional
+        name
+    parameters : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourcePluginParametersItems0], default is Undefined, optional
+        parameters
+    """
+    env?: [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourcePluginEnvItems0]
+    name?: str
+    parameters?: [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourcePluginParametersItems0]
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourcePluginEnvItems0:
+    r"""
+    EnvEntry represents an entry in the application's environment
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name is the name of the variable, usually expressed in uppercase
+    value : str, default is Undefined, required
+        Value is the value of the variable
+    """
+    name: str
+
+    value: str
+
+schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourcePluginParametersItems0:
+    r"""
+    argoproj io v1alpha1 application status source hydrator last successful operation source hydrator dry source plugin parameters items0
+
+    Attributes
+    ----------
+    array : [str], default is Undefined, optional
+        Array is the value of an array type parameter.
+    $map : {str:str}, default is Undefined, optional
+        Map is the value of a map type parameter.
+    name : str, default is Undefined, optional
+        Name is the name identifying a parameter.
+    string : str, default is Undefined, optional
+        String_ is the value of a string type parameter.
+    """
+    array?: [str]
+    $map?: {str:str}
+    name?: str
+    string?: str
 
 schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorHydrateTo:
     r"""
