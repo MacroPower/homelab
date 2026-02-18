@@ -4405,6 +4405,24 @@
           "title": "env",
           "type": "array"
         },
+        "extraVolumeMounts": {
+          "description": "Extra volume mounts to add to all deployed Deployments and StatefulSets",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "Extra volumes to add to all deployed Deployments and StatefulSets",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumes",
+          "type": "array"
+        },
         "hostAliases": {
           "description": "Mapping between IP and hostnames that will be injected as entries in the pod's hosts files",
           "items": {
@@ -6766,7 +6784,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.80.1",
+                  "default": "v1.81.0",
                   "description": "Tag to use for the redis-exporter",
                   "required": [],
                   "title": "tag",
@@ -6936,8 +6954,8 @@
               "type": "string"
             },
             "tag": {
-              "default": "8.2.2-alpine",
-              "description": "Redis tag\n# Do not upgrade to \u003e= 7.4.0, otherwise you are no longer using an open source version of Redis",
+              "default": "8.2.3-alpine",
+              "description": "Redis tag\n# Do not use 7.4.0 \u003c= v \u003c 8.0.0, otherwise you are no longer using an open source version of Redis",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -7816,7 +7834,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "8.2.2-alpine",
+              "default": "8.2.3-alpine",
               "description": "Redis tag\n# Do not upgrade to \u003e= 7.4.0, otherwise you are no longer using an open source version of Redis",
               "required": [],
               "title": "tag",
@@ -8583,6 +8601,13 @@
         "livenessProbe": {
           "additionalProperties": true,
           "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable Kubernetes liveness probe for Repo Server",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
             "failureThreshold": {
               "default": 3,
               "description": "Minimum consecutive failures for the [probe] to be considered failed after having succeeded",
@@ -8891,8 +8916,15 @@
         },
         "readinessProbe": {
           "additionalProperties": true,
-          "description": "# Readiness and liveness probes for default backend\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
+          "description": "# Readiness and liveness probes for Repo Server\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
           "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable Kubernetes readiness probe for Repo Server",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
             "failureThreshold": {
               "default": 3,
               "description": "Minimum consecutive failures for the [probe] to be considered failed after having succeeded",
@@ -10692,6 +10724,13 @@
         "livenessProbe": {
           "additionalProperties": true,
           "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable Kubernetes liveness probe for default backend",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
             "failureThreshold": {
               "default": 3,
               "description": "Minimum consecutive failures for the [probe] to be considered failed after having succeeded",
@@ -10993,6 +11032,13 @@
           "additionalProperties": true,
           "description": "# Readiness and liveness probes for default backend\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
           "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable Kubernetes readiness probe for default backend",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
             "failureThreshold": {
               "default": 3,
               "description": "Minimum consecutive failures for the [probe] to be considered failed after having succeeded",

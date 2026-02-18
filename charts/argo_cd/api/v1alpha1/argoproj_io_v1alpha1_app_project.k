@@ -92,8 +92,7 @@ schema ArgoprojIoV1alpha1AppProjectSpec:
 
 schema ArgoprojIoV1alpha1AppProjectSpecClusterResourceBlacklistItems0:
     r"""
-    GroupKind specifies a Group and a Kind, but does not force a version.  This is useful for identifying
-    concepts during lookup stages without having partially valid types
+    ClusterResourceRestrictionItem is a cluster resource that is restricted by the project's whitelist or blacklist
 
     Attributes
     ----------
@@ -101,15 +100,19 @@ schema ArgoprojIoV1alpha1AppProjectSpecClusterResourceBlacklistItems0:
         group
     kind : str, default is Undefined, required
         kind
+    name : str, default is Undefined, optional
+        Name is the name of the restricted resource. Glob patterns using Go's filepath.Match syntax are supported.
+        Unlike the group and kind fields, if no name is specified, all resources of the specified group/kind are matched.
     """
     group: str
 
     kind: str
+
+    name?: str
 
 schema ArgoprojIoV1alpha1AppProjectSpecClusterResourceWhitelistItems0:
     r"""
-    GroupKind specifies a Group and a Kind, but does not force a version.  This is useful for identifying
-    concepts during lookup stages without having partially valid types
+    ClusterResourceRestrictionItem is a cluster resource that is restricted by the project's whitelist or blacklist
 
     Attributes
     ----------
@@ -117,10 +120,15 @@ schema ArgoprojIoV1alpha1AppProjectSpecClusterResourceWhitelistItems0:
         group
     kind : str, default is Undefined, required
         kind
+    name : str, default is Undefined, optional
+        Name is the name of the restricted resource. Glob patterns using Go's filepath.Match syntax are supported.
+        Unlike the group and kind fields, if no name is specified, all resources of the specified group/kind are matched.
     """
     group: str
 
     kind: str
+
+    name?: str
 
 schema ArgoprojIoV1alpha1AppProjectSpecDestinationServiceAccountsItems0:
     r"""
