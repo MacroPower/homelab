@@ -34,9 +34,9 @@ schema Values:
     extraObjects : [any], optional
         To add arbitrary Kubernetes Objects during a Helm Install
     extraVolumeMountsCrossplane : ValuesExtraVolumeMountsCrossplane, optional
-        Add custom `volumeMounts` to the Crossplane pod.
+        Add custom `volumeMounts` to the Crossplane pod. Supports template expressions.
     extraVolumesCrossplane : ValuesExtraVolumesCrossplane, optional
-        Add custom `volumes` to the Crossplane pod.
+        Add custom `volumes` to the Crossplane pod. Supports template expressions.
     function : ValuesFunction, optional
     functionCache : ValuesFunctionCache, optional
     global : ValuesGlobal, optional
@@ -47,7 +47,7 @@ schema Values:
     imagePullSecrets : [any], optional
         The imagePullSecret names to add to the Crossplane ServiceAccount.
     leaderElection : bool, optional, default is True
-        Enable [leader election](https://docs.crossplane.io/latest/concepts/pods/#leader-election) for the Crossplane pod.
+        Enable [leader election](https://docs.crossplane.io/latest/guides/pods/#leader-election) for the Crossplane pod.
     metrics : ValuesMetrics, optional
     nodeSelector : ValuesNodeSelector, optional
         Add `nodeSelectors` to the Crossplane pod deployment.
@@ -73,10 +73,13 @@ schema Values:
         The number of Crossplane ReplicaSets to retain.
     runtimeClassName : str, optional, default is ""
         The runtimeClassName name to apply to the Crossplane and RBAC Manager pods.
+    secrets : ValuesSecrets, optional
     securityContextCrossplane : ValuesSecurityContextCrossplane, optional
     securityContextRBACManager : ValuesSecurityContextRbacmanager, optional
     service : ValuesService, optional
     serviceAccount : ValuesServiceAccount, optional
+    sidecarsCrossplane : [any], optional
+        Add sidecar containers to the Crossplane pod. Supports template expressions.
     tolerations : [any], optional
         Add `tolerations` to the Crossplane pod deployment.
     topologySpreadConstraints : [any], optional
@@ -119,10 +122,12 @@ schema Values:
     resourcesRBACManager?: ValuesResourcesRbacmanager
     revisionHistoryLimit?: any
     runtimeClassName?: str
+    secrets?: ValuesSecrets
     securityContextCrossplane?: ValuesSecurityContextCrossplane
     securityContextRBACManager?: ValuesSecurityContextRbacmanager
     service?: ValuesService
     serviceAccount?: ValuesServiceAccount
+    sidecarsCrossplane?: [any]
     tolerations?: [any]
     topologySpreadConstraints?: [any]
     webhooks?: ValuesWebhooks
@@ -180,13 +185,13 @@ schema ValuesExtraEnvVarsRbacmanager:
 
 schema ValuesExtraVolumeMountsCrossplane:
     r"""
-    Add custom `volumeMounts` to the Crossplane pod.
+    Add custom `volumeMounts` to the Crossplane pod. Supports template expressions.
     """
     [...str]: any
 
 schema ValuesExtraVolumesCrossplane:
     r"""
-    Add custom `volumes` to the Crossplane pod.
+    Add custom `volumes` to the Crossplane pod. Supports template expressions.
     """
     [...str]: any
 
@@ -329,7 +334,7 @@ schema ValuesRbacManager:
     deploy : bool, optional, default is True
         Deploy the RBAC Manager pod and its required roles.
     leaderElection : bool, optional, default is True
-        Enable [leader election](https://docs.crossplane.io/latest/concepts/pods/#leader-election) for the RBAC Manager pod.
+        Enable [leader election](https://docs.crossplane.io/latest/guides/pods/#leader-election) for the RBAC Manager pod.
     nodeSelector : ValuesRbacManagerNodeSelector, optional
         Add `nodeSelectors` to the RBAC Manager pod deployment.
     replicas : int, optional, default is 1
@@ -479,6 +484,24 @@ schema ValuesResourcesRbacmanagerRequests:
     [...str]: any
     cpu?: str
     memory?: str
+
+schema ValuesSecrets:
+    r"""
+    ValuesSecrets
+
+    Attributes
+    ----------
+    customAnnotations : ValuesSecretsCustomAnnotations, optional
+        Add custom annotations to Crossplane Secret resources.
+    """
+    [...str]: any
+    customAnnotations?: ValuesSecretsCustomAnnotations
+
+schema ValuesSecretsCustomAnnotations:
+    r"""
+    Add custom annotations to Crossplane Secret resources.
+    """
+    [...str]: any
 
 schema ValuesSecurityContextCrossplane:
     r"""

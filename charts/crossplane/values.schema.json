@@ -95,14 +95,14 @@
     },
     "extraVolumeMountsCrossplane": {
       "additionalProperties": true,
-      "description": "Add custom `volumeMounts` to the Crossplane pod.",
+      "description": "Add custom `volumeMounts` to the Crossplane pod. Supports template expressions.",
       "required": [],
       "title": "extraVolumeMountsCrossplane",
       "type": "object"
     },
     "extraVolumesCrossplane": {
       "additionalProperties": true,
-      "description": "Add custom `volumes` to the Crossplane pod.",
+      "description": "Add custom `volumes` to the Crossplane pod. Supports template expressions.",
       "required": [],
       "title": "extraVolumesCrossplane",
       "type": "object"
@@ -214,7 +214,7 @@
     },
     "leaderElection": {
       "default": true,
-      "description": "Enable [leader election](https://docs.crossplane.io/latest/concepts/pods/#leader-election) for the Crossplane pod.",
+      "description": "Enable [leader election](https://docs.crossplane.io/latest/guides/pods/#leader-election) for the Crossplane pod.",
       "required": [],
       "title": "leaderElection",
       "type": "boolean"
@@ -360,7 +360,7 @@
         },
         "leaderElection": {
           "default": true,
-          "description": "Enable [leader election](https://docs.crossplane.io/latest/concepts/pods/#leader-election) for the RBAC Manager pod.",
+          "description": "Enable [leader election](https://docs.crossplane.io/latest/guides/pods/#leader-election) for the RBAC Manager pod.",
           "required": [],
           "title": "leaderElection",
           "type": "boolean"
@@ -578,6 +578,21 @@
       "title": "runtimeClassName",
       "type": "string"
     },
+    "secrets": {
+      "additionalProperties": true,
+      "properties": {
+        "customAnnotations": {
+          "additionalProperties": true,
+          "description": "Add custom annotations to Crossplane Secret resources.",
+          "required": [],
+          "title": "customAnnotations",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "secrets",
+      "type": "object"
+    },
     "securityContextCrossplane": {
       "additionalProperties": true,
       "properties": {
@@ -693,6 +708,15 @@
       "required": [],
       "title": "serviceAccount",
       "type": "object"
+    },
+    "sidecarsCrossplane": {
+      "description": "Add sidecar containers to the Crossplane pod. Supports template expressions.",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "sidecarsCrossplane",
+      "type": "array"
     },
     "tolerations": {
       "description": "Add `tolerations` to the Crossplane pod deployment.",
