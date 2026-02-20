@@ -14,14 +14,11 @@ schema Chart(helm.Chart):
     values : Values | any, optional, default is {crds = {conversion = {enabled = False}}}
     chart : str, required, default is "external-secrets"
     repoURL : str, required, default is "https://charts.external-secrets.io/"
-    targetRevision : str, optional, default is "0.20.2"
+    targetRevision : str, optional, default is "1.3.2"
     """
-    values?: Values | any = {
-        crds = {
-            conversion = {enabled = False}
-        }
-    }
+
+    values?: Values | any = {crds = {conversion = {enabled = False}}}
     chart: str = "external-secrets"
     repoURL: str = "https://charts.external-secrets.io/"
-    targetRevision?: str = "0.20.2"
+    targetRevision?: str = "1.3.2"
 
