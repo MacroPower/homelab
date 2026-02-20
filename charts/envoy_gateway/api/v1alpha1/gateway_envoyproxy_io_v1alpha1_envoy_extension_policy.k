@@ -228,6 +228,20 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendRe
         case, the port number is the service port number, not the target port.
         For other resources, destination port might be derived from the referent
         resource or this field.
+    weight : int, default is 1, optional
+        Weight specifies the proportion of requests forwarded to the referenced
+        backend. This is computed as weight/(sum of all weights in this
+        BackendRefs list). For non-zero values, there may be some epsilon from
+        the exact proportion defined here depending on the precision an
+        implementation supports. Weight is not a percentage and the sum of
+        weights does not need to equal 100.
+
+        If only one backend is specified and it has a weight greater than 0, 100%
+        of the traffic is forwarded to that backend. If weight is set to 0, no
+        traffic should be forwarded for this entry. If unspecified, weight
+        defaults to 1.
+
+        Support for this field varies based on the context where used.
     """
     fallback?: bool
     group?: str = ""
@@ -236,6 +250,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendRe
 
     namespace?: str
     port?: int
+    weight?: int = 1
 
     check:
         len(group) <= 253 if group
@@ -250,6 +265,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendRe
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
         port <= 65535 if port not in [None, Undefined]
         port >= 1 if port not in [None, Undefined]
+        weight <= 1000000 if weight not in [None, Undefined]
+        weight >= 0 if weight not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettings:
     r"""
@@ -738,6 +755,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
         header
     headers : [GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerConsistentHashHeadersItems0], default is Undefined, optional
         Headers configures the header hash policy for each header, when the consistent hash type is set to Headers.
+    queryParams : [GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerConsistentHashQueryParamsItems0], default is Undefined, optional
+        QueryParams configures the query parameter hash policy when the consistent hash type is set to QueryParams.
     tableSize : int, default is 65537, optional
         The table size for consistent hashing, must be prime number limited to 5000011.
     $type : str, default is Undefined, required
@@ -746,12 +765,14 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
         "Header",
         "Headers",
         "Cookie".
+        "QueryParams".
     """
     cookie?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerConsistentHashCookie
     header?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerConsistentHashHeader
     headers?: [GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerConsistentHashHeadersItems0]
+    queryParams?: [GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerConsistentHashQueryParamsItems0]
     tableSize?: int = 65537
-    $type: "SourceIP" | "Header" | "Headers" | "Cookie"
+    $type: "SourceIP" | "Header" | "Headers" | "Cookie" | "QueryParams"
 
     check:
         tableSize <= 5000011 if tableSize not in [None, Undefined]
@@ -805,6 +826,18 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
     ----------
     name : str, default is Undefined, required
         Name of the header to hash.
+    """
+    name: str
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerConsistentHashQueryParamsItems0:
+    r"""
+    QueryParam defines the query parameter name hashing configuration for consistent hash based
+    load balancing.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the query param to hash.
     """
     name: str
 
