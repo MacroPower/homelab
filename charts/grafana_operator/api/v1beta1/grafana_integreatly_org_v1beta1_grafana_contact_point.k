@@ -43,42 +43,52 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpec:
     allowCrossNamespaceImport : bool, default is Undefined, optional
         Allow the Operator to match this resource with Grafanas outside the current namespace
     disableResolveMessage : bool, default is Undefined, optional
-        disable resolve message
+        Deprecated: define the receiver under .spec.receivers[]
+        Will be removed in a later version
+    editable : bool, default is Undefined, optional
+        Whether to enable or disable editing of the contact point in Grafana UI
     instanceSelector : GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecInstanceSelector, default is Undefined, required
         instance selector
-    name : str, default is Undefined, required
-        name
-    resyncPeriod : str, default is "10m0s", optional
+    name : str, default is Undefined, optional
+        Receivers are grouped under the same ContactPoint using the Name
+        Defaults to the name of the CR
+    receivers : [GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecReceiversItems0], default is Undefined, optional
+        List of receivers that Grafana will fan out notifications to
+    resyncPeriod : str, default is Undefined, optional
         How often the resource is synced, defaults to 10m0s if not set
-    settings : any, default is Undefined, required
-        settings
+    settings : any, default is Undefined, optional
+        Deprecated: define the receiver under .spec.receivers[]
+        Will be removed in a later version
     suspend : bool, default is Undefined, optional
         Suspend pauses synchronizing attempts and tells the operator to ignore changes
-    $type : str, default is Undefined, required
-        type
+    $type : str, default is Undefined, optional
+        Deprecated: define the receiver under .spec.receivers[]
+        Will be removed in a later version
     uid : str, default is Undefined, optional
+        Deprecated: define the receiver under .spec.receivers[]
         Manually specify the UID the Contact Point is created with. Can be any string consisting of alphanumeric characters, - and _ with a maximum length of 40
     valuesFrom : [GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0], default is Undefined, optional
-        values from
+        Deprecated: define the receiver under .spec.receivers[]
+        Will be removed in a later version
     """
     allowCrossNamespaceImport?: bool = False
     disableResolveMessage?: bool
+    editable?: bool
     instanceSelector: GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecInstanceSelector
 
-    name: str
-
-    resyncPeriod?: str = "10m0s"
-    settings: any
-
+    name?: str
+    receivers?: [GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecReceiversItems0]
+    resyncPeriod?: str
+    settings?: any
     suspend?: bool
-    $type: str
-
+    $type?: str
     uid?: str
     valuesFrom?: [GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0]
 
     check:
+        len(receivers) <= 99 if receivers
         _regex_match(str(resyncPeriod), r"^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$") if resyncPeriod
-        len($type) >= 1
+        len($type) >= 1 if $type
         len(uid) <= 40 if uid
         _regex_match(str(uid), r"^[a-zA-Z0-9-_]+$") if uid
         len(valuesFrom) <= 99 if valuesFrom
@@ -122,6 +132,110 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecInstanceSelectorMatchE
     operator: str
 
     values?: [str]
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecReceiversItems0:
+    r"""
+    Represents an integration to external services that receive Grafana notifications
+
+    Attributes
+    ----------
+    disableResolveMessage : bool, default is Undefined, optional
+        disable resolve message
+    settings : any, default is Undefined, required
+        settings
+    $type : str, default is Undefined, required
+        type
+    uid : str, default is Undefined, optional
+        Manually specify the UID the Contact Point is created with. Can be any string consisting of alphanumeric characters, - and _ with a maximum length of 40
+    valuesFrom : [GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecReceiversItems0ValuesFromItems0], default is Undefined, optional
+        values from
+    """
+    disableResolveMessage?: bool
+    settings: any
+
+    $type: str
+
+    uid?: str
+    valuesFrom?: [GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecReceiversItems0ValuesFromItems0]
+
+    check:
+        len($type) >= 1
+        len(uid) <= 40 if uid
+        _regex_match(str(uid), r"^[a-zA-Z0-9-_]+$") if uid
+        len(valuesFrom) <= 99 if valuesFrom
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecReceiversItems0ValuesFromItems0:
+    r"""
+    grafana integreatly org v1beta1 grafana contact point spec receivers items0 values from items0
+
+    Attributes
+    ----------
+    targetPath : str, default is Undefined, required
+        target path
+    valueFrom : GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecReceiversItems0ValuesFromItems0ValueFrom, default is Undefined, required
+        value from
+    """
+    targetPath: str
+
+    valueFrom: GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecReceiversItems0ValuesFromItems0ValueFrom
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecReceiversItems0ValuesFromItems0ValueFrom:
+    r"""
+    grafana integreatly org v1beta1 grafana contact point spec receivers items0 values from items0 value from
+
+    Attributes
+    ----------
+    configMapKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecReceiversItems0ValuesFromItems0ValueFromConfigMapKeyRef, default is Undefined, optional
+        config map key ref
+    secretKeyRef : GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecReceiversItems0ValuesFromItems0ValueFromSecretKeyRef, default is Undefined, optional
+        secret key ref
+    """
+    configMapKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecReceiversItems0ValuesFromItems0ValueFromConfigMapKeyRef
+    secretKeyRef?: GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecReceiversItems0ValuesFromItems0ValueFromSecretKeyRef
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecReceiversItems0ValuesFromItems0ValueFromConfigMapKeyRef:
+    r"""
+    Selects a key of a ConfigMap.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        The key to select.
+    name : str, default is Undefined, optional
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+    optional : bool, default is Undefined, optional
+        Specify whether the ConfigMap or its key must be defined
+    """
+    key: str
+
+    name?: str = ""
+    optional?: bool
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecReceiversItems0ValuesFromItems0ValueFromSecretKeyRef:
+    r"""
+    Selects a key of a Secret.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        The key of the secret to select from.  Must be a valid secret key.
+    name : str, default is Undefined, optional
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+    optional : bool, default is Undefined, optional
+        Specify whether the Secret or its key must be defined
+    """
+    key: str
+
+    name?: str = ""
+    optional?: bool
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointSpecValuesFromItems0:
     r"""
@@ -203,7 +317,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaContactPointStatus:
     Attributes
     ----------
     conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaContactPointStatusConditionsItems0], default is Undefined, optional
-        Results when synchonizing resource with Grafana instances
+        Results when synchronizing resource with Grafana instances
     lastResync : str, default is Undefined, optional
         Last time the resource was synchronized with Grafana instances
     """
