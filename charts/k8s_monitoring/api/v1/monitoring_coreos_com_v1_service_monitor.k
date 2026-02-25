@@ -117,6 +117,9 @@ schema MonitoringCoreosComV1ServiceMonitorSpec:
         It requires Prometheus >= v2.45.0.
 
         Notice: `scrapeClassicHistograms` corresponds to the `always_scrape_classic_histograms` field in the Prometheus configuration.
+    scrapeNativeHistograms : bool, default is Undefined, optional
+        scrapeNativeHistograms defines whether to enable scraping of native histograms.
+        It requires Prometheus >= v3.8.0.
     scrapeProtocols : [str], default is Undefined, optional
         scrapeProtocols defines the protocols to negotiate during a scrape. It tells clients the
         protocols supported by Prometheus in order of preference (from most to least preferred).
@@ -164,6 +167,7 @@ schema MonitoringCoreosComV1ServiceMonitorSpec:
     sampleLimit?: int
     scrapeClass?: str
     scrapeClassicHistograms?: bool
+    scrapeNativeHistograms?: bool
     scrapeProtocols?: [str]
     selector: MonitoringCoreosComV1ServiceMonitorSpecSelector
 
@@ -213,7 +217,7 @@ schema MonitoringCoreosComV1ServiceMonitorSpecEndpointsItems0:
     bearerTokenSecret : MonitoringCoreosComV1ServiceMonitorSpecEndpointsItems0BearerTokenSecret, default is Undefined, optional
         bearer token secret
     enableHttp2 : bool, default is Undefined, optional
-        enableHttp2 can be used to disable HTTP2 when scraping the target.
+        enableHttp2 can be used to disable HTTP2.
     filterRunning : bool, default is Undefined, optional
         filterRunning when true, the pods which are not running (e.g. either in Failed or
         Succeeded state) are dropped during the target discovery.
@@ -222,8 +226,8 @@ schema MonitoringCoreosComV1ServiceMonitorSpecEndpointsItems0:
 
         More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-phase
     followRedirects : bool, default is Undefined, optional
-        followRedirects defines whether the scrape requests should follow HTTP
-        3xx redirects.
+        followRedirects defines whether the client should follow HTTP 3xx
+        redirects.
     honorLabels : bool, default is Undefined, optional
         honorLabels defines when true the metric's labels when they collide
         with the target's labels.
@@ -276,12 +280,7 @@ schema MonitoringCoreosComV1ServiceMonitorSpecEndpointsItems0:
 
         More info: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config
     scheme : str, default is Undefined, optional
-        scheme defines the HTTP scheme to use for scraping.
-
-        `http` and `https` are the expected values unless you rewrite the
-        `__scheme__` label via relabeling.
-
-        If empty, Prometheus uses the default value `http`.
+        scheme defines the HTTP scheme to use when scraping the metrics.
     scrapeTimeout : str, default is Undefined, optional
         scrapeTimeout defines the timeout after which Prometheus considers the scrape to be failed.
 
@@ -320,7 +319,7 @@ schema MonitoringCoreosComV1ServiceMonitorSpecEndpointsItems0:
     proxyFromEnvironment?: bool
     proxyUrl?: str
     relabelings?: [MonitoringCoreosComV1ServiceMonitorSpecEndpointsItems0RelabelingsItems0]
-    scheme?: "http" | "https"
+    scheme?: "http" | "https" | "HTTP" | "HTTPS"
     scrapeTimeout?: str
     targetPort?: int | str
     tlsConfig?: MonitoringCoreosComV1ServiceMonitorSpecEndpointsItems0TLSConfig
@@ -333,10 +332,10 @@ schema MonitoringCoreosComV1ServiceMonitorSpecEndpointsItems0:
 
 schema MonitoringCoreosComV1ServiceMonitorSpecEndpointsItems0Authorization:
     r"""
-    authorization configures the Authorization header credentials to use when
-    scraping the target.
+    authorization configures the Authorization header credentials used by
+    the client.
 
-    Cannot be set at the same time as `basicAuth`, or `oauth2`.
+    Cannot be set at the same time as `basicAuth`, `bearerTokenSecret` or `oauth2`.
 
     Attributes
     ----------
@@ -376,10 +375,10 @@ schema MonitoringCoreosComV1ServiceMonitorSpecEndpointsItems0AuthorizationCreden
 
 schema MonitoringCoreosComV1ServiceMonitorSpecEndpointsItems0BasicAuth:
     r"""
-    basicAuth defines the Basic Authentication credentials to use when
-    scraping the target.
+    basicAuth defines the Basic Authentication credentials used by the
+    client.
 
-    Cannot be set at the same time as `authorization`, or `oauth2`.
+    Cannot be set at the same time as `authorization`, `bearerTokenSecret` or `oauth2`.
 
     Attributes
     ----------
@@ -439,9 +438,12 @@ schema MonitoringCoreosComV1ServiceMonitorSpecEndpointsItems0BasicAuthUsername:
 
 schema MonitoringCoreosComV1ServiceMonitorSpecEndpointsItems0BearerTokenSecret:
     r"""
-    bearerTokenSecret defines a key of a Secret containing the bearer
-    token for scraping targets. The secret needs to be in the same namespace
-    as the ServiceMonitor object and readable by the Prometheus Operator.
+    bearerTokenSecret defines a key of a Secret containing the bearer token
+    used by the client for authentication. The secret needs to be in the
+    same namespace as the custom resource and readable by the Prometheus
+    Operator.
+
+    Cannot be set at the same time as `authorization`, `basicAuth` or `oauth2`.
 
     Deprecated: use `authorization` instead.
 
@@ -514,11 +516,11 @@ schema MonitoringCoreosComV1ServiceMonitorSpecEndpointsItems0MetricRelabelingsIt
 
 schema MonitoringCoreosComV1ServiceMonitorSpecEndpointsItems0Oauth2:
     r"""
-    oauth2 defines the OAuth2 settings to use when scraping the target.
+    oauth2 defines the OAuth2 settings used by the client.
 
     It requires Prometheus >= 2.27.0.
 
-    Cannot be set at the same time as `authorization`, or `basicAuth`.
+    Cannot be set at the same time as `authorization`, `basicAuth` or `bearerTokenSecret`.
 
     Attributes
     ----------
@@ -919,7 +921,7 @@ schema MonitoringCoreosComV1ServiceMonitorSpecEndpointsItems0RelabelingsItems0:
 
 schema MonitoringCoreosComV1ServiceMonitorSpecEndpointsItems0TLSConfig:
     r"""
-    tlsConfig defines the TLS configuration to use when scraping the target.
+    tlsConfig defines TLS configuration used by the client.
 
     Attributes
     ----------
