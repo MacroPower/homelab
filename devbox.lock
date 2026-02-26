@@ -621,51 +621,51 @@
         }
       }
     },
-    "spacectl@1.18.2": {
-      "last_modified": "2026-02-10T02:06:53Z",
-      "resolved": "github:NixOS/nixpkgs/49d75834011c94a120a9cb874ac1c4d8b7bfc767#spacectl",
+    "spacectl@1.18.3": {
+      "last_modified": "2026-02-23T15:40:43Z",
+      "resolved": "github:NixOS/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97#spacectl",
       "source": "devbox-search",
-      "version": "1.18.2",
+      "version": "1.18.3",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/wcvxpavfm79wg6jall00n1n4cl4hvw1i-spacectl-1.18.2",
+              "path": "/nix/store/zjilrh0k7hs07jckpis9bn744palhmg9-spacectl-1.18.3",
               "default": true
             }
           ],
-          "store_path": "/nix/store/wcvxpavfm79wg6jall00n1n4cl4hvw1i-spacectl-1.18.2"
+          "store_path": "/nix/store/zjilrh0k7hs07jckpis9bn744palhmg9-spacectl-1.18.3"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/ah3a1bbrzpr84d7y4mkbfbvgyxjjkbdx-spacectl-1.18.2",
+              "path": "/nix/store/csg1xz2zimfsywbdaa1nbasdl6swbgyx-spacectl-1.18.3",
               "default": true
             }
           ],
-          "store_path": "/nix/store/ah3a1bbrzpr84d7y4mkbfbvgyxjjkbdx-spacectl-1.18.2"
+          "store_path": "/nix/store/csg1xz2zimfsywbdaa1nbasdl6swbgyx-spacectl-1.18.3"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/bjrfsf8wpvmqmbgis3pfbxakbvac8als-spacectl-1.18.2",
+              "path": "/nix/store/3j5s07b2x66l2skg3ni3rxf6hiimhs71-spacectl-1.18.3",
               "default": true
             }
           ],
-          "store_path": "/nix/store/bjrfsf8wpvmqmbgis3pfbxakbvac8als-spacectl-1.18.2"
+          "store_path": "/nix/store/3j5s07b2x66l2skg3ni3rxf6hiimhs71-spacectl-1.18.3"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/l6b9vl8q42z7i22kpzyppjvkj7kkgh0s-spacectl-1.18.2",
+              "path": "/nix/store/55laadhzn8drghhnb9b8ij2k0j8fwsim-spacectl-1.18.3",
               "default": true
             }
           ],
-          "store_path": "/nix/store/l6b9vl8q42z7i22kpzyppjvkj7kkgh0s-spacectl-1.18.2"
+          "store_path": "/nix/store/55laadhzn8drghhnb9b8ij2k0j8fwsim-spacectl-1.18.3"
         }
       }
     },
