@@ -145,51 +145,51 @@
         }
       }
     },
-    "doppler@3.75.2": {
-      "last_modified": "2026-01-30T02:32:49Z",
-      "resolved": "github:NixOS/nixpkgs/6308c3b21396534d8aaeac46179c14c439a89b8a#doppler",
+    "doppler@3.75.3": {
+      "last_modified": "2026-02-26T05:06:13Z",
+      "resolved": "github:NixOS/nixpkgs/26eaeac4e409d7b5a6bf6f90a2a2dc223c78d915#doppler",
       "source": "devbox-search",
-      "version": "3.75.2",
+      "version": "3.75.3",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/wiajzvizxi5dh9vdx3gx3nzh9xdjcfbd-doppler-3.75.2",
+              "path": "/nix/store/18cyn6l2svaarxzh8k7hwmwwvipbbv79-doppler-3.75.3",
               "default": true
             }
           ],
-          "store_path": "/nix/store/wiajzvizxi5dh9vdx3gx3nzh9xdjcfbd-doppler-3.75.2"
+          "store_path": "/nix/store/18cyn6l2svaarxzh8k7hwmwwvipbbv79-doppler-3.75.3"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/xyq7sqj0d5g7zc4z4a2yyyp3ma55inn2-doppler-3.75.2",
+              "path": "/nix/store/a9h7cxzcl9n1pm5j79rdc9bg8f54f5if-doppler-3.75.3",
               "default": true
             }
           ],
-          "store_path": "/nix/store/xyq7sqj0d5g7zc4z4a2yyyp3ma55inn2-doppler-3.75.2"
+          "store_path": "/nix/store/a9h7cxzcl9n1pm5j79rdc9bg8f54f5if-doppler-3.75.3"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/zj8fb3siqvpircjsflpz7vzr5nsf2jxw-doppler-3.75.2",
+              "path": "/nix/store/g9mj7v15iicw85k95gklc06742lipmpg-doppler-3.75.3",
               "default": true
             }
           ],
-          "store_path": "/nix/store/zj8fb3siqvpircjsflpz7vzr5nsf2jxw-doppler-3.75.2"
+          "store_path": "/nix/store/g9mj7v15iicw85k95gklc06742lipmpg-doppler-3.75.3"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/l1xxizv1g2givmrjp6qsc6mjia0g752w-doppler-3.75.2",
+              "path": "/nix/store/d8lqrkhig78g0cz8962r38gnm26xw9x7-doppler-3.75.3",
               "default": true
             }
           ],
-          "store_path": "/nix/store/l1xxizv1g2givmrjp6qsc6mjia0g752w-doppler-3.75.2"
+          "store_path": "/nix/store/d8lqrkhig78g0cz8962r38gnm26xw9x7-doppler-3.75.3"
         }
       }
     },
