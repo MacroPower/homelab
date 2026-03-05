@@ -945,6 +945,7 @@
           "properties": {
             "auditLogConfig": {
               "default": "null",
+              "description": "To provide explicit credentials for the S3 gateway, set them under\nthe top-level s3.credentials key (not allInOne.s3.credentials).\nThe s3-secret.yaml template only reads from .Values.s3.credentials.\nSee: s3.credentials.admin.accessKey, s3.credentials.read.accessKey",
               "required": [],
               "title": "auditLogConfig",
               "type": "null"
@@ -1258,6 +1259,13 @@
           "title": "bucketClassName",
           "type": "string"
         },
+        "bucketClassParameters": {
+          "additionalProperties": true,
+          "description": "Optional parameters to pass to the default BucketClass (e.g., diskType for tiered storage)",
+          "required": [],
+          "title": "bucketClassParameters",
+          "type": "object"
+        },
         "containerSecurityContext": {
           "additionalProperties": true,
           "required": [],
@@ -1379,6 +1387,53 @@
         "containerSecurityContext": {
           "additionalProperties": true,
           "description": "Configure security context for Container\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/\nExample:\ncontainerSecurityContext:\n  enabled: true\n  runAsUser: 2000\n  allowPrivilegeEscalation: false",
+          "properties": {
+            "allowPrivilegeEscalation": {
+              "required": [],
+              "title": "allowPrivilegeEscalation",
+              "type": "boolean"
+            },
+            "capabilities": {
+              "additionalProperties": true,
+              "properties": {
+                "drop": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "capabilities",
+              "type": "object"
+            },
+            "enabled": {
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "runAsNonRoot": {
+              "required": [],
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            },
+            "seccompProfile": {
+              "additionalProperties": true,
+              "properties": {
+                "type": {
+                  "required": [],
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "seccompProfile",
+              "type": "object"
+            }
+          },
           "required": [],
           "title": "containerSecurityContext",
           "type": "object"
@@ -1808,6 +1863,19 @@
         "podSecurityContext": {
           "additionalProperties": true,
           "description": "Configure security context for Pod\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/\nExample:\npodSecurityContext:\n  enabled: true\n  runAsUser: 1000\n  runAsGroup: 3000\n  fsGroup: 2000",
+          "properties": {
+            "enabled": {
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "runAsNonRoot": {
+              "description": "On OpenShift, we omit runAsUser/runAsGroup/fsGroup to let the admission\ncontroller assign them automatically based on the namespace's SCC.",
+              "required": [],
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            }
+          },
           "required": [],
           "title": "podSecurityContext",
           "type": "object"
@@ -1928,6 +1996,7 @@
           "properties": {
             "auditLogConfig": {
               "additionalProperties": true,
+              "description": "To provide explicit credentials for the S3 gateway, set them under\nthe top-level s3.credentials key (not filer.s3.credentials).\nThe s3-secret.yaml template only reads from .Values.s3.credentials.\nSee: s3.credentials.admin.accessKey, s3.credentials.read.accessKey",
               "required": [],
               "title": "auditLogConfig",
               "type": "object"
@@ -2042,6 +2111,7 @@
     },
     "global": {
       "additionalProperties": true,
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
       "properties": {
         "automountServiceAccountToken": {
           "default": true,
@@ -2248,6 +2318,12 @@
           "title": "securityConfig",
           "type": "object"
         },
+        "serviceAccountAnnotations": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "serviceAccountAnnotations",
+          "type": "object"
+        },
         "serviceAccountName": {
           "default": "seaweedfs",
           "description": "we will use this serviceAccountName for all ClusterRoles/ClusterRoleBindings",
@@ -2312,6 +2388,53 @@
         "containerSecurityContext": {
           "additionalProperties": true,
           "description": "Configure security context for Container\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/\nExample:\ncontainerSecurityContext:\n  enabled: true\n  runAsUser: 2000\n  allowPrivilegeEscalation: false",
+          "properties": {
+            "allowPrivilegeEscalation": {
+              "required": [],
+              "title": "allowPrivilegeEscalation",
+              "type": "boolean"
+            },
+            "capabilities": {
+              "additionalProperties": true,
+              "properties": {
+                "drop": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "capabilities",
+              "type": "object"
+            },
+            "enabled": {
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "runAsNonRoot": {
+              "required": [],
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            },
+            "seccompProfile": {
+              "additionalProperties": true,
+              "properties": {
+                "type": {
+                  "required": [],
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "seccompProfile",
+              "type": "object"
+            }
+          },
           "required": [],
           "title": "containerSecurityContext",
           "type": "object"
@@ -2324,6 +2447,11 @@
               "default": "/ssd",
               "required": [],
               "title": "hostPathPrefix",
+              "type": "string"
+            },
+            "size": {
+              "required": [],
+              "title": "size",
               "type": "string"
             },
             "storageClass": {
@@ -2669,6 +2797,19 @@
         "podSecurityContext": {
           "additionalProperties": true,
           "description": "Configure security context for Pod\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/\nExample:\npodSecurityContext:\n  enabled: true\n  runAsUser: 1000\n  runAsGroup: 3000\n  fsGroup: 2000",
+          "properties": {
+            "enabled": {
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "runAsNonRoot": {
+              "description": "On OpenShift, we omit runAsUser/runAsGroup/fsGroup to let the admission\ncontroller assign them automatically based on the namespace's SCC.",
+              "required": [],
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            }
+          },
           "required": [],
           "title": "podSecurityContext",
           "type": "object"
@@ -2861,6 +3002,7 @@
     },
     "s3": {
       "additionalProperties": true,
+      "description": "S3 gateway (if enabled)",
       "properties": {
         "annotations": {
           "additionalProperties": true,
@@ -2871,6 +3013,7 @@
         },
         "auditLogConfig": {
           "additionalProperties": true,
+          "description": "Optionally provide explicit credentials for the S3 gateway.\nWhen set, these are used in the generated s3 secret instead of\nauto-generating random credentials.\ncredentials:\n  admin:\n    accessKey: \"\"\n    secretKey: \"\"\n  read:\n    accessKey: \"\"\n    secretKey: \"\"",
           "required": [],
           "title": "auditLogConfig",
           "type": "object"
@@ -2884,6 +3027,53 @@
         "containerSecurityContext": {
           "additionalProperties": true,
           "description": "Configure security context for Container\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/\nExample:\ncontainerSecurityContext:\n  enabled: true\n  runAsUser: 2000\n  allowPrivilegeEscalation: false",
+          "properties": {
+            "allowPrivilegeEscalation": {
+              "required": [],
+              "title": "allowPrivilegeEscalation",
+              "type": "boolean"
+            },
+            "capabilities": {
+              "additionalProperties": true,
+              "properties": {
+                "drop": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "capabilities",
+              "type": "object"
+            },
+            "enabled": {
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "runAsNonRoot": {
+              "required": [],
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            },
+            "seccompProfile": {
+              "additionalProperties": true,
+              "properties": {
+                "type": {
+                  "required": [],
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "seccompProfile",
+              "type": "object"
+            }
+          },
           "required": [],
           "title": "containerSecurityContext",
           "type": "object"
@@ -3208,6 +3398,19 @@
         "podSecurityContext": {
           "additionalProperties": true,
           "description": "Configure security context for Pod\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/\nExample:\npodSecurityContext:\n  enabled: true\n  runAsUser: 1000\n  runAsGroup: 3000\n  fsGroup: 2000",
+          "properties": {
+            "enabled": {
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "runAsNonRoot": {
+              "description": "On OpenShift, we omit runAsUser/runAsGroup/fsGroup to let the admission\ncontroller assign them automatically based on the namespace's SCC.",
+              "required": [],
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            }
+          },
           "required": [],
           "title": "podSecurityContext",
           "type": "object"
@@ -3711,6 +3914,53 @@
         "containerSecurityContext": {
           "additionalProperties": true,
           "description": "Configure security context for Container\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/\nExample:\ncontainerSecurityContext:\n  enabled: true\n  runAsUser: 2000\n  allowPrivilegeEscalation: false",
+          "properties": {
+            "allowPrivilegeEscalation": {
+              "required": [],
+              "title": "allowPrivilegeEscalation",
+              "type": "boolean"
+            },
+            "capabilities": {
+              "additionalProperties": true,
+              "properties": {
+                "drop": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "capabilities",
+              "type": "object"
+            },
+            "enabled": {
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "runAsNonRoot": {
+              "required": [],
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            },
+            "seccompProfile": {
+              "additionalProperties": true,
+              "properties": {
+                "type": {
+                  "required": [],
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "seccompProfile",
+              "type": "object"
+            }
+          },
           "required": [],
           "title": "containerSecurityContext",
           "type": "object"
@@ -3743,6 +3993,16 @@
                 "default": "data1",
                 "required": [],
                 "title": "name",
+                "type": "string"
+              },
+              "size": {
+                "required": [],
+                "title": "size",
+                "type": "string"
+              },
+              "storageClass": {
+                "required": [],
+                "title": "storageClass",
                 "type": "string"
               },
               "type": {
@@ -3977,6 +4237,13 @@
         },
         "logs": {
           "additionalProperties": true,
+          "properties": {
+            "type": {
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
           "required": [],
           "title": "logs",
           "type": "object"
@@ -4031,6 +4298,19 @@
         "podSecurityContext": {
           "additionalProperties": true,
           "description": "Configure security context for Pod\nref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/\nExample:\npodSecurityContext:\n  enabled: true\n  runAsUser: 1000\n  runAsGroup: 3000\n  fsGroup: 2000",
+          "properties": {
+            "enabled": {
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "runAsNonRoot": {
+              "description": "On OpenShift, we omit runAsUser/runAsGroup/fsGroup to let the admission\ncontroller assign them automatically based on the namespace's SCC.",
+              "required": [],
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            }
+          },
           "required": [],
           "title": "podSecurityContext",
           "type": "object"
@@ -4246,13 +4526,6 @@
           "title": "annotations",
           "type": "object"
         },
-        "capabilities": {
-          "default": "vacuum,balance,erasure_coding",
-          "description": "Worker capabilities - comma-separated list\nAvailable: vacuum, balance, erasure_coding\nDefault: \"vacuum,balance,erasure_coding\" (all capabilities)",
-          "required": [],
-          "title": "capabilities",
-          "type": "string"
-        },
         "containerSecurityContext": {
           "additionalProperties": true,
           "required": [],
@@ -4329,6 +4602,13 @@
           "default": "",
           "required": [],
           "title": "initContainers",
+          "type": "string"
+        },
+        "jobType": {
+          "default": "vacuum,volume_balance,erasure_coding",
+          "description": "Worker job types - comma-separated list\nAvailable: vacuum, volume_balance, erasure_coding",
+          "required": [],
+          "title": "jobType",
           "type": "string"
         },
         "livenessProbe": {
@@ -4428,12 +4708,25 @@
           "title": "logs",
           "type": "object"
         },
-        "maxConcurrent": {
-          "default": 3,
-          "description": "Maximum number of concurrent tasks",
+        "maxDetect": {
+          "default": 1,
+          "description": "Maximum number of concurrent detection requests",
           "required": [],
-          "title": "maxConcurrent",
+          "title": "maxDetect",
           "type": "integer"
+        },
+        "maxExecute": {
+          "default": 4,
+          "description": "Maximum number of concurrent execution jobs",
+          "required": [],
+          "title": "maxExecute",
+          "type": "integer"
+        },
+        "metricsIp": {
+          "default": "",
+          "required": [],
+          "title": "metricsIp",
+          "type": "string"
         },
         "metricsPort": {
           "default": 9327,
