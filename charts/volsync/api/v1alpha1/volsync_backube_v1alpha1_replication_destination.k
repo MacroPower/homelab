@@ -1316,13 +1316,39 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0V
 
     Attributes
     ----------
+    nfs : VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSourceNfs, default is Undefined, optional
+        nfs
     persistentVolumeClaim : VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSourcePersistentVolumeClaim, default is Undefined, optional
         persistent volume claim
     secret : VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSourceSecret, default is Undefined, optional
         secret
     """
+    nfs?: VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSourceNfs
     persistentVolumeClaim?: VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSourcePersistentVolumeClaim
     secret?: VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSourceSecret
+
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSourceNfs:
+    r"""
+    nfs represents an NFS mount on the host that shares a pod's lifetime
+    More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+
+    Attributes
+    ----------
+    path : str, default is Undefined, required
+        path that is exported by the NFS server.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    readOnly : bool, default is Undefined, optional
+        readOnly here will force the NFS export to be mounted with read-only permissions.
+        Defaults to false.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    server : str, default is Undefined, required
+        server is the hostname or IP address of the NFS server.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    """
+    path: str
+
+    readOnly?: bool
+    server: str
 
 schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0VolumeSourcePersistentVolumeClaim:
     r"""
@@ -2661,13 +2687,39 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0V
 
     Attributes
     ----------
+    nfs : VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSourceNfs, default is Undefined, optional
+        nfs
     persistentVolumeClaim : VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSourcePersistentVolumeClaim, default is Undefined, optional
         persistent volume claim
     secret : VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSourceSecret, default is Undefined, optional
         secret
     """
+    nfs?: VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSourceNfs
     persistentVolumeClaim?: VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSourcePersistentVolumeClaim
     secret?: VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSourceSecret
+
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSourceNfs:
+    r"""
+    nfs represents an NFS mount on the host that shares a pod's lifetime
+    More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+
+    Attributes
+    ----------
+    path : str, default is Undefined, required
+        path that is exported by the NFS server.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    readOnly : bool, default is Undefined, optional
+        readOnly here will force the NFS export to be mounted with read-only permissions.
+        Defaults to false.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    server : str, default is Undefined, required
+        server is the hostname or IP address of the NFS server.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    """
+    path: str
+
+    readOnly?: bool
+    server: str
 
 schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0VolumeSourcePersistentVolumeClaim:
     r"""
@@ -4114,13 +4166,39 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems
 
     Attributes
     ----------
+    nfs : VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSourceNfs, default is Undefined, optional
+        nfs
     persistentVolumeClaim : VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSourcePersistentVolumeClaim, default is Undefined, optional
         persistent volume claim
     secret : VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSourceSecret, default is Undefined, optional
         secret
     """
+    nfs?: VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSourceNfs
     persistentVolumeClaim?: VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSourcePersistentVolumeClaim
     secret?: VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSourceSecret
+
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSourceNfs:
+    r"""
+    nfs represents an NFS mount on the host that shares a pod's lifetime
+    More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+
+    Attributes
+    ----------
+    path : str, default is Undefined, required
+        path that is exported by the NFS server.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    readOnly : bool, default is Undefined, optional
+        readOnly here will force the NFS export to be mounted with read-only permissions.
+        Defaults to false.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    server : str, default is Undefined, required
+        server is the hostname or IP address of the NFS server.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    """
+    path: str
+
+    readOnly?: bool
+    server: str
 
 schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0VolumeSourcePersistentVolumeClaim:
     r"""
