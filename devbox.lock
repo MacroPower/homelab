@@ -765,51 +765,51 @@
         }
       }
     },
-    "wrangler@4.61.1": {
-      "last_modified": "2026-02-01T22:02:28Z",
-      "resolved": "github:NixOS/nixpkgs/eb8d947de7b05897b2b5f4117d184f9c9846cd06#wrangler",
+    "wrangler@4.62.0": {
+      "last_modified": "2026-02-23T15:40:43Z",
+      "resolved": "github:NixOS/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97#wrangler",
       "source": "devbox-search",
-      "version": "4.61.1",
+      "version": "4.62.0",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/phwyf60gm2m5wf8kz1j8z98890gsgs3h-wrangler-4.61.1",
+              "path": "/nix/store/54p3b3a01966mw9f2v8l4f4xlq1qym4k-wrangler-4.62.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/phwyf60gm2m5wf8kz1j8z98890gsgs3h-wrangler-4.61.1"
+          "store_path": "/nix/store/54p3b3a01966mw9f2v8l4f4xlq1qym4k-wrangler-4.62.0"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/yxiv6gm8my2y99bk4f5nir23fm47566q-wrangler-4.61.1",
+              "path": "/nix/store/8aqa2wj5jmaaw72jkdj1x64p8knczg58-wrangler-4.62.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/yxiv6gm8my2y99bk4f5nir23fm47566q-wrangler-4.61.1"
+          "store_path": "/nix/store/8aqa2wj5jmaaw72jkdj1x64p8knczg58-wrangler-4.62.0"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/kswlc998p6mm1svxnadfjdmpn1vsg9lv-wrangler-4.61.1",
+              "path": "/nix/store/sfnf0jrh7k5npf91ndrkbxx3m4i98s4f-wrangler-4.62.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/kswlc998p6mm1svxnadfjdmpn1vsg9lv-wrangler-4.61.1"
+          "store_path": "/nix/store/sfnf0jrh7k5npf91ndrkbxx3m4i98s4f-wrangler-4.62.0"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/9vh4k85hnpby6jbcz3a8afya84a3qiza-wrangler-4.61.1",
+              "path": "/nix/store/fkwhcxyzdfzr92x60ryx2a2gis5mnmk5-wrangler-4.62.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/9vh4k85hnpby6jbcz3a8afya84a3qiza-wrangler-4.61.1"
+          "store_path": "/nix/store/fkwhcxyzdfzr92x60ryx2a2gis5mnmk5-wrangler-4.62.0"
         }
       }
     }
