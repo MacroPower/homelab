@@ -31,6 +31,8 @@ schema Values:
         Global values are values that can be accessed from any chart or subchart by exactly the same name.
     image : ValuesImage, optional
     imagePullSecrets : any, optional, default is ""
+    initContainers : [any], optional
+        Init containers to run before the main descheduler container
     jobAnnotations : ValuesJobAnnotations, optional
     jobLabels : ValuesJobLabels, optional
     kind : str, optional, default is "CronJob"
@@ -108,6 +110,7 @@ schema Values:
     global?: ValuesGlobal
     image?: ValuesImage
     imagePullSecrets?: any
+    initContainers?: [any]
     jobAnnotations?: ValuesJobAnnotations
     jobLabels?: ValuesJobLabels
     kind?: str
