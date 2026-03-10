@@ -1577,8 +1577,10 @@ schema ValuesConfigsCm:
         # Ref: https://argo-cd.readthedocs.io/en/stable/user-guide/status-badge/
     "timeout.hard.reconciliation" : str, optional, default is "0s"
         Timeout to refresh application data as well as target manifests cache
-    "timeout.reconciliation" : str, optional, default is "180s"
+    "timeout.reconciliation" : str, optional, default is "120s"
         Timeout to discover if a new manifests version got published to the repository
+    "timeout.reconciliation.jitter" : str, optional, default is "60s"
+        Maximum jitter added to the reconciliation timeout to spread out refreshes and reduce repo-server load
     """
     [...str]: any
     "admin.enabled"?: bool
@@ -1599,6 +1601,7 @@ schema ValuesConfigsCm:
     "statusbadge.enabled"?: bool
     "timeout.hard.reconciliation"?: str
     "timeout.reconciliation"?: str
+    "timeout.reconciliation.jitter"?: str
 
 schema ValuesConfigsCmAnnotations:
     r"""
@@ -2038,6 +2041,8 @@ schema ValuesController:
     serviceAccount : ValuesControllerServiceAccount, optional
     statefulsetAnnotations : ValuesControllerStatefulsetAnnotations, optional
         Annotations for the application controller StatefulSet
+    statefulsetLabels : ValuesControllerStatefulsetLabels, optional
+        Labels for the application controller StatefulSet
     terminationGracePeriodSeconds : int, optional, default is 30
         terminationGracePeriodSeconds for container lifecycle hook
     tolerations : [any], optional
@@ -2091,6 +2096,7 @@ schema ValuesController:
     runtimeClassName?: str
     serviceAccount?: ValuesControllerServiceAccount
     statefulsetAnnotations?: ValuesControllerStatefulsetAnnotations
+    statefulsetLabels?: ValuesControllerStatefulsetLabels
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: [any]
@@ -2550,6 +2556,12 @@ schema ValuesControllerStatefulsetAnnotations:
     """
     [...str]: any
 
+schema ValuesControllerStatefulsetLabels:
+    r"""
+    Labels for the application controller StatefulSet
+    """
+    [...str]: any
+
 schema ValuesControllerVpa:
     r"""
     # Application controller Vertical Pod Autoscaler
@@ -2850,6 +2862,7 @@ schema ValuesDexContainerSecurityContext:
     capabilities : ValuesDexContainerSecurityContextCapabilities, optional
     readOnlyRootFilesystem : bool, optional, default is True
     runAsNonRoot : bool, optional, default is True
+    runAsUser : int, optional, default is 1001
     seccompProfile : ValuesDexContainerSecurityContextSeccompProfile, optional
     """
     [...str]: any
@@ -2857,6 +2870,7 @@ schema ValuesDexContainerSecurityContext:
     capabilities?: ValuesDexContainerSecurityContextCapabilities
     readOnlyRootFilesystem?: bool
     runAsNonRoot?: bool
+    runAsUser?: int
     seccompProfile?: ValuesDexContainerSecurityContextSeccompProfile
 
 schema ValuesDexContainerSecurityContextCapabilities:
@@ -2927,7 +2941,7 @@ schema ValuesDexImage:
         Dex imagePullPolicy
     repository : str, optional, default is "ghcr.io/dexidp/dex"
         Dex image repository
-    tag : str, optional, default is "v2.44.0"
+    tag : str, optional, default is "v2.45.1"
         Dex image tag
     """
     [...str]: any
@@ -3512,6 +3526,10 @@ schema ValuesGlobal:
         Configure dual-stack used by all component services
     env : [any], optional
         Environment variables to pass to all deployed Deployments
+    extraVolumeMounts : [any], optional
+        Extra volume mounts to add to all deployed Deployments and StatefulSets
+    extraVolumes : [any], optional
+        Extra volumes to add to all deployed Deployments and StatefulSets
     hostAliases : [any], optional
         Mapping between IP and hostnames that will be injected as entries in the pod's hosts files
     image : ValuesGlobalImage, optional
@@ -3538,6 +3556,8 @@ schema ValuesGlobal:
         Toggle and define pod-level security context.
     statefulsetAnnotations : ValuesGlobalStatefulsetAnnotations, optional
         Annotations for the all deployed Statefulsets
+    statefulsetLabels : ValuesGlobalStatefulsetLabels, optional
+        Labels for the all deployed Statefulsets
     tolerations : [any], optional
         Default tolerations for all components
     topologySpreadConstraints : [any], optional
@@ -3557,6 +3577,8 @@ schema ValuesGlobal:
     domain?: str
     dualStack?: ValuesGlobalDualStack
     env?: [any]
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
     hostAliases?: [any]
     image?: ValuesGlobalImage
     imagePullSecrets?: [any]
@@ -3570,6 +3592,7 @@ schema ValuesGlobal:
     runtimeClassName?: str
     securityContext?: ValuesGlobalSecurityContext
     statefulsetAnnotations?: ValuesGlobalStatefulsetAnnotations
+    statefulsetLabels?: ValuesGlobalStatefulsetLabels
     tolerations?: [any]
     topologySpreadConstraints?: [any]
 
@@ -3750,6 +3773,12 @@ schema ValuesGlobalSecurityContext:
 schema ValuesGlobalStatefulsetAnnotations:
     r"""
     Annotations for the all deployed Statefulsets
+    """
+    [...str]: any
+
+schema ValuesGlobalStatefulsetLabels:
+    r"""
+    Labels for the all deployed Statefulsets
     """
     [...str]: any
 
@@ -5570,7 +5599,7 @@ schema ValuesRedisExporterImage:
         Image pull policy for the redis-exporter
     repository : str, optional, default is "ghcr.io/oliver006/redis_exporter"
         Repository to use for the redis-exporter
-    tag : str, optional, default is "v1.80.1"
+    tag : str, optional, default is "v1.82.0"
         Tag to use for the redis-exporter
     """
     [...str]: any
@@ -5821,7 +5850,7 @@ schema ValuesRedisHaImage:
     ----------
     repository : str, optional, default is "ecr-public.aws.com/docker/library/redis"
         Redis repository
-    tag : str, optional, default is "8.2.2-alpine"
+    tag : str, optional, default is "8.2.3-alpine"
         Redis tag
         # Do not upgrade to >= 7.4.0, otherwise you are no longer using an open source version of Redis
     """
@@ -5900,9 +5929,9 @@ schema ValuesRedisImage:
         Redis image pull policy
     repository : str, optional, default is "ecr-public.aws.com/docker/library/redis"
         Redis repository
-    tag : str, optional, default is "8.2.2-alpine"
+    tag : str, optional, default is "8.2.3-alpine"
         Redis tag
-        # Do not upgrade to >= 7.4.0, otherwise you are no longer using an open source version of Redis
+        # Do not use 7.4.0 <= v < 8.0.0, otherwise you are no longer using an open source version of Redis
     """
     [...str]: any
     imagePullPolicy?: str
@@ -6579,7 +6608,7 @@ schema ValuesRepoServer:
     rbac : [any], optional
         Repo server rbac rules
     readinessProbe : ValuesRepoServerReadinessProbe, optional
-        # Readiness and liveness probes for default backend
+        # Readiness and liveness probes for Repo Server
         # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
     replicas : int, optional, default is 1
         The number of repo server pods to run
@@ -6914,6 +6943,8 @@ schema ValuesRepoServerLivenessProbe:
 
     Attributes
     ----------
+    enabled : bool, optional, default is True
+        Enable Kubernetes liveness probe for Repo Server
     failureThreshold : int, optional, default is 3
         Minimum consecutive failures for the [probe] to be considered failed after having succeeded
     initialDelaySeconds : int, optional, default is 10
@@ -6926,6 +6957,7 @@ schema ValuesRepoServerLivenessProbe:
         Number of seconds after which the [probe] times out
     """
     [...str]: any
+    enabled?: bool
     failureThreshold?: int
     initialDelaySeconds?: int
     periodSeconds?: int
@@ -7126,11 +7158,13 @@ schema ValuesRepoServerPodLabels:
 
 schema ValuesRepoServerReadinessProbe:
     r"""
-    # Readiness and liveness probes for default backend
+    # Readiness and liveness probes for Repo Server
     # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 
     Attributes
     ----------
+    enabled : bool, optional, default is True
+        Enable Kubernetes readiness probe for Repo Server
     failureThreshold : int, optional, default is 3
         Minimum consecutive failures for the [probe] to be considered failed after having succeeded
     initialDelaySeconds : int, optional, default is 10
@@ -7143,6 +7177,7 @@ schema ValuesRepoServerReadinessProbe:
         Number of seconds after which the [probe] times out
     """
     [...str]: any
+    enabled?: bool
     failureThreshold?: int
     initialDelaySeconds?: int
     periodSeconds?: int
@@ -8558,6 +8593,8 @@ schema ValuesServerLivenessProbe:
 
     Attributes
     ----------
+    enabled : bool, optional, default is True
+        Enable Kubernetes liveness probe for default backend
     failureThreshold : int, optional, default is 3
         Minimum consecutive failures for the [probe] to be considered failed after having succeeded
     initialDelaySeconds : int, optional, default is 10
@@ -8570,6 +8607,7 @@ schema ValuesServerLivenessProbe:
         Number of seconds after which the [probe] times out
     """
     [...str]: any
+    enabled?: bool
     failureThreshold?: int
     initialDelaySeconds?: int
     periodSeconds?: int
@@ -8775,6 +8813,8 @@ schema ValuesServerReadinessProbe:
 
     Attributes
     ----------
+    enabled : bool, optional, default is True
+        Enable Kubernetes readiness probe for default backend
     failureThreshold : int, optional, default is 3
         Minimum consecutive failures for the [probe] to be considered failed after having succeeded
     initialDelaySeconds : int, optional, default is 10
@@ -8787,6 +8827,7 @@ schema ValuesServerReadinessProbe:
         Number of seconds after which the [probe] times out
     """
     [...str]: any
+    enabled?: bool
     failureThreshold?: int
     initialDelaySeconds?: int
     periodSeconds?: int
