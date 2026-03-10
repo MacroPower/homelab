@@ -309,6 +309,17 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverDns01AzureDNS:
         Auth: Azure Service Principal:
         The TenantID of the Azure Service Principal used to authenticate with Azure DNS.
         If set, ClientID and ClientSecret must also be set.
+    zoneType : str, default is Undefined, optional
+        ZoneType determines which type of Azure DNS zone to use.
+
+        Valid values are:
+          - AzurePublicZone  (default): Use a public Azure DNS zone.
+          - AzurePrivateZone: Use an Azure Private DNS zone.
+
+        If not specified, AzurePublicZone is used.
+
+        Support for Azure Private DNS zones is currently
+        experimental and may change in future releases.
     """
     clientID?: str
     clientSecretSecretRef?: AcmeCertManagerIoV1ChallengeSpecSolverDns01AzureDNSClientSecretSecretRef
@@ -320,6 +331,7 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverDns01AzureDNS:
     subscriptionID: str
 
     tenantID?: str
+    zoneType?: "AzurePublicZone" | "AzurePrivateZone"
 
 schema AcmeCertManagerIoV1ChallengeSpecSolverDns01AzureDNSClientSecretSecretRef:
     r"""
@@ -490,7 +502,7 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverDns01Rfc2136:
     nameserver : str, default is Undefined, required
         The IP address or hostname of an authoritative DNS server supporting
         RFC2136 in the form host:port. If the host is an IPv6 address it must be
-        enclosed in square brackets (e.g [2001:db8::1]) ; port is optional.
+        enclosed in square brackets (e.g [2001:db8::1]); port is optional.
         This field is required.
     $protocol : str, default is Undefined, optional
         Protocol to use for dynamic DNS update queries. Valid values are (case-sensitive) ``TCP`` and ``UDP``; ``UDP`` (default).
@@ -539,8 +551,8 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverDns01Route53:
     accessKeyID : str, default is Undefined, optional
         The AccessKeyID is used for authentication.
         Cannot be set when SecretAccessKeyID is set.
-        If neither the Access Key nor Key ID are set, we fall-back to using env
-        vars, shared credentials file or AWS Instance metadata,
+        If neither the Access Key nor Key ID are set, we fall back to using env
+        vars, shared credentials file, or AWS Instance metadata,
         see: https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials
     accessKeyIDSecretRef : AcmeCertManagerIoV1ChallengeSpecSolverDns01Route53AccessKeyIDSecretRef, default is Undefined, optional
         access key ID secret ref
@@ -590,8 +602,8 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverDns01Route53AccessKeyIDSecretRef:
     The SecretAccessKey is used for authentication. If set, pull the AWS
     access key ID from a key within a Kubernetes Secret.
     Cannot be set when AccessKeyID is set.
-    If neither the Access Key nor Key ID are set, we fall-back to using env
-    vars, shared credentials file or AWS Instance metadata,
+    If neither the Access Key nor Key ID are set, we fall back to using env
+    vars, shared credentials file, or AWS Instance metadata,
     see: https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials
 
     Attributes
@@ -652,8 +664,8 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverDns01Route53AuthKubernetesServiceAc
 schema AcmeCertManagerIoV1ChallengeSpecSolverDns01Route53SecretAccessKeySecretRef:
     r"""
     The SecretAccessKey is used for authentication.
-    If neither the Access Key nor Key ID are set, we fall-back to using env
-    vars, shared credentials file or AWS Instance metadata,
+    If neither the Access Key nor Key ID are set, we fall back to using env
+    vars, shared credentials file, or AWS Instance metadata,
     see: https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials
 
     Attributes
@@ -1975,9 +1987,10 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01GatewayHTTPRoutePodTemplateSp
         If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
         Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
         Exists is equivalent to wildcard for value, so that a pod can
         tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
     tolerationSeconds : int, default is Undefined, optional
         TolerationSeconds represents the period of time the toleration (which must be
         of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
@@ -3151,9 +3164,10 @@ schema AcmeCertManagerIoV1ChallengeSpecSolverHttp01IngressPodTemplateSpecTolerat
         If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
         Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
         Exists is equivalent to wildcard for value, so that a pod can
         tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
     tolerationSeconds : int, default is Undefined, optional
         TolerationSeconds represents the period of time the toleration (which must be
         of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
