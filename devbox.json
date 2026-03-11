@@ -5,7 +5,7 @@
     "git+https://nur.jacobcolvin.com#kat": "",
     "git+https://nur.jacobcolvin.com#kclipper": "",
     "git+https://nur.jacobcolvin.com#kcl-lsp": "",
-    "argocd": "3.1.9",
+    "argocd": "3.3.2",
     "cilium-cli": "0.18.8",
     "doppler": "3.75.3",
     "go-task": "3.45.5",
