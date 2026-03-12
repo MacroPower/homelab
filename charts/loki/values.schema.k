@@ -44,6 +44,8 @@ schema Values:
         #
     clusterLabelOverride : any, optional, default is "null"
         Overrides the chart's cluster label
+    commonLabels : ValuesCommonLabels, optional
+        Labels to be added to resources
     compactor : ValuesCompactor, optional
         Configuration for the compactor
     configPathmc : str, optional, default is "/etc/minio/mc/"
@@ -122,6 +124,9 @@ schema Values:
         Global values are values that can be accessed from any chart or subchart by exactly the same name.
     hostAliases : [any], optional
         hostAliases to add
+    hostNetwork : bool, optional, default is False
+        Enable or disable the use of host networking for the pod.
+        When true, the pod will use the node's network namespace
     ignoreChartChecksums : bool, optional, default is False
         # Typically the deployment/statefulset includes checksums of secrets/config,
         # So that when these change on a subsequent helm install, the deployment/statefulset
@@ -248,6 +253,7 @@ schema Values:
         Overrides the chart's name
     namespaceOverride : any, optional, default is "null"
         Overrides the chart's namespace
+    namespaceSelector : ValuesNamespaceSelector, optional
     networkPolicy : ValuesNetworkPolicy, optional
         #####################################################################################################################
 
@@ -394,6 +400,7 @@ schema Values:
     chunksCache?: ValuesChunksCache
     clusterDomain?: str
     clusterLabelOverride?: any
+    commonLabels?: ValuesCommonLabels
     compactor?: ValuesCompactor
     configPathmc?: str
     consoleIngress?: ValuesConsoleIngress
@@ -422,6 +429,7 @@ schema Values:
     gateway?: ValuesGateway
     global?: ValuesGlobal
     hostAliases?: [any]
+    hostNetwork?: bool
     ignoreChartChecksums?: bool
     image?: ValuesImage
     imagePullSecrets?: [any]
@@ -451,6 +459,7 @@ schema Values:
     mountPath?: str
     nameOverride?: any
     namespaceOverride?: any
+    namespaceSelector?: ValuesNamespaceSelector
     networkPolicy?: ValuesNetworkPolicy
     nodeSelector?: ValuesNodeSelector
     oidc?: ValuesOidc
@@ -813,6 +822,8 @@ schema ValuesBackend:
     image : ValuesBackendImage, optional
     initContainers : [any], optional
         Init containers to add to the backend pods
+    maxUnavailable : int, optional, default is 1
+        Pod Disruption Budget maxUnavailable
     nodeSelector : ValuesBackendNodeSelector, optional
         Node selector for backend pods
     persistence : ValuesBackendPersistence, optional
@@ -857,6 +868,7 @@ schema ValuesBackend:
     hostUsers?: str
     image?: ValuesBackendImage
     initContainers?: [any]
+    maxUnavailable?: int
     nodeSelector?: ValuesBackendNodeSelector
     persistence?: ValuesBackendPersistence
     podAnnotations?: ValuesBackendPodAnnotations
@@ -1029,6 +1041,10 @@ schema ValuesBackendPersistence:
         If set to "-", storageClassName: "", which disables dynamic provisioning.
         If empty or set to null, no storageClassName spec is
         set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).
+    volumeAttributesClassName : any, optional, default is "null"
+        Volume attributes class name to be used.
+        If empty or set to null, no volumeAttributesClassName spec is set.
+        Requires Kubernetes 1.31
     volumeClaimsEnabled : bool, optional, default is True
         Enable volume claims in pod spec
     """
@@ -1041,6 +1057,7 @@ schema ValuesBackendPersistence:
     selector?: any
     size?: str
     storageClass?: any
+    volumeAttributesClassName?: any
     volumeClaimsEnabled?: bool
 
 schema ValuesBackendPersistenceAnnotations:
@@ -1106,12 +1123,15 @@ schema ValuesBackendService:
         Annotations for backend Service
     labels : ValuesBackendServiceLabels, optional
         Additional labels for backend Service
+    trafficDistribution : str, optional, default is ""
+        trafficDistribution for backend Service
     $type : str, optional, default is "ClusterIP"
         Service type for backend Service
     """
     [...str]: any
     annotations?: ValuesBackendServiceAnnotations
     labels?: ValuesBackendServiceLabels
+    trafficDistribution?: str
     $type?: str
 
 schema ValuesBackendServiceAnnotations:
@@ -1470,7 +1490,7 @@ schema ValuesBloomGateway:
     initContainers : [any], optional
         Init containers to add to the bloom-gateway pods
     livenessProbe : ValuesBloomGatewayLivenessProbe, optional
-        liveness probe settings for ingester pods. If empty use `loki.livenessProbe`
+        liveness probe settings for bloom-gateway pods. If empty use `loki.livenessProbe`
     nodeSelector : ValuesBloomGatewayNodeSelector, optional
         Node selector for bloom-gateway pods
     persistence : ValuesBloomGatewayPersistence, optional
@@ -1481,7 +1501,7 @@ schema ValuesBloomGateway:
     priorityClassName : any, optional, default is "null"
         The name of the PriorityClass for bloom-gateway pods
     readinessProbe : ValuesBloomGatewayReadinessProbe, optional
-        readiness probe settings for ingester pods. If empty, use `loki.readinessProbe`
+        readiness probe settings for bloom-gateway pods. If empty, use `loki.readinessProbe`
     replicas : int, optional, default is 0
         Number of replicas for the bloom-gateway
     resources : ValuesBloomGatewayResources, optional
@@ -1492,7 +1512,7 @@ schema ValuesBloomGateway:
     serviceLabels : ValuesBloomGatewayServiceLabels, optional
         Labels for bloom-gateway service
     startupProbe : ValuesBloomGatewayStartupProbe, optional
-        startup probe settings for ingester pods. If empty, use `loki.startupProbe`
+        startup probe settings for bloom-gateway pods. If empty, use `loki.startupProbe`
     terminationGracePeriodSeconds : int, optional, default is 30
         Grace period to allow the bloom-gateway to shutdown before it is killed
     tolerations : [any], optional
@@ -1628,7 +1648,7 @@ schema ValuesBloomGatewayImage:
 
 schema ValuesBloomGatewayLivenessProbe:
     r"""
-    liveness probe settings for ingester pods. If empty use `loki.livenessProbe`
+    liveness probe settings for bloom-gateway pods. If empty use `loki.livenessProbe`
     """
     [...str]: any
 
@@ -1689,12 +1709,17 @@ schema ValuesBloomGatewayPersistenceClaimsItems0:
           If set to "-", storageClassName: "", which disables dynamic provisioning.
           If empty or set to null, no storageClassName spec is
           set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).
+    volumeAttributesClassName : any, optional, default is "null"
+        Volume attributes class name to be used.
+        If empty or set to null, no volumeAttributesClassName spec is set.
+        Requires Kubernetes 1.31
     """
     [...str]: any
     accessModes?: [str]
     name?: str
     size?: str
     storageClass?: any
+    volumeAttributesClassName?: any
 
 schema ValuesBloomGatewayPersistenceLabels:
     r"""
@@ -1716,7 +1741,7 @@ schema ValuesBloomGatewayPodLabels:
 
 schema ValuesBloomGatewayReadinessProbe:
     r"""
-    readiness probe settings for ingester pods. If empty, use `loki.readinessProbe`
+    readiness probe settings for bloom-gateway pods. If empty, use `loki.readinessProbe`
     """
     [...str]: any
 
@@ -1771,7 +1796,7 @@ schema ValuesBloomGatewayServiceLabels:
 
 schema ValuesBloomGatewayStartupProbe:
     r"""
-    startup probe settings for ingester pods. If empty, use `loki.startupProbe`
+    startup probe settings for bloom-gateway pods. If empty, use `loki.startupProbe`
     """
     [...str]: any
 
@@ -1813,7 +1838,7 @@ schema ValuesBloomPlanner:
     initContainers : [any], optional
         Init containers to add to the bloom-planner pods
     livenessProbe : ValuesBloomPlannerLivenessProbe, optional
-        liveness probe settings for ingester pods. If empty use `loki.livenessProbe`
+        liveness probe settings for bloom-planner pods. If empty use `loki.livenessProbe`
     nodeSelector : ValuesBloomPlannerNodeSelector, optional
         Node selector for bloom-planner pods
     persistence : ValuesBloomPlannerPersistence, optional
@@ -1824,7 +1849,7 @@ schema ValuesBloomPlanner:
     priorityClassName : any, optional, default is "null"
         The name of the PriorityClass for bloom-planner pods
     readinessProbe : ValuesBloomPlannerReadinessProbe, optional
-        readiness probe settings for ingester pods. If empty, use `loki.readinessProbe`
+        readiness probe settings for bloom-planner pods. If empty, use `loki.readinessProbe`
     replicas : int, optional, default is 0
         Number of replicas for the bloom-planner
     resources : ValuesBloomPlannerResources, optional
@@ -1835,7 +1860,7 @@ schema ValuesBloomPlanner:
     serviceLabels : ValuesBloomPlannerServiceLabels, optional
         Labels for bloom-planner service
     startupProbe : ValuesBloomPlannerStartupProbe, optional
-        startup probe settings for ingester pods. If empty use `loki.startupProbe`
+        startup probe settings for bloom-planner pods. If empty use `loki.startupProbe`
     terminationGracePeriodSeconds : int, optional, default is 30
         Grace period to allow the bloom-planner to shutdown before it is killed
     tolerations : [any], optional
@@ -1971,7 +1996,7 @@ schema ValuesBloomPlannerImage:
 
 schema ValuesBloomPlannerLivenessProbe:
     r"""
-    liveness probe settings for ingester pods. If empty use `loki.livenessProbe`
+    liveness probe settings for bloom-planner pods. If empty use `loki.livenessProbe`
     """
     [...str]: any
 
@@ -2024,6 +2049,10 @@ schema ValuesBloomPlannerPersistenceClaimsItems0:
           If set to "-", storageClassName: "", which disables dynamic provisioning.
           If empty or set to null, no storageClassName spec is
           set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).
+    volumeAttributesClassName : any, optional, default is "null"
+        Volume attributes class name to be used.
+        If empty or set to null, no volumeAttributesClassName spec is set.
+        Requires Kubernetes 1.31
     """
     [...str]: any
     accessModes?: [str]
@@ -2032,6 +2061,7 @@ schema ValuesBloomPlannerPersistenceClaimsItems0:
     name?: str
     size?: str
     storageClass?: any
+    volumeAttributesClassName?: any
 
 schema ValuesBloomPlannerPersistenceClaimsItems0Annotations:
     r"""
@@ -2059,7 +2089,7 @@ schema ValuesBloomPlannerPodLabels:
 
 schema ValuesBloomPlannerReadinessProbe:
     r"""
-    readiness probe settings for ingester pods. If empty, use `loki.readinessProbe`
+    readiness probe settings for bloom-planner pods. If empty, use `loki.readinessProbe`
     """
     [...str]: any
 
@@ -2114,7 +2144,7 @@ schema ValuesBloomPlannerServiceLabels:
 
 schema ValuesBloomPlannerStartupProbe:
     r"""
-    startup probe settings for ingester pods. If empty use `loki.startupProbe`
+    startup probe settings for bloom-planner pods. If empty use `loki.startupProbe`
     """
     [...str]: any
 
@@ -2128,6 +2158,8 @@ schema ValuesChunksCache:
         Comma separated addresses list in DNS Service Discovery format
     affinity : ValuesChunksCacheAffinity, optional
         Affinity for chunks-cache pods
+    allocatedCPU : str, optional, default is "500m"
+        Amount of cpu allocated to chunks-cache for object storage (in integer or millicores).
     allocatedMemory : int, optional, default is 8192
         Amount of memory allocated to chunks-cache for object storage (in MB).
     annotations : ValuesChunksCacheAnnotations, optional
@@ -2223,6 +2255,7 @@ schema ValuesChunksCache:
     [...str]: any
     addresses?: str
     affinity?: ValuesChunksCacheAffinity
+    allocatedCPU?: str
     allocatedMemory?: int
     annotations?: ValuesChunksCacheAnnotations
     batchSize?: int
@@ -2295,6 +2328,8 @@ schema ValuesChunksCacheL2:
         Comma separated addresses list in DNS Service Discovery format
     affinity : ValuesChunksCacheL2Affinity, optional
         Affinity for chunks-cache-l2 pods
+    allocatedCPU : str, optional, default is "500m"
+        Amount of cpu allocated to chunks-cache-l2 for object storage (in integer or millicores).
     allocatedMemory : int, optional, default is 8192
         Amount of memory allocated to chunks-cache-l2 for object storage (in MB).
     annotations : ValuesChunksCacheL2Annotations, optional
@@ -2391,6 +2426,7 @@ schema ValuesChunksCacheL2:
     [...str]: any
     addresses?: str
     affinity?: ValuesChunksCacheL2Affinity
+    allocatedCPU?: str
     allocatedMemory?: int
     annotations?: ValuesChunksCacheL2Annotations
     batchSize?: int
@@ -2478,6 +2514,10 @@ schema ValuesChunksCacheL2Persistence:
         set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).
     storageSize : str, optional, default is "10G"
         Size of persistent disk, must be in G or Gi
+    volumeAttributesClassName : any, optional, default is "null"
+        Volume attributes class name to be used.
+        If empty or set to null, no volumeAttributesClassName spec is set.
+        Requires Kubernetes 1.31
     """
     [...str]: any
     enabled?: bool
@@ -2485,6 +2525,7 @@ schema ValuesChunksCacheL2Persistence:
     mountPath?: str
     storageClass?: any
     storageSize?: str
+    volumeAttributesClassName?: any
 
 schema ValuesChunksCacheL2PersistenceLabels:
     r"""
@@ -2572,6 +2613,10 @@ schema ValuesChunksCachePersistence:
         set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).
     storageSize : str, optional, default is "10G"
         Size of persistent disk, must be in G or Gi
+    volumeAttributesClassName : any, optional, default is "null"
+        Volume attributes class name to be used.
+        If empty or set to null, no volumeAttributesClassName spec is set.
+        Requires Kubernetes 1.31
     """
     [...str]: any
     enabled?: bool
@@ -2579,6 +2624,7 @@ schema ValuesChunksCachePersistence:
     mountPath?: str
     storageClass?: any
     storageSize?: str
+    volumeAttributesClassName?: any
 
 schema ValuesChunksCachePersistenceLabels:
     r"""
@@ -2641,6 +2687,17 @@ schema ValuesChunksCacheStatefulStrategy:
     [...str]: any
     $type?: str
 
+schema ValuesCommonLabels:
+    r"""
+    Labels to be added to resources
+
+    Attributes
+    ----------
+    labelA : str, optional
+    """
+    [...str]: any
+    labelA?: str
+
 schema ValuesCompactor:
     r"""
     Configuration for the compactor
@@ -2679,7 +2736,7 @@ schema ValuesCompactor:
     initContainers : [any], optional
         Init containers to add to the compactor pods
     livenessProbe : ValuesCompactorLivenessProbe, optional
-        liveness probe settings for ingester pods. If empty use `loki.livenessProbe`
+        liveness probe settings for compactor pods. If empty use `loki.livenessProbe`
     nodeSelector : ValuesCompactorNodeSelector, optional
         Node selector for compactor pods
     persistence : ValuesCompactorPersistence, optional
@@ -2690,7 +2747,7 @@ schema ValuesCompactor:
     priorityClassName : any, optional, default is "null"
         The name of the PriorityClass for compactor pods
     readinessProbe : ValuesCompactorReadinessProbe, optional
-        readiness probe settings for ingester pods. If empty, use `loki.readinessProbe`
+        readiness probe settings for compactor pods. If empty, use `loki.readinessProbe`
     replicas : int, optional, default is 0
         Number of replicas for the compactor
     resources : ValuesCompactorResources, optional
@@ -2702,6 +2759,8 @@ schema ValuesCompactor:
         Labels for compactor service
     serviceType : str, optional, default is "ClusterIP"
         Service type for compactor service
+    startupProbe : ValuesCompactorStartupProbe, optional
+        liveness probe settings for ingester pods. If empty use `loki.livenessProbe`
     terminationGracePeriodSeconds : int, optional, default is 30
         Grace period to allow the compactor to shutdown before it is killed
     tolerations : [any], optional
@@ -2735,6 +2794,7 @@ schema ValuesCompactor:
     serviceAnnotations?: ValuesCompactorServiceAnnotations
     serviceLabels?: ValuesCompactorServiceLabels
     serviceType?: str
+    startupProbe?: ValuesCompactorStartupProbe
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
 
@@ -2837,7 +2897,7 @@ schema ValuesCompactorImage:
 
 schema ValuesCompactorLivenessProbe:
     r"""
-    liveness probe settings for ingester pods. If empty use `loki.livenessProbe`
+    liveness probe settings for compactor pods. If empty use `loki.livenessProbe`
     """
     [...str]: any
 
@@ -2889,6 +2949,10 @@ schema ValuesCompactorPersistenceClaimsItems0:
           If set to "-", storageClassName: "", which disables dynamic provisioning.
           If empty or set to null, no storageClassName spec is
           set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).
+    volumeAttributesClassName : any, optional, default is "null"
+        Volume attributes class name to be used.
+        If empty or set to null, no volumeAttributesClassName spec is set.
+        Requires Kubernetes 1.31
     """
     [...str]: any
     accessModes?: [str]
@@ -2897,6 +2961,7 @@ schema ValuesCompactorPersistenceClaimsItems0:
     name?: str
     size?: str
     storageClass?: any
+    volumeAttributesClassName?: any
 
 schema ValuesCompactorPersistenceClaimsItems0Annotations:
     r"""
@@ -2924,7 +2989,7 @@ schema ValuesCompactorPodLabels:
 
 schema ValuesCompactorReadinessProbe:
     r"""
-    readiness probe settings for ingester pods. If empty, use `loki.readinessProbe`
+    readiness probe settings for compactor pods. If empty, use `loki.readinessProbe`
     """
     [...str]: any
 
@@ -2974,6 +3039,12 @@ schema ValuesCompactorServiceAnnotations:
 schema ValuesCompactorServiceLabels:
     r"""
     Labels for compactor service
+    """
+    [...str]: any
+
+schema ValuesCompactorStartupProbe:
+    r"""
+    liveness probe settings for ingester pods. If empty use `loki.livenessProbe`
     """
     [...str]: any
 
@@ -3499,7 +3570,7 @@ schema ValuesEnterprise:
         Note: Uses enterprise.adminToken.secret value to mount the admin token used to call the admin api.
     useExternalLicense : bool, optional, default is False
         Set to true when providing an external license
-    version : str, optional, default is "3.5.4"
+    version : str, optional, default is "3.6.5"
         Default version of GEL to deploy
     """
     [...str]: any
@@ -3578,6 +3649,8 @@ schema ValuesEnterpriseGateway:
         Configure optional initContainers
     labels : ValuesEnterpriseGatewayLabels, optional
         Additional labels for the `gateway` Pod
+    livenessProbe : ValuesEnterpriseGatewayLivenessProbe, optional
+        Liveness probe
     nodeSelector : ValuesEnterpriseGatewayNodeSelector, optional
         Node selector for gateway Pods
     podSecurityContext : ValuesEnterpriseGatewayPodSecurityContext, optional
@@ -3592,6 +3665,8 @@ schema ValuesEnterpriseGateway:
     service : ValuesEnterpriseGatewayService, optional
         Additional labels and annotations for the `gateway` Service
         Service overriding service type
+    startupProbe : ValuesEnterpriseGatewayStartupProbe, optional
+        Startup probe
     strategy : ValuesEnterpriseGatewayStrategy, optional
         update strategy
     terminationGracePeriodSeconds : int, optional, default is 60
@@ -3618,12 +3693,14 @@ schema ValuesEnterpriseGateway:
     hostUsers?: str
     initContainers?: [any]
     labels?: ValuesEnterpriseGatewayLabels
+    livenessProbe?: ValuesEnterpriseGatewayLivenessProbe
     nodeSelector?: ValuesEnterpriseGatewayNodeSelector
     podSecurityContext?: ValuesEnterpriseGatewayPodSecurityContext
     readinessProbe?: ValuesEnterpriseGatewayReadinessProbe
     replicas?: int
     resources?: ValuesEnterpriseGatewayResources
     service?: ValuesEnterpriseGatewayService
+    startupProbe?: ValuesEnterpriseGatewayStartupProbe
     strategy?: ValuesEnterpriseGatewayStrategy
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
@@ -3678,6 +3755,12 @@ schema ValuesEnterpriseGatewayExtraArgs:
 schema ValuesEnterpriseGatewayLabels:
     r"""
     Additional labels for the `gateway` Pod
+    """
+    [...str]: any
+
+schema ValuesEnterpriseGatewayLivenessProbe:
+    r"""
+    Liveness probe
     """
     [...str]: any
 
@@ -3765,6 +3848,12 @@ schema ValuesEnterpriseGatewayServiceLabels:
     """
     [...str]: any
 
+schema ValuesEnterpriseGatewayStartupProbe:
+    r"""
+    Startup probe
+    """
+    [...str]: any
+
 schema ValuesEnterpriseGatewayStrategy:
     r"""
     update strategy
@@ -3790,7 +3879,7 @@ schema ValuesEnterpriseImage:
         The Docker registry
     repository : str, optional, default is "grafana/enterprise-logs"
         Docker image repository
-    tag : str, optional, default is "3.5.4"
+    tag : str, optional, default is "3.6.7"
         Docker image tag
     """
     [...str]: any
@@ -4510,6 +4599,8 @@ schema ValuesGatewayService:
         (int) Node port if service type is NodePort
     port : int, optional, default is 80
         Port of the gateway service
+    trafficDistribution : str, optional, default is ""
+        trafficDistribution for gateway service
     $type : str, optional, default is "ClusterIP"
         Type of the gateway service
     """
@@ -4520,6 +4611,7 @@ schema ValuesGatewayService:
     loadBalancerIP?: any
     nodePort?: any
     port?: int
+    trafficDistribution?: str
     $type?: str
 
 schema ValuesGatewayServiceAnnotations:
@@ -4703,6 +4795,8 @@ schema ValuesIndexGateway:
     topologySpreadConstraints : [any], optional
         Topology Spread Constraints for index-gateway pods
         The value will be passed through tpl.
+    trafficDistribution : str, optional, default is ""
+        trafficDistribution for index-gateway service
     updateStrategy : ValuesIndexGatewayUpdateStrategy, optional
         UpdateStrategy for the indexGateway StatefulSet.
     """
@@ -4736,6 +4830,7 @@ schema ValuesIndexGateway:
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: [any]
+    trafficDistribution?: str
     updateStrategy?: ValuesIndexGatewayUpdateStrategy
 
 schema ValuesIndexGatewayAffinity:
@@ -4873,6 +4968,10 @@ schema ValuesIndexGatewayPersistence:
         If set to "-", storageClassName: "", which disables dynamic provisioning.
         If empty or set to null, no storageClassName spec is
         set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).
+    volumeAttributesClassName : any, optional, default is "null"
+        Volume attributes class name to be used.
+        If empty or set to null, no volumeAttributesClassName spec is set.
+        Requires Kubernetes 1.31
     whenDeleted : str, optional, default is "Retain"
     whenScaled : str, optional, default is "Retain"
     """
@@ -4885,6 +4984,7 @@ schema ValuesIndexGatewayPersistence:
     labels?: ValuesIndexGatewayPersistenceLabels
     size?: str
     storageClass?: any
+    volumeAttributesClassName?: any
     whenDeleted?: str
     whenScaled?: str
 
@@ -5007,12 +5107,14 @@ schema ValuesIngester:
     rolloutGroupPrefix : any, optional, default is "null"
         optionally allow adding arbitrary prefix to the ingester rollout-group label
     serviceAnnotations : ValuesIngesterServiceAnnotations, optional
-        Annotations for ingestor service
+        Annotations for ingester service
     serviceLabels : ValuesIngesterServiceLabels, optional
         The name of the PriorityClass for ingester pods
-        Labels for ingestor service
+        Labels for ingester service
     serviceType : str, optional, default is "ClusterIP"
-        Service type for ingestor service
+        Service type for ingester service
+    startupProbe : ValuesIngesterStartupProbe, optional
+        startup probe settings for ingester pods. If empty use `loki.startupProbe`
     terminationGracePeriodSeconds : int, optional, default is 300
         Grace period to allow the ingester to shutdown before it is killed. Especially for the ingestor,
         this must be increased. It must be long enough so ingesters can be gracefully shutdown flushing/transferring
@@ -5022,6 +5124,8 @@ schema ValuesIngester:
     topologySpreadConstraints : [ValuesIngesterTopologySpreadConstraintsItems0], optional
         topologySpread for ingester pods.
         The value will be passed through tpl.
+    trafficDistribution : str, optional, default is ""
+        trafficDistribution for ingester service
     updateStrategy : ValuesIngesterUpdateStrategy, optional
         UpdateStrategy for the ingester StatefulSets.
     zoneAwareReplication : ValuesIngesterZoneAwareReplication, optional
@@ -5066,9 +5170,11 @@ schema ValuesIngester:
     serviceAnnotations?: ValuesIngesterServiceAnnotations
     serviceLabels?: ValuesIngesterServiceLabels
     serviceType?: str
+    startupProbe?: ValuesIngesterStartupProbe
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: [ValuesIngesterTopologySpreadConstraintsItems0]
+    trafficDistribution?: str
     updateStrategy?: ValuesIngesterUpdateStrategy
     zoneAwareReplication?: ValuesIngesterZoneAwareReplication
 
@@ -5307,12 +5413,17 @@ schema ValuesIngesterPersistenceClaimsItems0:
           If set to "-", storageClassName: "", which disables dynamic provisioning.
           If empty or set to null, no storageClassName spec is
           set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).
+    volumeAttributesClassName : any, optional, default is "null"
+        Volume attributes class name to be used.
+        If empty or set to null, no volumeAttributesClassName spec is set.
+        Requires Kubernetes 1.31
     """
     [...str]: any
     accessModes?: [str]
     name?: str
     size?: str
     storageClass?: any
+    volumeAttributesClassName?: any
 
 schema ValuesIngesterPodAnnotations:
     r"""
@@ -5340,14 +5451,20 @@ schema ValuesIngesterResources:
 
 schema ValuesIngesterServiceAnnotations:
     r"""
-    Annotations for ingestor service
+    Annotations for ingester service
     """
     [...str]: any
 
 schema ValuesIngesterServiceLabels:
     r"""
     The name of the PriorityClass for ingester pods
-    Labels for ingestor service
+    Labels for ingester service
+    """
+    [...str]: any
+
+schema ValuesIngesterStartupProbe:
+    r"""
+    startup probe settings for ingester pods. If empty use `loki.startupProbe`
     """
     [...str]: any
 
@@ -5783,6 +5900,7 @@ schema ValuesLoki:
         Check https://grafana.com/docs/loki/latest/configuration/#schema_config for more info on how to configure schemas
     server : ValuesLokiServer, optional
         Check https://grafana.com/docs/loki/latest/configuration/#server for more info on the server configuration.
+    service : ValuesLokiService, optional
     serviceAnnotations : ValuesLokiServiceAnnotations, optional
         Common annotations for all services
     serviceLabels : ValuesLokiServiceLabels, optional
@@ -5857,6 +5975,7 @@ schema ValuesLoki:
     runtimeConfig?: ValuesLokiRuntimeConfig
     schemaConfig?: ValuesLokiSchemaConfig
     server?: ValuesLokiServer
+    service?: ValuesLokiService
     serviceAnnotations?: ValuesLokiServiceAnnotations
     serviceLabels?: ValuesLokiServiceLabels
     startupProbe?: ValuesLokiStartupProbe
@@ -5967,6 +6086,8 @@ schema ValuesLokiCanary:
         The type of the loki canary k8s rollout. This can be a DaemonSet or Deployment.
     labelname : str, optional, default is "pod"
         The name of the label to look for at loki when doing the checks.
+    livenessProbe : any, optional, default is ""
+        Liveness probe
     lokiurl : any, optional, default is "null"
         If set overwrites the default value set by loki.host helper function. Use this if gateway not enabled.
     nodeSelector : ValuesLokiCanaryNodeSelector, optional
@@ -5985,6 +6106,8 @@ schema ValuesLokiCanary:
     resources : ValuesLokiCanaryResources, optional
         Resource requests and limits for the canary
     service : ValuesLokiCanaryService, optional
+    startupProbe : any, optional, default is ""
+        Startup probe
     tolerations : [any], optional
         Tolerations for canary pods
     updateStrategy : ValuesLokiCanaryUpdateStrategy, optional
@@ -6004,6 +6127,7 @@ schema ValuesLokiCanary:
     image?: ValuesLokiCanaryImage
     kind?: str
     labelname?: str
+    livenessProbe?: any
     lokiurl?: any
     nodeSelector?: ValuesLokiCanaryNodeSelector
     podLabels?: ValuesLokiCanaryPodLabels
@@ -6013,6 +6137,7 @@ schema ValuesLokiCanary:
     replicas?: int
     resources?: ValuesLokiCanaryResources
     service?: ValuesLokiCanaryService
+    startupProbe?: any
     tolerations?: [any]
     updateStrategy?: ValuesLokiCanaryUpdateStrategy
 
@@ -6266,7 +6391,7 @@ schema ValuesLokiImage:
         The Docker registry
     repository : str, optional, default is "grafana/loki"
         Docker image repository
-    tag : str, optional, default is "3.5.7"
+    tag : str, optional, default is "3.6.7"
         Overrides the image tag whose default is the chart's appVersion
     """
     [...str]: any
@@ -6380,12 +6505,14 @@ schema ValuesLokiPodSecurityContext:
     Attributes
     ----------
     fsGroup : int, optional, default is 10001
+    fsGroupChangePolicy : str, optional, default is "OnRootMismatch"
     runAsGroup : int, optional, default is 10001
     runAsNonRoot : bool, optional, default is True
     runAsUser : int, optional, default is 10001
     """
     [...str]: any
     fsGroup?: int
+    fsGroupChangePolicy?: str
     runAsGroup?: int
     runAsNonRoot?: bool
     runAsUser?: int
@@ -6539,6 +6666,19 @@ schema ValuesLokiServer:
     http_listen_port?: int
     http_server_read_timeout?: str
     http_server_write_timeout?: str
+
+schema ValuesLokiService:
+    r"""
+    ValuesLokiService
+
+    Attributes
+    ----------
+    trafficDistribution : str, optional, default is ""
+        trafficDistribution for services
+        Ref: https://kubernetes.io/docs/concepts/services-networking/service/#traffic-distribution
+    """
+    [...str]: any
+    trafficDistribution?: str
 
 schema ValuesLokiServiceAnnotations:
     r"""
@@ -7515,7 +7655,7 @@ schema ValuesMemcachedExporterImage:
     ----------
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "prom/memcached-exporter"
-    tag : str, optional, default is "v0.15.3"
+    tag : str, optional, default is "v0.15.4"
     """
     [...str]: any
     pullPolicy?: str
@@ -8465,6 +8605,25 @@ schema ValuesMonitoringServiceMonitorNamespaceSelector:
     """
     [...str]: any
 
+schema ValuesNamespaceSelector:
+    r"""
+    ValuesNamespaceSelector
+
+    Attributes
+    ----------
+    matchExpressions : [any], optional
+        Namespace selector to filter which namespaces the webhooks apply to.
+        See https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-namespaceselector
+        Example:
+            matchExpressions:
+              - key: team
+                operator: NotIn
+                values:
+                  - team-a
+    """
+    [...str]: any
+    matchExpressions?: [any]
+
 schema ValuesNetworkPolicy:
     r"""
     #####################################################################################################################
@@ -8982,7 +9141,7 @@ schema ValuesPatternIngester:
     initContainers : [any], optional
         Init containers to add to the pattern ingester pods
     livenessProbe : ValuesPatternIngesterLivenessProbe, optional
-        liveness probe settings for ingester pods. If empty use `loki.livenessProbe`
+        liveness probe settings for pattern ingester pods. If empty use `loki.livenessProbe`
     maxUnavailable : any, optional, default is "null"
         Pod Disruption Budget maxUnavailable
     nodeSelector : ValuesPatternIngesterNodeSelector, optional
@@ -8995,7 +9154,7 @@ schema ValuesPatternIngester:
     priorityClassName : any, optional, default is "null"
         The name of the PriorityClass for pattern ingester pods
     readinessProbe : ValuesPatternIngesterReadinessProbe, optional
-        readiness probe settings for ingester pods. If empty, use `loki.readinessProbe`
+        readiness probe settings for pattern ingester pods. If empty, use `loki.readinessProbe`
     replicas : int, optional, default is 0
         Number of replicas for the pattern ingester
     resources : ValuesPatternIngesterResources, optional
@@ -9005,6 +9164,8 @@ schema ValuesPatternIngester:
         Annotations for pattern ingester service
     serviceLabels : ValuesPatternIngesterServiceLabels, optional
         Labels for pattern ingester service
+    startupProbe : ValuesPatternIngesterStartupProbe, optional
+        startup probe settings for pattern ingester pods. If empty use `loki.startupProbe`
     terminationGracePeriodSeconds : int, optional, default is 30
         Grace period to allow the pattern ingester to shutdown before it is killed
     tolerations : [any], optional
@@ -9041,6 +9202,7 @@ schema ValuesPatternIngester:
     serviceAccount?: ValuesPatternIngesterServiceAccount
     serviceAnnotations?: ValuesPatternIngesterServiceAnnotations
     serviceLabels?: ValuesPatternIngesterServiceLabels
+    startupProbe?: ValuesPatternIngesterStartupProbe
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: [any]
@@ -9144,7 +9306,7 @@ schema ValuesPatternIngesterImage:
 
 schema ValuesPatternIngesterLivenessProbe:
     r"""
-    liveness probe settings for ingester pods. If empty use `loki.livenessProbe`
+    liveness probe settings for pattern ingester pods. If empty use `loki.livenessProbe`
     """
     [...str]: any
 
@@ -9206,6 +9368,10 @@ schema ValuesPatternIngesterPersistenceClaimsItems0:
           If set to "-", storageClassName: "", which disables dynamic provisioning.
           If empty or set to null, no storageClassName spec is
           set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).
+    volumeAttributesClassName : any, optional, default is "null"
+        Volume attributes class name to be used.
+        If empty or set to null, no volumeAttributesClassName spec is set.
+        Requires Kubernetes 1.31
     """
     [...str]: any
     accessModes?: [str]
@@ -9214,6 +9380,7 @@ schema ValuesPatternIngesterPersistenceClaimsItems0:
     name?: str
     size?: str
     storageClass?: any
+    volumeAttributesClassName?: any
 
 schema ValuesPatternIngesterPersistenceClaimsItems0Annotations:
     r"""
@@ -9241,7 +9408,7 @@ schema ValuesPatternIngesterPodLabels:
 
 schema ValuesPatternIngesterReadinessProbe:
     r"""
-    readiness probe settings for ingester pods. If empty, use `loki.readinessProbe`
+    readiness probe settings for pattern ingester pods. If empty, use `loki.readinessProbe`
     """
     [...str]: any
 
@@ -9291,6 +9458,12 @@ schema ValuesPatternIngesterServiceAnnotations:
 schema ValuesPatternIngesterServiceLabels:
     r"""
     Labels for pattern ingester service
+    """
+    [...str]: any
+
+schema ValuesPatternIngesterStartupProbe:
+    r"""
+    startup probe settings for pattern ingester pods. If empty use `loki.startupProbe`
     """
     [...str]: any
 
@@ -9504,6 +9677,8 @@ schema ValuesQuerier:
     topologySpreadConstraints : [ValuesQuerierTopologySpreadConstraintsItems0], optional
         topologySpread for querier pods.
         The value will be passed through tpl.
+    trafficDistribution : str, optional, default is ""
+        trafficDistribution for querier service
     """
     [...str]: any
     affinity?: ValuesQuerierAffinity
@@ -9535,6 +9710,7 @@ schema ValuesQuerier:
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: [ValuesQuerierTopologySpreadConstraintsItems0]
+    trafficDistribution?: str
 
 schema ValuesQuerierAffinity:
     r"""
@@ -9850,6 +10026,8 @@ schema ValuesQueryFrontend:
     topologySpreadConstraints : [any], optional
         Topology Spread Constraints for query-frontend pods
         The value will be passed through tpl.
+    trafficDistribution : str, optional, default is ""
+        trafficDistribution for query-frontend service
     """
     [...str]: any
     affinity?: ValuesQueryFrontendAffinity
@@ -9880,6 +10058,7 @@ schema ValuesQueryFrontend:
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: [any]
+    trafficDistribution?: str
 
 schema ValuesQueryFrontendAffinity:
     r"""
@@ -10154,6 +10333,8 @@ schema ValuesQueryScheduler:
     topologySpreadConstraints : [any], optional
         Topology Spread Constraints for query-scheduler pods
         The value will be passed through tpl.
+    trafficDistribution : str, optional, default is ""
+        trafficDistribution for query-scheduler service
     """
     [...str]: any
     affinity?: ValuesQuerySchedulerAffinity
@@ -10181,6 +10362,7 @@ schema ValuesQueryScheduler:
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: [any]
+    trafficDistribution?: str
 
 schema ValuesQuerySchedulerAffinity:
     r"""
@@ -10395,6 +10577,8 @@ schema ValuesRead:
         Lifecycle for the read container
     livenessProbe : ValuesReadLivenessProbe, optional
         liveness probe settings for read pods. If empty, applies no livenessProbe
+    maxUnavailable : int, optional, default is 1
+        Pod Disruption Budget maxUnavailable
     nodeSelector : ValuesReadNodeSelector, optional
         Node selector for read pods
     persistence : ValuesReadPersistence, optional
@@ -10414,6 +10598,8 @@ schema ValuesRead:
     selectorLabels : ValuesReadSelectorLabels, optional
         Additional selector labels for each `read` pod
     service : ValuesReadService, optional
+    startupProbe : ValuesReadStartupProbe, optional
+        statup probe for the read pods. If empty, applies no startupProbe
     targetModule : str, optional, default is "read"
         Comma-separated list of Loki modules to load for the read
     terminationGracePeriodSeconds : int, optional, default is 30
@@ -10441,6 +10627,7 @@ schema ValuesRead:
     legacyReadTarget?: bool
     lifecycle?: ValuesReadLifecycle
     livenessProbe?: ValuesReadLivenessProbe
+    maxUnavailable?: int
     nodeSelector?: ValuesReadNodeSelector
     persistence?: ValuesReadPersistence
     podAnnotations?: ValuesReadPodAnnotations
@@ -10451,6 +10638,7 @@ schema ValuesRead:
     resources?: ValuesReadResources
     selectorLabels?: ValuesReadSelectorLabels
     service?: ValuesReadService
+    startupProbe?: ValuesReadStartupProbe
     targetModule?: str
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
@@ -10623,6 +10811,10 @@ schema ValuesReadPersistence:
         If set to "-", storageClassName: "", which disables dynamic provisioning.
         If empty or set to null, no storageClassName spec is
         set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).
+    volumeAttributesClassName : any, optional, default is "null"
+        Volume attributes class name to be used.
+        If empty or set to null, no volumeAttributesClassName spec is set.
+        Requires Kubernetes 1.31
     """
     [...str]: any
     accessModes?: [str]
@@ -10632,6 +10824,7 @@ schema ValuesReadPersistence:
     selector?: any
     size?: str
     storageClass?: any
+    volumeAttributesClassName?: any
 
 schema ValuesReadPersistenceAnnotations:
     r"""
@@ -10679,12 +10872,15 @@ schema ValuesReadService:
         Annotations for read Service
     labels : ValuesReadServiceLabels, optional
         Additional labels for read Service
+    trafficDistribution : str, optional, default is ""
+        trafficDistribution for read service
     $type : str, optional, default is "ClusterIP"
         Service Type for read Service
     """
     [...str]: any
     annotations?: ValuesReadServiceAnnotations
     labels?: ValuesReadServiceLabels
+    trafficDistribution?: str
     $type?: str
 
 schema ValuesReadServiceAnnotations:
@@ -10696,6 +10892,12 @@ schema ValuesReadServiceAnnotations:
 schema ValuesReadServiceLabels:
     r"""
     Additional labels for read Service
+    """
+    [...str]: any
+
+schema ValuesReadStartupProbe:
+    r"""
+    statup probe for the read pods. If empty, applies no startupProbe
     """
     [...str]: any
 
@@ -10749,6 +10951,8 @@ schema ValuesResultsCache:
         Comma separated addresses list in DNS Service Discovery format
     affinity : ValuesResultsCacheAffinity, optional
         Affinity for results-cache pods
+    allocatedCPU : str, optional, default is "500m"
+        Amount of cpu allocated to results-cache for object storage (in integer or millicores).
     allocatedMemory : int, optional, default is 1024
         Amount of memory allocated to results-cache for object storage (in MB).
     annotations : ValuesResultsCacheAnnotations, optional
@@ -10836,6 +11040,7 @@ schema ValuesResultsCache:
     [...str]: any
     addresses?: str
     affinity?: ValuesResultsCacheAffinity
+    allocatedCPU?: str
     allocatedMemory?: int
     annotations?: ValuesResultsCacheAnnotations
     connectionLimit?: int
@@ -10920,6 +11125,10 @@ schema ValuesResultsCachePersistence:
         set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).
     storageSize : str, optional, default is "10G"
         Size of persistent disk, must be in G or Gi
+    volumeAttributesClassName : any, optional, default is "null"
+        Volume attributes class name to be used.
+        If empty or set to null, no volumeAttributesClassName spec is set.
+        Requires Kubernetes 1.31
     """
     [...str]: any
     enabled?: bool
@@ -10927,6 +11136,7 @@ schema ValuesResultsCachePersistence:
     mountPath?: str
     storageClass?: any
     storageSize?: str
+    volumeAttributesClassName?: any
 
 schema ValuesResultsCachePersistenceLabels:
     r"""
@@ -11314,6 +11524,10 @@ schema ValuesRulerPersistence:
         If set to "-", storageClassName: "", which disables dynamic provisioning.
         If empty or set to null, no storageClassName spec is
         set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).
+    volumeAttributesClassName : any, optional, default is "null"
+        Volume attributes class name to be used.
+        If empty or set to null, no volumeAttributesClassName spec is set.
+        Requires Kubernetes 1.31
     """
     [...str]: any
     accessModes?: [str]
@@ -11322,6 +11536,7 @@ schema ValuesRulerPersistence:
     labels?: ValuesRulerPersistenceLabels
     size?: str
     storageClass?: any
+    volumeAttributesClassName?: any
 
 schema ValuesRulerPersistenceAnnotations:
     r"""
@@ -11536,6 +11751,8 @@ schema ValuesSidecar:
 
     Attributes
     ----------
+    disableX509StrictVerification : bool, optional, default is False
+        Set to true to disable strict x509 verification for kube api calls.
     enableUniqueFilenames : bool, optional, default is False
         Ensure that rule files aren't conflicting and being overwritten by prefixing their name with the namespace they are defined in.
     image : ValuesSidecarImage, optional
@@ -11560,6 +11777,7 @@ schema ValuesSidecar:
         Startup probe definition. Probe is disabled on the sidecar by default.
     """
     [...str]: any
+    disableX509StrictVerification?: bool
     enableUniqueFilenames?: bool
     image?: ValuesSidecarImage
     livenessProbe?: ValuesSidecarLivenessProbe
@@ -11578,15 +11796,17 @@ schema ValuesSidecarImage:
     ----------
     pullPolicy : str, optional, default is "IfNotPresent"
         Docker image pull policy
-    repository : str, optional, default is "docker.io/kiwigrid/k8s-sidecar"
+    registry : str, optional, default is "docker.io"
+    repository : str, optional, default is "kiwigrid/k8s-sidecar"
         The Docker registry and image for the k8s sidecar
     sha : str, optional, default is ""
         Docker image sha. If empty, no sha will be used
-    tag : str, optional, default is "1.30.10"
+    tag : str, optional, default is "2.5.0"
         Docker image tag
     """
     [...str]: any
     pullPolicy?: str
+    registry?: str
     repository?: str
     sha?: str
     tag?: str
@@ -12048,12 +12268,15 @@ schema ValuesSingleBinaryService:
         Annotations for single binary Service
     labels : ValuesSingleBinaryServiceLabels, optional
         Additional labels for single binary Service
+    trafficDistribution : str, optional, default is ""
+        trafficDistribution single binary Service
     $type : str, optional, default is "ClusterIP"
         Service Type for single binary Service
     """
     [...str]: any
     annotations?: ValuesSingleBinaryServiceAnnotations
     labels?: ValuesSingleBinaryServiceLabels
+    trafficDistribution?: str
     $type?: str
 
 schema ValuesSingleBinaryServiceAnnotations:
@@ -12415,13 +12638,22 @@ schema ValuesWebhooks:
         Note that the webhooks require custom resource definitions. If upgrading, manually apply the files in the `crds` directory.
     failurePolicy : str, optional, default is "Fail"
         Validating and mutating webhook failure policy. `Ignore` or `Fail`.
+    objectSelector : ValuesWebhooksObjectSelector, optional
+        objectSelector to filter which objects the webhooks apply to.
     selfSignedCertSecretName : str, optional, default is "certificate"
         Secret resource name for the TLS certificate to be used with the webhooks
     """
     [...str]: any
     enabled?: bool
     failurePolicy?: str
+    objectSelector?: ValuesWebhooksObjectSelector
     selfSignedCertSecretName?: str
+
+schema ValuesWebhooksObjectSelector:
+    r"""
+    objectSelector to filter which objects the webhooks apply to.
+    """
+    [...str]: any
 
 schema ValuesWrite:
     r"""
@@ -12463,6 +12695,8 @@ schema ValuesWrite:
         Init containers to add to the write pods
     lifecycle : ValuesWriteLifecycle, optional
         Lifecycle for the write container
+    maxUnavailable : int, optional, default is 1
+        Pod Disruption Budget maxUnavailable
     nodeSelector : ValuesWriteNodeSelector, optional
         Node selector for write pods
     persistence : ValuesWritePersistence, optional
@@ -12509,6 +12743,7 @@ schema ValuesWrite:
     image?: ValuesWriteImage
     initContainers?: [any]
     lifecycle?: ValuesWriteLifecycle
+    maxUnavailable?: int
     nodeSelector?: ValuesWriteNodeSelector
     persistence?: ValuesWritePersistence
     podAnnotations?: ValuesWritePodAnnotations
@@ -12749,6 +12984,10 @@ schema ValuesWritePersistence:
         If set to "-", storageClassName: "", which disables dynamic provisioning.
         If empty or set to null, no storageClassName spec is
         set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).
+    volumeAttributesClassName : any, optional, default is "null"
+        Volume attributes class name to be used.
+        If empty or set to null, no volumeAttributesClassName spec is set.
+        Requires Kubernetes 1.31
     volumeClaimsEnabled : bool, optional, default is True
         Enable volume claims in pod spec
     """
@@ -12761,6 +13000,7 @@ schema ValuesWritePersistence:
     selector?: any
     size?: str
     storageClass?: any
+    volumeAttributesClassName?: any
     volumeClaimsEnabled?: bool
 
 schema ValuesWritePersistenceAnnotations:
@@ -12826,12 +13066,15 @@ schema ValuesWriteService:
         Annotations for write Service
     labels : ValuesWriteServiceLabels, optional
         Additional labels for write Service
+    trafficDistribution : str, optional, default is ""
+        trafficDistribution for write service
     $type : str, optional, default is "ClusterIP"
         Service Type for write Service
     """
     [...str]: any
     annotations?: ValuesWriteServiceAnnotations
     labels?: ValuesWriteServiceLabels
+    trafficDistribution?: str
     $type?: str
 
 schema ValuesWriteServiceAnnotations:
