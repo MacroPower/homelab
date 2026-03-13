@@ -15,8 +15,6 @@ schema Values:
         Global values are values that can be accessed from any chart or subchart by exactly the same name.
     image : ValuesImage, optional
     imagePullSecrets : [any], optional
-    "kube-rbac-proxy" : ValuesKubeRbacProxy, optional
-    "kube-rbac-proxy-resources" : ValuesKubeRbacProxyResources, optional
     manageCRDs : bool, optional, default is True
     metrics : ValuesMetrics, optional
     nameOverride : str, optional, default is ""
@@ -44,8 +42,6 @@ schema Values:
     global?: ValuesGlobal
     image?: ValuesImage
     imagePullSecrets?: [any]
-    "kube-rbac-proxy"?: ValuesKubeRbacProxy
-    "kube-rbac-proxy-resources"?: ValuesKubeRbacProxyResources
     manageCRDs?: bool
     metrics?: ValuesMetrics
     nameOverride?: str
@@ -95,60 +91,6 @@ schema ValuesImage:
     pullPolicy?: str
     repository?: str
     tag?: str
-
-schema ValuesKubeRbacProxy:
-    r"""
-    ValuesKubeRbacProxy
-
-    Attributes
-    ----------
-    image : str, optional, default is ""
-    repository : str, optional, default is "quay.io/brancz/kube-rbac-proxy"
-    tag : str, optional, default is "v0.19.0"
-    """
-    [...str]: any
-    image?: str
-    repository?: str
-    tag?: str
-
-schema ValuesKubeRbacProxyResources:
-    r"""
-    ValuesKubeRbacProxyResources
-
-    Attributes
-    ----------
-    limits : ValuesKubeRbacProxyResourcesLimits, optional
-    requests : ValuesKubeRbacProxyResourcesRequests, optional
-    """
-    [...str]: any
-    limits?: ValuesKubeRbacProxyResourcesLimits
-    requests?: ValuesKubeRbacProxyResourcesRequests
-
-schema ValuesKubeRbacProxyResourcesLimits:
-    r"""
-    ValuesKubeRbacProxyResourcesLimits
-
-    Attributes
-    ----------
-    cpu : str, optional, default is "500m"
-    memory : str, optional, default is "128Mi"
-    """
-    [...str]: any
-    cpu?: str
-    memory?: str
-
-schema ValuesKubeRbacProxyResourcesRequests:
-    r"""
-    ValuesKubeRbacProxyResourcesRequests
-
-    Attributes
-    ----------
-    cpu : str, optional, default is "5m"
-    memory : str, optional, default is "64Mi"
-    """
-    [...str]: any
-    cpu?: str
-    memory?: str
 
 schema ValuesMetrics:
     r"""
