@@ -4125,6 +4125,8 @@ schema ValuesControllersAdditionalPropertiesPodSecurityContext:
         The seccomp options to use by the containers in this pod. Note that this field cannot be set when spec.os.name is windows.
     supplementalGroups : [int], optional
         A list of groups applied to the first process run in each container, in addition to the container's primary GID, the fsGroup (if specified), and group memberships defined in the container image for the uid of the container process. If unspecified, no additional groups are added to any container. Note that group memberships defined in the container image for the uid of the container process are still effective, even if they are not included in this list. Note that this field cannot be set when spec.os.name is windows.
+    supplementalGroupsPolicy : "Merge" | "Strict", optional
+        Defines how supplemental groups of the the first process in each container are calculated. Valid values are "Merge" and "Strict". If not specified, "Merge" is used. Note that this field cannot be set when spec.os.name is windows.
     sysctls : [ValuesControllersAdditionalPropertiesPodSecurityContextSysctlsItems0], optional
         Sysctls hold a list of namespaced sysctls used for the pod. Pods with unsupported sysctls (by the container runtime) might fail to launch. Note that this field cannot be set when spec.os.name is windows.
     """
@@ -4136,6 +4138,7 @@ schema ValuesControllersAdditionalPropertiesPodSecurityContext:
     seLinuxOptions?: ValuesControllersAdditionalPropertiesPodSecurityContextSeLinuxOptions
     seccompProfile?: ValuesControllersAdditionalPropertiesPodSecurityContextSeccompProfile
     supplementalGroups?: [int]
+    supplementalGroupsPolicy?: "Merge" | "Strict"
     sysctls?: [ValuesControllersAdditionalPropertiesPodSecurityContextSysctlsItems0]
 
 schema ValuesControllersAdditionalPropertiesPodSecurityContextSeLinuxOptions:
@@ -5329,6 +5332,8 @@ schema ValuesDefaultPodOptionsSecurityContext:
         The seccomp options to use by the containers in this pod. Note that this field cannot be set when spec.os.name is windows.
     supplementalGroups : [int], optional
         A list of groups applied to the first process run in each container, in addition to the container's primary GID, the fsGroup (if specified), and group memberships defined in the container image for the uid of the container process. If unspecified, no additional groups are added to any container. Note that group memberships defined in the container image for the uid of the container process are still effective, even if they are not included in this list. Note that this field cannot be set when spec.os.name is windows.
+    supplementalGroupsPolicy : "Merge" | "Strict", optional
+        Defines how supplemental groups of the the first process in each container are calculated. Valid values are "Merge" and "Strict". If not specified, "Merge" is used. Note that this field cannot be set when spec.os.name is windows.
     sysctls : [ValuesDefaultPodOptionsSecurityContextSysctlsItems0], optional
         Sysctls hold a list of namespaced sysctls used for the pod. Pods with unsupported sysctls (by the container runtime) might fail to launch. Note that this field cannot be set when spec.os.name is windows.
     """
@@ -5340,6 +5345,7 @@ schema ValuesDefaultPodOptionsSecurityContext:
     seLinuxOptions?: ValuesDefaultPodOptionsSecurityContextSeLinuxOptions
     seccompProfile?: ValuesDefaultPodOptionsSecurityContextSeccompProfile
     supplementalGroups?: [int]
+    supplementalGroupsPolicy?: "Merge" | "Strict"
     sysctls?: [ValuesDefaultPodOptionsSecurityContextSysctlsItems0]
 
 schema ValuesDefaultPodOptionsSecurityContextSeLinuxOptions:
@@ -7835,6 +7841,8 @@ schema ValuesServiceMonitorAdditionalProperties:
         Endpoints allowed as part of this ServiceMonitor.
     forceRename : str, optional
         Override the default resource name. Mutually exclusive with prefix and suffix.
+    jobLabel : str, optional
+        The label to use to retrieve the job name from the target service's metadata. Defaults to the ServiceMonitor's 'metadata.name'. Helm templates can be used.
     labels : any, optional
         Labels to set on the item.
     prefix : str, optional
@@ -7854,6 +7862,7 @@ schema ValuesServiceMonitorAdditionalProperties:
     enabled?: bool
     endpoints?: [ValuesServiceMonitorAdditionalPropertiesEndpointsItems0]
     forceRename?: str
+    jobLabel?: str
     labels?: any
     prefix?: str
     selector?: ValuesServiceMonitorAdditionalPropertiesSelector
