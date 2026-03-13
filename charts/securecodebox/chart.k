@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "operator"
     repoURL : str, required, default is "oci://ghcr.io/securecodebox/helm/operator"
-    targetRevision : str, optional, default is "5.2.0"
+    targetRevision : str, optional, default is "5.6.0"
     """
     values?: Values | any
     chart: str = "operator"
     repoURL: str = "oci://ghcr.io/securecodebox/helm/operator"
-    targetRevision?: str = "5.2.0"
+    targetRevision?: str = "5.6.0"
 
