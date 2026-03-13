@@ -226,7 +226,7 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecConnectionConnectionLim
     maxStreamDuration : str, default is Undefined, optional
         MaxStreamDuration is the maximum amount of time to keep alive an http stream. When the limit is reached
         the stream will be reset independent of any other timeouts. If not specified, no value is set.
-    value : int, default is Undefined, required
+    value : int, default is Undefined, optional
         Value of the maximum concurrent connections limit.
         When the limit is reached, incoming connections will be closed after the CloseDelay duration.
     """
@@ -234,13 +234,13 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecConnectionConnectionLim
     maxConnectionDuration?: str
     maxRequestsPerConnection?: int
     maxStreamDuration?: str
-    value: int
+    value?: int
 
     check:
         _regex_match(str(closeDelay), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if closeDelay
         _regex_match(str(maxConnectionDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxConnectionDuration
         _regex_match(str(maxStreamDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxStreamDuration
-        value >= 1
+        value >= 1 if value not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeaders:
     r"""
