@@ -49,6 +49,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpec:
     compressor : [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCompressorItems0], default is Undefined, optional
         The compressor config for the http streams.
         This provides more granular control over compression configuration.
+        Order matters: The first compressor in the list is preferred when q-values in Accept-Encoding are equal.
     connection : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecConnection, default is Undefined, optional
         connection
     dns : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecDNS, default is Undefined, optional
@@ -81,6 +82,11 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpec:
         If multiple configurations are specified, the first one to match wins.
     retry : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRetry, default is Undefined, optional
         retry
+    routingType : str, default is Undefined, optional
+        RoutingType can be set to "Service" to use the Service Cluster IP for routing to the backend,
+        or it can be set to "Endpoint" to use Endpoint routing.
+        When specified, this overrides the EnvoyProxy-level setting for the relevant targeRefs.
+        If not specified, the EnvoyProxy-level setting is used.
     targetRef : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetRef, default is Undefined, optional
         target ref
     targetRefs : [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetRefsItems0], default is Undefined, optional
@@ -115,6 +121,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpec:
     requestBuffer?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRequestBuffer
     responseOverride?: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecResponseOverrideItems0]
     retry?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRetry
+    routingType?: str
     targetRef?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetRef
     targetRefs?: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetRefsItems0]
     targetSelectors?: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetSelectorsItems0]
@@ -189,6 +196,12 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCompressionItems0:
         The configuration for Brotli compressor.
     gzip : any, default is Undefined, optional
         The configuration for GZIP compressor.
+    minContentLength : int | str, default is Undefined, optional
+        MinContentLength defines the minimum response size in bytes to apply compression.
+        Responses smaller than this threshold will not be compressed.
+        Must be at least 30 bytes as enforced by Envoy Proxy.
+        Note that when the suffix is not provided, the value is interpreted as bytes.
+        Default: 30 bytes
     $type : str, default is Undefined, required
         CompressorType defines the compressor type to use for compression.
     zstd : any, default is Undefined, optional
@@ -196,9 +209,14 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCompressionItems0:
     """
     brotli?: any
     gzip?: any
+    minContentLength?: int | str
     $type: "Gzip" | "Brotli" | "Zstd"
 
     zstd?: any
+
+    check:
+        _regex_match(str(minContentLength), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if minContentLength
+        _regex_match(str(minContentLength), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if minContentLength
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCompressorItems0:
     r"""
@@ -211,6 +229,12 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCompressorItems0:
         The configuration for Brotli compressor.
     gzip : any, default is Undefined, optional
         The configuration for GZIP compressor.
+    minContentLength : int | str, default is Undefined, optional
+        MinContentLength defines the minimum response size in bytes to apply compression.
+        Responses smaller than this threshold will not be compressed.
+        Must be at least 30 bytes as enforced by Envoy Proxy.
+        Note that when the suffix is not provided, the value is interpreted as bytes.
+        Default: 30 bytes
     $type : str, default is Undefined, required
         CompressorType defines the compressor type to use for compression.
     zstd : any, default is Undefined, optional
@@ -218,9 +242,14 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCompressorItems0:
     """
     brotli?: any
     gzip?: any
+    minContentLength?: int | str
     $type: "Gzip" | "Brotli" | "Zstd"
 
     zstd?: any
+
+    check:
+        _regex_match(str(minContentLength), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if minContentLength
+        _regex_match(str(minContentLength), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if minContentLength
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecConnection:
     r"""
@@ -696,6 +725,8 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerConsistent
         header
     headers : [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerConsistentHashHeadersItems0], default is Undefined, optional
         Headers configures the header hash policy for each header, when the consistent hash type is set to Headers.
+    queryParams : [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerConsistentHashQueryParamsItems0], default is Undefined, optional
+        QueryParams configures the query parameter hash policy when the consistent hash type is set to QueryParams.
     tableSize : int, default is 65537, optional
         The table size for consistent hashing, must be prime number limited to 5000011.
     $type : str, default is Undefined, required
@@ -704,12 +735,14 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerConsistent
         "Header",
         "Headers",
         "Cookie".
+        "QueryParams".
     """
     cookie?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerConsistentHashCookie
     header?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerConsistentHashHeader
     headers?: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerConsistentHashHeadersItems0]
+    queryParams?: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerConsistentHashQueryParamsItems0]
     tableSize?: int = 65537
-    $type: "SourceIP" | "Header" | "Headers" | "Cookie"
+    $type: "SourceIP" | "Header" | "Headers" | "Cookie" | "QueryParams"
 
     check:
         tableSize <= 5000011 if tableSize not in [None, Undefined]
@@ -763,6 +796,18 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerConsistent
     ----------
     name : str, default is Undefined, required
         Name of the header to hash.
+    """
+    name: str
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerConsistentHashQueryParamsItems0:
+    r"""
+    QueryParam defines the query parameter name hashing configuration for consistent hash based
+    load balancing.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the query param to hash.
     """
     name: str
 
@@ -942,6 +987,13 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesIt
         cost
     limit : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0Limit, default is Undefined, required
         limit
+    shadowMode : bool, default is Undefined, optional
+        ShadowMode indicates whether this rate-limit rule runs in shadow mode.
+        When enabled, all rate-limiting operations are performed (cache lookups,
+        counter updates, telemetry generation), but the outcome is never enforced.
+        The request always succeeds, even if the configured limit is exceeded.
+
+        Only supported for Global Rate Limits.
     shared : bool, default is Undefined, optional
         Shared determines whether this rate limit rule applies across all the policy targets.
         If set to true, the rule is treated as a common bucket and is shared across all policy targets (xRoutes).
@@ -951,6 +1003,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesIt
     cost?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0Cost
     limit: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0Limit
 
+    shadowMode?: bool
     shared?: bool
 
     check:
@@ -961,7 +1014,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesIt
     RateLimitSelectCondition specifies the attributes within the traffic flow that can
     be used to select a subset of clients to be ratelimited.
     All the individual conditions must hold True for the overall condition to hold True.
-    And, at least one of headers or methods or path or sourceCIDR condition must be specified.
+    And, at least one of headers or methods or path or sourceCIDR or queryParams condition must be specified.
 
     Attributes
     ----------
@@ -973,16 +1026,21 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesIt
         meaning, a request can match any one of the specified methods. If not specified, it matches all methods.
     path : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0ClientSelectorsItems0Path, default is Undefined, optional
         path
+    queryParams : [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0ClientSelectorsItems0QueryParamsItems0], default is Undefined, optional
+        QueryParams is a list of query parameters to match. Multiple query parameter values are ANDed together,
+        meaning, a request MUST match all the specified query parameters.
     sourceCIDR : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0ClientSelectorsItems0SourceCIDR, default is Undefined, optional
         source c ID r
     """
     headers?: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0ClientSelectorsItems0HeadersItems0]
     methods?: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0ClientSelectorsItems0MethodsItems0]
     path?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0ClientSelectorsItems0Path
+    queryParams?: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0ClientSelectorsItems0QueryParamsItems0]
     sourceCIDR?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0ClientSelectorsItems0SourceCIDR
 
     check:
         len(headers) <= 16 if headers
+        len(queryParams) <= 16 if queryParams
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0ClientSelectorsItems0HeadersItems0:
     r"""
@@ -1050,6 +1108,36 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesIt
 
     check:
         len(value) <= 1024
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0ClientSelectorsItems0QueryParamsItems0:
+    r"""
+    QueryParamMatch defines the match attributes within the query parameters of the request.
+
+    Attributes
+    ----------
+    invert : bool, default is Undefined, optional
+        Invert specifies whether the value match result will be inverted.
+        Do not set this field when Type="Distinct", implying matching on any/all unique
+        values within the query parameter.
+    name : str, default is Undefined, required
+        Name of the query parameter.
+    $type : str, default is "Exact", optional
+        Type specifies how to match against the value of the query parameter.
+    value : str, default is Undefined, optional
+        Value of the query parameter.
+        Do not set this field when Type="Distinct", implying matching on any/all unique
+        values within the query parameter.
+    """
+    invert?: bool = False
+    name: str
+
+    $type?: "Exact" | "RegularExpression" | "Distinct" = "Exact"
+    value?: str
+
+    check:
+        len(name) <= 256
+        len(name) >= 1
+        len(value) <= 1024 if value
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0ClientSelectorsItems0SourceCIDR:
     r"""
@@ -1234,6 +1322,13 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesIte
         cost
     limit : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesItems0Limit, default is Undefined, required
         limit
+    shadowMode : bool, default is Undefined, optional
+        ShadowMode indicates whether this rate-limit rule runs in shadow mode.
+        When enabled, all rate-limiting operations are performed (cache lookups,
+        counter updates, telemetry generation), but the outcome is never enforced.
+        The request always succeeds, even if the configured limit is exceeded.
+
+        Only supported for Global Rate Limits.
     shared : bool, default is Undefined, optional
         Shared determines whether this rate limit rule applies across all the policy targets.
         If set to true, the rule is treated as a common bucket and is shared across all policy targets (xRoutes).
@@ -1243,6 +1338,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesIte
     cost?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesItems0Cost
     limit: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesItems0Limit
 
+    shadowMode?: bool
     shared?: bool
 
     check:
@@ -1253,7 +1349,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesIte
     RateLimitSelectCondition specifies the attributes within the traffic flow that can
     be used to select a subset of clients to be ratelimited.
     All the individual conditions must hold True for the overall condition to hold True.
-    And, at least one of headers or methods or path or sourceCIDR condition must be specified.
+    And, at least one of headers or methods or path or sourceCIDR or queryParams condition must be specified.
 
     Attributes
     ----------
@@ -1265,16 +1361,21 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesIte
         meaning, a request can match any one of the specified methods. If not specified, it matches all methods.
     path : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesItems0ClientSelectorsItems0Path, default is Undefined, optional
         path
+    queryParams : [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesItems0ClientSelectorsItems0QueryParamsItems0], default is Undefined, optional
+        QueryParams is a list of query parameters to match. Multiple query parameter values are ANDed together,
+        meaning, a request MUST match all the specified query parameters.
     sourceCIDR : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesItems0ClientSelectorsItems0SourceCIDR, default is Undefined, optional
         source c ID r
     """
     headers?: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesItems0ClientSelectorsItems0HeadersItems0]
     methods?: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesItems0ClientSelectorsItems0MethodsItems0]
     path?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesItems0ClientSelectorsItems0Path
+    queryParams?: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesItems0ClientSelectorsItems0QueryParamsItems0]
     sourceCIDR?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesItems0ClientSelectorsItems0SourceCIDR
 
     check:
         len(headers) <= 16 if headers
+        len(queryParams) <= 16 if queryParams
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesItems0ClientSelectorsItems0HeadersItems0:
     r"""
@@ -1342,6 +1443,36 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesIte
 
     check:
         len(value) <= 1024
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesItems0ClientSelectorsItems0QueryParamsItems0:
+    r"""
+    QueryParamMatch defines the match attributes within the query parameters of the request.
+
+    Attributes
+    ----------
+    invert : bool, default is Undefined, optional
+        Invert specifies whether the value match result will be inverted.
+        Do not set this field when Type="Distinct", implying matching on any/all unique
+        values within the query parameter.
+    name : str, default is Undefined, required
+        Name of the query parameter.
+    $type : str, default is "Exact", optional
+        Type specifies how to match against the value of the query parameter.
+    value : str, default is Undefined, optional
+        Value of the query parameter.
+        Do not set this field when Type="Distinct", implying matching on any/all unique
+        values within the query parameter.
+    """
+    invert?: bool = False
+    name: str
+
+    $type?: "Exact" | "RegularExpression" | "Distinct" = "Exact"
+    value?: str
+
+    check:
+        len(name) <= 256
+        len(name) >= 1
+        len(value) <= 1024 if value
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesItems0ClientSelectorsItems0SourceCIDR:
     r"""
@@ -2141,25 +2272,61 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTelemetry:
 
     Attributes
     ----------
+    metrics : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTelemetryMetrics, default is Undefined, optional
+        metrics
     tracing : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTelemetryTracing, default is Undefined, optional
         tracing
     """
+    metrics?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTelemetryMetrics
     tracing?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTelemetryTracing
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTelemetryMetrics:
+    r"""
+    Metrics defines metrics configuration for the backend or Route.
+
+    Attributes
+    ----------
+    routeStatName : str, default is Undefined, optional
+        RouteStatName defines the value of the Route stat_prefix, determining how the route stats are named.
+        For more details, see envoy docs: https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/route/v3/route_components.proto#config-route-v3-route
+        The supported operators for this pattern are:
+        %ROUTE_NAME%: name of Gateway API xRoute resource
+        %ROUTE_NAMESPACE%: namespace of Gateway API xRoute resource
+        %ROUTE_KIND%: kind of Gateway API xRoute resource
+        Example: %ROUTE_KIND%/%ROUTE_NAMESPACE%/%ROUTE_NAME% => httproute/my-ns/my-route
+        Disabled by default.
+    """
+    routeStatName?: str
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTelemetryTracing:
     r"""
     Tracing configures the tracing settings for the backend or HTTPRoute.
+
+    This takes precedence over EnvoyProxy tracing when set.
 
     Attributes
     ----------
     customTags : {str:GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTelemetryTracingCustomTagsAnon}, default is Undefined, optional
         CustomTags defines the custom tags to add to each span.
         If provider is kubernetes, pod name and namespace are added by default.
+
+        Deprecated: Use Tags instead.
     samplingFraction : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTelemetryTracingSamplingFraction, default is Undefined, optional
         sampling fraction
+    spanName : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTelemetryTracingSpanName, default is Undefined, optional
+        span name
+    tags : {str:str}, default is Undefined, optional
+        Tags defines the custom tags to add to each span.
+        Envoy [command operators](https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage#command-operators) may be used in the value.
+        The [format string documentation](https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage#config-access-log-format-strings) provides more information.
+        If provider is kubernetes, pod name and namespace are added by default.
+
+        Same keys take precedence over CustomTags.
     """
     customTags?: {str:GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTelemetryTracingCustomTagsAnon}
     samplingFraction?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTelemetryTracingSamplingFraction
+    spanName?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTelemetryTracingSpanName
+    tags?: {str:str}
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTelemetryTracingCustomTagsAnon:
     r"""
@@ -2228,8 +2395,6 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTelemetryTracingSampli
     SamplingFraction represents the fraction of requests that should be
     selected for tracing if no prior sampling decision has been made.
 
-    This will take precedence over sampling fraction on EnvoyProxy if set.
-
     Attributes
     ----------
     denominator : int, default is 100, optional
@@ -2243,6 +2408,27 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTelemetryTracingSampli
     check:
         denominator >= 1 if denominator not in [None, Undefined]
         numerator >= 0
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTelemetryTracingSpanName:
+    r"""
+    SpanName defines the name of the span which will be used for tracing.
+    Envoy [command operators](https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage#command-operators) may be used in the value.
+    The [format string documentation](https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage#config-access-log-format-strings) provides more information.
+
+    If not set, the span name is provider specific.
+    e.g. Datadog use `ingress` as the default client span name,
+    and `router <UPSTREAM_CLUSTER> egress` as the server span name.
+
+    Attributes
+    ----------
+    client : str, default is Undefined, required
+        Client defines operation name of the span which will be used for tracing.
+    server : str, default is Undefined, required
+        Server defines the operation name of the upstream span which will be used for tracing.
+    """
+    client: str
+
+    server: str
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTimeout:
     r"""
