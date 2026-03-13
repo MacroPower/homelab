@@ -178,7 +178,7 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpec:
     hostnames?: [str]
     parentRefs?: [GatewayNetworkingK8sIoV1HTTPRouteSpecParentRefsItems0]
     rules?: [GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0] = [{"matches": [{
-        "path": {"value": "/", "type": "PathPrefix"}
+        "path": {"type": "PathPrefix", "value": "/"}
     }]}]
     useDefaultGateways?: "All" | "None"
 
