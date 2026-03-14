@@ -55,7 +55,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpec:
         interval
     name : str, default is Undefined, optional
         Name of the alert rule group. If not specified, the resource name will be used.
-    resyncPeriod : str, default is "10m0s", optional
+    resyncPeriod : str, default is Undefined, optional
         How often the resource is synced, defaults to 10m0s if not set
     rules : [GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0], default is Undefined, required
         rules
@@ -71,7 +71,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpec:
     interval: str
 
     name?: str
-    resyncPeriod?: str = "10m0s"
+    resyncPeriod?: str
     rules: [GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0]
 
     suspend?: bool
@@ -130,6 +130,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0:
         annotations
     condition : str, default is Undefined, required
         condition
+    dashboardUid : str, default is Undefined, optional
+        Deprecated: The field is not used, use rules[].annotations.__dashboardUid__
     data : [GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0DataItems0], default is Undefined, required
         data
     execErrState : str, default is Undefined, required
@@ -148,6 +150,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0:
         no data state
     notificationSettings : GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0NotificationSettings, default is Undefined, optional
         notification settings
+    panelId : int, default is Undefined, optional
+        Deprecated: The field is not used, use rules[].annotations.__panelId__
     record : GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0Record, default is Undefined, optional
         record
     title : str, default is Undefined, required
@@ -158,6 +162,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0:
     annotations?: {str:str}
     condition: str
 
+    dashboardUid?: str
     data: [GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0DataItems0]
 
     execErrState: "OK" | "Alerting" | "Error" | "KeepLast"
@@ -171,12 +176,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0:
     noDataState: "Alerting" | "NoData" | "OK" | "KeepLast"
 
     notificationSettings?: GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0NotificationSettings
+    panelId?: int
     record?: GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0Record
     title: str
 
     uid: str
 
     check:
+        _regex_match(str($for), r"^([0-9]+(\.[0-9]+)?(s|m|h|d|w))+$")
         len(title) <= 190
         len(title) >= 1
         len(uid) <= 40
@@ -226,19 +233,26 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0Notificat
 
     Attributes
     ----------
+    active_time_intervals : [str], default is Undefined, optional
+        ActiveTimeIntervals defines the time intervals during which notifications should NOT be muted.
     group_by : [str], default is Undefined, optional
-        group by
+        GroupBy defines the labels by which incoming alerts are grouped together.
     group_interval : str, default is Undefined, optional
-        group interval
+        GroupInterval defines how long to wait before sending a notification about new alerts added
+        to a group for which an initial notification has already been sent. (e.g. 5m)
     group_wait : str, default is Undefined, optional
-        group wait
+        GroupWait defines how long to initially wait to send a notification for a group of alerts. (e.g. 30s)
     mute_time_intervals : [str], default is Undefined, optional
-        mute time intervals
+        MuteTimeIntervals defines the time intervals during which notifications should be muted.
+        These must match the name of a mute time interval defined in the Alertmanager configuration.
     receiver : str, default is Undefined, required
-        receiver
+        Receiver is the name of the receiver to send notifications to.
     repeat_interval : str, default is Undefined, optional
-        repeat interval
+        RepeatInterval defines how long to wait before sending a notification again if it has already
+        been sent successfully for an alert. (e.g. 4h)
+        Should not be less than GroupInterval.
     """
+    active_time_intervals?: [str]
     group_by?: [str]
     group_interval?: str
     group_wait?: str
@@ -246,6 +260,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0Notificat
     receiver: str
 
     repeat_interval?: str
+
+    check:
+        len(receiver) >= 1
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0Record:
     r"""
@@ -257,10 +274,14 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupSpecRulesItems0Record:
         from
     metric : str, default is Undefined, required
         metric
+    targetDatasourceUid : str, default is Undefined, optional
+        target datasource Uid
     """
     from: str
 
     metric: str
+
+    targetDatasourceUid?: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupStatus:
     r"""
@@ -269,7 +290,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupStatus:
     Attributes
     ----------
     conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaAlertRuleGroupStatusConditionsItems0], default is Undefined, optional
-        Results when synchonizing resource with Grafana instances
+        Results when synchronizing resource with Grafana instances
     lastResync : str, default is Undefined, optional
         Last time the resource was synchronized with Grafana instances
     """
