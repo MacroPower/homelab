@@ -13,6 +13,8 @@ schema Values:
         additional labels to add to all resources
     affinity : ValuesAffinity, optional
         pod affinity
+    annotations : ValuesAnnotations, optional
+        deployment annotations
     clusterDomain : str, optional, default is ""
         Sets the `CLUSTER_DOMAIN` environment variable,
         it defines how internal Kubernetes services managed by the operator are addressed.
@@ -22,6 +24,9 @@ schema Values:
         for the default Kubernetes configuration.
     crds : ValuesCrds, optional
     dashboard : ValuesDashboard, optional
+    defaultResyncPeriod : str, optional, default is "10m"
+        Sets the global default resyncPeriod for all resources.
+        Useful when you want to either lower or raise the duration between reconciliations.
     enforceCacheLabels : str, optional, default is "safe"
         Sets the `ENFORCE_CACHE_LABELS` environment variable,
         Allows to tweak how caching of various Kubernetes resources works inside the operator.
@@ -33,17 +38,25 @@ schema Values:
         Additional environment variables
     extraObjects : [any], optional
         Array of extra K8s objects to deploy
+    extraVolumeMounts : [any], optional
+        extra container volume mounts
+    extraVolumes : [any], optional
+        extra pod volumes
     fullnameOverride : str, optional, default is ""
         Overrides the fully qualified app name.
     global : ValuesGlobal, optional
-        Global values are values that can be accessed from any chart or subchart by exactly the same name.
+    hostUsers : bool, optional, default is True
+        Set to false to opt-in to use user namespaces
     image : ValuesImage, optional
     imagePullSecrets : [any], optional
         image pull secrets
     isOpenShift : bool, optional, default is False
         Determines if the target cluster is OpenShift. Additional rbac permissions for routes will be added on OpenShift
+    kubeAuth : ValuesKubeAuth, optional
     leaderElect : bool, optional, default is True
         This is recommended in most scenarios, even when only running a single instance of the operator.
+    livenessProbe : ValuesLivenessProbe, optional
+        pod livenessProbe
     logging : ValuesLogging, optional
     maxConcurrentReconciles : int, optional, default is 1
         Maximum number of concurrent reconciles per Custom Resource.
@@ -54,7 +67,7 @@ schema Values:
         Overrides the namespace name.
     namespaceScope : bool, optional, default is False
         If the operator should run in namespace-scope or not,
-        if true the operator will only be able to manage instances in the same namespace
+        if true the operator will only manage resources in the same namespace and namespaces selected via `watchNamespaces` OR `watchNamespaceSelector`
     nodeSelector : ValuesNodeSelector, optional
         pod node selector
     podAnnotations : ValuesPodAnnotations, optional
@@ -66,6 +79,8 @@ schema Values:
     priorityClassName : str, optional, default is ""
         pod priority class name
     rbac : ValuesRbac, optional
+    readinessProbe : ValuesReadinessProbe, optional
+        pod livenessProbe
     replicas : int, optional, default is 1
         The number of operators to run simultaneously.
         With leader election, only one instance reconciles CRs preventing duplicate reconciliations.
@@ -88,6 +103,7 @@ schema Values:
         Sets the `WATCH_NAMESPACE_SELECTOR` environment variable,
         it defines which namespaces the operator should be listening for based on a namespace label (e.g. `"environment: dev"`).
         By default, the operator watches all namespaces. To make it watch only its own namespace, check out `namespaceScope` option instead.
+        When combined with "namespaceScope" users must manually create the `RoleBindings` for the matched namespaces.
     watchNamespaces : str, optional, default is ""
         Sets the `WATCH_NAMESPACE` environment variable,
         it defines which namespaces the operator should be listening for (e.g. `"grafana, foo"`).
@@ -96,18 +112,25 @@ schema Values:
     [...str]: any
     additionalLabels?: ValuesAdditionalLabels
     affinity?: ValuesAffinity
+    annotations?: ValuesAnnotations
     clusterDomain?: str
     crds?: ValuesCrds
     dashboard?: ValuesDashboard
+    defaultResyncPeriod?: str
     enforceCacheLabels?: str
     env?: [any]
     extraObjects?: [any]
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
     fullnameOverride?: str
     global?: ValuesGlobal
+    hostUsers?: bool
     image?: ValuesImage
     imagePullSecrets?: [any]
     isOpenShift?: bool
+    kubeAuth?: ValuesKubeAuth
     leaderElect?: bool
+    livenessProbe?: ValuesLivenessProbe
     logging?: ValuesLogging
     maxConcurrentReconciles?: int
     metricsService?: ValuesMetricsService
@@ -120,6 +143,7 @@ schema Values:
     podSecurityContext?: ValuesPodSecurityContext
     priorityClassName?: str
     rbac?: ValuesRbac
+    readinessProbe?: ValuesReadinessProbe
     replicas?: int
     resources?: ValuesResources
     securityContext?: ValuesSecurityContext
@@ -139,6 +163,12 @@ schema ValuesAdditionalLabels:
 schema ValuesAffinity:
     r"""
     pod affinity
+    """
+    [...str]: any
+
+schema ValuesAnnotations:
+    r"""
+    deployment annotations
     """
     [...str]: any
 
@@ -195,9 +225,15 @@ schema ValuesDashboardLabels:
 
 schema ValuesGlobal:
     r"""
-    Global values are values that can be accessed from any chart or subchart by exactly the same name.
+    ValuesGlobal
+
+    Attributes
+    ----------
+    imageRegistry : any, optional, default is "null"
+        Overrides the Docker registry globally for all images
     """
     [...str]: any
+    imageRegistry?: any
 
 schema ValuesImage:
     r"""
@@ -207,15 +243,57 @@ schema ValuesImage:
     ----------
     pullPolicy : str, optional, default is "IfNotPresent"
         The image pull policy to use in grafana operator container
-    repository : str, optional, default is "ghcr.io/grafana/grafana-operator"
+    registry : str, optional, default is "ghcr.io"
+        grafana operator image registry
+    repository : str, optional, default is "grafana/grafana-operator"
         grafana operator image repository
     tag : str, optional, default is ""
         Overrides the image tag whose default is the chart appVersion.
     """
     [...str]: any
     pullPolicy?: str
+    registry?: str
     repository?: str
     tag?: str
+
+schema ValuesKubeAuth:
+    r"""
+    ValuesKubeAuth
+
+    Attributes
+    ----------
+    audience : str, optional, default is "operator.grafana.com"
+        Ensures token is invalid against the kubernetes API preventing misuse
+    expirationSeconds : int, optional, default is 3600
+        The frequency with which kubernetes will rotate the token, should never be less than 300
+    """
+    [...str]: any
+    audience?: str
+    expirationSeconds?: int
+
+schema ValuesLivenessProbe:
+    r"""
+    pod livenessProbe
+
+    Attributes
+    ----------
+    httpGet : ValuesLivenessProbeHttpGet, optional
+    """
+    [...str]: any
+    httpGet?: ValuesLivenessProbeHttpGet
+
+schema ValuesLivenessProbeHttpGet:
+    r"""
+    ValuesLivenessProbeHttpGet
+
+    Attributes
+    ----------
+    path : str, optional, default is "/healthz"
+    port : int, optional, default is 8081
+    """
+    [...str]: any
+    path?: str
+    port?: int
 
 schema ValuesLogging:
     r"""
@@ -241,6 +319,8 @@ schema ValuesMetricsService:
 
     Attributes
     ----------
+    annotations : ValuesMetricsServiceAnnotations, optional
+        annotations on the metrics service
     metricsPort : int, optional, default is 9090
         metrics service port
     pprofPort : int, optional, default is 8888
@@ -249,9 +329,16 @@ schema ValuesMetricsService:
         metrics service type
     """
     [...str]: any
+    annotations?: ValuesMetricsServiceAnnotations
     metricsPort?: int
     pprofPort?: int
     $type?: str
+
+schema ValuesMetricsServiceAnnotations:
+    r"""
+    annotations on the metrics service
+    """
+    [...str]: any
 
 schema ValuesNodeSelector:
     r"""
@@ -285,10 +372,35 @@ schema ValuesRbac:
     ----------
     create : bool, optional, default is True
         Specifies whether to create the ClusterRole and ClusterRoleBinding.
-        If "namespaceScope" is true or "watchNamespaces" is set, this will create Role and RoleBinding instead.
+        If "namespaceScope" is true, this will create a RoleBinding instead of ClusterRoleBinding.
+        If "watchNamespaces" is set with "namespaceScope", a RoleBinding is created in each namespace.
     """
     [...str]: any
     create?: bool
+
+schema ValuesReadinessProbe:
+    r"""
+    pod livenessProbe
+
+    Attributes
+    ----------
+    httpGet : ValuesReadinessProbeHttpGet, optional
+    """
+    [...str]: any
+    httpGet?: ValuesReadinessProbeHttpGet
+
+schema ValuesReadinessProbeHttpGet:
+    r"""
+    ValuesReadinessProbeHttpGet
+
+    Attributes
+    ----------
+    path : str, optional, default is "/readyz"
+    port : int, optional, default is 8081
+    """
+    [...str]: any
+    path?: str
+    port?: int
 
 schema ValuesResources:
     r"""
