@@ -43,6 +43,8 @@ schema JetstreamNatsIoV1beta2AccountSpec:
         creds
     name : str, default is Undefined, optional
         A unique name for the Account.
+    nkey : JetstreamNatsIoV1beta2AccountSpecNkey, default is Undefined, optional
+        nkey
     servers : [str], default is Undefined, optional
         A list of servers to connect.
     tls : JetstreamNatsIoV1beta2AccountSpecTLS, default is Undefined, optional
@@ -56,6 +58,7 @@ schema JetstreamNatsIoV1beta2AccountSpec:
     """
     creds?: JetstreamNatsIoV1beta2AccountSpecCreds
     name?: str
+    nkey?: JetstreamNatsIoV1beta2AccountSpecNkey
     servers?: [str]
     tls?: JetstreamNatsIoV1beta2AccountSpecTLS
     tlsFirst?: bool = False
@@ -90,6 +93,31 @@ schema JetstreamNatsIoV1beta2AccountSpecCredsSecret:
     ----------
     name : str, default is Undefined, optional
         Name of the secret with the creds.
+    """
+    name?: str
+
+schema JetstreamNatsIoV1beta2AccountSpecNkey:
+    r"""
+    The NKey seed to be used to connect to the NATS Service.
+
+    Attributes
+    ----------
+    secret : JetstreamNatsIoV1beta2AccountSpecNkeySecret, default is Undefined, optional
+        secret
+    seed : str, default is Undefined, optional
+        Key in the secret that contains the NKey seed.
+    """
+    secret?: JetstreamNatsIoV1beta2AccountSpecNkeySecret
+    seed?: str
+
+schema JetstreamNatsIoV1beta2AccountSpecNkeySecret:
+    r"""
+    jetstream nats io v1beta2 account spec nkey secret
+
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        Name of the secret containing the NKey seed.
     """
     name?: str
 
