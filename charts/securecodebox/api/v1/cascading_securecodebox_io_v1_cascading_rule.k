@@ -120,6 +120,8 @@ schema CascadingSecurecodeboxIoV1CascadingRuleSpecScanSpec:
         resources
     scanType : str, default is Undefined, required
         The name of the scanType which should be started.
+    suspend : bool, default is Undefined, optional
+        Suspend specifies whether the Scan should be suspended. When a Scan is suspended, the reconciler will not process it, effectively pausing all operations until it is resumed. This behaves similar to the suspend field in Kubernetes Jobs.
     tolerations : [CascadingSecurecodeboxIoV1CascadingRuleSpecScanSpecTolerationsItems0], default is Undefined, optional
         Tolerations are a different way to control on which nodes your scan is executed. See https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
     ttlSecondsAfterFinished : int, default is Undefined, optional
@@ -141,6 +143,7 @@ schema CascadingSecurecodeboxIoV1CascadingRuleSpecScanSpec:
     resources?: CascadingSecurecodeboxIoV1CascadingRuleSpecScanSpecResources
     scanType: str
 
+    suspend?: bool = False
     tolerations?: [CascadingSecurecodeboxIoV1CascadingRuleSpecScanSpecTolerationsItems0]
     ttlSecondsAfterFinished?: int
     volumeMounts?: [CascadingSecurecodeboxIoV1CascadingRuleSpecScanSpecVolumeMountsItems0]
@@ -1258,6 +1261,7 @@ schema CascadingSecurecodeboxIoV1CascadingRuleSpecScanSpecInitContainersItems0:
         readiness probe
     resizePolicy : [CascadingSecurecodeboxIoV1CascadingRuleSpecScanSpecInitContainersItems0ResizePolicyItems0], default is Undefined, optional
         Resources resize policy for the container.
+        This field cannot be set on ephemeral containers.
     resources : CascadingSecurecodeboxIoV1CascadingRuleSpecScanSpecInitContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
@@ -2613,7 +2617,7 @@ schema CascadingSecurecodeboxIoV1CascadingRuleSpecScanSpecTolerationsItems0:
         If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
         Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
         Exists is equivalent to wildcard for value, so that a pod can
         tolerate all taints of a particular category.
     tolerationSeconds : int, default is Undefined, optional
@@ -3271,6 +3275,9 @@ schema CascadingSecurecodeboxIoV1CascadingRuleSpecScanSpecVolumesItems0Ephemeral
 schema CascadingSecurecodeboxIoV1CascadingRuleSpecScanSpecVolumesItems0EphemeralVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
+    Users are allowed to specify resource requirements
+    that are lower than previous value but must still be higher than capacity recorded in the
+    status field of the claim.
 
     Attributes
     ----------
@@ -3956,6 +3963,12 @@ schema CascadingSecurecodeboxIoV1CascadingRuleSpecScanSpecVolumesItems0Projected
         If omitted, kube-apiserver will set it to 86400(24 hours).
     signerName : str, default is Undefined, required
         Kubelet's generated CSRs will be addressed to this signer.
+    userAnnotations : {str:str}, default is Undefined, optional
+        userAnnotations allow pod authors to pass additional information to
+        the signer implementation.  Kubernetes does not restrict or validate this
+        metadata in any way.
+
+        These values are copied verbatim into the `spec.
     """
     certificateChainPath?: str
     credentialBundlePath?: str
@@ -3964,6 +3977,8 @@ schema CascadingSecurecodeboxIoV1CascadingRuleSpecScanSpecVolumesItems0Projected
 
     maxExpirationSeconds?: int
     signerName: str
+
+    userAnnotations?: {str:str}
 
 schema CascadingSecurecodeboxIoV1CascadingRuleSpecScanSpecVolumesItems0ProjectedSourcesItems0Secret:
     r"""
