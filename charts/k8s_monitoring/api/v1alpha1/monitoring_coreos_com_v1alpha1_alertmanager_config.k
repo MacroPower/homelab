@@ -23,6 +23,8 @@ schema AlertmanagerConfig:
         metadata
     spec : MonitoringCoreosComV1alpha1AlertmanagerConfigSpec, default is Undefined, required
         spec
+    status : MonitoringCoreosComV1alpha1AlertmanagerConfigStatus, default is Undefined, optional
+        status
     """
     apiVersion: "monitoring.coreos.com/v1alpha1" = "monitoring.coreos.com/v1alpha1"
 
@@ -30,6 +32,8 @@ schema AlertmanagerConfig:
 
     metadata?: v1.ObjectMeta
     spec: MonitoringCoreosComV1alpha1AlertmanagerConfigSpec
+
+    status?: MonitoringCoreosComV1alpha1AlertmanagerConfigStatus
 
 schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpec:
     r"""
@@ -1110,6 +1114,15 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0EmailConf
     text?: str
     tlsConfig?: MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0EmailConfigsItems0TLSConfig
     to?: str
+
+    check:
+        len(authIdentity) >= 1 if authIdentity
+        len(authUsername) >= 1 if authUsername
+        len(from) >= 1 if from
+        len(hello) >= 1 if hello
+        len(smarthost) >= 1 if smarthost
+        len(text) >= 1 if text
+        len(to) >= 1 if to
 
 schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0EmailConfigsItems0AuthPassword:
     r"""
@@ -2946,6 +2959,17 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0OpsgenieC
     tags?: str
     updateAlerts?: bool
 
+    check:
+        len(actions) >= 1 if actions
+        _regex_match(str(apiURL), r"^https?://.+$") if apiURL
+        len(description) >= 1 if description
+        len(entity) >= 1 if entity
+        len(message) >= 1 if message
+        len(note) >= 1 if note
+        len(priority) >= 1 if priority
+        len(source) >= 1 if source
+        len(tags) >= 1 if tags
+
 schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0OpsgenieConfigsItems0APIKey:
     r"""
     apiKey defines the secret's key that contains the OpsGenie API key.
@@ -3728,7 +3752,10 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0OpsgenieC
     username?: str
 
     check:
+        len(id) >= 1 if id
+        len(name) >= 1 if name
         len($type) >= 1
+        len(username) >= 1 if username
 
 schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0PagerdutyConfigsItems0:
     r"""
@@ -3767,6 +3794,9 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0Pagerduty
         severity of the incident.
     source : str, default is Undefined, optional
         source defines the unique location of the affected system.
+    timeout : str, default is Undefined, optional
+        timeout is the maximum time allowed to invoke the pagerduty
+        It requires Alertmanager >= v0.30.0.
     url : str, default is Undefined, optional
         url defines the URL to send requests to.
     """
@@ -3785,7 +3815,19 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0Pagerduty
     serviceKey?: MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0PagerdutyConfigsItems0ServiceKey
     severity?: str
     source?: str
+    timeout?: str
     url?: str
+
+    check:
+        len(class) >= 1 if class
+        len(client) >= 1 if client
+        len(component) >= 1 if component
+        len(description) >= 1 if description
+        len(group) >= 1 if group
+        len(severity) >= 1 if severity
+        len(source) >= 1 if source
+        _regex_match(str(timeout), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if timeout
+        _regex_match(str(url), r"^https?://.+$") if url
 
 schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0PagerdutyConfigsItems0DetailsItems0:
     r"""
@@ -4534,6 +4576,10 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0Pagerduty
     href?: str
     src?: str
 
+    check:
+        len(alt) >= 1 if alt
+        len(src) >= 1 if src
+
 schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0PagerdutyConfigsItems0PagerDutyLinkConfigsItems0:
     r"""
     PagerDutyLinkConfig attaches text links to an incident
@@ -4547,6 +4593,9 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0Pagerduty
     """
     alt?: str
     href?: str
+
+    check:
+        len(alt) >= 1 if alt
 
 schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0PagerdutyConfigsItems0RoutingKey:
     r"""
@@ -4615,11 +4664,15 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0PushoverC
     html : bool, default is Undefined, optional
         html defines whether notification message is HTML or plain text.
         When true, the message can include HTML formatting tags.
+        html and monospace formatting are mutually exclusive.
     httpConfig : MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0PushoverConfigsItems0HTTPConfig, default is Undefined, optional
         http config
     message : str, default is Undefined, optional
         message defines the notification message content.
         This is the main body text of the Pushover notification.
+    monospace : bool, default is Undefined, optional
+        monospace optional HTML/monospace formatting for the message, see https://pushover.net/api#html
+        html and monospace formatting are mutually exclusive.
     priority : str, default is Undefined, optional
         priority defines the notification priority level.
         See https://pushover.net/api#priority for valid values and behavior.
@@ -4662,6 +4715,7 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0PushoverC
     html?: bool
     httpConfig?: MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0PushoverConfigsItems0HTTPConfig
     message?: str
+    monospace?: bool
     priority?: str
     retry?: str
     sendResolved?: bool
@@ -4676,9 +4730,17 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0PushoverC
     userKeyFile?: str
 
     check:
+        len(device) >= 1 if device
         _regex_match(str(expire), r"^(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?$") if expire
+        len(message) >= 1 if message
+        len(priority) >= 1 if priority
         _regex_match(str(retry), r"^(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?$") if retry
+        len(sound) >= 1 if sound
+        len(title) >= 1 if title
+        len(tokenFile) >= 1 if tokenFile
         _regex_match(str(ttl), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if ttl
+        len(urlTitle) >= 1 if urlTitle
+        len(userKeyFile) >= 1 if userKeyFile
 
 schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0PushoverConfigsItems0HTTPConfig:
     r"""
@@ -5526,10 +5588,7 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0Rocketcha
         len(color) >= 1 if color
         len(emoji) >= 1 if emoji
         len(fields) >= 1 if fields
-        _regex_match(str(iconURL), r"^https?://.+$") if iconURL
-        _regex_match(str(imageURL), r"^https?://.+$") if imageURL
         len(text) >= 1 if text
-        _regex_match(str(thumbURL), r"^https?://.+$") if thumbURL
         len(title) >= 1 if title
         len(titleLink) >= 1 if titleLink
 
@@ -5556,7 +5615,6 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0Rocketcha
     check:
         len(msg) >= 1 if msg
         len(text) >= 1 if text
-        _regex_match(str(url), r"^https?://.+$") if url
 
 schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0RocketchatConfigsItems0FieldsItems0:
     r"""
@@ -6296,6 +6354,8 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0Rocketcha
     r"""
     token defines the sender token for RocketChat authentication.
     This is the personal access token or bot token used to authenticate API requests.
+    The secret needs to be in the same namespace as the AlertmanagerConfig
+    object and accessible by the Prometheus Operator.
 
     Attributes
     ----------
@@ -6319,6 +6379,8 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0Rocketcha
     r"""
     tokenID defines the sender token ID for RocketChat authentication.
     This is the user ID associated with the token used for API requests.
+    The secret needs to be in the same namespace as the AlertmanagerConfig
+    object and accessible by the Prometheus Operator.
 
     Attributes
     ----------
@@ -6388,6 +6450,10 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0SlackConf
     thumbURL : str, default is Undefined, optional
         thumbURL defines the URL to an image file that will be displayed as a thumbnail
         on the right side of the message attachment.
+    timeout : str, default is Undefined, optional
+        timeout defines the maximum time to wait for a webhook request to complete,
+        before failing the request and allowing it to be retried.
+        It requires Alertmanager >= v0.30.0.
     title : str, default is Undefined, optional
         title defines the title text displayed in the Slack message attachment.
     titleLink : str, default is Undefined, optional
@@ -6414,9 +6480,27 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0SlackConf
     shortFields?: bool
     text?: str
     thumbURL?: str
+    timeout?: str
     title?: str
     titleLink?: str
     username?: str
+
+    check:
+        len(actions) >= 1 if actions
+        len(callbackId) >= 1 if callbackId
+        len(channel) >= 1 if channel
+        len(color) >= 1 if color
+        len(fallback) >= 1 if fallback
+        len(fields) >= 1 if fields
+        len(footer) >= 1 if footer
+        len(iconEmoji) >= 1 if iconEmoji
+        len(mrkdwnIn) >= 1 if mrkdwnIn
+        all mrkdwnIn in mrkdwnIn {len(mrkdwnIn) >= 1 if mrkdwnIn not in [None, Undefined]} if mrkdwnIn
+        len(pretext) >= 1 if pretext
+        len(text) >= 1 if text
+        _regex_match(str(timeout), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if timeout
+        len(title) >= 1 if title
+        len(username) >= 1 if username
 
 schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0SlackConfigsItems0APIURL:
     r"""
@@ -6483,8 +6567,11 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0SlackConf
     value?: str
 
     check:
+        len(name) >= 1 if name
+        len(style) >= 1 if style
         len(text) >= 1
         len($type) >= 1
+        len(value) >= 1 if value
 
 schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0SlackConfigsItems0ActionsItems0Confirm:
     r"""
@@ -6513,7 +6600,10 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0SlackConf
     title?: str
 
     check:
+        len(dismissText) >= 1 if dismissText
+        len(okText) >= 1 if okText
         len(text) >= 1
+        len(title) >= 1 if title
 
 schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0SlackConfigsItems0FieldsItems0:
     r"""
@@ -7300,6 +7390,13 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0SnsConfig
     targetARN?: str
     topicARN?: str
 
+    check:
+        len(message) >= 1 if message
+        len(phoneNumber) >= 1 if phoneNumber
+        len(subject) >= 1 if subject
+        len(targetARN) >= 1 if targetARN
+        len(topicARN) >= 1 if topicARN
+
 schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0SnsConfigsItems0HTTPConfig:
     r"""
     httpConfig defines the HTTP client configuration for SNS API requests.
@@ -8028,7 +8125,7 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0SnsConfig
     secretKey : MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0SnsConfigsItems0Sigv4SecretKey, default is Undefined, optional
         secret key
     useFIPSSTSEndpoint : bool, default is Undefined, optional
-        useFIPSSTSEndpoint defines FIPS mode for AWS STS endpoint.
+        useFIPSSTSEndpoint defines the FIPS mode for the AWS STS endpoint.
         It requires Prometheus >= v2.54.0.
     """
     accessKey?: MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0SnsConfigsItems0Sigv4AccessKey
@@ -8134,6 +8231,9 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0TelegramC
     messageThreadID?: int
     parseMode?: "MarkdownV2" | "Markdown" | "HTML"
     sendResolved?: bool
+
+    check:
+        _regex_match(str(apiURL), r"^https?://.+$") if apiURL
 
 schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0TelegramConfigsItems0BotToken:
     r"""
@@ -8896,7 +8996,7 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0Victorops
     monitoringTool : str, default is Undefined, optional
         monitoringTool defines the monitoring tool the state message is from.
         This helps identify the source system that generated the alert.
-    routingKey : str, default is Undefined, optional
+    routingKey : str, default is Undefined, required
         routingKey defines a key used to map the alert to a team.
         This determines which VictorOps team will receive the alert notification.
     sendResolved : bool, default is Undefined, optional
@@ -8912,9 +9012,18 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0Victorops
     httpConfig?: MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0VictoropsConfigsItems0HTTPConfig
     messageType?: str
     monitoringTool?: str
-    routingKey?: str
+    routingKey: str
+
     sendResolved?: bool
     stateMessage?: str
+
+    check:
+        _regex_match(str(apiUrl), r"^https?://.+$") if apiUrl
+        len(entityDisplayName) >= 1 if entityDisplayName
+        len(messageType) >= 1 if messageType
+        len(monitoringTool) >= 1 if monitoringTool
+        len(routingKey) >= 1
+        len(stateMessage) >= 1 if stateMessage
 
 schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0VictoropsConfigsItems0APIKey:
     r"""
@@ -11229,6 +11338,16 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0WechatCon
     toTag?: str
     toUser?: str
 
+    check:
+        len(agentID) >= 1 if agentID
+        _regex_match(str(apiURL), r"^https?://.+$") if apiURL
+        len(corpID) >= 1 if corpID
+        len(message) >= 1 if message
+        len(messageType) >= 1 if messageType
+        len(toParty) >= 1 if toParty
+        len(toTag) >= 1 if toTag
+        len(toUser) >= 1 if toUser
+
 schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecReceiversItems0WechatConfigsItems0APISecret:
     r"""
     apiSecret defines the secret's key that contains the WeChat API key.
@@ -11983,11 +12102,10 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecRoute:
         Special label "..." (aggregate by all possible labels), if provided, must be the only element in the list.
     groupInterval : str, default is Undefined, optional
         groupInterval defines how long to wait before sending an updated notification.
-        Must match the regular expression`^(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?$`
+        Must be greater than 0.
         Example: "5m"
     groupWait : str, default is Undefined, optional
         groupWait defines how long to wait before sending the initial notification.
-        Must match the regular expression`^(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?$`
         Example: "30s"
     matchers : [MonitoringCoreosComV1alpha1AlertmanagerConfigSpecRouteMatchersItems0], default is Undefined, optional
         matchers defines the list of matchers that the alert's labels should match. For the first
@@ -12001,7 +12119,7 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecRoute:
         the `receivers` field.
     repeatInterval : str, default is Undefined, optional
         repeatInterval defines how long to wait before repeating the last notification.
-        Must match the regular expression`^(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?$`
+        Must be greater than 0.
         Example: "4h"
     routes : [any], default is Undefined, optional
         routes defines the child routes.
@@ -12016,6 +12134,14 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecRoute:
     receiver?: str
     repeatInterval?: str
     routes?: [any]
+
+    check:
+        len(groupInterval) >= 1 if groupInterval
+        _regex_match(str(groupInterval), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if groupInterval
+        len(groupWait) >= 1 if groupWait
+        _regex_match(str(groupWait), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if groupWait
+        len(repeatInterval) >= 1 if repeatInterval
+        _regex_match(str(repeatInterval), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if repeatInterval
 
 schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecRouteMatchersItems0:
     r"""
@@ -12045,4 +12171,86 @@ schema MonitoringCoreosComV1alpha1AlertmanagerConfigSpecRouteMatchersItems0:
 
     check:
         len(name) >= 1
+
+schema MonitoringCoreosComV1alpha1AlertmanagerConfigStatus:
+    r"""
+    status defines the status subresource. It is under active development and is updated only when the
+    "StatusForConfigurationResources" feature gate is enabled.
+
+    Most recent observed status of the ServiceMonitor. Read-only.
+    More info:
+    https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+
+    Attributes
+    ----------
+    bindings : [MonitoringCoreosComV1alpha1AlertmanagerConfigStatusBindingsItems0], default is Undefined, optional
+        bindings defines the list of workload resources (Prometheus, PrometheusAgent, ThanosRuler or Alertmanager) which select the configuration resource.
+    """
+    bindings?: [MonitoringCoreosComV1alpha1AlertmanagerConfigStatusBindingsItems0]
+
+schema MonitoringCoreosComV1alpha1AlertmanagerConfigStatusBindingsItems0:
+    r"""
+    WorkloadBinding is a link between a configuration resource and a workload resource.
+
+    Attributes
+    ----------
+    conditions : [MonitoringCoreosComV1alpha1AlertmanagerConfigStatusBindingsItems0ConditionsItems0], default is Undefined, optional
+        conditions defines the current state of the configuration resource when bound to the referenced Workload object.
+    group : str, default is Undefined, required
+        group defines the group of the referenced resource.
+    name : str, default is Undefined, required
+        name defines the name of the referenced object.
+    namespace : str, default is Undefined, required
+        namespace defines the namespace of the referenced object.
+    resource : str, default is Undefined, required
+        resource defines the type of resource being referenced (e.g. Prometheus, PrometheusAgent, ThanosRuler or Alertmanager).
+    """
+    conditions?: [MonitoringCoreosComV1alpha1AlertmanagerConfigStatusBindingsItems0ConditionsItems0]
+    group: "monitoring.coreos.com"
+
+    name: str
+
+    namespace: str
+
+    resource: "prometheuses" | "prometheusagents" | "thanosrulers" | "alertmanagers"
+
+    check:
+        len(name) >= 1
+        len(namespace) >= 1
+
+schema MonitoringCoreosComV1alpha1AlertmanagerConfigStatusBindingsItems0ConditionsItems0:
+    r"""
+    ConfigResourceCondition describes the status of configuration resources linked to Prometheus, PrometheusAgent, Alertmanager or ThanosRuler.
+
+    Attributes
+    ----------
+    lastTransitionTime : str, default is Undefined, required
+        lastTransitionTime defines the time of the last update to the current status property.
+    message : str, default is Undefined, optional
+        message defines the human-readable message indicating details for the condition's last transition.
+    observedGeneration : int, default is Undefined, optional
+        observedGeneration defines the .metadata.generation that the
+        condition was set based upon. For instance, if `.metadata.generation` is
+        currently 12, but the `.status.conditions[].observedGeneration` is 9, the
+        condition is out of date with respect to the current state of the object.
+    reason : str, default is Undefined, optional
+        reason for the condition's last transition.
+    status : str, default is Undefined, required
+        status of the condition.
+    $type : str, default is Undefined, required
+        type of the condition being reported.
+        Currently, only "Accepted" is supported.
+    """
+    lastTransitionTime: str
+
+    message?: str
+    observedGeneration?: int
+    reason?: str
+    status: str
+
+    $type: "Accepted"
+
+    check:
+        len(status) >= 1
+        len($type) >= 1
 
