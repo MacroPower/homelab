@@ -1,51 +1,51 @@
 {
   "lockfile_version": "1",
   "packages": {
-    "argocd@3.1.9": {
-      "last_modified": "2026-01-23T17:20:52Z",
-      "resolved": "github:NixOS/nixpkgs/a1bab9e494f5f4939442a57a58d0449a109593fe#argocd",
+    "argocd@3.3.2": {
+      "last_modified": "2026-03-03T08:03:20Z",
+      "resolved": "github:NixOS/nixpkgs/72b1d820cb0149b40a35aa077b4b6d60cd1b23c3#argocd",
       "source": "devbox-search",
-      "version": "3.1.9",
+      "version": "3.3.2",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/f7m74b6g04lhl23cwsr6297yhq38rck7-argocd-3.1.9",
+              "path": "/nix/store/yrfidvpsrvp4rfhsbk5ymcmvc2yq608n-argocd-3.3.2",
               "default": true
             }
           ],
-          "store_path": "/nix/store/f7m74b6g04lhl23cwsr6297yhq38rck7-argocd-3.1.9"
+          "store_path": "/nix/store/yrfidvpsrvp4rfhsbk5ymcmvc2yq608n-argocd-3.3.2"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/ibam94c9chynxw2sxklxgvdhfibmbb3q-argocd-3.1.9",
+              "path": "/nix/store/38rbzgf36jdhfjd4j0vz48xrn1cd33c0-argocd-3.3.2",
               "default": true
             }
           ],
-          "store_path": "/nix/store/ibam94c9chynxw2sxklxgvdhfibmbb3q-argocd-3.1.9"
+          "store_path": "/nix/store/38rbzgf36jdhfjd4j0vz48xrn1cd33c0-argocd-3.3.2"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/rgf8w2aj9hq9b93a6251m93qg0q6qkc6-argocd-3.1.9",
+              "path": "/nix/store/550xnx6wsqv865bq7d839js40d9jz0bi-argocd-3.3.2",
               "default": true
             }
           ],
-          "store_path": "/nix/store/rgf8w2aj9hq9b93a6251m93qg0q6qkc6-argocd-3.1.9"
+          "store_path": "/nix/store/550xnx6wsqv865bq7d839js40d9jz0bi-argocd-3.3.2"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/56mh3sr2q9wdss3z0iklp2cir2i3nfrh-argocd-3.1.9",
+              "path": "/nix/store/7f2d512hbd1izff7iczw3lrv9lsv5p95-argocd-3.3.2",
               "default": true
             }
           ],
-          "store_path": "/nix/store/56mh3sr2q9wdss3z0iklp2cir2i3nfrh-argocd-3.1.9"
+          "store_path": "/nix/store/7f2d512hbd1izff7iczw3lrv9lsv5p95-argocd-3.3.2"
         }
       }
     },
