@@ -9,6 +9,13 @@
         "image": {
           "additionalProperties": true,
           "properties": {
+            "name": {
+              "default": "cert-manager-acmesolver",
+              "description": "The image name for the cert-manager acmesolver.\n+docs:property",
+              "required": [],
+              "title": "name",
+              "type": "string"
+            },
             "pullPolicy": {
               "default": "IfNotPresent",
               "description": "Kubernetes imagePullPolicy on Deployment.",
@@ -17,8 +24,8 @@
               "type": "string"
             },
             "repository": {
-              "default": "quay.io/jetstack/cert-manager-acmesolver",
-              "description": "The container image for the cert-manager acmesolver.\n+docs:property",
+              "default": "",
+              "description": "Full repository override (takes precedence over `imageRegistry`, `imageNamespace`, and `acmesolver.image.name`).\n+docs:property",
               "required": [],
               "title": "repository",
               "type": "string"
@@ -148,6 +155,13 @@
         "image": {
           "additionalProperties": true,
           "properties": {
+            "name": {
+              "default": "cert-manager-cainjector",
+              "description": "The image name for the cert-manager cainjector.\n+docs:property",
+              "required": [],
+              "title": "name",
+              "type": "string"
+            },
             "pullPolicy": {
               "default": "IfNotPresent",
               "description": "Kubernetes imagePullPolicy on Deployment.",
@@ -156,8 +170,8 @@
               "type": "string"
             },
             "repository": {
-              "default": "quay.io/jetstack/cert-manager-cainjector",
-              "description": "The container image for the cert-manager cainjector\n+docs:property",
+              "default": "",
+              "description": "Full repository override (takes precedence over `imageRegistry`, `imageNamespace`, and `cainjector.image.name`).\n+docs:property",
               "required": [],
               "title": "repository",
               "type": "string"
@@ -165,6 +179,96 @@
           },
           "required": [],
           "title": "image",
+          "type": "object"
+        },
+        "networkPolicy": {
+          "additionalProperties": true,
+          "description": "Enables default network policies for cainjector.\nThis provides a way for you to restrict network traffic\nbetween cert-manager components and other pods.\nFor more information, see [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)\nNOTE: an incorrect networkPolicy will cause traffic to be dropped",
+          "properties": {
+            "egress": {
+              "description": "Egress rule for the cainjector network policy. By default, it allows all\noutbound traffic to ports 80 and 443, as well as DNS ports.\n+docs:property",
+              "items": {
+                "additionalProperties": true,
+                "properties": {
+                  "ports": {
+                    "items": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "port": {
+                          "default": 6443,
+                          "required": [],
+                          "title": "port",
+                          "type": "integer"
+                        },
+                        "protocol": {
+                          "default": "TCP",
+                          "required": [],
+                          "title": "protocol",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "type": "object"
+                    },
+                    "required": [],
+                    "title": "ports",
+                    "type": "array"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "title": "egress",
+              "type": "array"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Create network policies for the cainjector.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "ingress": {
+              "description": "Ingress rule for the webhook cainjector policy.\nBy default all pods are allowed access to:\n  http-metrics port\n+docs:property",
+              "items": {
+                "additionalProperties": true,
+                "properties": {
+                  "ports": {
+                    "items": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "port": {
+                          "default": "http-metrics",
+                          "required": [],
+                          "title": "port",
+                          "type": "string"
+                        },
+                        "protocol": {
+                          "default": "TCP",
+                          "required": [],
+                          "title": "protocol",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "type": "object"
+                    },
+                    "required": [],
+                    "title": "ports",
+                    "type": "array"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "title": "ingress",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "networkPolicy",
           "type": "object"
         },
         "nodeSelector": {
@@ -333,7 +437,7 @@
     },
     "config": {
       "additionalProperties": true,
-      "description": "This property is used to configure options for the controller pod.\nThis allows setting options that would usually be provided using flags.\n\nIf `apiVersion` and `kind` are unspecified they default to the current latest\nversion (currently `controller.config.cert-manager.io/v1alpha1`). You can pin\nthe version by specifying the `apiVersion` yourself.\n\nFor example:\n config:\n   apiVersion: controller.config.cert-manager.io/v1alpha1\n   kind: ControllerConfiguration\n   logging:\n     verbosity: 2\n     format: text\n   leaderElectionConfig:\n     namespace: kube-system\n   kubernetesAPIQPS: 9000\n   kubernetesAPIBurst: 9000\n   numberOfConcurrentWorkers: 200\n   enableGatewayAPI: true\n   # Feature gates as of v1.18.1. Listed with their default values.\n   # See https://cert-manager.io/docs/cli/controller/\n   featureGates:\n     AdditionalCertificateOutputFormats: true # GA - default=true\n     AllAlpha: false # ALPHA - default=false\n     AllBeta: false # BETA - default=false\n     ExperimentalCertificateSigningRequestControllers: false # ALPHA - default=false\n     ExperimentalGatewayAPISupport: true # BETA - default=true\n     LiteralCertificateSubject: true # BETA - default=true\n     NameConstraints: true # BETA - default=true\n     OtherNames: false # ALPHA - default=false\n     SecretsFilteredCaching: true # BETA - default=true\n     ServerSideApply: false # ALPHA - default=false\n     StableCertificateRequestName: true # BETA - default=true\n     UseCertificateRequestBasicConstraints: false # ALPHA - default=false\n     UseDomainQualifiedFinalizer: true # GA - default=true\n     ValidateCAA: false # ALPHA - default=false\n     DefaultPrivateKeyRotationPolicyAlways: true # BETA - default=true\n     ACMEHTTP01IngressPathTypeExact: true # BETA - default=true\n   # Configure the metrics server for TLS\n   # See https://cert-manager.io/docs/devops-tips/prometheus-metrics/#tls\n   metricsTLSConfig:\n     dynamic:\n       secretNamespace: \"cert-manager\"\n       secretName: \"cert-manager-metrics-ca\"\n       dnsNames:\n       - cert-manager-metrics",
+      "description": "This property is used to configure options for the controller pod.\nThis allows setting options that would usually be provided using flags.\n\nIf `apiVersion` and `kind` are unspecified they default to the current latest\nversion (currently `controller.config.cert-manager.io/v1alpha1`). You can pin\nthe version by specifying the `apiVersion` yourself.\n\nFor example:\n config:\n   apiVersion: controller.config.cert-manager.io/v1alpha1\n   kind: ControllerConfiguration\n   logging:\n     verbosity: 2\n     format: text\n   leaderElectionConfig:\n     namespace: kube-system\n   kubernetesAPIQPS: 9000\n   kubernetesAPIBurst: 9000\n   numberOfConcurrentWorkers: 200\n   enableGatewayAPI: true\n   # Feature gates as of v1.20.0. Listed with their default values.\n   # See https://cert-manager.io/docs/cli/controller/\n   featureGates:\n     AllAlpha: false # ALPHA - default=false\n     AllBeta: false # BETA - default=false\n     ACMEHTTP01IngressPathTypeExact: true # BETA - default=true\n     ExperimentalCertificateSigningRequestControllers: false # ALPHA - default=false\n     ExperimentalGatewayAPISupport: true # BETA - default=true\n     LiteralCertificateSubject: true # BETA - default=true\n     NameConstraints: true # BETA - default=true\n     OtherNames: true # BETA - default=true\n     SecretsFilteredCaching: true # BETA - default=true\n     ServerSideApply: false # ALPHA - default=false\n     StableCertificateRequestName: true # BETA - default=true\n     UseCertificateRequestBasicConstraints: false # ALPHA - default=false\n   # Configure the metrics server for TLS\n   # See https://cert-manager.io/docs/devops-tips/prometheus-metrics/#tls\n   metricsTLSConfig:\n     dynamic:\n       secretNamespace: \"cert-manager\"\n       secretName: \"cert-manager-metrics-ca\"\n       dnsNames:\n       - cert-manager-metrics\n   # Configure PEM size limits for certificate validation\n   # Useful for certificates with many DNS names (e.g., Istio gateways with 100+ DNS names)\n   pemSizeLimitsConfig:\n     maxCertificateSize: 36500     # Maximum size in bytes for individual certificates (default: 36500)\n     maxPrivateKeySize: 13000      # Maximum size in bytes for private keys (default: 13000)\n     maxChainLength: 95000         # Maximum size in bytes for certificate chains (default: 95000)\n     maxBundleSize: 330000         # Maximum size in bytes for certificate bundles (default: 330000)",
       "required": [],
       "title": "config",
       "type": "object"
@@ -454,6 +558,15 @@
       },
       "required": [],
       "title": "extraArgs",
+      "type": "array"
+    },
+    "extraContainers": {
+      "description": "Extra containers to add to the pod spec in the deployment of the cert-manager controller.\nFor example, to deploy the [aws_signing_helper](https://github.com/aws/rolesanywhere-credential-helper) (replacing the ARNs as relevant):\n\nextraEnv:\n  - name: AWS_EC2_METADATA_SERVICE_ENDPOINT\n  - value: http://127.0.0.1:9911\nextraContainers:\n  - name: rolesanywhere-credential-helper\n    image: public.ecr.aws/rolesanywhere/credential-helper:latest\n    command: [aws_signing_helper]\n    args:\n      - serve\n      - --private-key\n      - /etc/cert/tls.key\n      - --certificate\n      - /etc/cert/tls.crt\n      - --role-arn\n      - $ROLE_ARN\n      - --profile-arn\n      - $PROFILE_ARN\n      - --trust-anchor-arn\n      - $TRUST_ANCHOR_ARN\n    volumeMounts:\n      - name: cert\n        mountPath: /etc/cert/\n        readOnly: true\nvolumes:\n  - name: cert\n    secret:\n      secretName: cert",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraContainers",
       "type": "array"
     },
     "extraEnv": {
@@ -599,6 +712,13 @@
     "image": {
       "additionalProperties": true,
       "properties": {
+        "name": {
+          "default": "cert-manager-controller",
+          "description": "The image name for the cert-manager controller.\nThis is used (together with `imageRegistry` and `imageNamespace`) to construct the full image reference.\n+docs:property",
+          "required": [],
+          "title": "name",
+          "type": "string"
+        },
         "pullPolicy": {
           "default": "IfNotPresent",
           "description": "Kubernetes imagePullPolicy on Deployment.",
@@ -607,8 +727,8 @@
           "type": "string"
         },
         "repository": {
-          "default": "quay.io/jetstack/cert-manager-controller",
-          "description": "The container image for the cert-manager controller.\n+docs:property",
+          "default": "",
+          "description": "Full repository override (takes precedence over `imageRegistry`, `imageNamespace`, and `image.name`).\nExample: quay.io/jetstack/cert-manager-controller\n+docs:property",
           "required": [],
           "title": "repository",
           "type": "string"
@@ -617,6 +737,20 @@
       "required": [],
       "title": "image",
       "type": "object"
+    },
+    "imageNamespace": {
+      "default": "jetstack",
+      "description": "The repository namespace used for all cert-manager images by default.\nExamples:\n- jetstack\n- cert-manager\n+docs:property",
+      "required": [],
+      "title": "imageNamespace",
+      "type": "string"
+    },
+    "imageRegistry": {
+      "default": "quay.io",
+      "description": "The container registry used for all cert-manager images by default.\nThis can include path prefixes (e.g. `artifactory.example.com/docker`).\n+docs:property",
+      "required": [],
+      "title": "imageRegistry",
+      "type": "string"
     },
     "ingressShim": {
       "additionalProperties": true,
@@ -690,6 +824,96 @@
       "required": [],
       "title": "namespace",
       "type": "string"
+    },
+    "networkPolicy": {
+      "additionalProperties": true,
+      "description": "Enables default network policies for cert-manager.\nThis provides a way for you to restrict network traffic\nbetween cert-manager components and other pods.\nFor more information, see [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)\nNOTE: an incorrect networkPolicy will cause traffic to be dropped",
+      "properties": {
+        "egress": {
+          "description": "Egress rule for the cert-manager network policy. By default, it allows all\noutbound traffic to ports 80 and 443, as well as DNS ports.\n+docs:property",
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "ports": {
+                "items": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "port": {
+                      "default": 6443,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    },
+                    "protocol": {
+                      "default": "TCP",
+                      "required": [],
+                      "title": "protocol",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
+                "required": [],
+                "title": "ports",
+                "type": "array"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "required": [],
+          "title": "egress",
+          "type": "array"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Create network policies for cert-manager.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "ingress": {
+          "description": "Ingress rule for the cert-manager network policy.\nBy default all pods are allowed access to:\n  http-metrics and http-healthz ports\n+docs:property",
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "ports": {
+                "items": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "port": {
+                      "default": "http-healthz",
+                      "required": [],
+                      "title": "port",
+                      "type": "string"
+                    },
+                    "protocol": {
+                      "default": "TCP",
+                      "required": [],
+                      "title": "protocol",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
+                "required": [],
+                "title": "ports",
+                "type": "array"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "required": [],
+          "title": "ingress",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "networkPolicy",
+      "type": "object"
     },
     "nodeSelector": {
       "additionalProperties": true,
@@ -1052,6 +1276,13 @@
         "image": {
           "additionalProperties": true,
           "properties": {
+            "name": {
+              "default": "cert-manager-startupapicheck",
+              "description": "The image name for the cert-manager startupapicheck.\n+docs:property",
+              "required": [],
+              "title": "name",
+              "type": "string"
+            },
             "pullPolicy": {
               "default": "IfNotPresent",
               "description": "Kubernetes imagePullPolicy on Deployment.",
@@ -1060,8 +1291,8 @@
               "type": "string"
             },
             "repository": {
-              "default": "quay.io/jetstack/cert-manager-startupapicheck",
-              "description": "The container image for the cert-manager startupapicheck.\n+docs:property",
+              "default": "",
+              "description": "Full repository override (takes precedence over `imageRegistry`, `imageNamespace`, and `startupapicheck.image.name`).\n+docs:property",
               "required": [],
               "title": "repository",
               "type": "string"
@@ -1334,6 +1565,20 @@
           "title": "affinity",
           "type": "object"
         },
+        "apiserverClientCertSubjects": {
+          "default": "",
+          "description": "Subject names to verify for the client certificate.\nMultiple values may be supplied as a comma-separated list.",
+          "required": [],
+          "title": "apiserverClientCertSubjects",
+          "type": "string"
+        },
+        "clientCAFile": {
+          "default": "",
+          "description": "the client CA file to be used for verification",
+          "required": [],
+          "title": "clientCAFile",
+          "type": "string"
+        },
         "config": {
           "additionalProperties": true,
           "description": "This is used to configure options for the webhook pod.\nThis allows setting options that would usually be provided using flags.\n\nIf `apiVersion` and `kind` are unspecified they default to the current latest\nversion (currently `webhook.config.cert-manager.io/v1alpha1`). You can pin\nthe version by specifying the `apiVersion` yourself.\n\nFor example:\n apiVersion: webhook.config.cert-manager.io/v1alpha1\n kind: WebhookConfiguration\n # The port that the webhook listens on for requests.\n # In GKE private clusters, by default Kubernetes apiservers are allowed to\n # talk to the cluster nodes only on 443 and 10250. Configuring\n # securePort: 10250 therefore will work out-of-the-box without needing to add firewall\n # rules or requiring NET_BIND_SERVICE capabilities to bind port numbers \u003c 1000.\n # This should be uncommented and set as a default by the chart once\n # the apiVersion of WebhookConfiguration graduates beyond v1alpha1.\n securePort: 10250\n # Configure the metrics server for TLS\n # See https://cert-manager.io/docs/devops-tips/prometheus-metrics/#tls\n metricsTLSConfig:\n   dynamic:\n     secretNamespace: \"cert-manager\"\n     secretName: \"cert-manager-metrics-ca\"\n     dnsNames:\n     - cert-manager-metrics",
@@ -1379,6 +1624,13 @@
           "title": "containerSecurityContext",
           "type": "object"
         },
+        "enableClientVerification": {
+          "default": false,
+          "description": "enableClientVerification turns on client verification of requests\nmade to the webhook server",
+          "required": [],
+          "title": "enableClientVerification",
+          "type": "boolean"
+        },
         "enableServiceLinks": {
           "default": false,
           "description": "enableServiceLinks indicates whether information about services should be\ninjected into the pod's environment variables, matching the syntax of Docker\nlinks.",
@@ -1421,6 +1673,13 @@
         "image": {
           "additionalProperties": true,
           "properties": {
+            "name": {
+              "default": "cert-manager-webhook",
+              "description": "The image name for the cert-manager webhook.\n+docs:property",
+              "required": [],
+              "title": "name",
+              "type": "string"
+            },
             "pullPolicy": {
               "default": "IfNotPresent",
               "description": "Kubernetes imagePullPolicy on Deployment.",
@@ -1429,8 +1688,8 @@
               "type": "string"
             },
             "repository": {
-              "default": "quay.io/jetstack/cert-manager-webhook",
-              "description": "The container image for the cert-manager webhook\n+docs:property",
+              "default": "",
+              "description": "Full repository override (takes precedence over `imageRegistry`, `imageNamespace`, and `webhook.image.name`).\n+docs:property",
               "required": [],
               "title": "repository",
               "type": "string"
@@ -1496,7 +1755,7 @@
         },
         "networkPolicy": {
           "additionalProperties": true,
-          "description": "Enables default network policies for webhooks.",
+          "description": "Enables default network policies for webhooks.\nThis provides a way for you to restrict network traffic\nbetween cert-manager components and other pods.\nFor more information, see [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)\nNOTE: an incorrect networkPolicy will cause traffic to be dropped",
           "properties": {
             "egress": {
               "description": "Egress rule for the webhook network policy. By default, it allows all\noutbound traffic to ports 80 and 443, as well as DNS ports.\n+docs:property",
@@ -1526,32 +1785,6 @@
                     "required": [],
                     "title": "ports",
                     "type": "array"
-                  },
-                  "to": {
-                    "items": {
-                      "additionalProperties": true,
-                      "properties": {
-                        "ipBlock": {
-                          "additionalProperties": true,
-                          "properties": {
-                            "cidr": {
-                              "default": "::/0",
-                              "required": [],
-                              "title": "cidr",
-                              "type": "string"
-                            }
-                          },
-                          "required": [],
-                          "title": "ipBlock",
-                          "type": "object"
-                        }
-                      },
-                      "required": [],
-                      "type": "object"
-                    },
-                    "required": [],
-                    "title": "to",
-                    "type": "array"
                   }
                 },
                 "required": [],
@@ -1569,34 +1802,32 @@
               "type": "boolean"
             },
             "ingress": {
-              "description": "Ingress rule for the webhook network policy. By default, it allows all\ninbound traffic.\n+docs:property",
+              "description": "Ingress rule for the webhook network policy.\nBy default all pods are allowed access to:\n  https, http-metrics, and http-healthz ports\n+docs:property",
               "items": {
                 "additionalProperties": true,
                 "properties": {
-                  "from": {
+                  "ports": {
                     "items": {
                       "additionalProperties": true,
                       "properties": {
-                        "ipBlock": {
-                          "additionalProperties": true,
-                          "properties": {
-                            "cidr": {
-                              "default": "::/0",
-                              "required": [],
-                              "title": "cidr",
-                              "type": "string"
-                            }
-                          },
+                        "port": {
+                          "default": "http-metrics",
                           "required": [],
-                          "title": "ipBlock",
-                          "type": "object"
+                          "title": "port",
+                          "type": "string"
+                        },
+                        "protocol": {
+                          "default": "TCP",
+                          "required": [],
+                          "title": "protocol",
+                          "type": "string"
                         }
                       },
                       "required": [],
                       "type": "object"
                     },
                     "required": [],
-                    "title": "from",
+                    "title": "ports",
                     "type": "array"
                   }
                 },

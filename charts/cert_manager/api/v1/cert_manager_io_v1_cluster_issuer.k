@@ -412,6 +412,17 @@ schema CertManagerIoV1ClusterIssuerSpecAcmeSolversItems0Dns01AzureDNS:
         Auth: Azure Service Principal:
         The TenantID of the Azure Service Principal used to authenticate with Azure DNS.
         If set, ClientID and ClientSecret must also be set.
+    zoneType : str, default is Undefined, optional
+        ZoneType determines which type of Azure DNS zone to use.
+
+        Valid values are:
+          - AzurePublicZone  (default): Use a public Azure DNS zone.
+          - AzurePrivateZone: Use an Azure Private DNS zone.
+
+        If not specified, AzurePublicZone is used.
+
+        Support for Azure Private DNS zones is currently
+        experimental and may change in future releases.
     """
     clientID?: str
     clientSecretSecretRef?: CertManagerIoV1ClusterIssuerSpecAcmeSolversItems0Dns01AzureDNSClientSecretSecretRef
@@ -423,6 +434,7 @@ schema CertManagerIoV1ClusterIssuerSpecAcmeSolversItems0Dns01AzureDNS:
     subscriptionID: str
 
     tenantID?: str
+    zoneType?: "AzurePublicZone" | "AzurePrivateZone"
 
 schema CertManagerIoV1ClusterIssuerSpecAcmeSolversItems0Dns01AzureDNSClientSecretSecretRef:
     r"""
@@ -593,7 +605,7 @@ schema CertManagerIoV1ClusterIssuerSpecAcmeSolversItems0Dns01Rfc2136:
     nameserver : str, default is Undefined, required
         The IP address or hostname of an authoritative DNS server supporting
         RFC2136 in the form host:port. If the host is an IPv6 address it must be
-        enclosed in square brackets (e.g [2001:db8::1]) ; port is optional.
+        enclosed in square brackets (e.g [2001:db8::1]); port is optional.
         This field is required.
     $protocol : str, default is Undefined, optional
         Protocol to use for dynamic DNS update queries. Valid values are (case-sensitive) ``TCP`` and ``UDP``; ``UDP`` (default).
@@ -642,8 +654,8 @@ schema CertManagerIoV1ClusterIssuerSpecAcmeSolversItems0Dns01Route53:
     accessKeyID : str, default is Undefined, optional
         The AccessKeyID is used for authentication.
         Cannot be set when SecretAccessKeyID is set.
-        If neither the Access Key nor Key ID are set, we fall-back to using env
-        vars, shared credentials file or AWS Instance metadata,
+        If neither the Access Key nor Key ID are set, we fall back to using env
+        vars, shared credentials file, or AWS Instance metadata,
         see: https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials
     accessKeyIDSecretRef : CertManagerIoV1ClusterIssuerSpecAcmeSolversItems0Dns01Route53AccessKeyIDSecretRef, default is Undefined, optional
         access key ID secret ref
@@ -693,8 +705,8 @@ schema CertManagerIoV1ClusterIssuerSpecAcmeSolversItems0Dns01Route53AccessKeyIDS
     The SecretAccessKey is used for authentication. If set, pull the AWS
     access key ID from a key within a Kubernetes Secret.
     Cannot be set when AccessKeyID is set.
-    If neither the Access Key nor Key ID are set, we fall-back to using env
-    vars, shared credentials file or AWS Instance metadata,
+    If neither the Access Key nor Key ID are set, we fall back to using env
+    vars, shared credentials file, or AWS Instance metadata,
     see: https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials
 
     Attributes
@@ -755,8 +767,8 @@ schema CertManagerIoV1ClusterIssuerSpecAcmeSolversItems0Dns01Route53AuthKubernet
 schema CertManagerIoV1ClusterIssuerSpecAcmeSolversItems0Dns01Route53SecretAccessKeySecretRef:
     r"""
     The SecretAccessKey is used for authentication.
-    If neither the Access Key nor Key ID are set, we fall-back to using env
-    vars, shared credentials file or AWS Instance metadata,
+    If neither the Access Key nor Key ID are set, we fall back to using env
+    vars, shared credentials file, or AWS Instance metadata,
     see: https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials
 
     Attributes
@@ -2078,9 +2090,10 @@ schema CertManagerIoV1ClusterIssuerSpecAcmeSolversItems0Http01GatewayHTTPRoutePo
         If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
         Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
         Exists is equivalent to wildcard for value, so that a pod can
         tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
     tolerationSeconds : int, default is Undefined, optional
         TolerationSeconds represents the period of time the toleration (which must be
         of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
@@ -3254,9 +3267,10 @@ schema CertManagerIoV1ClusterIssuerSpecAcmeSolversItems0Http01IngressPodTemplate
         If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
         Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
         Exists is equivalent to wildcard for value, so that a pod can
         tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
     tolerationSeconds : int, default is Undefined, optional
         TolerationSeconds represents the period of time the toleration (which must be
         of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
@@ -3543,8 +3557,8 @@ schema CertManagerIoV1ClusterIssuerSpecVaultAuthKubernetesServiceAccountRef:
     Attributes
     ----------
     audiences : [str], default is Undefined, optional
-        TokenAudiences is an optional list of extra audiences to include in the token passed to Vault. The default token
-        consisting of the issuer's namespace and name is always included.
+        TokenAudiences is an optional list of extra audiences to include in the token passed to Vault.
+        The default audiences are always included in the token.
     name : str, default is Undefined, required
         Name of the ServiceAccount used to request a token.
     """
@@ -3628,8 +3642,8 @@ schema CertManagerIoV1ClusterIssuerSpecVaultClientKeySecretRef:
 
 schema CertManagerIoV1ClusterIssuerSpecVenafi:
     r"""
-    Venafi configures this issuer to sign certificates using a Venafi TPP
-    or Venafi Cloud policy zone.
+    Venafi configures this issuer to sign certificates using a CyberArk Certificate Manager Self-Hosted
+    or SaaS policy zone.
 
     Attributes
     ----------
@@ -3638,8 +3652,8 @@ schema CertManagerIoV1ClusterIssuerSpecVenafi:
     tpp : CertManagerIoV1ClusterIssuerSpecVenafiTpp, default is Undefined, optional
         tpp
     zone : str, default is Undefined, required
-        Zone is the Venafi Policy Zone to use for this issuer.
-        All requests made to the Venafi platform will be restricted by the named
+        Zone is the Certificate Manager Policy Zone to use for this issuer.
+        All requests made to the Certificate Manager platform will be restricted by the named
         zone policy.
         This field is required.
     """
@@ -3649,15 +3663,15 @@ schema CertManagerIoV1ClusterIssuerSpecVenafi:
 
 schema CertManagerIoV1ClusterIssuerSpecVenafiCloud:
     r"""
-    Cloud specifies the Venafi cloud configuration settings.
-    Only one of TPP or Cloud may be specified.
+    Cloud specifies the CyberArk Certificate Manager SaaS configuration settings.
+    Only one of CyberArk Certificate Manager may be specified.
 
     Attributes
     ----------
     apiTokenSecretRef : CertManagerIoV1ClusterIssuerSpecVenafiCloudAPITokenSecretRef, default is Undefined, required
         api token secret ref
     url : str, default is Undefined, optional
-        URL is the base URL for Venafi Cloud.
+        URL is the base URL for CyberArk Certificate Manager SaaS.
         Defaults to "https://api.venafi.cloud/".
     """
     apiTokenSecretRef: CertManagerIoV1ClusterIssuerSpecVenafiCloudAPITokenSecretRef
@@ -3666,7 +3680,7 @@ schema CertManagerIoV1ClusterIssuerSpecVenafiCloud:
 
 schema CertManagerIoV1ClusterIssuerSpecVenafiCloudAPITokenSecretRef:
     r"""
-    APITokenSecretRef is a secret key selector for the Venafi Cloud API token.
+    APITokenSecretRef is a secret key selector for the CyberArk Certificate Manager SaaS API token.
 
     Attributes
     ----------
@@ -3683,14 +3697,14 @@ schema CertManagerIoV1ClusterIssuerSpecVenafiCloudAPITokenSecretRef:
 
 schema CertManagerIoV1ClusterIssuerSpecVenafiTpp:
     r"""
-    TPP specifies Trust Protection Platform configuration settings.
-    Only one of TPP or Cloud may be specified.
+    TPP specifies CyberArk Certificate Manager Self-Hosted configuration settings.
+    Only one of CyberArk Certificate Manager may be specified.
 
     Attributes
     ----------
     caBundle : str, default is Undefined, optional
         Base64-encoded bundle of PEM CAs which will be used to validate the certificate
-        chain presented by the TPP server. Only used if using HTTPS; ignored for HTTP.
+        chain presented by the CyberArk Certificate Manager Self-Hosted server. Only used if using HTTPS; ignored for HTTP.
         If undefined, the certificate bundle in the cert-manager controller container
         is used to validate the chain.
     caBundleSecretRef : CertManagerIoV1ClusterIssuerSpecVenafiTppCaBundleSecretRef, default is Undefined, optional
@@ -3698,7 +3712,7 @@ schema CertManagerIoV1ClusterIssuerSpecVenafiTpp:
     credentialsRef : CertManagerIoV1ClusterIssuerSpecVenafiTppCredentialsRef, default is Undefined, required
         credentials ref
     url : str, default is Undefined, required
-        URL is the base URL for the vedsdk endpoint of the Venafi TPP instance,
+        URL is the base URL for the vedsdk endpoint of the CyberArk Certificate Manager Self-Hosted instance,
         for example: "https://tpp.example.com/vedsdk".
     """
     caBundle?: str
@@ -3710,7 +3724,7 @@ schema CertManagerIoV1ClusterIssuerSpecVenafiTpp:
 schema CertManagerIoV1ClusterIssuerSpecVenafiTppCaBundleSecretRef:
     r"""
     Reference to a Secret containing a base64-encoded bundle of PEM CAs
-    which will be used to validate the certificate chain presented by the TPP server.
+    which will be used to validate the certificate chain presented by the CyberArk Certificate Manager Self-Hosted server.
     Only used if using HTTPS; ignored for HTTP. Mutually exclusive with CABundle.
     If neither CABundle nor CABundleSecretRef is defined, the certificate bundle in
     the cert-manager controller container is used to validate the TLS connection.
@@ -3730,7 +3744,7 @@ schema CertManagerIoV1ClusterIssuerSpecVenafiTppCaBundleSecretRef:
 
 schema CertManagerIoV1ClusterIssuerSpecVenafiTppCredentialsRef:
     r"""
-    CredentialsRef is a reference to a Secret containing the Venafi TPP API credentials.
+    CredentialsRef is a reference to a Secret containing the CyberArk Certificate Manager Self-Hosted API credentials.
     The secret must contain the key 'access-token' for the Access Token Authentication,
     or two keys, 'username' and 'password' for the API Keys Authentication.
 

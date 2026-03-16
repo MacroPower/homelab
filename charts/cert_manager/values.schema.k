@@ -59,25 +59,21 @@ schema Values:
            kubernetesAPIBurst: 9000
            numberOfConcurrentWorkers: 200
            enableGatewayAPI: true
-           # Feature gates as of v1.18.1. Listed with their default values.
+           # Feature gates as of v1.20.0. Listed with their default values.
            # See https://cert-manager.io/docs/cli/controller/
            featureGates:
-             AdditionalCertificateOutputFormats: true # GA - default=true
              AllAlpha: false # ALPHA - default=false
              AllBeta: false # BETA - default=false
+             ACMEHTTP01IngressPathTypeExact: true # BETA - default=true
              ExperimentalCertificateSigningRequestControllers: false # ALPHA - default=false
              ExperimentalGatewayAPISupport: true # BETA - default=true
              LiteralCertificateSubject: true # BETA - default=true
              NameConstraints: true # BETA - default=true
-             OtherNames: false # ALPHA - default=false
+             OtherNames: true # BETA - default=true
              SecretsFilteredCaching: true # BETA - default=true
              ServerSideApply: false # ALPHA - default=false
              StableCertificateRequestName: true # BETA - default=true
              UseCertificateRequestBasicConstraints: false # ALPHA - default=false
-             UseDomainQualifiedFinalizer: true # GA - default=true
-             ValidateCAA: false # ALPHA - default=false
-             DefaultPrivateKeyRotationPolicyAlways: true # BETA - default=true
-             ACMEHTTP01IngressPathTypeExact: true # BETA - default=true
            # Configure the metrics server for TLS
            # See https://cert-manager.io/docs/devops-tips/prometheus-metrics/#tls
            metricsTLSConfig:
@@ -86,6 +82,13 @@ schema Values:
                secretName: "cert-manager-metrics-ca"
                dnsNames:
                - cert-manager-metrics
+           # Configure PEM size limits for certificate validation
+           # Useful for certificates with many DNS names (e.g., Istio gateways with 100+ DNS names)
+           pemSizeLimitsConfig:
+             maxCertificateSize: 36500     # Maximum size in bytes for individual certificates (default: 36500)
+             maxPrivateKeySize: 13000      # Maximum size in bytes for private keys (default: 13000)
+             maxChainLength: 95000         # Maximum size in bytes for certificate chains (default: 95000)
+             maxBundleSize: 330000         # Maximum size in bytes for certificate bundles (default: 330000)
     containerSecurityContext : ValuesContainerSecurityContext, optional
         Container Security Context to be set on the controller component container.
         For more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
@@ -128,6 +131,37 @@ schema Values:
         For example:
          extraArgs:
            - --controllers=*,-certificaterequests-approver
+    extraContainers : [any], optional
+        Extra containers to add to the pod spec in the deployment of the cert-manager controller.
+        For example, to deploy the [aws_signing_helper](https://github.com/aws/rolesanywhere-credential-helper) (replacing the ARNs as relevant):
+
+        extraEnv:
+          - name: AWS_EC2_METADATA_SERVICE_ENDPOINT
+          - value: http://127.0.0.1:9911
+        extraContainers:
+          - name: rolesanywhere-credential-helper
+            image: public.ecr.aws/rolesanywhere/credential-helper:latest
+            command: [aws_signing_helper]
+            args:
+              - serve
+              - --private-key
+              - /etc/cert/tls.key
+              - --certificate
+              - /etc/cert/tls.crt
+              - --role-arn
+              - $ROLE_ARN
+              - --profile-arn
+              - $PROFILE_ARN
+              - --trust-anchor-arn
+              - $TRUST_ANCHOR_ARN
+            volumeMounts:
+              - name: cert
+                mountPath: /etc/cert/
+                readOnly: true
+        volumes:
+          - name: cert
+            secret:
+              secretName: cert
     extraEnv : [any], optional
         Additional environment variables to pass to cert-manager controller binary.
         For example:
@@ -154,6 +188,16 @@ schema Values:
     hostAliases : [any], optional
         Optional hostAliases for cert-manager-controller pods. May be useful when performing ACME DNS-01 self checks.
     image : ValuesImage, optional
+    imageNamespace : str, optional, default is "jetstack"
+        The repository namespace used for all cert-manager images by default.
+        Examples:
+        - jetstack
+        - cert-manager
+        +docs:property
+    imageRegistry : str, optional, default is "quay.io"
+        The container registry used for all cert-manager images by default.
+        This can include path prefixes (e.g. `artifactory.example.com/docker`).
+        +docs:property
     ingressShim : ValuesIngressShim, optional
         +docs:ignore
     installCRDs : bool, optional, default is False
@@ -174,6 +218,12 @@ schema Values:
         This namespace allows you to define where the services are installed into.
         If not set then they use the namespace of the release.
         This is helpful when installing cert manager as a chart dependency (sub chart).
+    networkPolicy : ValuesNetworkPolicy, optional
+        Enables default network policies for cert-manager.
+        This provides a way for you to restrict network traffic
+        between cert-manager components and other pods.
+        For more information, see [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
+        NOTE: an incorrect networkPolicy will cause traffic to be dropped
     nodeSelector : ValuesNodeSelector, optional
         The nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with
         matching labels.
@@ -282,17 +332,21 @@ schema Values:
     enableServiceLinks?: bool
     enabled?: bool
     extraArgs?: [any]
+    extraContainers?: [any]
     extraEnv?: [any]
     extraObjects?: [any]
     featureGates?: str
     global?: ValuesGlobal
     hostAliases?: [any]
     image?: ValuesImage
+    imageNamespace?: str
+    imageRegistry?: str
     ingressShim?: ValuesIngressShim
     installCRDs?: bool
     livenessProbe?: ValuesLivenessProbe
     maxConcurrentChallenges?: int
     namespace?: str
+    networkPolicy?: ValuesNetworkPolicy
     nodeSelector?: ValuesNodeSelector
     podDisruptionBudget?: ValuesPodDisruptionBudget
     podLabels?: ValuesPodLabels
@@ -326,13 +380,17 @@ schema ValuesAcmesolverImage:
 
     Attributes
     ----------
+    name : str, optional, default is "cert-manager-acmesolver"
+        The image name for the cert-manager acmesolver.
+        +docs:property
     pullPolicy : str, optional, default is "IfNotPresent"
         Kubernetes imagePullPolicy on Deployment.
-    repository : str, optional, default is "quay.io/jetstack/cert-manager-acmesolver"
-        The container image for the cert-manager acmesolver.
+    repository : str, optional, default is ""
+        Full repository override (takes precedence over `imageRegistry`, `imageNamespace`, and `acmesolver.image.name`).
         +docs:property
     """
     [...str]: any
+    name?: str
     pullPolicy?: str
     repository?: str
 
@@ -419,6 +477,12 @@ schema ValuesCainjector:
         Comma separated list of feature gates that should be enabled on the
         cainjector pod.
     image : ValuesCainjectorImage, optional
+    networkPolicy : ValuesCainjectorNetworkPolicy, optional
+        Enables default network policies for cainjector.
+        This provides a way for you to restrict network traffic
+        between cert-manager components and other pods.
+        For more information, see [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
+        NOTE: an incorrect networkPolicy will cause traffic to be dropped
     nodeSelector : ValuesCainjectorNodeSelector, optional
         The nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with
         matching labels.
@@ -502,6 +566,7 @@ schema ValuesCainjector:
     extraEnv?: [any]
     featureGates?: str
     image?: ValuesCainjectorImage
+    networkPolicy?: ValuesCainjectorNetworkPolicy
     nodeSelector?: ValuesCainjectorNodeSelector
     podDisruptionBudget?: ValuesCainjectorPodDisruptionBudget
     podLabels?: ValuesCainjectorPodLabels
@@ -595,15 +660,94 @@ schema ValuesCainjectorImage:
 
     Attributes
     ----------
+    name : str, optional, default is "cert-manager-cainjector"
+        The image name for the cert-manager cainjector.
+        +docs:property
     pullPolicy : str, optional, default is "IfNotPresent"
         Kubernetes imagePullPolicy on Deployment.
-    repository : str, optional, default is "quay.io/jetstack/cert-manager-cainjector"
-        The container image for the cert-manager cainjector
+    repository : str, optional, default is ""
+        Full repository override (takes precedence over `imageRegistry`, `imageNamespace`, and `cainjector.image.name`).
         +docs:property
     """
     [...str]: any
+    name?: str
     pullPolicy?: str
     repository?: str
+
+schema ValuesCainjectorNetworkPolicy:
+    r"""
+    Enables default network policies for cainjector.
+    This provides a way for you to restrict network traffic
+    between cert-manager components and other pods.
+    For more information, see [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
+    NOTE: an incorrect networkPolicy will cause traffic to be dropped
+
+    Attributes
+    ----------
+    egress : [ValuesCainjectorNetworkPolicyEgressItems0], optional
+        Egress rule for the cainjector network policy. By default, it allows all
+        outbound traffic to ports 80 and 443, as well as DNS ports.
+        +docs:property
+    enabled : bool, optional, default is False
+        Create network policies for the cainjector.
+    ingress : [ValuesCainjectorNetworkPolicyIngressItems0], optional
+        Ingress rule for the webhook cainjector policy.
+        By default all pods are allowed access to:
+          http-metrics port
+        +docs:property
+    """
+    [...str]: any
+    egress?: [ValuesCainjectorNetworkPolicyEgressItems0]
+    enabled?: bool
+    ingress?: [ValuesCainjectorNetworkPolicyIngressItems0]
+
+schema ValuesCainjectorNetworkPolicyEgressItems0:
+    r"""
+    ValuesCainjectorNetworkPolicyEgressItems0
+
+    Attributes
+    ----------
+    ports : [ValuesCainjectorNetworkPolicyEgressItems0PortsItems0], optional
+    """
+    [...str]: any
+    ports?: [ValuesCainjectorNetworkPolicyEgressItems0PortsItems0]
+
+schema ValuesCainjectorNetworkPolicyEgressItems0PortsItems0:
+    r"""
+    ValuesCainjectorNetworkPolicyEgressItems0PortsItems0
+
+    Attributes
+    ----------
+    port : int, optional, default is 6443
+    $protocol : str, optional, default is "TCP"
+    """
+    [...str]: any
+    port?: int
+    $protocol?: str
+
+schema ValuesCainjectorNetworkPolicyIngressItems0:
+    r"""
+    ValuesCainjectorNetworkPolicyIngressItems0
+
+    Attributes
+    ----------
+    ports : [ValuesCainjectorNetworkPolicyIngressItems0PortsItems0], optional
+    """
+    [...str]: any
+    ports?: [ValuesCainjectorNetworkPolicyIngressItems0PortsItems0]
+
+schema ValuesCainjectorNetworkPolicyIngressItems0PortsItems0:
+    r"""
+    ValuesCainjectorNetworkPolicyIngressItems0PortsItems0
+
+    Attributes
+    ----------
+    port : str, optional, default is "http-metrics"
+    $protocol : str, optional, default is "TCP"
+    """
+    [...str]: any
+    port?: str
+    $protocol?: str
 
 schema ValuesCainjectorNodeSelector:
     r"""
@@ -741,25 +885,21 @@ schema ValuesConfig:
        kubernetesAPIBurst: 9000
        numberOfConcurrentWorkers: 200
        enableGatewayAPI: true
-       # Feature gates as of v1.18.1. Listed with their default values.
+       # Feature gates as of v1.20.0. Listed with their default values.
        # See https://cert-manager.io/docs/cli/controller/
        featureGates:
-         AdditionalCertificateOutputFormats: true # GA - default=true
          AllAlpha: false # ALPHA - default=false
          AllBeta: false # BETA - default=false
+         ACMEHTTP01IngressPathTypeExact: true # BETA - default=true
          ExperimentalCertificateSigningRequestControllers: false # ALPHA - default=false
          ExperimentalGatewayAPISupport: true # BETA - default=true
          LiteralCertificateSubject: true # BETA - default=true
          NameConstraints: true # BETA - default=true
-         OtherNames: false # ALPHA - default=false
+         OtherNames: true # BETA - default=true
          SecretsFilteredCaching: true # BETA - default=true
          ServerSideApply: false # ALPHA - default=false
          StableCertificateRequestName: true # BETA - default=true
          UseCertificateRequestBasicConstraints: false # ALPHA - default=false
-         UseDomainQualifiedFinalizer: true # GA - default=true
-         ValidateCAA: false # ALPHA - default=false
-         DefaultPrivateKeyRotationPolicyAlways: true # BETA - default=true
-         ACMEHTTP01IngressPathTypeExact: true # BETA - default=true
        # Configure the metrics server for TLS
        # See https://cert-manager.io/docs/devops-tips/prometheus-metrics/#tls
        metricsTLSConfig:
@@ -768,6 +908,13 @@ schema ValuesConfig:
            secretName: "cert-manager-metrics-ca"
            dnsNames:
            - cert-manager-metrics
+       # Configure PEM size limits for certificate validation
+       # Useful for certificates with many DNS names (e.g., Istio gateways with 100+ DNS names)
+       pemSizeLimitsConfig:
+         maxCertificateSize: 36500     # Maximum size in bytes for individual certificates (default: 36500)
+         maxPrivateKeySize: 13000      # Maximum size in bytes for private keys (default: 13000)
+         maxChainLength: 95000         # Maximum size in bytes for certificate chains (default: 95000)
+         maxBundleSize: 330000         # Maximum size in bytes for certificate bundles (default: 330000)
     """
     [...str]: any
 
@@ -967,13 +1114,19 @@ schema ValuesImage:
 
     Attributes
     ----------
+    name : str, optional, default is "cert-manager-controller"
+        The image name for the cert-manager controller.
+        This is used (together with `imageRegistry` and `imageNamespace`) to construct the full image reference.
+        +docs:property
     pullPolicy : str, optional, default is "IfNotPresent"
         Kubernetes imagePullPolicy on Deployment.
-    repository : str, optional, default is "quay.io/jetstack/cert-manager-controller"
-        The container image for the cert-manager controller.
+    repository : str, optional, default is ""
+        Full repository override (takes precedence over `imageRegistry`, `imageNamespace`, and `image.name`).
+        Example: quay.io/jetstack/cert-manager-controller
         +docs:property
     """
     [...str]: any
+    name?: str
     pullPolicy?: str
     repository?: str
 
@@ -1010,6 +1163,81 @@ schema ValuesLivenessProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+
+schema ValuesNetworkPolicy:
+    r"""
+    Enables default network policies for cert-manager.
+    This provides a way for you to restrict network traffic
+    between cert-manager components and other pods.
+    For more information, see [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
+    NOTE: an incorrect networkPolicy will cause traffic to be dropped
+
+    Attributes
+    ----------
+    egress : [ValuesNetworkPolicyEgressItems0], optional
+        Egress rule for the cert-manager network policy. By default, it allows all
+        outbound traffic to ports 80 and 443, as well as DNS ports.
+        +docs:property
+    enabled : bool, optional, default is False
+        Create network policies for cert-manager.
+    ingress : [ValuesNetworkPolicyIngressItems0], optional
+        Ingress rule for the cert-manager network policy.
+        By default all pods are allowed access to:
+          http-metrics and http-healthz ports
+        +docs:property
+    """
+    [...str]: any
+    egress?: [ValuesNetworkPolicyEgressItems0]
+    enabled?: bool
+    ingress?: [ValuesNetworkPolicyIngressItems0]
+
+schema ValuesNetworkPolicyEgressItems0:
+    r"""
+    ValuesNetworkPolicyEgressItems0
+
+    Attributes
+    ----------
+    ports : [ValuesNetworkPolicyEgressItems0PortsItems0], optional
+    """
+    [...str]: any
+    ports?: [ValuesNetworkPolicyEgressItems0PortsItems0]
+
+schema ValuesNetworkPolicyEgressItems0PortsItems0:
+    r"""
+    ValuesNetworkPolicyEgressItems0PortsItems0
+
+    Attributes
+    ----------
+    port : int, optional, default is 6443
+    $protocol : str, optional, default is "TCP"
+    """
+    [...str]: any
+    port?: int
+    $protocol?: str
+
+schema ValuesNetworkPolicyIngressItems0:
+    r"""
+    ValuesNetworkPolicyIngressItems0
+
+    Attributes
+    ----------
+    ports : [ValuesNetworkPolicyIngressItems0PortsItems0], optional
+    """
+    [...str]: any
+    ports?: [ValuesNetworkPolicyIngressItems0PortsItems0]
+
+schema ValuesNetworkPolicyIngressItems0PortsItems0:
+    r"""
+    ValuesNetworkPolicyIngressItems0PortsItems0
+
+    Attributes
+    ----------
+    port : str, optional, default is "http-healthz"
+    $protocol : str, optional, default is "TCP"
+    """
+    [...str]: any
+    port?: str
+    $protocol?: str
 
 schema ValuesNodeSelector:
     r"""
@@ -1484,13 +1712,17 @@ schema ValuesStartupapicheckImage:
 
     Attributes
     ----------
+    name : str, optional, default is "cert-manager-startupapicheck"
+        The image name for the cert-manager startupapicheck.
+        +docs:property
     pullPolicy : str, optional, default is "IfNotPresent"
         Kubernetes imagePullPolicy on Deployment.
-    repository : str, optional, default is "quay.io/jetstack/cert-manager-startupapicheck"
-        The container image for the cert-manager startupapicheck.
+    repository : str, optional, default is ""
+        Full repository override (takes precedence over `imageRegistry`, `imageNamespace`, and `startupapicheck.image.name`).
         +docs:property
     """
     [...str]: any
+    name?: str
     pullPolicy?: str
     repository?: str
 
@@ -1672,6 +1904,11 @@ schema ValuesWebhook:
                    operator: In
                    values:
                    - master
+    apiserverClientCertSubjects : str, optional, default is ""
+        Subject names to verify for the client certificate.
+        Multiple values may be supplied as a comma-separated list.
+    clientCAFile : str, optional, default is ""
+        the client CA file to be used for verification
     config : ValuesWebhookConfig, optional
         This is used to configure options for the webhook pod.
         This allows setting options that would usually be provided using flags.
@@ -1703,6 +1940,9 @@ schema ValuesWebhook:
         Container Security Context to be set on the webhook component container.
         For more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
         +docs:property
+    enableClientVerification : bool, optional, default is False
+        enableClientVerification turns on client verification of requests
+        made to the webhook server
     enableServiceLinks : bool, optional, default is False
         enableServiceLinks indicates whether information about services should be
         injected into the pod's environment variables, matching the syntax of Docker
@@ -1738,6 +1978,10 @@ schema ValuesWebhook:
     mutatingWebhookConfiguration : ValuesWebhookMutatingWebhookConfiguration, optional
     networkPolicy : ValuesWebhookNetworkPolicy, optional
         Enables default network policies for webhooks.
+        This provides a way for you to restrict network traffic
+        between cert-manager components and other pods.
+        For more information, see [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
+        NOTE: an incorrect networkPolicy will cause traffic to be dropped
     nodeSelector : ValuesWebhookNodeSelector, optional
         The nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with
         matching labels.
@@ -1851,8 +2095,11 @@ schema ValuesWebhook:
     """
     [...str]: any
     affinity?: ValuesWebhookAffinity
+    apiserverClientCertSubjects?: str
+    clientCAFile?: str
     config?: ValuesWebhookConfig
     containerSecurityContext?: ValuesWebhookContainerSecurityContext
+    enableClientVerification?: bool
     enableServiceLinks?: bool
     extraArgs?: [any]
     extraEnv?: [any]
@@ -1966,13 +2213,17 @@ schema ValuesWebhookImage:
 
     Attributes
     ----------
+    name : str, optional, default is "cert-manager-webhook"
+        The image name for the cert-manager webhook.
+        +docs:property
     pullPolicy : str, optional, default is "IfNotPresent"
         Kubernetes imagePullPolicy on Deployment.
-    repository : str, optional, default is "quay.io/jetstack/cert-manager-webhook"
-        The container image for the cert-manager webhook
+    repository : str, optional, default is ""
+        Full repository override (takes precedence over `imageRegistry`, `imageNamespace`, and `webhook.image.name`).
         +docs:property
     """
     [...str]: any
+    name?: str
     pullPolicy?: str
     repository?: str
 
@@ -2021,6 +2272,10 @@ schema ValuesWebhookMutatingWebhookConfigurationNamespaceSelector:
 schema ValuesWebhookNetworkPolicy:
     r"""
     Enables default network policies for webhooks.
+    This provides a way for you to restrict network traffic
+    between cert-manager components and other pods.
+    For more information, see [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
+    NOTE: an incorrect networkPolicy will cause traffic to be dropped
 
     Attributes
     ----------
@@ -2031,8 +2286,9 @@ schema ValuesWebhookNetworkPolicy:
     enabled : bool, optional, default is False
         Create network policies for the webhooks.
     ingress : [ValuesWebhookNetworkPolicyIngressItems0], optional
-        Ingress rule for the webhook network policy. By default, it allows all
-        inbound traffic.
+        Ingress rule for the webhook network policy.
+        By default all pods are allowed access to:
+          https, http-metrics, and http-healthz ports
         +docs:property
     """
     [...str]: any
@@ -2047,11 +2303,9 @@ schema ValuesWebhookNetworkPolicyEgressItems0:
     Attributes
     ----------
     ports : [ValuesWebhookNetworkPolicyEgressItems0PortsItems0], optional
-    to : [ValuesWebhookNetworkPolicyEgressItems0ToItems0], optional
     """
     [...str]: any
     ports?: [ValuesWebhookNetworkPolicyEgressItems0PortsItems0]
-    to?: [ValuesWebhookNetworkPolicyEgressItems0ToItems0]
 
 schema ValuesWebhookNetworkPolicyEgressItems0PortsItems0:
     r"""
@@ -2066,60 +2320,29 @@ schema ValuesWebhookNetworkPolicyEgressItems0PortsItems0:
     port?: int
     $protocol?: str
 
-schema ValuesWebhookNetworkPolicyEgressItems0ToItems0:
-    r"""
-    ValuesWebhookNetworkPolicyEgressItems0ToItems0
-
-    Attributes
-    ----------
-    ipBlock : ValuesWebhookNetworkPolicyEgressItems0ToItems0IpBlock, optional
-    """
-    [...str]: any
-    ipBlock?: ValuesWebhookNetworkPolicyEgressItems0ToItems0IpBlock
-
-schema ValuesWebhookNetworkPolicyEgressItems0ToItems0IpBlock:
-    r"""
-    ValuesWebhookNetworkPolicyEgressItems0ToItems0IpBlock
-
-    Attributes
-    ----------
-    cidr : str, optional, default is "::/0"
-    """
-    [...str]: any
-    cidr?: str
-
 schema ValuesWebhookNetworkPolicyIngressItems0:
     r"""
     ValuesWebhookNetworkPolicyIngressItems0
 
     Attributes
     ----------
-    from : [ValuesWebhookNetworkPolicyIngressItems0FromItems0], optional
+    ports : [ValuesWebhookNetworkPolicyIngressItems0PortsItems0], optional
     """
     [...str]: any
-    from?: [ValuesWebhookNetworkPolicyIngressItems0FromItems0]
+    ports?: [ValuesWebhookNetworkPolicyIngressItems0PortsItems0]
 
-schema ValuesWebhookNetworkPolicyIngressItems0FromItems0:
+schema ValuesWebhookNetworkPolicyIngressItems0PortsItems0:
     r"""
-    ValuesWebhookNetworkPolicyIngressItems0FromItems0
+    ValuesWebhookNetworkPolicyIngressItems0PortsItems0
 
     Attributes
     ----------
-    ipBlock : ValuesWebhookNetworkPolicyIngressItems0FromItems0IpBlock, optional
+    port : str, optional, default is "http-metrics"
+    $protocol : str, optional, default is "TCP"
     """
     [...str]: any
-    ipBlock?: ValuesWebhookNetworkPolicyIngressItems0FromItems0IpBlock
-
-schema ValuesWebhookNetworkPolicyIngressItems0FromItems0IpBlock:
-    r"""
-    ValuesWebhookNetworkPolicyIngressItems0FromItems0IpBlock
-
-    Attributes
-    ----------
-    cidr : str, optional, default is "::/0"
-    """
-    [...str]: any
-    cidr?: str
+    port?: str
+    $protocol?: str
 
 schema ValuesWebhookNodeSelector:
     r"""
