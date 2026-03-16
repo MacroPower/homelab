@@ -64,7 +64,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendSpec:
 
     check:
         len(endpoints) >= 1 if endpoints
-        len(endpoints) <= 64 if endpoints
+        len(endpoints) <= 256 if endpoints
 
 schema GatewayEnvoyproxyIoV1alpha1BackendSpecEndpointsItems0:
     r"""
