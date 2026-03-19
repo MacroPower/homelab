@@ -135,7 +135,7 @@ charts: helm.Charts = {
     mimir: {
         chart = "mimir-distributed"
         repoURL = "https://grafana.github.io/helm-charts"
-        targetRevision = "6.0.5"
+        targetRevision = "6.0.6"
         schemaGenerator = "NONE"
         crdGenerator = "NONE"
     }
