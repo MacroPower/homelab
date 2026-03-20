@@ -32,6 +32,34 @@
       "title": "crds",
       "type": "object"
     },
+    "createAggregateRoles": {
+      "default": true,
+      "description": "Create aggregated cluster roles for view, edit, and admin",
+      "required": [],
+      "title": "createAggregateRoles",
+      "type": "boolean"
+    },
+    "deploymentAnnotations": {
+      "additionalProperties": true,
+      "description": "Additional annotations to add to deployments",
+      "required": [],
+      "title": "deploymentAnnotations",
+      "type": "object"
+    },
+    "deploymentLabels": {
+      "additionalProperties": true,
+      "description": "Additional labels to add to deployments",
+      "required": [],
+      "title": "deploymentLabels",
+      "type": "object"
+    },
+    "dragonflyImage": {
+      "default": "",
+      "description": "Default dragonfly image to use",
+      "required": [],
+      "title": "dragonflyImage",
+      "type": "string"
+    },
     "fullnameOverride": {
       "default": "",
       "required": [],
@@ -331,6 +359,12 @@
       "title": "nameOverride",
       "type": "string"
     },
+    "namespaceOverride": {
+      "default": "",
+      "required": [],
+      "title": "namespaceOverride",
+      "type": "string"
+    },
     "podAnnotations": {
       "additionalProperties": true,
       "properties": {
@@ -396,7 +430,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v0.13.1",
+              "default": "v0.20.2",
               "description": "Overrides the image tag whose default is the chart appVersion.",
               "required": [],
               "title": "tag",
@@ -598,6 +632,36 @@
           "required": [],
           "title": "path",
           "type": "string"
+        },
+        "rbacProxyMetricsReader": {
+          "additionalProperties": true,
+          "description": "When rbacProxy is enabled, a ClusterRoleBinding is needed to grant the\nPrometheus service account access to the /metrics endpoint via kube-rbac-proxy.",
+          "properties": {
+            "create": {
+              "default": false,
+              "description": "Create a ClusterRoleBinding for the Prometheus service account",
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            },
+            "serviceAccountName": {
+              "default": "",
+              "description": "Name of the Prometheus ServiceAccount",
+              "required": [],
+              "title": "serviceAccountName",
+              "type": "string"
+            },
+            "serviceAccountNamespace": {
+              "default": "",
+              "description": "Namespace of the Prometheus ServiceAccount",
+              "required": [],
+              "title": "serviceAccountNamespace",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "rbacProxyMetricsReader",
+          "type": "object"
         },
         "relabelings": {
           "description": "Set relabelings for the ServiceMonitor, use to apply to samples before scraping",
