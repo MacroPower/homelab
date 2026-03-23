@@ -47,20 +47,13 @@
     name = "qbt_base"
     full_name = "starr_qbt_base_0.1.0"
     version = "0.1.0"
-  [dependencies.starr]
-    name = "starr"
-    full_name = "starr_0.1.0"
-    version = "0.1.0"
-  [dependencies.starr_qbt_base]
-    name = "starr_qbt_base"
-    full_name = "starr_qbt_tv_base_0.1.0"
-    version = "0.1.0"
-    reg = "ghcr.io"
-    repo = "kcl-lang/starr_qbt_base"
-    oci_tag = "0.1.0"
   [dependencies.starr_qbt_tv_base]
     name = "starr_qbt_tv_base"
     full_name = "starr_qbt_tv_base_0.1.0"
+    version = "0.1.0"
+  [dependencies.starr_shared]
+    name = "starr_shared"
+    full_name = "starr_shared_0.1.0"
     version = "0.1.0"
   [dependencies.starr_tenant]
     name = "starr_tenant"

@@ -43,13 +43,13 @@
     name = "konfig"
     full_name = "konfig_0.0.1"
     version = "0.0.1"
-  [dependencies.twitch]
-    name = "twitch"
-    full_name = "twitch_0.1.0"
-    version = "0.1.0"
   [dependencies.twitch_channel_points_miner_base]
     name = "twitch_channel_points_miner_base"
     full_name = "twitch_channel_points_miner_base_0.1.0"
+    version = "0.1.0"
+  [dependencies.twitch_shared]
+    name = "twitch_shared"
+    full_name = "twitch_shared_0.1.0"
     version = "0.1.0"
   [dependencies.twitch_tenant]
     name = "twitch_tenant"

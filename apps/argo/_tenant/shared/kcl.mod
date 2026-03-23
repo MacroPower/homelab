@@ -1,5 +1,5 @@
 [package]
-name = "argo"
+name = "argo_shared"
 version = "0.1.0"
 
 [dependencies]

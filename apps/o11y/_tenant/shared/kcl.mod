@@ -1,5 +1,5 @@
 [package]
-name = "o11y"
+name = "o11y_shared"
 version = "0.1.0"
 
 [dependencies]

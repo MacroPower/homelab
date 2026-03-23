@@ -3,7 +3,7 @@ import file
 import konfig.models.frontend
 import konfig.files
 
-import envoy
+import envoy_shared
 import charts.envoy_gateway
 import charts.envoy_gateway.api.v1 as gatewayv1
 import charts.envoy_gateway.api.v1alpha1 as gatewayv1alpha1
@@ -118,7 +118,7 @@ _publicGateway = gatewayv1.Gateway {
 
 app = frontend.App {
     name = "gateway"
-    tenantName = envoy.tenant.name
+    tenantName = envoy_shared.tenant.name
 
     charts.envoy_gateway = envoy_gateway.Chart {
         values: _values | envoy_gateway.Values {}

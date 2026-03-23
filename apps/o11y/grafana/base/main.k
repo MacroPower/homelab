@@ -1,7 +1,7 @@
 import konfig.models.frontend
 import konfig.models.frontend.secret
 
-import o11y
+import o11y_shared
 import charts.grafana_pdc_agent
 
 _pdcAgentCreds = secret.ExternalSecret {
@@ -15,9 +15,9 @@ _pdcAgentCreds = secret.ExternalSecret {
 
 app = frontend.App {
     name = "grafana"
-    tenantName = o11y.tenant.name
+    tenantName = o11y_shared.tenant.name
 
-    secretStore = o11y.shared.secretStores.default.name
+    secretStore = o11y_shared.shared.secretStores.default.name
 
     externalSecrets.pdcAgentCreds = _pdcAgentCreds
 

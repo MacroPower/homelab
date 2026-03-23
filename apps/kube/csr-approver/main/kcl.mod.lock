@@ -39,13 +39,13 @@
     name = "konfig"
     full_name = "konfig_0.0.1"
     version = "0.0.1"
-  [dependencies.kube]
-    name = "kube"
-    full_name = "kube_0.1.0"
-    version = "0.1.0"
   [dependencies.kube_csr_approver_base]
     name = "kube_csr_approver_base"
     full_name = "kube_csr_approver_base_0.1.0"
+    version = "0.1.0"
+  [dependencies.kube_shared]
+    name = "kube_shared"
+    full_name = "kube_shared_0.1.0"
     version = "0.1.0"
   [dependencies.kube_tenant]
     name = "kube_tenant"

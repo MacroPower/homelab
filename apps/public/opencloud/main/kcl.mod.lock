@@ -43,13 +43,13 @@
     name = "konfig"
     full_name = "konfig_0.0.1"
     version = "0.0.1"
-  [dependencies.public]
-    name = "public"
-    full_name = "public_0.1.0"
-    version = "0.1.0"
   [dependencies.public_opencloud_base]
     name = "public_opencloud_base"
     full_name = "public_opencloud_base_0.1.0"
+    version = "0.1.0"
+  [dependencies.public_shared]
+    name = "public_shared"
+    full_name = "public_shared_0.1.0"
     version = "0.1.0"
   [dependencies.public_tenant]
     name = "public_tenant"

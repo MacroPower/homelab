@@ -4,14 +4,14 @@ import konfig.models.frontend
 import konfig.models.templates.networkpolicy
 import konfig.files
 
-import kube
+import kube_shared
 import charts.descheduler
 
 _values = files.read_yaml(file.current(), "values.yaml")
 
 app = frontend.App {
     name = "descheduler"
-    tenantName = kube.tenant.name
+    tenantName = kube_shared.tenant.name
 
     networkPolicies = {
         denyDefault = networkpolicy.denyDefault

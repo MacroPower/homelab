@@ -7,13 +7,13 @@
     name = "cluster"
     full_name = "cluster_mgmt_0.1.0"
     version = "0.1.0"
-  [dependencies.envoy]
-    name = "envoy"
-    full_name = "envoy_0.1.0"
-    version = "0.1.0"
   [dependencies.envoy_gateway_base]
     name = "envoy_gateway_base"
     full_name = "envoy_gateway_base_0.1.0"
+    version = "0.1.0"
+  [dependencies.envoy_shared]
+    name = "envoy_shared"
+    full_name = "envoy_shared_0.1.0"
     version = "0.1.0"
   [dependencies.envoy_tenant]
     name = "envoy_tenant"

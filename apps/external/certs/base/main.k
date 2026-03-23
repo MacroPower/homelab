@@ -4,7 +4,7 @@ import konfig.models.frontend
 import konfig.models.frontend.secret
 import konfig.files
 
-import external
+import external_shared
 import charts.cert_manager
 import charts.cert_manager.api.v1 as certmanagerv1
 
@@ -54,8 +54,8 @@ _cfJacobColvinComCI = certmanagerv1.ClusterIssuer {
 
 app = frontend.App {
     name = "certs"
-    tenantName = external.tenant.name
-    secretStore = external.shared.secretStores.default.name
+    tenantName = external_shared.tenant.name
+    secretStore = external_shared.shared.secretStores.default.name
     namespace = "{}-{}".format(tenantName, name)
 
     externalSecrets.cfMacroNetwork = _cfMacroNetwork

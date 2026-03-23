@@ -4,7 +4,7 @@ import konfig.models.frontend
 import konfig.models.frontend.configmap
 import konfig.files
 
-import securecodebox
+import securecodebox_shared
 import charts.securecodebox_kube_hunter
 import charts.securecodebox_nmap
 import charts.securecodebox_generic_webhook
@@ -14,7 +14,7 @@ _values = files.read_yaml(file.current(), "values.yaml")
 
 app = frontend.App {
     name = "scanners"
-    tenantName = securecodebox.tenant.name
+    tenantName = securecodebox_shared.tenant.name
 
     # https://github.com/secureCodeBox/secureCodeBox/tree/main/scanners/kube-hunter
     charts.securecodebox_kube_hunter = securecodebox_kube_hunter.Chart {

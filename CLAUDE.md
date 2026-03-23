@@ -156,22 +156,10 @@ import konfig.files as kutils
 
 ## Development Workflow
 
-### 1. Creating New Applications
-Use the project's task automation:
-```bash
-# Create a new application with environments
-task kcl:create-app TENANT=kube APP=myapp ENV=mgmt,main
-
-# This creates:
-# apps/kube/myapp/base/
-# apps/kube/myapp/mgmt/
-# apps/kube/myapp/main/
-```
-
-### 2. Development and Testing
+### 1. Development and Testing
 Use the #kat agent tools for rendering and validation.
 
-### 3. Helm Chart Integration
+### 2. Helm Chart Integration
 When using Helm charts, they're auto-generated as KCL wrappers.
 
 First, update ./charts/charts.k, then run:
@@ -182,7 +170,7 @@ task kcl:chart:update
 # This updates charts/ directory with latest Helm chart schemas
 ```
 
-### 4. Package Management
+### 3. Package Management
 ```toml
 # kcl.mod - Package definition
 [package]

@@ -1,7 +1,7 @@
 import konfig.models.frontend
 import konfig.models.frontend.secret
 
-import starr
+import starr_shared
 import charts.cloudnative_pg.api.v1 as cnpgv1
 
 cnpgRole = cnpgv1.PostgresqlCnpgIoV1ClusterSpecManagedRolesItems0
@@ -129,8 +129,8 @@ _prowlarrMainDatabase = cnpgv1.Database {
 
 app = frontend.App {
     name = "system"
-    tenantName = starr.tenant.name
-    secretStore = starr.shared.secretStores.default.name
+    tenantName = starr_shared.tenant.name
+    secretStore = starr_shared.shared.secretStores.default.name
 
     externalSecrets: {
         sonarrCreds = _sonarrCreds

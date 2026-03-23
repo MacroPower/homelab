@@ -5,7 +5,7 @@ import konfig.models.frontend.secret
 import konfig.models.frontend.configmap
 import konfig.files
 
-import o11y
+import o11y_shared
 import charts.wakatime_exporter
 import charts.readme_updater
 
@@ -20,8 +20,8 @@ _wakatimeCreds = secret.ExternalSecret {
 
 app = frontend.App {
     name = "wakatime-exporter"
-    tenantName = o11y.tenant.name
-    secretStore = o11y.shared.secretStores.default.name
+    tenantName = o11y_shared.tenant.name
+    secretStore = o11y_shared.shared.secretStores.default.name
 
     externalSecrets: {
         wakatimeCreds = _wakatimeCreds

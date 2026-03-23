@@ -9,7 +9,7 @@ import konfig.models.frontend.rbac
 import konfig.models.templates.networkpolicy as npt
 import konfig.files
 
-import public
+import public_shared
 import charts.homepage
 
 _values = files.read_yaml(file.current(), "values.yaml")
@@ -24,7 +24,7 @@ _homepagePort = 3000
 
 app = frontend.App {
     name = "homepage"
-    tenantName = public.tenant.name
+    tenantName = public_shared.tenant.name
 
     networkPolicies: {
         denyDefault = npt.denyDefault
@@ -70,7 +70,7 @@ app = frontend.App {
     }
 
     routes.homepage = gateway.Route {
-        gatewayRef = public.tenant.gateways.default
+        gatewayRef = public_shared.tenant.gateways.default
         services.homepage = {
             name = name
             port = _homepagePort

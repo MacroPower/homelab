@@ -1,5 +1,5 @@
 [package]
-name = "external"
+name = "external_shared"
 version = "0.1.0"
 
 [dependencies]

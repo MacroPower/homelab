@@ -8,7 +8,7 @@ import konfig.models.utils
 import konfig.files
 import helm
 
-import public
+import public_shared
 import charts.opencloud
 import charts.nats
 import charts.nack.api.v1beta2 as nackv1beta2
@@ -64,9 +64,9 @@ _natsCluster = "opencloud-cluster"
 
 app = frontend.App {
     name = "opencloud"
-    tenantName = public.tenant.name
+    tenantName = public_shared.tenant.name
 
-    secretStore = public.shared.secretStores.default.name
+    secretStore = public_shared.shared.secretStores.default.name
     externalSecrets: {
         opencloudCredentials = _opencloudCredentials
         opencloudOIDCClient = _opencloudOIDCClient
@@ -114,7 +114,7 @@ app = frontend.App {
     }
 
     routes.opencloud = gateway.Route {
-        gatewayRef = public.tenant.gateways.default
+        gatewayRef = public_shared.tenant.gateways.default
         services.opencloud = {
             name = "opencloud-opencloud"
             port = 9200
@@ -129,7 +129,7 @@ app = frontend.App {
     routes.collabora = gateway.Route {
         name = "public-collabora"
         names = ["collabora"]
-        gatewayRef = public.tenant.gateways.default
+        gatewayRef = public_shared.tenant.gateways.default
         services.collabora = {
             name = "opencloud-collabora"
             port = 9980

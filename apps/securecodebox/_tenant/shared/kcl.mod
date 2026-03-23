@@ -1,5 +1,5 @@
 [package]
-name = "securecodebox"
+name = "securecodebox_shared"
 version = "0.1.0"
 
 [dependencies]

@@ -41,7 +41,7 @@
     version = "0.0.1"
   [dependencies.securecodebox_shared]
     name = "securecodebox_shared"
-    full_name = "securecodebox_0.1.0"
+    full_name = "securecodebox_shared_0.1.0"
     version = "0.1.0"
   [dependencies.securecodebox_tenant]
     name = "securecodebox_tenant"

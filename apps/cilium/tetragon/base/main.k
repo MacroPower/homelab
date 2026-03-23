@@ -4,7 +4,7 @@ import konfig.models.frontend
 import konfig.models.utils as modelutils
 import konfig.files
 
-import cilium
+import cilium_shared
 import charts.tetragon
 import charts.tetragon.api.v1alpha1 as tetrav1alpha1
 
@@ -12,7 +12,7 @@ _values = files.read_yaml(file.current(), "values.yaml")
 
 app = frontend.App {
     name = "tetragon"
-    tenantName = cilium.tenant.name
+    tenantName = cilium_shared.tenant.name
 
     charts.tetragon = tetragon.Chart {
         values: _values | tetragon.Values {}

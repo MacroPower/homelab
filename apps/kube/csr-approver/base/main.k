@@ -1,12 +1,12 @@
 import konfig.models.frontend
 import konfig.models.templates.networkpolicy
 
-import kube
+import kube_shared
 import charts.kubelet_csr_approver
 
 app = frontend.App {
     name = "csr-approver"
-    tenantName = kube.tenant.name
+    tenantName = kube_shared.tenant.name
 
     networkPolicies = {
         denyDefault = networkpolicy.denyDefault

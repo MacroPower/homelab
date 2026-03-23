@@ -3,8 +3,8 @@
     name = "charts"
     full_name = "charts_0.1.0"
     version = "0.1.0"
-  [dependencies.cilium]
-    name = "cilium"
+  [dependencies.cilium_shared]
+    name = "cilium_shared"
     full_name = "cilium_shared_0.1.0"
     version = "0.1.0"
   [dependencies.cilium_tenant]

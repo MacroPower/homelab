@@ -3,9 +3,9 @@
     name = "charts"
     full_name = "charts_0.1.0"
     version = "0.1.0"
-  [dependencies.cnpg]
-    name = "cnpg"
-    full_name = "cnpg_0.1.0"
+  [dependencies.cnpg_shared]
+    name = "cnpg_shared"
+    full_name = "cnpg_shared_0.1.0"
     version = "0.1.0"
   [dependencies.cnpg_tenant]
     name = "cnpg_tenant"

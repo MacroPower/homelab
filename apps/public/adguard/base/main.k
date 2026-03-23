@@ -9,7 +9,7 @@ import konfig.models.frontend.secret
 import konfig.models.templates.networkpolicy as npt
 import konfig.files
 
-import public
+import public_shared
 import charts.adguard
 
 _values = files.read_yaml(file.current(), "values.yaml")
@@ -32,7 +32,7 @@ _adguardWebPort = 3000
 
 app = frontend.App {
     name = "adguard"
-    tenantName = public.tenant.name
+    tenantName = public_shared.tenant.name
 
     networkPolicies: {
         denyDefault = npt.denyDefault
@@ -110,7 +110,7 @@ app = frontend.App {
         }
     }
 
-    secretStore = public.shared.secretStores.default.name
+    secretStore = public_shared.shared.secretStores.default.name
     externalSecrets: {
         adguardOIDCClient = _adguardOIDCClient
     }
@@ -131,7 +131,7 @@ app = frontend.App {
     }
 
     routes.adguardWeb = gateway.Route {
-        gatewayRef = public.tenant.gateways.default
+        gatewayRef = public_shared.tenant.gateways.default
         services.adguardWeb = {
             name = "${name}-app"
             port = _adguardWebPort
@@ -144,7 +144,7 @@ app = frontend.App {
         }
         security = {
             oidcClientRef = _adguardOIDCClient.name
-            oidcIssuer = public.tenant.oidcIssuer
+            oidcIssuer = public_shared.tenant.oidcIssuer
         }
     }
 }

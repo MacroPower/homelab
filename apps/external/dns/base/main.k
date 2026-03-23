@@ -6,7 +6,7 @@ import konfig.models.frontend.secret
 import konfig.models.utils
 import konfig.files
 
-import external
+import external_shared
 import charts.external_dns
 
 _values = files.read_yaml(file.current(), "values.yaml")
@@ -62,6 +62,6 @@ unifiValues = _values | external_dns.Values {
 
 app = frontend.App {
     name = "dns"
-    tenantName = external.tenant.name
-    secretStore = external.shared.secretStores.default.name
+    tenantName = external_shared.tenant.name
+    secretStore = external_shared.shared.secretStores.default.name
 }

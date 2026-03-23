@@ -1,5 +1,5 @@
 [package]
-name = "starr"
+name = "starr_shared"
 version = "0.1.0"
 
 [dependencies]

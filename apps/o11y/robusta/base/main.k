@@ -4,7 +4,7 @@ import konfig.models.frontend
 import konfig.models.frontend.secret
 import konfig.files
 
-import o11y
+import o11y_shared
 import charts.robusta
 
 _values = files.read_yaml(file.current(), "values.yaml")
@@ -20,9 +20,9 @@ _config = secret.ExternalSecret {
 
 app = frontend.App {
     name = "robusta"
-    tenantName = o11y.tenant.name
+    tenantName = o11y_shared.tenant.name
 
-    secretStore = o11y.shared.secretStores.default.name
+    secretStore = o11y_shared.shared.secretStores.default.name
 
     charts.robusta = robusta.Chart {
         values: _values | robusta.Values {}

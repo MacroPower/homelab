@@ -1,5 +1,5 @@
 [package]
-name = "cnpg"
+name = "cnpg_shared"
 version = "0.1.0"
 
 [dependencies]

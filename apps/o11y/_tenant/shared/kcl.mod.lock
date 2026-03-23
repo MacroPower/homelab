@@ -1,11 +1,4 @@
 [dependencies]
-  [dependencies.argo_tenant]
-    name = "argo_tenant"
-    full_name = "o11y_tenant_0.1.0"
-    version = "0.1.0"
-    reg = "ghcr.io"
-    repo = "kcl-lang/argo_tenant"
-    oci_tag = "0.1.0"
   [dependencies.charts]
     name = "charts"
     full_name = "charts_0.1.0"

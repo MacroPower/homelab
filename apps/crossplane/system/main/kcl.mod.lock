@@ -5,7 +5,7 @@
     version = "0.1.0"
   [dependencies.crossplane_shared]
     name = "crossplane_shared"
-    full_name = "crossplane_0.1.0"
+    full_name = "crossplane_shared_0.1.0"
     version = "0.1.0"
   [dependencies.crossplane_system_base]
     name = "crossplane_system_base"

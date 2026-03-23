@@ -3,13 +3,13 @@
     name = "charts"
     full_name = "charts_0.1.0"
     version = "0.1.0"
-  [dependencies.crossplane]
-    name = "crossplane"
-    full_name = "crossplane_0.1.0"
-    version = "0.1.0"
   [dependencies.crossplane_providers_base]
     name = "crossplane_providers_base"
     full_name = "crossplane_providers_base_0.1.0"
+    version = "0.1.0"
+  [dependencies.crossplane_shared]
+    name = "crossplane_shared"
+    full_name = "crossplane_shared_0.1.0"
     version = "0.1.0"
   [dependencies.crossplane_tenant]
     name = "crossplane_tenant"

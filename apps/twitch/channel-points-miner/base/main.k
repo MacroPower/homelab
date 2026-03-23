@@ -8,7 +8,7 @@ import konfig.models.frontend.secret
 import konfig.models.templates.networkpolicy as npt
 import konfig.files
 
-import twitch
+import twitch_shared
 import charts.tcpm
 
 _values = files.read_yaml(file.current(), "values.yaml")
@@ -41,7 +41,7 @@ _twitchCookie = secret.ExternalSecret {
 
 app = frontend.App {
     name = "channel-points-miner"
-    tenantName = twitch.tenant.name
+    tenantName = twitch_shared.tenant.name
 
     networkPolicies: {
         denyDefault = npt.denyDefault
@@ -52,7 +52,7 @@ app = frontend.App {
         gatewayIngress = npt.envoyGatewayIngress
     }
 
-    secretStore = twitch.shared.secretStores.default.name
+    secretStore = twitch_shared.shared.secretStores.default.name
     externalSecrets: {
         tcpmOIDCClient = _tcpmOIDCClient
         twitchCookie = _twitchCookie
@@ -71,7 +71,7 @@ app = frontend.App {
 
     routes.tcpm = gateway.Route {
         names = ["tcpm"]
-        gatewayRef = twitch.tenant.gateways.default
+        gatewayRef = twitch_shared.tenant.gateways.default
         services.tcpm = {
             name = "twitch-channel-points-miner"
             port = 5000
@@ -84,7 +84,7 @@ app = frontend.App {
         }
         security = {
             oidcClientRef = _tcpmOIDCClient.name
-            oidcIssuer = twitch.tenant.oidcIssuer
+            oidcIssuer = twitch_shared.tenant.oidcIssuer
         }
     }
 }

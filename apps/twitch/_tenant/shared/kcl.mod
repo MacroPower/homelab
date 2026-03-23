@@ -1,5 +1,5 @@
 [package]
-name = "twitch"
+name = "twitch_shared"
 version = "0.1.0"
 
 [dependencies]

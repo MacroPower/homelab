@@ -39,9 +39,9 @@
     name = "konfig"
     full_name = "konfig_0.0.1"
     version = "0.0.1"
-  [dependencies.o11y]
-    name = "o11y"
-    full_name = "o11y_0.1.0"
+  [dependencies.o11y_shared]
+    name = "o11y_shared"
+    full_name = "o11y_shared_0.1.0"
     version = "0.1.0"
   [dependencies.o11y_tempo_base]
     name = "o11y_tempo_base"

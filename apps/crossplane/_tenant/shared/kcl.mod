@@ -1,5 +1,5 @@
 [package]
-name = "crossplane"
+name = "crossplane_shared"
 version = "0.1.0"
 
 [dependencies]

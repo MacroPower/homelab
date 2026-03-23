@@ -12,20 +12,20 @@ vars:
 
 includes:
   argocd:
-    taskfile: ./.taskfiles/argo-cd/taskfile.yaml
+    taskfile: ./.taskfiles/argo-cd/Taskfile.yaml
     aliases: [acd]
   talos:
-    taskfile: ./.taskfiles/talos/taskfile.yaml
+    taskfile: ./.taskfiles/talos/Taskfile.yaml
     dir: "{{.TALOS_DIR}}"
     aliases: [tal]
   externalsecrets:
-    taskfile: .taskfiles/external-secrets/taskfile.yaml
+    taskfile: .taskfiles/external-secrets/Taskfile.yaml
     aliases: [es]
   kube:
-    taskfile: ./.taskfiles/kube/taskfile.yaml
+    taskfile: ./.taskfiles/kube/Taskfile.yaml
     aliases: [k]
   kyverno:
-    taskfile: ./.taskfiles/kyverno/taskfile.yaml
+    taskfile: ./.taskfiles/kyverno/Taskfile.yaml
     dir: "{{.KYVERNO_POLICY_DIR}}"
     aliases: [ky]
   renovate:
@@ -35,14 +35,14 @@ includes:
     taskfile: ./.taskfiles/repo/Taskfile.yaml
     aliases: [r]
   rookceph:
-    taskfile: .taskfiles/rook-ceph/taskfile.yaml
+    taskfile: .taskfiles/rook-ceph/Taskfile.yaml
     aliases: [rook]
   terraform:
-    taskfile: ./.taskfiles/terraform/taskfile.yaml
+    taskfile: ./.taskfiles/terraform/Taskfile.yaml
     dir: "{{.TERRAFORM_DIR}}"
     aliases: [tf]
   turingpi:
-    taskfile: ./.taskfiles/turing-pi/taskfile.yaml
+    taskfile: ./.taskfiles/turing-pi/Taskfile.yaml
     aliases: [tpi]
   kcl:
     taskfile: ./.taskfiles/kcl/Taskfile.yaml

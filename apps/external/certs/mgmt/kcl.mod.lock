@@ -7,13 +7,13 @@
     name = "cluster"
     full_name = "cluster_mgmt_0.1.0"
     version = "0.1.0"
-  [dependencies.external]
-    name = "external"
-    full_name = "external_0.1.0"
-    version = "0.1.0"
   [dependencies.external_certs_base]
     name = "external_certs_base"
     full_name = "external_certs_base_0.1.0"
+    version = "0.1.0"
+  [dependencies.external_shared]
+    name = "external_shared"
+    full_name = "external_shared_0.1.0"
     version = "0.1.0"
   [dependencies.external_tenant]
     name = "external_tenant"

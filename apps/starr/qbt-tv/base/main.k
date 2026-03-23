@@ -4,7 +4,7 @@ import konfig.models.frontend
 import konfig.models.frontend.gateway
 import konfig.files
 
-import starr
+import starr_shared
 import qbt_base
 import charts.qbittorrent as qbt
 
@@ -12,9 +12,9 @@ _values = files.read_yaml(file.current(), "values.yaml")
 
 app = frontend.App {
     name = "qbt-tv"
-    tenantName = starr.tenant.name
+    tenantName = starr_shared.tenant.name
 
-    secretStore = starr.shared.secretStores.default.name
+    secretStore = starr_shared.shared.secretStores.default.name
     externalSecrets: {
         qbtOIDCClient = qbt_base.oidcClient
     }
@@ -29,7 +29,7 @@ app = frontend.App {
     }
 
     routes.qbt = gateway.Route {
-        gatewayRef = starr.tenant.gateways.default
+        gatewayRef = starr_shared.tenant.gateways.default
         services.qbt = {
             name = "qbt-tv-web"
             port = 8080
@@ -42,7 +42,7 @@ app = frontend.App {
         }
         security = {
             oidcClientRef = qbt_base.oidcClient.name
-            oidcIssuer = starr.tenant.oidcIssuer
+            oidcIssuer = starr_shared.tenant.oidcIssuer
         }
     }
 }

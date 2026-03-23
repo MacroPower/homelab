@@ -43,9 +43,9 @@
     name = "konfig"
     full_name = "konfig_0.0.1"
     version = "0.0.1"
-  [dependencies.starr]
-    name = "starr"
-    full_name = "starr_0.1.0"
+  [dependencies.starr_shared]
+    name = "starr_shared"
+    full_name = "starr_shared_0.1.0"
     version = "0.1.0"
   [dependencies.starr_sonarr_base]
     name = "starr_sonarr_base"

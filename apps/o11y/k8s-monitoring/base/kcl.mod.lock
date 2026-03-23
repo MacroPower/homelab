@@ -39,23 +39,9 @@
     name = "konfig"
     full_name = "konfig_0.0.1"
     version = "0.0.1"
-  [dependencies.kube]
-    name = "kube"
-    full_name = "o11y_0.1.0"
-    version = "0.1.0"
-    reg = "ghcr.io"
-    repo = "kcl-lang/kube"
-    oci_tag = "0.1.0"
-  [dependencies.kube_tenant]
-    name = "kube_tenant"
-    full_name = "kube_tenant_0.1.0"
-    version = "0.1.0"
-    reg = "ghcr.io"
-    repo = "kcl-lang/kube_tenant"
-    oci_tag = "0.1.0"
-  [dependencies.o11y]
-    name = "o11y"
-    full_name = "o11y_0.1.0"
+  [dependencies.o11y_shared]
+    name = "o11y_shared"
+    full_name = "o11y_shared_0.1.0"
     version = "0.1.0"
   [dependencies.o11y_tenant]
     name = "o11y_tenant"

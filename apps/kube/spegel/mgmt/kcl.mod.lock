@@ -39,9 +39,9 @@
     name = "konfig"
     full_name = "konfig_0.0.1"
     version = "0.0.1"
-  [dependencies.kube]
-    name = "kube"
-    full_name = "kube_0.1.0"
+  [dependencies.kube_shared]
+    name = "kube_shared"
+    full_name = "kube_shared_0.1.0"
     version = "0.1.0"
   [dependencies.kube_spegel_base]
     name = "kube_spegel_base"

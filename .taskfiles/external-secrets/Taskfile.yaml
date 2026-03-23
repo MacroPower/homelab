@@ -2,10 +2,6 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
-vars:
-  CURRENT_NS:
-    sh: kubectl config view --minify --output 'jsonpath={..namespace}'
-
 tasks:
   show:
     desc: Show an ExternalSecret
@@ -16,6 +12,8 @@ tasks:
     requires:
       vars: [SECRET]
     vars:
+      CURRENT_NS: &current_ns
+        sh: kubectl config view --minify --output 'jsonpath={..namespace}'
       NS: &nsVar "{{.NS | default .CURRENT_NS}}"
     preconditions:
       - &esExists
@@ -56,6 +54,7 @@ tasks:
         MAX_EVENTS: Maximum number of events to show (default: 5)
     requires: { vars: [SECRET] }
     vars:
+      CURRENT_NS: *current_ns
       NS: *nsVar
       MAX_EVENTS: '{{.MAX_EVENTS | default "5"}}'
     preconditions: [*esExists]
@@ -87,7 +86,7 @@ tasks:
     summary: |
       Args:
         NS: Namespace to list (default: current)
-    vars: { NS: *nsVar }
+    vars: { CURRENT_NS: *current_ns, NS: *nsVar }
     cmd: kubectl -n {{.NS}} get externalsecret -o wide
 
   list-all:
@@ -100,6 +99,7 @@ tasks:
       Args:
         NS: Namespace to sync (default: current)
     vars:
+      CURRENT_NS: *current_ns
       NS: *nsVar
       SECRETS:
         sh: kubectl -n {{.NS}} get externalsecret --no-headers | awk '{print $1}'
@@ -114,7 +114,7 @@ tasks:
     desc: Sync an ExternalSecret
     summary: *commonSummary
     requires: { vars: [SECRET] }
-    vars: { NS: *nsVar }
+    vars: { CURRENT_NS: *current_ns, NS: *nsVar }
     preconditions: [*esExists]
     cmds:
       - kubectl -n {{.NS}} annotate externalsecret {{.SECRET}} force-sync=$(date +%s) --overwrite

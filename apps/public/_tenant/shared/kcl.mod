@@ -1,5 +1,5 @@
 [package]
-name = "public"
+name = "public_shared"
 version = "0.1.0"
 
 [dependencies]

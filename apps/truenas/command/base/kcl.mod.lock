@@ -39,9 +39,9 @@
     name = "konfig"
     full_name = "konfig_0.0.1"
     version = "0.0.1"
-  [dependencies.truenas]
-    name = "truenas"
-    full_name = "truenas_0.1.0"
+  [dependencies.truenas_shared]
+    name = "truenas_shared"
+    full_name = "truenas_shared_0.1.0"
     version = "0.1.0"
   [dependencies.truenas_tenant]
     name = "truenas_tenant"

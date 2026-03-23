@@ -6,7 +6,7 @@ import konfig.models.frontend.secret
 import konfig.models.frontend.gateway
 import konfig.files
 
-import starr
+import starr_shared
 import charts.radarr
 import charts.opentofu.api.v1beta1 as opentofu
 
@@ -92,9 +92,9 @@ tofuWorkspace = opentofu.Workspace {
 
 app = frontend.App {
     name = "radarr"
-    tenantName = starr.tenant.name
+    tenantName = starr_shared.tenant.name
 
-    secretStore = starr.shared.secretStores.default.name
+    secretStore = starr_shared.shared.secretStores.default.name
     externalSecrets: {
         radarrCreds = _radarrCreds
         radarrOIDCClient = _radarrOIDCClient
@@ -106,7 +106,7 @@ app = frontend.App {
     }
 
     routes.radarr = gateway.Route {
-        gatewayRef = starr.tenant.gateways.default
+        gatewayRef = starr_shared.tenant.gateways.default
         services.radarr = {
             name = "radarr"
             port = 7878
@@ -119,7 +119,7 @@ app = frontend.App {
         }
         security = {
             oidcClientRef = _radarrOIDCClient.name
-            oidcIssuer = starr.tenant.oidcIssuer
+            oidcIssuer = starr_shared.tenant.oidcIssuer
         }
     }
 

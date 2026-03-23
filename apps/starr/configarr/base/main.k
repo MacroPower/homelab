@@ -6,7 +6,7 @@ import konfig.models.frontend.configmap
 import konfig.models.frontend.secret
 import konfig.files
 
-import starr
+import starr_shared
 import charts.configarr
 
 _values = files.read_yaml(file.current(), "values.yaml")
@@ -28,8 +28,8 @@ _secrets = secret.ExternalSecret {
 
 app = frontend.App {
     name = "configarr"
-    tenantName = starr.tenant.name
-    secretStore = starr.shared.secretStores.default.name
+    tenantName = starr_shared.tenant.name
+    secretStore = starr_shared.shared.secretStores.default.name
 
     configMaps.configarr = _config
     externalSecrets.configarr = _secrets

@@ -6,20 +6,20 @@ import konfig.models.frontend.networkpolicy
 import konfig.models.templates.networkpolicy as npt
 import konfig.files
 
-import truenas
+import truenas_shared
 import charts.truecommand
 
 _values = files.read_yaml(file.current(), "values.yaml")
 
 app = frontend.App {
     name = "command"
-    tenantName = truenas.tenant.name
+    tenantName = truenas_shared.tenant.name
     charts.truecommand = truecommand.Chart {
         values: _values | truecommand.Values {}
     }
     routes.truecommand = gateway.Route {
         hostnames = ["truecommand.jacobcolvin.com"]
-        gatewayRef = truenas.tenant.gateways.public
+        gatewayRef = truenas_shared.tenant.gateways.public
         services.server = {
             name = "truecommand"
             port = 80

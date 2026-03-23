@@ -34,6 +34,12 @@ tasks:
         kcl export konfig/models/backend/ -S BackendTenantPatch \
           --output=konfig/models/frontend/patch.schema.json
 
+  lock:
+    desc: Regenerate all kcl.mod.lock files
+    cmds:
+      - fd kcl.mod.lock apps/ --type f -x rm {}
+      - fd '^kcl\.mod$' apps/ --type f --exact-depth 4 -x sh -c 'cd "$(dirname {})" && kcl mod metadata >/dev/null'
+
   chart:update:
     desc: Update KCL charts
     cmds:
@@ -48,19 +54,3 @@ tasks:
       - .env
     cmds:
       - kcl run
-
-  create-app:
-    desc: Create a new app
-    interactive: true
-    requires:
-      vars: [TENANT, APP]
-    vars:
-      ENV: '{{.ENV | default ""}}'
-    cmds:
-      - |-
-        go run apps/.template/main.go \
-          -tenant={{.TENANT}} \
-          -app={{.APP}}
-          {{- if ne .ENV "" }} \
-          -env={{.ENV}}
-          {{- end }}

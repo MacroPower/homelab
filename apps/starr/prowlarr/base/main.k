@@ -7,7 +7,7 @@ import konfig.models.frontend.gateway
 import konfig.files
 import konfig.strings
 
-import starr
+import starr_shared
 import charts.prowlarr
 import charts.opentofu.api.v1beta1 as opentofu
 
@@ -98,9 +98,9 @@ tofuWorkspace = opentofu.Workspace {
 
 app = frontend.App {
     name = "prowlarr"
-    tenantName = starr.tenant.name
+    tenantName = starr_shared.tenant.name
 
-    secretStore = starr.shared.secretStores.default.name
+    secretStore = starr_shared.shared.secretStores.default.name
     externalSecrets: {
         prowlarrCreds = _prowlarrCreds
         prowlarrOIDCClient = _prowlarrOIDCClient
@@ -112,7 +112,7 @@ app = frontend.App {
     }
 
     routes.prowlarr = gateway.Route {
-        gatewayRef = starr.tenant.gateways.default
+        gatewayRef = starr_shared.tenant.gateways.default
         services.prowlarr = {
             name = "prowlarr"
             port = 9696
@@ -125,7 +125,7 @@ app = frontend.App {
         }
         security = {
             oidcClientRef = _prowlarrOIDCClient.name
-            oidcIssuer = starr.tenant.oidcIssuer
+            oidcIssuer = starr_shared.tenant.oidcIssuer
         }
     }
 

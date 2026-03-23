@@ -5,7 +5,7 @@ import konfig.models.frontend
 import konfig.models.frontend.secret
 import konfig.files
 
-import o11y
+import o11y_shared
 import charts.seaweedfs
 
 _values = files.read_yaml(file.current(), "values.yaml")
@@ -86,9 +86,9 @@ _s3Config = secret.ExternalSecret {
 
 app = frontend.App {
     name = "seaweedfs"
-    tenantName = o11y.tenant.name
+    tenantName = o11y_shared.tenant.name
 
-    secretStore = o11y.shared.secretStores.default.name
+    secretStore = o11y_shared.shared.secretStores.default.name
 
     externalSecrets.s3Config = _s3Config
 

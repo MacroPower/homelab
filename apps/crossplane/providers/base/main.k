@@ -1,8 +1,8 @@
 import konfig.models.frontend
 
-import crossplane
+import crossplane_shared
 
 app = frontend.App {
     name = "providers"
-    tenantName = crossplane.tenant.name
+    tenantName = crossplane_shared.tenant.name
 }

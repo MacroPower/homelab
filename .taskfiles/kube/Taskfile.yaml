@@ -3,10 +3,6 @@
 version: "3"
 
 vars:
-  CURRENT_CTX:
-    sh: kubectl config current-context
-  CURRENT_NS:
-    sh: kubectl config view --minify --output 'jsonpath={..namespace}'
   KUBE_TEMPLATE_DIR: "{{.ROOT_DIR}}/.taskfiles/kube/templates"
   KUBE_SCRIPTS_DIR: "{{.ROOT_DIR}}/.taskfiles/kube/scripts"
 
@@ -21,6 +17,8 @@ tasks:
     requires:
       vars: [CTX]
     vars:
+      CURRENT_NS: &current_ns
+        sh: kubectl config view --minify --output 'jsonpath={..namespace}'
       NS: "{{.NS | default .CURRENT_NS}}"
     cmds:
       - kubectl config use-context "{{.CTX}}"
@@ -45,6 +43,7 @@ tasks:
       Args:
         NS: Namespace (default: current)
     vars:
+      CURRENT_NS: *current_ns
       NS: "{{.NS | default .CURRENT_NS}}"
       RESOURCES: >-
         ingresses
@@ -84,6 +83,7 @@ tasks:
     requires:
       vars: [POD]
     vars:
+      CURRENT_NS: *current_ns
       NS: "{{.NS | default .CURRENT_NS}}"
     preconditions:
       - sh: kubectl -n "{{.NS}}" get pod "{{.POD}}"
@@ -101,6 +101,7 @@ tasks:
       Args:
         NS: Namespace to launch the Pod in (default: current)
     vars:
+      CURRENT_NS: *current_ns
       NS: "{{.NS | default .CURRENT_NS}}"
       POD_NAME: '{{.POD_NAME | default "netshoot"}}'
     env:
@@ -125,6 +126,7 @@ tasks:
     requires:
       vars: [NODE]
     vars:
+      CURRENT_NS: *current_ns
       NS: "{{.NS | default .CURRENT_NS}}"
       POD_NAME: '{{.POD_NAME | default (print "netshoot-" .NODE)}}'
     env:
@@ -150,6 +152,7 @@ tasks:
     requires:
       vars: [NODE]
     vars:
+      CURRENT_NS: *current_ns
       NS: "{{.NS | default .CURRENT_NS}}"
     env:
       NODE: "{{.NODE}}"
@@ -168,6 +171,7 @@ tasks:
     requires:
       vars: [NODE, TARGET]
     vars:
+      CURRENT_NS: *current_ns
       NS: "{{.NS | default .CURRENT_NS}}"
     env:
       NODE: "{{.NODE}}"
@@ -186,6 +190,7 @@ tasks:
       Args:
         NS: Namespace to clean up in (default: current)
     vars:
+      CURRENT_NS: *current_ns
       NS: "{{.NS | default .CURRENT_NS}}"
     cmds:
       - kubectl -n "{{.NS}}" delete deployment -l app.kubernetes.io/name=iperf3-server --ignore-not-found

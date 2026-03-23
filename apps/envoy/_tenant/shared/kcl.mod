@@ -1,5 +1,5 @@
 [package]
-name = "envoy"
+name = "envoy_shared"
 version = "0.1.0"
 
 [dependencies]
