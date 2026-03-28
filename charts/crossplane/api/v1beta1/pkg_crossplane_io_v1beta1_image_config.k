@@ -43,6 +43,8 @@ schema PkgCrossplaneIoV1beta1ImageConfigSpec:
         registry
     rewriteImage : PkgCrossplaneIoV1beta1ImageConfigSpecRewriteImage, default is Undefined, optional
         rewrite image
+    runtime : PkgCrossplaneIoV1beta1ImageConfigSpecRuntime, default is Undefined, optional
+        runtime
     verification : PkgCrossplaneIoV1beta1ImageConfigSpecVerification, default is Undefined, optional
         verification
     """
@@ -50,6 +52,7 @@ schema PkgCrossplaneIoV1beta1ImageConfigSpec:
 
     registry?: PkgCrossplaneIoV1beta1ImageConfigSpecRegistry
     rewriteImage?: PkgCrossplaneIoV1beta1ImageConfigSpecRewriteImage
+    runtime?: PkgCrossplaneIoV1beta1ImageConfigSpecRuntime
     verification?: PkgCrossplaneIoV1beta1ImageConfigSpecVerification
 
 schema PkgCrossplaneIoV1beta1ImageConfigSpecMatchImagesItems0:
@@ -118,6 +121,35 @@ schema PkgCrossplaneIoV1beta1ImageConfigSpecRewriteImage:
         the longest one will be replaced.
     """
     prefix: str
+
+schema PkgCrossplaneIoV1beta1ImageConfigSpecRuntime:
+    r"""
+    Runtime allows configuration of runtime options for the image.
+
+    Attributes
+    ----------
+    configRef : PkgCrossplaneIoV1beta1ImageConfigSpecRuntimeConfigRef, default is Undefined, optional
+        config ref
+    """
+    configRef?: PkgCrossplaneIoV1beta1ImageConfigSpecRuntimeConfigRef
+
+schema PkgCrossplaneIoV1beta1ImageConfigSpecRuntimeConfigRef:
+    r"""
+    ConfigReference references a RuntimeConfig resource that will be
+    used to configure the package runtime.
+
+    Attributes
+    ----------
+    apiVersion : str, default is "pkg.crossplane.io/v1beta1", optional
+        API version of the referent.
+    kind : str, default is "DeploymentRuntimeConfig", optional
+        Kind of the referent.
+    name : str, default is Undefined, required
+        Name of the RuntimeConfig.
+    """
+    apiVersion?: str = "pkg.crossplane.io/v1beta1"
+    kind?: str = "DeploymentRuntimeConfig"
+    name: str
 
 schema PkgCrossplaneIoV1beta1ImageConfigSpecVerification:
     r"""

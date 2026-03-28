@@ -11,7 +11,7 @@ schema Function:
     Crossplane with support for a new kind of composition function.
 
     Read the Crossplane documentation for
-    [more information about Functions](https://docs.crossplane.io/latest/concepts/composition-functions).
+    [more information about Functions](https://docs.crossplane.io/latest/packages/functions/).
 
     Attributes
     ----------

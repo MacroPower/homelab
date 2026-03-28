@@ -86,6 +86,8 @@ schema OpentofumUpboundIoV1beta1WorkspaceSpecForProvider:
         content of a simple main.tf or main.tf.json file may be written inline.
     planArgs : [str], default is Undefined, optional
         Arguments to be included in the tofu plan CLI command
+    remotePullPolicy : str, default is "Always", optional
+        RemotePullPolicy determines when to download remote module sources.
     source : str, default is Undefined, required
         Source of the root module of this workspace.
     varFiles : [OpentofumUpboundIoV1beta1WorkspaceSpecForProviderVarFilesItems0], default is Undefined, optional
@@ -106,6 +108,7 @@ schema OpentofumUpboundIoV1beta1WorkspaceSpecForProvider:
     module: str
 
     planArgs?: [str]
+    remotePullPolicy?: "Always" | "IfNotPresent" = "Always"
     source: "Remote" | "Inline"
 
     varFiles?: [OpentofumUpboundIoV1beta1WorkspaceSpecForProviderVarFilesItems0]
@@ -288,9 +291,12 @@ schema OpentofumUpboundIoV1beta1WorkspaceStatusAtProvider:
         checksum
     outputs : {str:any}, default is Undefined, optional
         outputs
+    remoteSource : str, default is Undefined, optional
+        RemoteSource is the remote module URL that was last retrieved
     """
     checksum?: str
     outputs?: {str:any}
+    remoteSource?: str
 
 schema OpentofumUpboundIoV1beta1WorkspaceStatusConditionsItems0:
     r"""

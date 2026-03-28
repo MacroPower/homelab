@@ -11,7 +11,7 @@ schema EnvironmentConfig:
     use in a Composition.
 
     Read the Crossplane documentation for
-    [more information about EnvironmentConfigs](https://docs.crossplane.io/latest/concepts/environment-configs).
+    [more information about EnvironmentConfigs](https://docs.crossplane.io/latest/composition/environment-configs/).
 
     Attributes
     ----------

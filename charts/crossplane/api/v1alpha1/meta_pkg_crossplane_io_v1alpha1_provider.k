@@ -71,10 +71,12 @@ schema MetaPkgCrossplaneIoV1alpha1ProviderSpecDependsOnItems0:
     configuration : str, default is Undefined, optional
         Configuration is the name of a Configuration package image.
         Must be a fully qualified image name, including the registry,
+
         Deprecated: Specify an apiVersion, kind, and package instead.
     function : str, default is Undefined, optional
         Function is the name of a Function package image.
         Must be a fully qualified image name, including the registry,
+
         Deprecated: Specify an apiVersion, kind, and package instead.
     kind : str, default is Undefined, optional
         Kind of the dependency.
@@ -86,6 +88,7 @@ schema MetaPkgCrossplaneIoV1alpha1ProviderSpecDependsOnItems0:
     provider : str, default is Undefined, optional
         Provider is the name of a Provider package image.
         Must be a fully qualified image name, including the registry,
+
         Deprecated: Specify an apiVersion and kind instead.
     version : str, default is Undefined, required
         Version is the semantic version constraints of the dependency image.

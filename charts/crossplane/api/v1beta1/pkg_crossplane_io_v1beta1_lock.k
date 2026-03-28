@@ -49,6 +49,7 @@ schema PkgCrossplaneIoV1beta1LockPackagesItems0:
         Source is the OCI image name without a tag or digest.
     $type : str, default is Undefined, optional
         Type is the type of package.
+
         Deprecated: Specify an apiVersion and kind instead.
     version : str, default is Undefined, required
         Version is the tag or digest of the OCI image.
@@ -81,6 +82,7 @@ schema PkgCrossplaneIoV1beta1LockPackagesItems0DependenciesItems0:
         Package is the OCI image name without a tag or digest.
     $type : str, default is Undefined, optional
         Type is the type of package. Can be either Configuration or Provider.
+
         Deprecated: Specify an apiVersion and kind instead.
     """
     apiVersion?: str

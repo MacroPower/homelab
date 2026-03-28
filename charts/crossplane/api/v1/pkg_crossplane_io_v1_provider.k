@@ -11,7 +11,7 @@ schema Provider:
     Crossplane with support for new kinds of managed resources.
 
     Read the Crossplane documentation for
-    [more information about Providers](https://docs.crossplane.io/latest/concepts/providers).
+    [more information about Providers](https://docs.crossplane.io/latest/packages/providers/).
 
     Attributes
     ----------

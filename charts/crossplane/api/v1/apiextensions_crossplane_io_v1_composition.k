@@ -11,7 +11,7 @@ schema Composition:
     Crossplane uses to create and manage new composite resources.
 
     Read the Crossplane documentation for
-    [more information about Compositions](https://docs.crossplane.io/latest/concepts/compositions).
+    [more information about Compositions](https://docs.crossplane.io/latest/composition/compositions/).
 
     Attributes
     ----------
@@ -168,8 +168,12 @@ schema ApiextensionsCrossplaneIoV1CompositionSpecPipelineItems0Requirements:
     requiredResources : [ApiextensionsCrossplaneIoV1CompositionSpecPipelineItems0RequirementsRequiredResourcesItems0], default is Undefined, optional
         RequiredResources is a list of resources that must be fetched before
         this function is called.
+    requiredSchemas : [ApiextensionsCrossplaneIoV1CompositionSpecPipelineItems0RequirementsRequiredSchemasItems0], default is Undefined, optional
+        RequiredSchemas is a list of OpenAPI schemas that must be fetched before
+        this function is called.
     """
     requiredResources?: [ApiextensionsCrossplaneIoV1CompositionSpecPipelineItems0RequirementsRequiredResourcesItems0]
+    requiredSchemas?: [ApiextensionsCrossplaneIoV1CompositionSpecPipelineItems0RequirementsRequiredSchemasItems0]
 
 schema ApiextensionsCrossplaneIoV1CompositionSpecPipelineItems0RequirementsRequiredResourcesItems0:
     r"""
@@ -199,5 +203,25 @@ schema ApiextensionsCrossplaneIoV1CompositionSpecPipelineItems0RequirementsRequi
     matchLabels?: {str:str}
     name?: str
     namespace?: str
+    requirementName: str
+
+schema ApiextensionsCrossplaneIoV1CompositionSpecPipelineItems0RequirementsRequiredSchemasItems0:
+    r"""
+    RequiredSchemaSelector selects a required OpenAPI schema.
+
+    Attributes
+    ----------
+    apiVersion : str, default is Undefined, required
+        APIVersion of the resource kind whose schema is required, e.g. "example.org/v1".
+    kind : str, default is Undefined, required
+        Kind of resource whose schema is required, e.g. "MyResource".
+    requirementName : str, default is Undefined, required
+        RequirementName is the unique name to identify this required schema
+        in the Required Schemas map in the function request.
+    """
+    apiVersion: str
+
+    kind: str
+
     requirementName: str
 

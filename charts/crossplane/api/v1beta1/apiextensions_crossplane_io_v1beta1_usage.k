@@ -13,7 +13,7 @@ schema Usage:
     resources with dependent resources.
 
     Read the Crossplane documentation for
-    [more information about Usages](https://docs.crossplane.io/latest/concepts/usages).
+    [more information about Usages](https://docs.crossplane.io/latest/managed-resources/usages/).
 
     Deprecated: Use protection.crossplane.io Usage or ClusterUsage.
 

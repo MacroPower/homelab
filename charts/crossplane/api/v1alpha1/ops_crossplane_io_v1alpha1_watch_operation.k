@@ -182,8 +182,12 @@ schema OpsCrossplaneIoV1alpha1WatchOperationSpecOperationTemplateSpecPipelineIte
     requiredResources : [OpsCrossplaneIoV1alpha1WatchOperationSpecOperationTemplateSpecPipelineItems0RequirementsRequiredResourcesItems0], default is Undefined, optional
         RequiredResources that will be fetched before this pipeline step
         is called for the first time.
+    requiredSchemas : [OpsCrossplaneIoV1alpha1WatchOperationSpecOperationTemplateSpecPipelineItems0RequirementsRequiredSchemasItems0], default is Undefined, optional
+        RequiredSchemas that will be fetched before this pipeline step
+        is called for the first time.
     """
     requiredResources?: [OpsCrossplaneIoV1alpha1WatchOperationSpecOperationTemplateSpecPipelineItems0RequirementsRequiredResourcesItems0]
+    requiredSchemas?: [OpsCrossplaneIoV1alpha1WatchOperationSpecOperationTemplateSpecPipelineItems0RequirementsRequiredSchemasItems0]
 
 schema OpsCrossplaneIoV1alpha1WatchOperationSpecOperationTemplateSpecPipelineItems0RequirementsRequiredResourcesItems0:
     r"""
@@ -215,6 +219,27 @@ schema OpsCrossplaneIoV1alpha1WatchOperationSpecOperationTemplateSpecPipelineIte
     matchLabels?: {str:str}
     name?: str
     namespace?: str
+    requirementName: str
+
+schema OpsCrossplaneIoV1alpha1WatchOperationSpecOperationTemplateSpecPipelineItems0RequirementsRequiredSchemasItems0:
+    r"""
+    RequiredSchemaSelector selects an OpenAPI schema that should be fetched
+    before a pipeline step runs.
+
+    Attributes
+    ----------
+    apiVersion : str, default is Undefined, required
+        APIVersion of the resource kind whose schema is required, e.g. "example.org/v1".
+    kind : str, default is Undefined, required
+        Kind of resource whose schema is required, e.g. "MyResource".
+    requirementName : str, default is Undefined, required
+        RequirementName uniquely identifies this schema.
+        This name will be used as the key in RunFunctionRequest.required_schemas.
+    """
+    apiVersion: str
+
+    kind: str
+
     requirementName: str
 
 schema OpsCrossplaneIoV1alpha1WatchOperationSpecWatch:

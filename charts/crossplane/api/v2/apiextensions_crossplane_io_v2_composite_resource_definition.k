@@ -11,7 +11,7 @@ schema CompositeResourceDefinition:
     API.
 
     Read the Crossplane documentation for
-    [more information about CustomResourceDefinitions](https://docs.crossplane.io/latest/concepts/composite-resource-definitions).
+    [more information about CustomResourceDefinitions](https://docs.crossplane.io/latest/composition/composite-resource-definitions/).
 
     Attributes
     ----------
@@ -60,6 +60,8 @@ schema ApiextensionsCrossplaneIoV2CompositeResourceDefinitionSpec:
         Deprecated: Claims aren't supported in apiextensions.crossplane.io/v2.
     defaultCompositionRef : ApiextensionsCrossplaneIoV2CompositeResourceDefinitionSpecDefaultCompositionRef, default is Undefined, optional
         default composition ref
+    defaultCompositionRevisionSelector : ApiextensionsCrossplaneIoV2CompositeResourceDefinitionSpecDefaultCompositionRevisionSelector, default is Undefined, optional
+        default composition revision selector
     defaultCompositionUpdatePolicy : str, default is "Automatic", optional
         DefaultCompositionUpdatePolicy is the policy used when updating composites after a new
         Composition Revision has been created if no policy has been specified on the composite.
@@ -95,6 +97,7 @@ schema ApiextensionsCrossplaneIoV2CompositeResourceDefinitionSpec:
     conversion?: ApiextensionsCrossplaneIoV2CompositeResourceDefinitionSpecConversion
     defaultCompositeDeletePolicy?: "Background" | "Foreground"
     defaultCompositionRef?: ApiextensionsCrossplaneIoV2CompositeResourceDefinitionSpecDefaultCompositionRef
+    defaultCompositionRevisionSelector?: ApiextensionsCrossplaneIoV2CompositeResourceDefinitionSpecDefaultCompositionRevisionSelector
     defaultCompositionUpdatePolicy?: "Automatic" | "Manual" = "Automatic"
     enforcedCompositionRef?: ApiextensionsCrossplaneIoV2CompositeResourceDefinitionSpecEnforcedCompositionRef
     group: str
@@ -269,6 +272,47 @@ schema ApiextensionsCrossplaneIoV2CompositeResourceDefinitionSpecDefaultComposit
         Name of the Composition.
     """
     name: str
+
+schema ApiextensionsCrossplaneIoV2CompositeResourceDefinitionSpecDefaultCompositionRevisionSelector:
+    r"""
+    DefaultCompositionRevisionSelector refers to the CompositionRevision that will be used
+    in case no compositionRevision selector is given.
+
+    Attributes
+    ----------
+    matchExpressions : [ApiextensionsCrossplaneIoV2CompositeResourceDefinitionSpecDefaultCompositionRevisionSelectorMatchExpressionsItems0], default is Undefined, optional
+        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+    matchLabels : {str:str}, default is Undefined, optional
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
+    """
+    matchExpressions?: [ApiextensionsCrossplaneIoV2CompositeResourceDefinitionSpecDefaultCompositionRevisionSelectorMatchExpressionsItems0]
+    matchLabels?: {str:str}
+
+schema ApiextensionsCrossplaneIoV2CompositeResourceDefinitionSpecDefaultCompositionRevisionSelectorMatchExpressionsItems0:
+    r"""
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the label key that the selector applies to.
+    operator : str, default is Undefined, required
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
+    values : [str], default is Undefined, optional
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
+    """
+    key: str
+
+    operator: str
+
+    values?: [str]
 
 schema ApiextensionsCrossplaneIoV2CompositeResourceDefinitionSpecEnforcedCompositionRef:
     r"""

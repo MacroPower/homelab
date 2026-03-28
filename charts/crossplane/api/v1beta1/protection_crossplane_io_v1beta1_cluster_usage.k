@@ -14,7 +14,7 @@ schema ClusterUsage:
     resources with dependent resources.
 
     Read the Crossplane documentation for
-    [more information about usages](https://docs.crossplane.io/latest/concepts/usages).
+    [more information about usages](https://docs.crossplane.io/latest/managed-resources/usages/).
 
     Attributes
     ----------

@@ -12,7 +12,7 @@ schema Configuration:
     Compositions.
 
     Read the Crossplane documentation for
-    [more information about Configuration packages](https://docs.crossplane.io/latest/concepts/packages).
+    [more information about Configuration packages]( https://docs.crossplane.io/latest/packages/configurations/).
 
     Attributes
     ----------
