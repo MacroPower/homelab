@@ -1305,13 +1305,39 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecRcloneMoverVolumesItems0Volume
 
     Attributes
     ----------
+    nfs : VolsyncBackubeV1alpha1ReplicationSourceSpecRcloneMoverVolumesItems0VolumeSourceNfs, default is Undefined, optional
+        nfs
     persistentVolumeClaim : VolsyncBackubeV1alpha1ReplicationSourceSpecRcloneMoverVolumesItems0VolumeSourcePersistentVolumeClaim, default is Undefined, optional
         persistent volume claim
     secret : VolsyncBackubeV1alpha1ReplicationSourceSpecRcloneMoverVolumesItems0VolumeSourceSecret, default is Undefined, optional
         secret
     """
+    nfs?: VolsyncBackubeV1alpha1ReplicationSourceSpecRcloneMoverVolumesItems0VolumeSourceNfs
     persistentVolumeClaim?: VolsyncBackubeV1alpha1ReplicationSourceSpecRcloneMoverVolumesItems0VolumeSourcePersistentVolumeClaim
     secret?: VolsyncBackubeV1alpha1ReplicationSourceSpecRcloneMoverVolumesItems0VolumeSourceSecret
+
+schema VolsyncBackubeV1alpha1ReplicationSourceSpecRcloneMoverVolumesItems0VolumeSourceNfs:
+    r"""
+    nfs represents an NFS mount on the host that shares a pod's lifetime
+    More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+
+    Attributes
+    ----------
+    path : str, default is Undefined, required
+        path that is exported by the NFS server.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    readOnly : bool, default is Undefined, optional
+        readOnly here will force the NFS export to be mounted with read-only permissions.
+        Defaults to false.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    server : str, default is Undefined, required
+        server is the hostname or IP address of the NFS server.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    """
+    path: str
+
+    readOnly?: bool
+    server: str
 
 schema VolsyncBackubeV1alpha1ReplicationSourceSpecRcloneMoverVolumesItems0VolumeSourcePersistentVolumeClaim:
     r"""
@@ -2631,13 +2657,39 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverVolumesItems0Volume
 
     Attributes
     ----------
+    nfs : VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverVolumesItems0VolumeSourceNfs, default is Undefined, optional
+        nfs
     persistentVolumeClaim : VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverVolumesItems0VolumeSourcePersistentVolumeClaim, default is Undefined, optional
         persistent volume claim
     secret : VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverVolumesItems0VolumeSourceSecret, default is Undefined, optional
         secret
     """
+    nfs?: VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverVolumesItems0VolumeSourceNfs
     persistentVolumeClaim?: VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverVolumesItems0VolumeSourcePersistentVolumeClaim
     secret?: VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverVolumesItems0VolumeSourceSecret
+
+schema VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverVolumesItems0VolumeSourceNfs:
+    r"""
+    nfs represents an NFS mount on the host that shares a pod's lifetime
+    More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+
+    Attributes
+    ----------
+    path : str, default is Undefined, required
+        path that is exported by the NFS server.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    readOnly : bool, default is Undefined, optional
+        readOnly here will force the NFS export to be mounted with read-only permissions.
+        Defaults to false.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    server : str, default is Undefined, required
+        server is the hostname or IP address of the NFS server.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    """
+    path: str
+
+    readOnly?: bool
+    server: str
 
 schema VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverVolumesItems0VolumeSourcePersistentVolumeClaim:
     r"""
@@ -4065,13 +4117,39 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLSMoverVolumesItems0Volu
 
     Attributes
     ----------
+    nfs : VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLSMoverVolumesItems0VolumeSourceNfs, default is Undefined, optional
+        nfs
     persistentVolumeClaim : VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLSMoverVolumesItems0VolumeSourcePersistentVolumeClaim, default is Undefined, optional
         persistent volume claim
     secret : VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLSMoverVolumesItems0VolumeSourceSecret, default is Undefined, optional
         secret
     """
+    nfs?: VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLSMoverVolumesItems0VolumeSourceNfs
     persistentVolumeClaim?: VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLSMoverVolumesItems0VolumeSourcePersistentVolumeClaim
     secret?: VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLSMoverVolumesItems0VolumeSourceSecret
+
+schema VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLSMoverVolumesItems0VolumeSourceNfs:
+    r"""
+    nfs represents an NFS mount on the host that shares a pod's lifetime
+    More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+
+    Attributes
+    ----------
+    path : str, default is Undefined, required
+        path that is exported by the NFS server.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    readOnly : bool, default is Undefined, optional
+        readOnly here will force the NFS export to be mounted with read-only permissions.
+        Defaults to false.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    server : str, default is Undefined, required
+        server is the hostname or IP address of the NFS server.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    """
+    path: str
+
+    readOnly?: bool
+    server: str
 
 schema VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLSMoverVolumesItems0VolumeSourcePersistentVolumeClaim:
     r"""
@@ -5335,13 +5413,39 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingMoverVolumesItems0Vol
 
     Attributes
     ----------
+    nfs : VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingMoverVolumesItems0VolumeSourceNfs, default is Undefined, optional
+        nfs
     persistentVolumeClaim : VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingMoverVolumesItems0VolumeSourcePersistentVolumeClaim, default is Undefined, optional
         persistent volume claim
     secret : VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingMoverVolumesItems0VolumeSourceSecret, default is Undefined, optional
         secret
     """
+    nfs?: VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingMoverVolumesItems0VolumeSourceNfs
     persistentVolumeClaim?: VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingMoverVolumesItems0VolumeSourcePersistentVolumeClaim
     secret?: VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingMoverVolumesItems0VolumeSourceSecret
+
+schema VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingMoverVolumesItems0VolumeSourceNfs:
+    r"""
+    nfs represents an NFS mount on the host that shares a pod's lifetime
+    More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+
+    Attributes
+    ----------
+    path : str, default is Undefined, required
+        path that is exported by the NFS server.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    readOnly : bool, default is Undefined, optional
+        readOnly here will force the NFS export to be mounted with read-only permissions.
+        Defaults to false.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    server : str, default is Undefined, required
+        server is the hostname or IP address of the NFS server.
+        More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs
+    """
+    path: str
+
+    readOnly?: bool
+    server: str
 
 schema VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingMoverVolumesItems0VolumeSourcePersistentVolumeClaim:
     r"""
