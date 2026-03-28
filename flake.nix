@@ -34,6 +34,7 @@
               pkgs.natscli
               pkgs.spacectl
               pkgs.talosctl
+              pkgs.tpi
               pkgs.wrangler
 
               nurPkgs.kat

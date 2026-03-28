@@ -3,9 +3,6 @@
 version: "3"
 
 vars:
-  TPI_BIN_DIR: "{{.ROOT_DIR}}/.task/bin"
-  TPI_VERSION: "v1.0.5"
-  TPI_RELEASE: "x86_64-apple-darwin"
   TPI_DOMAIN: cin.macro.network
   TPI_HOST_PREFIX: turingpi
   TPI_AUTH_ARGS: "--user=$TPI_USERNAME --password=$TPI_PASSWORD"
@@ -13,19 +10,6 @@ vars:
   DOPPLER_CMD: doppler run -p {{.DOPPLER_PROJECT}}
 
 tasks:
-  install:
-    desc: Install the tpi CLI
-    cmds:
-      - mkdir -p {{.TPI_BIN_DIR}}
-      - |
-        cd {{.TPI_BIN_DIR}}
-        curl -LO https://github.com/turing-machines/tpi/releases/download/{{.TPI_VERSION}}/{{.TPI_RELEASE}}.zip
-        unzip {{.TPI_RELEASE}}.zip
-      - defer: rm {{.TPI_BIN_DIR}}/{{.TPI_RELEASE}}.zip
-      - mv {{.TPI_BIN_DIR}}/target/{{.TPI_RELEASE}}/release/tpi {{.TPI_BIN_DIR}}/tpi
-      - defer: rm -rf {{.TPI_BIN_DIR}}/target
-      - chmod +x {{.TPI_BIN_DIR}}/tpi
-
   info:
     desc: Show Turing Pi info
     requires:
@@ -35,7 +19,7 @@ tasks:
     cmds:
       - |-
         {{.DOPPLER_CMD}} -c {{.TPI_HOST_PREFIX}}_{{.TPI_HOST}} -- \
-          bash -c '{{.TPI_BIN_DIR}}/tpi info \
+          bash -c 'tpi info \
             --host {{.TPI_HOST_PREFIX}}{{.TPI_HOST}}.{{.TPI_DOMAIN}} {{.TPI_AUTH_ARGS}}'
 
   flash:
@@ -52,7 +36,7 @@ tasks:
     cmds:
       - |-
         {{.DOPPLER_CMD}} -c {{.TPI_HOST_PREFIX}}_{{.TPI_HOST}} -- \
-          bash -c '{{.TPI_BIN_DIR}}/tpi flash --node {{.TPI_NODE}} --image-path {{.IMAGE_PATH}} \
+          bash -c 'tpi flash --node {{.TPI_NODE}} --image-path {{.IMAGE_PATH}} \
             --host {{.TPI_HOST_PREFIX}}{{.TPI_HOST}}.{{.TPI_DOMAIN}} {{.TPI_AUTH_ARGS}}'
 
   power:
@@ -70,7 +54,7 @@ tasks:
     cmds:
       - |-
         {{.DOPPLER_CMD}} -c {{.TPI_HOST_PREFIX}}_{{.TPI_HOST}} -- \
-          bash -c '{{.TPI_BIN_DIR}}/tpi power {{.STATE}} --node {{.TPI_NODE}} \
+          bash -c 'tpi power {{.STATE}} --node {{.TPI_NODE}} \
             --host {{.TPI_HOST_PREFIX}}{{.TPI_HOST}}.{{.TPI_DOMAIN}} {{.TPI_AUTH_ARGS}}'
 
   uart:get:
@@ -87,7 +71,7 @@ tasks:
     cmds:
       - |-
         {{.DOPPLER_CMD}} -c {{.TPI_HOST_PREFIX}}_{{.TPI_HOST}} -- \
-          bash -c '{{.TPI_BIN_DIR}}/tpi uart get --node {{.TPI_NODE}} \
+          bash -c 'tpi uart get --node {{.TPI_NODE}} \
             --host {{.TPI_HOST_PREFIX}}{{.TPI_HOST}}.{{.TPI_DOMAIN}} {{.TPI_AUTH_ARGS}}'
 
   uart:set:
@@ -104,7 +88,7 @@ tasks:
     cmds:
       - |-
         {{.DOPPLER_CMD}} -c {{.TPI_HOST_PREFIX}}_{{.TPI_HOST}} -- \
-          bash -c '{{.TPI_BIN_DIR}}/tpi uart set --cmd='"'"'{{.CMD}}'"'"' --node {{.TPI_NODE}} \
+          bash -c 'tpi uart set --cmd='"'"'{{.CMD}}'"'"' --node {{.TPI_NODE}} \
             --host {{.TPI_HOST_PREFIX}}{{.TPI_HOST}}.{{.TPI_DOMAIN}} {{.TPI_AUTH_ARGS}}'
 
   boot-target:
