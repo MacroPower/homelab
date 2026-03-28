@@ -46,6 +46,8 @@ includes:
     aliases: [tpi]
   kcl:
     taskfile: ./.taskfiles/kcl/Taskfile.yaml
+  nix:
+    taskfile: ./.taskfiles/nix/Taskfile.yaml
 
 tasks:
   default:

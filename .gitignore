@@ -73,3 +73,7 @@ package-lock.json
 
 # Brew
 Brewfile.lock.json
+
+# Nix
+.nix/
+.direnv/

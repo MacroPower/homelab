@@ -1,0 +1,45 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+tasks:
+  update:
+    desc: Update all flake inputs
+    cmds:
+      - nix flake update
+
+  update:input:
+    desc: Update a single flake input
+    summary: |
+      Args:
+        INPUT: The flake input to update (e.g. nixpkgs, nur, talhelper)
+    requires:
+      vars: [INPUT]
+    cmds:
+      - nix flake update {{.INPUT}}
+
+  lock:pin:
+    desc: Pin a flake input to a specific commit
+    summary: |
+      Args:
+        INPUT: The flake input to pin
+        COMMIT: The commit hash to pin to
+    requires:
+      vars: [INPUT, COMMIT]
+    cmds:
+      - nix flake lock --override-input {{.INPUT}} github:{{.INPUT}}/{{.COMMIT}}
+
+  show:
+    desc: Show flake outputs
+    cmds:
+      - nix flake show
+
+  check:
+    desc: Evaluate the flake and check for errors
+    cmds:
+      - nix flake check
+
+  shell:
+    desc: Enter the dev shell
+    cmds:
+      - nix develop

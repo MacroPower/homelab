@@ -17,14 +17,7 @@ su ubuntu <<'EOF'
 EOF
 chown -R ubuntu:ubuntu /nix
 
-export DEVBOX_USE_VERSION="0.16.0"
-export DEVBOX_USER="ubuntu"
-export PATH="/home/${DEVBOX_USER}/.nix-profile/bin:$PATH"
-
-echo "Installing devbox"
-curl -L https://get.jetify.com/devbox | bash -s -- -f
-chown -R ubuntu:ubuntu /usr/local/bin/devbox
-chmod +x /usr/local/bin/devbox
+export PATH="/home/ubuntu/.nix-profile/bin:$PATH"
 
 KCLIPPER_URL=$(curl -s "https://api.github.com/repos/macropower/kclipper/releases/latest" | \
   jq -r ".assets[] | select(.name | test(\"kclipper_$(uname)_$(arch).tar.gz\")) | .browser_download_url")
