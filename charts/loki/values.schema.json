@@ -584,6 +584,13 @@
           "title": "initContainers",
           "type": "array"
         },
+        "maxUnavailable": {
+          "default": 1,
+          "description": "Pod Disruption Budget maxUnavailable",
+          "required": [],
+          "title": "maxUnavailable",
+          "type": "integer"
+        },
         "nodeSelector": {
           "additionalProperties": true,
           "description": "Node selector for backend pods",
@@ -659,6 +666,13 @@
               "description": "Storage class to be used.\nIf defined, storageClassName: \u003cstorageClass\u003e.\nIf set to \"-\", storageClassName: \"\", which disables dynamic provisioning.\nIf empty or set to null, no storageClassName spec is\nset, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).",
               "required": [],
               "title": "storageClass",
+              "type": "null"
+            },
+            "volumeAttributesClassName": {
+              "default": "null",
+              "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+              "required": [],
+              "title": "volumeAttributesClassName",
               "type": "null"
             },
             "volumeClaimsEnabled": {
@@ -738,6 +752,13 @@
               "required": [],
               "title": "labels",
               "type": "object"
+            },
+            "trafficDistribution": {
+              "default": "",
+              "description": "trafficDistribution for backend Service",
+              "required": [],
+              "title": "trafficDistribution",
+              "type": "string"
             },
             "type": {
               "default": "ClusterIP",
@@ -1390,7 +1411,7 @@
         },
         "livenessProbe": {
           "additionalProperties": true,
-          "description": "liveness probe settings for ingester pods. If empty use `loki.livenessProbe`",
+          "description": "liveness probe settings for bloom-gateway pods. If empty use `loki.livenessProbe`",
           "required": [],
           "title": "livenessProbe",
           "type": "object"
@@ -1445,6 +1466,13 @@
                     "description": "  -- Storage class to be used.\n  If defined, storageClassName: \u003cstorageClass\u003e.\n  If set to \"-\", storageClassName: \"\", which disables dynamic provisioning.\n  If empty or set to null, no storageClassName spec is\n  set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).",
                     "required": [],
                     "title": "storageClass",
+                    "type": "null"
+                  },
+                  "volumeAttributesClassName": {
+                    "default": "null",
+                    "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+                    "required": [],
+                    "title": "volumeAttributesClassName",
                     "type": "null"
                   }
                 },
@@ -1516,7 +1544,7 @@
         },
         "readinessProbe": {
           "additionalProperties": true,
-          "description": "readiness probe settings for ingester pods. If empty, use `loki.readinessProbe`",
+          "description": "readiness probe settings for bloom-gateway pods. If empty, use `loki.readinessProbe`",
           "required": [],
           "title": "readinessProbe",
           "type": "object"
@@ -1595,7 +1623,7 @@
         },
         "startupProbe": {
           "additionalProperties": true,
-          "description": "startup probe settings for ingester pods. If empty, use `loki.startupProbe`",
+          "description": "startup probe settings for bloom-gateway pods. If empty, use `loki.startupProbe`",
           "required": [],
           "title": "startupProbe",
           "type": "object"
@@ -1833,7 +1861,7 @@
         },
         "livenessProbe": {
           "additionalProperties": true,
-          "description": "liveness probe settings for ingester pods. If empty use `loki.livenessProbe`",
+          "description": "liveness probe settings for bloom-planner pods. If empty use `loki.livenessProbe`",
           "required": [],
           "title": "livenessProbe",
           "type": "object"
@@ -1895,6 +1923,13 @@
                     "description": "  -- Storage class to be used.\n  If defined, storageClassName: \u003cstorageClass\u003e.\n  If set to \"-\", storageClassName: \"\", which disables dynamic provisioning.\n  If empty or set to null, no storageClassName spec is\n  set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).",
                     "required": [],
                     "title": "storageClass",
+                    "type": "null"
+                  },
+                  "volumeAttributesClassName": {
+                    "default": "null",
+                    "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+                    "required": [],
+                    "title": "volumeAttributesClassName",
                     "type": "null"
                   }
                 },
@@ -1959,7 +1994,7 @@
         },
         "readinessProbe": {
           "additionalProperties": true,
-          "description": "readiness probe settings for ingester pods. If empty, use `loki.readinessProbe`",
+          "description": "readiness probe settings for bloom-planner pods. If empty, use `loki.readinessProbe`",
           "required": [],
           "title": "readinessProbe",
           "type": "object"
@@ -2038,7 +2073,7 @@
         },
         "startupProbe": {
           "additionalProperties": true,
-          "description": "startup probe settings for ingester pods. If empty use `loki.startupProbe`",
+          "description": "startup probe settings for bloom-planner pods. If empty use `loki.startupProbe`",
           "required": [],
           "title": "startupProbe",
           "type": "object"
@@ -2103,6 +2138,13 @@
           "required": [],
           "title": "affinity",
           "type": "object"
+        },
+        "allocatedCPU": {
+          "default": "500m",
+          "description": "Amount of cpu allocated to chunks-cache for object storage (in integer or millicores).",
+          "required": [],
+          "title": "allocatedCPU",
+          "type": "string"
         },
         "allocatedMemory": {
           "default": 8192,
@@ -2227,6 +2269,13 @@
               "required": [],
               "title": "affinity",
               "type": "object"
+            },
+            "allocatedCPU": {
+              "default": "500m",
+              "description": "Amount of cpu allocated to chunks-cache-l2 for object storage (in integer or millicores).",
+              "required": [],
+              "title": "allocatedCPU",
+              "type": "string"
             },
             "allocatedMemory": {
               "default": 8192,
@@ -2418,6 +2467,13 @@
                   "required": [],
                   "title": "storageSize",
                   "type": "string"
+                },
+                "volumeAttributesClassName": {
+                  "default": "null",
+                  "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+                  "required": [],
+                  "title": "volumeAttributesClassName",
+                  "type": "null"
                 }
               },
               "required": [],
@@ -2651,6 +2707,13 @@
               "required": [],
               "title": "storageSize",
               "type": "string"
+            },
+            "volumeAttributesClassName": {
+              "default": "null",
+              "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+              "required": [],
+              "title": "volumeAttributesClassName",
+              "type": "null"
             }
           },
           "required": [],
@@ -2820,6 +2883,20 @@
       "required": [],
       "title": "clusterLabelOverride",
       "type": "null"
+    },
+    "commonLabels": {
+      "additionalProperties": true,
+      "description": "Labels to be added to resources",
+      "properties": {
+        "labelA": {
+          "required": [],
+          "title": "labelA",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "commonLabels",
+      "type": "object"
     },
     "compactor": {
       "additionalProperties": true,
@@ -3033,7 +3110,7 @@
         },
         "livenessProbe": {
           "additionalProperties": true,
-          "description": "liveness probe settings for ingester pods. If empty use `loki.livenessProbe`",
+          "description": "liveness probe settings for compactor pods. If empty use `loki.livenessProbe`",
           "required": [],
           "title": "livenessProbe",
           "type": "object"
@@ -3094,6 +3171,13 @@
                     "description": "  -- Storage class to be used.\n  If defined, storageClassName: \u003cstorageClass\u003e.\n  If set to \"-\", storageClassName: \"\", which disables dynamic provisioning.\n  If empty or set to null, no storageClassName spec is\n  set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).",
                     "required": [],
                     "title": "storageClass",
+                    "type": "null"
+                  },
+                  "volumeAttributesClassName": {
+                    "default": "null",
+                    "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+                    "required": [],
+                    "title": "volumeAttributesClassName",
                     "type": "null"
                   }
                 },
@@ -3158,7 +3242,7 @@
         },
         "readinessProbe": {
           "additionalProperties": true,
-          "description": "readiness probe settings for ingester pods. If empty, use `loki.readinessProbe`",
+          "description": "readiness probe settings for compactor pods. If empty, use `loki.readinessProbe`",
           "required": [],
           "title": "readinessProbe",
           "type": "object"
@@ -3241,6 +3325,13 @@
           "required": [],
           "title": "serviceType",
           "type": "string"
+        },
+        "startupProbe": {
+          "additionalProperties": true,
+          "description": "liveness probe settings for ingester pods. If empty use `loki.livenessProbe`",
+          "required": [],
+          "title": "startupProbe",
+          "type": "object"
         },
         "terminationGracePeriodSeconds": {
           "default": 30,
@@ -4062,7 +4153,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "3.5.4",
+              "default": "3.6.7",
               "description": "Docker image tag",
               "required": [],
               "title": "tag",
@@ -4304,7 +4395,7 @@
           "type": "boolean"
         },
         "version": {
-          "default": "3.5.4",
+          "default": "3.6.5",
           "description": "Default version of GEL to deploy",
           "required": [],
           "title": "version",
@@ -4454,6 +4545,13 @@
           "title": "labels",
           "type": "object"
         },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "description": "Liveness probe",
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
         "nodeSelector": {
           "additionalProperties": true,
           "description": "Node selector for gateway Pods",
@@ -4568,6 +4666,13 @@
           },
           "required": [],
           "title": "service",
+          "type": "object"
+        },
+        "startupProbe": {
+          "additionalProperties": true,
+          "description": "Startup probe",
+          "required": [],
+          "title": "startupProbe",
           "type": "object"
         },
         "strategy": {
@@ -5485,6 +5590,13 @@
               "title": "port",
               "type": "integer"
             },
+            "trafficDistribution": {
+              "default": "",
+              "description": "trafficDistribution for gateway service",
+              "required": [],
+              "title": "trafficDistribution",
+              "type": "string"
+            },
             "type": {
               "default": "ClusterIP",
               "description": "Type of the gateway service",
@@ -5660,6 +5772,13 @@
       "required": [],
       "title": "hostAliases",
       "type": "array"
+    },
+    "hostNetwork": {
+      "default": false,
+      "description": "Enable or disable the use of host networking for the pod.\nWhen true, the pod will use the node's network namespace",
+      "required": [],
+      "title": "hostNetwork",
+      "type": "boolean"
     },
     "ignoreChartChecksums": {
       "default": false,
@@ -6016,6 +6135,13 @@
               "title": "storageClass",
               "type": "null"
             },
+            "volumeAttributesClassName": {
+              "default": "null",
+              "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+              "required": [],
+              "title": "volumeAttributesClassName",
+              "type": "null"
+            },
             "whenDeleted": {
               "default": "Retain",
               "required": [],
@@ -6113,6 +6239,13 @@
           "required": [],
           "title": "topologySpreadConstraints",
           "type": "array"
+        },
+        "trafficDistribution": {
+          "default": "",
+          "description": "trafficDistribution for index-gateway service",
+          "required": [],
+          "title": "trafficDistribution",
+          "type": "string"
         },
         "updateStrategy": {
           "additionalProperties": true,
@@ -6505,6 +6638,13 @@
                     "required": [],
                     "title": "storageClass",
                     "type": "null"
+                  },
+                  "volumeAttributesClassName": {
+                    "default": "null",
+                    "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+                    "required": [],
+                    "title": "volumeAttributesClassName",
+                    "type": "null"
                   }
                 },
                 "required": [],
@@ -6602,24 +6742,31 @@
         },
         "serviceAnnotations": {
           "additionalProperties": true,
-          "description": "Annotations for ingestor service",
+          "description": "Annotations for ingester service",
           "required": [],
           "title": "serviceAnnotations",
           "type": "object"
         },
         "serviceLabels": {
           "additionalProperties": true,
-          "description": "The name of the PriorityClass for ingester pods\nLabels for ingestor service",
+          "description": "The name of the PriorityClass for ingester pods\nLabels for ingester service",
           "required": [],
           "title": "serviceLabels",
           "type": "object"
         },
         "serviceType": {
           "default": "ClusterIP",
-          "description": "Service type for ingestor service",
+          "description": "Service type for ingester service",
           "required": [],
           "title": "serviceType",
           "type": "string"
+        },
+        "startupProbe": {
+          "additionalProperties": true,
+          "description": "startup probe settings for ingester pods. If empty use `loki.startupProbe`",
+          "required": [],
+          "title": "startupProbe",
+          "type": "object"
         },
         "terminationGracePeriodSeconds": {
           "default": 300,
@@ -6701,6 +6848,13 @@
           "required": [],
           "title": "topologySpreadConstraints",
           "type": "array"
+        },
+        "trafficDistribution": {
+          "default": "",
+          "description": "trafficDistribution for ingester service",
+          "required": [],
+          "title": "trafficDistribution",
+          "type": "string"
         },
         "updateStrategy": {
           "additionalProperties": true,
@@ -7316,7 +7470,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "3.5.7",
+              "default": "3.6.7",
               "description": "Overrides the image tag whose default is the chart's appVersion",
               "required": [],
               "title": "tag",
@@ -7479,6 +7633,12 @@
               "required": [],
               "title": "fsGroup",
               "type": "integer"
+            },
+            "fsGroupChangePolicy": {
+              "default": "OnRootMismatch",
+              "required": [],
+              "title": "fsGroupChangePolicy",
+              "type": "string"
             },
             "runAsGroup": {
               "default": 10001,
@@ -7718,6 +7878,21 @@
           },
           "required": [],
           "title": "server",
+          "type": "object"
+        },
+        "service": {
+          "additionalProperties": true,
+          "properties": {
+            "trafficDistribution": {
+              "default": "",
+              "description": "trafficDistribution for services\nRef: https://kubernetes.io/docs/concepts/services-networking/service/#traffic-distribution",
+              "required": [],
+              "title": "trafficDistribution",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "service",
           "type": "object"
         },
         "serviceAnnotations": {
@@ -8625,6 +8800,13 @@
           "title": "labelname",
           "type": "string"
         },
+        "livenessProbe": {
+          "default": "",
+          "description": "Liveness probe",
+          "required": [],
+          "title": "livenessProbe",
+          "type": "null"
+        },
         "lokiurl": {
           "default": "null",
           "description": "If set overwrites the default value set by loki.host helper function. Use this if gateway not enabled.",
@@ -8736,6 +8918,13 @@
           "required": [],
           "title": "service",
           "type": "object"
+        },
+        "startupProbe": {
+          "default": "",
+          "description": "Startup probe",
+          "required": [],
+          "title": "startupProbe",
+          "type": "null"
         },
         "tolerations": {
           "description": "Tolerations for canary pods",
@@ -9391,7 +9580,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v0.15.3",
+              "default": "v0.15.4",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -10488,6 +10677,23 @@
       "title": "namespaceOverride",
       "type": "null"
     },
+    "namespaceSelector": {
+      "additionalProperties": true,
+      "properties": {
+        "matchExpressions": {
+          "description": "Namespace selector to filter which namespaces the webhooks apply to.\nSee https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-namespaceselector\nExample:\n    matchExpressions:\n      - key: team\n        operator: NotIn\n        values:\n          - team-a",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "matchExpressions",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "namespaceSelector",
+      "type": "object"
+    },
     "networkPolicy": {
       "additionalProperties": true,
       "description": "#####################################################################################################################\n\nNetwork Policy configuration\n\n#####################################################################################################################",
@@ -11312,7 +11518,7 @@
         },
         "livenessProbe": {
           "additionalProperties": true,
-          "description": "liveness probe settings for ingester pods. If empty use `loki.livenessProbe`",
+          "description": "liveness probe settings for pattern ingester pods. If empty use `loki.livenessProbe`",
           "required": [],
           "title": "livenessProbe",
           "type": "object"
@@ -11380,6 +11586,13 @@
                     "description": "  -- Storage class to be used.\n  If defined, storageClassName: \u003cstorageClass\u003e.\n  If set to \"-\", storageClassName: \"\", which disables dynamic provisioning.\n  If empty or set to null, no storageClassName spec is\n  set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).",
                     "required": [],
                     "title": "storageClass",
+                    "type": "null"
+                  },
+                  "volumeAttributesClassName": {
+                    "default": "null",
+                    "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+                    "required": [],
+                    "title": "volumeAttributesClassName",
                     "type": "null"
                   }
                 },
@@ -11458,7 +11671,7 @@
         },
         "readinessProbe": {
           "additionalProperties": true,
-          "description": "readiness probe settings for ingester pods. If empty, use `loki.readinessProbe`",
+          "description": "readiness probe settings for pattern ingester pods. If empty, use `loki.readinessProbe`",
           "required": [],
           "title": "readinessProbe",
           "type": "object"
@@ -11533,6 +11746,13 @@
           "description": "Labels for pattern ingester service",
           "required": [],
           "title": "serviceLabels",
+          "type": "object"
+        },
+        "startupProbe": {
+          "additionalProperties": true,
+          "description": "startup probe settings for pattern ingester pods. If empty use `loki.startupProbe`",
+          "required": [],
+          "title": "startupProbe",
           "type": "object"
         },
         "terminationGracePeriodSeconds": {
@@ -12213,6 +12433,13 @@
           "required": [],
           "title": "topologySpreadConstraints",
           "type": "array"
+        },
+        "trafficDistribution": {
+          "default": "",
+          "description": "trafficDistribution for querier service",
+          "required": [],
+          "title": "trafficDistribution",
+          "type": "string"
         }
       },
       "required": [],
@@ -12614,6 +12841,13 @@
           "required": [],
           "title": "topologySpreadConstraints",
           "type": "array"
+        },
+        "trafficDistribution": {
+          "default": "",
+          "description": "trafficDistribution for query-frontend service",
+          "required": [],
+          "title": "trafficDistribution",
+          "type": "string"
         }
       },
       "required": [],
@@ -12910,6 +13144,13 @@
           "required": [],
           "title": "topologySpreadConstraints",
           "type": "array"
+        },
+        "trafficDistribution": {
+          "default": "",
+          "description": "trafficDistribution for query-scheduler service",
+          "required": [],
+          "title": "trafficDistribution",
+          "type": "string"
         }
       },
       "required": [],
@@ -13231,6 +13472,13 @@
           "title": "livenessProbe",
           "type": "object"
         },
+        "maxUnavailable": {
+          "default": 1,
+          "description": "Pod Disruption Budget maxUnavailable",
+          "required": [],
+          "title": "maxUnavailable",
+          "type": "integer"
+        },
         "nodeSelector": {
           "additionalProperties": true,
           "description": "Node selector for read pods",
@@ -13292,6 +13540,13 @@
               "description": "Storage class to be used.\nIf defined, storageClassName: \u003cstorageClass\u003e.\nIf set to \"-\", storageClassName: \"\", which disables dynamic provisioning.\nIf empty or set to null, no storageClassName spec is\nset, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).",
               "required": [],
               "title": "storageClass",
+              "type": "null"
+            },
+            "volumeAttributesClassName": {
+              "default": "null",
+              "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+              "required": [],
+              "title": "volumeAttributesClassName",
               "type": "null"
             }
           },
@@ -13365,6 +13620,13 @@
               "title": "labels",
               "type": "object"
             },
+            "trafficDistribution": {
+              "default": "",
+              "description": "trafficDistribution for read service",
+              "required": [],
+              "title": "trafficDistribution",
+              "type": "string"
+            },
             "type": {
               "default": "ClusterIP",
               "description": "Service Type for read Service",
@@ -13375,6 +13637,13 @@
           },
           "required": [],
           "title": "service",
+          "type": "object"
+        },
+        "startupProbe": {
+          "additionalProperties": true,
+          "description": "statup probe for the read pods. If empty, applies no startupProbe",
+          "required": [],
+          "title": "startupProbe",
           "type": "object"
         },
         "targetModule": {
@@ -13481,6 +13750,13 @@
           "required": [],
           "title": "affinity",
           "type": "object"
+        },
+        "allocatedCPU": {
+          "default": "500m",
+          "description": "Amount of cpu allocated to results-cache for object storage (in integer or millicores).",
+          "required": [],
+          "title": "allocatedCPU",
+          "type": "string"
         },
         "allocatedMemory": {
           "default": 1024,
@@ -13652,6 +13928,13 @@
               "required": [],
               "title": "storageSize",
               "type": "string"
+            },
+            "volumeAttributesClassName": {
+              "default": "null",
+              "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+              "required": [],
+              "title": "volumeAttributesClassName",
+              "type": "null"
             }
           },
           "required": [],
@@ -14206,6 +14489,13 @@
               "required": [],
               "title": "storageClass",
               "type": "null"
+            },
+            "volumeAttributesClassName": {
+              "default": "null",
+              "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+              "required": [],
+              "title": "volumeAttributesClassName",
+              "type": "null"
             }
           },
           "required": [],
@@ -14542,6 +14832,13 @@
     "sidecar": {
       "additionalProperties": true,
       "properties": {
+        "disableX509StrictVerification": {
+          "default": false,
+          "description": "Set to true to disable strict x509 verification for kube api calls.",
+          "required": [],
+          "title": "disableX509StrictVerification",
+          "type": "boolean"
+        },
         "enableUniqueFilenames": {
           "default": false,
           "description": "Ensure that rule files aren't conflicting and being overwritten by prefixing their name with the namespace they are defined in.",
@@ -14559,8 +14856,14 @@
               "title": "pullPolicy",
               "type": "string"
             },
+            "registry": {
+              "default": "docker.io",
+              "required": [],
+              "title": "registry",
+              "type": "string"
+            },
             "repository": {
-              "default": "docker.io/kiwigrid/k8s-sidecar",
+              "default": "kiwigrid/k8s-sidecar",
               "description": "The Docker registry and image for the k8s sidecar",
               "required": [],
               "title": "repository",
@@ -14574,7 +14877,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "1.30.10",
+              "default": "2.5.0",
               "description": "Docker image tag",
               "required": [],
               "title": "tag",
@@ -15190,6 +15493,13 @@
               "title": "labels",
               "type": "object"
             },
+            "trafficDistribution": {
+              "default": "",
+              "description": "trafficDistribution single binary Service",
+              "required": [],
+              "title": "trafficDistribution",
+              "type": "string"
+            },
             "type": {
               "default": "ClusterIP",
               "description": "Service Type for single binary Service",
@@ -15753,6 +16063,13 @@
           "title": "failurePolicy",
           "type": "string"
         },
+        "objectSelector": {
+          "additionalProperties": true,
+          "description": "objectSelector to filter which objects the webhooks apply to.",
+          "required": [],
+          "title": "objectSelector",
+          "type": "object"
+        },
         "selfSignedCertSecretName": {
           "default": "certificate",
           "description": "Secret resource name for the TLS certificate to be used with the webhooks",
@@ -16102,6 +16419,13 @@
           "title": "lifecycle",
           "type": "object"
         },
+        "maxUnavailable": {
+          "default": 1,
+          "description": "Pod Disruption Budget maxUnavailable",
+          "required": [],
+          "title": "maxUnavailable",
+          "type": "integer"
+        },
         "nodeSelector": {
           "additionalProperties": true,
           "description": "Node selector for write pods",
@@ -16177,6 +16501,13 @@
               "description": "Storage class to be used.\nIf defined, storageClassName: \u003cstorageClass\u003e.\nIf set to \"-\", storageClassName: \"\", which disables dynamic provisioning.\nIf empty or set to null, no storageClassName spec is\nset, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).",
               "required": [],
               "title": "storageClass",
+              "type": "null"
+            },
+            "volumeAttributesClassName": {
+              "default": "null",
+              "description": "Volume attributes class name to be used.\nIf empty or set to null, no volumeAttributesClassName spec is set.\nRequires Kubernetes 1.31",
+              "required": [],
+              "title": "volumeAttributesClassName",
               "type": "null"
             },
             "volumeClaimsEnabled": {
@@ -16256,6 +16587,13 @@
               "required": [],
               "title": "labels",
               "type": "object"
+            },
+            "trafficDistribution": {
+              "default": "",
+              "description": "trafficDistribution for write service",
+              "required": [],
+              "title": "trafficDistribution",
+              "type": "string"
             },
             "type": {
               "default": "ClusterIP",
