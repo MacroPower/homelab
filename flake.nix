@@ -43,13 +43,10 @@
               talhelper.packages.${system}.default
             ];
 
-            env = {
-              KCL_LIB_HOME = ".nix/kcl/lib";
-              KCL_PKG_PATH = ".nix/kcl/kpm";
-              KCL_CACHE_PATH = ".nix/kcl/cache";
-            };
-
             shellHook = ''
+              export KCL_LIB_HOME="$PWD/.nix/kcl/lib"
+              export KCL_PKG_PATH="$PWD/.nix/kcl/kpm"
+              export KCL_CACHE_PATH="$PWD/.nix/kcl/cache"
               mkdir -p "$KCL_LIB_HOME" "$KCL_PKG_PATH" "$KCL_CACHE_PATH"
             '';
           };
