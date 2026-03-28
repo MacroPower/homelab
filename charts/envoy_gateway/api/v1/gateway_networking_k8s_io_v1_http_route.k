@@ -159,7 +159,7 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpec:
         connections originating from the same namespace as the Route, for which
         the intended destination of the connections are a Service targeted as a
         ParentRef of the Route.
-    rules : [GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0], default is [{"matches": [{"path": {"type": "PathPrefix", "value": "/"}}]}], optional
+    rules : [GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0], default is [{"matches": [{"path": {"value": "/", "type": "PathPrefix"}}]}], optional
         Rules are a list of HTTP matchers, filters and actions.
     useDefaultGateways : str, default is Undefined, optional
         UseDefaultGateways indicates the default Gateway scope to use for this
@@ -178,7 +178,7 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpec:
     hostnames?: [str]
     parentRefs?: [GatewayNetworkingK8sIoV1HTTPRouteSpecParentRefsItems0]
     rules?: [GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0] = [{"matches": [{
-        "path": {"value": "/", "type": "PathPrefix"}
+        "path": {"type": "PathPrefix", "value": "/"}
     }]}]
     useDefaultGateways?: "All" | "None"
 
