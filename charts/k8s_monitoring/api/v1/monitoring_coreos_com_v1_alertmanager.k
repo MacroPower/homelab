@@ -103,14 +103,20 @@ schema MonitoringCoreosComV1AlertmanagerSpec:
         operator provisions a minimal Alertmanager configuration with one empty
         receiver (effectively dropping alert notifications).
     containers : [MonitoringCoreosComV1AlertmanagerSpecContainersItems0], default is Undefined, optional
-        containers allows injecting additional containers. This is meant to
-        allow adding an authentication proxy to an Alertmanager pod.
-        Containers described here modify an operator generated container if they
-        share the same name and modifications are done via a strategic merge
-        patch. The current container names are: `alertmanager` and
-        `config-reloader`. Overriding containers is entirely outside the scope
-        of what the maintainers will support and by doing so, you accept that
-        this behaviour may break at any time without notice.
+        containers allows injecting additional containers or modifying operator
+        generated containers. This can be used to allow adding an authentication
+        proxy to the Pods or to change the behavior of an operator generated
+        container. Containers described here modify an operator generated
+        container if they share the same name and modifications are done via a
+        strategic merge patch.
+
+        The names of containers managed by the operator are:
+        * `alertmanager`
+        * `config-reloader`
+        * `thanos-sidecar`
+
+        Overriding containers which are managed by the operator require careful
+        testing, especially when upgrading to a new version of the operator.
     dnsConfig : MonitoringCoreosComV1AlertmanagerSpecDNSConfig, default is Undefined, optional
         dns config
     dnsPolicy : str, default is Undefined, optional
@@ -133,6 +139,15 @@ schema MonitoringCoreosComV1AlertmanagerSpec:
         Use case is e.g. spanning an Alertmanager cluster across Kubernetes clusters with a single replica in each.
     hostAliases : [MonitoringCoreosComV1AlertmanagerSpecHostAliasesItems0], default is Undefined, optional
         hostAliases Pods configuration
+    hostNetwork : bool, default is Undefined, optional
+        hostNetwork controls whether the pod may use the node network namespace.
+
+        Make sure to understand the security implications if you want to enable
+        it (https://kubernetes.io/docs/concepts/configuration/overview/).
+
+        When hostNetwork is enabled, this will set the DNS policy to
+        `ClusterFirstWithHostNet` automatically (unless `.spec.dnsPolicy` is set
+        to a different value).
     hostUsers : bool, default is Undefined, optional
         hostUsers supports the user space in Kubernetes.
 
@@ -153,15 +168,21 @@ schema MonitoringCoreosComV1AlertmanagerSpec:
         to use for pulling prometheus and alertmanager images from registries
         see https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
     initContainers : [MonitoringCoreosComV1AlertmanagerSpecInitContainersItems0], default is Undefined, optional
-        initContainers allows adding initContainers to the pod definition. Those can be used to e.g.
-        fetch secrets for injection into the Alertmanager configuration from external sources. Any
-        errors during the execution of an initContainer will lead to a restart of the Pod. More info: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
-        InitContainers described here modify an operator
-        generated init containers if they share the same name and modifications are
-        done via a strategic merge patch. The current init container name is:
-        `init-config-reloader`. Overriding init containers is entirely outside the
-        scope of what the maintainers will support and by doing so, you accept that
-        this behaviour may break at any time without notice.
+        initContainers allows injecting initContainers to the Pod definition. Those
+        can be used to e.g.  fetch secrets for injection into the Prometheus
+        configuration from external sources. Any errors during the execution of
+        an initContainer will lead to a restart of the Pod. More info:
+        https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+        InitContainers described here modify an operator generated init
+        containers if they share the same name and modifications are done via a
+        strategic merge patch.
+
+        The names of init container name managed by the operator are:
+        * `init-config-reloader`.
+
+        Overriding init containers which are managed by the operator require
+        careful testing, especially when upgrading to a new version of the
+        operator.
     limits : MonitoringCoreosComV1AlertmanagerSpecLimits, default is Undefined, optional
         limits
     listenLocal : bool, default is Undefined, optional
@@ -173,10 +194,18 @@ schema MonitoringCoreosComV1AlertmanagerSpec:
     logLevel : str, default is Undefined, optional
         logLevel for Alertmanager to be configured with.
     minReadySeconds : int, default is Undefined, optional
-        minReadySeconds defines the minimum number of seconds for which a newly created pod should be ready
-        without any of its container crashing for it to be considered available.
+        minReadySeconds defines the minimum number of seconds for which a newly
+        created pod should be ready without any of its container crashing for it
+        to be considered available.
 
         If unset, pods will be considered available as soon as they are ready.
+
+        When the Alertmanager version is greater than or equal to v0.30.0, the
+        duration is also used to delay the first flush of the aggregation
+        groups. This delay helps ensuring that all alerts have been resent by
+        the Prometheus instances to Alertmanager after a roll-out. It is
+        possible to override this behavior passing a custom value via
+        `.spec.additionalArgs`.
     nodeSelector : {str:str}, default is Undefined, optional
         nodeSelector defines which Nodes the Pods are scheduled on.
     paused : bool, default is Undefined, optional
@@ -184,6 +213,16 @@ schema MonitoringCoreosComV1AlertmanagerSpec:
         going to be performed, except for delete actions.
     persistentVolumeClaimRetentionPolicy : MonitoringCoreosComV1AlertmanagerSpecPersistentVolumeClaimRetentionPolicy, default is Undefined, optional
         persistent volume claim retention policy
+    podManagementPolicy : str, default is Undefined, optional
+        podManagementPolicy defines the policy for creating/deleting pods when
+        scaling up and down.
+
+        Unlike the default StatefulSet behavior, the default policy is
+        `Parallel` to avoid manual intervention in case a pod gets stuck during
+        a rollout.
+
+        Note that updating this value implies the recreation of the StatefulSet
+        which incurs a service outage.
     podMetadata : MonitoringCoreosComV1AlertmanagerSpecPodMetadata, default is Undefined, optional
         pod metadata
     portName : str, default is "web", optional
@@ -205,6 +244,8 @@ schema MonitoringCoreosComV1AlertmanagerSpec:
         if using ExternalURL and a proxy is rewriting HTTP routes of a request,
         and the actual ExternalURL is still true, but the server serves requests
         under a different route prefix. For example for use with `kubectl proxy`.
+    schedulerName : str, default is Undefined, optional
+        schedulerName defines the scheduler to use for Pod scheduling. If not specified, the default scheduler is used.
     secrets : [str], default is Undefined, optional
         secrets is a list of Secrets in the same namespace as the Alertmanager
         object, which shall be mounted into the Alertmanager Pods.
@@ -242,6 +283,8 @@ schema MonitoringCoreosComV1AlertmanagerSpec:
         tolerations defines the pod's tolerations.
     topologySpreadConstraints : [MonitoringCoreosComV1AlertmanagerSpecTopologySpreadConstraintsItems0], default is Undefined, optional
         topologySpreadConstraints defines the Pod's topology spread constraints.
+    updateStrategy : MonitoringCoreosComV1AlertmanagerSpecUpdateStrategy, default is Undefined, optional
+        update strategy
     version : str, default is Undefined, optional
         version the cluster should be on.
     volumeMounts : [MonitoringCoreosComV1AlertmanagerSpecVolumeMountsItems0], default is Undefined, optional
@@ -280,6 +323,7 @@ schema MonitoringCoreosComV1AlertmanagerSpec:
     externalUrl?: str
     forceEnableClusterMode?: bool
     hostAliases?: [MonitoringCoreosComV1AlertmanagerSpecHostAliasesItems0]
+    hostNetwork?: bool
     hostUsers?: bool
     image?: str
     imagePullPolicy?: "" | "Always" | "Never" | "IfNotPresent"
@@ -293,6 +337,7 @@ schema MonitoringCoreosComV1AlertmanagerSpec:
     nodeSelector?: {str:str}
     paused?: bool
     persistentVolumeClaimRetentionPolicy?: MonitoringCoreosComV1AlertmanagerSpecPersistentVolumeClaimRetentionPolicy
+    podManagementPolicy?: "OrderedReady" | "Parallel"
     podMetadata?: MonitoringCoreosComV1AlertmanagerSpecPodMetadata
     portName?: str = "web"
     priorityClassName?: str
@@ -300,6 +345,7 @@ schema MonitoringCoreosComV1AlertmanagerSpec:
     resources?: MonitoringCoreosComV1AlertmanagerSpecResources
     retention?: str = "120h"
     routePrefix?: str
+    schedulerName?: str
     secrets?: [str]
     securityContext?: MonitoringCoreosComV1AlertmanagerSpecSecurityContext
     serviceAccountName?: str
@@ -310,6 +356,7 @@ schema MonitoringCoreosComV1AlertmanagerSpec:
     terminationGracePeriodSeconds?: int
     tolerations?: [MonitoringCoreosComV1AlertmanagerSpecTolerationsItems0]
     topologySpreadConstraints?: [MonitoringCoreosComV1AlertmanagerSpecTopologySpreadConstraintsItems0]
+    updateStrategy?: MonitoringCoreosComV1AlertmanagerSpecUpdateStrategy
     version?: str
     volumeMounts?: [MonitoringCoreosComV1AlertmanagerSpecVolumeMountsItems0]
     volumes?: [MonitoringCoreosComV1AlertmanagerSpecVolumesItems0]
@@ -321,6 +368,7 @@ schema MonitoringCoreosComV1AlertmanagerSpec:
         _regex_match(str(clusterPushpullInterval), r"^(0|(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if clusterPushpullInterval
         minReadySeconds >= 0 if minReadySeconds not in [None, Undefined]
         _regex_match(str(retention), r"^(0|(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if retention
+        len(schedulerName) >= 1 if schedulerName
         len(serviceName) >= 1 if serviceName
         terminationGracePeriodSeconds >= 0 if terminationGracePeriodSeconds not in [None, Undefined]
 
@@ -2205,6 +2253,12 @@ schema MonitoringCoreosComV1AlertmanagerSpecAlertmanagerConfigurationGlobalSMTP:
         auth secret
     authUsername : str, default is Undefined, optional
         authUsername represents SMTP Auth using CRAM-MD5, LOGIN and PLAIN. If empty, Alertmanager doesn't authenticate to the SMTP server.
+    forceImplicitTLS : bool, default is Undefined, optional
+        forceImplicitTLS defines whether to force use of implicit TLS (direct TLS connection) for better security.
+        true: force use of implicit TLS (direct TLS connection on any port)
+        false: force disable implicit TLS (use explicit TLS/STARTTLS if required)
+        nil (default): auto-detect based on port (465=implicit, other=explicit) for backward compatibility
+        It requires Alertmanager >= v0.31.0.
     from : str, default is Undefined, optional
         from defines the default SMTP From header field.
     hello : str, default is Undefined, optional
@@ -2221,6 +2275,7 @@ schema MonitoringCoreosComV1AlertmanagerSpecAlertmanagerConfigurationGlobalSMTP:
     authPassword?: MonitoringCoreosComV1AlertmanagerSpecAlertmanagerConfigurationGlobalSMTPAuthPassword
     authSecret?: MonitoringCoreosComV1AlertmanagerSpecAlertmanagerConfigurationGlobalSMTPAuthSecret
     authUsername?: str
+    forceImplicitTLS?: bool
     from?: str
     hello?: str
     requireTLS?: bool
@@ -2540,7 +2595,7 @@ schema MonitoringCoreosComV1AlertmanagerSpecAlertmanagerConfigurationGlobalVicto
 
 schema MonitoringCoreosComV1AlertmanagerSpecAlertmanagerConfigurationGlobalWebex:
     r"""
-    webex defines the default configuration for Jira.
+    webex defines the default configuration for Webex.
 
     Attributes
     ----------
@@ -3128,6 +3183,7 @@ schema MonitoringCoreosComV1AlertmanagerSpecContainersItems0:
         readiness probe
     resizePolicy : [MonitoringCoreosComV1AlertmanagerSpecContainersItems0ResizePolicyItems0], default is Undefined, optional
         Resources resize policy for the container.
+        This field cannot be set on ephemeral containers.
     resources : MonitoringCoreosComV1AlertmanagerSpecContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
@@ -4688,6 +4744,7 @@ schema MonitoringCoreosComV1AlertmanagerSpecInitContainersItems0:
         readiness probe
     resizePolicy : [MonitoringCoreosComV1AlertmanagerSpecInitContainersItems0ResizePolicyItems0], default is Undefined, optional
         Resources resize policy for the container.
+        This field cannot be set on ephemeral containers.
     resources : MonitoringCoreosComV1AlertmanagerSpecInitContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
@@ -6695,7 +6752,7 @@ schema MonitoringCoreosComV1AlertmanagerSpecStorageEphemeralVolumeClaimTemplateS
 schema MonitoringCoreosComV1AlertmanagerSpecStorageEphemeralVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -6944,7 +7001,7 @@ schema MonitoringCoreosComV1AlertmanagerSpecStorageVolumeClaimTemplateSpecDataSo
 schema MonitoringCoreosComV1AlertmanagerSpecStorageVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -7050,8 +7107,6 @@ schema MonitoringCoreosComV1AlertmanagerSpecStorageVolumeClaimTemplateStatus:
         should ignore the update for the purpose it was designed. For example - a controller that
         only is responsible for resizing capacity of the volume, should ignore PVC updates that change other valid
         resources associated with PVC.
-
-        This is an alpha field and requires enabling RecoverVolumeExpansionFailure feature.
     allocatedResources : {str:int | str}, default is Undefined, optional
         allocatedResources tracks the resources allocated to a PVC including its capacity.
         Key names follow standard Kubernetes label syntax. Valid values are either:
@@ -7073,8 +7128,6 @@ schema MonitoringCoreosComV1AlertmanagerSpecStorageVolumeClaimTemplateStatus:
         should ignore the update for the purpose it was designed. For example - a controller that
         only is responsible for resizing capacity of the volume, should ignore PVC updates that change other valid
         resources associated with PVC.
-
-        This is an alpha field and requires enabling RecoverVolumeExpansionFailure feature.
     capacity : {str:int | str}, default is Undefined, optional
         capacity represents the actual resources of the underlying volume.
     conditions : [MonitoringCoreosComV1AlertmanagerSpecStorageVolumeClaimTemplateStatusConditionsItems0], default is Undefined, optional
@@ -7173,9 +7226,10 @@ schema MonitoringCoreosComV1AlertmanagerSpecTolerationsItems0:
         If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
         Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
         Exists is equivalent to wildcard for value, so that a pod can
         tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
     tolerationSeconds : int, default is Undefined, optional
         TolerationSeconds represents the period of time the toleration (which must be
         of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
@@ -7346,6 +7400,44 @@ schema MonitoringCoreosComV1AlertmanagerSpecTopologySpreadConstraintsItems0Label
     operator: str
 
     values?: [str]
+
+schema MonitoringCoreosComV1AlertmanagerSpecUpdateStrategy:
+    r"""
+    updateStrategy indicates the strategy that will be employed to update
+    Pods in the StatefulSet when a revision is made to statefulset's Pod
+    Template.
+
+    The default strategy is RollingUpdate.
+
+    Attributes
+    ----------
+    rollingUpdate : MonitoringCoreosComV1AlertmanagerSpecUpdateStrategyRollingUpdate, default is Undefined, optional
+        rolling update
+    $type : str, default is Undefined, required
+        type indicates the type of the StatefulSetUpdateStrategy.
+
+        Default is RollingUpdate.
+    """
+    rollingUpdate?: MonitoringCoreosComV1AlertmanagerSpecUpdateStrategyRollingUpdate
+    $type: "OnDelete" | "RollingUpdate"
+
+schema MonitoringCoreosComV1AlertmanagerSpecUpdateStrategyRollingUpdate:
+    r"""
+    rollingUpdate is used to communicate parameters when type is RollingUpdate.
+
+    Attributes
+    ----------
+    maxUnavailable : int | str, default is Undefined, optional
+        maxUnavailable is the maximum number of pods that can be unavailable
+        during the update. The value can be an absolute number (ex: 5) or a
+        percentage of desired pods (ex: 10%). Absolute number is calculated from
+        percentage by rounding up. This can not be 0.  Defaults to 1. This field
+        is alpha-level and is only honored by servers that enable the
+        MaxUnavailableStatefulSet feature. The field applies to all pods in the
+        range 0 to Replicas-1.  That means if there is any unavailable pod in
+        the range 0 to Replicas-1, it will be counted towards MaxUnavailable.
+    """
+    maxUnavailable?: int | str
 
 schema MonitoringCoreosComV1AlertmanagerSpecVolumeMountsItems0:
     r"""
@@ -8104,7 +8196,7 @@ schema MonitoringCoreosComV1AlertmanagerSpecVolumesItems0EphemeralVolumeClaimTem
 schema MonitoringCoreosComV1AlertmanagerSpecVolumesItems0EphemeralVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -8898,6 +8990,20 @@ schema MonitoringCoreosComV1AlertmanagerSpecVolumesItems0ProjectedSourcesItems0P
         longer than 24 hours.
     signerName : str, default is Undefined, required
         Kubelet's generated CSRs will be addressed to this signer.
+    userAnnotations : {str:str}, default is Undefined, optional
+        userAnnotations allow pod authors to pass additional information to
+        the signer implementation.  Kubernetes does not restrict or validate this
+        metadata in any way.
+
+        These values are copied verbatim into the `spec.unverifiedUserAnnotations` field of
+        the PodCertificateRequest objects that Kubelet creates.
+
+        Entries are subject to the same validation as object metadata annotations,
+        with the addition that all keys must be domain-prefixed. No restrictions
+        are placed on values, except an overall size limitation on the entire field.
+
+        Signers should document the keys and values they support. Signers should
+        deny requests that contain keys they do not recognize.
     """
     certificateChainPath?: str
     credentialBundlePath?: str
@@ -8906,6 +9012,8 @@ schema MonitoringCoreosComV1AlertmanagerSpecVolumesItems0ProjectedSourcesItems0P
 
     maxExpirationSeconds?: int
     signerName: str
+
+    userAnnotations?: {str:str}
 
 schema MonitoringCoreosComV1AlertmanagerSpecVolumesItems0ProjectedSourcesItems0Secret:
     r"""

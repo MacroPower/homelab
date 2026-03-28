@@ -47,6 +47,12 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpec:
         azureSDConfigs defines a list of Azure service discovery configurations.
     basicAuth : MonitoringCoreosComV1alpha1ScrapeConfigSpecBasicAuth, default is Undefined, optional
         basic auth
+    bodySizeLimit : str, default is Undefined, optional
+        bodySizeLimit defines a per-scrape limit on the size of the uncompressed
+        response body that will be accepted by Prometheus. Targets responding with
+        a body larger than this many bytes will cause the scrape to fail.
+
+        It requires Prometheus >= v2.28.0.
     consulSDConfigs : [MonitoringCoreosComV1alpha1ScrapeConfigSpecConsulSDConfigsItems0], default is Undefined, optional
         consulSDConfigs defines a list of Consul service discovery configurations.
     convertClassicHistogramsToNHCB : bool, default is Undefined, optional
@@ -180,7 +186,6 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpec:
         scalewaySDConfigs defines a list of Scaleway instances and baremetal service discovery configurations.
     scheme : str, default is Undefined, optional
         scheme defines the protocol scheme used for requests.
-        If empty, Prometheus uses HTTP by default.
     scrapeClass : str, default is Undefined, optional
         scrapeClass defines the scrape class to apply.
     scrapeClassicHistograms : bool, default is Undefined, optional
@@ -190,6 +195,9 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpec:
         Notice: `scrapeClassicHistograms` corresponds to the `always_scrape_classic_histograms` field in the Prometheus configuration.
     scrapeInterval : str, default is Undefined, optional
         scrapeInterval defines the interval between consecutive scrapes.
+    scrapeNativeHistograms : bool, default is Undefined, optional
+        scrapeNativeHistograms defines whether to enable scraping of native histograms.
+        It requires Prometheus >= v3.8.0.
     scrapeProtocols : [str], default is Undefined, optional
         scrapeProtocols defines the protocols to negotiate during a scrape. It tells clients the
         protocols supported by Prometheus in order of preference (from most to least preferred).
@@ -215,6 +223,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpec:
     authorization?: MonitoringCoreosComV1alpha1ScrapeConfigSpecAuthorization
     azureSDConfigs?: [MonitoringCoreosComV1alpha1ScrapeConfigSpecAzureSDConfigsItems0]
     basicAuth?: MonitoringCoreosComV1alpha1ScrapeConfigSpecBasicAuth
+    bodySizeLimit?: str
     consulSDConfigs?: [MonitoringCoreosComV1alpha1ScrapeConfigSpecConsulSDConfigsItems0]
     convertClassicHistogramsToNHCB?: bool
     digitalOceanSDConfigs?: [MonitoringCoreosComV1alpha1ScrapeConfigSpecDigitalOceanSDConfigsItems0]
@@ -261,10 +270,11 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpec:
     relabelings?: [MonitoringCoreosComV1alpha1ScrapeConfigSpecRelabelingsItems0]
     sampleLimit?: int
     scalewaySDConfigs?: [MonitoringCoreosComV1alpha1ScrapeConfigSpecScalewaySDConfigsItems0]
-    scheme?: "HTTP" | "HTTPS"
+    scheme?: "http" | "https" | "HTTP" | "HTTPS"
     scrapeClass?: str
     scrapeClassicHistograms?: bool
     scrapeInterval?: str
+    scrapeNativeHistograms?: bool
     scrapeProtocols?: [str]
     scrapeTimeout?: str
     staticConfigs?: [MonitoringCoreosComV1alpha1ScrapeConfigSpecStaticConfigsItems0]
@@ -273,6 +283,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpec:
     trackTimestampsStaleness?: bool
 
     check:
+        _regex_match(str(bodySizeLimit), r"(^0|([0-9]*[.])?[0-9]+((K|M|G|T|E|P)i?)?B)$") if bodySizeLimit
         len(jobName) >= 1 if jobName
         len(metricRelabelings) >= 1 if metricRelabelings
         len(metricsPath) >= 1 if metricsPath
@@ -1185,7 +1196,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecConsulSDConfigsItems0:
         refreshInterval defines the time after which the provided names are refreshed.
         If not set, Prometheus uses its default value.
     scheme : str, default is Undefined, optional
-        scheme defines the HTTP Scheme default "http"
+        scheme defines the HTTP Scheme.
     server : str, default is Undefined, required
         server defines the consul server address. A valid string consisting of a hostname or IP followed by an optional port number.
     services : [str], default is Undefined, optional
@@ -1218,7 +1229,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecConsulSDConfigsItems0:
     proxyFromEnvironment?: bool
     proxyUrl?: str
     refreshInterval?: str
-    scheme?: "HTTP" | "HTTPS"
+    scheme?: "http" | "https" | "HTTP" | "HTTPS"
     server: str
 
     services?: [str]
@@ -1984,7 +1995,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecDigitalOceanSDConfigsItems0:
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecDigitalOceanSDConfigsItems0Authorization:
     r"""
-    authorization defines the  header configuration to authenticate against the DigitalOcean API.
+    authorization defines the header configuration to authenticate against the DigitalOcean API.
     Cannot be set at the same time as `oauth2`.
 
     Attributes
@@ -2377,7 +2388,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecDigitalOceanSDConfigsItems0Pro
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecDigitalOceanSDConfigsItems0TLSConfig:
     r"""
-    tlsConfig defines the TLS configuration to connect to the Consul API.
+    tlsConfig defines the TLS configuration to connect to the DigitalOcean API.
 
     Attributes
     ----------
@@ -2566,7 +2577,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecDockerSDConfigsItems0:
     followRedirects : bool, default is Undefined, optional
         followRedirects defines whether HTTP requests follow HTTP 3xx redirects.
     host : str, default is Undefined, required
-        host defines the address of the docker daemon
+        host defines the address of the docker daemon.
     hostNetworkingHost : str, default is Undefined, optional
         hostNetworkingHost defines the host to use if the container is in host networking mode.
     matchFirstNetwork : bool, default is Undefined, optional
@@ -2620,6 +2631,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecDockerSDConfigsItems0:
 
     check:
         len(host) >= 1
+        _regex_match(str(host), r"^[a-zA-Z][a-zA-Z0-9+.-]*://.+$")
         len(hostNetworkingHost) >= 1 if hostNetworkingHost
         port <= 65535 if port not in [None, Undefined]
         port >= 0 if port not in [None, Undefined]
@@ -2628,7 +2640,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecDockerSDConfigsItems0:
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecDockerSDConfigsItems0Authorization:
     r"""
-    authorization defines the  header configuration to authenticate against the DigitalOcean API.
+    authorization defines the header configuration to authenticate against the Docker daemon.
     Cannot be set at the same time as `oauth2`.
 
     Attributes
@@ -2743,6 +2755,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecDockerSDConfigsItems0FiltersIt
     values: [str]
 
     check:
+        len(name) >= 1
         len(values) >= 1
         all values in values {len(values) >= 1 if values not in [None, Undefined]} if values
 
@@ -3100,7 +3113,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecDockerSDConfigsItems0ProxyConn
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecDockerSDConfigsItems0TLSConfig:
     r"""
-    tlsConfig defines the TLS configuration to connect to the Consul API.
+    tlsConfig defines the TLS configuration to connect to the Docker daemon.
 
     Attributes
     ----------
@@ -3350,7 +3363,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecDockerSwarmSDConfigsItems0:
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecDockerSwarmSDConfigsItems0Authorization:
     r"""
-    authorization defines the  header configuration to authenticate against the DigitalOcean API.
+    authorization defines the header configuration to authenticate against the Docker Swarm API.
     Cannot be set at the same time as `oauth2`.
 
     Attributes
@@ -3465,6 +3478,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecDockerSwarmSDConfigsItems0Filt
     values: [str]
 
     check:
+        len(name) >= 1
         len(values) >= 1
         all values in values {len(values) >= 1 if values not in [None, Undefined]} if values
 
@@ -3823,7 +3837,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecDockerSwarmSDConfigsItems0Prox
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecDockerSwarmSDConfigsItems0TLSConfig:
     r"""
-    tlsConfig defines the TLS configuration to connect to the Consul API.
+    tlsConfig defines the TLS configuration to connect to the Docker Swarm daemon.
 
     Attributes
     ----------
@@ -4111,6 +4125,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecEc2SDConfigsItems0FiltersItems
     values: [str]
 
     check:
+        len(name) >= 1
         len(values) >= 1
         all values in values {len(values) >= 1 if values not in [None, Undefined]} if values
 
@@ -4160,7 +4175,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecEc2SDConfigsItems0SecretKey:
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecEc2SDConfigsItems0TLSConfig:
     r"""
-    tlsConfig defines the TLS configuration to connect to the Consul API.
+    tlsConfig defines the TLS configuration to connect to the EC2 API.
     It requires Prometheus >= v2.41.0
 
     Attributes
@@ -4390,12 +4405,11 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecEurekaSDConfigsItems0:
     check:
         _regex_match(str(proxyUrl), r"^(http|https|socks5)://.+$") if proxyUrl
         _regex_match(str(refreshInterval), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if refreshInterval
-        len(server) >= 1
-        _regex_match(str(server), r"^http(s)?://.+$")
+        _regex_match(str(server), r"^https?://.+$")
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecEurekaSDConfigsItems0Authorization:
     r"""
-    authorization defines the  header configuration to authenticate against the DigitalOcean API.
+    authorization defines the header configuration to authenticate against the Eureka server.
     Cannot be set at the same time as `oauth2`.
 
     Attributes
@@ -4848,7 +4862,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecEurekaSDConfigsItems0ProxyConn
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecEurekaSDConfigsItems0TLSConfig:
     r"""
-    tlsConfig defines the TLS configuration to connect to the Consul API.
+    tlsConfig defines the TLS configuration to connect to the Eureka server.
 
     Attributes
     ----------
@@ -5152,8 +5166,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecHTTPSDConfigsItems0:
     check:
         _regex_match(str(proxyUrl), r"^(http|https|socks5)://.+$") if proxyUrl
         _regex_match(str(refreshInterval), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if refreshInterval
-        len(url) >= 1
-        _regex_match(str(url), r"^http(s)?://.+$")
+        _regex_match(str(url), r"^https?://.+$")
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecHTTPSDConfigsItems0Authorization:
     r"""
@@ -5855,7 +5868,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecHetznerSDConfigsItems0:
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecHetznerSDConfigsItems0Authorization:
     r"""
-    authorization defines the  header configuration to authenticate against the DigitalOcean API.
+    authorization defines the header configuration to authenticate against the Hetzner API.
     Cannot be set at the same time as `oauth2`.
 
     Attributes
@@ -6308,7 +6321,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecHetznerSDConfigsItems0ProxyCon
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecHetznerSDConfigsItems0TLSConfig:
     r"""
-    tlsConfig defines the TLS configuration to connect to the Consul API.
+    tlsConfig defines the TLS configuration to connect to the Hetzner API.
 
     Attributes
     ----------
@@ -6543,7 +6556,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecIonosSDConfigsItems0:
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecIonosSDConfigsItems0Authorization:
     r"""
-    authorization defines the  header configuration to authenticate against the IONOS.
+    authorization defines the header configuration to authenticate against the IONOS API.
     Cannot be set at the same time as `oauth2`.
 
     Attributes
@@ -6936,7 +6949,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecIonosSDConfigsItems0ProxyConne
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecIonosSDConfigsItems0TLSConfig:
     r"""
-    tlsConfig defines the TLS configuration to connect to the Consul API.
+    tlsConfig defines the TLS configuration to connect to the IONOS API.
 
     Attributes
     ----------
@@ -7932,7 +7945,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecKumaSDConfigsItems0:
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecKumaSDConfigsItems0Authorization:
     r"""
-    authorization defines the  header configuration to authenticate against the DigitalOcean API.
+    authorization defines the header configuration to authenticate against the Kuma control plane.
     Cannot be set at the same time as `oauth2`.
 
     Attributes
@@ -8385,7 +8398,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecKumaSDConfigsItems0ProxyConnec
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecKumaSDConfigsItems0TLSConfig:
     r"""
-    tlsConfig defines the TLS configuration to connect to the Consul API.
+    tlsConfig defines the TLS configuration to connect to the Kuma control plane.
 
     Attributes
     ----------
@@ -8656,7 +8669,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecLightSailSDConfigsItems0Access
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecLightSailSDConfigsItems0Authorization:
     r"""
-    authorization defines the  header configuration to authenticate against the DigitalOcean API.
+    authorization defines the header configuration to authenticate against the Lightsail API.
     Cannot be set at the same time as `oauth2`.
 
     Attributes
@@ -9133,7 +9146,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecLightSailSDConfigsItems0Secret
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecLightSailSDConfigsItems0TLSConfig:
     r"""
-    tlsConfig defines the TLS configuration to connect to the Consul API.
+    tlsConfig defines the TLS configuration to connect to the Lightsail API.
 
     Attributes
     ----------
@@ -9370,7 +9383,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecLinodeSDConfigsItems0:
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecLinodeSDConfigsItems0Authorization:
     r"""
-    authorization defines the  header configuration to authenticate against the DigitalOcean API.
+    authorization defines the header configuration to authenticate against the Linode API.
     Cannot be set at the same time as `oauth2`.
 
     Attributes
@@ -9764,7 +9777,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecLinodeSDConfigsItems0ProxyConn
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecLinodeSDConfigsItems0TLSConfig:
     r"""
-    tlsConfig defines the TLS configuration to connect to the Consul API.
+    tlsConfig defines the TLS configuration to connect to the Linode API.
 
     Attributes
     ----------
@@ -10058,11 +10071,11 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecNomadSDConfigsItems0:
     check:
         _regex_match(str(proxyUrl), r"^(http|https|socks5)://.+$") if proxyUrl
         _regex_match(str(refreshInterval), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if refreshInterval
-        len(server) >= 1
+        _regex_match(str(server), r"^https?://.+$")
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecNomadSDConfigsItems0Authorization:
     r"""
-    authorization defines the  header configuration to authenticate against the DigitalOcean API.
+    authorization defines the header configuration to authenticate against the Nomad API.
     Cannot be set at the same time as `oauth2`.
 
     Attributes
@@ -10515,7 +10528,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecNomadSDConfigsItems0ProxyConne
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecNomadSDConfigsItems0TLSConfig:
     r"""
-    tlsConfig defines the TLS configuration to connect to the Consul API.
+    tlsConfig defines the TLS configuration to connect to the Nomad API.
 
     Attributes
     ----------
@@ -11099,7 +11112,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecOpenstackSDConfigsItems0:
         len(applicationCredentialName) >= 1 if applicationCredentialName
         len(domainID) >= 1 if domainID
         len(domainName) >= 1 if domainName
-        _regex_match(str(identityEndpoint), r"^http(s)?:\/\/.+$") if identityEndpoint
+        _regex_match(str(identityEndpoint), r"^https?://.+$") if identityEndpoint
         port <= 65535 if port not in [None, Undefined]
         port >= 0 if port not in [None, Undefined]
         len(projectID) >= 1 if projectID
@@ -11507,12 +11520,11 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecPuppetDBSDConfigsItems0:
         _regex_match(str(proxyUrl), r"^(http|https|socks5)://.+$") if proxyUrl
         len(query) >= 1
         _regex_match(str(refreshInterval), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if refreshInterval
-        len(url) >= 1
-        _regex_match(str(url), r"^http(s)?://.+$")
+        _regex_match(str(url), r"^https?://.+$")
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecPuppetDBSDConfigsItems0Authorization:
     r"""
-    authorization defines the  header configuration to authenticate against the DigitalOcean API.
+    authorization defines the header configuration to authenticate against the PuppetDB API.
     Cannot be set at the same time as `oauth2`.
 
     Attributes
@@ -11967,7 +11979,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecPuppetDBSDConfigsItems0ProxyCo
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecPuppetDBSDConfigsItems0TLSConfig:
     r"""
-    tlsConfig defines the TLS configuration to connect to the Consul API.
+    tlsConfig defines the TLS configuration to connect to the PuppetDB server.
 
     Attributes
     ----------
@@ -12261,7 +12273,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecScalewaySDConfigsItems0:
 
     check:
         len(accessKey) >= 1
-        _regex_match(str(apiURL), r"^http(s)?://.+$") if apiURL
+        _regex_match(str(apiURL), r"^https?://.+$") if apiURL
         len(nameFilter) >= 1 if nameFilter
         port <= 65535 if port not in [None, Undefined]
         port >= 0 if port not in [None, Undefined]
@@ -12318,7 +12330,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecScalewaySDConfigsItems0SecretK
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecScalewaySDConfigsItems0TLSConfig:
     r"""
-    tlsConfig defines the TLS configuration to connect to the Consul API.
+    tlsConfig defines the TLS configuration to connect to the Scaleway API.
 
     Attributes
     ----------
@@ -12504,6 +12516,7 @@ schema MonitoringCoreosComV1alpha1ScrapeConfigSpecStaticConfigsItems0:
 
     check:
         len(targets) >= 1
+        all targets in targets {len(targets) >= 1 if targets not in [None, Undefined]} if targets
 
 schema MonitoringCoreosComV1alpha1ScrapeConfigSpecTLSConfig:
     r"""

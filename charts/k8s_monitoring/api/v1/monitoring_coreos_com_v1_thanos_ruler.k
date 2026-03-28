@@ -86,13 +86,19 @@ schema MonitoringCoreosComV1ThanosRulerSpec:
 
         `alertmanagersConfig` takes precedence over this field.
     containers : [MonitoringCoreosComV1ThanosRulerSpecContainersItems0], default is Undefined, optional
-        containers allows injecting additional containers or modifying operator generated
-        containers. This can be used to allow adding an authentication proxy to a ThanosRuler pod or
-        to change the behavior of an operator generated container. Containers described here modify
-        an operator generated container if they share the same name and modifications are done via a
-        strategic merge patch. The current container names are: `thanos-ruler` and `config-reloader`.
-        Overriding containers is entirely outside the scope of what the maintainers will support and by doing
-        so, you accept that this behaviour may break at any time without notice.
+        containers allows injecting additional containers or modifying operator
+        generated containers. This can be used to allow adding an authentication
+        proxy to the Pods or to change the behavior of an operator generated
+        container. Containers described here modify an operator generated
+        container if they share the same name and modifications are done via a
+        strategic merge patch.
+
+        The names of containers managed by the operator are:
+        * `thanos-ruler`
+        * `config-reloader`
+
+        Overriding containers which are managed by the operator require careful
+        testing, especially when upgrading to a new version of the operator.
     dnsConfig : MonitoringCoreosComV1ThanosRulerSpecDNSConfig, default is Undefined, optional
         dns config
     dnsPolicy : str, default is Undefined, optional
@@ -144,13 +150,11 @@ schema MonitoringCoreosComV1ThanosRulerSpec:
         to use for pulling thanos images from registries
         see http://kubernetes.io/docs/user-guide/images#specifying-imagepullsecrets-on-a-pod
     initContainers : [MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0], default is Undefined, optional
-        initContainers allows adding initContainers to the pod definition. Those can be used to e.g.
-        fetch secrets for injection into the ThanosRuler configuration from external sources. Any
-        errors during the execution of an initContainer will lead to a restart of the Pod.
-        More info: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
-        Using initContainers for any use case other then secret fetching is entirely outside the scope
-        of what the maintainers will support and by doing so, you accept that this behaviour may break
-        at any time without notice.
+        initContainers allows injecting initContainers to the Pod definition.
+        Those can be used to e.g. fetch secrets for injection into the
+        configuration from external sources. Any errors during the execution of
+        an initContainer will lead to a restart of the Pod. More info:
+        https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
     labels : {str:str}, default is Undefined, optional
         labels defines the external label pairs of the ThanosRuler resource.
 
@@ -183,6 +187,16 @@ schema MonitoringCoreosComV1ThanosRulerSpec:
     paused : bool, default is Undefined, optional
         paused defines when a ThanosRuler deployment is paused, no actions except for deletion
         will be performed on the underlying objects.
+    podManagementPolicy : str, default is Undefined, optional
+        podManagementPolicy defines the policy for creating/deleting pods when
+        scaling up and down.
+
+        Unlike the default StatefulSet behavior, the default policy is
+        `Parallel` to avoid manual intervention in case a pod gets stuck during
+        a rollout.
+
+        Note that updating this value implies the recreation of the StatefulSet
+        which incurs a service outage.
     podMetadata : MonitoringCoreosComV1ThanosRulerSpecPodMetadata, default is Undefined, optional
         pod metadata
     portName : str, default is "web", optional
@@ -241,6 +255,8 @@ schema MonitoringCoreosComV1ThanosRulerSpec:
         It requires Thanos >= v0.38.0.
     ruleSelector : MonitoringCoreosComV1ThanosRulerSpecRuleSelector, default is Undefined, optional
         rule selector
+    schedulerName : str, default is Undefined, optional
+        schedulerName defines the scheduler to use for Pod scheduling. If not specified, the default scheduler is used.
     securityContext : MonitoringCoreosComV1ThanosRulerSpecSecurityContext, default is Undefined, optional
         security context
     serviceAccountName : str, default is Undefined, optional
@@ -277,6 +293,8 @@ schema MonitoringCoreosComV1ThanosRulerSpec:
         The operator performs no validation of the configuration file.
 
         This field takes precedence over `tracingConfig`.
+    updateStrategy : MonitoringCoreosComV1ThanosRulerSpecUpdateStrategy, default is Undefined, optional
+        update strategy
     version : str, default is Undefined, optional
         version of Thanos to be deployed.
     volumeMounts : [MonitoringCoreosComV1ThanosRulerSpecVolumeMountsItems0], default is Undefined, optional
@@ -322,6 +340,7 @@ schema MonitoringCoreosComV1ThanosRulerSpec:
     objectStorageConfig?: MonitoringCoreosComV1ThanosRulerSpecObjectStorageConfig
     objectStorageConfigFile?: str
     paused?: bool
+    podManagementPolicy?: "OrderedReady" | "Parallel"
     podMetadata?: MonitoringCoreosComV1ThanosRulerSpecPodMetadata
     portName?: str = "web"
     priorityClassName?: str
@@ -340,6 +359,7 @@ schema MonitoringCoreosComV1ThanosRulerSpec:
     ruleOutageTolerance?: str
     ruleQueryOffset?: str
     ruleSelector?: MonitoringCoreosComV1ThanosRulerSpecRuleSelector
+    schedulerName?: str
     securityContext?: MonitoringCoreosComV1ThanosRulerSpecSecurityContext
     serviceAccountName?: str
     serviceName?: str
@@ -349,6 +369,7 @@ schema MonitoringCoreosComV1ThanosRulerSpec:
     topologySpreadConstraints?: [MonitoringCoreosComV1ThanosRulerSpecTopologySpreadConstraintsItems0]
     tracingConfig?: MonitoringCoreosComV1ThanosRulerSpecTracingConfig
     tracingConfigFile?: str
+    updateStrategy?: MonitoringCoreosComV1ThanosRulerSpecUpdateStrategy
     version?: str
     volumeMounts?: [MonitoringCoreosComV1ThanosRulerSpecVolumeMountsItems0]
     volumes?: [MonitoringCoreosComV1ThanosRulerSpecVolumesItems0]
@@ -364,6 +385,7 @@ schema MonitoringCoreosComV1ThanosRulerSpec:
         _regex_match(str(ruleGracePeriod), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if ruleGracePeriod
         _regex_match(str(ruleOutageTolerance), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if ruleOutageTolerance
         _regex_match(str(ruleQueryOffset), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if ruleQueryOffset
+        len(schedulerName) >= 1 if schedulerName
         len(serviceName) >= 1 if serviceName
         terminationGracePeriodSeconds >= 0 if terminationGracePeriodSeconds not in [None, Undefined]
 
@@ -1336,6 +1358,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecContainersItems0:
         readiness probe
     resizePolicy : [MonitoringCoreosComV1ThanosRulerSpecContainersItems0ResizePolicyItems0], default is Undefined, optional
         Resources resize policy for the container.
+        This field cannot be set on ephemeral containers.
     resources : MonitoringCoreosComV1ThanosRulerSpecContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
@@ -2828,8 +2851,8 @@ schema MonitoringCoreosComV1ThanosRulerSpecGrpcServerTLSConfig:
     r"""
     grpcServerTlsConfig defines the gRPC server from which Thanos Querier reads
     recorded rule data.
-    Note: Currently only the CAFile, CertFile, and KeyFile fields are supported.
-    Maps to the '--grpc-server-tls-*' CLI args.
+
+    Note: Currently only the `minVersion`, `caFile`, `certFile`, and `keyFile` fields are supported.
 
     Attributes
     ----------
@@ -3104,6 +3127,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0:
         readiness probe
     resizePolicy : [MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0ResizePolicyItems0], default is Undefined, optional
         Resources resize policy for the container.
+        This field cannot be set on ephemeral containers.
     resources : MonitoringCoreosComV1ThanosRulerSpecInitContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
@@ -4738,6 +4762,8 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0:
         tls config
     url : str, default is Undefined, required
         url defines the URL of the endpoint to send samples to.
+
+        It must use the HTTP or HTTPS scheme.
     writeRelabelConfigs : [MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0WriteRelabelConfigsItems0], default is Undefined, optional
         writeRelabelConfigs defines the list of remote write relabel configurations.
     """
@@ -4771,7 +4797,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0:
     check:
         _regex_match(str(proxyUrl), r"^(http|https|socks5)://.+$") if proxyUrl
         _regex_match(str(remoteTimeout), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if remoteTimeout
-        len(url) >= 1
+        _regex_match(str(url), r"^(http|https)://.+$")
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Authorization:
     r"""
@@ -4836,30 +4862,45 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAd:
         managed identity
     oauth : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdOauth, default is Undefined, optional
         oauth
+    scope : str, default is Undefined, optional
+        scope is the custom OAuth 2.0 scope to request when acquiring tokens.
+        It requires Prometheus >= 3.9.0. Currently not supported by Thanos.
     sdk : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdSdk, default is Undefined, optional
         sdk
+    workloadIdentity : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdWorkloadIdentity, default is Undefined, optional
+        workload identity
     """
     cloud?: "AzureChina" | "AzureGovernment" | "AzurePublic"
     managedIdentity?: MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdManagedIdentity
     oauth?: MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdOauth
+    scope?: str
     sdk?: MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdSdk
+    workloadIdentity?: MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdWorkloadIdentity
+
+    check:
+        _regex_match(str(scope), r"^[\w\s:/.\\-]+$") if scope
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdManagedIdentity:
     r"""
     managedIdentity defines the Azure User-assigned Managed identity.
-    Cannot be set at the same time as `oauth` or `sdk`.
+    Cannot be set at the same time as `oauth`, `sdk` or `workloadIdentity`.
 
     Attributes
     ----------
-    clientId : str, default is Undefined, required
-        clientId defines defines the Azure User-assigned Managed identity.
+    clientId : str, default is Undefined, optional
+        clientId defines the Azure User-assigned Managed identity.
+
+        For Prometheus >= 3.5.0 and Thanos >= 0.40.0, this field is allowed to be empty to support system-assigned managed identities.
     """
-    clientId: str
+    clientId?: str
+
+    check:
+        len(clientId) >= 1 if clientId
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdOauth:
     r"""
     oauth defines the oauth config that is being used to authenticate.
-    Cannot be set at the same time as `managedIdentity` or `sdk`.
+    Cannot be set at the same time as `managedIdentity`, `sdk` or `workloadIdentity`.
 
     It requires Prometheus >= v2.48.0 or Thanos >= v0.31.0.
 
@@ -4909,7 +4950,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdSdk:
     r"""
     sdk defines the Azure SDK config that is being used to authenticate.
     See https://learn.microsoft.com/en-us/azure/developer/go/azure-sdk-authentication
-    Cannot be set at the same time as `oauth` or `managedIdentity`.
+    Cannot be set at the same time as `oauth`, `managedIdentity` or `workloadIdentity`.
 
     It requires Prometheus >= v2.52.0 or Thanos >= v0.36.0.
 
@@ -4922,6 +4963,28 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdSdk:
 
     check:
         _regex_match(str(tenantId), r"^[0-9a-zA-Z-.]+$") if tenantId
+
+schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0AzureAdWorkloadIdentity:
+    r"""
+    workloadIdentity defines the Azure Workload Identity authentication.
+    Cannot be set at the same time as `oauth`, `managedIdentity`, or `sdk`.
+
+    It requires Prometheus >= 3.7.0. Currently not supported by Thanos.
+
+    Attributes
+    ----------
+    clientId : str, default is Undefined, required
+        clientId is the clientID of the Azure Active Directory application.
+    tenantId : str, default is Undefined, required
+        tenantId is the tenant ID of the Azure Active Directory application.
+    """
+    clientId: str
+
+    tenantId: str
+
+    check:
+        len(clientId) >= 1
+        len(tenantId) >= 1
 
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0BasicAuth:
     r"""
@@ -4988,6 +5051,9 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0BasicAuthUsername:
 schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0MetadataConfig:
     r"""
     metadataConfig defines how to send a series metadata to the remote storage.
+
+    When the field is empty, **no metadata** is sent. But when the field is
+    null, metadata is sent.
 
     Attributes
     ----------
@@ -5434,7 +5500,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Sigv4:
     secretKey : MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Sigv4SecretKey, default is Undefined, optional
         secret key
     useFIPSSTSEndpoint : bool, default is Undefined, optional
-        useFIPSSTSEndpoint defines FIPS mode for AWS STS endpoint.
+        useFIPSSTSEndpoint defines the FIPS mode for the AWS STS endpoint.
         It requires Prometheus >= v2.54.0.
     """
     accessKey?: MonitoringCoreosComV1ThanosRulerSpecRemoteWriteItems0Sigv4AccessKey
@@ -6308,7 +6374,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecStorageEphemeralVolumeClaimTemplateSp
 schema MonitoringCoreosComV1ThanosRulerSpecStorageEphemeralVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -6557,7 +6623,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecStorageVolumeClaimTemplateSpecDataSou
 schema MonitoringCoreosComV1ThanosRulerSpecStorageVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -6663,8 +6729,6 @@ schema MonitoringCoreosComV1ThanosRulerSpecStorageVolumeClaimTemplateStatus:
         should ignore the update for the purpose it was designed. For example - a controller that
         only is responsible for resizing capacity of the volume, should ignore PVC updates that change other valid
         resources associated with PVC.
-
-        This is an alpha field and requires enabling RecoverVolumeExpansionFailure feature.
     allocatedResources : {str:int | str}, default is Undefined, optional
         allocatedResources tracks the resources allocated to a PVC including its capacity.
         Key names follow standard Kubernetes label syntax. Valid values are either:
@@ -6686,8 +6750,6 @@ schema MonitoringCoreosComV1ThanosRulerSpecStorageVolumeClaimTemplateStatus:
         should ignore the update for the purpose it was designed. For example - a controller that
         only is responsible for resizing capacity of the volume, should ignore PVC updates that change other valid
         resources associated with PVC.
-
-        This is an alpha field and requires enabling RecoverVolumeExpansionFailure feature.
     capacity : {str:int | str}, default is Undefined, optional
         capacity represents the actual resources of the underlying volume.
     conditions : [MonitoringCoreosComV1ThanosRulerSpecStorageVolumeClaimTemplateStatusConditionsItems0], default is Undefined, optional
@@ -6786,9 +6848,10 @@ schema MonitoringCoreosComV1ThanosRulerSpecTolerationsItems0:
         If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
         Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
         Exists is equivalent to wildcard for value, so that a pod can
         tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
     tolerationSeconds : int, default is Undefined, optional
         TolerationSeconds represents the period of time the toleration (which must be
         of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
@@ -6990,6 +7053,44 @@ schema MonitoringCoreosComV1ThanosRulerSpecTracingConfig:
 
     name?: str = ""
     optional?: bool
+
+schema MonitoringCoreosComV1ThanosRulerSpecUpdateStrategy:
+    r"""
+    updateStrategy indicates the strategy that will be employed to update
+    Pods in the StatefulSet when a revision is made to statefulset's Pod
+    Template.
+
+    The default strategy is RollingUpdate.
+
+    Attributes
+    ----------
+    rollingUpdate : MonitoringCoreosComV1ThanosRulerSpecUpdateStrategyRollingUpdate, default is Undefined, optional
+        rolling update
+    $type : str, default is Undefined, required
+        type indicates the type of the StatefulSetUpdateStrategy.
+
+        Default is RollingUpdate.
+    """
+    rollingUpdate?: MonitoringCoreosComV1ThanosRulerSpecUpdateStrategyRollingUpdate
+    $type: "OnDelete" | "RollingUpdate"
+
+schema MonitoringCoreosComV1ThanosRulerSpecUpdateStrategyRollingUpdate:
+    r"""
+    rollingUpdate is used to communicate parameters when type is RollingUpdate.
+
+    Attributes
+    ----------
+    maxUnavailable : int | str, default is Undefined, optional
+        maxUnavailable is the maximum number of pods that can be unavailable
+        during the update. The value can be an absolute number (ex: 5) or a
+        percentage of desired pods (ex: 10%). Absolute number is calculated from
+        percentage by rounding up. This can not be 0.  Defaults to 1. This field
+        is alpha-level and is only honored by servers that enable the
+        MaxUnavailableStatefulSet feature. The field applies to all pods in the
+        range 0 to Replicas-1.  That means if there is any unavailable pod in
+        the range 0 to Replicas-1, it will be counted towards MaxUnavailable.
+    """
+    maxUnavailable?: int | str
 
 schema MonitoringCoreosComV1ThanosRulerSpecVolumeMountsItems0:
     r"""
@@ -7748,7 +7849,7 @@ schema MonitoringCoreosComV1ThanosRulerSpecVolumesItems0EphemeralVolumeClaimTemp
 schema MonitoringCoreosComV1ThanosRulerSpecVolumesItems0EphemeralVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -8542,6 +8643,20 @@ schema MonitoringCoreosComV1ThanosRulerSpecVolumesItems0ProjectedSourcesItems0Po
         longer than 24 hours.
     signerName : str, default is Undefined, required
         Kubelet's generated CSRs will be addressed to this signer.
+    userAnnotations : {str:str}, default is Undefined, optional
+        userAnnotations allow pod authors to pass additional information to
+        the signer implementation.  Kubernetes does not restrict or validate this
+        metadata in any way.
+
+        These values are copied verbatim into the `spec.unverifiedUserAnnotations` field of
+        the PodCertificateRequest objects that Kubelet creates.
+
+        Entries are subject to the same validation as object metadata annotations,
+        with the addition that all keys must be domain-prefixed. No restrictions
+        are placed on values, except an overall size limitation on the entire field.
+
+        Signers should document the keys and values they support. Signers should
+        deny requests that contain keys they do not recognize.
     """
     certificateChainPath?: str
     credentialBundlePath?: str
@@ -8550,6 +8665,8 @@ schema MonitoringCoreosComV1ThanosRulerSpecVolumesItems0ProjectedSourcesItems0Po
 
     maxExpirationSeconds?: int
     signerName: str
+
+    userAnnotations?: {str:str}
 
 schema MonitoringCoreosComV1ThanosRulerSpecVolumesItems0ProjectedSourcesItems0Secret:
     r"""

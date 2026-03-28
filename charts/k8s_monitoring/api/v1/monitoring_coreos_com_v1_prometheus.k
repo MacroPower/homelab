@@ -109,9 +109,8 @@ schema MonitoringCoreosComV1PrometheusSpec:
         * `config-reloader`
         * `thanos-sidecar`
 
-        Overriding containers is entirely outside the scope of what the
-        maintainers will support and by doing so, you accept that this behaviour
-        may break at any time without notice.
+        Overriding containers which are managed by the operator require careful
+        testing, especially when upgrading to a new version of the operator.
     convertClassicHistogramsToNHCB : bool, default is Undefined, optional
         convertClassicHistogramsToNHCB defines whether to convert all scraped classic histograms into a native
         histogram with custom buckets.
@@ -332,7 +331,7 @@ schema MonitoringCoreosComV1PrometheusSpec:
         See http://kubernetes.io/docs/user-guide/images#specifying-imagepullsecrets-on-a-pod
     initContainers : [MonitoringCoreosComV1PrometheusSpecInitContainersItems0], default is Undefined, optional
         initContainers allows injecting initContainers to the Pod definition. Those
-        can be used to e.g.  fetch secrets for injection into the Prometheus
+        can be used to e.g. fetch secrets for injection into the Prometheus
         configuration from external sources. Any errors during the execution of
         an initContainer will lead to a restart of the Pod. More info:
         https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
@@ -343,9 +342,9 @@ schema MonitoringCoreosComV1PrometheusSpec:
         The names of init container name managed by the operator are:
         * `init-config-reloader`.
 
-        Overriding init containers is entirely outside the scope of what the
-        maintainers will support and by doing so, you accept that this behaviour
-        may break at any time without notice.
+        Overriding init containers which are managed by the operator require
+        careful testing, especially when upgrading to a new version of the
+        operator.
     keepDroppedTargets : int, default is Undefined, optional
         keepDroppedTargets defines the per-scrape limit on the number of targets dropped by relabeling
         that will be kept in memory. 0 means no limit.
@@ -416,6 +415,16 @@ schema MonitoringCoreosComV1PrometheusSpec:
         will be performed on the underlying objects.
     persistentVolumeClaimRetentionPolicy : MonitoringCoreosComV1PrometheusSpecPersistentVolumeClaimRetentionPolicy, default is Undefined, optional
         persistent volume claim retention policy
+    podManagementPolicy : str, default is Undefined, optional
+        podManagementPolicy defines the policy for creating/deleting pods when
+        scaling up and down.
+
+        Unlike the default StatefulSet behavior, the default policy is
+        `Parallel` to avoid manual intervention in case a pod gets stuck during
+        a rollout.
+
+        Note that updating this value implies the recreation of the StatefulSet
+        which incurs a service outage.
     podMetadata : MonitoringCoreosComV1PrometheusSpecPodMetadata, default is Undefined, optional
         pod metadata
     podMonitorNamespaceSelector : MonitoringCoreosComV1PrometheusSpecPodMonitorNamespaceSelector, default is Undefined, optional
@@ -515,6 +524,8 @@ schema MonitoringCoreosComV1PrometheusSpec:
 
         Note that the global limit only applies to scrape objects that don't specify an explicit limit value.
         If you want to enforce a maximum limit for all scrape objects, refer to enforcedSampleLimit.
+    schedulerName : str, default is Undefined, optional
+        schedulerName defines the scheduler to use for Pod scheduling. If not specified, the default scheduler is used.
     scrapeClasses : [MonitoringCoreosComV1PrometheusSpecScrapeClassesItems0], default is Undefined, optional
         scrapeClasses defines the list of scrape classes to expose to scraping objects such as
         PodMonitors, ServiceMonitors, Probes and ScrapeConfigs.
@@ -544,6 +555,9 @@ schema MonitoringCoreosComV1PrometheusSpec:
         scrapeInterval defines interval between consecutive scrapes.
 
         Default: "30s"
+    scrapeNativeHistograms : bool, default is Undefined, optional
+        scrapeNativeHistograms defines whether to enable scraping of native histograms.
+        It requires Prometheus >= v3.8.0.
     scrapeProtocols : [str], default is Undefined, optional
         scrapeProtocols defines the protocols to negotiate during a scrape. It tells clients the
         protocols supported by Prometheus in order of preference (from most to least preferred).
@@ -640,6 +654,8 @@ schema MonitoringCoreosComV1PrometheusSpec:
         tracing config
     tsdb : MonitoringCoreosComV1PrometheusSpecTsdb, default is Undefined, optional
         tsdb
+    updateStrategy : MonitoringCoreosComV1PrometheusSpecUpdateStrategy, default is Undefined, optional
+        update strategy
     version : str, default is Undefined, optional
         version of Prometheus being deployed. The operator uses this information
         to generate the Prometheus StatefulSet + configuration files.
@@ -726,6 +742,7 @@ schema MonitoringCoreosComV1PrometheusSpec:
     overrideHonorTimestamps?: bool
     paused?: bool
     persistentVolumeClaimRetentionPolicy?: MonitoringCoreosComV1PrometheusSpecPersistentVolumeClaimRetentionPolicy
+    podManagementPolicy?: "OrderedReady" | "Parallel"
     podMetadata?: MonitoringCoreosComV1PrometheusSpecPodMetadata
     podMonitorNamespaceSelector?: MonitoringCoreosComV1PrometheusSpecPodMonitorNamespaceSelector
     podMonitorSelector?: MonitoringCoreosComV1PrometheusSpecPodMonitorSelector
@@ -754,12 +771,14 @@ schema MonitoringCoreosComV1PrometheusSpec:
     rules?: MonitoringCoreosComV1PrometheusSpecRules
     runtime?: MonitoringCoreosComV1PrometheusSpecRuntime
     sampleLimit?: int
+    schedulerName?: str
     scrapeClasses?: [MonitoringCoreosComV1PrometheusSpecScrapeClassesItems0]
     scrapeClassicHistograms?: bool
     scrapeConfigNamespaceSelector?: MonitoringCoreosComV1PrometheusSpecScrapeConfigNamespaceSelector
     scrapeConfigSelector?: MonitoringCoreosComV1PrometheusSpecScrapeConfigSelector
     scrapeFailureLogFile?: str
     scrapeInterval?: str = "30s"
+    scrapeNativeHistograms?: bool
     scrapeProtocols?: [str]
     scrapeTimeout?: str
     secrets?: [str]
@@ -781,6 +800,7 @@ schema MonitoringCoreosComV1PrometheusSpec:
     topologySpreadConstraints?: [MonitoringCoreosComV1PrometheusSpecTopologySpreadConstraintsItems0]
     tracingConfig?: MonitoringCoreosComV1PrometheusSpecTracingConfig
     tsdb?: MonitoringCoreosComV1PrometheusSpecTsdb
+    updateStrategy?: MonitoringCoreosComV1PrometheusSpecUpdateStrategy
     version?: str
     volumeMounts?: [MonitoringCoreosComV1PrometheusSpecVolumeMountsItems0]
     volumes?: [MonitoringCoreosComV1PrometheusSpecVolumesItems0]
@@ -798,6 +818,7 @@ schema MonitoringCoreosComV1PrometheusSpec:
         _regex_match(str(retention), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if retention
         _regex_match(str(retentionSize), r"(^0|([0-9]*[.])?[0-9]+((K|M|G|T|E|P)i?)?B)$") if retentionSize
         _regex_match(str(ruleQueryOffset), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if ruleQueryOffset
+        len(schedulerName) >= 1 if schedulerName
         len(scrapeFailureLogFile) >= 1 if scrapeFailureLogFile
         _regex_match(str(scrapeInterval), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if scrapeInterval
         _regex_match(str(scrapeTimeout), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if scrapeTimeout
@@ -1818,7 +1839,7 @@ schema MonitoringCoreosComV1PrometheusSpecAlertingAlertmanagersItems0:
     relabelings : [MonitoringCoreosComV1PrometheusSpecAlertingAlertmanagersItems0RelabelingsItems0], default is Undefined, optional
         relabelings defines the relabel configuration applied to the discovered Alertmanagers.
     scheme : str, default is Undefined, optional
-        scheme to use when firing alerts.
+        scheme defines the HTTP scheme to use when sending alerts.
     sigv4 : MonitoringCoreosComV1PrometheusSpecAlertingAlertmanagersItems0Sigv4, default is Undefined, optional
         sigv4
     timeout : str, default is Undefined, optional
@@ -1843,7 +1864,7 @@ schema MonitoringCoreosComV1PrometheusSpecAlertingAlertmanagersItems0:
     proxyFromEnvironment?: bool
     proxyUrl?: str
     relabelings?: [MonitoringCoreosComV1PrometheusSpecAlertingAlertmanagersItems0RelabelingsItems0]
-    scheme?: str
+    scheme?: "http" | "https" | "HTTP" | "HTTPS"
     sigv4?: MonitoringCoreosComV1PrometheusSpecAlertingAlertmanagersItems0Sigv4
     timeout?: str
     tlsConfig?: MonitoringCoreosComV1PrometheusSpecAlertingAlertmanagersItems0TLSConfig
@@ -1851,6 +1872,7 @@ schema MonitoringCoreosComV1PrometheusSpecAlertingAlertmanagersItems0:
     check:
         len(name) >= 1
         len(namespace) >= 1 if namespace
+        len(pathPrefix) >= 1 if pathPrefix
         _regex_match(str(proxyUrl), r"^(http|https|socks5)://.+$") if proxyUrl
         _regex_match(str(timeout), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if timeout
 
@@ -2099,7 +2121,7 @@ schema MonitoringCoreosComV1PrometheusSpecAlertingAlertmanagersItems0Sigv4:
     secretKey : MonitoringCoreosComV1PrometheusSpecAlertingAlertmanagersItems0Sigv4SecretKey, default is Undefined, optional
         secret key
     useFIPSSTSEndpoint : bool, default is Undefined, optional
-        useFIPSSTSEndpoint defines FIPS mode for AWS STS endpoint.
+        useFIPSSTSEndpoint defines the FIPS mode for the AWS STS endpoint.
         It requires Prometheus >= v2.54.0.
     """
     accessKey?: MonitoringCoreosComV1PrometheusSpecAlertingAlertmanagersItems0Sigv4AccessKey
@@ -2796,6 +2818,7 @@ schema MonitoringCoreosComV1PrometheusSpecContainersItems0:
         readiness probe
     resizePolicy : [MonitoringCoreosComV1PrometheusSpecContainersItems0ResizePolicyItems0], default is Undefined, optional
         Resources resize policy for the container.
+        This field cannot be set on ephemeral containers.
     resources : MonitoringCoreosComV1PrometheusSpecContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
@@ -4399,6 +4422,7 @@ schema MonitoringCoreosComV1PrometheusSpecInitContainersItems0:
         readiness probe
     resizePolicy : [MonitoringCoreosComV1PrometheusSpecInitContainersItems0ResizePolicyItems0], default is Undefined, optional
         Resources resize policy for the container.
+        This field cannot be set on ephemeral containers.
     resources : MonitoringCoreosComV1PrometheusSpecInitContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
@@ -7002,6 +7026,8 @@ schema MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0:
         tls config
     url : str, default is Undefined, required
         url defines the URL of the endpoint to send samples to.
+
+        It must use the HTTP or HTTPS scheme.
     writeRelabelConfigs : [MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0WriteRelabelConfigsItems0], default is Undefined, optional
         writeRelabelConfigs defines the list of remote write relabel configurations.
     """
@@ -7035,7 +7061,7 @@ schema MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0:
     check:
         _regex_match(str(proxyUrl), r"^(http|https|socks5)://.+$") if proxyUrl
         _regex_match(str(remoteTimeout), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if remoteTimeout
-        len(url) >= 1
+        _regex_match(str(url), r"^(http|https)://.+$")
 
 schema MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0Authorization:
     r"""
@@ -7100,30 +7126,45 @@ schema MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0AzureAd:
         managed identity
     oauth : MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0AzureAdOauth, default is Undefined, optional
         oauth
+    scope : str, default is Undefined, optional
+        scope is the custom OAuth 2.0 scope to request when acquiring tokens.
+        It requires Prometheus >= 3.9.0. Currently not supported by Thanos.
     sdk : MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0AzureAdSdk, default is Undefined, optional
         sdk
+    workloadIdentity : MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0AzureAdWorkloadIdentity, default is Undefined, optional
+        workload identity
     """
     cloud?: "AzureChina" | "AzureGovernment" | "AzurePublic"
     managedIdentity?: MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0AzureAdManagedIdentity
     oauth?: MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0AzureAdOauth
+    scope?: str
     sdk?: MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0AzureAdSdk
+    workloadIdentity?: MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0AzureAdWorkloadIdentity
+
+    check:
+        _regex_match(str(scope), r"^[\w\s:/.\\-]+$") if scope
 
 schema MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0AzureAdManagedIdentity:
     r"""
     managedIdentity defines the Azure User-assigned Managed identity.
-    Cannot be set at the same time as `oauth` or `sdk`.
+    Cannot be set at the same time as `oauth`, `sdk` or `workloadIdentity`.
 
     Attributes
     ----------
-    clientId : str, default is Undefined, required
-        clientId defines defines the Azure User-assigned Managed identity.
+    clientId : str, default is Undefined, optional
+        clientId defines the Azure User-assigned Managed identity.
+
+        For Prometheus >= 3.5.0 and Thanos >= 0.40.0, this field is allowed to be empty to support system-assigned managed identities.
     """
-    clientId: str
+    clientId?: str
+
+    check:
+        len(clientId) >= 1 if clientId
 
 schema MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0AzureAdOauth:
     r"""
     oauth defines the oauth config that is being used to authenticate.
-    Cannot be set at the same time as `managedIdentity` or `sdk`.
+    Cannot be set at the same time as `managedIdentity`, `sdk` or `workloadIdentity`.
 
     It requires Prometheus >= v2.48.0 or Thanos >= v0.31.0.
 
@@ -7173,7 +7214,7 @@ schema MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0AzureAdSdk:
     r"""
     sdk defines the Azure SDK config that is being used to authenticate.
     See https://learn.microsoft.com/en-us/azure/developer/go/azure-sdk-authentication
-    Cannot be set at the same time as `oauth` or `managedIdentity`.
+    Cannot be set at the same time as `oauth`, `managedIdentity` or `workloadIdentity`.
 
     It requires Prometheus >= v2.52.0 or Thanos >= v0.36.0.
 
@@ -7186,6 +7227,28 @@ schema MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0AzureAdSdk:
 
     check:
         _regex_match(str(tenantId), r"^[0-9a-zA-Z-.]+$") if tenantId
+
+schema MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0AzureAdWorkloadIdentity:
+    r"""
+    workloadIdentity defines the Azure Workload Identity authentication.
+    Cannot be set at the same time as `oauth`, `managedIdentity`, or `sdk`.
+
+    It requires Prometheus >= 3.7.0. Currently not supported by Thanos.
+
+    Attributes
+    ----------
+    clientId : str, default is Undefined, required
+        clientId is the clientID of the Azure Active Directory application.
+    tenantId : str, default is Undefined, required
+        tenantId is the tenant ID of the Azure Active Directory application.
+    """
+    clientId: str
+
+    tenantId: str
+
+    check:
+        len(clientId) >= 1
+        len(tenantId) >= 1
 
 schema MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0BasicAuth:
     r"""
@@ -7252,6 +7315,9 @@ schema MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0BasicAuthUsername:
 schema MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0MetadataConfig:
     r"""
     metadataConfig defines how to send a series metadata to the remote storage.
+
+    When the field is empty, **no metadata** is sent. But when the field is
+    null, metadata is sent.
 
     Attributes
     ----------
@@ -7698,7 +7764,7 @@ schema MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0Sigv4:
     secretKey : MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0Sigv4SecretKey, default is Undefined, optional
         secret key
     useFIPSSTSEndpoint : bool, default is Undefined, optional
-        useFIPSSTSEndpoint defines FIPS mode for AWS STS endpoint.
+        useFIPSSTSEndpoint defines the FIPS mode for the AWS STS endpoint.
         It requires Prometheus >= v2.54.0.
     """
     accessKey?: MonitoringCoreosComV1PrometheusSpecRemoteWriteItems0Sigv4AccessKey
@@ -9246,7 +9312,7 @@ schema MonitoringCoreosComV1PrometheusSpecStorageEphemeralVolumeClaimTemplateSpe
 schema MonitoringCoreosComV1PrometheusSpecStorageEphemeralVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -9495,7 +9561,7 @@ schema MonitoringCoreosComV1PrometheusSpecStorageVolumeClaimTemplateSpecDataSour
 schema MonitoringCoreosComV1PrometheusSpecStorageVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -9601,8 +9667,6 @@ schema MonitoringCoreosComV1PrometheusSpecStorageVolumeClaimTemplateStatus:
         should ignore the update for the purpose it was designed. For example - a controller that
         only is responsible for resizing capacity of the volume, should ignore PVC updates that change other valid
         resources associated with PVC.
-
-        This is an alpha field and requires enabling RecoverVolumeExpansionFailure feature.
     allocatedResources : {str:int | str}, default is Undefined, optional
         allocatedResources tracks the resources allocated to a PVC including its capacity.
         Key names follow standard Kubernetes label syntax. Valid values are either:
@@ -9624,8 +9688,6 @@ schema MonitoringCoreosComV1PrometheusSpecStorageVolumeClaimTemplateStatus:
         should ignore the update for the purpose it was designed. For example - a controller that
         only is responsible for resizing capacity of the volume, should ignore PVC updates that change other valid
         resources associated with PVC.
-
-        This is an alpha field and requires enabling RecoverVolumeExpansionFailure feature.
     capacity : {str:int | str}, default is Undefined, optional
         capacity represents the actual resources of the underlying volume.
     conditions : [MonitoringCoreosComV1PrometheusSpecStorageVolumeClaimTemplateStatusConditionsItems0], default is Undefined, optional
@@ -9863,7 +9925,7 @@ schema MonitoringCoreosComV1PrometheusSpecThanosGrpcServerTLSConfig:
     r"""
     grpcServerTlsConfig defines the TLS parameters for the gRPC server providing the StoreAPI.
 
-    Note: Currently only the `caFile`, `certFile`, and `keyFile` fields are supported.
+    Note: Currently only the `minVersion`, `caFile`, `certFile`, and `keyFile` fields are supported.
 
     Attributes
     ----------
@@ -10218,9 +10280,10 @@ schema MonitoringCoreosComV1PrometheusSpecTolerationsItems0:
         If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
         Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
         Exists is equivalent to wildcard for value, so that a pod can
         tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
     tolerationSeconds : int, default is Undefined, optional
         TolerationSeconds represents the period of time the toleration (which must be
         of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
@@ -10405,9 +10468,9 @@ schema MonitoringCoreosComV1PrometheusSpecTracingConfig:
     Attributes
     ----------
     clientType : str, default is Undefined, optional
-        clientType defines the client used to export the traces. Supported values are `http` or `grpc`.
+        clientType defines the client used to export the traces. Supported values are `HTTP` and `GRPC`.
     compression : str, default is Undefined, optional
-        compression key for supported compression types. The only supported value is `gzip`.
+        compression key for supported compression types. The only supported value is `Gzip`.
     endpoint : str, default is Undefined, required
         endpoint to send the traces to. Should be provided in format <host>:<port>.
     headers : {str:str}, default is Undefined, optional
@@ -10421,8 +10484,8 @@ schema MonitoringCoreosComV1PrometheusSpecTracingConfig:
     tlsConfig : MonitoringCoreosComV1PrometheusSpecTracingConfigTLSConfig, default is Undefined, optional
         tls config
     """
-    clientType?: "http" | "grpc"
-    compression?: "gzip"
+    clientType?: "http" | "grpc" | "HTTP" | "GRPC"
+    compression?: "gzip" | "Gzip"
     endpoint: str
 
     headers?: {str:str}
@@ -10639,6 +10702,44 @@ schema MonitoringCoreosComV1PrometheusSpecTsdb:
 
     check:
         _regex_match(str(outOfOrderTimeWindow), r"^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$") if outOfOrderTimeWindow
+
+schema MonitoringCoreosComV1PrometheusSpecUpdateStrategy:
+    r"""
+    updateStrategy indicates the strategy that will be employed to update
+    Pods in the StatefulSet when a revision is made to statefulset's Pod
+    Template.
+
+    The default strategy is RollingUpdate.
+
+    Attributes
+    ----------
+    rollingUpdate : MonitoringCoreosComV1PrometheusSpecUpdateStrategyRollingUpdate, default is Undefined, optional
+        rolling update
+    $type : str, default is Undefined, required
+        type indicates the type of the StatefulSetUpdateStrategy.
+
+        Default is RollingUpdate.
+    """
+    rollingUpdate?: MonitoringCoreosComV1PrometheusSpecUpdateStrategyRollingUpdate
+    $type: "OnDelete" | "RollingUpdate"
+
+schema MonitoringCoreosComV1PrometheusSpecUpdateStrategyRollingUpdate:
+    r"""
+    rollingUpdate is used to communicate parameters when type is RollingUpdate.
+
+    Attributes
+    ----------
+    maxUnavailable : int | str, default is Undefined, optional
+        maxUnavailable is the maximum number of pods that can be unavailable
+        during the update. The value can be an absolute number (ex: 5) or a
+        percentage of desired pods (ex: 10%). Absolute number is calculated from
+        percentage by rounding up. This can not be 0.  Defaults to 1. This field
+        is alpha-level and is only honored by servers that enable the
+        MaxUnavailableStatefulSet feature. The field applies to all pods in the
+        range 0 to Replicas-1.  That means if there is any unavailable pod in
+        the range 0 to Replicas-1, it will be counted towards MaxUnavailable.
+    """
+    maxUnavailable?: int | str
 
 schema MonitoringCoreosComV1PrometheusSpecVolumeMountsItems0:
     r"""
@@ -11397,7 +11498,7 @@ schema MonitoringCoreosComV1PrometheusSpecVolumesItems0EphemeralVolumeClaimTempl
 schema MonitoringCoreosComV1PrometheusSpecVolumesItems0EphemeralVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -12191,6 +12292,20 @@ schema MonitoringCoreosComV1PrometheusSpecVolumesItems0ProjectedSourcesItems0Pod
         longer than 24 hours.
     signerName : str, default is Undefined, required
         Kubelet's generated CSRs will be addressed to this signer.
+    userAnnotations : {str:str}, default is Undefined, optional
+        userAnnotations allow pod authors to pass additional information to
+        the signer implementation.  Kubernetes does not restrict or validate this
+        metadata in any way.
+
+        These values are copied verbatim into the `spec.unverifiedUserAnnotations` field of
+        the PodCertificateRequest objects that Kubelet creates.
+
+        Entries are subject to the same validation as object metadata annotations,
+        with the addition that all keys must be domain-prefixed. No restrictions
+        are placed on values, except an overall size limitation on the entire field.
+
+        Signers should document the keys and values they support. Signers should
+        deny requests that contain keys they do not recognize.
     """
     certificateChainPath?: str
     credentialBundlePath?: str
@@ -12199,6 +12314,8 @@ schema MonitoringCoreosComV1PrometheusSpecVolumesItems0ProjectedSourcesItems0Pod
 
     maxExpirationSeconds?: int
     signerName: str
+
+    userAnnotations?: {str:str}
 
 schema MonitoringCoreosComV1PrometheusSpecVolumesItems0ProjectedSourcesItems0Secret:
     r"""
