@@ -19,6 +19,31 @@ schema Values:
         For more information, visit: https://container-object-storage-interface.github.io/docs/deployment-guide
     filer : ValuesFiler, optional
     global : ValuesGlobal, optional
+        openshift-values.yaml
+
+        Example overrides for deploying SeaweedFS on OpenShift (or any cluster
+        enforcing the Kubernetes "restricted" Pod Security Standard).
+
+        OpenShift's default "restricted" SCC blocks containers that:
+          - Run as UID 0 (root)
+          - Request privilege escalation
+          - Use hostPath volumes
+          - Omit a seccompProfile
+
+        These overrides satisfy all four requirements by:
+          1. Replacing hostPath volumes with PersistentVolumeClaims (or emptyDir for logs)
+          2. Enabling runAsNonRoot: true. By omitting runAsUser, OpenShift will
+             automatically assign a valid UID from the namespace's allocated range.
+          3. Dropping all Linux capabilities and setting allowPrivilegeEscalation: false
+          4. Enabling RuntimeDefault seccompProfile
+
+        Usage:
+          helm install seaweedfs seaweedfs/seaweedfs \
+            -n seaweedfs --create-namespace \
+            -f openshift-values.yaml
+
+        Adjust storageClass and sizes to match your cluster's available StorageClasses.
+        On OpenShift you can discover them with: oc get storageclass
     image : ValuesImage, optional
     master : ValuesMaster, optional
     podAnnotations : ValuesPodAnnotations, optional
@@ -26,6 +51,7 @@ schema Values:
     podLabels : ValuesPodLabels, optional
         Labels to be added to all the created pods
     s3 : ValuesS3, optional
+        S3 gateway (if enabled)
     sftp : ValuesSftp, optional
     volume : ValuesVolume, optional
     volumes : ValuesVolumes, optional
@@ -779,6 +805,10 @@ schema ValuesAllInOneS3:
     Attributes
     ----------
     auditLogConfig : any, optional, default is "null"
+        To provide explicit credentials for the S3 gateway, set them under
+        the top-level s3.credentials key (not allInOne.s3.credentials).
+        The s3-secret.yaml template only reads from .Values.s3.credentials.
+        See: s3.credentials.admin.accessKey, s3.credentials.read.accessKey
     domainName : any, optional, default is "null"
     enableAuth : bool, optional, default is False
     enabled : bool, optional, default is False
@@ -787,6 +817,7 @@ schema ValuesAllInOneS3:
         should have a secret key called seaweedfs_s3_config with an inline json config
     httpsPort : any, optional, default is "null"
     port : any, optional, default is "null"
+    trafficDistribution : any, optional, default is "null"
     """
     [...str]: any
     auditLogConfig?: any
@@ -796,6 +827,7 @@ schema ValuesAllInOneS3:
     existingConfigSecret?: any
     httpsPort?: any
     port?: any
+    trafficDistribution?: any
 
 schema ValuesAllInOneSecretExtraEnvironmentVars:
     r"""
@@ -950,6 +982,8 @@ schema ValuesCosi:
     Attributes
     ----------
     bucketClassName : str, optional, default is "seaweedfs"
+    bucketClassParameters : ValuesCosiBucketClassParameters, optional
+        Optional parameters to pass to the default BucketClass (e.g., diskType for tiered storage)
     containerSecurityContext : ValuesCosiContainerSecurityContext, optional
     driverName : str, optional, default is "seaweedfs.objectstorage.k8s.io"
     enableAuth : bool, optional, default is False
@@ -973,6 +1007,7 @@ schema ValuesCosi:
     """
     [...str]: any
     bucketClassName?: str
+    bucketClassParameters?: ValuesCosiBucketClassParameters
     containerSecurityContext?: ValuesCosiContainerSecurityContext
     driverName?: str
     enableAuth?: bool
@@ -986,6 +1021,12 @@ schema ValuesCosi:
     region?: str
     resources?: ValuesCosiResources
     sidecar?: ValuesCosiSidecar
+
+schema ValuesCosiBucketClassParameters:
+    r"""
+    Optional parameters to pass to the default BucketClass (e.g., diskType for tiered storage)
+    """
+    [...str]: any
 
 schema ValuesCosiContainerSecurityContext:
     r"""
@@ -1269,8 +1310,43 @@ schema ValuesFilerContainerSecurityContext:
       enabled: true
       runAsUser: 2000
       allowPrivilegeEscalation: false
+
+    Attributes
+    ----------
+    allowPrivilegeEscalation : bool, optional
+    capabilities : ValuesFilerContainerSecurityContextCapabilities, optional
+    enabled : bool, optional
+    runAsNonRoot : bool, optional
+    seccompProfile : ValuesFilerContainerSecurityContextSeccompProfile, optional
     """
     [...str]: any
+    allowPrivilegeEscalation?: bool
+    capabilities?: ValuesFilerContainerSecurityContextCapabilities
+    enabled?: bool
+    runAsNonRoot?: bool
+    seccompProfile?: ValuesFilerContainerSecurityContextSeccompProfile
+
+schema ValuesFilerContainerSecurityContextCapabilities:
+    r"""
+    ValuesFilerContainerSecurityContextCapabilities
+
+    Attributes
+    ----------
+    drop : [str], optional
+    """
+    [...str]: any
+    drop?: [str]
+
+schema ValuesFilerContainerSecurityContextSeccompProfile:
+    r"""
+    ValuesFilerContainerSecurityContextSeccompProfile
+
+    Attributes
+    ----------
+    $type : str, optional
+    """
+    [...str]: any
+    $type?: str
 
 schema ValuesFilerData:
     r"""
@@ -1448,8 +1524,17 @@ schema ValuesFilerPodSecurityContext:
       runAsUser: 1000
       runAsGroup: 3000
       fsGroup: 2000
+
+    Attributes
+    ----------
+    enabled : bool, optional
+    runAsNonRoot : bool, optional
+        On OpenShift, we omit runAsUser/runAsGroup/fsGroup to let the admission
+        controller assign them automatically based on the namespace's SCC.
     """
     [...str]: any
+    enabled?: bool
+    runAsNonRoot?: bool
 
 schema ValuesFilerReadinessProbe:
     r"""
@@ -1504,6 +1589,10 @@ schema ValuesFilerS3:
     Attributes
     ----------
     auditLogConfig : ValuesFilerS3AuditLogConfig, optional
+        To provide explicit credentials for the S3 gateway, set them under
+        the top-level s3.credentials key (not filer.s3.credentials).
+        The s3-secret.yaml template only reads from .Values.s3.credentials.
+        See: s3.credentials.admin.accessKey, s3.credentials.read.accessKey
     domainName : str, optional, default is ""
         Suffix of the host name, {bucket}.{domainName}
     enableAuth : bool, optional, default is False
@@ -1527,7 +1616,10 @@ schema ValuesFilerS3:
 
 schema ValuesFilerS3AuditLogConfig:
     r"""
-    ValuesFilerS3AuditLogConfig
+    To provide explicit credentials for the S3 gateway, set them under
+    the top-level s3.credentials key (not filer.s3.credentials).
+    The s3-secret.yaml template only reads from .Values.s3.credentials.
+    See: s3.credentials.admin.accessKey, s3.credentials.read.accessKey
     """
     [...str]: any
 
@@ -1539,7 +1631,31 @@ schema ValuesFilerSecretExtraEnvironmentVars:
 
 schema ValuesGlobal:
     r"""
-    ValuesGlobal
+    openshift-values.yaml
+
+    Example overrides for deploying SeaweedFS on OpenShift (or any cluster
+    enforcing the Kubernetes "restricted" Pod Security Standard).
+
+    OpenShift's default "restricted" SCC blocks containers that:
+      - Run as UID 0 (root)
+      - Request privilege escalation
+      - Use hostPath volumes
+      - Omit a seccompProfile
+
+    These overrides satisfy all four requirements by:
+      1. Replacing hostPath volumes with PersistentVolumeClaims (or emptyDir for logs)
+      2. Enabling runAsNonRoot: true. By omitting runAsUser, OpenShift will
+         automatically assign a valid UID from the namespace's allocated range.
+      3. Dropping all Linux capabilities and setting allowPrivilegeEscalation: false
+      4. Enabling RuntimeDefault seccompProfile
+
+    Usage:
+      helm install seaweedfs seaweedfs/seaweedfs \
+        -n seaweedfs --create-namespace \
+        -f openshift-values.yaml
+
+    Adjust storageClass and sizes to match your cluster's available StorageClasses.
+    On OpenShift you can discover them with: oc get storageclass
 
     Attributes
     ----------
@@ -1566,6 +1682,7 @@ schema ValuesGlobal:
         if repository is set, it overrides the namespace part of imageName
     restartPolicy : str, optional, default is "Always"
     securityConfig : ValuesGlobalSecurityConfig, optional
+    serviceAccountAnnotations : ValuesGlobalServiceAccountAnnotations, optional
     serviceAccountName : str, optional, default is "seaweedfs"
         we will use this serviceAccountName for all ClusterRoles/ClusterRoleBindings
     """
@@ -1587,6 +1704,7 @@ schema ValuesGlobal:
     repository?: str
     restartPolicy?: str
     securityConfig?: ValuesGlobalSecurityConfig
+    serviceAccountAnnotations?: ValuesGlobalServiceAccountAnnotations
     serviceAccountName?: str
 
 schema ValuesGlobalCertificates:
@@ -1669,6 +1787,12 @@ schema ValuesGlobalSecurityConfigJwtSigning:
     filerWrite?: bool
     volumeRead?: bool
     volumeWrite?: bool
+
+schema ValuesGlobalServiceAccountAnnotations:
+    r"""
+    ValuesGlobalServiceAccountAnnotations
+    """
+    [...str]: any
 
 schema ValuesImage:
     r"""
@@ -1895,8 +2019,43 @@ schema ValuesMasterContainerSecurityContext:
       enabled: true
       runAsUser: 2000
       allowPrivilegeEscalation: false
+
+    Attributes
+    ----------
+    allowPrivilegeEscalation : bool, optional
+    capabilities : ValuesMasterContainerSecurityContextCapabilities, optional
+    enabled : bool, optional
+    runAsNonRoot : bool, optional
+    seccompProfile : ValuesMasterContainerSecurityContextSeccompProfile, optional
     """
     [...str]: any
+    allowPrivilegeEscalation?: bool
+    capabilities?: ValuesMasterContainerSecurityContextCapabilities
+    enabled?: bool
+    runAsNonRoot?: bool
+    seccompProfile?: ValuesMasterContainerSecurityContextSeccompProfile
+
+schema ValuesMasterContainerSecurityContextCapabilities:
+    r"""
+    ValuesMasterContainerSecurityContextCapabilities
+
+    Attributes
+    ----------
+    drop : [str], optional
+    """
+    [...str]: any
+    drop?: [str]
+
+schema ValuesMasterContainerSecurityContextSeccompProfile:
+    r"""
+    ValuesMasterContainerSecurityContextSeccompProfile
+
+    Attributes
+    ----------
+    $type : str, optional
+    """
+    [...str]: any
+    $type?: str
 
 schema ValuesMasterData:
     r"""
@@ -1921,11 +2080,13 @@ schema ValuesMasterData:
     Attributes
     ----------
     hostPathPrefix : str, optional, default is "/ssd"
+    size : str, optional
     storageClass : str, optional, default is ""
     $type : str, optional, default is "hostPath"
     """
     [...str]: any
     hostPathPrefix?: str
+    size?: str
     storageClass?: str
     $type?: str
 
@@ -2069,8 +2230,17 @@ schema ValuesMasterPodSecurityContext:
       runAsUser: 1000
       runAsGroup: 3000
       fsGroup: 2000
+
+    Attributes
+    ----------
+    enabled : bool, optional
+    runAsNonRoot : bool, optional
+        On OpenShift, we omit runAsUser/runAsGroup/fsGroup to let the admission
+        controller assign them automatically based on the namespace's SCC.
     """
     [...str]: any
+    enabled?: bool
+    runAsNonRoot?: bool
 
 schema ValuesMasterReadinessProbe:
     r"""
@@ -2132,13 +2302,23 @@ schema ValuesPodLabels:
 
 schema ValuesS3:
     r"""
-    ValuesS3
+    S3 gateway (if enabled)
 
     Attributes
     ----------
     annotations : ValuesS3Annotations, optional
         Annotations to be added to the s3 resources
     auditLogConfig : ValuesS3AuditLogConfig, optional
+        Optionally provide explicit credentials for the S3 gateway.
+        When set, these are used in the generated s3 secret instead of
+        auto-generating random credentials.
+        credentials:
+          admin:
+            accessKey: ""
+            secretKey: ""
+          read:
+            accessKey: ""
+            secretKey: ""
     bindAddress : str, optional, default is "0.0.0.0"
     containerSecurityContext : ValuesS3ContainerSecurityContext, optional
         Configure security context for Container
@@ -2226,6 +2406,13 @@ schema ValuesS3:
         #       - name: portname
         #         containerPort: 1234
         #
+    tlsSecret : any, optional, default is "null"
+        Use a custom TLS certificate secret for the S3 HTTPS endpoint.
+        When set, this Kubernetes Secret (must contain tls.crt and tls.key) is used
+        instead of the internal self-signed client certificate generated by cert-manager.
+        This allows using a publicly trusted certificate (e.g., from Let's Encrypt)
+        so that S3 clients don't need to trust the internal CA.
+        Requires global.enableSecurity to be true.
     tolerations : str, optional, default is ""
         Toleration Settings for server pods
         This should be a multi-line string matching the Toleration array
@@ -2266,6 +2453,7 @@ schema ValuesS3:
     restartPolicy?: any
     serviceAccountName?: str
     sidecars?: [any]
+    tlsSecret?: any
     tolerations?: str
 
 schema ValuesS3Annotations:
@@ -2276,7 +2464,16 @@ schema ValuesS3Annotations:
 
 schema ValuesS3AuditLogConfig:
     r"""
-    ValuesS3AuditLogConfig
+    Optionally provide explicit credentials for the S3 gateway.
+    When set, these are used in the generated s3 secret instead of
+    auto-generating random credentials.
+    credentials:
+      admin:
+        accessKey: ""
+        secretKey: ""
+      read:
+        accessKey: ""
+        secretKey: ""
     """
     [...str]: any
 
@@ -2289,8 +2486,43 @@ schema ValuesS3ContainerSecurityContext:
       enabled: true
       runAsUser: 2000
       allowPrivilegeEscalation: false
+
+    Attributes
+    ----------
+    allowPrivilegeEscalation : bool, optional
+    capabilities : ValuesS3ContainerSecurityContextCapabilities, optional
+    enabled : bool, optional
+    runAsNonRoot : bool, optional
+    seccompProfile : ValuesS3ContainerSecurityContextSeccompProfile, optional
     """
     [...str]: any
+    allowPrivilegeEscalation?: bool
+    capabilities?: ValuesS3ContainerSecurityContextCapabilities
+    enabled?: bool
+    runAsNonRoot?: bool
+    seccompProfile?: ValuesS3ContainerSecurityContextSeccompProfile
+
+schema ValuesS3ContainerSecurityContextCapabilities:
+    r"""
+    ValuesS3ContainerSecurityContextCapabilities
+
+    Attributes
+    ----------
+    drop : [str], optional
+    """
+    [...str]: any
+    drop?: [str]
+
+schema ValuesS3ContainerSecurityContextSeccompProfile:
+    r"""
+    ValuesS3ContainerSecurityContextSeccompProfile
+
+    Attributes
+    ----------
+    $type : str, optional
+    """
+    [...str]: any
+    $type?: str
 
 schema ValuesS3IcebergIngress:
     r"""
@@ -2430,8 +2662,17 @@ schema ValuesS3PodSecurityContext:
       runAsUser: 1000
       runAsGroup: 3000
       fsGroup: 2000
+
+    Attributes
+    ----------
+    enabled : bool, optional
+    runAsNonRoot : bool, optional
+        On OpenShift, we omit runAsUser/runAsGroup/fsGroup to let the admission
+        controller assign them automatically based on the namespace's SCC.
     """
     [...str]: any
+    enabled?: bool
+    runAsNonRoot?: bool
 
 schema ValuesS3ReadinessProbe:
     r"""
@@ -2901,8 +3142,43 @@ schema ValuesVolumeContainerSecurityContext:
       enabled: true
       runAsUser: 2000
       allowPrivilegeEscalation: false
+
+    Attributes
+    ----------
+    allowPrivilegeEscalation : bool, optional
+    capabilities : ValuesVolumeContainerSecurityContextCapabilities, optional
+    enabled : bool, optional
+    runAsNonRoot : bool, optional
+    seccompProfile : ValuesVolumeContainerSecurityContextSeccompProfile, optional
     """
     [...str]: any
+    allowPrivilegeEscalation?: bool
+    capabilities?: ValuesVolumeContainerSecurityContextCapabilities
+    enabled?: bool
+    runAsNonRoot?: bool
+    seccompProfile?: ValuesVolumeContainerSecurityContextSeccompProfile
+
+schema ValuesVolumeContainerSecurityContextCapabilities:
+    r"""
+    ValuesVolumeContainerSecurityContextCapabilities
+
+    Attributes
+    ----------
+    drop : [str], optional
+    """
+    [...str]: any
+    drop?: [str]
+
+schema ValuesVolumeContainerSecurityContextSeccompProfile:
+    r"""
+    ValuesVolumeContainerSecurityContextSeccompProfile
+
+    Attributes
+    ----------
+    $type : str, optional
+    """
+    [...str]: any
+    $type?: str
 
 schema ValuesVolumeDataDirsItems0:
     r"""
@@ -2913,12 +3189,16 @@ schema ValuesVolumeDataDirsItems0:
     hostPathPrefix : str, optional, default is "/ssd"
     maxVolumes : int, optional, default is 0
     name : str, optional, default is "data1"
+    size : str, optional
+    storageClass : str, optional
     $type : str, optional, default is "hostPath"
     """
     [...str]: any
     hostPathPrefix?: str
     maxVolumes?: int
     name?: str
+    size?: str
+    storageClass?: str
     $type?: str
 
 schema ValuesVolumeIdx:
@@ -2999,8 +3279,13 @@ schema ValuesVolumeLivenessProbeHttpGet:
 schema ValuesVolumeLogs:
     r"""
     ValuesVolumeLogs
+
+    Attributes
+    ----------
+    $type : str, optional
     """
     [...str]: any
+    $type?: str
 
 schema ValuesVolumePodAnnotations:
     r"""
@@ -3024,8 +3309,17 @@ schema ValuesVolumePodSecurityContext:
       runAsUser: 1000
       runAsGroup: 3000
       fsGroup: 2000
+
+    Attributes
+    ----------
+    enabled : bool, optional
+    runAsNonRoot : bool, optional
+        On OpenShift, we omit runAsUser/runAsGroup/fsGroup to let the admission
+        controller assign them automatically based on the namespace's SCC.
     """
     [...str]: any
+    enabled?: bool
+    runAsNonRoot?: bool
 
 schema ValuesVolumeReadinessProbe:
     r"""
@@ -3127,10 +3421,6 @@ schema ValuesWorker:
         Commenting out or setting as empty the affinity variable, will allow
         deployment to single node services such as Minikube
     annotations : ValuesWorkerAnnotations, optional
-    capabilities : str, optional, default is "vacuum,balance,erasure_coding"
-        Worker capabilities - comma-separated list
-        Available: vacuum, balance, erasure_coding
-        Default: "vacuum,balance,erasure_coding" (all capabilities)
     containerSecurityContext : ValuesWorkerContainerSecurityContext, optional
     data : ValuesWorkerData, optional
         Storage configuration for working directory
@@ -3145,13 +3435,19 @@ schema ValuesWorker:
     extraVolumes : str, optional, default is ""
     imageOverride : any, optional, default is "null"
     initContainers : str, optional, default is ""
+    jobType : str, optional, default is "vacuum,volume_balance,erasure_coding"
+        Worker job types - comma-separated list
+        Available: vacuum, volume_balance, erasure_coding
     livenessProbe : ValuesWorkerLivenessProbe, optional
         Health checks for worker pods
         Workers expose /health (liveness) and /ready (readiness) endpoints on the metricsPort
     loggingOverrideLevel : any, optional, default is "null"
     logs : ValuesWorkerLogs, optional
-    maxConcurrent : int, optional, default is 3
-        Maximum number of concurrent tasks
+    maxDetect : int, optional, default is 1
+        Maximum number of concurrent detection requests
+    maxExecute : int, optional, default is 4
+        Maximum number of concurrent execution jobs
+    metricsIp : str, optional, default is ""
     metricsPort : int, optional, default is 9327
     nodeSelector : str, optional, default is ""
     podAnnotations : ValuesWorkerPodAnnotations, optional
@@ -3179,7 +3475,6 @@ schema ValuesWorker:
     adminServer?: str
     affinity?: str
     annotations?: ValuesWorkerAnnotations
-    capabilities?: str
     containerSecurityContext?: ValuesWorkerContainerSecurityContext
     data?: ValuesWorkerData
     enabled?: bool
@@ -3189,10 +3484,13 @@ schema ValuesWorker:
     extraVolumes?: str
     imageOverride?: any
     initContainers?: str
+    jobType?: str
     livenessProbe?: ValuesWorkerLivenessProbe
     loggingOverrideLevel?: any
     logs?: ValuesWorkerLogs
-    maxConcurrent?: int
+    maxDetect?: int
+    maxExecute?: int
+    metricsIp?: str
     metricsPort?: int
     nodeSelector?: str
     podAnnotations?: ValuesWorkerPodAnnotations
