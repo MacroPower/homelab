@@ -2,6 +2,7 @@ import file
 
 import konfig.models.frontend
 import konfig.models.frontend.networkpolicy
+import konfig.models.frontend.secret
 import konfig.models.templates.networkpolicy as npt
 import konfig.files
 
@@ -10,9 +11,23 @@ import charts.rustdesk
 
 _values = files.read_yaml(file.current(), "values.yaml")
 
+_keypair = secret.ExternalSecret {
+    name = "rustdesk-keypair"
+    data: {
+        RUSTDESK_KEY_PRIV = {}
+        RUSTDESK_KEY_PUB = {}
+    }
+    target.template.data = {
+        id_ed25519 = "{{ .RUSTDESK_KEY_PRIV }}"
+        "id_ed25519.pub" = "{{ .RUSTDESK_KEY_PUB }}"
+    }
+}
+
 app = frontend.App {
     name = "rustdesk"
     tenantName = public_shared.tenant.name
+    secretStore = public_shared.shared.secretStores.default.name
+    externalSecrets.keypair = _keypair
 
     networkPolicies: {
         denyDefault = npt.denyDefault

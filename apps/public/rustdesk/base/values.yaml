@@ -11,6 +11,9 @@ controllers:
           tag: "1.1.14"
         command:
           - hbbs
+        env:
+          DB_URL:
+            value: /data/db_v2.sqlite3
         resources:
           requests:
             cpu: 10m
@@ -103,10 +106,15 @@ service:
         protocol: TCP
 
 persistence:
-  data:
-    type: persistentVolumeClaim
-    storageClass: openebs-hostpath
-    accessMode: ReadWriteOnce
-    size: 1Gi
+  keys:
+    type: secret
+    name: rustdesk-keypair
     globalMounts:
       - path: /root
+        readOnly: true
+  data:
+    type: emptyDir
+    advancedMounts:
+      app:
+        hbbs:
+          - path: /data
