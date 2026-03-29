@@ -8,7 +8,7 @@ controllers:
       hbbs:
         image:
           repository: rustdesk/rustdesk-server
-          tag: "1.1.14"
+          tag: "1.1.15"
         command:
           - hbbs
         resources:
@@ -42,7 +42,7 @@ controllers:
       hbbr:
         image:
           repository: rustdesk/rustdesk-server
-          tag: "1.1.14"
+          tag: "1.1.15"
         command:
           - hbbr
         resources:
