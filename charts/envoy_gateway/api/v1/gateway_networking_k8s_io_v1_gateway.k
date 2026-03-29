@@ -1224,7 +1224,7 @@ schema GatewayNetworkingK8sIoV1GatewayStatus:
           * no addresses are specified, all addresses are dynamically assigned
           * a combination of specified and dynamic addresses are assigned
           * a specified address was unusable (e.g. already in use)
-    conditions : [GatewayNetworkingK8sIoV1GatewayStatusConditionsItems0], default is [{"message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z"}, {"type": "Programmed", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown"}], optional
+    conditions : [GatewayNetworkingK8sIoV1GatewayStatusConditionsItems0], default is [{"status": "Unknown", "type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending"}, {"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Programmed"}], optional
         Conditions describe the current conditions of the Gateway.
 
         Implementations should prefer to express Gateway conditions

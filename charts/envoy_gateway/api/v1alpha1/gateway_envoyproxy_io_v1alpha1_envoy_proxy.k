@@ -20,18 +20,19 @@ schema EnvoyProxy:
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, optional
         metadata
-    spec : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpec, default is Undefined, optional
+    spec : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpec, default is Undefined, required
         spec
-    status : any, default is Undefined, optional
-        EnvoyProxyStatus defines the actual state of EnvoyProxy.
+    status : GatewayEnvoyproxyIoV1alpha1EnvoyProxyStatus, default is Undefined, optional
+        status
     """
     apiVersion: "gateway.envoyproxy.io/v1alpha1" = "gateway.envoyproxy.io/v1alpha1"
 
     kind: "EnvoyProxy" = "EnvoyProxy"
 
     metadata?: v1.ObjectMeta
-    spec?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpec
-    status?: any
+    spec: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpec
+
+    status?: GatewayEnvoyproxyIoV1alpha1EnvoyProxyStatus
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpec:
     r"""
@@ -99,6 +100,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpec:
         - envoy.filters.http.credential_injector
 
         - envoy.filters.http.compressor
+
+        - envoy.filters.http.dynamic_forward_proxy
 
         - envoy.filters.http.router
 
@@ -978,6 +981,10 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
         NodeSelector is a selector which must be true for the pod to fit on a node.
         Selector which must match a node's labels for the pod to be scheduled on that node.
         More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+    priorityClassName : str, default is Undefined, optional
+        PriorityClassName indicates the importance of a Pod relative to other Pods.
+        If a PriorityClassName is not specified, the pod priority will be default or zero if there is no default.
+        More info: https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
     securityContext : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodSecurityContext, default is Undefined, optional
         security context
     tolerations : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodTolerationsItems0], default is Undefined, optional
@@ -995,6 +1002,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
     imagePullSecrets?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodImagePullSecretsItems0]
     labels?: {str:str}
     nodeSelector?: {str:str}
+    priorityClassName?: str
     securityContext?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodSecurityContext
     tolerations?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodTolerationsItems0]
     topologySpreadConstraints?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodTopologySpreadConstraintsItems0]
@@ -2087,9 +2095,10 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
         If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
         Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
         Exists is equivalent to wildcard for value, so that a pod can
         tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
     tolerationSeconds : int, default is Undefined, optional
         TolerationSeconds represents the period of time the toleration (which must be
         of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
@@ -2961,7 +2970,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodVolumesItems0EphemeralVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -3755,6 +3764,20 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
         longer than 24 hours.
     signerName : str, default is Undefined, required
         Kubelet's generated CSRs will be addressed to this signer.
+    userAnnotations : {str:str}, default is Undefined, optional
+        userAnnotations allow pod authors to pass additional information to
+        the signer implementation.  Kubernetes does not restrict or validate this
+        metadata in any way.
+
+        These values are copied verbatim into the `spec.unverifiedUserAnnotations` field of
+        the PodCertificateRequest objects that Kubelet creates.
+
+        Entries are subject to the same validation as object metadata annotations,
+        with the addition that all keys must be domain-prefixed. No restrictions
+        are placed on values, except an overall size limitation on the entire field.
+
+        Signers should document the keys and values they support. Signers should
+        deny requests that contain keys they do not recognize.
     """
     certificateChainPath?: str
     credentialBundlePath?: str
@@ -3763,6 +3786,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSet
 
     maxExpirationSeconds?: int
     signerName: str
+
+    userAnnotations?: {str:str}
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDaemonSetPodVolumesItems0ProjectedSourcesItems0Secret:
     r"""
@@ -4789,6 +4814,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
         readiness probe
     resizePolicy : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0ResizePolicyItems0], default is Undefined, optional
         Resources resize policy for the container.
+        This field cannot be set on ephemeral containers.
     resources : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentInitContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
@@ -6247,6 +6273,10 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
         NodeSelector is a selector which must be true for the pod to fit on a node.
         Selector which must match a node's labels for the pod to be scheduled on that node.
         More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+    priorityClassName : str, default is Undefined, optional
+        PriorityClassName indicates the importance of a Pod relative to other Pods.
+        If a PriorityClassName is not specified, the pod priority will be default or zero if there is no default.
+        More info: https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
     securityContext : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodSecurityContext, default is Undefined, optional
         security context
     tolerations : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodTolerationsItems0], default is Undefined, optional
@@ -6264,6 +6294,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
     imagePullSecrets?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodImagePullSecretsItems0]
     labels?: {str:str}
     nodeSelector?: {str:str}
+    priorityClassName?: str
     securityContext?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodSecurityContext
     tolerations?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodTolerationsItems0]
     topologySpreadConstraints?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodTopologySpreadConstraintsItems0]
@@ -7356,9 +7387,10 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
         If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
         Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
         Exists is equivalent to wildcard for value, so that a pod can
         tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
     tolerationSeconds : int, default is Undefined, optional
         TolerationSeconds represents the period of time the toleration (which must be
         of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
@@ -8230,7 +8262,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodVolumesItems0EphemeralVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -9024,6 +9056,20 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
         longer than 24 hours.
     signerName : str, default is Undefined, required
         Kubelet's generated CSRs will be addressed to this signer.
+    userAnnotations : {str:str}, default is Undefined, optional
+        userAnnotations allow pod authors to pass additional information to
+        the signer implementation.  Kubernetes does not restrict or validate this
+        metadata in any way.
+
+        These values are copied verbatim into the `spec.unverifiedUserAnnotations` field of
+        the PodCertificateRequest objects that Kubelet creates.
+
+        Entries are subject to the same validation as object metadata annotations,
+        with the addition that all keys must be domain-prefixed. No restrictions
+        are placed on values, except an overall size limitation on the entire field.
+
+        Signers should document the keys and values they support. Signers should
+        deny requests that contain keys they do not recognize.
     """
     certificateChainPath?: str
     credentialBundlePath?: str
@@ -9032,6 +9078,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymen
 
     maxExpirationSeconds?: int
     signerName: str
+
+    userAnnotations?: {str:str}
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyDeploymentPodVolumesItems0ProjectedSourcesItems0Secret:
     r"""
@@ -9541,8 +9589,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyHpaBehavi
         and scale-down and scale-up tolerances of 5% and 1% respectively, scaling will be
         triggered when the actual consumption falls below 95Mi or exceeds 101Mi.
 
-        This is an alpha field and requires enabling the HPAConfigurableTolerance
-        feature gate.
+        This is an beta field and requires the HPAConfigurableTolerance feature
+        gate to be enabled.
     """
     policies?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyHpaBehaviorScaleDownPoliciesItems0]
     selectPolicy?: str
@@ -9608,8 +9656,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyHpaBehavi
         and scale-down and scale-up tolerances of 5% and 1% respectively, scaling will be
         triggered when the actual consumption falls below 95Mi or exceeds 101Mi.
 
-        This is an alpha field and requires enabling the HPAConfigurableTolerance
-        feature gate.
+        This is an beta field and requires the HPAConfigurableTolerance feature
+        gate to be enabled.
     """
     policies?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecProviderKubernetesEnvoyHpaBehaviorScaleUpPoliciesItems0]
     selectPolicy?: str
@@ -10276,11 +10324,14 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetry:
         access log
     metrics : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetrics, default is Undefined, optional
         metrics
+    requestID : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryRequestID, default is Undefined, optional
+        request ID
     tracing : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracing, default is Undefined, optional
         tracing
     """
     accessLog?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLog
     metrics?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetrics
+    requestID?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryRequestID
     tracing?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracing
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLog:
@@ -10354,6 +10405,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         The [format string documentation](https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage#config-access-log-format-strings) provides more information.
     $type : str, default is Undefined, optional
         Type defines the type of accesslog format.
+        When unset, both text and json can be specified.
     """
     json?: {str:str}
     text?: str
@@ -10528,6 +10580,20 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         case, the port number is the service port number, not the target port.
         For other resources, destination port might be derived from the referent
         resource or this field.
+    weight : int, default is 1, optional
+        Weight specifies the proportion of requests forwarded to the referenced
+        backend. This is computed as weight/(sum of all weights in this
+        BackendRefs list). For non-zero values, there may be some epsilon from
+        the exact proportion defined here depending on the precision an
+        implementation supports. Weight is not a percentage and the sum of
+        weights does not need to equal 100.
+
+        If only one backend is specified and it has a weight greater than 0, 100%
+        of the traffic is forwarded to that backend. If weight is set to 0, no
+        traffic should be forwarded for this entry. If unspecified, weight
+        defaults to 1.
+
+        Support for this field varies based on the context where used.
     """
     fallback?: bool
     group?: str = ""
@@ -10536,6 +10602,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
 
     namespace?: str
     port?: int
+    weight?: int = 1
 
     check:
         len(group) <= 253 if group
@@ -10550,6 +10617,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
         port <= 65535 if port not in [None, Undefined]
         port >= 1 if port not in [None, Undefined]
+        weight <= 1000000 if weight not in [None, Undefined]
+        weight >= 0 if weight not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettings:
     r"""
@@ -11038,6 +11107,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         header
     headers : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsLoadBalancerConsistentHashHeadersItems0], default is Undefined, optional
         Headers configures the header hash policy for each header, when the consistent hash type is set to Headers.
+    queryParams : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsLoadBalancerConsistentHashQueryParamsItems0], default is Undefined, optional
+        QueryParams configures the query parameter hash policy when the consistent hash type is set to QueryParams.
     tableSize : int, default is 65537, optional
         The table size for consistent hashing, must be prime number limited to 5000011.
     $type : str, default is Undefined, required
@@ -11046,12 +11117,14 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         "Header",
         "Headers",
         "Cookie".
+        "QueryParams".
     """
     cookie?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsLoadBalancerConsistentHashCookie
     header?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsLoadBalancerConsistentHashHeader
     headers?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsLoadBalancerConsistentHashHeadersItems0]
+    queryParams?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsLoadBalancerConsistentHashQueryParamsItems0]
     tableSize?: int = 65537
-    $type: "SourceIP" | "Header" | "Headers" | "Cookie"
+    $type: "SourceIP" | "Header" | "Headers" | "Cookie" | "QueryParams"
 
     check:
         tableSize <= 5000011 if tableSize not in [None, Undefined]
@@ -11105,6 +11178,18 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
     ----------
     name : str, default is Undefined, required
         Name of the header to hash.
+    """
+    name: str
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0AlsBackendSettingsLoadBalancerConsistentHashQueryParamsItems0:
+    r"""
+    QueryParam defines the query parameter name hashing configuration for consistent hash based
+    load balancing.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the query param to hash.
     """
     name: str
 
@@ -11435,25 +11520,37 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         backend server to which the authorization request will be sent.
     backendSettings : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettings, default is Undefined, optional
         backend settings
+    headers : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryHeadersItems0], default is Undefined, optional
+        Headers is a list of additional headers to send with OTLP export requests.
+        These headers are added as gRPC initial metadata for the OTLP gRPC service.
     host : str, default is Undefined, optional
         Host define the extension service hostname.
         Deprecated: Use BackendRefs instead.
     port : int, default is 4317, optional
         Port defines the port the extension service is exposed on.
         Deprecated: Use BackendRefs instead.
+    resourceAttributes : {str:str}, default is Undefined, optional
+        ResourceAttributes is a set of labels that describe the source of a log entry, including envoy node info.
+        It's recommended to follow [semantic conventions](https://opentelemetry.io/docs/reference/specification/resource/semantic_conventions/).
     resources : {str:str}, default is Undefined, optional
         Resources is a set of labels that describe the source of a log entry, including envoy node info.
         It's recommended to follow [semantic conventions](https://opentelemetry.io/docs/reference/specification/resource/semantic_conventions/).
+
+        Deprecated: Use ResourceAttributes instead.
     """
     backendRef?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendRef
     backendRefs?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendRefsItems0]
     backendSettings?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettings
+    headers?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryHeadersItems0]
     host?: str
     port?: int = 4317
+    resourceAttributes?: {str:str}
     resources?: {str:str}
 
     check:
         len(backendRefs) <= 16 if backendRefs
+        len(headers) >= 1 if headers
+        len(headers) <= 32 if headers
         port >= 0 if port not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendRef:
@@ -11572,6 +11669,20 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         case, the port number is the service port number, not the target port.
         For other resources, destination port might be derived from the referent
         resource or this field.
+    weight : int, default is 1, optional
+        Weight specifies the proportion of requests forwarded to the referenced
+        backend. This is computed as weight/(sum of all weights in this
+        BackendRefs list). For non-zero values, there may be some epsilon from
+        the exact proportion defined here depending on the precision an
+        implementation supports. Weight is not a percentage and the sum of
+        weights does not need to equal 100.
+
+        If only one backend is specified and it has a weight greater than 0, 100%
+        of the traffic is forwarded to that backend. If weight is set to 0, no
+        traffic should be forwarded for this entry. If unspecified, weight
+        defaults to 1.
+
+        Support for this field varies based on the context where used.
     """
     fallback?: bool
     group?: str = ""
@@ -11580,6 +11691,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
 
     namespace?: str
     port?: int
+    weight?: int = 1
 
     check:
         len(group) <= 253 if group
@@ -11594,6 +11706,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
         port <= 65535 if port not in [None, Undefined]
         port >= 1 if port not in [None, Undefined]
+        weight <= 1000000 if weight not in [None, Undefined]
+        weight >= 0 if weight not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettings:
     r"""
@@ -12082,6 +12196,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         header
     headers : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashHeadersItems0], default is Undefined, optional
         Headers configures the header hash policy for each header, when the consistent hash type is set to Headers.
+    queryParams : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashQueryParamsItems0], default is Undefined, optional
+        QueryParams configures the query parameter hash policy when the consistent hash type is set to QueryParams.
     tableSize : int, default is 65537, optional
         The table size for consistent hashing, must be prime number limited to 5000011.
     $type : str, default is Undefined, required
@@ -12090,12 +12206,14 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
         "Header",
         "Headers",
         "Cookie".
+        "QueryParams".
     """
     cookie?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashCookie
     header?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashHeader
     headers?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashHeadersItems0]
+    queryParams?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashQueryParamsItems0]
     tableSize?: int = 65537
-    $type: "SourceIP" | "Header" | "Headers" | "Cookie"
+    $type: "SourceIP" | "Header" | "Headers" | "Cookie" | "QueryParams"
 
     check:
         tableSize <= 5000011 if tableSize not in [None, Undefined]
@@ -12149,6 +12267,18 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
     ----------
     name : str, default is Undefined, required
         Name of the header to hash.
+    """
+    name: str
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashQueryParamsItems0:
+    r"""
+    QueryParam defines the query parameter name hashing configuration for consistent hash based
+    load balancing.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the query param to hash.
     """
     name: str
 
@@ -12435,6 +12565,35 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0
     check:
         _regex_match(str(connectTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if connectTimeout
 
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryAccessLogSettingsItems0SinksItems0OpenTelemetryHeadersItems0:
+    r"""
+    HTTPHeader represents an HTTP Header name and value as defined by RFC 7230.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name is the name of the HTTP Header to be matched. Name matching MUST be
+        case-insensitive. (See https://tools.ietf.org/html/rfc7230#section-3.2).
+
+        If multiple entries specify equivalent header names, the first entry with
+        an equivalent name MUST be considered for a match. Subsequent entries
+        with an equivalent header name MUST be ignored. Due to the
+        case-insensitivity of header names, "foo" and "Foo" are considered
+        equivalent.
+    value : str, default is Undefined, required
+        Value is the value of HTTP Header to be matched.
+    """
+    name: str
+
+    value: str
+
+    check:
+        len(name) <= 256
+        len(name) >= 1
+        _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
+        len(value) <= 4096
+        len(value) >= 1
+
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetrics:
     r"""
     Metrics defines metrics configuration for managed proxies.
@@ -12445,15 +12604,15 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetrics:
         ClusterStatName defines the value of cluster alt_stat_name, determining how cluster stats are named.
         For more details, see envoy docs: https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/cluster/v3/cluster.proto.html
         The supported operators for this pattern are:
-        %ROUTE_NAME%: name of Gateway API xRoute resource
-        %ROUTE_NAMESPACE%: namespace of Gateway API xRoute resource
-        %ROUTE_KIND%: kind of Gateway API xRoute resource
-        %ROUTE_RULE_NAME%: name of the Gateway API xRoute section
-        %ROUTE_RULE_NUMBER%: name of the Gateway API xRoute section
-        %BACKEND_REFS%: names of all backends referenced in <NAMESPACE>/<NAME>|<NAMESPACE>/<NAME>|... format
+        `%ROUTE_NAME%`: name of Gateway API xRoute resource
+        `%ROUTE_NAMESPACE%`: namespace of Gateway API xRoute resource
+        `%ROUTE_KIND%`: kind of Gateway API xRoute resource
+        `%ROUTE_RULE_NAME%`: name of the Gateway API xRoute section
+        `%ROUTE_RULE_NUMBER%`: name of the Gateway API xRoute section
+        `%BACKEND_REFS%`: names of all backends referenced in `<NAMESPACE>/<NAME>|<NAMESPACE>/<NAME>|...` format
         Only xDS Clusters created for HTTPRoute and GRPCRoute are currently supported.
-        Default: %ROUTE_KIND%/%ROUTE_NAMESPACE%/%ROUTE_NAME%/rule/%ROUTE_RULE_NUMBER%
-        Example: httproute/my-ns/my-route/rule/0
+        Default: `%ROUTE_KIND%/%ROUTE_NAMESPACE%/%ROUTE_NAME%/rule/%ROUTE_RULE_NUMBER%`
+        Example: `httproute/my-ns/my-route/rule/0`
     enablePerEndpointStats : bool, default is Undefined, optional
         EnablePerEndpointStats enables per endpoint envoy stats metrics.
         Please use with caution.
@@ -12528,6 +12687,12 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsPrometheusCompre
         The configuration for Brotli compressor.
     gzip : any, default is Undefined, optional
         The configuration for GZIP compressor.
+    minContentLength : int | str, default is Undefined, optional
+        MinContentLength defines the minimum response size in bytes to apply compression.
+        Responses smaller than this threshold will not be compressed.
+        Must be at least 30 bytes as enforced by Envoy Proxy.
+        Note that when the suffix is not provided, the value is interpreted as bytes.
+        Default: 30 bytes
     $type : str, default is Undefined, required
         CompressorType defines the compressor type to use for compression.
     zstd : any, default is Undefined, optional
@@ -12535,9 +12700,14 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsPrometheusCompre
     """
     brotli?: any
     gzip?: any
+    minContentLength?: int | str
     $type: "Gzip" | "Brotli" | "Zstd"
 
     zstd?: any
+
+    check:
+        _regex_match(str(minContentLength), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if minContentLength
+        _regex_match(str(minContentLength), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if minContentLength
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0:
     r"""
@@ -12569,21 +12739,40 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
         backend server to which the authorization request will be sent.
     backendSettings : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettings, default is Undefined, optional
         backend settings
+    headers : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryHeadersItems0], default is Undefined, optional
+        Headers is a list of additional headers to send with OTLP export requests.
+        These headers are added as gRPC initial metadata for the OTLP gRPC service.
     host : str, default is Undefined, optional
         Host define the service hostname.
         Deprecated: Use BackendRefs instead.
     port : int, default is 4317, optional
         Port defines the port the service is exposed on.
         Deprecated: Use BackendRefs instead.
+    reportCountersAsDeltas : bool, default is Undefined, optional
+        ReportCountersAsDeltas configures the OpenTelemetry sink to report
+        counters as delta temporality instead of cumulative.
+    reportHistogramsAsDeltas : bool, default is Undefined, optional
+        ReportHistogramsAsDeltas configures the OpenTelemetry sink to report
+        histograms as delta temporality instead of cumulative.
+        Required for backends like Elastic that drop cumulative histograms.
+    resourceAttributes : {str:str}, default is Undefined, optional
+        ResourceAttributes is a set of labels that describe the source of metrics.
+        It's recommended to follow semantic conventions: https://opentelemetry.io/docs/reference/specification/resource/semantic_conventions/
     """
     backendRef?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendRef
     backendRefs?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendRefsItems0]
     backendSettings?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettings
+    headers?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryHeadersItems0]
     host?: str
     port?: int = 4317
+    reportCountersAsDeltas?: bool
+    reportHistogramsAsDeltas?: bool
+    resourceAttributes?: {str:str}
 
     check:
         len(backendRefs) <= 16 if backendRefs
+        len(headers) >= 1 if headers
+        len(headers) <= 32 if headers
         port <= 65535 if port not in [None, Undefined]
         port >= 0 if port not in [None, Undefined]
 
@@ -12703,6 +12892,20 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
         case, the port number is the service port number, not the target port.
         For other resources, destination port might be derived from the referent
         resource or this field.
+    weight : int, default is 1, optional
+        Weight specifies the proportion of requests forwarded to the referenced
+        backend. This is computed as weight/(sum of all weights in this
+        BackendRefs list). For non-zero values, there may be some epsilon from
+        the exact proportion defined here depending on the precision an
+        implementation supports. Weight is not a percentage and the sum of
+        weights does not need to equal 100.
+
+        If only one backend is specified and it has a weight greater than 0, 100%
+        of the traffic is forwarded to that backend. If weight is set to 0, no
+        traffic should be forwarded for this entry. If unspecified, weight
+        defaults to 1.
+
+        Support for this field varies based on the context where used.
     """
     fallback?: bool
     group?: str = ""
@@ -12711,6 +12914,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
 
     namespace?: str
     port?: int
+    weight?: int = 1
 
     check:
         len(group) <= 253 if group
@@ -12725,6 +12929,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
         port <= 65535 if port not in [None, Undefined]
         port >= 1 if port not in [None, Undefined]
+        weight <= 1000000 if weight not in [None, Undefined]
+        weight >= 0 if weight not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettings:
     r"""
@@ -13213,6 +13419,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
         header
     headers : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashHeadersItems0], default is Undefined, optional
         Headers configures the header hash policy for each header, when the consistent hash type is set to Headers.
+    queryParams : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashQueryParamsItems0], default is Undefined, optional
+        QueryParams configures the query parameter hash policy when the consistent hash type is set to QueryParams.
     tableSize : int, default is 65537, optional
         The table size for consistent hashing, must be prime number limited to 5000011.
     $type : str, default is Undefined, required
@@ -13221,12 +13429,14 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
         "Header",
         "Headers",
         "Cookie".
+        "QueryParams".
     """
     cookie?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashCookie
     header?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashHeader
     headers?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashHeadersItems0]
+    queryParams?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashQueryParamsItems0]
     tableSize?: int = 65537
-    $type: "SourceIP" | "Header" | "Headers" | "Cookie"
+    $type: "SourceIP" | "Header" | "Headers" | "Cookie" | "QueryParams"
 
     check:
         tableSize <= 5000011 if tableSize not in [None, Undefined]
@@ -13280,6 +13490,18 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
     ----------
     name : str, default is Undefined, required
         Name of the header to hash.
+    """
+    name: str
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryBackendSettingsLoadBalancerConsistentHashQueryParamsItems0:
+    r"""
+    QueryParam defines the query parameter name hashing configuration for consistent hash based
+    load balancing.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the query param to hash.
     """
     name: str
 
@@ -13566,6 +13788,52 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenT
     check:
         _regex_match(str(connectTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if connectTimeout
 
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryMetricsSinksItems0OpenTelemetryHeadersItems0:
+    r"""
+    HTTPHeader represents an HTTP Header name and value as defined by RFC 7230.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name is the name of the HTTP Header to be matched. Name matching MUST be
+        case-insensitive. (See https://tools.ietf.org/html/rfc7230#section-3.2).
+
+        If multiple entries specify equivalent header names, the first entry with
+        an equivalent name MUST be considered for a match. Subsequent entries
+        with an equivalent header name MUST be ignored. Due to the
+        case-insensitivity of header names, "foo" and "Foo" are considered
+        equivalent.
+    value : str, default is Undefined, required
+        Value is the value of HTTP Header to be matched.
+    """
+    name: str
+
+    value: str
+
+    check:
+        len(name) <= 256
+        len(name) >= 1
+        _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
+        len(value) <= 4096
+        len(value) >= 1
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryRequestID:
+    r"""
+    RequestID configures Envoy request ID behavior.
+
+    Attributes
+    ----------
+    tracing : str, default is Undefined, optional
+        Tracing configures Envoy's behavior for the UUID request ID extension,
+        including whether the trace sampling decision is packed into the UUID and
+        whether `X-Request-ID` is used for trace sampling decisions.
+
+        When omitted, the default behavior is `PackAndSample`, which alters the UUID
+        to contain the trace sampling decision and uses `X-Request-ID` for stable
+        trace sampling.
+    """
+    tracing?: "PackAndSample" | "Sample" | "Pack" | "Disable"
+
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracing:
     r"""
     Tracing defines tracing configuration for managed proxies.
@@ -13576,6 +13844,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracing:
     customTags : {str:GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingCustomTagsAnon}, default is Undefined, optional
         CustomTags defines the custom tags to add to each span.
         If provider is kubernetes, pod name and namespace are added by default.
+
+        Deprecated: Use Tags instead.
     provider : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProvider, default is Undefined, required
         provider
     samplingFraction : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingSamplingFraction, default is Undefined, optional
@@ -13587,12 +13857,23 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracing:
 
         Only one of SamplingRate or SamplingFraction may be specified.
         If neither field is specified, all requests will be sampled.
+    spanName : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingSpanName, default is Undefined, optional
+        span name
+    tags : {str:str}, default is Undefined, optional
+        Tags defines the custom tags to add to each span.
+        Envoy [command operators](https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage#command-operators) may be used in the value.
+        The [format string documentation](https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage#config-access-log-format-strings) provides more information.
+        If provider is kubernetes, pod name and namespace are added by default.
+
+        Same keys take precedence over CustomTags.
     """
     customTags?: {str:GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingCustomTagsAnon}
     provider: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProvider
 
     samplingFraction?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingSamplingFraction
     samplingRate?: int
+    spanName?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingSpanName
+    tags?: {str:str}
 
     check:
         samplingRate <= 100 if samplingRate not in [None, Undefined]
@@ -13676,6 +13957,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProvider:
     host : str, default is Undefined, optional
         Host define the provider service hostname.
         Deprecated: Use BackendRefs instead.
+    openTelemetry : GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderOpenTelemetry, default is Undefined, optional
+        open telemetry
     port : int, default is 4317, optional
         Port defines the port the provider service is exposed on.
         Deprecated: Use BackendRefs instead.
@@ -13695,6 +13978,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProvider:
     backendRefs?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendRefsItems0]
     backendSettings?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettings
     host?: str
+    openTelemetry?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderOpenTelemetry
     port?: int = 4317
     serviceName?: str
     $type: "OpenTelemetry" | "Zipkin" | "Datadog" = "OpenTelemetry"
@@ -13821,6 +14105,20 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendR
         case, the port number is the service port number, not the target port.
         For other resources, destination port might be derived from the referent
         resource or this field.
+    weight : int, default is 1, optional
+        Weight specifies the proportion of requests forwarded to the referenced
+        backend. This is computed as weight/(sum of all weights in this
+        BackendRefs list). For non-zero values, there may be some epsilon from
+        the exact proportion defined here depending on the precision an
+        implementation supports. Weight is not a percentage and the sum of
+        weights does not need to equal 100.
+
+        If only one backend is specified and it has a weight greater than 0, 100%
+        of the traffic is forwarded to that backend. If weight is set to 0, no
+        traffic should be forwarded for this entry. If unspecified, weight
+        defaults to 1.
+
+        Support for this field varies based on the context where used.
     """
     fallback?: bool
     group?: str = ""
@@ -13829,6 +14127,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendR
 
     namespace?: str
     port?: int
+    weight?: int = 1
 
     check:
         len(group) <= 253 if group
@@ -13843,6 +14142,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendR
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
         port <= 65535 if port not in [None, Undefined]
         port >= 1 if port not in [None, Undefined]
+        weight <= 1000000 if weight not in [None, Undefined]
+        weight >= 0 if weight not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettings:
     r"""
@@ -14331,6 +14632,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendS
         header
     headers : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsLoadBalancerConsistentHashHeadersItems0], default is Undefined, optional
         Headers configures the header hash policy for each header, when the consistent hash type is set to Headers.
+    queryParams : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsLoadBalancerConsistentHashQueryParamsItems0], default is Undefined, optional
+        QueryParams configures the query parameter hash policy when the consistent hash type is set to QueryParams.
     tableSize : int, default is 65537, optional
         The table size for consistent hashing, must be prime number limited to 5000011.
     $type : str, default is Undefined, required
@@ -14339,12 +14642,14 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendS
         "Header",
         "Headers",
         "Cookie".
+        "QueryParams".
     """
     cookie?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsLoadBalancerConsistentHashCookie
     header?: GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsLoadBalancerConsistentHashHeader
     headers?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsLoadBalancerConsistentHashHeadersItems0]
+    queryParams?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsLoadBalancerConsistentHashQueryParamsItems0]
     tableSize?: int = 65537
-    $type: "SourceIP" | "Header" | "Headers" | "Cookie"
+    $type: "SourceIP" | "Header" | "Headers" | "Cookie" | "QueryParams"
 
     check:
         tableSize <= 5000011 if tableSize not in [None, Undefined]
@@ -14398,6 +14703,18 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendS
     ----------
     name : str, default is Undefined, required
         Name of the header to hash.
+    """
+    name: str
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendSettingsLoadBalancerConsistentHashQueryParamsItems0:
+    r"""
+    QueryParam defines the query parameter name hashing configuration for consistent hash based
+    load balancing.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the query param to hash.
     """
     name: str
 
@@ -14684,6 +15001,55 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderBackendS
     check:
         _regex_match(str(connectTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if connectTimeout
 
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderOpenTelemetry:
+    r"""
+    OpenTelemetry defines the OpenTelemetry tracing provider configuration
+
+    Attributes
+    ----------
+    headers : [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderOpenTelemetryHeadersItems0], default is Undefined, optional
+        Headers is a list of additional headers to send with OTLP export requests.
+        These headers are added as gRPC initial metadata for the OTLP gRPC service.
+    resourceAttributes : {str:str}, default is Undefined, optional
+        ResourceAttributes is a set of labels that describe the source of traces.
+        It's recommended to follow semantic conventions: https://opentelemetry.io/docs/reference/specification/resource/semantic_conventions/
+    """
+    headers?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderOpenTelemetryHeadersItems0]
+    resourceAttributes?: {str:str}
+
+    check:
+        len(headers) >= 1 if headers
+        len(headers) <= 32 if headers
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderOpenTelemetryHeadersItems0:
+    r"""
+    HTTPHeader represents an HTTP Header name and value as defined by RFC 7230.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name is the name of the HTTP Header to be matched. Name matching MUST be
+        case-insensitive. (See https://tools.ietf.org/html/rfc7230#section-3.2).
+
+        If multiple entries specify equivalent header names, the first entry with
+        an equivalent name MUST be considered for a match. Subsequent entries
+        with an equivalent header name MUST be ignored. Due to the
+        case-insensitivity of header names, "foo" and "Foo" are considered
+        equivalent.
+    value : str, default is Undefined, required
+        Value is the value of HTTP Header to be matched.
+    """
+    name: str
+
+    value: str
+
+    check:
+        len(name) <= 256
+        len(name) >= 1
+        _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
+        len(value) <= 4096
+        len(value) >= 1
+
 schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingProviderZipkin:
     r"""
     Zipkin defines the Zipkin tracing provider configuration
@@ -14706,9 +15072,6 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingSamplingFraction
     SamplingFraction represents the fraction of requests that should be
     selected for tracing if no prior sampling decision has been made.
 
-    Only one of SamplingRate or SamplingFraction may be specified.
-    If neither field is specified, all requests will be sampled.
-
     Attributes
     ----------
     denominator : int, default is 100, optional
@@ -14722,4 +15085,230 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingSamplingFraction
     check:
         denominator >= 1 if denominator not in [None, Undefined]
         numerator >= 0
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxySpecTelemetryTracingSpanName:
+    r"""
+    SpanName defines the name of the span which will be used for tracing.
+    Envoy [command operators](https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage#command-operators) may be used in the value.
+    The [format string documentation](https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage#config-access-log-format-strings) provides more information.
+
+    If not set, the span name is provider specific.
+    e.g. Datadog use `ingress` as the default client span name,
+    and `router <UPSTREAM_CLUSTER> egress` as the server span name.
+
+    Attributes
+    ----------
+    client : str, default is Undefined, required
+        Client defines operation name of the span which will be used for tracing.
+    server : str, default is Undefined, required
+        Server defines the operation name of the upstream span which will be used for tracing.
+    """
+    client: str
+
+    server: str
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxyStatus:
+    r"""
+    EnvoyProxyStatus defines the actual state of EnvoyProxy.
+
+    Attributes
+    ----------
+    ancestors : [GatewayEnvoyproxyIoV1alpha1EnvoyProxyStatusAncestorsItems0], default is Undefined, optional
+        Ancestors represent the status information for all the GatewayClass or Gateway
+        reference this EnvoyProxy with ParametersReference.
+    """
+    ancestors?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxyStatusAncestorsItems0]
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxyStatusAncestorsItems0:
+    r"""
+    gateway envoyproxy io v1alpha1 envoy proxy status ancestors items0
+
+    Attributes
+    ----------
+    ancestorRef : GatewayEnvoyproxyIoV1alpha1EnvoyProxyStatusAncestorsItems0AncestorRef, default is Undefined, required
+        ancestor ref
+    conditions : [GatewayEnvoyproxyIoV1alpha1EnvoyProxyStatusAncestorsItems0ConditionsItems0], default is Undefined, optional
+        Conditions describes the status of the Policy with respect to the given Ancestor.
+    """
+    ancestorRef: GatewayEnvoyproxyIoV1alpha1EnvoyProxyStatusAncestorsItems0AncestorRef
+
+    conditions?: [GatewayEnvoyproxyIoV1alpha1EnvoyProxyStatusAncestorsItems0ConditionsItems0]
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxyStatusAncestorsItems0AncestorRef:
+    r"""
+    AncestorRef corresponds a GatewayClass or Gateway use this EnvoyProxy with ParametersReference.
+
+    Attributes
+    ----------
+    group : str, default is "gateway.networking.k8s.io", optional
+        Group is the group of the referent.
+        When unspecified, "gateway.networking.k8s.io" is inferred.
+        To set the core API group (such as for a "Service" kind referent),
+        Group must be explicitly set to "" (empty string).
+
+        Support: Core
+    kind : str, default is "Gateway", optional
+        Kind is kind of the referent.
+
+        There are two kinds of parent resources with "Core" support:
+
+        * Gateway (Gateway conformance profile)
+        * Service (Mesh conformance profile, ClusterIP Services only)
+
+        Support for other resources is Implementation-Specific.
+    name : str, default is Undefined, required
+        Name is the name of the referent.
+
+        Support: Core
+    namespace : str, default is Undefined, optional
+        Namespace is the namespace of the referent. When unspecified, this refers
+        to the local namespace of the Route.
+
+        Note that there are specific rules for ParentRefs which cross namespace
+        boundaries. Cross-namespace references are only valid if they are explicitly
+        allowed by something in the namespace they are referring to. For example:
+        Gateway has the AllowedRoutes field, and ReferenceGrant provides a
+        generic way to enable any other kind of cross-namespace reference.
+
+        <gateway:experimental:description>
+        ParentRefs from a Route to a Service in the same namespace are "producer"
+        routes, which apply default routing rules to inbound connections from
+        any namespace to the Service.
+
+        ParentRefs from a Route to a Service in a different namespace are
+        "consumer" routes, and these routing rules are only applied to outbound
+        connections originating from the same namespace as the Route, for which
+        the intended destination of the connections are a Service targeted as a
+        ParentRef of the Route.
+        </gateway:experimental:description>
+
+        Support: Core
+    port : int, default is Undefined, optional
+        Port is the network port this Route targets. It can be interpreted
+        differently based on the type of parent resource.
+
+        When the parent resource is a Gateway, this targets all listeners
+        listening on the specified port that also support this kind of Route(and
+        select this Route). It's not recommended to set `Port` unless the
+        networking behaviors specified in a Route must apply to a specific port
+        as opposed to a listener(s) whose port(s) may be changed. When both Port
+        and SectionName are specified, the name and port of the selected listener
+        must match both specified values.
+
+        <gateway:experimental:description>
+        When the parent resource is a Service, this targets a specific port in the
+        Service spec. When both Port (experimental) and SectionName are specified,
+        the name and port of the selected port must match both specified values.
+        </gateway:experimental:description>
+
+        Implementations MAY choose to support other parent resources.
+        Implementations supporting other types of parent resources MUST clearly
+        document how/if Port is interpreted.
+
+        For the purpose of status, an attachment is considered successful as
+        long as the parent resource accepts it partially. For example, Gateway
+        listeners can restrict which Routes can attach to them by Route kind,
+        namespace, or hostname. If 1 of 2 Gateway listeners accept attachment
+        from the referencing Route, the Route MUST be considered successfully
+        attached. If no Gateway listeners accept attachment from this Route,
+        the Route MUST be considered detached from the Gateway.
+
+        Support: Extended
+    sectionName : str, default is Undefined, optional
+        SectionName is the name of a section within the target resource. In the
+        following resources, SectionName is interpreted as the following:
+
+        * Gateway: Listener name. When both Port (experimental) and SectionName
+        are specified, the name and port of the selected listener must match
+        both specified values.
+        * Service: Port name. When both Port (experimental) and SectionName
+        are specified, the name and port of the selected listener must match
+        both specified values.
+
+        Implementations MAY choose to support attaching Routes to other resources.
+        If that is the case, they MUST clearly document how SectionName is
+        interpreted.
+
+        When unspecified (empty string), this will reference the entire resource.
+        For the purpose of status, an attachment is considered successful if at
+        least one section in the parent resource accepts it. For example, Gateway
+        listeners can restrict which Routes can attach to them by Route kind,
+        namespace, or hostname. If 1 of 2 Gateway listeners accept attachment from
+        the referencing Route, the Route MUST be considered successfully
+        attached. If no Gateway listeners accept attachment from this Route, the
+        Route MUST be considered detached from the Gateway.
+
+        Support: Core
+    """
+    group?: str = "gateway.networking.k8s.io"
+    kind?: str = "Gateway"
+    name: str
+
+    namespace?: str
+    port?: int
+    sectionName?: str
+
+    check:
+        len(group) <= 253 if group
+        _regex_match(str(group), r"^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if group
+        len(kind) <= 63 if kind
+        len(kind) >= 1 if kind
+        _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$") if kind
+        len(name) <= 253
+        len(name) >= 1
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+        port <= 65535 if port not in [None, Undefined]
+        port >= 1 if port not in [None, Undefined]
+        len(sectionName) <= 253 if sectionName
+        len(sectionName) >= 1 if sectionName
+        _regex_match(str(sectionName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if sectionName
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyProxyStatusAncestorsItems0ConditionsItems0:
+    r"""
+    Condition contains details for one aspect of the current state of this API Resource.
+
+    Attributes
+    ----------
+    lastTransitionTime : str, default is Undefined, required
+        lastTransitionTime is the last time the condition transitioned from one status to another.
+        This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+    message : str, default is Undefined, required
+        message is a human readable message indicating details about the transition.
+        This may be an empty string.
+    observedGeneration : int, default is Undefined, optional
+        observedGeneration represents the .metadata.generation that the condition was set based upon.
+        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+        with respect to the current state of the instance.
+    reason : str, default is Undefined, required
+        reason contains a programmatic identifier indicating the reason for the condition's last transition.
+        Producers of specific condition types may define expected values and meanings for this field,
+        and whether the values are considered a guaranteed API.
+        The value should be a CamelCase string.
+        This field may not be empty.
+    status : str, default is Undefined, required
+        status of the condition, one of True, False, Unknown.
+    $type : str, default is Undefined, required
+        type of condition in CamelCase or in foo.example.com/CamelCase.
+    """
+    lastTransitionTime: str
+
+    message: str
+
+    observedGeneration?: int
+    reason: str
+
+    status: "True" | "False" | "Unknown"
+
+    $type: str
+
+    check:
+        len(message) <= 32768
+        observedGeneration >= 0 if observedGeneration not in [None, Undefined]
+        len(reason) <= 1024
+        len(reason) >= 1
+        _regex_match(str(reason), r"^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$")
+        len($type) <= 316
+        _regex_match(str($type), r"^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$")
 
