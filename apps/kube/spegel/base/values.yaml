@@ -11,6 +11,9 @@ updateStrategy:
   rollingUpdate:
     maxUnavailable: 25%
 
+nodeSelector:
+  topology.kubernetes.io/region: cin
+
 tolerations:
   - key: CriticalAddonsOnly
     operator: Exists
