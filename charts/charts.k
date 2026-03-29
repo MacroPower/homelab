@@ -170,25 +170,25 @@ charts: helm.Charts = {
     sonarr: {
         chart = "app-template"
         repoURL = "oci://ghcr.io/bjw-s-labs/helm/app-template"
-        targetRevision = "4.5.0"
+        targetRevision = "4.6.2"
         schemaGenerator = "AUTO"
     }
     radarr: {
         chart = "app-template"
         repoURL = "oci://ghcr.io/bjw-s-labs/helm/app-template"
-        targetRevision = "4.5.0"
+        targetRevision = "4.6.2"
         schemaGenerator = "AUTO"
     }
     configarr: {
         chart = "app-template"
         repoURL = "oci://ghcr.io/bjw-s-labs/helm/app-template"
-        targetRevision = "4.5.0"
+        targetRevision = "4.6.2"
         schemaGenerator = "AUTO"
     }
     prowlarr: {
         chart = "app-template"
         repoURL = "oci://ghcr.io/bjw-s-labs/helm/app-template"
-        targetRevision = "4.5.0"
+        targetRevision = "4.6.2"
         schemaGenerator = "AUTO"
     }
     envoy_gateway: {
@@ -213,13 +213,13 @@ charts: helm.Charts = {
     homepage: {
         chart = "app-template"
         repoURL = "oci://ghcr.io/bjw-s-labs/helm/app-template"
-        targetRevision = "4.5.0"
+        targetRevision = "4.6.2"
         schemaGenerator = "AUTO"
     }
     adguard: {
         chart = "app-template"
         repoURL = "oci://ghcr.io/bjw-s-labs/helm/app-template"
-        targetRevision = "4.5.0"
+        targetRevision = "4.6.2"
         schemaGenerator = "NONE"
     }
     robusta: {
@@ -275,7 +275,7 @@ charts: helm.Charts = {
     webhook: {
         chart = "app-template"
         repoURL = "oci://ghcr.io/bjw-s-labs/helm/app-template"
-        targetRevision = "4.5.0"
+        targetRevision = "4.6.2"
         schemaGenerator = "AUTO"
     }
     osrs_ge_exporter: {
@@ -293,7 +293,7 @@ charts: helm.Charts = {
     readme_updater: {
         chart = "app-template"
         repoURL = "oci://ghcr.io/bjw-s-labs/helm/app-template"
-        targetRevision = "4.5.0"
+        targetRevision = "4.6.2"
         schemaGenerator = "AUTO"
     }
     opencloud: {
@@ -319,7 +319,7 @@ charts: helm.Charts = {
     qbittorrent: {
         chart = "app-template"
         repoURL = "oci://ghcr.io/bjw-s-labs/helm/app-template"
-        targetRevision = "4.5.0"
+        targetRevision = "4.6.2"
         schemaGenerator = "AUTO"
     }
     crossplane: {
@@ -335,7 +335,7 @@ charts: helm.Charts = {
     opentofu: {
         chart = "app-template"
         repoURL = "oci://ghcr.io/bjw-s-labs/helm/app-template"
-        targetRevision = "4.5.0"
+        targetRevision = "4.6.2"
         schemaGenerator = "NONE"
         crdGenerator = "PATH"
         crdPaths = [
@@ -347,7 +347,7 @@ charts: helm.Charts = {
     truecommand: {
         chart = "app-template"
         repoURL = "oci://ghcr.io/bjw-s-labs/helm/app-template"
-        targetRevision = "4.5.0"
+        targetRevision = "4.6.2"
         schemaGenerator = "AUTO"
     }
 }
