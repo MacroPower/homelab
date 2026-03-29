@@ -37,6 +37,7 @@ services:
       - /mnt/main/media/video/anime:/var/media/video/anime:rshared
       - /mnt/main/media/video/tv:/var/media/video/tv:rshared
       - /mnt/main/media/video/movies:/var/media/video/movies:rshared
+      - /mnt/main/archive/backups/repos:/var/archive/backups/repos:rshared
     networks:
       shared_macvlan:
         ipv4_address: "10.10.12.1"

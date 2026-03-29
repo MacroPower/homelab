@@ -331,6 +331,13 @@ nodes:
                   - rbind
                   - rshared
                   - rw
+              - source: /var/archive/backups
+                destination: /var/archive/backups
+                type: bind
+                options:
+                  - rbind
+                  - rshared
+                  - rw
 
   - hostname: krobot01.fsn.macro.network
     ipAddress: 10.42.2.20

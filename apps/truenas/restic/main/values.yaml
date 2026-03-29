@@ -9,6 +9,6 @@ controllers:
 persistence:
   data:
     type: hostPath
-    hostPath: /mnt/main/archive/backups/restic
+    hostPath: /var/archive/backups/repos
     globalMounts:
       - path: /data
