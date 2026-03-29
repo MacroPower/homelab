@@ -10,6 +10,15 @@ resource "auth0_client" "lab_admin_client" {
   jwt_configuration {
     alg = "RS256"
   }
+
+  oidc_logout {
+    backchannel_logout_urls = []
+
+    backchannel_logout_initiators {
+      mode                = "custom"
+      selected_initiators = ["idp-logout", "rp-logout"]
+    }
+  }
 }
 
 resource "auth0_client_credentials" "lab_admin_client_secret_post" {

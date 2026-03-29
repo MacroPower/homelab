@@ -11,6 +11,15 @@ resource "auth0_client" "starr_client" {
   jwt_configuration {
     alg = "RS256"
   }
+
+  oidc_logout {
+    backchannel_logout_urls = []
+
+    backchannel_logout_initiators {
+      mode                = "custom"
+      selected_initiators = ["idp-logout", "rp-logout"]
+    }
+  }
 }
 
 # https://registry.terraform.io/providers/auth0/auth0/latest/docs/resources/client_credentials
