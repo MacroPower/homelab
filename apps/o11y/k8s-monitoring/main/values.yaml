@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=../../../../charts/k8s_monitoring/values.schema.json
 
-destinationsMap:
+destinations:
   loki:
     url: "http://loki-gateway.o11y-loki.svc/loki/api/v1/push"
   tempo:
@@ -8,10 +8,8 @@ destinationsMap:
   mimir:
     url: "http://mimir-distributed-nginx.o11y-mimir.svc/api/v1/push"
 
-alloy-singleton:
-  # https://grafana.com/docs/alloy/latest/reference/components/mimir/mimir.rules.kubernetes/
-  extraConfig: |-
-    mimir.rules.kubernetes "default" {
-      address = "http://mimir-distributed-ruler.o11y-mimir.svc:8080"
-      tenant_id = "anonymous"
-    }
+extraConfig: |-
+  mimir.rules.kubernetes "default" {
+    address = "http://mimir-distributed-ruler.o11y-mimir.svc:8080"
+    tenant_id = "anonymous"
+  }

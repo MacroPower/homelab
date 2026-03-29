@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=../../../../charts/k8s_monitoring/values.schema.json
 
-destinationsMap:
+destinations:
   loki:
     type: loki
   tempo:
@@ -32,7 +32,7 @@ clusterMetrics:
 clusterEvents:
   enabled: true
 
-podLogs:
+podLogsViaLoki:
   enabled: true
 
 applicationObservability:
@@ -49,35 +49,7 @@ applicationObservability:
 autoInstrumentation:
   enabled: true
 
-alloy-metrics:
-  enabled: true
-
-alloy-singleton:
-  enabled: true
-
-alloy-logs:
-  enabled: true
-
-alloy-receiver:
-  enabled: true
-  alloy:
-    extraPorts:
-      - name: otlp-grpc
-        port: 4317
-        targetPort: 4317
-        protocol: TCP
-      - name: otlp-http
-        port: 4318
-        targetPort: 4318
-        protocol: TCP
-
 integrations:
   alloy:
     instances:
       - name: alloy
-        labelSelectors:
-          app.kubernetes.io/name:
-            - alloy-metrics
-            - alloy-singleton
-            - alloy-logs
-            - alloy-receiver

@@ -2,6 +2,10 @@
 
 mimir:
   structuredConfig:
+    ingest_storage:
+      enabled: false
+    ingester:
+      push_grpc_method_enabled: true
     common:
       storage:
         backend: s3
@@ -16,6 +20,9 @@ mimir:
         bucket_name: mimir-ruler
     limits:
       max_global_series_per_user: 0
+
+kafka:
+  enabled: false
 
 alertmanager:
   persistentVolume:
@@ -160,15 +167,6 @@ store_gateway:
           topologyKey: topology.kubernetes.io/zone
   zoneAwareReplication:
     topologyKey: topology.kubernetes.io/zone
-
-nginx:
-  replicas: 1
-  resources:
-    limits:
-      memory: 731Mi
-    requests:
-      cpu: 100m
-      memory: 100Mi
 
 metaMonitoring:
   serviceMonitor:

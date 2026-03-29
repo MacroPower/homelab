@@ -121,14 +121,14 @@ charts: helm.Charts = {
     loki: {
         chart = "loki"
         repoURL = "https://grafana.github.io/helm-charts"
-        targetRevision = "6.46.0"
+        targetRevision = "6.55.0"
         schemaGenerator = "VALUE-INFERENCE"
         crdGenerator = "NONE"
     }
     tempo: {
         chart = "tempo-distributed"
-        repoURL = "https://grafana.github.io/helm-charts"
-        targetRevision = "1.57.1"
+        repoURL = "https://grafana-community.github.io/helm-charts"
+        targetRevision = "2.7.0"
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
     }
@@ -142,16 +142,13 @@ charts: helm.Charts = {
     k8s_monitoring: {
         chart = "k8s-monitoring"
         repoURL = "https://grafana.github.io/helm-charts"
-        targetRevision = "3.6.2"
+        targetRevision = "4.0.0"
         schemaGenerator = "VALUE-INFERENCE"
         crdGenerator = "TEMPLATE"
         values: {
             cluster: {name = "kcl"}
-            destinationsMap: {
+            destinations: {
                 mimir: {"type" = "prometheus"}
-            }
-            "alloy-metrics": {
-                enabled = True
             }
             prometheusOperatorObjects: {
                 enabled = True
