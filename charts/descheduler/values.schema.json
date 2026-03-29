@@ -324,6 +324,15 @@
       "title": "imagePullSecrets",
       "type": "null"
     },
+    "initContainers": {
+      "description": "Init containers to run before the main descheduler container",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "initContainers",
+      "type": "array"
+    },
     "jobAnnotations": {
       "additionalProperties": true,
       "required": [],
