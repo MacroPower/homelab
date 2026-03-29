@@ -4,6 +4,7 @@ import json
 import konfig.models.frontend
 import konfig.models.frontend.configmap
 import konfig.models.frontend.gateway
+import konfig.models.frontend.networkpolicy
 import konfig.models.templates.networkpolicy as npt
 import konfig.files
 
@@ -26,6 +27,15 @@ app = frontend.App {
         denyDefault = npt.denyDefault
         kubeDNSEgress = npt.kubeDNSEgress
         icmpV6Egress = npt.icmpV6Egress
+        codeSigningEgress = networkpolicy.NetworkPolicy {
+            name = "code-signing-egress"
+            egress = [{
+                toFQDNs = [{matchName = "timestamp.comodoca.com"}]
+                toPorts = [{
+                    ports = [{port = "443", protocol = "TCP"}]
+                }]
+            }]
+        }
         gatewayIngress = npt.envoyGatewayIngress
     }
 
