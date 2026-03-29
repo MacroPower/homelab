@@ -1,7 +1,7 @@
 import file
 import json
 
-import konfig.models.frontend.configmap
+import konfig.models.frontend.secret
 import konfig.files
 import konfig.objects
 
@@ -13,20 +13,39 @@ _baseValues = public_meshcentral_base.app.charts.meshcentral.values
 _envValues = files.read_yaml(file.current(), "values.yaml")
 _values = objects.json_merge_patch(_baseValues, _envValues)
 
-_meshcentralConfig = public_meshcentral_base.meshcentralConfig | {
-    settings: {
-        cert = "meshcentral.${cluster.DOMAIN_NAME}"
+_meshcentralOIDCClient = secret.ExternalSecret {
+    name = "meshcentral-oidc-config"
+    data: {
+        "MESHCENTRAL_AUTH0_CLIENT_ID" = {}
+        "MESHCENTRAL_AUTH0_CLIENT_SECRET" = {}
+    }
+    target = {
+        name = "meshcentral-config"
+        template.data: {
+            "config.json" = json.encode(public_meshcentral_base.meshcentralConfig | {
+                settings: {
+                    cert = "meshcentral.jacobcolvin.com"
+                }
+                domains: {
+                    "": {
+                        authStrategies.oidc: {
+                            issuer = "https://auth.jacobcolvin.com/"
+                            client: {
+                                client_id = "{{ .MESHCENTRAL_AUTH0_CLIENT_ID }}"
+                                client_secret = "{{ .MESHCENTRAL_AUTH0_CLIENT_SECRET }}"
+                                redirect_uri = "https://meshcentral.jacobcolvin.com/auth-oidc-callback"
+                            }
+                        }
+                    }
+                }
+            })
+        }
     }
 }
 
 app = public_meshcentral_base.app | {
-    domainName = cluster.DOMAIN_NAME
+    domainName = "jacobcolvin.com"
     charts.meshcentral.values = _values
 
-    configMaps.meshcentralConfig = configmap.ConfigMap {
-        name = "meshcentral-config"
-        data: {
-            "config.json" = json.encode(_meshcentralConfig)
-        }
-    }
+    externalSecrets.meshcentralOIDCClient = _meshcentralOIDCClient
 }

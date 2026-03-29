@@ -13,3 +13,6 @@ domains:
     title: MeshCentral
     title2: Homelab
     newAccounts: false
+    authStrategies:
+      oidc:
+        newAccounts: true

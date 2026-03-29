@@ -58,7 +58,7 @@ persistence:
     globalMounts:
       - path: /opt/meshcentral/meshcentral-files
   config:
-    type: configMap
+    type: secret
     name: meshcentral-config
     globalMounts:
       - subPath: config.json
