@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Ylianst/MeshCentral/master/meshcentral-config-schema.json
+
+settings:
+  aliasPort: 443
+  redirPort: 0
+  tlsOffload: "0.0.0.0"
+  WANonly: true
+  allowLoginToken: true
+  allowFraming: false
+
+domains:
+  "":
+    title: MeshCentral
+    title2: Homelab
+    newAccounts: false

@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=../../../../charts/meshcentral/values.schema.json
+
+controllers:
+  app:
+    replicas: 1
+    strategy: Recreate
+    containers:
+      meshcentral:
+        image:
+          repository: ghcr.io/ylianst/meshcentral
+          tag: "1.1.58"
+        resources:
+          requests:
+            cpu: 50m
+            memory: 256Mi
+          limits:
+            memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+        probes:
+          startup:
+            enabled: true
+            type: TCP
+            port: 4430
+            spec:
+              failureThreshold: 30
+              periodSeconds: 5
+          liveness:
+            enabled: true
+            type: TCP
+            port: 4430
+          readiness:
+            enabled: true
+            type: TCP
+            port: 4430
+
+service:
+  app:
+    ports:
+      https:
+        port: 4430
+
+persistence:
+  data:
+    type: persistentVolumeClaim
+    storageClass: openebs-hostpath
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    globalMounts:
+      - path: /opt/meshcentral/meshcentral-data
+  files:
+    type: persistentVolumeClaim
+    storageClass: openebs-hostpath
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    globalMounts:
+      - path: /opt/meshcentral/meshcentral-files
+  config:
+    type: configMap
+    name: meshcentral-config
+    globalMounts:
+      - subPath: config.json
+        path: /opt/meshcentral/meshcentral-data/config.json
+        readOnly: true
