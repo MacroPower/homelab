@@ -56,7 +56,7 @@ app = frontend.App {
     routes.meshcentralWeb = gateway.Route {
         gatewayRef = public_shared.tenant.gateways.default
         services.meshcentralWeb = {
-            name = "${name}-app"
+            name = name
             port = _meshcentralPort
         }
         homepage = {
