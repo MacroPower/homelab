@@ -1,8 +1,9 @@
 resource "auth0_client" "meshcentral_client" {
-  name        = "MeshCentral"
-  description = "MeshCentral"
-  app_type    = "regular_web"
-  callbacks   = ["https://meshcentral.jacobcolvin.com/auth-oidc-callback"]
+  name                = "MeshCentral"
+  description         = "MeshCentral"
+  app_type            = "regular_web"
+  callbacks           = ["https://meshcentral.jacobcolvin.com/auth-oidc-callback"]
+  allowed_logout_urls = ["https://meshcentral.jacobcolvin.com/login"]
 
   jwt_configuration {
     alg = "RS256"
@@ -29,14 +30,6 @@ resource "auth0_connection_client" "meshcentral_client_github_connection" {
   client_id     = auth0_client.meshcentral_client.id
 }
 
-resource "doppler_secret" "meshcentral_client_id" {
-  name     = "MESHCENTRAL_AUTH0_CLIENT_ID"
-  value    = auth0_client.meshcentral_client.client_id
-  project  = "homelab"
-  config   = "cin"
-  provider = doppler.cin
-}
-
 resource "auth0_role" "meshcentral_admin" {
   name        = "meshcentral-admin"
   description = "MeshCentral Admin"
@@ -45,6 +38,14 @@ resource "auth0_role" "meshcentral_admin" {
 resource "auth0_role" "meshcentral_user" {
   name        = "meshcentral-user"
   description = "MeshCentral User"
+}
+
+resource "doppler_secret" "meshcentral_client_id" {
+  name     = "MESHCENTRAL_AUTH0_CLIENT_ID"
+  value    = auth0_client.meshcentral_client.client_id
+  project  = "homelab"
+  config   = "cin"
+  provider = doppler.cin
 }
 
 resource "doppler_secret" "meshcentral_client_secret" {

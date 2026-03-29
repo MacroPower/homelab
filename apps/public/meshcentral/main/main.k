@@ -34,6 +34,7 @@ _meshcentralOIDCClient = secret.ExternalSecret {
                                 client_id = "{{ .MESHCENTRAL_AUTH0_CLIENT_ID }}"
                                 client_secret = "{{ .MESHCENTRAL_AUTH0_CLIENT_SECRET }}"
                                 redirect_uri = "https://meshcentral.jacobcolvin.com/auth-oidc-callback"
+                                post_logout_redirect_uri = "https://meshcentral.jacobcolvin.com/login"
                             }
                         }
                     }
