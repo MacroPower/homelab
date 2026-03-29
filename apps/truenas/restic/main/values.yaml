@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=../../../../charts/restic/values.schema.json
+
+controllers:
+  restic:
+    pod:
+      nodeSelector:
+        kubernetes.io/hostname: knas01
+
+persistence:
+  data:
+    type: hostPath
+    hostPath: /mnt/main/archive/backups/restic
+    globalMounts:
+      - path: /data

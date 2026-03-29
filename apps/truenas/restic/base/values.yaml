@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=../../../../charts/restic/values.schema.json
+
+controllers:
+  restic:
+    strategy: Recreate
+    pod:
+      securityContext:
+        runAsUser: 1010
+        runAsGroup: 3000
+        fsGroup: 3000
+        fsGroupChangePolicy: OnRootMismatch
+      tolerations:
+        - key: node-role.kubernetes.io/storage
+          effect: NoSchedule
+    containers:
+      app:
+        image:
+          repository: restic/rest-server
+          tag: "0.13.0"
+        env:
+          OPTIONS: { value: "--htpasswd-file /auth/.htpasswd" }
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        probes:
+          startup:
+            enabled: true
+            type: TCP
+            port: 8000
+            spec:
+              failureThreshold: 30
+              periodSeconds: 5
+          liveness:
+            enabled: true
+            type: TCP
+            port: 8000
+          readiness:
+            enabled: true
+            type: TCP
+            port: 8000
+
+service:
+  app:
+    ports:
+      http:
+        port: 8000
+
+persistence:
+  auth:
+    type: secret
+    name: restic-credentials
+    globalMounts:
+      - path: /auth
+        readOnly: true
+  tmp:
+    type: emptyDir
+    globalMounts:
+      - path: /tmp

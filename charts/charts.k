@@ -356,4 +356,10 @@ charts: helm.Charts = {
         targetRevision = "4.6.2"
         schemaGenerator = "NONE"
     }
+    restic: {
+        chart = "app-template"
+        repoURL = "oci://ghcr.io/bjw-s-labs/helm/app-template"
+        targetRevision = "4.6.2"
+        schemaGenerator = "AUTO"
+    }
 }
