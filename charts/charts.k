@@ -150,6 +150,9 @@ charts: helm.Charts = {
             destinations: {
                 mimir: {"type" = "prometheus"}
             }
+            collectors: {
+                prometheusOperator: {enabled = True}
+            }
             prometheusOperatorObjects: {
                 enabled = True
                 crds: {deploy = True}
