@@ -4,6 +4,7 @@ import json
 import konfig.models.frontend
 import konfig.models.frontend.gateway
 import konfig.models.frontend.networkpolicy
+import konfig.models.frontend.secret
 import konfig.models.templates.networkpolicy as npt
 import konfig.files
 
@@ -18,10 +19,34 @@ meshcentralConfig = files.read_yaml(file.current(), "config/config.yaml") | {
     settings.port = _meshcentralPort
 }
 
+_certFiles = [
+    "root-cert-public.crt"
+    "root-cert-private.key"
+    "agentserver-cert-public.crt"
+    "agentserver-cert-private.key"
+    "webserver-cert-public.crt"
+    "webserver-cert-private.key"
+    "mpsserver-cert-public.crt"
+    "mpsserver-cert-private.key"
+    "codesign-cert-public.crt"
+    "codesign-cert-private.key"
+]
+
+_certDopplerKey = lambda name: str -> str {
+    "MESHCENTRAL_" + name.replace("-", "_").replace(".", "_").upper()
+}
+
+_certs = secret.ExternalSecret {
+    name = "meshcentral-certs"
+    data: {_certDopplerKey(f) = {} for f in _certFiles}
+    target.template.data = {"${f}" = "{{ .${_certDopplerKey(f)} }}" for f in _certFiles}
+}
+
 app = frontend.App {
     name = "meshcentral"
     tenantName = public_shared.tenant.name
     secretStore = public_shared.shared.secretStores.default.name
+    externalSecrets.meshcentralCerts = _certs
 
     networkPolicies: {
         denyDefault = npt.denyDefault

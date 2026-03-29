@@ -2,6 +2,8 @@
 
 controllers:
   app:
+    annotations:
+      reloader.stakater.com/auto: "true"
     replicas: 1
     strategy: Recreate
     containers:
@@ -63,4 +65,39 @@ persistence:
     globalMounts:
       - subPath: config.json
         path: /opt/meshcentral/meshcentral-data/config.json
+        readOnly: true
+  certs:
+    type: secret
+    name: meshcentral-certs
+    defaultMode: 256
+    globalMounts:
+      - subPath: root-cert-public.crt
+        path: /opt/meshcentral/meshcentral-data/root-cert-public.crt
+        readOnly: true
+      - subPath: root-cert-private.key
+        path: /opt/meshcentral/meshcentral-data/root-cert-private.key
+        readOnly: true
+      - subPath: agentserver-cert-public.crt
+        path: /opt/meshcentral/meshcentral-data/agentserver-cert-public.crt
+        readOnly: true
+      - subPath: agentserver-cert-private.key
+        path: /opt/meshcentral/meshcentral-data/agentserver-cert-private.key
+        readOnly: true
+      - subPath: webserver-cert-public.crt
+        path: /opt/meshcentral/meshcentral-data/webserver-cert-public.crt
+        readOnly: true
+      - subPath: webserver-cert-private.key
+        path: /opt/meshcentral/meshcentral-data/webserver-cert-private.key
+        readOnly: true
+      - subPath: mpsserver-cert-public.crt
+        path: /opt/meshcentral/meshcentral-data/mpsserver-cert-public.crt
+        readOnly: true
+      - subPath: mpsserver-cert-private.key
+        path: /opt/meshcentral/meshcentral-data/mpsserver-cert-private.key
+        readOnly: true
+      - subPath: codesign-cert-public.crt
+        path: /opt/meshcentral/meshcentral-data/codesign-cert-public.crt
+        readOnly: true
+      - subPath: codesign-cert-private.key
+        path: /opt/meshcentral/meshcentral-data/codesign-cert-private.key
         readOnly: true
