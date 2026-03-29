@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../../../../charts/seaweedfs/values.schema.json
 
 global:
+  createClusterRole: false
   serviceAccountName: securecodebox-seaweedfs
 
 master:

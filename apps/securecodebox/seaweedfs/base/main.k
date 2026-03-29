@@ -2,6 +2,7 @@ import file
 import json
 
 import konfig.models.frontend
+import konfig.models.frontend.rbac
 import konfig.models.frontend.secret
 import konfig.files
 
@@ -50,6 +51,21 @@ app = frontend.App {
     secretStore = securecodebox_shared.shared.secretStores.default.name
 
     externalSecrets.s3Config = _s3Config
+
+    clusterRoles.seaweedfsRw = rbac.ClusterRole {
+        name = "securecodebox-seaweedfs-rw"
+        rules = [{
+            apiGroups = [""]
+            resources = ["pods"]
+            verbs = ["get", "list", "watch", "create", "update", "patch", "delete"]
+        }]
+    }
+
+    clusterRoleBindings.seaweedfsRw = rbac.ClusterRoleBinding {
+        name = "securecodebox-seaweedfs-rw"
+        roleRef = clusterRoles.seaweedfsRw.getRef()
+        subjects = [{kind = "ServiceAccount", name = "securecodebox-seaweedfs"}]
+    }
 
     charts.seaweedfs = seaweedfs.Chart {
         values: _values | seaweedfs.Values {
