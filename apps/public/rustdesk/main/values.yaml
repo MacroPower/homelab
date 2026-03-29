@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=../../../../charts/rustdesk/values.schema.json
+
+controllers:
+  app:
+    containers:
+      hbbs:
+        args:
+          - -r
+          - "10.10.40.30:21117"
+
+service:
+  rustdesk:
+    annotations:
+      lbipam.cilium.io/ips: "10.10.40.30"

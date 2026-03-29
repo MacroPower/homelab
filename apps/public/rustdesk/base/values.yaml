@@ -1,0 +1,112 @@
+# yaml-language-server: $schema=../../../../charts/rustdesk/values.schema.json
+
+controllers:
+  app:
+    replicas: 1
+    strategy: Recreate
+    containers:
+      hbbs:
+        image:
+          repository: rustdesk/rustdesk-server
+          tag: "1.1.14"
+        command:
+          - hbbs
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
+        securityContext:
+          runAsUser: 0
+          runAsNonRoot: false
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+        probes:
+          startup:
+            enabled: true
+            type: TCP
+            port: 21116
+            spec:
+              failureThreshold: 30
+              periodSeconds: 5
+          liveness:
+            enabled: true
+            type: TCP
+            port: 21116
+          readiness:
+            enabled: true
+            type: TCP
+            port: 21116
+      hbbr:
+        image:
+          repository: rustdesk/rustdesk-server
+          tag: "1.1.14"
+        command:
+          - hbbr
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
+        securityContext:
+          runAsUser: 0
+          runAsNonRoot: false
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+        probes:
+          startup:
+            enabled: true
+            type: TCP
+            port: 21117
+            spec:
+              failureThreshold: 30
+              periodSeconds: 5
+          liveness:
+            enabled: true
+            type: TCP
+            port: 21117
+          readiness:
+            enabled: true
+            type: TCP
+            port: 21117
+
+service:
+  rustdesk:
+    type: LoadBalancer
+    ipFamilyPolicy: SingleStack
+    ipFamilies:
+      - IPv4
+    labels:
+      bgp.kube.macro.network/peer-group: main
+    ports:
+      nat-test:
+        port: 21115
+        protocol: TCP
+      id-tcp:
+        port: 21116
+        protocol: TCP
+      id-udp:
+        port: 21116
+        protocol: UDP
+      relay:
+        port: 21117
+        protocol: TCP
+      ws-id:
+        port: 21118
+        protocol: TCP
+      ws-relay:
+        port: 21119
+        protocol: TCP
+
+persistence:
+  data:
+    type: persistentVolumeClaim
+    storageClass: openebs-hostpath
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    globalMounts:
+      - path: /root
