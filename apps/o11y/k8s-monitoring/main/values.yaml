@@ -8,8 +8,11 @@ destinations:
   mimir:
     url: "http://mimir-distributed-nginx.o11y-mimir.svc/api/v1/push"
 
-extraConfig: |-
-  mimir.rules.kubernetes "default" {
-    address = "http://mimir-distributed-ruler.o11y-mimir.svc:8080"
-    tenant_id = "anonymous"
-  }
+collectors:
+  alloy-singleton:
+    presets: [singleton]
+    extraConfig: |-
+      mimir.rules.kubernetes "default" {
+        address = "http://mimir-distributed-ruler.o11y-mimir.svc:8080"
+        tenant_id = "anonymous"
+      }

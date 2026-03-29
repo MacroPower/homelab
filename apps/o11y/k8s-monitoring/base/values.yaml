@@ -15,13 +15,23 @@ destinations:
   mimir:
     type: prometheus
 
+collectors:
+  alloy-metrics:
+    presets: [clustered, statefulset]
+  alloy-logs:
+    presets: [filesystem-log-reader, daemonset]
+  alloy-singleton:
+    presets: [singleton]
+  alloy-receiver:
+    presets: [deployment]
+
 prometheusOperatorObjects:
   enabled: true
-  crds:
-    deploy: true
+  collector: alloy-singleton
 
 clusterMetrics:
   enabled: true
+  collector: alloy-metrics
   apiServer:
     enabled: true
   kubeControllerManager:
@@ -29,14 +39,31 @@ clusterMetrics:
   kubeScheduler:
     enabled: true
 
+hostMetrics:
+  enabled: true
+  collector: alloy-metrics
+  linuxHosts:
+    enabled: true
+
+telemetryServices:
+  node-exporter:
+    deploy: true
+
 clusterEvents:
   enabled: true
+  collector: alloy-singleton
+
+annotationAutodiscovery:
+  enabled: true
+  collector: alloy-metrics
 
 podLogsViaLoki:
   enabled: true
+  collector: alloy-logs
 
 applicationObservability:
   enabled: true
+  collector: alloy-receiver
   receivers:
     otlp:
       grpc:
@@ -48,8 +75,21 @@ applicationObservability:
 
 autoInstrumentation:
   enabled: true
+  collector: alloy-metrics
 
 integrations:
+  collector: alloy-singleton
   alloy:
     instances:
-      - name: alloy
+      - name: alloy-metrics
+        labelSelectors:
+          app.kubernetes.io/name: alloy-metrics
+      - name: alloy-logs
+        labelSelectors:
+          app.kubernetes.io/name: alloy-logs
+      - name: alloy-singleton
+        labelSelectors:
+          app.kubernetes.io/name: alloy-singleton
+      - name: alloy-receiver
+        labelSelectors:
+          app.kubernetes.io/name: alloy-receiver
