@@ -32,7 +32,7 @@ app = frontend.App {
             egress = [{
                 toFQDNs = [{matchName = "timestamp.comodoca.com"}]
                 toPorts = [{
-                    ports = [{port = "443", protocol = "TCP"}]
+                    ports = [{port = "80", protocol = "TCP"}]
                 }]
             }]
         }
