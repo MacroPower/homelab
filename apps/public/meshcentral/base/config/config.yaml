@@ -19,3 +19,11 @@ domains:
         custom:
           authorities:
             - groups
+        groups:
+          claim: colvinGroups
+          required:
+            - meshcentral-admin
+            - meshcentral-user
+          siteadmin:
+            - meshcentral-admin
+          sync: true

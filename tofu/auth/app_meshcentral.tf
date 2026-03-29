@@ -37,6 +37,16 @@ resource "doppler_secret" "meshcentral_client_id" {
   provider = doppler.cin
 }
 
+resource "auth0_role" "meshcentral_admin" {
+  name        = "meshcentral-admin"
+  description = "MeshCentral Admin"
+}
+
+resource "auth0_role" "meshcentral_user" {
+  name        = "meshcentral-user"
+  description = "MeshCentral User"
+}
+
 resource "doppler_secret" "meshcentral_client_secret" {
   name     = "MESHCENTRAL_AUTH0_CLIENT_SECRET"
   value    = auth0_client_credentials.meshcentral_client_secret_post.client_secret
