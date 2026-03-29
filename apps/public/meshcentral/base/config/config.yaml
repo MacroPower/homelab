@@ -16,3 +16,6 @@ domains:
     authStrategies:
       oidc:
         newAccounts: true
+        custom:
+          authorities:
+            - groups
