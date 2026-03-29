@@ -48,4 +48,9 @@ app = public_meshcentral_base.app | {
     charts.meshcentral.values = _values
 
     externalSecrets.meshcentralOIDCClient = _meshcentralOIDCClient
+
+    routes.meshcentralWeb.gatewayRef = {
+        name = "public-gateway"
+        namespace = "envoy-gateway"
+    }
 }
