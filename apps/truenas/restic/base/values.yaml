@@ -16,7 +16,7 @@ controllers:
       app:
         image:
           repository: restic/rest-server
-          tag: "0.13.0"
+          tag: "0.14.0"
         env:
           OPTIONS: { value: "--htpasswd-file /auth/.htpasswd" }
         resources:
