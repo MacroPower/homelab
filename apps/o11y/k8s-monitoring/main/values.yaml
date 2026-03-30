@@ -6,7 +6,7 @@ destinations:
   tempo:
     url: "http://tempo-distributed-gateway.o11y-tempo.svc"
   mimir:
-    url: "http://mimir-distributed-nginx.o11y-mimir.svc/api/v1/push"
+    url: "http://mimir-distributed-gateway.o11y-mimir.svc/api/v1/push"
 
 collectors:
   alloy-singleton:

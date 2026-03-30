@@ -3,7 +3,7 @@
 globalConfig:
   signing_key: "{{ env.ROBUSTA_SIGNING_KEY }}"
   account_id: "{{ env.ROBUSTA_ACCOUNT_ID }}"
-  prometheus_url: http://mimir-distributed-nginx.o11y-mimir.svc/prometheus
+  prometheus_url: http://mimir-distributed-gateway.o11y-mimir.svc/prometheus
 
 sinksConfig:
   - robusta_sink:

@@ -33,7 +33,7 @@ app = o11y_grafana_base.app | {
                         {
                             matchLabels = {
                                 "io.kubernetes.pod.namespace" = "o11y-mimir"
-                                "app.kubernetes.io/component" = "nginx"
+                                "app.kubernetes.io/component" = "gateway"
                             }
                         }
                     ]

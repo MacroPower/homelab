@@ -14,5 +14,5 @@ metricsGenerator:
   config:
     storage:
       remote_write:
-        - url: http://mimir-distributed-nginx.o11y-mimir.svc/api/v1/push
+        - url: http://mimir-distributed-gateway.o11y-mimir.svc/api/v1/push
           send_exemplars: true
