@@ -5,6 +5,8 @@ destinations:
     url: "http://loki-gateway.o11y-loki.svc/loki/api/v1/push"
   tempo:
     url: "http://tempo-distributed-gateway.o11y-tempo.svc"
+    tls:
+      insecure: true
   mimir:
     url: "http://mimir-distributed-gateway.o11y-mimir.svc/api/v1/push"
 
