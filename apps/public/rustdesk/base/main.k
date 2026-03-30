@@ -38,9 +38,10 @@ app = frontend.App {
         rustdeskEgress = networkpolicy.NetworkPolicy {
             name = "rustdesk-egress"
             egress = [{
-                toFQDNs = [{
-                    matchPattern = "*.rustdesk.com"
-                }]
+                toFQDNs = [
+                    {matchName = "rustdesk.com"}
+                    {matchPattern = "*.rustdesk.com"}
+                ]
                 toPorts = [{
                     ports = [{
                         port = "443"
