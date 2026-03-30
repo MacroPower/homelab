@@ -83,12 +83,6 @@ persistence:
       - subPath: agentserver-cert-private.key
         path: /opt/meshcentral/meshcentral-data/agentserver-cert-private.key
         readOnly: true
-      - subPath: webserver-cert-public.crt
-        path: /opt/meshcentral/meshcentral-data/webserver-cert-public.crt
-        readOnly: true
-      - subPath: webserver-cert-private.key
-        path: /opt/meshcentral/meshcentral-data/webserver-cert-private.key
-        readOnly: true
       - subPath: mpsserver-cert-public.crt
         path: /opt/meshcentral/meshcentral-data/mpsserver-cert-public.crt
         readOnly: true

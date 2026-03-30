@@ -25,8 +25,6 @@ _certFiles = [
     "root-cert-private.key"
     "agentserver-cert-public.crt"
     "agentserver-cert-private.key"
-    "webserver-cert-public.crt"
-    "webserver-cert-private.key"
     "mpsserver-cert-public.crt"
     "mpsserver-cert-private.key"
     "codesign-cert-public.crt"
@@ -114,6 +112,15 @@ app = frontend.App {
             name = "npm-registry-egress"
             egress = [{
                 toFQDNs = [{matchName = "registry.npmjs.org"}]
+                toPorts = [{
+                    ports = [{port = "443", protocol = "TCP"}]
+                }]
+            }]
+        }
+        certUrlEgress = networkpolicy.NetworkPolicy {
+            name = "cert-url-egress"
+            egress = [{
+                toFQDNs = [{matchName = "meshcentral.jacobcolvin.com"}]
                 toPorts = [{
                     ports = [{port = "443", protocol = "TCP"}]
                 }]
