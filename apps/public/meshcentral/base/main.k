@@ -3,6 +3,7 @@ import json
 
 import konfig.models.frontend
 import konfig.models.frontend.gateway
+import charts.envoy_gateway.api.v1alpha1 as gatewayv1alpha1
 import konfig.models.frontend.networkpolicy
 import konfig.models.frontend.secret
 import konfig.models.templates.networkpolicy as npt
@@ -42,8 +43,33 @@ _certs = secret.ExternalSecret {
     target.template.data = {"${f}" = "{{ .${_certDopplerKey(f)} }}" for f in _certFiles}
 }
 
+_appName = "meshcentral"
+_fullName = "${public_shared.tenant.name}-${_appName}"
+
+_backendTrafficPolicy = gatewayv1alpha1.BackendTrafficPolicy {
+    metadata = {
+        name = _fullName
+    }
+    spec = {
+        targetRefs = [{
+            group = "gateway.networking.k8s.io"
+            kind = "HTTPRoute"
+            name = _fullName
+        }]
+        httpUpgrade = [{
+            $type = "websocket"
+        }]
+        timeout = {
+            http = {
+                connectionIdleTimeout = "360s"
+                requestTimeout = "0s"
+            }
+        }
+    }
+}
+
 app = frontend.App {
-    name = "meshcentral"
+    name = _appName
     tenantName = public_shared.tenant.name
     secretStore = public_shared.shared.secretStores.default.name
     externalSecrets.meshcentralCerts = _certs
@@ -102,6 +128,8 @@ app = frontend.App {
             global.fullnameOverride = name
         }
     }
+
+    extraResources.backendTrafficPolicy = _backendTrafficPolicy
 
     routes.meshcentralWeb = gateway.Route {
         gatewayRef = public_shared.tenant.gateways.default
