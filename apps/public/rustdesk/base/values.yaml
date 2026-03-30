@@ -11,6 +11,9 @@ controllers:
           tag: "1.7.7"
         command:
           - hbbs
+        env:
+          DATABASE_URL:
+            value: sqlite:///data/db.sqlite3
         resources:
           requests:
             cpu: 10m
