@@ -12,3 +12,4 @@ service:
   rustdesk:
     annotations:
       lbipam.cilium.io/ips: "10.10.40.30"
+      external-dns.alpha.kubernetes.io/hostname: "rustdesk-host.jacobcolvin.com"
