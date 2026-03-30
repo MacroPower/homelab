@@ -7,19 +7,16 @@ controllers:
     containers:
       hbbs:
         image:
-          repository: rustdesk/rustdesk-server
-          tag: "1.1.14"
+          repository: rustdesk/rustdesk-server-pro
+          tag: "1.7.7"
         command:
           - hbbs
-        env:
-          DB_URL:
-            value: /data/db_v2.sqlite3
         resources:
           requests:
             cpu: 10m
             memory: 64Mi
           limits:
-            memory: 128Mi
+            memory: 256Mi
         securityContext:
           runAsUser: 0
           runAsNonRoot: false
@@ -44,8 +41,8 @@ controllers:
             port: 21116
       hbbr:
         image:
-          repository: rustdesk/rustdesk-server
-          tag: "1.1.14"
+          repository: rustdesk/rustdesk-server-pro
+          tag: "1.7.7"
         command:
           - hbbr
         resources:
@@ -78,6 +75,12 @@ controllers:
             port: 21117
 
 service:
+  web:
+    type: ClusterIP
+    ports:
+      http:
+        port: 21114
+        protocol: TCP
   rustdesk:
     type: LoadBalancer
     ipFamilyPolicy: SingleStack
@@ -113,7 +116,10 @@ persistence:
       - path: /root
         readOnly: true
   data:
-    type: emptyDir
+    type: persistentVolumeClaim
+    storageClass: openebs-hostpath
+    accessMode: ReadWriteOnce
+    size: 1Gi
     advancedMounts:
       app:
         hbbs:

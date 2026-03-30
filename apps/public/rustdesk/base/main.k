@@ -1,6 +1,7 @@
 import file
 
 import konfig.models.frontend
+import konfig.models.frontend.gateway
 import konfig.models.frontend.networkpolicy
 import konfig.models.frontend.secret
 import konfig.models.templates.networkpolicy as npt
@@ -33,6 +34,21 @@ app = frontend.App {
         denyDefault = npt.denyDefault
         kubeDNSEgress = npt.kubeDNSEgress
         icmpV6Egress = npt.icmpV6Egress
+        gatewayIngress = npt.envoyGatewayIngress
+        rustdeskEgress = networkpolicy.NetworkPolicy {
+            name = "rustdesk-egress"
+            egress = [{
+                toFQDNs = [{
+                    matchPattern = "*.rustdesk.com"
+                }]
+                toPorts = [{
+                    ports = [{
+                        port = "443"
+                        protocol = "TCP"
+                    }]
+                }]
+            }]
+        }
         rustdeskIngress = networkpolicy.NetworkPolicy {
             name = "rustdesk-ingress"
             ingress = [{
@@ -69,6 +85,20 @@ app = frontend.App {
         values = _values | rustdesk.Values {
             global.nameOverride = name
             global.fullnameOverride = name
+        }
+    }
+
+    routes.rustdeskWeb = gateway.Route {
+        gatewayRef = public_shared.tenant.gateways.default
+        services.rustdeskWeb = {
+            name = "${name}-web"
+            port = 21114
+        }
+        homepage = {
+            name = "RustDesk"
+            description = "Remote Desktop Server"
+            group = "Apps"
+            icon = "rustdesk"
         }
     }
 }
