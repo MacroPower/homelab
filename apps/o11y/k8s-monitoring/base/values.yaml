@@ -78,6 +78,10 @@ applicationObservability:
 autoInstrumentation:
   enabled: true
   collector: alloy-metrics
+  beyla:
+    config:
+      data:
+        log_level: debug
 
 integrations:
   collector: alloy-singleton
