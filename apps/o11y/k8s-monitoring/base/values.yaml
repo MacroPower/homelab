@@ -79,9 +79,15 @@ autoInstrumentation:
   enabled: true
   collector: alloy-metrics
   beyla:
+    image:
+      tag: "3.7.0"
     config:
       data:
         log_level: debug
+        discovery:
+          instrument:
+            - k8s_namespace: .
+            - open_port: .
 
 integrations:
   collector: alloy-singleton
