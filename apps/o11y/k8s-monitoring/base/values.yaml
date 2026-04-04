@@ -79,9 +79,32 @@ autoInstrumentation:
   enabled: true
   collector: alloy-metrics
   beyla:
+    updateStrategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 25%
+    image:
+      tag: "3.7.0"
+    volumes:
+      - name: bpffs
+        hostPath:
+          path: /sys/fs/bpf
+          type: Directory
+    volumeMounts:
+      - name: bpffs
+        mountPath: /sys/fs/bpf
     config:
       data:
-        log_level: debug
+        log_level: info
+        attributes:
+          kubernetes:
+            informers_sync_timeout: 2m
+        discovery:
+          exclude_instrument:
+            - exe_path: .*alloy.*|.*otelcol.*|.*beyla.*
+          instrument:
+            - k8s_namespace: .
+            - open_ports: 1-65535
 
 integrations:
   collector: alloy-singleton
