@@ -79,6 +79,8 @@ autoInstrumentation:
   enabled: true
   collector: alloy-metrics
   beyla:
+    image:
+      tag: "3.7.0"
     config:
       data:
         log_level: debug
