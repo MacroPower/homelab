@@ -1,8 +1,9 @@
 # yaml-language-server: $schema=../../../../charts/seaweedfs/values.schema.json
 
 global:
-  createClusterRole: false
-  serviceAccountName: o11y-seaweedfs
+  seaweedfs:
+    createClusterRole: false
+    serviceAccountName: o11y-seaweedfs
 
 master:
   logs: &logs

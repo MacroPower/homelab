@@ -130,7 +130,7 @@ schema ValuesAdmin:
     logs : ValuesAdminLogs, optional
     masters : str, optional, default is ""
         Master servers to connect to
-        If empty, uses global.masterServer or auto-discovers from master statefulset
+        If empty, uses global.seaweedfs.masterServer or auto-discovers from master statefulset
     nodeSelector : str, optional, default is ""
     podAnnotations : ValuesAdminPodAnnotations, optional
     podLabels : ValuesAdminPodLabels, optional
@@ -156,6 +156,10 @@ schema ValuesAdmin:
         Topology Spread Constraints Settings
         This should map directly to the value of the topologySpreadConstraints
         for a PodSpec. By Default no constraints are set.
+    urlPrefix : str, optional, default is ""
+        URL path prefix when running behind a reverse proxy under a subdirectory
+        Example: "/seaweedfs-admin" makes the UI available at /seaweedfs-admin/
+        If empty and ingress is enabled with a non-root path, the ingress path is used automatically
     """
     [...str]: any
     affinity?: str
@@ -194,6 +198,7 @@ schema ValuesAdmin:
     sidecars?: [any]
     tolerations?: str
     topologySpreadConstraints?: str
+    urlPrefix?: str
 
 schema ValuesAdminAnnotations:
     r"""
@@ -809,6 +814,20 @@ schema ValuesAllInOneS3:
         the top-level s3.credentials key (not allInOne.s3.credentials).
         The s3-secret.yaml template only reads from .Values.s3.credentials.
         See: s3.credentials.admin.accessKey, s3.credentials.read.accessKey
+    createBucketsHook : ValuesAllInOneS3CreateBucketsHook, optional
+        You may specify buckets to be created during the install process.
+        Buckets may be exposed publicly by setting `anonymousRead` to `true`
+        ttl format: [1-255][m|h|d|w|M|y] (e.g., 7d)
+        objectLock enables S3 Object Lock (irreversible, forces versioning)
+        versioning: Enabled or Suspended (or true to enable)
+        createBuckets:
+          - name: bucket-a
+            anonymousRead: true
+            ttl: 7d
+            objectLock: true
+            versioning: Enabled
+          - name: bucket-b
+            anonymousRead: false
     domainName : any, optional, default is "null"
     enableAuth : bool, optional, default is False
     enabled : bool, optional, default is False
@@ -821,6 +840,7 @@ schema ValuesAllInOneS3:
     """
     [...str]: any
     auditLogConfig?: any
+    createBucketsHook?: ValuesAllInOneS3CreateBucketsHook
     domainName?: any
     enableAuth?: bool
     enabled?: bool
@@ -828,6 +848,35 @@ schema ValuesAllInOneS3:
     httpsPort?: any
     port?: any
     trafficDistribution?: any
+
+schema ValuesAllInOneS3CreateBucketsHook:
+    r"""
+    You may specify buckets to be created during the install process.
+    Buckets may be exposed publicly by setting `anonymousRead` to `true`
+    ttl format: [1-255][m|h|d|w|M|y] (e.g., 7d)
+    objectLock enables S3 Object Lock (irreversible, forces versioning)
+    versioning: Enabled or Suspended (or true to enable)
+    createBuckets:
+      - name: bucket-a
+        anonymousRead: true
+        ttl: 7d
+        objectLock: true
+        versioning: Enabled
+      - name: bucket-b
+        anonymousRead: false
+
+    Attributes
+    ----------
+    resources : ValuesAllInOneS3CreateBucketsHookResources, optional
+    """
+    [...str]: any
+    resources?: ValuesAllInOneS3CreateBucketsHookResources
+
+schema ValuesAllInOneS3CreateBucketsHookResources:
+    r"""
+    ValuesAllInOneS3CreateBucketsHookResources
+    """
+    [...str]: any
 
 schema ValuesAllInOneSecretExtraEnvironmentVars:
     r"""
@@ -1593,6 +1642,20 @@ schema ValuesFilerS3:
         the top-level s3.credentials key (not filer.s3.credentials).
         The s3-secret.yaml template only reads from .Values.s3.credentials.
         See: s3.credentials.admin.accessKey, s3.credentials.read.accessKey
+    createBucketsHook : ValuesFilerS3CreateBucketsHook, optional
+        You may specify buckets to be created during the install or upgrade process.
+        Buckets may be exposed publicly by setting `anonymousRead` to `true`
+        ttl format: [1-255][m|h|d|w|M|y] (e.g., 7d)
+        objectLock enables S3 Object Lock (irreversible, forces versioning)
+        versioning: Enabled or Suspended (or true to enable)
+        createBuckets:
+          - name: bucket-a
+            anonymousRead: true
+            ttl: 7d
+            objectLock: true
+            versioning: Enabled
+          - name: bucket-b
+            anonymousRead: false
     domainName : str, optional, default is ""
         Suffix of the host name, {bucket}.{domainName}
     enableAuth : bool, optional, default is False
@@ -1607,6 +1670,7 @@ schema ValuesFilerS3:
     """
     [...str]: any
     auditLogConfig?: ValuesFilerS3AuditLogConfig
+    createBucketsHook?: ValuesFilerS3CreateBucketsHook
     domainName?: str
     enableAuth?: bool
     enabled?: bool
@@ -1620,6 +1684,35 @@ schema ValuesFilerS3AuditLogConfig:
     the top-level s3.credentials key (not filer.s3.credentials).
     The s3-secret.yaml template only reads from .Values.s3.credentials.
     See: s3.credentials.admin.accessKey, s3.credentials.read.accessKey
+    """
+    [...str]: any
+
+schema ValuesFilerS3CreateBucketsHook:
+    r"""
+    You may specify buckets to be created during the install or upgrade process.
+    Buckets may be exposed publicly by setting `anonymousRead` to `true`
+    ttl format: [1-255][m|h|d|w|M|y] (e.g., 7d)
+    objectLock enables S3 Object Lock (irreversible, forces versioning)
+    versioning: Enabled or Suspended (or true to enable)
+    createBuckets:
+      - name: bucket-a
+        anonymousRead: true
+        ttl: 7d
+        objectLock: true
+        versioning: Enabled
+      - name: bucket-b
+        anonymousRead: false
+
+    Attributes
+    ----------
+    resources : ValuesFilerS3CreateBucketsHookResources, optional
+    """
+    [...str]: any
+    resources?: ValuesFilerS3CreateBucketsHookResources
+
+schema ValuesFilerS3CreateBucketsHookResources:
+    r"""
+    ValuesFilerS3CreateBucketsHookResources
     """
     [...str]: any
 
@@ -1659,57 +1752,78 @@ schema ValuesGlobal:
 
     Attributes
     ----------
+    enableReplication : bool, optional
+    imagePullSecrets : str, optional, default is ""
+    imageRegistry : str, optional, default is ""
+        global.imageRegistry and global.imagePullSecrets are standard Helm conventions
+        shared across subcharts. See https://helm.sh/docs/chart_template_guide/subcharts_and_globals/
+    replicationPlacement : str, optional
+         replication type is XYZ:
+        X number of replica in other data centers
+        Y number of replica in other racks in the same data center
+        Z number of replica in other servers in the same rack
+    seaweedfs : ValuesGlobalSeaweedfs, optional
+        All app-specific global values are namespaced under global.seaweedfs
+        to avoid polluting the shared global namespace when used as a subchart.
+    """
+    [...str]: any
+    enableReplication?: bool
+    imagePullSecrets?: str
+    imageRegistry?: str
+    replicationPlacement?: str
+    seaweedfs?: ValuesGlobalSeaweedfs
+
+schema ValuesGlobalSeaweedfs:
+    r"""
+    All app-specific global values are namespaced under global.seaweedfs
+    to avoid polluting the shared global namespace when used as a subchart.
+
+    Attributes
+    ----------
     automountServiceAccountToken : bool, optional, default is True
-    certificates : ValuesGlobalCertificates, optional
+    certificates : ValuesGlobalSeaweedfsCertificates, optional
     createClusterRole : bool, optional, default is True
     enableReplication : bool, optional, default is False
-        if enabled will use global.replicationPlacement and override master & filer defaultReplicaPlacement config
+        if enabled will use global.seaweedfs.replicationPlacement and override master & filer defaultReplicaPlacement config
     enableSecurity : bool, optional, default is False
-    extraEnvironmentVars : ValuesGlobalExtraEnvironmentVars, optional
-    imageName : str, optional, default is "chrislusf/seaweedfs"
+    extraEnvironmentVars : ValuesGlobalSeaweedfsExtraEnvironmentVars, optional
+    image : ValuesGlobalSeaweedfsImage, optional
     imagePullPolicy : str, optional, default is "IfNotPresent"
-    imagePullSecrets : str, optional, default is ""
     loggingLevel : int, optional, default is 1
     masterServer : any, optional, default is "null"
-    monitoring : ValuesGlobalMonitoring, optional
-    registry : str, optional, default is ""
+    monitoring : ValuesGlobalSeaweedfsMonitoring, optional
     replicationPlacement : str, optional, default is "001"
          replication type is XYZ:
         X number of replica in other data centers
         Y number of replica in other racks in the same data center
         Z number of replica in other servers in the same rack
-    repository : str, optional, default is ""
-        if repository is set, it overrides the namespace part of imageName
     restartPolicy : str, optional, default is "Always"
-    securityConfig : ValuesGlobalSecurityConfig, optional
-    serviceAccountAnnotations : ValuesGlobalServiceAccountAnnotations, optional
+    securityConfig : ValuesGlobalSeaweedfsSecurityConfig, optional
+    serviceAccountAnnotations : ValuesGlobalSeaweedfsServiceAccountAnnotations, optional
     serviceAccountName : str, optional, default is "seaweedfs"
         we will use this serviceAccountName for all ClusterRoles/ClusterRoleBindings
     """
     [...str]: any
     automountServiceAccountToken?: bool
-    certificates?: ValuesGlobalCertificates
+    certificates?: ValuesGlobalSeaweedfsCertificates
     createClusterRole?: bool
     enableReplication?: bool
     enableSecurity?: bool
-    extraEnvironmentVars?: ValuesGlobalExtraEnvironmentVars
-    imageName?: str
+    extraEnvironmentVars?: ValuesGlobalSeaweedfsExtraEnvironmentVars
+    image?: ValuesGlobalSeaweedfsImage
     imagePullPolicy?: str
-    imagePullSecrets?: str
     loggingLevel?: int
     masterServer?: any
-    monitoring?: ValuesGlobalMonitoring
-    registry?: str
+    monitoring?: ValuesGlobalSeaweedfsMonitoring
     replicationPlacement?: str
-    repository?: str
     restartPolicy?: str
-    securityConfig?: ValuesGlobalSecurityConfig
-    serviceAccountAnnotations?: ValuesGlobalServiceAccountAnnotations
+    securityConfig?: ValuesGlobalSeaweedfsSecurityConfig
+    serviceAccountAnnotations?: ValuesGlobalSeaweedfsServiceAccountAnnotations
     serviceAccountName?: str
 
-schema ValuesGlobalCertificates:
+schema ValuesGlobalSeaweedfsCertificates:
     r"""
-    ValuesGlobalCertificates
+    ValuesGlobalSeaweedfsCertificates
 
     Attributes
     ----------
@@ -1722,9 +1836,9 @@ schema ValuesGlobalCertificates:
     duration?: str
     renewBefore?: str
 
-schema ValuesGlobalExtraEnvironmentVars:
+schema ValuesGlobalSeaweedfsExtraEnvironmentVars:
     r"""
-    ValuesGlobalExtraEnvironmentVars
+    ValuesGlobalSeaweedfsExtraEnvironmentVars
 
     Attributes
     ----------
@@ -1737,43 +1851,57 @@ schema ValuesGlobalExtraEnvironmentVars:
     WEED_CLUSTER_SW_FILER?: str
     WEED_CLUSTER_SW_MASTER?: str
 
-schema ValuesGlobalMonitoring:
+schema ValuesGlobalSeaweedfsImage:
     r"""
-    ValuesGlobalMonitoring
+    ValuesGlobalSeaweedfsImage
 
     Attributes
     ----------
-    additionalLabels : ValuesGlobalMonitoringAdditionalLabels, optional
+    name : str, optional, default is "chrislusf/seaweedfs"
+    repository : str, optional, default is ""
+        if repository is set, it overrides the namespace part of image.name
+    """
+    [...str]: any
+    name?: str
+    repository?: str
+
+schema ValuesGlobalSeaweedfsMonitoring:
+    r"""
+    ValuesGlobalSeaweedfsMonitoring
+
+    Attributes
+    ----------
+    additionalLabels : ValuesGlobalSeaweedfsMonitoringAdditionalLabels, optional
     enabled : bool, optional, default is False
     gatewayHost : any, optional, default is "null"
     gatewayPort : any, optional, default is "null"
     """
     [...str]: any
-    additionalLabels?: ValuesGlobalMonitoringAdditionalLabels
+    additionalLabels?: ValuesGlobalSeaweedfsMonitoringAdditionalLabels
     enabled?: bool
     gatewayHost?: any
     gatewayPort?: any
 
-schema ValuesGlobalMonitoringAdditionalLabels:
+schema ValuesGlobalSeaweedfsMonitoringAdditionalLabels:
     r"""
-    ValuesGlobalMonitoringAdditionalLabels
+    ValuesGlobalSeaweedfsMonitoringAdditionalLabels
     """
     [...str]: any
 
-schema ValuesGlobalSecurityConfig:
+schema ValuesGlobalSeaweedfsSecurityConfig:
     r"""
-    ValuesGlobalSecurityConfig
+    ValuesGlobalSeaweedfsSecurityConfig
 
     Attributes
     ----------
-    jwtSigning : ValuesGlobalSecurityConfigJwtSigning, optional
+    jwtSigning : ValuesGlobalSeaweedfsSecurityConfigJwtSigning, optional
     """
     [...str]: any
-    jwtSigning?: ValuesGlobalSecurityConfigJwtSigning
+    jwtSigning?: ValuesGlobalSeaweedfsSecurityConfigJwtSigning
 
-schema ValuesGlobalSecurityConfigJwtSigning:
+schema ValuesGlobalSeaweedfsSecurityConfigJwtSigning:
     r"""
-    ValuesGlobalSecurityConfigJwtSigning
+    ValuesGlobalSeaweedfsSecurityConfigJwtSigning
 
     Attributes
     ----------
@@ -1788,9 +1916,9 @@ schema ValuesGlobalSecurityConfigJwtSigning:
     volumeRead?: bool
     volumeWrite?: bool
 
-schema ValuesGlobalServiceAccountAnnotations:
+schema ValuesGlobalSeaweedfsServiceAccountAnnotations:
     r"""
-    ValuesGlobalServiceAccountAnnotations
+    ValuesGlobalSeaweedfsServiceAccountAnnotations
     """
     [...str]: any
 
@@ -2328,6 +2456,7 @@ schema ValuesS3:
           enabled: true
           runAsUser: 2000
           allowPrivilegeEscalation: false
+    createBucketsHook : ValuesS3CreateBucketsHook, optional
     domainName : str, optional, default is ""
         Suffix of the host name, {bucket}.{domainName}
     enableAuth : bool, optional, default is False
@@ -2392,6 +2521,8 @@ schema ValuesS3:
         formatted as a multi-line string. By default no direct resource request
         is made.
     restartPolicy : any, optional, default is "null"
+    service : ValuesS3Service, optional
+        Service settings
     serviceAccountName : str, optional, default is ""
         used to assign a service account.
         ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
@@ -2412,7 +2543,7 @@ schema ValuesS3:
         instead of the internal self-signed client certificate generated by cert-manager.
         This allows using a publicly trusted certificate (e.g., from Let's Encrypt)
         so that S3 clients don't need to trust the internal CA.
-        Requires global.enableSecurity to be true.
+        Requires global.seaweedfs.enableSecurity to be true.
     tolerations : str, optional, default is ""
         Toleration Settings for server pods
         This should be a multi-line string matching the Toleration array
@@ -2423,6 +2554,7 @@ schema ValuesS3:
     auditLogConfig?: ValuesS3AuditLogConfig
     bindAddress?: str
     containerSecurityContext?: ValuesS3ContainerSecurityContext
+    createBucketsHook?: ValuesS3CreateBucketsHook
     domainName?: str
     enableAuth?: bool
     enabled?: bool
@@ -2451,6 +2583,7 @@ schema ValuesS3:
     replicas?: int
     resources?: ValuesS3Resources
     restartPolicy?: any
+    service?: ValuesS3Service
     serviceAccountName?: str
     sidecars?: [any]
     tlsSecret?: any
@@ -2523,6 +2656,23 @@ schema ValuesS3ContainerSecurityContextSeccompProfile:
     """
     [...str]: any
     $type?: str
+
+schema ValuesS3CreateBucketsHook:
+    r"""
+    ValuesS3CreateBucketsHook
+
+    Attributes
+    ----------
+    resources : ValuesS3CreateBucketsHookResources, optional
+    """
+    [...str]: any
+    resources?: ValuesS3CreateBucketsHookResources
+
+schema ValuesS3CreateBucketsHookResources:
+    r"""
+    ValuesS3CreateBucketsHookResources
+    """
+    [...str]: any
 
 schema ValuesS3IcebergIngress:
     r"""
@@ -2720,6 +2870,17 @@ schema ValuesS3Resources:
     """
     [...str]: any
 
+schema ValuesS3Service:
+    r"""
+    Service settings
+
+    Attributes
+    ----------
+    $type : str, optional, default is "ClusterIP"
+    """
+    [...str]: any
+    $type?: str
+
 schema ValuesSftp:
     r"""
     ValuesSftp
@@ -2769,6 +2930,8 @@ schema ValuesSftp:
     replicas : int, optional, default is 1
     resources : ValuesSftpResources, optional
     restartPolicy : any, optional, default is "null"
+    service : ValuesSftpService, optional
+        Service settings
     serviceAccountName : str, optional, default is ""
     sidecars : [any], optional
         Additional resources
@@ -2813,6 +2976,7 @@ schema ValuesSftp:
     replicas?: int
     resources?: ValuesSftpResources
     restartPolicy?: any
+    service?: ValuesSftpService
     serviceAccountName?: str
     sidecars?: [any]
     sshPrivateKey?: str
@@ -2916,6 +3080,17 @@ schema ValuesSftpResources:
     """
     [...str]: any
 
+schema ValuesSftpService:
+    r"""
+    Service settings
+
+    Attributes
+    ----------
+    $type : str, optional, default is "ClusterIP"
+    """
+    [...str]: any
+    $type?: str
+
 schema ValuesVolume:
     r"""
     ValuesVolume
@@ -2995,6 +3170,11 @@ schema ValuesVolume:
         Useful for Kubernetes environments with hostPath volumes to maintain stable identity
     idx : ValuesVolumeIdx, optional
         same applies to "logs"
+    idxVolMoveResources : ValuesVolumeIdxVolMoveResources, optional
+        Resource requests, limits, etc. for the vol-move-idx initContainer. This
+        should map directly to the value of the resources field for a PodSpec,
+        formatted as a multi-line string. By default no direct resource request
+        is made.
     imageOverride : any, optional, default is "null"
     imagesFixOrientation : bool, optional, default is False
         Adjust jpg orientation when uploading.
@@ -3094,6 +3274,7 @@ schema ValuesVolume:
     grpcPort?: int
     id?: any
     idx?: ValuesVolumeIdx
+    idxVolMoveResources?: ValuesVolumeIdxVolMoveResources
     imageOverride?: any
     imagesFixOrientation?: bool
     index?: any
@@ -3204,6 +3385,15 @@ schema ValuesVolumeDataDirsItems0:
 schema ValuesVolumeIdx:
     r"""
     same applies to "logs"
+    """
+    [...str]: any
+
+schema ValuesVolumeIdxVolMoveResources:
+    r"""
+    Resource requests, limits, etc. for the vol-move-idx initContainer. This
+    should map directly to the value of the resources field for a PodSpec,
+    formatted as a multi-line string. By default no direct resource request
+    is made.
     """
     [...str]: any
 

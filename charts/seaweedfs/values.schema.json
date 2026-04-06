@@ -297,7 +297,7 @@
         },
         "masters": {
           "default": "",
-          "description": "Master servers to connect to\nIf empty, uses global.masterServer or auto-discovers from master statefulset",
+          "description": "Master servers to connect to\nIf empty, uses global.seaweedfs.masterServer or auto-discovers from master statefulset",
           "required": [],
           "title": "masters",
           "type": "string"
@@ -530,6 +530,13 @@
           "description": "Topology Spread Constraints Settings\nThis should map directly to the value of the topologySpreadConstraints\nfor a PodSpec. By Default no constraints are set.",
           "required": [],
           "title": "topologySpreadConstraints",
+          "type": "string"
+        },
+        "urlPrefix": {
+          "default": "",
+          "description": "URL path prefix when running behind a reverse proxy under a subdirectory\nExample: \"/seaweedfs-admin\" makes the UI available at /seaweedfs-admin/\nIf empty and ingress is enabled with a non-root path, the ingress path is used automatically",
+          "required": [],
+          "title": "urlPrefix",
           "type": "string"
         }
       },
@@ -949,6 +956,21 @@
               "required": [],
               "title": "auditLogConfig",
               "type": "null"
+            },
+            "createBucketsHook": {
+              "additionalProperties": true,
+              "description": "You may specify buckets to be created during the install process.\nBuckets may be exposed publicly by setting `anonymousRead` to `true`\nttl format: [1-255][m|h|d|w|M|y] (e.g., 7d)\nobjectLock enables S3 Object Lock (irreversible, forces versioning)\nversioning: Enabled or Suspended (or true to enable)\ncreateBuckets:\n  - name: bucket-a\n    anonymousRead: true\n    ttl: 7d\n    objectLock: true\n    versioning: Enabled\n  - name: bucket-b\n    anonymousRead: false",
+              "properties": {
+                "resources": {
+                  "additionalProperties": true,
+                  "required": [],
+                  "title": "resources",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "createBucketsHook",
+              "type": "object"
             },
             "domainName": {
               "default": "null",
@@ -2007,6 +2029,21 @@
               "title": "auditLogConfig",
               "type": "object"
             },
+            "createBucketsHook": {
+              "additionalProperties": true,
+              "description": "You may specify buckets to be created during the install or upgrade process.\nBuckets may be exposed publicly by setting `anonymousRead` to `true`\nttl format: [1-255][m|h|d|w|M|y] (e.g., 7d)\nobjectLock enables S3 Object Lock (irreversible, forces versioning)\nversioning: Enabled or Suspended (or true to enable)\ncreateBuckets:\n  - name: bucket-a\n    anonymousRead: true\n    ttl: 7d\n    objectLock: true\n    versioning: Enabled\n  - name: bucket-b\n    anonymousRead: false",
+              "properties": {
+                "resources": {
+                  "additionalProperties": true,
+                  "required": [],
+                  "title": "resources",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "createBucketsHook",
+              "type": "object"
+            },
             "domainName": {
               "default": "",
               "description": "Suffix of the host name, {bucket}.{domainName}",
@@ -2119,94 +2156,10 @@
       "additionalProperties": true,
       "description": "openshift-values.yaml\n\nExample overrides for deploying SeaweedFS on OpenShift (or any cluster\nenforcing the Kubernetes \"restricted\" Pod Security Standard).\n\nOpenShift's default \"restricted\" SCC blocks containers that:\n  - Run as UID 0 (root)\n  - Request privilege escalation\n  - Use hostPath volumes\n  - Omit a seccompProfile\n\nThese overrides satisfy all four requirements by:\n  1. Replacing hostPath volumes with PersistentVolumeClaims (or emptyDir for logs)\n  2. Enabling runAsNonRoot: true. By omitting runAsUser, OpenShift will\n     automatically assign a valid UID from the namespace's allocated range.\n  3. Dropping all Linux capabilities and setting allowPrivilegeEscalation: false\n  4. Enabling RuntimeDefault seccompProfile\n\nUsage:\n  helm install seaweedfs seaweedfs/seaweedfs \\\n    -n seaweedfs --create-namespace \\\n    -f openshift-values.yaml\n\nAdjust storageClass and sizes to match your cluster's available StorageClasses.\nOn OpenShift you can discover them with: oc get storageclass",
       "properties": {
-        "automountServiceAccountToken": {
-          "default": true,
-          "required": [],
-          "title": "automountServiceAccountToken",
-          "type": "boolean"
-        },
-        "certificates": {
-          "additionalProperties": true,
-          "properties": {
-            "alphacrds": {
-              "default": false,
-              "required": [],
-              "title": "alphacrds",
-              "type": "boolean"
-            },
-            "duration": {
-              "default": "87600h",
-              "required": [],
-              "title": "duration",
-              "type": "string"
-            },
-            "renewBefore": {
-              "default": "720h",
-              "required": [],
-              "title": "renewBefore",
-              "type": "string"
-            }
-          },
-          "required": [],
-          "title": "certificates",
-          "type": "object"
-        },
-        "createClusterRole": {
-          "default": true,
-          "required": [],
-          "title": "createClusterRole",
-          "type": "boolean"
-        },
         "enableReplication": {
-          "default": false,
-          "description": "if enabled will use global.replicationPlacement and override master \u0026 filer defaultReplicaPlacement config",
           "required": [],
           "title": "enableReplication",
           "type": "boolean"
-        },
-        "enableSecurity": {
-          "default": false,
-          "required": [],
-          "title": "enableSecurity",
-          "type": "boolean"
-        },
-        "extraEnvironmentVars": {
-          "additionalProperties": true,
-          "properties": {
-            "WEED_CLUSTER_DEFAULT": {
-              "default": "sw",
-              "required": [],
-              "title": "WEED_CLUSTER_DEFAULT",
-              "type": "string"
-            },
-            "WEED_CLUSTER_SW_FILER": {
-              "default": "{{ include \"seaweedfs.cluster.filerAddress\" . }}",
-              "required": [],
-              "title": "WEED_CLUSTER_SW_FILER",
-              "type": "string"
-            },
-            "WEED_CLUSTER_SW_MASTER": {
-              "default": "{{ include \"seaweedfs.cluster.masterAddress\" . }}",
-              "required": [],
-              "title": "WEED_CLUSTER_SW_MASTER",
-              "type": "string"
-            }
-          },
-          "required": [],
-          "title": "extraEnvironmentVars",
-          "type": "object"
-        },
-        "imageName": {
-          "default": "chrislusf/seaweedfs",
-          "required": [],
-          "title": "imageName",
-          "type": "string"
-        },
-        "imagePullPolicy": {
-          "default": "IfNotPresent",
-          "required": [],
-          "title": "imagePullPolicy",
-          "type": "string"
         },
         "imagePullSecrets": {
           "default": "",
@@ -2214,128 +2167,241 @@
           "title": "imagePullSecrets",
           "type": "string"
         },
-        "loggingLevel": {
-          "default": 1,
-          "required": [],
-          "title": "loggingLevel",
-          "type": "integer"
-        },
-        "masterServer": {
-          "default": "null",
-          "required": [],
-          "title": "masterServer",
-          "type": "null"
-        },
-        "monitoring": {
-          "additionalProperties": true,
-          "properties": {
-            "additionalLabels": {
-              "additionalProperties": true,
-              "required": [],
-              "title": "additionalLabels",
-              "type": "object"
-            },
-            "enabled": {
-              "default": false,
-              "required": [],
-              "title": "enabled",
-              "type": "boolean"
-            },
-            "gatewayHost": {
-              "default": "null",
-              "required": [],
-              "title": "gatewayHost",
-              "type": "null"
-            },
-            "gatewayPort": {
-              "default": "null",
-              "required": [],
-              "title": "gatewayPort",
-              "type": "null"
-            }
-          },
-          "required": [],
-          "title": "monitoring",
-          "type": "object"
-        },
-        "registry": {
+        "imageRegistry": {
           "default": "",
+          "description": "global.imageRegistry and global.imagePullSecrets are standard Helm conventions\nshared across subcharts. See https://helm.sh/docs/chart_template_guide/subcharts_and_globals/",
           "required": [],
-          "title": "registry",
+          "title": "imageRegistry",
           "type": "string"
         },
         "replicationPlacement": {
-          "default": "001",
           "description": " replication type is XYZ:\nX number of replica in other data centers\nY number of replica in other racks in the same data center\nZ number of replica in other servers in the same rack",
           "required": [],
           "title": "replicationPlacement",
           "type": "string"
         },
-        "repository": {
-          "default": "",
-          "description": "if repository is set, it overrides the namespace part of imageName",
-          "required": [],
-          "title": "repository",
-          "type": "string"
-        },
-        "restartPolicy": {
-          "default": "Always",
-          "required": [],
-          "title": "restartPolicy",
-          "type": "string"
-        },
-        "securityConfig": {
+        "seaweedfs": {
           "additionalProperties": true,
+          "description": "All app-specific global values are namespaced under global.seaweedfs\nto avoid polluting the shared global namespace when used as a subchart.",
           "properties": {
-            "jwtSigning": {
+            "automountServiceAccountToken": {
+              "default": true,
+              "required": [],
+              "title": "automountServiceAccountToken",
+              "type": "boolean"
+            },
+            "certificates": {
               "additionalProperties": true,
               "properties": {
-                "filerRead": {
+                "alphacrds": {
                   "default": false,
                   "required": [],
-                  "title": "filerRead",
+                  "title": "alphacrds",
                   "type": "boolean"
                 },
-                "filerWrite": {
-                  "default": false,
+                "duration": {
+                  "default": "87600h",
                   "required": [],
-                  "title": "filerWrite",
-                  "type": "boolean"
+                  "title": "duration",
+                  "type": "string"
                 },
-                "volumeRead": {
-                  "default": false,
+                "renewBefore": {
+                  "default": "720h",
                   "required": [],
-                  "title": "volumeRead",
-                  "type": "boolean"
-                },
-                "volumeWrite": {
-                  "default": true,
-                  "required": [],
-                  "title": "volumeWrite",
-                  "type": "boolean"
+                  "title": "renewBefore",
+                  "type": "string"
                 }
               },
               "required": [],
-              "title": "jwtSigning",
+              "title": "certificates",
               "type": "object"
+            },
+            "createClusterRole": {
+              "default": true,
+              "required": [],
+              "title": "createClusterRole",
+              "type": "boolean"
+            },
+            "enableReplication": {
+              "default": false,
+              "description": "if enabled will use global.seaweedfs.replicationPlacement and override master \u0026 filer defaultReplicaPlacement config",
+              "required": [],
+              "title": "enableReplication",
+              "type": "boolean"
+            },
+            "enableSecurity": {
+              "default": false,
+              "required": [],
+              "title": "enableSecurity",
+              "type": "boolean"
+            },
+            "extraEnvironmentVars": {
+              "additionalProperties": true,
+              "properties": {
+                "WEED_CLUSTER_DEFAULT": {
+                  "default": "sw",
+                  "required": [],
+                  "title": "WEED_CLUSTER_DEFAULT",
+                  "type": "string"
+                },
+                "WEED_CLUSTER_SW_FILER": {
+                  "default": "{{ include \"seaweedfs.cluster.filerAddress\" . }}",
+                  "required": [],
+                  "title": "WEED_CLUSTER_SW_FILER",
+                  "type": "string"
+                },
+                "WEED_CLUSTER_SW_MASTER": {
+                  "default": "{{ include \"seaweedfs.cluster.masterAddress\" . }}",
+                  "required": [],
+                  "title": "WEED_CLUSTER_SW_MASTER",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "extraEnvironmentVars",
+              "type": "object"
+            },
+            "image": {
+              "additionalProperties": true,
+              "properties": {
+                "name": {
+                  "default": "chrislusf/seaweedfs",
+                  "required": [],
+                  "title": "name",
+                  "type": "string"
+                },
+                "repository": {
+                  "default": "",
+                  "description": "if repository is set, it overrides the namespace part of image.name",
+                  "required": [],
+                  "title": "repository",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "image",
+              "type": "object"
+            },
+            "imagePullPolicy": {
+              "default": "IfNotPresent",
+              "required": [],
+              "title": "imagePullPolicy",
+              "type": "string"
+            },
+            "loggingLevel": {
+              "default": 1,
+              "required": [],
+              "title": "loggingLevel",
+              "type": "integer"
+            },
+            "masterServer": {
+              "default": "null",
+              "required": [],
+              "title": "masterServer",
+              "type": "null"
+            },
+            "monitoring": {
+              "additionalProperties": true,
+              "properties": {
+                "additionalLabels": {
+                  "additionalProperties": true,
+                  "required": [],
+                  "title": "additionalLabels",
+                  "type": "object"
+                },
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "gatewayHost": {
+                  "default": "null",
+                  "required": [],
+                  "title": "gatewayHost",
+                  "type": "null"
+                },
+                "gatewayPort": {
+                  "default": "null",
+                  "required": [],
+                  "title": "gatewayPort",
+                  "type": "null"
+                }
+              },
+              "required": [],
+              "title": "monitoring",
+              "type": "object"
+            },
+            "replicationPlacement": {
+              "default": "001",
+              "description": " replication type is XYZ:\nX number of replica in other data centers\nY number of replica in other racks in the same data center\nZ number of replica in other servers in the same rack",
+              "required": [],
+              "title": "replicationPlacement",
+              "type": "string"
+            },
+            "restartPolicy": {
+              "default": "Always",
+              "required": [],
+              "title": "restartPolicy",
+              "type": "string"
+            },
+            "securityConfig": {
+              "additionalProperties": true,
+              "properties": {
+                "jwtSigning": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "filerRead": {
+                      "default": false,
+                      "required": [],
+                      "title": "filerRead",
+                      "type": "boolean"
+                    },
+                    "filerWrite": {
+                      "default": false,
+                      "required": [],
+                      "title": "filerWrite",
+                      "type": "boolean"
+                    },
+                    "volumeRead": {
+                      "default": false,
+                      "required": [],
+                      "title": "volumeRead",
+                      "type": "boolean"
+                    },
+                    "volumeWrite": {
+                      "default": true,
+                      "required": [],
+                      "title": "volumeWrite",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [],
+                  "title": "jwtSigning",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "securityConfig",
+              "type": "object"
+            },
+            "serviceAccountAnnotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "serviceAccountAnnotations",
+              "type": "object"
+            },
+            "serviceAccountName": {
+              "default": "seaweedfs",
+              "description": "we will use this serviceAccountName for all ClusterRoles/ClusterRoleBindings",
+              "required": [],
+              "title": "serviceAccountName",
+              "type": "string"
             }
           },
           "required": [],
-          "title": "securityConfig",
+          "title": "seaweedfs",
           "type": "object"
-        },
-        "serviceAccountAnnotations": {
-          "additionalProperties": true,
-          "required": [],
-          "title": "serviceAccountAnnotations",
-          "type": "object"
-        },
-        "serviceAccountName": {
-          "default": "seaweedfs",
-          "description": "we will use this serviceAccountName for all ClusterRoles/ClusterRoleBindings",
-          "required": [],
-          "title": "serviceAccountName",
-          "type": "string"
         }
       },
       "required": [],
@@ -3084,6 +3150,20 @@
           "title": "containerSecurityContext",
           "type": "object"
         },
+        "createBucketsHook": {
+          "additionalProperties": true,
+          "properties": {
+            "resources": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "createBucketsHook",
+          "type": "object"
+        },
         "domainName": {
           "default": "",
           "description": "Suffix of the host name, {bucket}.{domainName}",
@@ -3518,6 +3598,21 @@
           "title": "restartPolicy",
           "type": "null"
         },
+        "service": {
+          "additionalProperties": true,
+          "description": "Service settings",
+          "properties": {
+            "type": {
+              "default": "ClusterIP",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "service",
+          "type": "object"
+        },
         "serviceAccountName": {
           "default": "",
           "description": "used to assign a service account.\nref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/",
@@ -3536,7 +3631,7 @@
         },
         "tlsSecret": {
           "default": "null",
-          "description": "Use a custom TLS certificate secret for the S3 HTTPS endpoint.\nWhen set, this Kubernetes Secret (must contain tls.crt and tls.key) is used\ninstead of the internal self-signed client certificate generated by cert-manager.\nThis allows using a publicly trusted certificate (e.g., from Let's Encrypt)\nso that S3 clients don't need to trust the internal CA.\nRequires global.enableSecurity to be true.",
+          "description": "Use a custom TLS certificate secret for the S3 HTTPS endpoint.\nWhen set, this Kubernetes Secret (must contain tls.crt and tls.key) is used\ninstead of the internal self-signed client certificate generated by cert-manager.\nThis allows using a publicly trusted certificate (e.g., from Let's Encrypt)\nso that S3 clients don't need to trust the internal CA.\nRequires global.seaweedfs.enableSecurity to be true.",
           "required": [],
           "title": "tlsSecret",
           "type": "null"
@@ -3867,6 +3962,21 @@
           "title": "restartPolicy",
           "type": "null"
         },
+        "service": {
+          "additionalProperties": true,
+          "description": "Service settings",
+          "properties": {
+            "type": {
+              "default": "ClusterIP",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "service",
+          "type": "object"
+        },
         "serviceAccountName": {
           "default": "",
           "required": [],
@@ -4091,6 +4201,13 @@
           "description": "same applies to \"logs\"",
           "required": [],
           "title": "idx",
+          "type": "object"
+        },
+        "idxVolMoveResources": {
+          "additionalProperties": true,
+          "description": "Resource requests, limits, etc. for the vol-move-idx initContainer. This\nshould map directly to the value of the resources field for a PodSpec,\nformatted as a multi-line string. By default no direct resource request\nis made.",
+          "required": [],
+          "title": "idxVolMoveResources",
           "type": "object"
         },
         "imageOverride": {
