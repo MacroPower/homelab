@@ -1736,10 +1736,17 @@
               "type": "string"
             },
             "timeout.reconciliation": {
-              "default": "180s",
+              "default": "120s",
               "description": "Timeout to discover if a new manifests version got published to the repository",
               "required": [],
               "title": "timeout.reconciliation",
+              "type": "string"
+            },
+            "timeout.reconciliation.jitter": {
+              "default": "60s",
+              "description": "Maximum jitter added to the reconciliation timeout to spread out refreshes and reduce repo-server load",
+              "required": [],
+              "title": "timeout.reconciliation.jitter",
               "type": "string"
             }
           },
@@ -2878,6 +2885,13 @@
           "title": "statefulsetAnnotations",
           "type": "object"
         },
+        "statefulsetLabels": {
+          "additionalProperties": true,
+          "description": "Labels for the application controller StatefulSet",
+          "required": [],
+          "title": "statefulsetLabels",
+          "type": "object"
+        },
         "terminationGracePeriodSeconds": {
           "default": 30,
           "description": "terminationGracePeriodSeconds for container lifecycle hook",
@@ -2984,6 +2998,14 @@
         "annotations": {
           "additionalProperties": true,
           "description": "Annotations to be added to all CRDs",
+          "properties": {
+            "argocd.argoproj.io/sync-options": {
+              "default": "ServerSideApply=true",
+              "required": [],
+              "title": "argocd.argoproj.io/sync-options",
+              "type": "string"
+            }
+          },
           "required": [],
           "title": "annotations",
           "type": "object"
@@ -3159,6 +3181,12 @@
               "title": "runAsNonRoot",
               "type": "boolean"
             },
+            "runAsUser": {
+              "default": 1001,
+              "required": [],
+              "title": "runAsUser",
+              "type": "integer"
+            },
             "seccompProfile": {
               "additionalProperties": true,
               "properties": {
@@ -3291,7 +3319,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v2.44.0",
+              "default": "v2.45.1",
               "description": "Dex image tag",
               "required": [],
               "title": "tag",
@@ -4405,6 +4433,24 @@
           "title": "env",
           "type": "array"
         },
+        "extraVolumeMounts": {
+          "description": "Extra volume mounts to add to all deployed Deployments and StatefulSets",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "Extra volumes to add to all deployed Deployments and StatefulSets",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumes",
+          "type": "array"
+        },
         "hostAliases": {
           "description": "Mapping between IP and hostnames that will be injected as entries in the pod's hosts files",
           "items": {
@@ -4561,6 +4607,13 @@
           "description": "Annotations for the all deployed Statefulsets",
           "required": [],
           "title": "statefulsetAnnotations",
+          "type": "object"
+        },
+        "statefulsetLabels": {
+          "additionalProperties": true,
+          "description": "Labels for the all deployed Statefulsets",
+          "required": [],
+          "title": "statefulsetLabels",
           "type": "object"
         },
         "tolerations": {
@@ -6766,7 +6819,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.80.1",
+                  "default": "v1.82.0",
                   "description": "Tag to use for the redis-exporter",
                   "required": [],
                   "title": "tag",
@@ -6936,8 +6989,8 @@
               "type": "string"
             },
             "tag": {
-              "default": "8.2.2-alpine",
-              "description": "Redis tag\n# Do not upgrade to \u003e= 7.4.0, otherwise you are no longer using an open source version of Redis",
+              "default": "8.2.3-alpine",
+              "description": "Redis tag\n# Do not use 7.4.0 \u003c= v \u003c 8.0.0, otherwise you are no longer using an open source version of Redis",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -7816,7 +7869,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "8.2.2-alpine",
+              "default": "8.2.3-alpine",
               "description": "Redis tag\n# Do not upgrade to \u003e= 7.4.0, otherwise you are no longer using an open source version of Redis",
               "required": [],
               "title": "tag",
@@ -8583,6 +8636,13 @@
         "livenessProbe": {
           "additionalProperties": true,
           "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable Kubernetes liveness probe for Repo Server",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
             "failureThreshold": {
               "default": 3,
               "description": "Minimum consecutive failures for the [probe] to be considered failed after having succeeded",
@@ -8891,8 +8951,15 @@
         },
         "readinessProbe": {
           "additionalProperties": true,
-          "description": "# Readiness and liveness probes for default backend\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
+          "description": "# Readiness and liveness probes for Repo Server\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
           "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable Kubernetes readiness probe for Repo Server",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
             "failureThreshold": {
               "default": 3,
               "description": "Minimum consecutive failures for the [probe] to be considered failed after having succeeded",
@@ -10692,6 +10759,13 @@
         "livenessProbe": {
           "additionalProperties": true,
           "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable Kubernetes liveness probe for default backend",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
             "failureThreshold": {
               "default": 3,
               "description": "Minimum consecutive failures for the [probe] to be considered failed after having succeeded",
@@ -10993,6 +11067,13 @@
           "additionalProperties": true,
           "description": "# Readiness and liveness probes for default backend\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
           "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable Kubernetes readiness probe for default backend",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
             "failureThreshold": {
               "default": 3,
               "description": "Minimum consecutive failures for the [probe] to be considered failed after having succeeded",
