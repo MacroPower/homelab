@@ -14,6 +14,10 @@ schema Values:
     customCACertificate : ValuesCustomCacertificate, optional
         Setup for Custom CA certificates. These are automatically mounted into every secureCodeBox component (lurker, parser & hooks).
         Requires that every namespace has a configmap with the CA certificate(s)
+    extraVolumeMounts : [any], optional
+        Additional volume mounts to be mounted to the operator deployment
+    extraVolumes : [any], optional
+        Additional volumes to be mounted to the operator deployment
     global : ValuesGlobal, optional
         Global values are values that can be accessed from any chart or subchart by exactly the same name.
     image : ValuesImage, optional
@@ -44,6 +48,8 @@ schema Values:
     [...str]: any
     allowIstioSidecarInjectionInJobs?: bool
     customCACertificate?: ValuesCustomCacertificate
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
     global?: ValuesGlobal
     image?: ValuesImage
     imagePullSecrets?: [any]
