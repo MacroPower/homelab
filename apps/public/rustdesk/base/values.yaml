@@ -99,12 +99,7 @@ service:
         protocol: TCP
   hbbs:
     controller: hbbs
-    type: LoadBalancer
-    ipFamilyPolicy: SingleStack
-    ipFamilies:
-      - IPv4
-    labels:
-      bgp.kube.macro.network/peer-group: main
+    type: ClusterIP
     ports:
       nat-test:
         port: 21115
@@ -120,12 +115,7 @@ service:
         protocol: TCP
   hbbr:
     controller: hbbr
-    type: LoadBalancer
-    ipFamilyPolicy: SingleStack
-    ipFamilies:
-      - IPv4
-    labels:
-      bgp.kube.macro.network/peer-group: main
+    type: ClusterIP
     ports:
       relay:
         port: 21117

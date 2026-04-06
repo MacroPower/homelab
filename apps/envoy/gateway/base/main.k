@@ -112,6 +112,30 @@ _publicGateway = gatewayv1.Gateway {
                     }
                 ]
             }
+            {
+                name = "rustdesk-nat-test"
+                protocol = "TCP"
+                port = 21115
+                allowedRoutes.namespaces.from = "All"
+            }
+            {
+                name = "rustdesk-id-tcp"
+                protocol = "TCP"
+                port = 21116
+                allowedRoutes.namespaces.from = "All"
+            }
+            {
+                name = "rustdesk-id-udp"
+                protocol = "UDP"
+                port = 21116
+                allowedRoutes.namespaces.from = "All"
+            }
+            {
+                name = "rustdesk-relay"
+                protocol = "TCP"
+                port = 21117
+                allowedRoutes.namespaces.from = "All"
+            }
         ]
     }
 }
