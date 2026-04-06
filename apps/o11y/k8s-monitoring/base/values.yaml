@@ -113,15 +113,9 @@ autoInstrumentation:
         hostPath:
           path: /sys/fs/bpf
           type: Directory
-      - name: cgroup
-        hostPath:
-          path: /sys/fs/cgroup
-          type: Directory
     volumeMounts:
       - name: bpffs
         mountPath: /sys/fs/bpf
-      - name: cgroup
-        mountPath: /sys/fs/cgroup
     config:
       data:
         log_level: info
