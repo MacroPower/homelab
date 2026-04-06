@@ -74,6 +74,23 @@ applicationObservability:
       http:
         enabled: true
         port: 4318
+  processors:
+    filters:
+      enabled: true
+      traces:
+        span:
+          - 'attributes["url.path"] == "/ready"'
+          - 'attributes["url.path"] == "/healthz"'
+
+connectors:
+  spanLogs:
+    enabled: true
+    roots: true
+    spans: false
+    labels:
+      - "k8s.namespace.name"
+      - "k8s.pod.name"
+      - "service.name"
 
 autoInstrumentation:
   enabled: true
@@ -85,17 +102,32 @@ autoInstrumentation:
         maxUnavailable: 25%
     image:
       tag: "3.7.0"
+    hostNetwork: true
+    dnsPolicy: ClusterFirstWithHostNet
+    securityContext:
+      capabilities:
+        add:
+          - NET_ADMIN
     volumes:
       - name: bpffs
         hostPath:
           path: /sys/fs/bpf
           type: Directory
+      - name: cgroup
+        hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
     volumeMounts:
       - name: bpffs
         mountPath: /sys/fs/bpf
+      - name: cgroup
+        mountPath: /sys/fs/cgroup
     config:
       data:
         log_level: info
+        ebpf:
+          track_request_headers: true
+          context_propagation: all
         attributes:
           kubernetes:
             informers_sync_timeout: 2m
