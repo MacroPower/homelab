@@ -127,7 +127,7 @@ autoInstrumentation:
             informers_sync_timeout: 2m
         discovery:
           exclude_instrument:
-            - exe_path: .*alloy.*|.*otelcol.*|.*beyla.*
+            - exe_path: .*alloy.*|.*otelcol.*|.*beyla.*|.*envoy.*
           instrument:
             - k8s_namespace: .
             - open_ports: 1-65535
