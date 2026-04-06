@@ -1,15 +1,19 @@
 # yaml-language-server: $schema=../../../../charts/rustdesk/values.schema.json
 
 controllers:
-  app:
+  hbbs:
     containers:
       hbbs:
         args:
           - -r
-          - "10.10.40.30:21117"
+          - "rustdesk-hbbr:21117"
 
 service:
-  rustdesk:
+  hbbs:
     annotations:
       lbipam.cilium.io/ips: "10.10.40.30"
       external-dns.alpha.kubernetes.io/hostname: "rustdesk-host.jacobcolvin.com"
+  hbbr:
+    annotations:
+      lbipam.cilium.io/ips: "10.10.40.31"
+      external-dns.alpha.kubernetes.io/hostname: "rustdesk-relay.cin.macro.network"

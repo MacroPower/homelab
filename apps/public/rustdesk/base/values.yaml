@@ -1,9 +1,17 @@
 # yaml-language-server: $schema=../../../../charts/rustdesk/values.schema.json
 
 controllers:
-  app:
+  hbbs:
     replicas: 1
-    strategy: Recreate
+    type: statefulset
+    statefulset:
+      volumeClaimTemplates:
+        - accessMode: ReadWriteOnce
+          storageClass: openebs-hostpath
+          name: data
+          size: 1Gi
+          globalMounts:
+            - path: /data
     containers:
       hbbs:
         image:
@@ -42,6 +50,10 @@ controllers:
             enabled: true
             type: TCP
             port: 21116
+  hbbr:
+    replicas: 1
+    strategy: RollingUpdate
+    containers:
       hbbr:
         image:
           repository: rustdesk/rustdesk-server-pro
@@ -79,12 +91,14 @@ controllers:
 
 service:
   web:
+    controller: hbbs
     type: ClusterIP
     ports:
       http:
         port: 21114
         protocol: TCP
-  rustdesk:
+  hbbs:
+    controller: hbbs
     type: LoadBalancer
     ipFamilyPolicy: SingleStack
     ipFamilies:
@@ -101,11 +115,20 @@ service:
       id-udp:
         port: 21116
         protocol: UDP
-      relay:
-        port: 21117
-        protocol: TCP
       ws-id:
         port: 21118
+        protocol: TCP
+  hbbr:
+    controller: hbbr
+    type: LoadBalancer
+    ipFamilyPolicy: SingleStack
+    ipFamilies:
+      - IPv4
+    labels:
+      bgp.kube.macro.network/peer-group: main
+    ports:
+      relay:
+        port: 21117
         protocol: TCP
       ws-relay:
         port: 21119
@@ -115,15 +138,12 @@ persistence:
   keys:
     type: secret
     name: rustdesk-keypair
-    globalMounts:
-      - path: /root
-        readOnly: true
-  data:
-    type: persistentVolumeClaim
-    storageClass: openebs-hostpath
-    accessMode: ReadWriteOnce
-    size: 1Gi
     advancedMounts:
-      app:
+      hbbs:
         hbbs:
-          - path: /data
+          - path: /root
+            readOnly: true
+      hbbr:
+        hbbr:
+          - path: /root
+            readOnly: true
