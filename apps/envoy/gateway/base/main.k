@@ -38,6 +38,15 @@ _gp = gatewayv1alpha1.EnvoyProxy {
                 }
             }
         }
+        telemetry = {
+            tracing = {
+                samplingRate = 100
+                provider = {
+                    host = "k8s-monitoring-alloy-receiver.o11y-k8s-monitoring.svc"
+                    port = 4317
+                }
+            }
+        }
     }
 }
 
