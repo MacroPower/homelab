@@ -40,7 +40,7 @@ schema ExternalSecretsIoV1SecretStoreSpec:
     Attributes
     ----------
     conditions : [ExternalSecretsIoV1SecretStoreSpecConditionsItems0], default is Undefined, optional
-        Used to constraint a ClusterSecretStore to specific namespaces. Relevant only to ClusterSecretStore
+        Used to constrain a ClusterSecretStore to specific namespaces. Relevant only to ClusterSecretStore.
     controller : str, default is Undefined, optional
         Used to select the correct ESO controller (think: ingress.ingressClassName)
         The ESO controller is instantiated with a specific controller name and filters ES based on this property
@@ -129,12 +129,12 @@ schema ExternalSecretsIoV1SecretStoreSpecProvider:
     ----------
     akeyless : ExternalSecretsIoV1SecretStoreSpecProviderAkeyless, default is Undefined, optional
         akeyless
-    alibaba : ExternalSecretsIoV1SecretStoreSpecProviderAlibaba, default is Undefined, optional
-        alibaba
     aws : ExternalSecretsIoV1SecretStoreSpecProviderAws, default is Undefined, optional
         aws
     azurekv : ExternalSecretsIoV1SecretStoreSpecProviderAzurekv, default is Undefined, optional
         azurekv
+    barbican : ExternalSecretsIoV1SecretStoreSpecProviderBarbican, default is Undefined, optional
+        barbican
     beyondtrust : ExternalSecretsIoV1SecretStoreSpecProviderBeyondtrust, default is Undefined, optional
         beyondtrust
     bitwardensecretsmanager : ExternalSecretsIoV1SecretStoreSpecProviderBitwardensecretsmanager, default is Undefined, optional
@@ -147,10 +147,10 @@ schema ExternalSecretsIoV1SecretStoreSpecProvider:
         conjur
     delinea : ExternalSecretsIoV1SecretStoreSpecProviderDelinea, default is Undefined, optional
         delinea
-    device42 : ExternalSecretsIoV1SecretStoreSpecProviderDevice42, default is Undefined, optional
-        device42
     doppler : ExternalSecretsIoV1SecretStoreSpecProviderDoppler, default is Undefined, optional
         doppler
+    dvls : ExternalSecretsIoV1SecretStoreSpecProviderDvls, default is Undefined, optional
+        dvls
     fake : ExternalSecretsIoV1SecretStoreSpecProviderFake, default is Undefined, optional
         fake
     fortanix : ExternalSecretsIoV1SecretStoreSpecProviderFortanix, default is Undefined, optional
@@ -169,6 +169,8 @@ schema ExternalSecretsIoV1SecretStoreSpecProvider:
         keepersecurity
     kubernetes : ExternalSecretsIoV1SecretStoreSpecProviderKubernetes, default is Undefined, optional
         kubernetes
+    nebiusmysterybox : ExternalSecretsIoV1SecretStoreSpecProviderNebiusmysterybox, default is Undefined, optional
+        nebiusmysterybox
     ngrok : ExternalSecretsIoV1SecretStoreSpecProviderNgrok, default is Undefined, optional
         ngrok
     onboardbase : ExternalSecretsIoV1SecretStoreSpecProviderOnboardbase, default is Undefined, optional
@@ -205,17 +207,17 @@ schema ExternalSecretsIoV1SecretStoreSpecProvider:
         yandexlockbox
     """
     akeyless?: ExternalSecretsIoV1SecretStoreSpecProviderAkeyless
-    alibaba?: ExternalSecretsIoV1SecretStoreSpecProviderAlibaba
     aws?: ExternalSecretsIoV1SecretStoreSpecProviderAws
     azurekv?: ExternalSecretsIoV1SecretStoreSpecProviderAzurekv
+    barbican?: ExternalSecretsIoV1SecretStoreSpecProviderBarbican
     beyondtrust?: ExternalSecretsIoV1SecretStoreSpecProviderBeyondtrust
     bitwardensecretsmanager?: ExternalSecretsIoV1SecretStoreSpecProviderBitwardensecretsmanager
     chef?: ExternalSecretsIoV1SecretStoreSpecProviderChef
     cloudrusm?: ExternalSecretsIoV1SecretStoreSpecProviderCloudrusm
     conjur?: ExternalSecretsIoV1SecretStoreSpecProviderConjur
     delinea?: ExternalSecretsIoV1SecretStoreSpecProviderDelinea
-    device42?: ExternalSecretsIoV1SecretStoreSpecProviderDevice42
     doppler?: ExternalSecretsIoV1SecretStoreSpecProviderDoppler
+    dvls?: ExternalSecretsIoV1SecretStoreSpecProviderDvls
     fake?: ExternalSecretsIoV1SecretStoreSpecProviderFake
     fortanix?: ExternalSecretsIoV1SecretStoreSpecProviderFortanix
     gcpsm?: ExternalSecretsIoV1SecretStoreSpecProviderGcpsm
@@ -225,6 +227,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProvider:
     infisical?: ExternalSecretsIoV1SecretStoreSpecProviderInfisical
     keepersecurity?: ExternalSecretsIoV1SecretStoreSpecProviderKeepersecurity
     kubernetes?: ExternalSecretsIoV1SecretStoreSpecProviderKubernetes
+    nebiusmysterybox?: ExternalSecretsIoV1SecretStoreSpecProviderNebiusmysterybox
     ngrok?: ExternalSecretsIoV1SecretStoreSpecProviderNgrok
     onboardbase?: ExternalSecretsIoV1SecretStoreSpecProviderOnboardbase
     onepassword?: ExternalSecretsIoV1SecretStoreSpecProviderOnepassword
@@ -419,7 +422,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderAkeylessAuthSecretRefSecretRefA
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderAkeylessAuthSecretRefSecretRefAccessType:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -450,7 +453,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderAkeylessAuthSecretRefSecretRefA
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderAkeylessAuthSecretRefSecretRefAccessTypeParam:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -508,133 +511,6 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderAkeylessCaProvider:
         len(name) <= 253
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
-        len(namespace) <= 63 if namespace
-        len(namespace) >= 1 if namespace
-        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
-schema ExternalSecretsIoV1SecretStoreSpecProviderAlibaba:
-    r"""
-    Alibaba configures this store to sync secrets using Alibaba Cloud provider
-
-    Attributes
-    ----------
-    auth : ExternalSecretsIoV1SecretStoreSpecProviderAlibabaAuth, default is Undefined, required
-        auth
-    regionID : str, default is Undefined, required
-        Alibaba Region to be used for the provider
-    """
-    auth: ExternalSecretsIoV1SecretStoreSpecProviderAlibabaAuth
-
-    regionID: str
-
-schema ExternalSecretsIoV1SecretStoreSpecProviderAlibabaAuth:
-    r"""
-    AlibabaAuth contains a secretRef for credentials.
-
-    Attributes
-    ----------
-    rrsa : ExternalSecretsIoV1SecretStoreSpecProviderAlibabaAuthRrsa, default is Undefined, optional
-        rrsa
-    secretRef : ExternalSecretsIoV1SecretStoreSpecProviderAlibabaAuthSecretRef, default is Undefined, optional
-        secret ref
-    """
-    rrsa?: ExternalSecretsIoV1SecretStoreSpecProviderAlibabaAuthRrsa
-    secretRef?: ExternalSecretsIoV1SecretStoreSpecProviderAlibabaAuthSecretRef
-
-schema ExternalSecretsIoV1SecretStoreSpecProviderAlibabaAuthRrsa:
-    r"""
-    Authenticate against Alibaba using RRSA.
-
-    Attributes
-    ----------
-    oidcProviderArn : str, default is Undefined, required
-        oidc provider arn
-    oidcTokenFilePath : str, default is Undefined, required
-        oidc token file path
-    roleArn : str, default is Undefined, required
-        role arn
-    sessionName : str, default is Undefined, required
-        session name
-    """
-    oidcProviderArn: str
-
-    oidcTokenFilePath: str
-
-    roleArn: str
-
-    sessionName: str
-
-schema ExternalSecretsIoV1SecretStoreSpecProviderAlibabaAuthSecretRef:
-    r"""
-    AlibabaAuthSecretRef holds secret references for Alibaba credentials.
-
-    Attributes
-    ----------
-    accessKeyIDSecretRef : ExternalSecretsIoV1SecretStoreSpecProviderAlibabaAuthSecretRefAccessKeyIDSecretRef, default is Undefined, required
-        access key ID secret ref
-    accessKeySecretSecretRef : ExternalSecretsIoV1SecretStoreSpecProviderAlibabaAuthSecretRefAccessKeySecretSecretRef, default is Undefined, required
-        access key secret secret ref
-    """
-    accessKeyIDSecretRef: ExternalSecretsIoV1SecretStoreSpecProviderAlibabaAuthSecretRefAccessKeyIDSecretRef
-
-    accessKeySecretSecretRef: ExternalSecretsIoV1SecretStoreSpecProviderAlibabaAuthSecretRefAccessKeySecretSecretRef
-
-schema ExternalSecretsIoV1SecretStoreSpecProviderAlibabaAuthSecretRefAccessKeyIDSecretRef:
-    r"""
-    The AccessKeyID is used for authentication
-
-    Attributes
-    ----------
-    key : str, default is Undefined, optional
-        A key in the referenced Secret.
-        Some instances of this field may be defaulted, in others it may be required.
-    name : str, default is Undefined, optional
-        The name of the Secret resource being referred to.
-    namespace : str, default is Undefined, optional
-        The namespace of the Secret resource being referred to.
-        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
-    """
-    key?: str
-    name?: str
-    namespace?: str
-
-    check:
-        len(key) <= 253 if key
-        len(key) >= 1 if key
-        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
-        len(name) <= 253 if name
-        len(name) >= 1 if name
-        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
-        len(namespace) <= 63 if namespace
-        len(namespace) >= 1 if namespace
-        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
-schema ExternalSecretsIoV1SecretStoreSpecProviderAlibabaAuthSecretRefAccessKeySecretSecretRef:
-    r"""
-    The AccessKeySecret is used for authentication
-
-    Attributes
-    ----------
-    key : str, default is Undefined, optional
-        A key in the referenced Secret.
-        Some instances of this field may be defaulted, in others it may be required.
-    name : str, default is Undefined, optional
-        The name of the Secret resource being referred to.
-    namespace : str, default is Undefined, optional
-        The namespace of the Secret resource being referred to.
-        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
-    """
-    key?: str
-    name?: str
-    namespace?: str
-
-    check:
-        len(key) <= 253 if key
-        len(key) >= 1 if key
-        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
-        len(name) <= 253 if name
-        len(name) >= 1 if name
-        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
@@ -697,7 +573,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderAwsAuth:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderAwsAuthJwt:
     r"""
-    Authenticate against AWS using service account tokens.
+    AWSJWTAuth stores reference to Authenticate against AWS using service account tokens.
 
     Attributes
     ----------
@@ -708,7 +584,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderAwsAuthJwt:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderAwsAuthJwtServiceAccountRef:
     r"""
-    A reference to a ServiceAccount resource.
+    ServiceAccountSelector is a reference to a ServiceAccount resource.
 
     Attributes
     ----------
@@ -861,7 +737,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderAwsSecretsManager:
         The number of days from 7 to 30 that Secrets Manager waits before
         permanently deleting the secret. You can't use both this parameter and
         ForceDeleteWithoutRecovery in the same call. If you don't use either,
-        then by default Secrets Manager uses a 30 day recovery window.
+        then by default Secrets Manager uses a 30-day recovery window.
         see: https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_DeleteSecret.html#SecretsManager-DeleteSecret-request-RecoveryWindowInDays
     """
     forceDeleteWithoutRecovery?: bool
@@ -869,7 +745,8 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderAwsSecretsManager:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderAwsSessionTagsItems0:
     r"""
-    external secrets io v1 secret store spec provider aws session tags items0
+    Tag is a key-value pair that can be attached to an AWS resource.
+    see: https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html
 
     Attributes
     ----------
@@ -1067,8 +944,11 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderAzurekvAuthSecretRefTenantID:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderAzurekvCustomCloudConfig:
     r"""
-    CustomCloudConfig defines custom Azure Stack Hub or Azure Stack Edge endpoints.
+    CustomCloudConfig defines custom Azure endpoints for non-standard clouds.
     Required when EnvironmentType is AzureStackCloud.
+    Optional for other environment types - useful for Azure China when using Workload Identity
+    with AKS, where the OIDC issuer (login.partner.microsoftonline.cn) differs from the
+    standard China Cloud endpoint (login.chinacloudapi.cn).
     IMPORTANT: This feature REQUIRES UseAzureSDK to be set to true. Custom cloud
     configuration is not supported with the legacy go-autorest SDK.
 
@@ -1116,6 +996,132 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderAzurekvServiceAccountRef:
         len(name) <= 253
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderBarbican:
+    r"""
+    Barbican configures this store to sync secrets using the OpenStack Barbican provider
+
+    Attributes
+    ----------
+    auth : ExternalSecretsIoV1SecretStoreSpecProviderBarbicanAuth, default is Undefined, required
+        auth
+    authURL : str, default is Undefined, optional
+        auth URL
+    domainName : str, default is Undefined, optional
+        domain name
+    region : str, default is Undefined, optional
+        region
+    tenantName : str, default is Undefined, optional
+        tenant name
+    """
+    auth: ExternalSecretsIoV1SecretStoreSpecProviderBarbicanAuth
+
+    authURL?: str
+    domainName?: str
+    region?: str
+    tenantName?: str
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderBarbicanAuth:
+    r"""
+    BarbicanAuth contains the authentication information for Barbican.
+
+    Attributes
+    ----------
+    password : ExternalSecretsIoV1SecretStoreSpecProviderBarbicanAuthPassword, default is Undefined, required
+        password
+    username : ExternalSecretsIoV1SecretStoreSpecProviderBarbicanAuthUsername, default is Undefined, required
+        username
+    """
+    password: ExternalSecretsIoV1SecretStoreSpecProviderBarbicanAuthPassword
+
+    username: ExternalSecretsIoV1SecretStoreSpecProviderBarbicanAuthUsername
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderBarbicanAuthPassword:
+    r"""
+    BarbicanProviderPasswordRef defines a reference to a secret containing password for the Barbican provider.
+
+    Attributes
+    ----------
+    secretRef : ExternalSecretsIoV1SecretStoreSpecProviderBarbicanAuthPasswordSecretRef, default is Undefined, required
+        secret ref
+    """
+    secretRef: ExternalSecretsIoV1SecretStoreSpecProviderBarbicanAuthPasswordSecretRef
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderBarbicanAuthPasswordSecretRef:
+    r"""
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
+    In some instances, `key` is a required field.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderBarbicanAuthUsername:
+    r"""
+    BarbicanProviderUsernameRef defines a reference to a secret containing username for the Barbican provider.
+
+    Attributes
+    ----------
+    secretRef : ExternalSecretsIoV1SecretStoreSpecProviderBarbicanAuthUsernameSecretRef, default is Undefined, optional
+        secret ref
+    value : str, default is Undefined, optional
+        value
+    """
+    secretRef?: ExternalSecretsIoV1SecretStoreSpecProviderBarbicanAuthUsernameSecretRef
+    value?: str
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderBarbicanAuthUsernameSecretRef:
+    r"""
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
+    In some instances, `key` is a required field.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
@@ -1390,6 +1396,8 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderBeyondtrustServer:
         api version
     clientTimeOutSeconds : int, default is Undefined, optional
         Timeout specifies a time limit for requests made by this Client. The timeout includes connection time, any redirects, and reading the response body. Defaults to 45 seconds.
+    decrypt : bool, default is True, optional
+        When true, the response includes the decrypted password. When false, the password field is omitted. This option only applies to the SECRET retrieval type. Default: true.
     retrievalType : str, default is Undefined, optional
         The secret retrieval type. SECRET = Secrets Safe (credential, text, file). MANAGED_ACCOUNT = Password Safe account associated with a system.
     separator : str, default is Undefined, optional
@@ -1401,6 +1409,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderBeyondtrustServer:
 
     apiVersion?: str
     clientTimeOutSeconds?: int
+    decrypt?: bool = True
     retrievalType?: str
     separator?: str
     verifyCA: bool
@@ -2052,73 +2061,6 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderDelineaClientSecretSecretRef:
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-schema ExternalSecretsIoV1SecretStoreSpecProviderDevice42:
-    r"""
-    Device42 configures this store to sync secrets using the Device42 provider
-
-    Attributes
-    ----------
-    auth : ExternalSecretsIoV1SecretStoreSpecProviderDevice42Auth, default is Undefined, required
-        auth
-    host : str, default is Undefined, required
-        URL configures the Device42 instance URL.
-    """
-    auth: ExternalSecretsIoV1SecretStoreSpecProviderDevice42Auth
-
-    host: str
-
-schema ExternalSecretsIoV1SecretStoreSpecProviderDevice42Auth:
-    r"""
-    Auth configures how secret-manager authenticates with a Device42 instance.
-
-    Attributes
-    ----------
-    secretRef : ExternalSecretsIoV1SecretStoreSpecProviderDevice42AuthSecretRef, default is Undefined, required
-        secret ref
-    """
-    secretRef: ExternalSecretsIoV1SecretStoreSpecProviderDevice42AuthSecretRef
-
-schema ExternalSecretsIoV1SecretStoreSpecProviderDevice42AuthSecretRef:
-    r"""
-    external secrets io v1 secret store spec provider device42 auth secret ref
-
-    Attributes
-    ----------
-    credentials : ExternalSecretsIoV1SecretStoreSpecProviderDevice42AuthSecretRefCredentials, default is Undefined, optional
-        credentials
-    """
-    credentials?: ExternalSecretsIoV1SecretStoreSpecProviderDevice42AuthSecretRefCredentials
-
-schema ExternalSecretsIoV1SecretStoreSpecProviderDevice42AuthSecretRefCredentials:
-    r"""
-    Username / Password is used for authentication.
-
-    Attributes
-    ----------
-    key : str, default is Undefined, optional
-        A key in the referenced Secret.
-        Some instances of this field may be defaulted, in others it may be required.
-    name : str, default is Undefined, optional
-        The name of the Secret resource being referred to.
-    namespace : str, default is Undefined, optional
-        The namespace of the Secret resource being referred to.
-        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
-    """
-    key?: str
-    name?: str
-    namespace?: str
-
-    check:
-        len(key) <= 253 if key
-        len(key) >= 1 if key
-        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
-        len(name) <= 253 if name
-        len(name) >= 1 if name
-        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
-        len(namespace) <= 63 if namespace
-        len(namespace) >= 1 if namespace
-        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
-
 schema ExternalSecretsIoV1SecretStoreSpecProviderDoppler:
     r"""
     Doppler configures this store to sync secrets using the Doppler provider
@@ -2149,14 +2091,65 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderDopplerAuth:
 
     Attributes
     ----------
-    secretRef : ExternalSecretsIoV1SecretStoreSpecProviderDopplerAuthSecretRef, default is Undefined, required
+    oidcConfig : ExternalSecretsIoV1SecretStoreSpecProviderDopplerAuthOidcConfig, default is Undefined, optional
+        oidc config
+    secretRef : ExternalSecretsIoV1SecretStoreSpecProviderDopplerAuthSecretRef, default is Undefined, optional
         secret ref
     """
-    secretRef: ExternalSecretsIoV1SecretStoreSpecProviderDopplerAuthSecretRef
+    oidcConfig?: ExternalSecretsIoV1SecretStoreSpecProviderDopplerAuthOidcConfig
+    secretRef?: ExternalSecretsIoV1SecretStoreSpecProviderDopplerAuthSecretRef
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderDopplerAuthOidcConfig:
+    r"""
+    OIDCConfig authenticates using Kubernetes ServiceAccount tokens via OIDC.
+
+    Attributes
+    ----------
+    expirationSeconds : int, default is 600, optional
+        ExpirationSeconds sets the ServiceAccount token validity duration.
+        Defaults to 10 minutes.
+    identity : str, default is Undefined, required
+        Identity is the Doppler Service Account Identity ID configured for OIDC authentication.
+    serviceAccountRef : ExternalSecretsIoV1SecretStoreSpecProviderDopplerAuthOidcConfigServiceAccountRef, default is Undefined, required
+        service account ref
+    """
+    expirationSeconds?: int = 600
+    identity: str
+
+    serviceAccountRef: ExternalSecretsIoV1SecretStoreSpecProviderDopplerAuthOidcConfigServiceAccountRef
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderDopplerAuthOidcConfigServiceAccountRef:
+    r"""
+    ServiceAccountRef specifies the Kubernetes ServiceAccount to use for authentication.
+
+    Attributes
+    ----------
+    audiences : [str], default is Undefined, optional
+        Audience specifies the `aud` claim for the service account token
+        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+        then this audiences will be appended to the list
+    name : str, default is Undefined, required
+        The name of the ServiceAccount resource being referred to.
+    namespace : str, default is Undefined, optional
+        Namespace of the resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    audiences?: [str]
+    name: str
+
+    namespace?: str
+
+    check:
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderDopplerAuthSecretRef:
     r"""
-    external secrets io v1 secret store spec provider doppler auth secret ref
+    SecretRef authenticates using a Doppler service token stored in a Kubernetes Secret.
 
     Attributes
     ----------
@@ -2197,6 +2190,112 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderDopplerAuthSecretRefDopplerToke
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
+schema ExternalSecretsIoV1SecretStoreSpecProviderDvls:
+    r"""
+    DVLS configures this store to sync secrets using Devolutions Server provider
+
+    Attributes
+    ----------
+    auth : ExternalSecretsIoV1SecretStoreSpecProviderDvlsAuth, default is Undefined, required
+        auth
+    insecure : bool, default is Undefined, optional
+        Insecure allows connecting to DVLS over plain HTTP.
+        This is NOT RECOMMENDED for production use.
+        Set to true only if you understand the security implications.
+    serverUrl : str, default is Undefined, required
+        ServerURL is the DVLS instance URL (e.g., https://dvls.example.com).
+    """
+    auth: ExternalSecretsIoV1SecretStoreSpecProviderDvlsAuth
+
+    insecure?: bool
+    serverUrl: str
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderDvlsAuth:
+    r"""
+    Auth defines the authentication method to use.
+
+    Attributes
+    ----------
+    secretRef : ExternalSecretsIoV1SecretStoreSpecProviderDvlsAuthSecretRef, default is Undefined, required
+        secret ref
+    """
+    secretRef: ExternalSecretsIoV1SecretStoreSpecProviderDvlsAuthSecretRef
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderDvlsAuthSecretRef:
+    r"""
+    SecretRef contains the Application ID and Application Secret for authentication.
+
+    Attributes
+    ----------
+    appId : ExternalSecretsIoV1SecretStoreSpecProviderDvlsAuthSecretRefAppID, default is Undefined, required
+        app Id
+    appSecret : ExternalSecretsIoV1SecretStoreSpecProviderDvlsAuthSecretRefAppSecret, default is Undefined, required
+        app secret
+    """
+    appId: ExternalSecretsIoV1SecretStoreSpecProviderDvlsAuthSecretRefAppID
+
+    appSecret: ExternalSecretsIoV1SecretStoreSpecProviderDvlsAuthSecretRefAppSecret
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderDvlsAuthSecretRefAppID:
+    r"""
+    AppID is the reference to the secret containing the Application ID.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderDvlsAuthSecretRefAppSecret:
+    r"""
+    AppSecret is the reference to the secret containing the Application Secret.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
 schema ExternalSecretsIoV1SecretStoreSpecProviderFake:
     r"""
     Fake configures a store with static key/value pairs
@@ -2206,7 +2305,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderFake:
     data : [ExternalSecretsIoV1SecretStoreSpecProviderFakeDataItems0], default is Undefined, required
         data
     validationResult : int, default is Undefined, optional
-        validation result
+        ValidationResult is defined type for the number of validation results.
     """
     data: [ExternalSecretsIoV1SecretStoreSpecProviderFakeDataItems0]
 
@@ -2214,7 +2313,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderFake:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderFakeDataItems0:
     r"""
-    external secrets io v1 secret store spec provider fake data items0
+    FakeProviderData defines a key-value pair with optional version for the fake provider.
 
     Attributes
     ----------
@@ -2329,7 +2428,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderGcpsmAuth:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderGcpsmAuthSecretRef:
     r"""
-    external secrets io v1 secret store spec provider gcpsm auth secret ref
+    GCPSMAuthSecretRef contains the secret references for GCP Secret Manager authentication.
 
     Attributes
     ----------
@@ -2370,7 +2469,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderGcpsmAuthSecretRefSecretAccessK
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderGcpsmAuthWorkloadIdentity:
     r"""
-    external secrets io v1 secret store spec provider gcpsm auth workload identity
+    GCPWorkloadIdentity defines configuration for workload identity authentication to GCP.
 
     Attributes
     ----------
@@ -2530,7 +2629,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderGcpsmAuthWorkloadIdentityFedera
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderGcpsmAuthWorkloadIdentityServiceAccountRef:
     r"""
-    A reference to a ServiceAccount resource.
+    ServiceAccountSelector is a reference to a ServiceAccount resource.
 
     Attributes
     ----------
@@ -2559,7 +2658,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderGcpsmAuthWorkloadIdentityServic
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderGithub:
     r"""
-    Github configures this store to push GitHub Action secrets using GitHub API provider.
+    Github configures this store to push GitHub Actions secrets using the GitHub API provider.
     Note: This provider only supports write operations (PushSecret) and cannot fetch secrets from GitHub
 
     Attributes
@@ -2607,7 +2706,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderGithubAuth:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderGithubAuthPrivateKey:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -2683,7 +2782,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderGitlabAuth:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderGitlabAuthSecretRef:
     r"""
-    external secrets io v1 secret store spec provider gitlab auth secret ref
+    GitlabSecretRef contains the secret reference for GitLab authentication credentials.
 
     Attributes
     ----------
@@ -2786,7 +2885,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderIbmAuth:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderIbmAuthContainerAuth:
     r"""
-    IBM Container-based auth with IAM Trusted Profile.
+    IBMAuthContainerAuth defines container-based authentication with IAM Trusted Profile.
 
     Attributes
     ----------
@@ -2804,13 +2903,16 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderIbmAuthContainerAuth:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderIbmAuthSecretRef:
     r"""
-    external secrets io v1 secret store spec provider ibm auth secret ref
+    IBMAuthSecretRef contains the secret reference for IBM Cloud API key authentication.
 
     Attributes
     ----------
+    iamEndpoint : str, default is Undefined, optional
+        The IAM endpoint used to obain a token
     secretApiKeySecretRef : ExternalSecretsIoV1SecretStoreSpecProviderIbmAuthSecretRefSecretAPIKeySecretRef, default is Undefined, optional
         secret Api key secret ref
     """
+    iamEndpoint?: str
     secretApiKeySecretRef?: ExternalSecretsIoV1SecretStoreSpecProviderIbmAuthSecretRefSecretAPIKeySecretRef
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderIbmAuthSecretRefSecretAPIKeySecretRef:
@@ -2851,6 +2953,11 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisical:
     ----------
     auth : ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuth, default is Undefined, required
         auth
+    caBundle : str, default is Undefined, optional
+        CABundle is a PEM-encoded CA certificate bundle used to validate
+        the Infisical server's TLS certificate. Mutually exclusive with CAProvider.
+    caProvider : ExternalSecretsIoV1SecretStoreSpecProviderInfisicalCaProvider, default is Undefined, optional
+        ca provider
     hostAPI : str, default is "https://app.infisical.com/api", optional
         HostAPI specifies the base URL of the Infisical API. If not provided, it defaults to "https://app.infisical.com/api".
     secretsScope : ExternalSecretsIoV1SecretStoreSpecProviderInfisicalSecretsScope, default is Undefined, required
@@ -2858,6 +2965,8 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisical:
     """
     auth: ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuth
 
+    caBundle?: str
+    caProvider?: ExternalSecretsIoV1SecretStoreSpecProviderInfisicalCaProvider
     hostAPI?: str = "https://app.infisical.com/api"
     secretsScope: ExternalSecretsIoV1SecretStoreSpecProviderInfisicalSecretsScope
 
@@ -2901,7 +3010,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuth:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthAwsAuthCredentials:
     r"""
-    external secrets io v1 secret store spec provider infisical auth aws auth credentials
+    AwsAuthCredentials represents the credentials for AWS authentication.
 
     Attributes
     ----------
@@ -2912,7 +3021,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthAwsAuthCredentials
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthAwsAuthCredentialsIdentityID:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -2943,7 +3052,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthAwsAuthCredentials
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthAzureAuthCredentials:
     r"""
-    external secrets io v1 secret store spec provider infisical auth azure auth credentials
+    AzureAuthCredentials represents the credentials for Azure authentication.
 
     Attributes
     ----------
@@ -2958,7 +3067,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthAzureAuthCredentia
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthAzureAuthCredentialsIdentityID:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -2989,7 +3098,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthAzureAuthCredentia
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthAzureAuthCredentialsResource:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3020,7 +3129,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthAzureAuthCredentia
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthGcpIDTokenAuthCredentials:
     r"""
-    external secrets io v1 secret store spec provider infisical auth gcp ID token auth credentials
+    GcpIDTokenAuthCredentials represents the credentials for GCP ID token authentication.
 
     Attributes
     ----------
@@ -3031,7 +3140,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthGcpIDTokenAuthCred
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthGcpIDTokenAuthCredentialsIdentityID:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3062,7 +3171,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthGcpIDTokenAuthCred
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthGcpIamAuthCredentials:
     r"""
-    external secrets io v1 secret store spec provider infisical auth gcp iam auth credentials
+    GcpIamAuthCredentials represents the credentials for GCP IAM authentication.
 
     Attributes
     ----------
@@ -3077,7 +3186,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthGcpIamAuthCredenti
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthGcpIamAuthCredentialsIdentityID:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3108,7 +3217,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthGcpIamAuthCredenti
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthGcpIamAuthCredentialsServiceAccountKeyFilePath:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3139,7 +3248,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthGcpIamAuthCredenti
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthJwtAuthCredentials:
     r"""
-    external secrets io v1 secret store spec provider infisical auth jwt auth credentials
+    JwtAuthCredentials represents the credentials for JWT authentication.
 
     Attributes
     ----------
@@ -3154,7 +3263,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthJwtAuthCredentials
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthJwtAuthCredentialsIdentityID:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3185,7 +3294,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthJwtAuthCredentials
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthJwtAuthCredentialsJwt:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3216,7 +3325,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthJwtAuthCredentials
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthKubernetesAuthCredentials:
     r"""
-    external secrets io v1 secret store spec provider infisical auth kubernetes auth credentials
+    KubernetesAuthCredentials represents the credentials for Kubernetes authentication.
 
     Attributes
     ----------
@@ -3231,7 +3340,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthKubernetesAuthCred
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthKubernetesAuthCredentialsIdentityID:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3262,7 +3371,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthKubernetesAuthCred
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthKubernetesAuthCredentialsServiceAccountTokenPath:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3293,7 +3402,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthKubernetesAuthCred
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthLdapAuthCredentials:
     r"""
-    external secrets io v1 secret store spec provider infisical auth ldap auth credentials
+    LdapAuthCredentials represents the credentials for LDAP authentication.
 
     Attributes
     ----------
@@ -3312,7 +3421,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthLdapAuthCredential
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthLdapAuthCredentialsIdentityID:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3343,7 +3452,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthLdapAuthCredential
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthLdapAuthCredentialsLdapPassword:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3374,7 +3483,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthLdapAuthCredential
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthLdapAuthCredentialsLdapUsername:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3405,7 +3514,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthLdapAuthCredential
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthOciAuthCredentials:
     r"""
-    external secrets io v1 secret store spec provider infisical auth oci auth credentials
+    OciAuthCredentials represents the credentials for OCI authentication.
 
     Attributes
     ----------
@@ -3439,7 +3548,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthOciAuthCredentials
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthOciAuthCredentialsFingerprint:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3470,7 +3579,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthOciAuthCredentials
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthOciAuthCredentialsIdentityID:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3501,7 +3610,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthOciAuthCredentials
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthOciAuthCredentialsPrivateKey:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3532,7 +3641,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthOciAuthCredentials
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthOciAuthCredentialsPrivateKeyPassphrase:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3563,7 +3672,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthOciAuthCredentials
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthOciAuthCredentialsRegion:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3594,7 +3703,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthOciAuthCredentials
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthOciAuthCredentialsTenancyID:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3625,7 +3734,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthOciAuthCredentials
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthOciAuthCredentialsUserID:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3656,7 +3765,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthOciAuthCredentials
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthTokenAuthCredentials:
     r"""
-    external secrets io v1 secret store spec provider infisical auth token auth credentials
+    TokenAuthCredentials represents the credentials for access token-based authentication.
 
     Attributes
     ----------
@@ -3667,7 +3776,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthTokenAuthCredentia
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthTokenAuthCredentialsAccessToken:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3698,7 +3807,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthTokenAuthCredentia
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthUniversalAuthCredentials:
     r"""
-    external secrets io v1 secret store spec provider infisical auth universal auth credentials
+    UniversalAuthCredentials represents the client credentials for universal authentication.
 
     Attributes
     ----------
@@ -3713,7 +3822,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthUniversalAuthCrede
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthUniversalAuthCredentialsClientID:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3744,7 +3853,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthUniversalAuthCrede
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthUniversalAuthCredentialsClientSecret:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3769,6 +3878,41 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalAuthUniversalAuthCrede
         len(name) <= 253 if name
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderInfisicalCaProvider:
+    r"""
+    CAProvider is a reference to a Secret or ConfigMap that contains a CA certificate.
+    The certificate is used to validate the Infisical server's TLS certificate.
+    Mutually exclusive with CABundle.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        The key where the CA certificate can be found in the Secret or ConfigMap.
+    name : str, default is Undefined, required
+        The name of the object located at the provider type.
+    namespace : str, default is Undefined, optional
+        The namespace the Provider type is in.
+        Can only be defined when used in a ClusterSecretStore.
+    $type : str, default is Undefined, required
+        The type of provider to use such as "Secret", or "ConfigMap".
+    """
+    key?: str
+    name: str
+
+    namespace?: str
+    $type: "Secret" | "ConfigMap"
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
@@ -3815,7 +3959,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderKeepersecurity:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderKeepersecurityAuthRef:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3902,7 +4046,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderKubernetesAuthCert:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderKubernetesAuthCertClientCert:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3933,7 +4077,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderKubernetesAuthCertClientCert:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderKubernetesAuthCertClientKey:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -4034,7 +4178,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderKubernetesAuthToken:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderKubernetesAuthTokenBearerToken:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -4109,6 +4253,153 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderKubernetesServerCaProvider:
         len(name) <= 253
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderNebiusmysterybox:
+    r"""
+    NebiusMysterybox configures this store to sync secrets using NebiusMysterybox provider
+
+    Attributes
+    ----------
+    apiDomain : str, default is Undefined, required
+        NebiusMysterybox API endpoint
+    auth : ExternalSecretsIoV1SecretStoreSpecProviderNebiusmysteryboxAuth, default is Undefined, required
+        auth
+    caProvider : ExternalSecretsIoV1SecretStoreSpecProviderNebiusmysteryboxCaProvider, default is Undefined, optional
+        ca provider
+    """
+    apiDomain: str
+
+    auth: ExternalSecretsIoV1SecretStoreSpecProviderNebiusmysteryboxAuth
+
+    caProvider?: ExternalSecretsIoV1SecretStoreSpecProviderNebiusmysteryboxCaProvider
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderNebiusmysteryboxAuth:
+    r"""
+    Auth defines parameters to authenticate in MysteryBox
+
+    Attributes
+    ----------
+    serviceAccountCredsSecretRef : ExternalSecretsIoV1SecretStoreSpecProviderNebiusmysteryboxAuthServiceAccountCredsSecretRef, default is Undefined, optional
+        service account creds secret ref
+    tokenSecretRef : ExternalSecretsIoV1SecretStoreSpecProviderNebiusmysteryboxAuthTokenSecretRef, default is Undefined, optional
+        token secret ref
+    """
+    serviceAccountCredsSecretRef?: ExternalSecretsIoV1SecretStoreSpecProviderNebiusmysteryboxAuthServiceAccountCredsSecretRef
+    tokenSecretRef?: ExternalSecretsIoV1SecretStoreSpecProviderNebiusmysteryboxAuthTokenSecretRef
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderNebiusmysteryboxAuthServiceAccountCredsSecretRef:
+    r"""
+    ServiceAccountCreds references a Kubernetes Secret key that contains a JSON
+    document with service account credentials used to get an IAM token.
+
+    Expected JSON structure:
+    {
+      "subject-credentials": {
+        "alg": "RS256",
+        "private-key": "-----BEGIN PRIVATE KEY-----\n<private-key>\n-----END PRIVATE KEY-----\n",
+        "kid": "<public-key-id>",
+        "iss": "<issuer-service-account-id>",
+        "sub": "<subject-service-account-id>"
+      }
+    }
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderNebiusmysteryboxAuthTokenSecretRef:
+    r"""
+    Token authenticates with Nebius Mysterybox by presenting a token.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderNebiusmysteryboxCaProvider:
+    r"""
+    The provider for the CA bundle to use to validate NebiusMysterybox server certificate.
+
+    Attributes
+    ----------
+    certSecretRef : ExternalSecretsIoV1SecretStoreSpecProviderNebiusmysteryboxCaProviderCertSecretRef, default is Undefined, optional
+        cert secret ref
+    """
+    certSecretRef?: ExternalSecretsIoV1SecretStoreSpecProviderNebiusmysteryboxCaProviderCertSecretRef
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderNebiusmysteryboxCaProviderCertSecretRef:
+    r"""
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
+    In some instances, `key` is a required field.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
@@ -4372,6 +4663,8 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderOnepasswordSDK:
     ----------
     auth : ExternalSecretsIoV1SecretStoreSpecProviderOnepasswordSDKAuth, default is Undefined, required
         auth
+    cache : ExternalSecretsIoV1SecretStoreSpecProviderOnepasswordSDKCache, default is Undefined, optional
+        cache
     integrationInfo : ExternalSecretsIoV1SecretStoreSpecProviderOnepasswordSDKIntegrationInfo, default is Undefined, optional
         integration info
     vault : str, default is Undefined, required
@@ -4379,6 +4672,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderOnepasswordSDK:
     """
     auth: ExternalSecretsIoV1SecretStoreSpecProviderOnepasswordSDKAuth
 
+    cache?: ExternalSecretsIoV1SecretStoreSpecProviderOnepasswordSDKCache
     integrationInfo?: ExternalSecretsIoV1SecretStoreSpecProviderOnepasswordSDKIntegrationInfo
     vault: str
 
@@ -4422,6 +4716,29 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderOnepasswordSDKAuthServiceAccoun
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderOnepasswordSDKCache:
+    r"""
+    Cache configures client-side caching for read operations (GetSecret, GetSecretMap).
+    When enabled, secrets are cached with the specified TTL.
+    Write operations (PushSecret, DeleteSecret) automatically invalidate relevant cache entries.
+    If omitted, caching is disabled (default).
+    cache: {} is a valid option to set.
+
+    Attributes
+    ----------
+    maxSize : int, default is 100, optional
+        MaxSize is the maximum number of secrets to cache.
+        When the cache is full, least-recently-used entries are evicted.
+    ttl : str, default is "5m", optional
+        TTL is the time-to-live for cached secrets.
+        Format: duration string (e.g., "5m", "1h", "30s")
+    """
+    maxSize?: int = 100
+    ttl?: str = "5m"
+
+    check:
+        maxSize >= 1 if maxSize not in [None, Undefined]
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderOnepasswordSDKIntegrationInfo:
     r"""
@@ -4599,7 +4916,8 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderOracleServiceAccountRef:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderPassbolt:
     r"""
-    external secrets io v1 secret store spec provider passbolt
+    PassboltProvider provides access to Passbolt secrets manager.
+    See: https://www.passbolt.com.
 
     Attributes
     ----------
@@ -4629,7 +4947,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderPassboltAuth:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderPassboltAuthPasswordSecretRef:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -4660,7 +4978,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderPassboltAuthPasswordSecretRef:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderPassboltAuthPrivateKeySecretRef:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -4691,7 +5009,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderPassboltAuthPrivateKeySecretRef
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderPassworddepot:
     r"""
-    Configures a store to sync secrets with a Password Depot instance.
+    PasswordDepotProvider configures a store to sync secrets with a Password Depot instance.
 
     Attributes
     ----------
@@ -4721,7 +5039,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderPassworddepotAuth:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderPassworddepotAuthSecretRef:
     r"""
-    external secrets io v1 secret store spec provider passworddepot auth secret ref
+    PasswordDepotSecretRef contains the secret reference for Password Depot authentication.
 
     Attributes
     ----------
@@ -4900,7 +5218,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderPulumiAccessTokenSecretRef:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderScaleway:
     r"""
-    Scaleway
+    Scaleway configures this store to sync secrets using the Scaleway provider.
 
     Attributes
     ----------
@@ -5019,6 +5337,12 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderSecretserver:
 
     Attributes
     ----------
+    caBundle : str, default is Undefined, optional
+        PEM/base64 encoded CA bundle used to validate Secret ServerURL. Only used
+        if the ServerURL URL is using HTTPS protocol. If not set the system root certificates
+        are used to validate the TLS connection.
+    caProvider : ExternalSecretsIoV1SecretStoreSpecProviderSecretserverCaProvider, default is Undefined, optional
+        ca provider
     domain : str, default is Undefined, optional
         Domain is the secret server domain.
     password : ExternalSecretsIoV1SecretStoreSpecProviderSecretserverPassword, default is Undefined, required
@@ -5029,12 +5353,47 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderSecretserver:
     username : ExternalSecretsIoV1SecretStoreSpecProviderSecretserverUsername, default is Undefined, required
         username
     """
+    caBundle?: str
+    caProvider?: ExternalSecretsIoV1SecretStoreSpecProviderSecretserverCaProvider
     domain?: str
     password: ExternalSecretsIoV1SecretStoreSpecProviderSecretserverPassword
 
     serverURL: str
 
     username: ExternalSecretsIoV1SecretStoreSpecProviderSecretserverUsername
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderSecretserverCaProvider:
+    r"""
+    The provider for the CA bundle to use to validate Secret ServerURL certificate.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        The key where the CA certificate can be found in the Secret or ConfigMap.
+    name : str, default is Undefined, required
+        The name of the object located at the provider type.
+    namespace : str, default is Undefined, optional
+        The namespace the Provider type is in.
+        Can only be defined when used in a ClusterSecretStore.
+    $type : str, default is Undefined, required
+        The type of provider to use such as "Secret", or "ConfigMap".
+    """
+    key?: str
+    name: str
+
+    namespace?: str
+    $type: "Secret" | "ConfigMap"
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderSecretserverPassword:
     r"""
@@ -5163,7 +5522,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderSenhaseguraAuth:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderSenhaseguraAuthClientSecretSecretRef:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -5194,7 +5553,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderSenhaseguraAuthClientSecretSecr
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderVault:
     r"""
-    Vault configures this store to sync secrets using Hashi provider
+    Vault configures this store to sync secrets using the HashiCorp Vault provider.
 
     Attributes
     ----------
@@ -5262,6 +5621,8 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderVaultAuth:
         app role
     cert : ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthCert, default is Undefined, optional
         cert
+    gcp : ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthGcp, default is Undefined, optional
+        gcp
     iam : ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthIam, default is Undefined, optional
         iam
     jwt : ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthJwt, default is Undefined, optional
@@ -5283,6 +5644,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderVaultAuth:
     """
     appRole?: ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthAppRole
     cert?: ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthCert
+    gcp?: ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthGcp
     iam?: ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthIam
     jwt?: ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthJwt
     kubernetes?: ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthKubernetes
@@ -5462,6 +5824,159 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthCertSecretRef:
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
+schema ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthGcp:
+    r"""
+    Gcp authenticates with Vault using Google Cloud Platform authentication method
+    GCP authentication method
+
+    Attributes
+    ----------
+    location : str, default is Undefined, optional
+        Location optionally defines a location/region for the secret
+    path : str, default is "gcp", optional
+        Path where the GCP auth method is enabled in Vault, e.g: "gcp"
+    projectID : str, default is Undefined, optional
+        Project ID of the Google Cloud Platform project
+    role : str, default is Undefined, required
+        Vault Role. In Vault, a role describes an identity with a set of permissions, groups, or policies you want to attach to a user of the secrets engine.
+    secretRef : ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthGcpSecretRef, default is Undefined, optional
+        secret ref
+    serviceAccountRef : ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthGcpServiceAccountRef, default is Undefined, optional
+        service account ref
+    workloadIdentity : ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthGcpWorkloadIdentity, default is Undefined, optional
+        workload identity
+    """
+    location?: str
+    path?: str = "gcp"
+    projectID?: str
+    role: str
+
+    secretRef?: ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthGcpSecretRef
+    serviceAccountRef?: ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthGcpServiceAccountRef
+    workloadIdentity?: ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthGcpWorkloadIdentity
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthGcpSecretRef:
+    r"""
+    Specify credentials in a Secret object
+
+    Attributes
+    ----------
+    secretAccessKeySecretRef : ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthGcpSecretRefSecretAccessKeySecretRef, default is Undefined, optional
+        secret access key secret ref
+    """
+    secretAccessKeySecretRef?: ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthGcpSecretRefSecretAccessKeySecretRef
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthGcpSecretRefSecretAccessKeySecretRef:
+    r"""
+    The SecretAccessKey is used for authentication
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthGcpServiceAccountRef:
+    r"""
+    ServiceAccountRef to a service account for impersonation
+
+    Attributes
+    ----------
+    audiences : [str], default is Undefined, optional
+        Audience specifies the `aud` claim for the service account token
+        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+        then this audiences will be appended to the list
+    name : str, default is Undefined, required
+        The name of the ServiceAccount resource being referred to.
+    namespace : str, default is Undefined, optional
+        Namespace of the resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    audiences?: [str]
+    name: str
+
+    namespace?: str
+
+    check:
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthGcpWorkloadIdentity:
+    r"""
+    Specify a service account with Workload Identity
+
+    Attributes
+    ----------
+    clusterLocation : str, default is Undefined, optional
+        ClusterLocation is the location of the cluster
+        If not specified, it fetches information from the metadata server
+    clusterName : str, default is Undefined, optional
+        ClusterName is the name of the cluster
+        If not specified, it fetches information from the metadata server
+    clusterProjectID : str, default is Undefined, optional
+        ClusterProjectID is the project ID of the cluster
+        If not specified, it fetches information from the metadata server
+    serviceAccountRef : ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthGcpWorkloadIdentityServiceAccountRef, default is Undefined, required
+        service account ref
+    """
+    clusterLocation?: str
+    clusterName?: str
+    clusterProjectID?: str
+    serviceAccountRef: ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthGcpWorkloadIdentityServiceAccountRef
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthGcpWorkloadIdentityServiceAccountRef:
+    r"""
+    ServiceAccountSelector is a reference to a ServiceAccount resource.
+
+    Attributes
+    ----------
+    audiences : [str], default is Undefined, optional
+        Audience specifies the `aud` claim for the service account token
+        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+        then this audiences will be appended to the list
+    name : str, default is Undefined, required
+        The name of the ServiceAccount resource being referred to.
+    namespace : str, default is Undefined, optional
+        Namespace of the resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    audiences?: [str]
+    name: str
+
+    namespace?: str
+
+    check:
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
 schema ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthIam:
     r"""
     Iam authenticates with vault by passing a special AWS request signed with AWS IAM credentials
@@ -5508,7 +6023,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthIamJwt:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthIamJwtServiceAccountRef:
     r"""
-    A reference to a ServiceAccount resource.
+    ServiceAccountSelector is a reference to a ServiceAccount resource.
 
     Attributes
     ----------
@@ -5679,11 +6194,13 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthJwtKubernetesServiceAc
         Optional audiences field that will be used to request a temporary Kubernetes service
         account token for the service account referenced by `serviceAccountRef`.
         Defaults to a single audience `vault` it not specified.
+
         Deprecated: use serviceAccountRef.Audiences instead
     expirationSeconds : int, default is Undefined, optional
         Optional expiration time in seconds that will be used to request a temporary
         Kubernetes service account token for the service account referenced by
         `serviceAccountRef`.
+
         Deprecated: this will be removed in the future.
         Defaults to 10 minutes.
     serviceAccountRef : ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthJwtKubernetesServiceAccountTokenServiceAccountRef, default is Undefined, required
@@ -6264,7 +6781,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderWebhook:
         Headers
     method : str, default is Undefined, optional
         Webhook Method
-    result : ExternalSecretsIoV1SecretStoreSpecProviderWebhookResult, default is Undefined, required
+    result : ExternalSecretsIoV1SecretStoreSpecProviderWebhookResult, default is Undefined, optional
         result
     secrets : [ExternalSecretsIoV1SecretStoreSpecProviderWebhookSecretsItems0], default is Undefined, optional
         Secrets to fill in templates
@@ -6280,8 +6797,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderWebhook:
     caProvider?: ExternalSecretsIoV1SecretStoreSpecProviderWebhookCaProvider
     headers?: {str:str}
     method?: str
-    result: ExternalSecretsIoV1SecretStoreSpecProviderWebhookResult
-
+    result?: ExternalSecretsIoV1SecretStoreSpecProviderWebhookResult
     secrets?: [ExternalSecretsIoV1SecretStoreSpecProviderWebhookSecretsItems0]
     timeout?: str
     url: str
@@ -6314,7 +6830,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderWebhookAuthNtlm:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderWebhookAuthNtlmPasswordSecret:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -6345,7 +6861,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderWebhookAuthNtlmPasswordSecret:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderWebhookAuthNtlmUsernameSecret:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -6419,7 +6935,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderWebhookResult:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderWebhookSecretsItems0:
     r"""
-    external secrets io v1 secret store spec provider webhook secrets items0
+    WebhookSecret defines a secret that will be passed to the webhook request.
 
     Attributes
     ----------
@@ -6537,7 +7053,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderYandexcertificatemanagerCaProvi
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderYandexcertificatemanagerCaProviderCertSecretRef:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -6666,7 +7182,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderYandexlockboxCaProvider:
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderYandexlockboxCaProviderCertSecretRef:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -6722,7 +7238,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderYandexlockboxFetchingByName:
 
 schema ExternalSecretsIoV1SecretStoreSpecRetrySettings:
     r"""
-    Used to configure http retries if failed
+    Used to configure HTTP retries on failures.
 
     Attributes
     ----------
@@ -6750,7 +7266,7 @@ schema ExternalSecretsIoV1SecretStoreStatus:
 
 schema ExternalSecretsIoV1SecretStoreStatusConditionsItems0:
     r"""
-    external secrets io v1 secret store status conditions items0
+    SecretStoreStatusCondition contains condition information for a SecretStore.
 
     Attributes
     ----------
@@ -6763,7 +7279,7 @@ schema ExternalSecretsIoV1SecretStoreStatusConditionsItems0:
     status : str, default is Undefined, required
         status
     $type : str, default is Undefined, required
-        type
+        SecretStoreConditionType represents the condition of the SecretStore.
     """
     lastTransitionTime?: str
     message?: str

@@ -36,15 +36,16 @@ schema GeneratorsExternalSecretsIoV1alpha1SSHKeySpec:
     comment : str, default is Undefined, optional
         Comment specifies an optional comment for the SSH key
     keySize : int, default is Undefined, optional
-        KeySize specifies the key size for RSA keys (default: 2048)
+        KeySize specifies the key size for RSA keys (default: 2048) and ECDSA keys (default: 256).
         For RSA keys: 2048, 3072, 4096
+        For ECDSA keys: 256, 384, 521
         Ignored for ed25519 keys
     keyType : str, default is "rsa", optional
-        KeyType specifies the SSH key type (rsa, ed25519)
+        KeyType specifies the SSH key type (rsa, ecdsa, ed25519)
     """
     comment?: str
     keySize?: int
-    keyType?: "rsa" | "ed25519" = "rsa"
+    keyType?: "rsa" | "ecdsa" | "ed25519" = "rsa"
 
     check:
         keySize <= 8192 if keySize not in [None, Undefined]

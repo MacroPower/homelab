@@ -7,7 +7,7 @@ import k8s.apimachinery.pkg.apis.meta.v1
 
 schema GeneratorState:
     r"""
-    generators external secrets io v1alpha1 generator state
+    GeneratorState represents the state created and managed by a generator resource.
 
     Attributes
     ----------
@@ -32,7 +32,7 @@ schema GeneratorState:
 
 schema GeneratorsExternalSecretsIoV1alpha1GeneratorStateSpec:
     r"""
-    generators external secrets io v1alpha1 generator state spec
+    GeneratorStateSpec defines the desired state of a generator state resource.
 
     Attributes
     ----------
@@ -58,7 +58,7 @@ schema GeneratorsExternalSecretsIoV1alpha1GeneratorStateSpec:
 
 schema GeneratorsExternalSecretsIoV1alpha1GeneratorStateStatus:
     r"""
-    generators external secrets io v1alpha1 generator state status
+    GeneratorStateStatus defines the observed state of a generator state resource.
 
     Attributes
     ----------
@@ -69,7 +69,7 @@ schema GeneratorsExternalSecretsIoV1alpha1GeneratorStateStatus:
 
 schema GeneratorsExternalSecretsIoV1alpha1GeneratorStateStatusConditionsItems0:
     r"""
-    generators external secrets io v1alpha1 generator state status conditions items0
+    GeneratorStateStatusCondition represents the observed condition of a generator state.
 
     Attributes
     ----------
@@ -82,7 +82,7 @@ schema GeneratorsExternalSecretsIoV1alpha1GeneratorStateStatusConditionsItems0:
     status : str, default is Undefined, required
         status
     $type : str, default is Undefined, required
-        type
+        GeneratorStateConditionType represents the type of condition for a generator state.
     """
     lastTransitionTime?: str
     message?: str

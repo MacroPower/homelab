@@ -10,8 +10,7 @@ _regex_match = regex.match
 
 schema ECRAuthorizationToken:
     r"""
-    ECRAuthorizationTokenSpec uses the GetAuthorizationToken API to retrieve an
-    authorization token.
+    ECRAuthorizationToken uses the GetAuthorizationToken API to retrieve an authorization token.
     The authorization token is valid for 12 hours.
     The authorizationToken returned is a base64 encoded string that can be decoded
     and used in a docker login command to authenticate to a registry.
@@ -37,7 +36,7 @@ schema ECRAuthorizationToken:
 
 schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpec:
     r"""
-    generators external secrets io v1alpha1 e c r authorization token spec
+    ECRAuthorizationTokenSpec defines the desired state to generate an AWS ECR authorization token.
 
     Attributes
     ----------
@@ -74,7 +73,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuth:
 
 schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthJwt:
     r"""
-    Authenticate against AWS using service account tokens.
+    AWSJWTAuth provides configuration to authenticate against AWS using service account tokens.
 
     Attributes
     ----------
@@ -85,7 +84,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthJwt:
 
 schema GeneratorsExternalSecretsIoV1alpha1ECRAuthorizationTokenSpecAuthJwtServiceAccountRef:
     r"""
-    A reference to a ServiceAccount resource.
+    ServiceAccountSelector is a reference to a ServiceAccount resource.
 
     Attributes
     ----------

@@ -32,7 +32,7 @@ schema CloudsmithAccessToken:
 
 schema GeneratorsExternalSecretsIoV1alpha1CloudsmithAccessTokenSpec:
     r"""
-    generators external secrets io v1alpha1 cloudsmith access token spec
+    CloudsmithAccessTokenSpec defines the configuration for generating a Cloudsmith access token using OIDC authentication.
 
     Attributes
     ----------

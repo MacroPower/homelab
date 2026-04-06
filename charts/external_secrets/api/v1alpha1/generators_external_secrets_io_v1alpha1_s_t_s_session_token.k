@@ -35,7 +35,7 @@ schema STSSessionToken:
 
 schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpec:
     r"""
-    generators external secrets io v1alpha1 s t s session token spec
+    STSSessionTokenSpec defines the desired state to generate an AWS STS session token.
 
     Attributes
     ----------
@@ -71,7 +71,7 @@ schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuth:
 
 schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthJwt:
     r"""
-    Authenticate against AWS using service account tokens.
+    AWSJWTAuth provides configuration to authenticate against AWS using service account tokens.
 
     Attributes
     ----------
@@ -82,7 +82,7 @@ schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthJwt:
 
 schema GeneratorsExternalSecretsIoV1alpha1STSSessionTokenSpecAuthJwtServiceAccountRef:
     r"""
-    A reference to a ServiceAccount resource.
+    ServiceAccountSelector is a reference to a ServiceAccount resource.
 
     Attributes
     ----------

@@ -33,7 +33,7 @@ schema GCRAccessToken:
 
 schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpec:
     r"""
-    generators external secrets io v1alpha1 g c r access token spec
+    GCRAccessTokenSpec defines the desired state to generate a Google Container Registry access token.
 
     Attributes
     ----------
@@ -65,7 +65,7 @@ schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuth:
 
 schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthSecretRef:
     r"""
-    generators external secrets io v1alpha1 g c r access token spec auth secret ref
+    GCPSMAuthSecretRef defines the reference to a secret containing Google Cloud Platform credentials.
 
     Attributes
     ----------
@@ -106,7 +106,7 @@ schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthSecretRefSecretA
 
 schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentity:
     r"""
-    generators external secrets io v1alpha1 g c r access token spec auth workload identity
+    GCPWorkloadIdentity defines the configuration for using GCP Workload Identity authentication.
 
     Attributes
     ----------
@@ -265,7 +265,7 @@ schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentity
 
 schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityServiceAccountRef:
     r"""
-    A reference to a ServiceAccount resource.
+    ServiceAccountSelector is a reference to a ServiceAccount resource.
 
     Attributes
     ----------

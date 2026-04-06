@@ -104,7 +104,7 @@ schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecAuthNtlm:
 
 schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecAuthNtlmPasswordSecret:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -135,7 +135,7 @@ schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecAuthNtlmPasswordSecret:
 
 schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecAuthNtlmUsernameSecret:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -209,7 +209,7 @@ schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecResult:
 
 schema GeneratorsExternalSecretsIoV1alpha1WebhookSpecSecretsItems0:
     r"""
-    generators external secrets io v1alpha1 webhook spec secrets items0
+    WebhookSecret defines a secret reference that will be used in webhook templates.
 
     Attributes
     ----------

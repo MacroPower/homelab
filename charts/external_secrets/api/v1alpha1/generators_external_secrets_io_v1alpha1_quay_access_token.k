@@ -32,7 +32,7 @@ schema QuayAccessToken:
 
 schema GeneratorsExternalSecretsIoV1alpha1QuayAccessTokenSpec:
     r"""
-    generators external secrets io v1alpha1 quay access token spec
+    QuayAccessTokenSpec defines the desired state to generate a Quay access token.
 
     Attributes
     ----------

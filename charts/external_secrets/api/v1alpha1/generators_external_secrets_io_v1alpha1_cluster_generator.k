@@ -32,7 +32,7 @@ schema ClusterGenerator:
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpec:
     r"""
-    generators external secrets io v1alpha1 cluster generator spec
+    ClusterGeneratorSpec defines the desired state of a ClusterGenerator.
 
     Attributes
     ----------
@@ -110,7 +110,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccess
         auth
     environmentType : str, default is "PublicCloud", optional
         EnvironmentType specifies the Azure cloud environment endpoints to use for
-        connecting and authenticating with Azure. By default it points to the public cloud AAD endpoint.
+        connecting and authenticating with Azure. By default, it points to the public cloud AAD endpoint.
         The following endpoints are available, also see here: https://github.com/Azure/go-autorest/blob/main/autorest/azure/environments.go#L152
         PublicCloud, USGovernmentCloud, ChinaCloud, GermanCloud
     registry : str, default is Undefined, required
@@ -139,7 +139,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccess
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuth:
     r"""
-    generators external secrets io v1alpha1 cluster generator spec generator acr access token spec auth
+    ACRAuth defines the authentication methods for Azure Container Registry.
 
     Attributes
     ----------
@@ -178,8 +178,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccess
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpecAuthServicePrincipalSecretRef:
     r"""
-    Configuration used to authenticate with Azure using static
-    credentials stored in a Kind=Secret.
+    AzureACRServicePrincipalAuthSecretRef defines the secret references for Azure Service Principal authentication.
+    It uses static credentials stored in a Kind=Secret.
 
     Attributes
     ----------
@@ -294,7 +294,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccess
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorCloudsmithAccessTokenSpec:
     r"""
-    generators external secrets io v1alpha1 cluster generator spec generator cloudsmith access token spec
+    CloudsmithAccessTokenSpec defines the configuration for generating a Cloudsmith access token using OIDC authentication.
 
     Attributes
     ----------
@@ -345,7 +345,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorCloudsmit
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpec:
     r"""
-    generators external secrets io v1alpha1 cluster generator spec generator ecr authorization token spec
+    ECRAuthorizationTokenSpec defines the desired state to generate an AWS ECR authorization token.
 
     Attributes
     ----------
@@ -382,7 +382,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthor
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuthJwt:
     r"""
-    Authenticate against AWS using service account tokens.
+    AWSJWTAuth provides configuration to authenticate against AWS using service account tokens.
 
     Attributes
     ----------
@@ -393,7 +393,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthor
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpecAuthJwtServiceAccountRef:
     r"""
-    A reference to a ServiceAccount resource.
+    ServiceAccountSelector is a reference to a ServiceAccount resource.
 
     Attributes
     ----------
@@ -548,7 +548,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorFakeSpec:
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpec:
     r"""
-    generators external secrets io v1alpha1 cluster generator spec generator gcr access token spec
+    GCRAccessTokenSpec defines the desired state to generate a Google Container Registry access token.
 
     Attributes
     ----------
@@ -580,7 +580,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccess
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthSecretRef:
     r"""
-    generators external secrets io v1alpha1 cluster generator spec generator gcr access token spec auth secret ref
+    GCPSMAuthSecretRef defines the reference to a secret containing Google Cloud Platform credentials.
 
     Attributes
     ----------
@@ -621,7 +621,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccess
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthWorkloadIdentity:
     r"""
-    generators external secrets io v1alpha1 cluster generator spec generator gcr access token spec auth workload identity
+    GCPWorkloadIdentity defines the configuration for using GCP Workload Identity authentication.
 
     Attributes
     ----------
@@ -780,7 +780,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccess
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthWorkloadIdentityServiceAccountRef:
     r"""
-    A reference to a ServiceAccount resource.
+    ServiceAccountSelector is a reference to a ServiceAccount resource.
 
     Attributes
     ----------
@@ -809,7 +809,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccess
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAccessTokenSpec:
     r"""
-    generators external secrets io v1alpha1 cluster generator spec generator github access token spec
+    GithubAccessTokenSpec defines the desired state to generate a GitHub access token.
 
     Attributes
     ----------
@@ -825,7 +825,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAcc
         List of repositories the token will have access to. If omitted, defaults to all repositories the GitHub App
         is installed to.
     url : str, default is Undefined, optional
-        URL configures the Github instance URL. Defaults to https://github.com/.
+        URL configures the GitHub instance URL. Defaults to https://github.com/.
     """
     appID: str
 
@@ -850,7 +850,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAcc
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAccessTokenSpecAuthPrivateKey:
     r"""
-    generators external secrets io v1alpha1 cluster generator spec generator github access token spec auth private key
+    GithubSecretRef references a secret containing GitHub credentials.
 
     Attributes
     ----------
@@ -861,7 +861,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAcc
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAccessTokenSpecAuthPrivateKeySecretRef:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -1072,11 +1072,22 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorPasswordS
     digits : int, default is Undefined, optional
         Digits specifies the number of digits in the generated
         password. If omitted it defaults to 25% of the length of the password
+    encoding : str, default is "raw", optional
+        Encoding specifies the encoding of the generated password.
+        Valid values are:
+        - "raw" (default): no encoding
+        - "base64": standard base64 encoding
+        - "base64url": base64url encoding
+        - "base32": base32 encoding
+        - "hex": hexadecimal encoding
     length : int, default is 24, required
         Length of the password to be generated.
         Defaults to 24
     noUpper : bool, default is Undefined, required
         Set NoUpper to disable uppercase characters
+    secretKeys : [str], default is Undefined, optional
+        SecretKeys defines the keys that will be populated with generated passwords.
+        Defaults to "password" when not set.
     symbolCharacters : str, default is Undefined, optional
         SymbolCharacters specifies the special characters that should be used
         in the generated password.
@@ -1087,16 +1098,21 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorPasswordS
     allowRepeat: bool = False
 
     digits?: int
+    encoding?: "base64" | "base64url" | "base32" | "hex" | "raw" = "raw"
     length: int = 24
 
     noUpper: bool = False
 
+    secretKeys?: [str]
     symbolCharacters?: str
     symbols?: int
 
+    check:
+        len(secretKeys) >= 1 if secretKeys
+
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorQuayAccessTokenSpec:
     r"""
-    generators external secrets io v1alpha1 cluster generator spec generator quay access token spec
+    QuayAccessTokenSpec defines the desired state to generate a Quay access token.
 
     Attributes
     ----------
@@ -1151,15 +1167,16 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorSSHKeySpe
     comment : str, default is Undefined, optional
         Comment specifies an optional comment for the SSH key
     keySize : int, default is Undefined, optional
-        KeySize specifies the key size for RSA keys (default: 2048)
+        KeySize specifies the key size for RSA keys (default: 2048) and ECDSA keys (default: 256).
         For RSA keys: 2048, 3072, 4096
+        For ECDSA keys: 256, 384, 521
         Ignored for ed25519 keys
     keyType : str, default is "rsa", optional
-        KeyType specifies the SSH key type (rsa, ed25519)
+        KeyType specifies the SSH key type (rsa, ecdsa, ed25519)
     """
     comment?: str
     keySize?: int
-    keyType?: "rsa" | "ed25519" = "rsa"
+    keyType?: "rsa" | "ecdsa" | "ed25519" = "rsa"
 
     check:
         keySize <= 8192 if keySize not in [None, Undefined]
@@ -1167,7 +1184,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorSSHKeySpe
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpec:
     r"""
-    generators external secrets io v1alpha1 cluster generator spec generator sts session token spec
+    STSSessionTokenSpec defines the desired state to generate an AWS STS session token.
 
     Attributes
     ----------
@@ -1203,7 +1220,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessio
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuthJwt:
     r"""
-    Authenticate against AWS using service account tokens.
+    AWSJWTAuth provides configuration to authenticate against AWS using service account tokens.
 
     Attributes
     ----------
@@ -1214,7 +1231,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessio
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessionTokenSpecAuthJwtServiceAccountRef:
     r"""
-    A reference to a ServiceAccount resource.
+    ServiceAccountSelector is a reference to a ServiceAccount resource.
 
     Attributes
     ----------
@@ -1373,7 +1390,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessio
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpec:
     r"""
-    generators external secrets io v1alpha1 cluster generator spec generator vault dynamic secret spec
+    VaultDynamicSecretSpec defines the desired spec of VaultDynamicSecret.
 
     Attributes
     ----------
@@ -1392,7 +1409,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         provider
     resultType : str, default is "Data", optional
         Result type defines which data is returned from the generator.
-        By default it is the "data" section of the Vault API response.
+        By default, it is the "data" section of the Vault API response.
         When using e.g. /auth/token/create the "data" section is empty but
         the "auth" section contains the generated token.
         Please refer to the vault docs regarding the result data structure.
@@ -1481,6 +1498,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         app role
     cert : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCert, default is Undefined, optional
         cert
+    gcp : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthGcp, default is Undefined, optional
+        gcp
     iam : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIam, default is Undefined, optional
         iam
     jwt : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthJwt, default is Undefined, optional
@@ -1502,6 +1521,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     """
     appRole?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthAppRole
     cert?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCert
+    gcp?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthGcp
     iam?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIam
     jwt?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthJwt
     kubernetes?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthKubernetes
@@ -1681,6 +1701,159 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
+schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthGcp:
+    r"""
+    Gcp authenticates with Vault using Google Cloud Platform authentication method
+    GCP authentication method
+
+    Attributes
+    ----------
+    location : str, default is Undefined, optional
+        Location optionally defines a location/region for the secret
+    path : str, default is "gcp", optional
+        Path where the GCP auth method is enabled in Vault, e.g: "gcp"
+    projectID : str, default is Undefined, optional
+        Project ID of the Google Cloud Platform project
+    role : str, default is Undefined, required
+        Vault Role. In Vault, a role describes an identity with a set of permissions, groups, or policies you want to attach to a user of the secrets engine.
+    secretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthGcpSecretRef, default is Undefined, optional
+        secret ref
+    serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthGcpServiceAccountRef, default is Undefined, optional
+        service account ref
+    workloadIdentity : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthGcpWorkloadIdentity, default is Undefined, optional
+        workload identity
+    """
+    location?: str
+    path?: str = "gcp"
+    projectID?: str
+    role: str
+
+    secretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthGcpSecretRef
+    serviceAccountRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthGcpServiceAccountRef
+    workloadIdentity?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthGcpWorkloadIdentity
+
+schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthGcpSecretRef:
+    r"""
+    Specify credentials in a Secret object
+
+    Attributes
+    ----------
+    secretAccessKeySecretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthGcpSecretRefSecretAccessKeySecretRef, default is Undefined, optional
+        secret access key secret ref
+    """
+    secretAccessKeySecretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthGcpSecretRefSecretAccessKeySecretRef
+
+schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthGcpSecretRefSecretAccessKeySecretRef:
+    r"""
+    The SecretAccessKey is used for authentication
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthGcpServiceAccountRef:
+    r"""
+    ServiceAccountRef to a service account for impersonation
+
+    Attributes
+    ----------
+    audiences : [str], default is Undefined, optional
+        Audience specifies the `aud` claim for the service account token
+        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+        then this audiences will be appended to the list
+    name : str, default is Undefined, required
+        The name of the ServiceAccount resource being referred to.
+    namespace : str, default is Undefined, optional
+        Namespace of the resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    audiences?: [str]
+    name: str
+
+    namespace?: str
+
+    check:
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthGcpWorkloadIdentity:
+    r"""
+    Specify a service account with Workload Identity
+
+    Attributes
+    ----------
+    clusterLocation : str, default is Undefined, optional
+        ClusterLocation is the location of the cluster
+        If not specified, it fetches information from the metadata server
+    clusterName : str, default is Undefined, optional
+        ClusterName is the name of the cluster
+        If not specified, it fetches information from the metadata server
+    clusterProjectID : str, default is Undefined, optional
+        ClusterProjectID is the project ID of the cluster
+        If not specified, it fetches information from the metadata server
+    serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthGcpWorkloadIdentityServiceAccountRef, default is Undefined, required
+        service account ref
+    """
+    clusterLocation?: str
+    clusterName?: str
+    clusterProjectID?: str
+    serviceAccountRef: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthGcpWorkloadIdentityServiceAccountRef
+
+schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthGcpWorkloadIdentityServiceAccountRef:
+    r"""
+    ServiceAccountSelector is a reference to a ServiceAccount resource.
+
+    Attributes
+    ----------
+    audiences : [str], default is Undefined, optional
+        Audience specifies the `aud` claim for the service account token
+        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+        then this audiences will be appended to the list
+    name : str, default is Undefined, required
+        The name of the ServiceAccount resource being referred to.
+    namespace : str, default is Undefined, optional
+        Namespace of the resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    audiences?: [str]
+    name: str
+
+    namespace?: str
+
+    check:
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIam:
     r"""
     Iam authenticates with vault by passing a special AWS request signed with AWS IAM credentials
@@ -1727,7 +1900,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthIamJwtServiceAccountRef:
     r"""
-    A reference to a ServiceAccount resource.
+    ServiceAccountSelector is a reference to a ServiceAccount resource.
 
     Attributes
     ----------
@@ -1898,11 +2071,13 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         Optional audiences field that will be used to request a temporary Kubernetes service
         account token for the service account referenced by `serviceAccountRef`.
         Defaults to a single audience `vault` it not specified.
+
         Deprecated: use serviceAccountRef.Audiences instead
     expirationSeconds : int, default is Undefined, optional
         Optional expiration time in seconds that will be used to request a temporary
         Kubernetes service account token for the service account referenced by
         `serviceAccountRef`.
+
         Deprecated: this will be removed in the future.
         Defaults to 10 minutes.
     serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthJwtKubernetesServiceAccountTokenServiceAccountRef, default is Undefined, required
@@ -2411,7 +2586,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSp
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSpecAuthNtlmPasswordSecret:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -2442,7 +2617,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSp
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSpecAuthNtlmUsernameSecret:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -2516,7 +2691,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSp
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorWebhookSpecSecretsItems0:
     r"""
-    generators external secrets io v1alpha1 cluster generator spec generator webhook spec secrets items0
+    WebhookSecret defines a secret reference that will be used in webhook templates.
 
     Attributes
     ----------

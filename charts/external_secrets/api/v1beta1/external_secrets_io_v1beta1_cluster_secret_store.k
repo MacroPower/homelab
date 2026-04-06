@@ -40,7 +40,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpec:
     Attributes
     ----------
     conditions : [ExternalSecretsIoV1beta1ClusterSecretStoreSpecConditionsItems0], default is Undefined, optional
-        Used to constraint a ClusterSecretStore to specific namespaces. Relevant only to ClusterSecretStore
+        Used to constrain a ClusterSecretStore to specific namespaces. Relevant only to ClusterSecretStore.
     controller : str, default is Undefined, optional
         Used to select the correct ESO controller (think: ingress.ingressClassName)
         The ESO controller is instantiated with a specific controller name and filters ES based on this property
@@ -410,7 +410,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderAkeylessAuthSecretR
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderAkeylessAuthSecretRefSecretRefAccessType:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -441,7 +441,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderAkeylessAuthSecretR
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderAkeylessAuthSecretRefSecretRefAccessTypeParam:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -534,7 +534,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderAlibabaAuth:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderAlibabaAuthRrsa:
     r"""
-    Authenticate against Alibaba using RRSA.
+    AlibabaRRSAAuth authenticates against Alibaba using RRSA (Resource-oriented RAM-based Service Authentication).
 
     Attributes
     ----------
@@ -688,7 +688,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderAwsAuth:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderAwsAuthJwt:
     r"""
-    Authenticate against AWS using service account tokens.
+    AWSJWTAuth authenticates against AWS using service account tokens from the Kubernetes cluster.
 
     Attributes
     ----------
@@ -699,7 +699,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderAwsAuthJwt:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderAwsAuthJwtServiceAccountRef:
     r"""
-    A reference to a ServiceAccount resource.
+    ServiceAccountSelector is a reference to a ServiceAccount resource.
 
     Attributes
     ----------
@@ -860,7 +860,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderAwsSecretsManager:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderAwsSessionTagsItems0:
     r"""
-    external secrets io v1beta1 cluster secret store spec provider aws session tags items0
+    Tag defines a tag key and value for AWS resources.
 
     Attributes
     ----------
@@ -1348,6 +1348,8 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderBeyondtrustServer:
         api version
     clientTimeOutSeconds : int, default is Undefined, optional
         Timeout specifies a time limit for requests made by this Client. The timeout includes connection time, any redirects, and reading the response body. Defaults to 45 seconds.
+    decrypt : bool, default is True, optional
+        When true, the response includes the decrypted password. When false, the password field is omitted. This option only applies to the SECRET retrieval type. Default: true.
     retrievalType : str, default is Undefined, optional
         The secret retrieval type. SECRET = Secrets Safe (credential, text, file). MANAGED_ACCOUNT = Password Safe account associated with a system.
     separator : str, default is Undefined, optional
@@ -1359,6 +1361,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderBeyondtrustServer:
 
     apiVersion?: str
     clientTimeOutSeconds?: int
+    decrypt?: bool = True
     retrievalType?: str
     separator?: str
     verifyCA: bool
@@ -2038,7 +2041,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderDevice42Auth:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderDevice42AuthSecretRef:
     r"""
-    external secrets io v1beta1 cluster secret store spec provider device42 auth secret ref
+    Device42SecretRef defines a reference to a secret containing credentials for the Device42 provider.
 
     Attributes
     ----------
@@ -2114,7 +2117,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderDopplerAuth:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderDopplerAuthSecretRef:
     r"""
-    external secrets io v1beta1 cluster secret store spec provider doppler auth secret ref
+    DopplerAuthSecretRef defines a reference to a secret containing credentials for the Doppler provider.
 
     Attributes
     ----------
@@ -2168,7 +2171,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderFake:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderFakeDataItems0:
     r"""
-    external secrets io v1beta1 cluster secret store spec provider fake data items0
+    FakeProviderData defines a key-value pair for the fake provider used in testing.
 
     Attributes
     ----------
@@ -2273,7 +2276,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderGcpsmAuth:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderGcpsmAuthSecretRef:
     r"""
-    external secrets io v1beta1 cluster secret store spec provider gcpsm auth secret ref
+    GCPSMAuthSecretRef defines a reference to a secret containing credentials for the GCP Secret Manager provider.
 
     Attributes
     ----------
@@ -2314,7 +2317,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderGcpsmAuthSecretRefS
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderGcpsmAuthWorkloadIdentity:
     r"""
-    external secrets io v1beta1 cluster secret store spec provider gcpsm auth workload identity
+    GCPWorkloadIdentity defines configuration for using GCP Workload Identity authentication.
 
     Attributes
     ----------
@@ -2337,7 +2340,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderGcpsmAuthWorkloadId
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderGcpsmAuthWorkloadIdentityServiceAccountRef:
     r"""
-    A reference to a ServiceAccount resource.
+    ServiceAccountSelector is a reference to a ServiceAccount resource.
 
     Attributes
     ----------
@@ -2366,7 +2369,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderGcpsmAuthWorkloadId
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderGithub:
     r"""
-    Github configures this store to push Github Action secrets using Github API provider
+    Github configures this store to push GitHub Actions secrets using the GitHub API provider.
 
     Attributes
     ----------
@@ -2413,7 +2416,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderGithubAuth:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderGithubAuthPrivateKey:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -2489,7 +2492,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderGitlabAuth:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderGitlabAuthSecretRef:
     r"""
-    external secrets io v1beta1 cluster secret store spec provider gitlab auth secret ref
+    GitlabSecretRef defines a reference to a secret containing credentials for the GitLab provider.
 
     Attributes
     ----------
@@ -2592,7 +2595,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderIbmAuth:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderIbmAuthContainerAuth:
     r"""
-    IBM Container-based auth with IAM Trusted Profile.
+    IBMAuthContainerAuth defines authentication using IBM Container-based auth with IAM Trusted Profile.
 
     Attributes
     ----------
@@ -2610,7 +2613,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderIbmAuthContainerAut
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderIbmAuthSecretRef:
     r"""
-    external secrets io v1beta1 cluster secret store spec provider ibm auth secret ref
+    IBMAuthSecretRef defines a reference to a secret containing credentials for the IBM provider.
 
     Attributes
     ----------
@@ -2680,7 +2683,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderInfisicalAuth:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderInfisicalAuthUniversalAuthCredentials:
     r"""
-    external secrets io v1beta1 cluster secret store spec provider infisical auth universal auth credentials
+    UniversalAuthCredentials defines the credentials for Infisical Universal Auth.
 
     Attributes
     ----------
@@ -2695,7 +2698,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderInfisicalAuthUniver
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderInfisicalAuthUniversalAuthCredentialsClientID:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -2726,7 +2729,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderInfisicalAuthUniver
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderInfisicalAuthUniversalAuthCredentialsClientSecret:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -2797,7 +2800,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderKeepersecurity:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderKeepersecurityAuthRef:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -2884,7 +2887,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderKubernetesAuthCert:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderKubernetesAuthCertClientCert:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -2915,7 +2918,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderKubernetesAuthCertC
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderKubernetesAuthCertClientKey:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3016,7 +3019,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderKubernetesAuthToken
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderKubernetesAuthTokenBearerToken:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -3426,7 +3429,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderOracleServiceAccoun
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderPassbolt:
     r"""
-    external secrets io v1beta1 cluster secret store spec provider passbolt
+    PassboltProvider defines configuration for the Passbolt provider.
 
     Attributes
     ----------
@@ -3456,8 +3459,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderPassboltAuth:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderPassboltAuthPasswordSecretRef:
     r"""
-    A reference to a specific 'key' within a Secret resource.
-    In some instances, `key` is a required field.
+    PasswordSecretRef is a reference to the secret containing the Passbolt password
 
     Attributes
     ----------
@@ -3487,8 +3489,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderPassboltAuthPasswor
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderPassboltAuthPrivateKeySecretRef:
     r"""
-    A reference to a specific 'key' within a Secret resource.
-    In some instances, `key` is a required field.
+    PrivateKeySecretRef is a reference to the secret containing the Passbolt private key
 
     Attributes
     ----------
@@ -3518,7 +3519,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderPassboltAuthPrivate
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderPassworddepot:
     r"""
-    Configures a store to sync secrets with a Password Depot instance.
+    PasswordDepotProvider configures a store to sync secrets with a Password Depot instance.
 
     Attributes
     ----------
@@ -3548,7 +3549,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderPassworddepotAuth:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderPassworddepotAuthSecretRef:
     r"""
-    external secrets io v1beta1 cluster secret store spec provider passworddepot auth secret ref
+    PasswordDepotSecretRef defines a reference to a secret containing credentials for the Password Depot provider.
 
     Attributes
     ----------
@@ -3727,7 +3728,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderPulumiAccessTokenSe
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderScaleway:
     r"""
-    Scaleway
+    Scaleway configures this store to sync secrets using the Scaleway provider.
 
     Attributes
     ----------
@@ -3987,7 +3988,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderSenhaseguraAuth:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderSenhaseguraAuthClientSecretSecretRef:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -4018,7 +4019,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderSenhaseguraAuthClie
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderVault:
     r"""
-    Vault configures this store to sync secrets using Hashi provider
+    Vault configures this store to sync secrets using the HashiCorp Vault provider.
 
     Attributes
     ----------
@@ -4325,7 +4326,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderVaultAuthIamJwt:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderVaultAuthIamJwtServiceAccountRef:
     r"""
-    A reference to a ServiceAccount resource.
+    ServiceAccountSelector is a reference to a ServiceAccount resource.
 
     Attributes
     ----------
@@ -4496,11 +4497,13 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderVaultAuthJwtKuberne
         Optional audiences field that will be used to request a temporary Kubernetes service
         account token for the service account referenced by `serviceAccountRef`.
         Defaults to a single audience `vault` it not specified.
+
         Deprecated: use serviceAccountRef.Audiences instead
     expirationSeconds : int, default is Undefined, optional
         Optional expiration time in seconds that will be used to request a temporary
         Kubernetes service account token for the service account referenced by
         `serviceAccountRef`.
+
         Deprecated: this will be removed in the future.
         Defaults to 10 minutes.
     serviceAccountRef : ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderVaultAuthJwtKubernetesServiceAccountTokenServiceAccountRef, default is Undefined, required
@@ -4981,7 +4984,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderWebhookAuthNtlm:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderWebhookAuthNtlmPasswordSecret:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -5012,7 +5015,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderWebhookAuthNtlmPass
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderWebhookAuthNtlmUsernameSecret:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -5086,7 +5089,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderWebhookResult:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderWebhookSecretsItems0:
     r"""
-    external secrets io v1beta1 cluster secret store spec provider webhook secrets items0
+    WebhookSecret defines a secret to be used in webhook templates.
 
     Attributes
     ----------
@@ -5201,7 +5204,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderYandexcertificatema
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderYandexcertificatemanagerCaProviderCertSecretRef:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -5302,7 +5305,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderYandexlockboxCaProv
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderYandexlockboxCaProviderCertSecretRef:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
@@ -5333,14 +5336,14 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecProviderYandexlockboxCaProv
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreSpecRetrySettings:
     r"""
-    Used to configure http retries if failed
+    Used to configure HTTP retries on failures.
 
     Attributes
     ----------
     maxRetries : int, default is Undefined, optional
-        max retries
+        MaxRetries is the maximum number of retry attempts.
     retryInterval : str, default is Undefined, optional
-        retry interval
+        RetryInterval is the interval between retry attempts.
     """
     maxRetries?: int
     retryInterval?: str
@@ -5361,7 +5364,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreStatus:
 
 schema ExternalSecretsIoV1beta1ClusterSecretStoreStatusConditionsItems0:
     r"""
-    external secrets io v1beta1 cluster secret store status conditions items0
+    SecretStoreStatusCondition defines the observed condition of the SecretStore.
 
     Attributes
     ----------
@@ -5374,7 +5377,7 @@ schema ExternalSecretsIoV1beta1ClusterSecretStoreStatusConditionsItems0:
     status : str, default is Undefined, required
         status
     $type : str, default is Undefined, required
-        type
+        SecretStoreConditionType represents the condition type of the SecretStore.
     """
     lastTransitionTime?: str
     message?: str

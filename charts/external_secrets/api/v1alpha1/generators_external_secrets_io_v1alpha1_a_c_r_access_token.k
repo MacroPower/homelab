@@ -49,7 +49,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpec:
         auth
     environmentType : str, default is "PublicCloud", optional
         EnvironmentType specifies the Azure cloud environment endpoints to use for
-        connecting and authenticating with Azure. By default it points to the public cloud AAD endpoint.
+        connecting and authenticating with Azure. By default, it points to the public cloud AAD endpoint.
         The following endpoints are available, also see here: https://github.com/Azure/go-autorest/blob/main/autorest/azure/environments.go#L152
         PublicCloud, USGovernmentCloud, ChinaCloud, GermanCloud
     registry : str, default is Undefined, required
@@ -78,7 +78,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpec:
 
 schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuth:
     r"""
-    generators external secrets io v1alpha1 a c r access token spec auth
+    ACRAuth defines the authentication methods for Azure Container Registry.
 
     Attributes
     ----------
@@ -117,8 +117,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthServicePrincipal
 
 schema GeneratorsExternalSecretsIoV1alpha1ACRAccessTokenSpecAuthServicePrincipalSecretRef:
     r"""
-    Configuration used to authenticate with Azure using static
-    credentials stored in a Kind=Secret.
+    AzureACRServicePrincipalAuthSecretRef defines the secret references for Azure Service Principal authentication.
+    It uses static credentials stored in a Kind=Secret.
 
     Attributes
     ----------

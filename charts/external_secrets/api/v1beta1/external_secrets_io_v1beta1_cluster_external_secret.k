@@ -10,7 +10,7 @@ _regex_match = regex.match
 
 schema ClusterExternalSecret:
     r"""
-    ClusterExternalSecret is the Schema for the clusterexternalsecrets API.
+    ClusterExternalSecret is the schema for the clusterexternalsecrets API.
 
     Attributes
     ----------
@@ -52,6 +52,7 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpec:
         A list of labels to select by to find the Namespaces to create the ExternalSecrets in. The selectors are ORed.
     namespaces : [str], default is Undefined, optional
         Choose namespaces by name. This field is ORed with anything that NamespaceSelectors ends up choosing.
+
         Deprecated: Use NamespaceSelectors instead.
     refreshTime : str, default is Undefined, optional
         The time in which the controller should reconcile its objects and recheck namespaces for labels.
@@ -98,12 +99,12 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpec:
     dataFrom : [ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0], default is Undefined, optional
         DataFrom is used to fetch all properties from a specific Provider data
         If multiple entries are specified, the Secret keys are merged in the specified order
-    refreshInterval : str, default is "1h", optional
+    refreshInterval : str, default is "1h0m0s", optional
         RefreshInterval is the amount of time before the values are read again from the SecretStore provider,
         specified as Golang Duration strings.
         Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h"
-        Example values: "1h", "2h30m", "10s"
-        May be set to zero to fetch and create it once. Defaults to 1h.
+        Example values: "1h0m0s", "2h30m0s", "10m0s"
+        May be set to "0s" to fetch and create it once. Defaults to 1h0m0s.
     refreshPolicy : str, default is Undefined, optional
         RefreshPolicy determines how the ExternalSecret should be refreshed:
         - CreatedOnce: Creates the Secret only if it does not exist and does not update it thereafter
@@ -117,14 +118,14 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpec:
     """
     data?: [ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataItems0]
     dataFrom?: [ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0]
-    refreshInterval?: str = "1h"
+    refreshInterval?: str = "1h0m0s"
     refreshPolicy?: "CreatedOnce" | "Periodic" | "OnChange"
     secretStoreRef?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecSecretStoreRef
     target?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0:
     r"""
-    external secrets io v1beta1 cluster external secret spec external secret spec data from items0
+    ExternalSecretDataFromRemoteRef defines a reference to multiple secrets in the provider to be fetched using options.
 
     Attributes
     ----------
@@ -208,7 +209,7 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFr
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0RewriteItems0:
     r"""
-    external secrets io v1beta1 cluster external secret spec external secret spec data from items0 rewrite items0
+    ExternalSecretRewrite defines rules on how to rewrite secret keys.
 
     Attributes
     ----------
@@ -489,7 +490,7 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget
         that should be used to compile/execute the
         template specified in .data and .templateFrom[].
     mergePolicy : str, default is "Replace", optional
-        merge policy
+        TemplateMergePolicy defines how template values should be merged when generating a secret.
     metadata : ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateMetadata, default is Undefined, optional
         metadata
     templateFrom : [ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateTemplateFromItems0], default is Undefined, optional
@@ -520,7 +521,7 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateTemplateFromItems0:
     r"""
-    external secrets io v1beta1 cluster external secret spec external secret spec target template template from items0
+    TemplateFrom defines a source for template data.
 
     Attributes
     ----------
@@ -531,7 +532,7 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget
     secret : ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateTemplateFromItems0Secret, default is Undefined, optional
         secret
     target : str, default is "Data", optional
-        target
+        TemplateTarget defines the target field where the template result will be stored.
     """
     configMap?: ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMap
     literal?: str
@@ -540,7 +541,7 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMap:
     r"""
-    external secrets io v1beta1 cluster external secret spec external secret spec target template template from items0 config map
+    TemplateRef defines a reference to a template source in a ConfigMap or Secret.
 
     Attributes
     ----------
@@ -560,14 +561,14 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMapItemsItems0:
     r"""
-    external secrets io v1beta1 cluster external secret spec external secret spec target template template from items0 config map items items0
+    TemplateRefItem defines which key in the referenced ConfigMap or Secret to use as a template.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         A key in the ConfigMap/Secret
     templateAs : str, default is "Values", optional
-        template as
+        TemplateScope defines the scope of the template when processing template data.
     """
     key: str
 
@@ -580,7 +581,7 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateTemplateFromItems0Secret:
     r"""
-    external secrets io v1beta1 cluster external secret spec external secret spec target template template from items0 secret
+    TemplateRef defines a reference to a template source in a ConfigMap or Secret.
 
     Attributes
     ----------
@@ -600,14 +601,14 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTarget
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretSpecExternalSecretSpecTargetTemplateTemplateFromItems0SecretItemsItems0:
     r"""
-    external secrets io v1beta1 cluster external secret spec external secret spec target template template from items0 secret items items0
+    TemplateRefItem defines which key in the referenced ConfigMap or Secret to use as a template.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         A key in the ConfigMap/Secret
     templateAs : str, default is "Values", optional
-        template as
+        TemplateScope defines the scope of the template when processing template data.
     """
     key: str
 
@@ -722,7 +723,7 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretStatus:
 
 schema ExternalSecretsIoV1beta1ClusterExternalSecretStatusConditionsItems0:
     r"""
-    external secrets io v1beta1 cluster external secret status conditions items0
+    ClusterExternalSecretStatusCondition indicates the status of the ClusterExternalSecret.
 
     Attributes
     ----------
@@ -731,7 +732,7 @@ schema ExternalSecretsIoV1beta1ClusterExternalSecretStatusConditionsItems0:
     status : str, default is Undefined, required
         status
     $type : str, default is Undefined, required
-        type
+        ClusterExternalSecretConditionType indicates the condition of the ClusterExternalSecret.
     """
     message?: str
     status: str

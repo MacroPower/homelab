@@ -10,7 +10,7 @@ _regex_match = regex.match
 
 schema Grafana:
     r"""
-    generators external secrets io v1alpha1 grafana
+    Grafana represents a generator for Grafana service account tokens.
 
     Attributes
     ----------

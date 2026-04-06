@@ -10,118 +10,73 @@ schema Values:
     Attributes
     ----------
     affinity : ValuesAffinity, optional
-    autoscaling : ValuesAutoscaling, optional
     "bitwarden-sdk-server" : ValuesBitwardenSdkServer, optional
     certController : ValuesCertController, optional
     commonLabels : ValuesCommonLabels, optional
-        Additional labels added to all helm chart resources.
-    concurrent : int, optional, default is 1
-        Specifies the number of concurrent ExternalSecret Reconciles external-secret executes at
-        a time.
-    controllerClass : str, optional, default is ""
-        If set external secrets will filter matching
-        Secret Stores with the appropriate controller values.
+    concurrent : int, optional
+    controllerClass : str, optional
     crds : ValuesCrds, optional
-    createOperator : bool, optional, default is True
-        Specifies whether an external secret operator deployment be created.
+    createOperator : bool, optional
     deploymentAnnotations : ValuesDeploymentAnnotations, optional
-        Annotations to add to Deployment
     dnsConfig : ValuesDnsConfig, optional
-        Specifies `dnsOptions` to deployment
-    dnsPolicy : str, optional, default is "ClusterFirst"
-        Specifies `dnsPolicy` to deployment
-    enableHTTP2 : bool, optional, default is False
-        if true, HTTP2 will be enabled for the services created by all controllers, curently metrics and webhook.
-    extendedMetricLabels : bool, optional, default is False
-        If true external secrets will use recommended kubernetes
-        annotations as prometheus metric labels.
+    dnsPolicy : str, optional
+    enableHTTP2 : bool, optional
+    extendedMetricLabels : bool, optional
     extraArgs : ValuesExtraArgs, optional
-        # -- Map of extra arguments to pass to container.
-    extraContainers : [any], optional
-        # -- Extra containers to add to the pod.
-    extraEnv : [any], optional
-        # -- Extra environment variables to add to container.
-    extraInitContainers : [any], optional
-        # -- Extra init containers to add to the pod.
-    extraObjects : [any], optional
-        # -- Extra Kubernetes objects to deploy with the helm chart
-    extraVolumeMounts : [any], optional
-        # -- Extra volumes to mount to the container.
-    extraVolumes : [any], optional
-        # -- Extra volumes to pass to pod.
-    fullnameOverride : str, optional, default is ""
+    extraContainers : any, optional
+    extraEnv : any, optional
+    extraInitContainers : any, optional
+    extraObjects : any, optional
+    extraVolumeMounts : any, optional
+    extraVolumes : any, optional
+    fullnameOverride : str, optional
+    genericTargets : ValuesGenericTargets, optional
     global : ValuesGlobal, optional
-        Global values are values that can be accessed from any chart or subchart by exactly the same name.
     grafanaDashboard : ValuesGrafanaDashboard, optional
-    hostNetwork : bool, optional, default is False
-        Run the controller on the host network
+    hostAliases : any, optional
+    hostNetwork : bool, optional
+    hostUsers : bool, optional
     image : ValuesImage, optional
-    imagePullSecrets : [any], optional
-    ingress : ValuesIngress, optional
-    installCRDs : bool, optional, default is True
-        If set, install and upgrade CRDs through helm chart.
-    leaderElect : bool, optional, default is False
-        If true, external-secrets will perform leader election between instances to ensure no more
-        than one instance of external-secrets operates at a time.
+    imagePullSecrets : any, optional
+    installCRDs : bool, optional
+    leaderElect : bool, optional
     livenessProbe : ValuesLivenessProbe, optional
     log : ValuesLog, optional
-        Specifies Log Params to the External Secrets Operator
     metrics : ValuesMetrics, optional
-    nameOverride : str, optional, default is ""
-    namespaceOverride : str, optional, default is ""
+    nameOverride : str, optional
+    namespaceOverride : str, optional
     nodeSelector : ValuesNodeSelector, optional
-    openshiftFinalizers : bool, optional, default is True
-        If true the OpenShift finalizer permissions will be added to RBAC
+    openshiftFinalizers : bool, optional
     podAnnotations : ValuesPodAnnotations, optional
-        Annotations to add to Pod
     podDisruptionBudget : ValuesPodDisruptionBudget, optional
-        Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
-    podDnsConfig : ValuesPodDnsConfig, optional
-    podDnsPolicy : str, optional, default is ""
     podLabels : ValuesPodLabels, optional
     podSecurityContext : ValuesPodSecurityContext, optional
     podSpecExtra : ValuesPodSpecExtra, optional
-        Any extra pod spec on the deployment
-    priorityClassName : str, optional, default is ""
-        Pod priority class name.
-    processClusterExternalSecret : bool, optional, default is True
-        if true, the operator will process cluster external secret. Else, it will ignore them.
-        When enabled, this adds update/patch permissions on namespaces to handle finalizers for proper
-        cleanup during namespace deletion, preventing race conditions with ExternalSecrets.
-    processClusterGenerator : bool, optional, default is True
-        if true, the operator will process cluster generator. Else, it will ignore them.
-    processClusterPushSecret : bool, optional, default is True
-        if true, the operator will process cluster push secret. Else, it will ignore them.
-    processClusterStore : bool, optional, default is True
-        if true, the operator will process cluster store. Else, it will ignore them.
-    processPushSecret : bool, optional, default is True
-        if true, the operator will process push secret. Else, it will ignore them.
+    priorityClassName : str, optional
+    processClusterExternalSecret : bool, optional
+    processClusterGenerator : bool, optional
+    processClusterPushSecret : bool, optional
+    processClusterStore : bool, optional
+    processPushSecret : bool, optional
+    processSecretStore : bool, optional
     rbac : ValuesRbac, optional
-    replicaCount : int, optional, default is 1
+    readinessProbe : ValuesReadinessProbe, optional
+    replicaCount : int, optional
     resources : ValuesResources, optional
-    revisionHistoryLimit : int, optional, default is 10
-        Specifies the amount of historic ReplicaSets k8s should keep (see https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#clean-up-policy)
-    scopedNamespace : str, optional, default is ""
-        If set external secrets are only reconciled in the
-        provided namespace
-    scopedRBAC : bool, optional, default is False
-        Must be used with scopedNamespace. If true, create scoped RBAC roles under the scoped namespace
-        and implicitly disable cluster stores and cluster external secrets
+    revisionHistoryLimit : int, optional
+    scopedNamespace : str, optional
+    scopedRBAC : bool, optional
     securityContext : ValuesSecurityContext, optional
     service : ValuesService, optional
     serviceAccount : ValuesServiceAccount, optional
     serviceMonitor : ValuesServiceMonitor, optional
     strategy : ValuesStrategy, optional
-        Set deployment strategy
-    systemAuthDelegator : bool, optional, default is False
-        If true the system:auth-delegator ClusterRole will be added to RBAC
-    tolerations : [any], optional
-    topologySpreadConstraints : [any], optional
+    systemAuthDelegator : bool, optional
+    tolerations : any, optional
+    topologySpreadConstraints : any, optional
     webhook : ValuesWebhook, optional
     """
-    [...str]: any
     affinity?: ValuesAffinity
-    autoscaling?: ValuesAutoscaling
     "bitwarden-sdk-server"?: ValuesBitwardenSdkServer
     certController?: ValuesCertController
     commonLabels?: ValuesCommonLabels
@@ -135,19 +90,21 @@ schema Values:
     enableHTTP2?: bool
     extendedMetricLabels?: bool
     extraArgs?: ValuesExtraArgs
-    extraContainers?: [any]
-    extraEnv?: [any]
-    extraInitContainers?: [any]
-    extraObjects?: [any]
-    extraVolumeMounts?: [any]
-    extraVolumes?: [any]
+    extraContainers?: any
+    extraEnv?: any
+    extraInitContainers?: any
+    extraObjects?: any
+    extraVolumeMounts?: any
+    extraVolumes?: any
     fullnameOverride?: str
+    genericTargets?: ValuesGenericTargets
     global?: ValuesGlobal
     grafanaDashboard?: ValuesGrafanaDashboard
+    hostAliases?: any
     hostNetwork?: bool
+    hostUsers?: bool
     image?: ValuesImage
-    imagePullSecrets?: [any]
-    ingress?: ValuesIngress
+    imagePullSecrets?: any
     installCRDs?: bool
     leaderElect?: bool
     livenessProbe?: ValuesLivenessProbe
@@ -159,8 +116,6 @@ schema Values:
     openshiftFinalizers?: bool
     podAnnotations?: ValuesPodAnnotations
     podDisruptionBudget?: ValuesPodDisruptionBudget
-    podDnsConfig?: ValuesPodDnsConfig
-    podDnsPolicy?: str
     podLabels?: ValuesPodLabels
     podSecurityContext?: ValuesPodSecurityContext
     podSpecExtra?: ValuesPodSpecExtra
@@ -170,7 +125,9 @@ schema Values:
     processClusterPushSecret?: bool
     processClusterStore?: bool
     processPushSecret?: bool
+    processSecretStore?: bool
     rbac?: ValuesRbac
+    readinessProbe?: ValuesReadinessProbe
     replicaCount?: int
     resources?: ValuesResources
     revisionHistoryLimit?: int
@@ -182,8 +139,8 @@ schema Values:
     serviceMonitor?: ValuesServiceMonitor
     strategy?: ValuesStrategy
     systemAuthDelegator?: bool
-    tolerations?: [any]
-    topologySpreadConstraints?: [any]
+    tolerations?: any
+    topologySpreadConstraints?: any
     webhook?: ValuesWebhook
 
 schema ValuesAffinity:
@@ -192,33 +149,15 @@ schema ValuesAffinity:
     """
     [...str]: any
 
-schema ValuesAutoscaling:
-    r"""
-    ValuesAutoscaling
-
-    Attributes
-    ----------
-    enabled : bool, optional, default is False
-    maxReplicas : int, optional, default is 100
-    minReplicas : int, optional, default is 1
-    targetCPUUtilizationPercentage : int, optional, default is 80
-    """
-    [...str]: any
-    enabled?: bool
-    maxReplicas?: int
-    minReplicas?: int
-    targetCPUUtilizationPercentage?: int
-
 schema ValuesBitwardenSdkServer:
     r"""
     ValuesBitwardenSdkServer
 
     Attributes
     ----------
-    enabled : bool, optional, default is False
-    namespaceOverride : str, optional, default is ""
+    enabled : bool, optional
+    namespaceOverride : str, optional
     """
-    [...str]: any
     enabled?: bool
     namespaceOverride?: str
 
@@ -229,68 +168,54 @@ schema ValuesCertController:
     Attributes
     ----------
     affinity : ValuesCertControllerAffinity, optional
-    create : bool, optional, default is True
-        Specifies whether a certificate controller deployment be created.
+    create : bool, optional
     deploymentAnnotations : ValuesCertControllerDeploymentAnnotations, optional
-        Annotations to add to Deployment
     extraArgs : ValuesCertControllerExtraArgs, optional
-        # -- Map of extra arguments to pass to container.
-    extraEnv : [any], optional
-    extraInitContainers : [any], optional
-        # -- Extra init containers to add to the pod.
-    extraVolumeMounts : [any], optional
-        # -- Extra volumes to mount to the container.
-    extraVolumes : [any], optional
-        # -- Extra volumes to pass to pod.
-    fullnameOverride : str, optional, default is ""
-    hostNetwork : bool, optional, default is False
-        Run the certController on the host network
+    extraEnv : any, optional
+    extraInitContainers : any, optional
+    extraVolumeMounts : any, optional
+    extraVolumes : any, optional
+    hostAliases : any, optional
+    hostNetwork : bool, optional
+    hostUsers : bool, optional
     image : ValuesCertControllerImage, optional
-    imagePullSecrets : [any], optional
+    imagePullSecrets : any, optional
     log : ValuesCertControllerLog, optional
-        Specifies Log Params to the Certificate Controller
     metrics : ValuesCertControllerMetrics, optional
-    nameOverride : str, optional, default is ""
     nodeSelector : ValuesCertControllerNodeSelector, optional
     podAnnotations : ValuesCertControllerPodAnnotations, optional
-        Annotations to add to Pod
     podDisruptionBudget : ValuesCertControllerPodDisruptionBudget, optional
-        Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
     podLabels : ValuesCertControllerPodLabels, optional
     podSecurityContext : ValuesCertControllerPodSecurityContext, optional
-    priorityClassName : str, optional, default is ""
-        Pod priority class name.
+    priorityClassName : str, optional
     rbac : ValuesCertControllerRbac, optional
     readinessProbe : ValuesCertControllerReadinessProbe, optional
-    replicaCount : int, optional, default is 1
-    requeueInterval : str, optional, default is "5m"
+    replicaCount : int, optional
+    requeueInterval : str, optional
     resources : ValuesCertControllerResources, optional
-    revisionHistoryLimit : int, optional, default is 10
-        Specifies the amount of historic ReplicaSets k8s should keep (see https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#clean-up-policy)
+    revisionHistoryLimit : int, optional
     securityContext : ValuesCertControllerSecurityContext, optional
     serviceAccount : ValuesCertControllerServiceAccount, optional
     startupProbe : ValuesCertControllerStartupProbe, optional
     strategy : ValuesCertControllerStrategy, optional
-        Set deployment strategy
-    tolerations : [any], optional
-    topologySpreadConstraints : [any], optional
+    tolerations : any, optional
+    topologySpreadConstraints : any, optional
     """
-    [...str]: any
     affinity?: ValuesCertControllerAffinity
     create?: bool
     deploymentAnnotations?: ValuesCertControllerDeploymentAnnotations
     extraArgs?: ValuesCertControllerExtraArgs
-    extraEnv?: [any]
-    extraInitContainers?: [any]
-    extraVolumeMounts?: [any]
-    extraVolumes?: [any]
-    fullnameOverride?: str
+    extraEnv?: any
+    extraInitContainers?: any
+    extraVolumeMounts?: any
+    extraVolumes?: any
+    hostAliases?: any
     hostNetwork?: bool
+    hostUsers?: bool
     image?: ValuesCertControllerImage
-    imagePullSecrets?: [any]
+    imagePullSecrets?: any
     log?: ValuesCertControllerLog
     metrics?: ValuesCertControllerMetrics
-    nameOverride?: str
     nodeSelector?: ValuesCertControllerNodeSelector
     podAnnotations?: ValuesCertControllerPodAnnotations
     podDisruptionBudget?: ValuesCertControllerPodDisruptionBudget
@@ -307,8 +232,8 @@ schema ValuesCertController:
     serviceAccount?: ValuesCertControllerServiceAccount
     startupProbe?: ValuesCertControllerStartupProbe
     strategy?: ValuesCertControllerStrategy
-    tolerations?: [any]
-    topologySpreadConstraints?: [any]
+    tolerations?: any
+    topologySpreadConstraints?: any
 
 schema ValuesCertControllerAffinity:
     r"""
@@ -318,13 +243,13 @@ schema ValuesCertControllerAffinity:
 
 schema ValuesCertControllerDeploymentAnnotations:
     r"""
-    Annotations to add to Deployment
+    ValuesCertControllerDeploymentAnnotations
     """
     [...str]: any
 
 schema ValuesCertControllerExtraArgs:
     r"""
-    # -- Map of extra arguments to pass to container.
+    ValuesCertControllerExtraArgs
     """
     [...str]: any
 
@@ -334,12 +259,11 @@ schema ValuesCertControllerImage:
 
     Attributes
     ----------
-    flavour : str, optional, default is ""
-    pullPolicy : str, optional, default is "IfNotPresent"
-    repository : str, optional, default is "oci.external-secrets.io/external-secrets/external-secrets"
-    tag : str, optional, default is ""
+    flavour : str, optional
+    pullPolicy : str, optional
+    repository : str, optional
+    tag : str, optional
     """
-    [...str]: any
     flavour?: str
     pullPolicy?: str
     repository?: str
@@ -347,14 +271,13 @@ schema ValuesCertControllerImage:
 
 schema ValuesCertControllerLog:
     r"""
-    Specifies Log Params to the Certificate Controller
+    ValuesCertControllerLog
 
     Attributes
     ----------
-    level : str, optional, default is "info"
-    timeEncoding : str, optional, default is "epoch"
+    level : str, optional
+    timeEncoding : str, optional
     """
-    [...str]: any
     level?: str
     timeEncoding?: str
 
@@ -367,7 +290,6 @@ schema ValuesCertControllerMetrics:
     listen : ValuesCertControllerMetricsListen, optional
     service : ValuesCertControllerMetricsService, optional
     """
-    [...str]: any
     listen?: ValuesCertControllerMetricsListen
     service?: ValuesCertControllerMetricsService
 
@@ -377,9 +299,8 @@ schema ValuesCertControllerMetricsListen:
 
     Attributes
     ----------
-    port : int, optional, default is 8080
+    port : int, optional
     """
-    [...str]: any
     port?: int
 
 schema ValuesCertControllerMetricsService:
@@ -389,20 +310,16 @@ schema ValuesCertControllerMetricsService:
     Attributes
     ----------
     annotations : ValuesCertControllerMetricsServiceAnnotations, optional
-        Additional service annotations
-    enabled : bool, optional, default is False
-        Enable if you use another monitoring tool than Prometheus to scrape the metrics
-    port : int, optional, default is 8080
-        Metrics service port to scrape
+    enabled : bool, optional
+    port : int, optional
     """
-    [...str]: any
     annotations?: ValuesCertControllerMetricsServiceAnnotations
     enabled?: bool
     port?: int
 
 schema ValuesCertControllerMetricsServiceAnnotations:
     r"""
-    Additional service annotations
+    ValuesCertControllerMetricsServiceAnnotations
     """
     [...str]: any
 
@@ -414,23 +331,22 @@ schema ValuesCertControllerNodeSelector:
 
 schema ValuesCertControllerPodAnnotations:
     r"""
-    Annotations to add to Pod
+    ValuesCertControllerPodAnnotations
     """
     [...str]: any
 
 schema ValuesCertControllerPodDisruptionBudget:
     r"""
-    Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
+    ValuesCertControllerPodDisruptionBudget
 
     Attributes
     ----------
-    enabled : bool, optional, default is False
-    minAvailable : int, optional, default is 1
-    nameOverride : str, optional, default is ""
+    enabled : bool, optional
+    minAvailable : int | str, optional
+    nameOverride : str, optional
     """
-    [...str]: any
     enabled?: bool
-    minAvailable?: int
+    minAvailable?: int | str
     nameOverride?: str
 
 schema ValuesCertControllerPodLabels:
@@ -445,9 +361,8 @@ schema ValuesCertControllerPodSecurityContext:
 
     Attributes
     ----------
-    enabled : bool, optional, default is True
+    enabled : bool, optional
     """
-    [...str]: any
     enabled?: bool
 
 schema ValuesCertControllerRbac:
@@ -456,10 +371,8 @@ schema ValuesCertControllerRbac:
 
     Attributes
     ----------
-    create : bool, optional, default is True
-        Specifies whether role and rolebinding resources should be created.
+    create : bool, optional
     """
-    [...str]: any
     create?: bool
 
 schema ValuesCertControllerReadinessProbe:
@@ -468,12 +381,9 @@ schema ValuesCertControllerReadinessProbe:
 
     Attributes
     ----------
-    address : str, optional, default is ""
-        Address for readiness probe
-    port : int, optional, default is 8081
-        ReadinessProbe port for kubelet
+    address : str, optional
+    port : int, optional
     """
-    [...str]: any
     address?: str
     port?: int
 
@@ -489,15 +399,14 @@ schema ValuesCertControllerSecurityContext:
 
     Attributes
     ----------
-    allowPrivilegeEscalation : bool, optional, default is False
+    allowPrivilegeEscalation : bool, optional
     capabilities : ValuesCertControllerSecurityContextCapabilities, optional
-    enabled : bool, optional, default is True
-    readOnlyRootFilesystem : bool, optional, default is True
-    runAsNonRoot : bool, optional, default is True
-    runAsUser : int, optional, default is 1000
+    enabled : bool, optional
+    readOnlyRootFilesystem : bool, optional
+    runAsNonRoot : bool, optional
+    runAsUser : int, optional
     seccompProfile : ValuesCertControllerSecurityContextSeccompProfile, optional
     """
-    [...str]: any
     allowPrivilegeEscalation?: bool
     capabilities?: ValuesCertControllerSecurityContextCapabilities
     enabled?: bool
@@ -514,7 +423,6 @@ schema ValuesCertControllerSecurityContextCapabilities:
     ----------
     drop : [str], optional
     """
-    [...str]: any
     drop?: [str]
 
 schema ValuesCertControllerSecurityContextSeccompProfile:
@@ -523,9 +431,8 @@ schema ValuesCertControllerSecurityContextSeccompProfile:
 
     Attributes
     ----------
-    $type : str, optional, default is "RuntimeDefault"
+    $type : str, optional
     """
-    [...str]: any
     $type?: str
 
 schema ValuesCertControllerServiceAccount:
@@ -535,18 +442,11 @@ schema ValuesCertControllerServiceAccount:
     Attributes
     ----------
     annotations : ValuesCertControllerServiceAccountAnnotations, optional
-        Annotations to add to the service account.
-    automount : bool, optional, default is True
-        Automounts the service account token in all containers of the pod
-    create : bool, optional, default is True
-        Specifies whether a service account should be created.
+    automount : bool, optional
+    create : bool, optional
     extraLabels : ValuesCertControllerServiceAccountExtraLabels, optional
-        Extra Labels to add to the service account.
-    name : str, optional, default is ""
-        The name of the service account to use.
-        If not set and create is true, a name is generated using the fullname template.
+    name : str, optional
     """
-    [...str]: any
     annotations?: ValuesCertControllerServiceAccountAnnotations
     automount?: bool
     create?: bool
@@ -555,13 +455,13 @@ schema ValuesCertControllerServiceAccount:
 
 schema ValuesCertControllerServiceAccountAnnotations:
     r"""
-    Annotations to add to the service account.
+    ValuesCertControllerServiceAccountAnnotations
     """
     [...str]: any
 
 schema ValuesCertControllerServiceAccountExtraLabels:
     r"""
-    Extra Labels to add to the service account.
+    ValuesCertControllerServiceAccountExtraLabels
     """
     [...str]: any
 
@@ -571,27 +471,23 @@ schema ValuesCertControllerStartupProbe:
 
     Attributes
     ----------
-    enabled : bool, optional, default is False
-        Enabled determines if the startup probe should be used or not. By default it's enabled
-    port : str, optional, default is ""
-        Port for startup probe.
-    useReadinessProbePort : bool, optional, default is True
-        whether to use the readiness probe port for startup probe.
+    enabled : bool, optional
+    port : str, optional
+    useReadinessProbePort : bool, optional
     """
-    [...str]: any
     enabled?: bool
     port?: str
     useReadinessProbePort?: bool
 
 schema ValuesCertControllerStrategy:
     r"""
-    Set deployment strategy
+    ValuesCertControllerStrategy
     """
     [...str]: any
 
 schema ValuesCommonLabels:
     r"""
-    Additional labels added to all helm chart resources.
+    ValuesCommonLabels
     """
     [...str]: any
 
@@ -603,18 +499,14 @@ schema ValuesCrds:
     ----------
     annotations : ValuesCrdsAnnotations, optional
     conversion : ValuesCrdsConversion, optional
-    createClusterExternalSecret : bool, optional, default is True
-        If true, create CRDs for Cluster External Secret.
-    createClusterGenerator : bool, optional, default is True
-        If true, create CRDs for Cluster Generator.
-    createClusterPushSecret : bool, optional, default is True
-        If true, create CRDs for Cluster Push Secret.
-    createClusterSecretStore : bool, optional, default is True
-        If true, create CRDs for Cluster Secret Store.
-    createPushSecret : bool, optional, default is True
-        If true, create CRDs for Push Secret.
+    createClusterExternalSecret : bool, optional
+    createClusterGenerator : bool, optional
+    createClusterPushSecret : bool, optional
+    createClusterSecretStore : bool, optional
+    createPushSecret : bool, optional
+    createSecretStore : bool, optional
+    unsafeServeV1Beta1 : bool, optional
     """
-    [...str]: any
     annotations?: ValuesCrdsAnnotations
     conversion?: ValuesCrdsConversion
     createClusterExternalSecret?: bool
@@ -622,6 +514,8 @@ schema ValuesCrds:
     createClusterPushSecret?: bool
     createClusterSecretStore?: bool
     createPushSecret?: bool
+    createSecretStore?: bool
+    unsafeServeV1Beta1?: bool
 
 schema ValuesCrdsAnnotations:
     r"""
@@ -635,48 +529,67 @@ schema ValuesCrdsConversion:
 
     Attributes
     ----------
-    enabled : bool, optional, default is False
-        Conversion is disabled by default as we stopped supporting v1alpha1.
+    enabled : bool, optional
     """
-    [...str]: any
     enabled?: bool
 
 schema ValuesDeploymentAnnotations:
     r"""
-    Annotations to add to Deployment
+    ValuesDeploymentAnnotations
     """
     [...str]: any
 
 schema ValuesDnsConfig:
     r"""
-    Specifies `dnsOptions` to deployment
+    ValuesDnsConfig
     """
     [...str]: any
 
 schema ValuesExtraArgs:
     r"""
-    # -- Map of extra arguments to pass to container.
+    ValuesExtraArgs
     """
     [...str]: any
 
+schema ValuesGenericTargets:
+    r"""
+    ValuesGenericTargets
+
+    Attributes
+    ----------
+    enabled : bool, optional
+    resources : any, optional
+    """
+    enabled?: bool
+    resources?: any
+
 schema ValuesGlobal:
     r"""
-    Global values are values that can be accessed from any chart or subchart by exactly the same name.
+    ValuesGlobal
 
     Attributes
     ----------
     affinity : ValuesGlobalAffinity, optional
     compatibility : ValuesGlobalCompatibility, optional
+    hostAliases : any, optional
+    imagePullSecrets : any, optional
     nodeSelector : ValuesGlobalNodeSelector, optional
-    tolerations : [any], optional
-    topologySpreadConstraints : [any], optional
+    podAnnotations : ValuesGlobalPodAnnotations, optional
+    podLabels : ValuesGlobalPodLabels, optional
+    repository : str, optional
+    tolerations : any, optional
+    topologySpreadConstraints : any, optional
     """
-    [...str]: any
     affinity?: ValuesGlobalAffinity
     compatibility?: ValuesGlobalCompatibility
+    hostAliases?: any
+    imagePullSecrets?: any
     nodeSelector?: ValuesGlobalNodeSelector
-    tolerations?: [any]
-    topologySpreadConstraints?: [any]
+    podAnnotations?: ValuesGlobalPodAnnotations
+    podLabels?: ValuesGlobalPodLabels
+    repository?: str
+    tolerations?: any
+    topologySpreadConstraints?: any
 
 schema ValuesGlobalAffinity:
     r"""
@@ -692,7 +605,6 @@ schema ValuesGlobalCompatibility:
     ----------
     openshift : ValuesGlobalCompatibilityOpenshift, optional
     """
-    [...str]: any
     openshift?: ValuesGlobalCompatibilityOpenshift
 
 schema ValuesGlobalCompatibilityOpenshift:
@@ -701,19 +613,25 @@ schema ValuesGlobalCompatibilityOpenshift:
 
     Attributes
     ----------
-    adaptSecurityContext : str, optional, default is "auto"
-        Manages the securityContext properties to make them compatible with OpenShift.
-        Possible values:
-        auto - Apply configurations if it is detected that OpenShift is the target platform.
-        force - Always apply configurations.
-        disabled - No modification applied.
+    adaptSecurityContext : str, optional
     """
-    [...str]: any
     adaptSecurityContext?: str
 
 schema ValuesGlobalNodeSelector:
     r"""
     ValuesGlobalNodeSelector
+    """
+    [...str]: any
+
+schema ValuesGlobalPodAnnotations:
+    r"""
+    ValuesGlobalPodAnnotations
+    """
+    [...str]: any
+
+schema ValuesGlobalPodLabels:
+    r"""
+    ValuesGlobalPodLabels
     """
     [...str]: any
 
@@ -724,19 +642,11 @@ schema ValuesGrafanaDashboard:
     Attributes
     ----------
     annotations : ValuesGrafanaDashboardAnnotations, optional
-        Annotations that ConfigMaps can have to get configured in Grafana,
-        See: sidecar.dashboards.folderAnnotation for specifying the dashboard folder.
-        https://github.com/grafana/helm-charts/tree/main/charts/grafana
-    enabled : bool, optional, default is False
-        If true creates a Grafana dashboard.
+    enabled : bool, optional
     extraLabels : ValuesGrafanaDashboardExtraLabels, optional
-        Extra labels to add to the Grafana dashboard ConfigMap.
-    sidecarLabel : str, optional, default is "grafana_dashboard"
-        Label that ConfigMaps should have to be loaded as dashboards.
-    sidecarLabelValue : str, optional, default is "1"
-        Label value that ConfigMaps should have to be loaded as dashboards.
+    sidecarLabel : str, optional
+    sidecarLabelValue : str, optional
     """
-    [...str]: any
     annotations?: ValuesGrafanaDashboardAnnotations
     enabled?: bool
     extraLabels?: ValuesGrafanaDashboardExtraLabels
@@ -745,15 +655,13 @@ schema ValuesGrafanaDashboard:
 
 schema ValuesGrafanaDashboardAnnotations:
     r"""
-    Annotations that ConfigMaps can have to get configured in Grafana,
-    See: sidecar.dashboards.folderAnnotation for specifying the dashboard folder.
-    https://github.com/grafana/helm-charts/tree/main/charts/grafana
+    ValuesGrafanaDashboardAnnotations
     """
     [...str]: any
 
 schema ValuesGrafanaDashboardExtraLabels:
     r"""
-    Extra labels to add to the Grafana dashboard ConfigMap.
+    ValuesGrafanaDashboardExtraLabels
     """
     [...str]: any
 
@@ -763,143 +671,15 @@ schema ValuesImage:
 
     Attributes
     ----------
-    flavour : str, optional, default is ""
-        The flavour of tag you want to use
-        There are different image flavours available, like distroless and ubi.
-        Please see GitHub release notes for image tags for these flavors.
-        By default, the distroless image is used.
-    pullPolicy : str, optional, default is "IfNotPresent"
-    repository : str, optional, default is "oci.external-secrets.io/external-secrets/external-secrets"
-    tag : str, optional, default is ""
-        The image tag to use. The default is the chart appVersion.
-    tls : ValuesImageTls, optional
+    flavour : str, optional
+    pullPolicy : str, optional
+    repository : str, optional
+    tag : str, optional
     """
-    [...str]: any
     flavour?: str
     pullPolicy?: str
     repository?: str
     tag?: str
-    tls?: ValuesImageTls
-
-schema ValuesImageTls:
-    r"""
-    ValuesImageTls
-
-    Attributes
-    ----------
-    enabled : bool, optional, default is True
-    volumeMounts : [ValuesImageTlsVolumeMountsItems0], optional
-    volumes : [ValuesImageTlsVolumesItems0], optional
-    """
-    [...str]: any
-    enabled?: bool
-    volumeMounts?: [ValuesImageTlsVolumeMountsItems0]
-    volumes?: [ValuesImageTlsVolumesItems0]
-
-schema ValuesImageTlsVolumeMountsItems0:
-    r"""
-    ValuesImageTlsVolumeMountsItems0
-
-    Attributes
-    ----------
-    mountPath : str, optional, default is "/certs"
-    name : str, optional, default is "bitwarden-tls-certs"
-    """
-    [...str]: any
-    mountPath?: str
-    name?: str
-
-schema ValuesImageTlsVolumesItems0:
-    r"""
-    ValuesImageTlsVolumesItems0
-
-    Attributes
-    ----------
-    name : str, optional, default is "bitwarden-tls-certs"
-    secret : ValuesImageTlsVolumesItems0Secret, optional
-    """
-    [...str]: any
-    name?: str
-    secret?: ValuesImageTlsVolumesItems0Secret
-
-schema ValuesImageTlsVolumesItems0Secret:
-    r"""
-    ValuesImageTlsVolumesItems0Secret
-
-    Attributes
-    ----------
-    items : [ValuesImageTlsVolumesItems0SecretItemsItems0], optional
-    secretName : str, optional, default is "bitwarden-tls-certs"
-    """
-    [...str]: any
-    items?: [ValuesImageTlsVolumesItems0SecretItemsItems0]
-    secretName?: str
-
-schema ValuesImageTlsVolumesItems0SecretItemsItems0:
-    r"""
-    ValuesImageTlsVolumesItems0SecretItemsItems0
-
-    Attributes
-    ----------
-    key : str, optional, default is "ca.crt"
-    path : str, optional, default is "ca.pem"
-    """
-    [...str]: any
-    key?: str
-    path?: str
-
-schema ValuesIngress:
-    r"""
-    ValuesIngress
-
-    Attributes
-    ----------
-    annotations : ValuesIngressAnnotations, optional
-    className : str, optional, default is ""
-    enabled : bool, optional, default is False
-    hosts : [ValuesIngressHostsItems0], optional
-        kubernetes.io/ingress.class: nginx
-        kubernetes.io/tls-acme: "true"
-    tls : [any], optional
-    """
-    [...str]: any
-    annotations?: ValuesIngressAnnotations
-    className?: str
-    enabled?: bool
-    hosts?: [ValuesIngressHostsItems0]
-    tls?: [any]
-
-schema ValuesIngressAnnotations:
-    r"""
-    ValuesIngressAnnotations
-    """
-    [...str]: any
-
-schema ValuesIngressHostsItems0:
-    r"""
-    ValuesIngressHostsItems0
-
-    Attributes
-    ----------
-    host : str, optional, default is "chart-example.local"
-    paths : [ValuesIngressHostsItems0PathsItems0], optional
-    """
-    [...str]: any
-    host?: str
-    paths?: [ValuesIngressHostsItems0PathsItems0]
-
-schema ValuesIngressHostsItems0PathsItems0:
-    r"""
-    ValuesIngressHostsItems0PathsItems0
-
-    Attributes
-    ----------
-    path : str, optional, default is "/"
-    pathType : str, optional, default is "ImplementationSpecific"
-    """
-    [...str]: any
-    path?: str
-    pathType?: str
 
 schema ValuesLivenessProbe:
     r"""
@@ -907,69 +687,57 @@ schema ValuesLivenessProbe:
 
     Attributes
     ----------
-    enabled : bool, optional, default is False
-        Enabled determines if the liveness probe should be used or not. By default it's disabled.
+    enabled : bool, optional
     spec : ValuesLivenessProbeSpec, optional
-        The body of the liveness probe settings.
     """
-    [...str]: any
     enabled?: bool
     spec?: ValuesLivenessProbeSpec
 
 schema ValuesLivenessProbeSpec:
     r"""
-    The body of the liveness probe settings.
+    ValuesLivenessProbeSpec
 
     Attributes
     ----------
-    address : str, optional, default is ""
-        Address for liveness probe.
-    failureThreshold : int, optional, default is 5
-        Number of consecutive probe failures that should occur before considering the probe as failed.
+    address : str, optional
+    failureThreshold : int, optional
     httpGet : ValuesLivenessProbeSpecHttpGet, optional
-        Handler for liveness probe.
-    initialDelaySeconds : int, optional, default is 10
-        Delay in seconds for the container to start before performing the initial probe.
-    periodSeconds : int, optional, default is 10
-        Period in seconds for K8s to start performing probes.
-    successThreshold : int, optional, default is 1
-        Number of successful probes to mark probe successful.
-    timeoutSeconds : int, optional, default is 5
-        Specify the maximum amount of time to wait for a probe to respond before considering it fails.
+    initialDelaySeconds : int, optional
+    periodSeconds : int, optional
+    port : int, optional
+    successThreshold : int, optional
+    timeoutSeconds : int, optional
     """
-    [...str]: any
     address?: str
     failureThreshold?: int
     httpGet?: ValuesLivenessProbeSpecHttpGet
     initialDelaySeconds?: int
     periodSeconds?: int
+    port?: int
     successThreshold?: int
     timeoutSeconds?: int
 
 schema ValuesLivenessProbeSpecHttpGet:
     r"""
-    Handler for liveness probe.
+    ValuesLivenessProbeSpecHttpGet
 
     Attributes
     ----------
-    path : str, optional, default is "/healthz"
-    port : str, optional, default is "8082"
-        Set this value to 8082 to active liveness probes.
+    path : str, optional
+    port : str | int, optional
     """
-    [...str]: any
     path?: str
-    port?: str
+    port?: str | int
 
 schema ValuesLog:
     r"""
-    Specifies Log Params to the External Secrets Operator
+    ValuesLog
 
     Attributes
     ----------
-    level : str, optional, default is "info"
-    timeEncoding : str, optional, default is "epoch"
+    level : str, optional
+    timeEncoding : str, optional
     """
-    [...str]: any
     level?: str
     timeEncoding?: str
 
@@ -982,7 +750,6 @@ schema ValuesMetrics:
     listen : ValuesMetricsListen, optional
     service : ValuesMetricsService, optional
     """
-    [...str]: any
     listen?: ValuesMetricsListen
     service?: ValuesMetricsService
 
@@ -992,10 +759,9 @@ schema ValuesMetricsListen:
 
     Attributes
     ----------
-    port : int, optional, default is 8080
+    port : int, optional
     secure : ValuesMetricsListenSecure, optional
     """
-    [...str]: any
     port?: int
     secure?: ValuesMetricsListenSecure
 
@@ -1005,16 +771,11 @@ schema ValuesMetricsListenSecure:
 
     Attributes
     ----------
-    certDir : str, optional, default is "/etc/tls"
-        if those are not set or invalid, self-signed certs will be generated
-        TLS cert directory path
-    certFile : str, optional, default is "/etc/tls/tls.crt"
-        TLS cert file path
-    enabled : bool, optional, default is False
-    keyFile : str, optional, default is "/etc/tls/tls.key"
-        TLS key file path
+    certDir : str, optional
+    certFile : str, optional
+    enabled : bool, optional
+    keyFile : str, optional
     """
-    [...str]: any
     certDir?: str
     certFile?: str
     enabled?: bool
@@ -1027,20 +788,16 @@ schema ValuesMetricsService:
     Attributes
     ----------
     annotations : ValuesMetricsServiceAnnotations, optional
-        Additional service annotations
-    enabled : bool, optional, default is False
-        Enable if you use another monitoring tool than Prometheus to scrape the metrics
-    port : int, optional, default is 8080
-        Metrics service port to scrape
+    enabled : bool, optional
+    port : int, optional
     """
-    [...str]: any
     annotations?: ValuesMetricsServiceAnnotations
     enabled?: bool
     port?: int
 
 schema ValuesMetricsServiceAnnotations:
     r"""
-    Additional service annotations
+    ValuesMetricsServiceAnnotations
     """
     [...str]: any
 
@@ -1052,30 +809,23 @@ schema ValuesNodeSelector:
 
 schema ValuesPodAnnotations:
     r"""
-    Annotations to add to Pod
+    ValuesPodAnnotations
     """
     [...str]: any
 
 schema ValuesPodDisruptionBudget:
     r"""
-    Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
+    ValuesPodDisruptionBudget
 
     Attributes
     ----------
-    enabled : bool, optional, default is False
-    minAvailable : int, optional, default is 1
-    nameOverride : str, optional, default is ""
+    enabled : bool, optional
+    minAvailable : int | str, optional
+    nameOverride : str, optional
     """
-    [...str]: any
     enabled?: bool
-    minAvailable?: int
+    minAvailable?: int | str
     nameOverride?: str
-
-schema ValuesPodDnsConfig:
-    r"""
-    ValuesPodDnsConfig
-    """
-    [...str]: any
 
 schema ValuesPodLabels:
     r"""
@@ -1089,14 +839,13 @@ schema ValuesPodSecurityContext:
 
     Attributes
     ----------
-    enabled : bool, optional, default is True
+    enabled : bool, optional
     """
-    [...str]: any
     enabled?: bool
 
 schema ValuesPodSpecExtra:
     r"""
-    Any extra pod spec on the deployment
+    ValuesPodSpecExtra
     """
     [...str]: any
 
@@ -1106,15 +855,11 @@ schema ValuesRbac:
 
     Attributes
     ----------
-    aggregateToEdit : bool, optional, default is True
-        Specifies whether permissions are aggregated to the edit ClusterRole
-    aggregateToView : bool, optional, default is True
-        Specifies whether permissions are aggregated to the view ClusterRole
-    create : bool, optional, default is True
-        Specifies whether role and rolebinding resources should be created.
+    aggregateToEdit : bool, optional
+    aggregateToView : bool, optional
+    create : bool, optional
     servicebindings : ValuesRbacServicebindings, optional
     """
-    [...str]: any
     aggregateToEdit?: bool
     aggregateToView?: bool
     create?: bool
@@ -1126,11 +871,53 @@ schema ValuesRbacServicebindings:
 
     Attributes
     ----------
-    create : bool, optional, default is True
-        Specifies whether a clusterrole to give servicebindings read access should be created.
+    create : bool, optional
     """
-    [...str]: any
     create?: bool
+
+schema ValuesReadinessProbe:
+    r"""
+    ValuesReadinessProbe
+
+    Attributes
+    ----------
+    enabled : bool, optional
+    spec : ValuesReadinessProbeSpec, optional
+    """
+    enabled?: bool
+    spec?: ValuesReadinessProbeSpec
+
+schema ValuesReadinessProbeSpec:
+    r"""
+    ValuesReadinessProbeSpec
+
+    Attributes
+    ----------
+    failureThreshold : int, optional
+    httpGet : ValuesReadinessProbeSpecHttpGet, optional
+    initialDelaySeconds : int, optional
+    periodSeconds : int, optional
+    successThreshold : int, optional
+    timeoutSeconds : int, optional
+    """
+    failureThreshold?: int
+    httpGet?: ValuesReadinessProbeSpecHttpGet
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+
+schema ValuesReadinessProbeSpecHttpGet:
+    r"""
+    ValuesReadinessProbeSpecHttpGet
+
+    Attributes
+    ----------
+    path : str, optional
+    port : str | int, optional
+    """
+    path?: str
+    port?: str | int
 
 schema ValuesResources:
     r"""
@@ -1144,15 +931,14 @@ schema ValuesSecurityContext:
 
     Attributes
     ----------
-    allowPrivilegeEscalation : bool, optional, default is False
+    allowPrivilegeEscalation : bool, optional
     capabilities : ValuesSecurityContextCapabilities, optional
-    enabled : bool, optional, default is True
-    readOnlyRootFilesystem : bool, optional, default is True
-    runAsNonRoot : bool, optional, default is True
-    runAsUser : int, optional, default is 1000
+    enabled : bool, optional
+    readOnlyRootFilesystem : bool, optional
+    runAsNonRoot : bool, optional
+    runAsUser : int, optional
     seccompProfile : ValuesSecurityContextSeccompProfile, optional
     """
-    [...str]: any
     allowPrivilegeEscalation?: bool
     capabilities?: ValuesSecurityContextCapabilities
     enabled?: bool
@@ -1169,7 +955,6 @@ schema ValuesSecurityContextCapabilities:
     ----------
     drop : [str], optional
     """
-    [...str]: any
     drop?: [str]
 
 schema ValuesSecurityContextSeccompProfile:
@@ -1178,9 +963,8 @@ schema ValuesSecurityContextSeccompProfile:
 
     Attributes
     ----------
-    $type : str, optional, default is "RuntimeDefault"
+    $type : str, optional
     """
-    [...str]: any
     $type?: str
 
 schema ValuesService:
@@ -1189,18 +973,11 @@ schema ValuesService:
 
     Attributes
     ----------
-    ipFamilies : [any], optional
-        Sets the families that should be supported and the order in which they should be applied to ClusterIP as well. Can be IPv4 and/or IPv6.
-    ipFamilyPolicy : str, optional, default is ""
-        Set the ip family policy to configure dual-stack see [Configure dual-stack](https://kubernetes.io/docs/concepts/services-networking/dual-stack/#services)
-    port : int, optional, default is 9998
-    $type : str, optional, default is "ClusterIP"
+    ipFamilies : any, optional
+    ipFamilyPolicy : str, optional
     """
-    [...str]: any
-    ipFamilies?: [any]
+    ipFamilies?: any
     ipFamilyPolicy?: str
-    port?: int
-    $type?: str
 
 schema ValuesServiceAccount:
     r"""
@@ -1209,18 +986,11 @@ schema ValuesServiceAccount:
     Attributes
     ----------
     annotations : ValuesServiceAccountAnnotations, optional
-        Annotations to add to the service account.
-    automount : bool, optional, default is True
-        Automounts the service account token in all containers of the pod
-    create : bool, optional, default is True
-        Specifies whether a service account should be created.
+    automount : bool, optional
+    create : bool, optional
     extraLabels : ValuesServiceAccountExtraLabels, optional
-        Extra Labels to add to the service account.
-    name : str, optional, default is ""
-        The name of the service account to use.
-        If not set and create is true, a name is generated using the fullname template.
+    name : str, optional
     """
-    [...str]: any
     annotations?: ValuesServiceAccountAnnotations
     automount?: bool
     create?: bool
@@ -1229,13 +999,13 @@ schema ValuesServiceAccount:
 
 schema ValuesServiceAccountAnnotations:
     r"""
-    Annotations to add to the service account.
+    ValuesServiceAccountAnnotations
     """
     [...str]: any
 
 schema ValuesServiceAccountExtraLabels:
     r"""
-    Extra Labels to add to the service account.
+    ValuesServiceAccountExtraLabels
     """
     [...str]: any
 
@@ -1246,43 +1016,34 @@ schema ValuesServiceMonitor:
     Attributes
     ----------
     additionalLabels : ValuesServiceMonitorAdditionalLabels, optional
-        Additional labels
-    enabled : bool, optional, default is False
-        Specifies whether to create a ServiceMonitor resource for collecting Prometheus metrics
-    honorLabels : bool, optional, default is False
-        Let prometheus add an exported_ prefix to conflicting labels
-    interval : str, optional, default is "30s"
-         Interval to scrape metrics
-    metricRelabelings : [any], optional
-        Metric relabel configs to apply to samples before ingestion. [Metric Relabeling](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#metric_relabel_configs)
-    namespace : str, optional, default is ""
-        namespace where you want to install ServiceMonitors
-    relabelings : [any], optional
-        Relabel configs to apply to samples before ingestion. [Relabeling](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config)
-    renderMode : "skipIfMissing" | "failIfMissing" | "alwaysRender", optional, default is "skipIfMissing"
-    scrapeTimeout : str, optional, default is "25s"
-        Timeout if metrics can't be retrieved in given time interval
+    enabled : bool, optional
+    honorLabels : bool, optional
+    interval : str, optional
+    metricRelabelings : any, optional
+    namespace : str, optional
+    relabelings : any, optional
+    renderMode : "skipIfMissing" | "failIfMissing" | "alwaysRender", optional
+    scrapeTimeout : str, optional
     """
-    [...str]: any
     additionalLabels?: ValuesServiceMonitorAdditionalLabels
     enabled?: bool
     honorLabels?: bool
     interval?: str
-    metricRelabelings?: [any]
+    metricRelabelings?: any
     namespace?: str
-    relabelings?: [any]
+    relabelings?: any
     renderMode?: "skipIfMissing" | "failIfMissing" | "alwaysRender"
     scrapeTimeout?: str
 
 schema ValuesServiceMonitorAdditionalLabels:
     r"""
-    Additional labels
+    ValuesServiceMonitorAdditionalLabels
     """
     [...str]: any
 
 schema ValuesStrategy:
     r"""
-    Set deployment strategy
+    ValuesStrategy
     """
     [...str]: any
 
@@ -1294,66 +1055,44 @@ schema ValuesWebhook:
     ----------
     affinity : ValuesWebhookAffinity, optional
     annotations : ValuesWebhookAnnotations, optional
-        Annotations to place on validating webhook configuration.
-    certCheckInterval : str, optional, default is "5m"
-        Specifies the time to check if the cert is valid
-    certDir : str, optional, default is "/tmp/certs"
+    certCheckInterval : str, optional
+    certDir : str, optional
     certManager : ValuesWebhookCertManager, optional
-    create : bool, optional, default is True
-        Specifies whether a webhook deployment be created. If set to false, crds.conversion.enabled should also be set to false otherwise the kubeapi will be hammered because the conversion is looking for a webhook endpoint.
+    create : bool, optional
     deploymentAnnotations : ValuesWebhookDeploymentAnnotations, optional
-        Annotations to add to Deployment
     extraArgs : ValuesWebhookExtraArgs, optional
-        # -- Map of extra arguments to pass to container.
-    extraEnv : [any], optional
-    extraInitContainers : [any], optional
-        # -- Extra init containers to add to the pod.
-    extraVolumeMounts : [any], optional
-        # -- Extra volumes to mount to the container.
-    extraVolumes : [any], optional
-        # -- Extra volumes to pass to pod.
-    failurePolicy : str, optional, default is "Fail"
-        Specifies whether validating webhooks should be created with failurePolicy: Fail or Ignore
-    fullnameOverride : str, optional, default is ""
-    hostNetwork : bool, optional, default is False
-        Specifies if webhook pod should use hostNetwork or not.
+    extraEnv : any, optional
+    extraInitContainers : any, optional
+    extraVolumeMounts : any, optional
+    extraVolumes : any, optional
+    failurePolicy : str, optional
+    hostAliases : any, optional
+    hostNetwork : bool, optional
+    hostUsers : bool, optional
     image : ValuesWebhookImage, optional
-    imagePullSecrets : [any], optional
+    imagePullSecrets : any, optional
     log : ValuesWebhookLog, optional
-        Specifies Log Params to the Webhook
-    lookaheadInterval : str, optional, default is ""
-        Specifies the lookaheadInterval for certificate validity
+    lookaheadInterval : str, optional
     metrics : ValuesWebhookMetrics, optional
-    nameOverride : str, optional, default is ""
     nodeSelector : ValuesWebhookNodeSelector, optional
     podAnnotations : ValuesWebhookPodAnnotations, optional
-        Annotations to add to Pod
     podDisruptionBudget : ValuesWebhookPodDisruptionBudget, optional
-        Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
     podLabels : ValuesWebhookPodLabels, optional
     podSecurityContext : ValuesWebhookPodSecurityContext, optional
-    port : int, optional, default is 10250
-        The port the webhook will listen to
-    priorityClassName : str, optional, default is ""
-        Pod priority class name.
-    rbac : ValuesWebhookRbac, optional
+    port : int, optional
+    priorityClassName : str, optional
     readinessProbe : ValuesWebhookReadinessProbe, optional
-    replicaCount : int, optional, default is 1
+    replicaCount : int, optional
     resources : ValuesWebhookResources, optional
-    revisionHistoryLimit : int, optional, default is 10
-        Specifies the amount of historic ReplicaSets k8s should keep (see https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#clean-up-policy)
+    revisionHistoryLimit : int, optional
     secretAnnotations : ValuesWebhookSecretAnnotations, optional
-        Annotations to add to Secret
     securityContext : ValuesWebhookSecurityContext, optional
     service : ValuesWebhookService, optional
-        Manage the service through which the webhook is reached.
     serviceAccount : ValuesWebhookServiceAccount, optional
     strategy : ValuesWebhookStrategy, optional
-        Set deployment strategy
-    tolerations : [any], optional
-    topologySpreadConstraints : [any], optional
+    tolerations : any, optional
+    topologySpreadConstraints : any, optional
     """
-    [...str]: any
     affinity?: ValuesWebhookAffinity
     annotations?: ValuesWebhookAnnotations
     certCheckInterval?: str
@@ -1362,19 +1101,19 @@ schema ValuesWebhook:
     create?: bool
     deploymentAnnotations?: ValuesWebhookDeploymentAnnotations
     extraArgs?: ValuesWebhookExtraArgs
-    extraEnv?: [any]
-    extraInitContainers?: [any]
-    extraVolumeMounts?: [any]
-    extraVolumes?: [any]
+    extraEnv?: any
+    extraInitContainers?: any
+    extraVolumeMounts?: any
+    extraVolumes?: any
     failurePolicy?: str
-    fullnameOverride?: str
+    hostAliases?: any
     hostNetwork?: bool
+    hostUsers?: bool
     image?: ValuesWebhookImage
-    imagePullSecrets?: [any]
+    imagePullSecrets?: any
     log?: ValuesWebhookLog
     lookaheadInterval?: str
     metrics?: ValuesWebhookMetrics
-    nameOverride?: str
     nodeSelector?: ValuesWebhookNodeSelector
     podAnnotations?: ValuesWebhookPodAnnotations
     podDisruptionBudget?: ValuesWebhookPodDisruptionBudget
@@ -1382,7 +1121,6 @@ schema ValuesWebhook:
     podSecurityContext?: ValuesWebhookPodSecurityContext
     port?: int
     priorityClassName?: str
-    rbac?: ValuesWebhookRbac
     readinessProbe?: ValuesWebhookReadinessProbe
     replicaCount?: int
     resources?: ValuesWebhookResources
@@ -1392,8 +1130,8 @@ schema ValuesWebhook:
     service?: ValuesWebhookService
     serviceAccount?: ValuesWebhookServiceAccount
     strategy?: ValuesWebhookStrategy
-    tolerations?: [any]
-    topologySpreadConstraints?: [any]
+    tolerations?: any
+    topologySpreadConstraints?: any
 
 schema ValuesWebhookAffinity:
     r"""
@@ -1403,7 +1141,7 @@ schema ValuesWebhookAffinity:
 
 schema ValuesWebhookAnnotations:
     r"""
-    Annotations to place on validating webhook configuration.
+    ValuesWebhookAnnotations
     """
     [...str]: any
 
@@ -1413,19 +1151,10 @@ schema ValuesWebhookCertManager:
 
     Attributes
     ----------
-    addInjectorAnnotations : bool, optional, default is True
-        Automatically add the cert-manager.io/inject-ca-from annotation to the
-        webhooks and CRDs. As long as you have the cert-manager CA Injector
-        enabled, this will automatically setup your webhook's CA to the one used
-        by cert-manager. See https://cert-manager.io/docs/concepts/ca-injector
+    addInjectorAnnotations : bool, optional
     cert : ValuesWebhookCertManagerCert, optional
-    enabled : bool, optional, default is False
-        Enabling cert-manager support will disable the built in secret and
-        switch to using cert-manager (installed separately) to automatically issue
-        and renew the webhook certificate. This chart does not install
-        cert-manager for you, See https://cert-manager.io/docs/
+    enabled : bool, optional
     """
-    [...str]: any
     addInjectorAnnotations?: bool
     cert?: ValuesWebhookCertManagerCert
     enabled?: bool
@@ -1437,68 +1166,58 @@ schema ValuesWebhookCertManagerCert:
     Attributes
     ----------
     annotations : ValuesWebhookCertManagerCertAnnotations, optional
-        Add extra annotations to the Certificate resource.
-    create : bool, optional, default is True
-        Create a certificate resource within this chart. See
-        https://cert-manager.io/docs/usage/certificate/
-    duration : str, optional, default is "8760h"
-        Set the requested duration (i.e. lifetime) of the Certificate. See
-        https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec
-        One year by default.
+    create : bool, optional
+    duration : str, optional
     issuerRef : ValuesWebhookCertManagerCertIssuerRef, optional
-        For the Certificate created by this chart, setup the issuer. See
-        https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.IssuerSpec
-    renewBefore : str, optional, default is ""
-        How long before the currently issued certificate’s expiry
-        cert-manager should renew the certificate. See
-        https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec
-        Note that renewBefore should be greater than .webhook.lookaheadInterval
-        since the webhook will check this far in advance that the certificate is
-        valid.
-    revisionHistoryLimit : int, optional, default is 0
-        Set the revisionHistoryLimit on the Certificate. See
-        https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec
-        Defaults to 0 (ignored).
+    privateKey : ValuesWebhookCertManagerCertPrivateKey, optional
+    renewBefore : str, optional
+    revisionHistoryLimit : int, optional
+    signatureAlgorithm : str, optional
     """
-    [...str]: any
     annotations?: ValuesWebhookCertManagerCertAnnotations
     create?: bool
     duration?: str
     issuerRef?: ValuesWebhookCertManagerCertIssuerRef
+    privateKey?: ValuesWebhookCertManagerCertPrivateKey
     renewBefore?: str
     revisionHistoryLimit?: int
+    signatureAlgorithm?: str
 
 schema ValuesWebhookCertManagerCertAnnotations:
     r"""
-    Add extra annotations to the Certificate resource.
+    ValuesWebhookCertManagerCertAnnotations
     """
     [...str]: any
 
 schema ValuesWebhookCertManagerCertIssuerRef:
     r"""
-    For the Certificate created by this chart, setup the issuer. See
-    https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.IssuerSpec
+    ValuesWebhookCertManagerCertIssuerRef
 
     Attributes
     ----------
-    group : str, optional, default is "cert-manager.io"
-    kind : str, optional, default is "Issuer"
-    name : str, optional, default is "my-issuer"
+    group : str, optional
+    kind : str, optional
+    name : str, optional
     """
-    [...str]: any
     group?: str
     kind?: str
     name?: str
 
+schema ValuesWebhookCertManagerCertPrivateKey:
+    r"""
+    ValuesWebhookCertManagerCertPrivateKey
+    """
+    [...str]: any
+
 schema ValuesWebhookDeploymentAnnotations:
     r"""
-    Annotations to add to Deployment
+    ValuesWebhookDeploymentAnnotations
     """
     [...str]: any
 
 schema ValuesWebhookExtraArgs:
     r"""
-    # -- Map of extra arguments to pass to container.
+    ValuesWebhookExtraArgs
     """
     [...str]: any
 
@@ -1508,14 +1227,11 @@ schema ValuesWebhookImage:
 
     Attributes
     ----------
-    flavour : str, optional, default is ""
-        The flavour of tag you want to use
-    pullPolicy : str, optional, default is "IfNotPresent"
-    repository : str, optional, default is "oci.external-secrets.io/external-secrets/external-secrets"
-    tag : str, optional, default is ""
-        The image tag to use. The default is the chart appVersion.
+    flavour : str, optional
+    pullPolicy : str, optional
+    repository : str, optional
+    tag : str, optional
     """
-    [...str]: any
     flavour?: str
     pullPolicy?: str
     repository?: str
@@ -1523,14 +1239,13 @@ schema ValuesWebhookImage:
 
 schema ValuesWebhookLog:
     r"""
-    Specifies Log Params to the Webhook
+    ValuesWebhookLog
 
     Attributes
     ----------
-    level : str, optional, default is "info"
-    timeEncoding : str, optional, default is "epoch"
+    level : str, optional
+    timeEncoding : str, optional
     """
-    [...str]: any
     level?: str
     timeEncoding?: str
 
@@ -1543,7 +1258,6 @@ schema ValuesWebhookMetrics:
     listen : ValuesWebhookMetricsListen, optional
     service : ValuesWebhookMetricsService, optional
     """
-    [...str]: any
     listen?: ValuesWebhookMetricsListen
     service?: ValuesWebhookMetricsService
 
@@ -1553,9 +1267,8 @@ schema ValuesWebhookMetricsListen:
 
     Attributes
     ----------
-    port : int, optional, default is 8080
+    port : int, optional
     """
-    [...str]: any
     port?: int
 
 schema ValuesWebhookMetricsService:
@@ -1565,20 +1278,16 @@ schema ValuesWebhookMetricsService:
     Attributes
     ----------
     annotations : ValuesWebhookMetricsServiceAnnotations, optional
-        Additional service annotations
-    enabled : bool, optional, default is False
-        Enable if you use another monitoring tool than Prometheus to scrape the metrics
-    port : int, optional, default is 8080
-        Metrics service port to scrape
+    enabled : bool, optional
+    port : int, optional
     """
-    [...str]: any
     annotations?: ValuesWebhookMetricsServiceAnnotations
     enabled?: bool
     port?: int
 
 schema ValuesWebhookMetricsServiceAnnotations:
     r"""
-    Additional service annotations
+    ValuesWebhookMetricsServiceAnnotations
     """
     [...str]: any
 
@@ -1590,23 +1299,22 @@ schema ValuesWebhookNodeSelector:
 
 schema ValuesWebhookPodAnnotations:
     r"""
-    Annotations to add to Pod
+    ValuesWebhookPodAnnotations
     """
     [...str]: any
 
 schema ValuesWebhookPodDisruptionBudget:
     r"""
-    Pod disruption budget - for more details see https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
+    ValuesWebhookPodDisruptionBudget
 
     Attributes
     ----------
-    enabled : bool, optional, default is False
-    minAvailable : int, optional, default is 1
-    nameOverride : str, optional, default is ""
+    enabled : bool, optional
+    minAvailable : int | str, optional
+    nameOverride : str, optional
     """
-    [...str]: any
     enabled?: bool
-    minAvailable?: int
+    minAvailable?: int | str
     nameOverride?: str
 
 schema ValuesWebhookPodLabels:
@@ -1621,22 +1329,9 @@ schema ValuesWebhookPodSecurityContext:
 
     Attributes
     ----------
-    enabled : bool, optional, default is True
+    enabled : bool, optional
     """
-    [...str]: any
     enabled?: bool
-
-schema ValuesWebhookRbac:
-    r"""
-    ValuesWebhookRbac
-
-    Attributes
-    ----------
-    create : bool, optional, default is True
-        Specifies whether role and rolebinding resources should be created.
-    """
-    [...str]: any
-    create?: bool
 
 schema ValuesWebhookReadinessProbe:
     r"""
@@ -1644,12 +1339,9 @@ schema ValuesWebhookReadinessProbe:
 
     Attributes
     ----------
-    address : str, optional, default is ""
-        Address for readiness probe
-    port : int, optional, default is 8081
-        ReadinessProbe port for kubelet
+    address : str, optional
+    port : int, optional
     """
-    [...str]: any
     address?: str
     port?: int
 
@@ -1661,7 +1353,7 @@ schema ValuesWebhookResources:
 
 schema ValuesWebhookSecretAnnotations:
     r"""
-    Annotations to add to Secret
+    ValuesWebhookSecretAnnotations
     """
     [...str]: any
 
@@ -1671,15 +1363,14 @@ schema ValuesWebhookSecurityContext:
 
     Attributes
     ----------
-    allowPrivilegeEscalation : bool, optional, default is False
+    allowPrivilegeEscalation : bool, optional
     capabilities : ValuesWebhookSecurityContextCapabilities, optional
-    enabled : bool, optional, default is True
-    readOnlyRootFilesystem : bool, optional, default is True
-    runAsNonRoot : bool, optional, default is True
-    runAsUser : int, optional, default is 1000
+    enabled : bool, optional
+    readOnlyRootFilesystem : bool, optional
+    runAsNonRoot : bool, optional
+    runAsUser : int, optional
     seccompProfile : ValuesWebhookSecurityContextSeccompProfile, optional
     """
-    [...str]: any
     allowPrivilegeEscalation?: bool
     capabilities?: ValuesWebhookSecurityContextCapabilities
     enabled?: bool
@@ -1696,7 +1387,6 @@ schema ValuesWebhookSecurityContextCapabilities:
     ----------
     drop : [str], optional
     """
-    [...str]: any
     drop?: [str]
 
 schema ValuesWebhookSecurityContextSeccompProfile:
@@ -1705,30 +1395,22 @@ schema ValuesWebhookSecurityContextSeccompProfile:
 
     Attributes
     ----------
-    $type : str, optional, default is "RuntimeDefault"
+    $type : str, optional
     """
-    [...str]: any
     $type?: str
 
 schema ValuesWebhookService:
     r"""
-    Manage the service through which the webhook is reached.
+    ValuesWebhookService
 
     Attributes
     ----------
     annotations : ValuesWebhookServiceAnnotations, optional
-        Custom annotations for the webhook service.
-    enabled : bool, optional, default is True
-        Whether the service object should be enabled or not (it is expected to exist).
+    enabled : bool, optional
     labels : ValuesWebhookServiceLabels, optional
-        Custom labels for the webhook service.
-    loadBalancerIP : str, optional, default is ""
-        If the webhook service type is LoadBalancer, you can assign a specific load balancer IP here.
-        Check the documentation of your load balancer provider to see if/how this should be used.
-    $type : str, optional, default is "ClusterIP"
-        The service type of the webhook service.
+    loadBalancerIP : str, optional
+    $type : str, optional
     """
-    [...str]: any
     annotations?: ValuesWebhookServiceAnnotations
     enabled?: bool
     labels?: ValuesWebhookServiceLabels
@@ -1742,18 +1424,11 @@ schema ValuesWebhookServiceAccount:
     Attributes
     ----------
     annotations : ValuesWebhookServiceAccountAnnotations, optional
-        Annotations to add to the service account.
-    automount : bool, optional, default is True
-        Automounts the service account token in all containers of the pod
-    create : bool, optional, default is True
-        Specifies whether a service account should be created.
+    automount : bool, optional
+    create : bool, optional
     extraLabels : ValuesWebhookServiceAccountExtraLabels, optional
-        Extra Labels to add to the service account.
-    name : str, optional, default is ""
-        The name of the service account to use.
-        If not set and create is true, a name is generated using the fullname template.
+    name : str, optional
     """
-    [...str]: any
     annotations?: ValuesWebhookServiceAccountAnnotations
     automount?: bool
     create?: bool
@@ -1762,31 +1437,31 @@ schema ValuesWebhookServiceAccount:
 
 schema ValuesWebhookServiceAccountAnnotations:
     r"""
-    Annotations to add to the service account.
+    ValuesWebhookServiceAccountAnnotations
     """
     [...str]: any
 
 schema ValuesWebhookServiceAccountExtraLabels:
     r"""
-    Extra Labels to add to the service account.
+    ValuesWebhookServiceAccountExtraLabels
     """
     [...str]: any
 
 schema ValuesWebhookServiceAnnotations:
     r"""
-    Custom annotations for the webhook service.
+    ValuesWebhookServiceAnnotations
     """
     [...str]: any
 
 schema ValuesWebhookServiceLabels:
     r"""
-    Custom labels for the webhook service.
+    ValuesWebhookServiceLabels
     """
     [...str]: any
 
 schema ValuesWebhookStrategy:
     r"""
-    Set deployment strategy
+    ValuesWebhookStrategy
     """
     [...str]: any
 

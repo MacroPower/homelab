@@ -10,7 +10,7 @@ _regex_match = regex.match
 
 schema PushSecret:
     r"""
-    external secrets io v1alpha1 push secret
+    PushSecret is the Schema for the PushSecrets API that enables pushing Kubernetes secrets to external secret providers.
 
     Attributes
     ----------
@@ -43,7 +43,7 @@ schema ExternalSecretsIoV1alpha1PushSecretSpec:
         Secret Data that should be pushed to providers
     deletionPolicy : str, default is "None", optional
         Deletion Policy to handle Secrets in the provider.
-    refreshInterval : str, default is "1h", optional
+    refreshInterval : str, default is "1h0m0s", optional
         The Interval to which External Secrets will try to push a secret definition
     secretStoreRefs : [ExternalSecretsIoV1alpha1PushSecretSpecSecretStoreRefsItems0], default is Undefined, required
         secret store refs
@@ -56,7 +56,7 @@ schema ExternalSecretsIoV1alpha1PushSecretSpec:
     """
     data?: [ExternalSecretsIoV1alpha1PushSecretSpecDataItems0]
     deletionPolicy?: "Delete" | "None" = "None"
-    refreshInterval?: str = "1h"
+    refreshInterval?: str = "1h0m0s"
     secretStoreRefs: [ExternalSecretsIoV1alpha1PushSecretSpecSecretStoreRefsItems0]
 
     selector: ExternalSecretsIoV1alpha1PushSecretSpecSelector
@@ -66,7 +66,7 @@ schema ExternalSecretsIoV1alpha1PushSecretSpec:
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecDataItems0:
     r"""
-    external secrets io v1alpha1 push secret spec data items0
+    PushSecretData defines data to be pushed to the provider and associated metadata.
 
     Attributes
     ----------
@@ -114,7 +114,7 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecDataItems0MatchRemoteRef:
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecSecretStoreRefsItems0:
     r"""
-    external secrets io v1alpha1 push secret spec secret store refs items0
+    PushSecretStoreRef contains a reference on how to sync to a SecretStore.
 
     Attributes
     ----------
@@ -284,7 +284,7 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecTemplate:
         that should be used to compile/execute the
         template specified in .data and .templateFrom[].
     mergePolicy : str, default is "Replace", optional
-        merge policy
+        TemplateMergePolicy defines how the rendered template should be merged with the existing Secret data.
     metadata : ExternalSecretsIoV1alpha1PushSecretSpecTemplateMetadata, default is Undefined, optional
         metadata
     templateFrom : [ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0], default is Undefined, optional
@@ -318,7 +318,8 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateMetadata:
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0:
     r"""
-    external secrets io v1alpha1 push secret spec template template from items0
+    TemplateFrom specifies a source for templates.
+    Each item in the list can either reference a ConfigMap or a Secret resource.
 
     Attributes
     ----------
@@ -329,16 +330,19 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0:
     secret : ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0Secret, default is Undefined, optional
         secret
     target : str, default is "Data", optional
-        target
+        Target specifies where to place the template result.
+        For Secret resources, common values are: "Data", "Annotations", "Labels".
+        For custom resources (when spec.target.manifest is set), this supports
+        nested paths like "spec.database.config" or "data".
     """
     configMap?: ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0ConfigMap
     literal?: str
     secret?: ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0Secret
-    target?: "Data" | "Annotations" | "Labels" = "Data"
+    target?: str = "Data"
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0ConfigMap:
     r"""
-    external secrets io v1alpha1 push secret spec template template from items0 config map
+    TemplateRef specifies a reference to either a ConfigMap or a Secret resource.
 
     Attributes
     ----------
@@ -358,14 +362,14 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0ConfigMa
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0ConfigMapItemsItems0:
     r"""
-    external secrets io v1alpha1 push secret spec template template from items0 config map items items0
+    TemplateRefItem specifies a key in the ConfigMap/Secret to use as a template for Secret data.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         A key in the ConfigMap/Secret
     templateAs : str, default is "Values", optional
-        template as
+        TemplateScope specifies how the template keys should be interpreted.
     """
     key: str
 
@@ -378,7 +382,7 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0ConfigMa
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0Secret:
     r"""
-    external secrets io v1alpha1 push secret spec template template from items0 secret
+    TemplateRef specifies a reference to either a ConfigMap or a Secret resource.
 
     Attributes
     ----------
@@ -398,14 +402,14 @@ schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0Secret:
 
 schema ExternalSecretsIoV1alpha1PushSecretSpecTemplateTemplateFromItems0SecretItemsItems0:
     r"""
-    external secrets io v1alpha1 push secret spec template template from items0 secret items items0
+    TemplateRefItem specifies a key in the ConfigMap/Secret to use as a template for Secret data.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         A key in the ConfigMap/Secret
     templateAs : str, default is "Values", optional
-        template as
+        TemplateScope specifies how the template keys should be interpreted.
     """
     key: str
 
@@ -464,7 +468,7 @@ schema ExternalSecretsIoV1alpha1PushSecretStatusConditionsItems0:
 
 schema ExternalSecretsIoV1alpha1PushSecretStatusSyncedPushSecretsAnon:
     r"""
-    external secrets io v1alpha1 push secret status synced push secrets anon
+    PushSecretData defines data to be pushed to the provider and associated metadata.
 
     Attributes
     ----------

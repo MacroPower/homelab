@@ -32,7 +32,7 @@ schema GithubAccessToken:
 
 schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpec:
     r"""
-    generators external secrets io v1alpha1 github access token spec
+    GithubAccessTokenSpec defines the desired state to generate a GitHub access token.
 
     Attributes
     ----------
@@ -48,7 +48,7 @@ schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpec:
         List of repositories the token will have access to. If omitted, defaults to all repositories the GitHub App
         is installed to.
     url : str, default is Undefined, optional
-        URL configures the Github instance URL. Defaults to https://github.com/.
+        URL configures the GitHub instance URL. Defaults to https://github.com/.
     """
     appID: str
 
@@ -73,7 +73,7 @@ schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuth:
 
 schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuthPrivateKey:
     r"""
-    generators external secrets io v1alpha1 github access token spec auth private key
+    GithubSecretRef references a secret containing GitHub credentials.
 
     Attributes
     ----------
@@ -84,7 +84,7 @@ schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuthPrivateKey:
 
 schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuthPrivateKeySecretRef:
     r"""
-    A reference to a specific 'key' within a Secret resource.
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
 
     Attributes
