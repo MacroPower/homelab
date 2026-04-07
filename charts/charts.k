@@ -309,14 +309,14 @@ charts: helm.Charts = {
     nack: {
         chart = "nack"
         repoURL = "https://nats-io.github.io/k8s/helm/charts/"
-        targetRevision = "0.30.0"
+        targetRevision = "0.33.2"
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
     }
     nats: {
         chart = "nats"
         repoURL = "https://nats-io.github.io/k8s/helm/charts/"
-        targetRevision = "1.3.16"
+        targetRevision = "2.12.6"
         schemaGenerator = "AUTO"
     }
     qbittorrent: {
