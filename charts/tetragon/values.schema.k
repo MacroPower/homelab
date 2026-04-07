@@ -370,7 +370,7 @@ schema ValuesRthooksImage:
     ----------
     override : any, optional, default is "~"
     repository : str, optional, default is "quay.io/cilium/tetragon-rthooks"
-    tag : str, optional, default is "v0.5"
+    tag : str, optional, default is "v0.8"
     """
     [...str]: any
     override?: any
@@ -751,7 +751,7 @@ schema ValuesTetragonImage:
     ----------
     override : any, optional, default is "~"
     repository : str, optional, default is "quay.io/cilium/tetragon"
-    tag : str, optional, default is "v1.6.0"
+    tag : str, optional, default is "v1.6.1"
     """
     [...str]: any
     override?: any
@@ -992,7 +992,7 @@ schema ValuesTetragonOperatorImage:
     override : any, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/tetragon-operator"
-    tag : str, optional, default is "v1.6.0"
+    tag : str, optional, default is "v1.6.1"
     """
     [...str]: any
     override?: any
