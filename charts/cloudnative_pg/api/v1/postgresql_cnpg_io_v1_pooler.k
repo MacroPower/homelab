@@ -52,6 +52,12 @@ schema PostgresqlCnpgIoV1PoolerSpec:
         monitoring
     pgbouncer : PostgresqlCnpgIoV1PoolerSpecPgbouncer, default is Undefined, required
         pgbouncer
+    serviceAccountName : str, default is Undefined, optional
+        Name of an existing ServiceAccount in the same namespace to use for the pooler.
+        When specified, the operator will not create a new ServiceAccount
+        but will use the provided one. This is useful for sharing a single
+        ServiceAccount across multiple poolers (e.g., for cloud IAM configurations).
+        If not specified, a ServiceAccount will be created with the pooler name.
     serviceTemplate : PostgresqlCnpgIoV1PoolerSpecServiceTemplate, default is Undefined, optional
         service template
     template : PostgresqlCnpgIoV1PoolerSpecTemplate, default is Undefined, optional
@@ -66,9 +72,14 @@ schema PostgresqlCnpgIoV1PoolerSpec:
     monitoring?: PostgresqlCnpgIoV1PoolerSpecMonitoring
     pgbouncer: PostgresqlCnpgIoV1PoolerSpecPgbouncer
 
+    serviceAccountName?: str
     serviceTemplate?: PostgresqlCnpgIoV1PoolerSpecServiceTemplate
     template?: PostgresqlCnpgIoV1PoolerSpecTemplate
     $type?: "rw" | "ro" | "r" = "rw"
+
+    check:
+        len(serviceAccountName) <= 253 if serviceAccountName
+        _regex_match(str(serviceAccountName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if serviceAccountName
 
 schema PostgresqlCnpgIoV1PoolerSpecCluster:
     r"""
@@ -261,6 +272,10 @@ schema PostgresqlCnpgIoV1PoolerSpecPgbouncer:
         no automatic CNPG Cluster integration will be triggered.
     authQuerySecret : PostgresqlCnpgIoV1PoolerSpecPgbouncerAuthQuerySecret, default is Undefined, optional
         auth query secret
+    clientCASecret : PostgresqlCnpgIoV1PoolerSpecPgbouncerClientCASecret, default is Undefined, optional
+        client c a secret
+    clientTLSSecret : PostgresqlCnpgIoV1PoolerSpecPgbouncerClientTLSSecret, default is Undefined, optional
+        client TLS secret
     parameters : {str:str}, default is Undefined, optional
         Additional parameters to be passed to PgBouncer - please check
         the CNPG documentation for a list of options you can configure
@@ -274,13 +289,21 @@ schema PostgresqlCnpgIoV1PoolerSpecPgbouncer:
         to the pg_hba.conf file)
     poolMode : str, default is "session", optional
         The pool mode. Default: `session`.
+    serverCASecret : PostgresqlCnpgIoV1PoolerSpecPgbouncerServerCASecret, default is Undefined, optional
+        server c a secret
+    serverTLSSecret : PostgresqlCnpgIoV1PoolerSpecPgbouncerServerTLSSecret, default is Undefined, optional
+        server TLS secret
     """
     authQuery?: str
     authQuerySecret?: PostgresqlCnpgIoV1PoolerSpecPgbouncerAuthQuerySecret
+    clientCASecret?: PostgresqlCnpgIoV1PoolerSpecPgbouncerClientCASecret
+    clientTLSSecret?: PostgresqlCnpgIoV1PoolerSpecPgbouncerClientTLSSecret
     parameters?: {str:str}
     paused?: bool = False
     pg_hba?: [str]
     poolMode?: "session" | "transaction" = "session"
+    serverCASecret?: PostgresqlCnpgIoV1PoolerSpecPgbouncerServerCASecret
+    serverTLSSecret?: PostgresqlCnpgIoV1PoolerSpecPgbouncerServerTLSSecret
 
 schema PostgresqlCnpgIoV1PoolerSpecPgbouncerAuthQuerySecret:
     r"""
@@ -288,6 +311,57 @@ schema PostgresqlCnpgIoV1PoolerSpecPgbouncerAuthQuerySecret:
     query. In case it is specified, also an AuthQuery
     (e.g. "SELECT usename, passwd FROM pg_catalog.pg_shadow WHERE usename=$1")
     has to be specified and no automatic CNPG Cluster integration will be triggered.
+
+    Deprecated.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the referent.
+    """
+    name: str
+
+schema PostgresqlCnpgIoV1PoolerSpecPgbouncerClientCASecret:
+    r"""
+    ClientCASecret provides PgBouncer’s client_tls_ca_file, the root
+    CA for validating client certificates
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the referent.
+    """
+    name: str
+
+schema PostgresqlCnpgIoV1PoolerSpecPgbouncerClientTLSSecret:
+    r"""
+    ClientTLSSecret provides PgBouncer’s client_tls_key_file (private key)
+    and client_tls_cert_file (certificate) used to accept client connections
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the referent.
+    """
+    name: str
+
+schema PostgresqlCnpgIoV1PoolerSpecPgbouncerServerCASecret:
+    r"""
+    ServerCASecret provides PgBouncer’s server_tls_ca_file, the root
+    CA for validating PostgreSQL certificates
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the referent.
+    """
+    name: str
+
+schema PostgresqlCnpgIoV1PoolerSpecPgbouncerServerTLSSecret:
+    r"""
+    ServerTLSSecret, when pointing to a TLS secret, provides pgbouncer's
+    `server_tls_key_file` and `server_tls_cert_file`, used when
+    authenticating against PostgreSQL.
 
     Attributes
     ----------
@@ -821,8 +895,8 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpec:
         will be made available to those containers which consume them
         by name.
 
-        This is an alpha field and requires enabling the
-        DynamicResourceAllocation feature gate.
+        This is a stable field but requires that the
+        DynamicResourceAllocation feature gate is enabled.
 
         This field is immutable.
     resources : PostgresqlCnpgIoV1PoolerSpecTemplateSpecResources, default is Undefined, optional
@@ -888,6 +962,8 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpec:
     volumes : [PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0], default is Undefined, optional
         List of volumes that can be mounted by containers belonging to the pod.
         More info: https://kubernetes.io/docs/concepts/storage/volumes
+    workloadRef : PostgresqlCnpgIoV1PoolerSpecTemplateSpecWorkloadRef, default is Undefined, optional
+        workload ref
     """
     activeDeadlineSeconds?: int
     affinity?: PostgresqlCnpgIoV1PoolerSpecTemplateSpecAffinity
@@ -931,6 +1007,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpec:
     tolerations?: [PostgresqlCnpgIoV1PoolerSpecTemplateSpecTolerationsItems0]
     topologySpreadConstraints?: [PostgresqlCnpgIoV1PoolerSpecTemplateSpecTopologySpreadConstraintsItems0]
     volumes?: [PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0]
+    workloadRef?: PostgresqlCnpgIoV1PoolerSpecTemplateSpecWorkloadRef
 
     check:
         all _, overhead in overhead {_regex_match(str(overhead), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if overhead} if overhead
@@ -1826,6 +1903,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0:
         readiness probe
     resizePolicy : [PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0ResizePolicyItems0], default is Undefined, optional
         Resources resize policy for the container.
+        This field cannot be set on ephemeral containers.
     resources : PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
@@ -4837,6 +4915,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0:
         readiness probe
     resizePolicy : [PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0ResizePolicyItems0], default is Undefined, optional
         Resources resize policy for the container.
+        This field cannot be set on ephemeral containers.
     resources : PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
@@ -6669,9 +6748,10 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecTolerationsItems0:
         If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
         Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
         Exists is equivalent to wildcard for value, so that a pod can
         tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
     tolerationSeconds : int, default is Undefined, optional
         TolerationSeconds represents the period of time the toleration (which must be
         of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
@@ -7543,7 +7623,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0EphemeralVolumeClaim
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -8337,6 +8417,20 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItem
         longer than 24 hours.
     signerName : str, default is Undefined, required
         Kubelet's generated CSRs will be addressed to this signer.
+    userAnnotations : {str:str}, default is Undefined, optional
+        userAnnotations allow pod authors to pass additional information to
+        the signer implementation.  Kubernetes does not restrict or validate this
+        metadata in any way.
+
+        These values are copied verbatim into the `spec.unverifiedUserAnnotations` field of
+        the PodCertificateRequest objects that Kubelet creates.
+
+        Entries are subject to the same validation as object metadata annotations,
+        with the addition that all keys must be domain-prefixed. No restrictions
+        are placed on values, except an overall size limitation on the entire field.
+
+        Signers should document the keys and values they support. Signers should
+        deny requests that contain keys they do not recognize.
     """
     certificateChainPath?: str
     credentialBundlePath?: str
@@ -8345,6 +8439,8 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItem
 
     maxExpirationSeconds?: int
     signerName: str
+
+    userAnnotations?: {str:str}
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItems0Secret:
     r"""
@@ -8722,6 +8818,41 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0VsphereVolume:
     storagePolicyName?: str
     volumePath: str
 
+schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecWorkloadRef:
+    r"""
+    WorkloadRef provides a reference to the Workload object that this Pod belongs to.
+    This field is used by the scheduler to identify the PodGroup and apply the
+    correct group scheduling policies. The Workload object referenced
+    by this field may not exist at the time the Pod is created.
+    This field is immutable, but a Workload object with the same name
+    may be recreated with different policies. Doing this during pod scheduling
+    may result in the placement not conforming to the expected policies.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name defines the name of the Workload object this Pod belongs to.
+        Workload must be in the same namespace as the Pod.
+        If it doesn't match any existing Workload, the Pod will remain unschedulable
+        until a Workload object is created and observed by the kube-scheduler.
+        It must be a DNS subdomain.
+    podGroup : str, default is Undefined, required
+        PodGroup is the name of the PodGroup within the Workload that this Pod
+        belongs to. If it doesn't match any existing PodGroup within the Workload,
+        the Pod will remain unschedulable until the Workload object is recreated
+        and observed by the kube-scheduler. It must be a DNS label.
+    podGroupReplicaKey : str, default is Undefined, optional
+        PodGroupReplicaKey specifies the replica key of the PodGroup to which this
+        Pod belongs. It is used to distinguish pods belonging to different replicas
+        of the same pod group. The pod group policy is applied separately to each replica.
+        When set, it must be a DNS label.
+    """
+    name: str
+
+    podGroup: str
+
+    podGroupReplicaKey?: str
+
 schema PostgresqlCnpgIoV1PoolerStatus:
     r"""
     Most recently observed status of the Pooler. This data may not be up to
@@ -8746,6 +8877,8 @@ schema PostgresqlCnpgIoV1PoolerStatusSecrets:
     ----------
     clientCA : PostgresqlCnpgIoV1PoolerStatusSecretsClientCA, default is Undefined, optional
         client c a
+    clientTLS : PostgresqlCnpgIoV1PoolerStatusSecretsClientTLS, default is Undefined, optional
+        client TLS
     pgBouncerSecrets : PostgresqlCnpgIoV1PoolerStatusSecretsPgBouncerSecrets, default is Undefined, optional
         pg bouncer secrets
     serverCA : PostgresqlCnpgIoV1PoolerStatusSecretsServerCA, default is Undefined, optional
@@ -8754,6 +8887,7 @@ schema PostgresqlCnpgIoV1PoolerStatusSecrets:
         server TLS
     """
     clientCA?: PostgresqlCnpgIoV1PoolerStatusSecretsClientCA
+    clientTLS?: PostgresqlCnpgIoV1PoolerStatusSecretsClientTLS
     pgBouncerSecrets?: PostgresqlCnpgIoV1PoolerStatusSecretsPgBouncerSecrets
     serverCA?: PostgresqlCnpgIoV1PoolerStatusSecretsServerCA
     serverTLS?: PostgresqlCnpgIoV1PoolerStatusSecretsServerTLS
@@ -8761,6 +8895,20 @@ schema PostgresqlCnpgIoV1PoolerStatusSecrets:
 schema PostgresqlCnpgIoV1PoolerStatusSecretsClientCA:
     r"""
     The client CA secret version
+
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        The name of the secret
+    version : str, default is Undefined, optional
+        The ResourceVersion of the secret
+    """
+    name?: str
+    version?: str
+
+schema PostgresqlCnpgIoV1PoolerStatusSecretsClientTLS:
+    r"""
+    The client TLS secret version
 
     Attributes
     ----------

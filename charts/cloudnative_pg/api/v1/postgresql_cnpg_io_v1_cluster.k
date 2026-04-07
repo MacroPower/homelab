@@ -127,6 +127,13 @@ schema PostgresqlCnpgIoV1ClusterSpec:
     plugins : [PostgresqlCnpgIoV1ClusterSpecPluginsItems0], default is Undefined, optional
         The plugins configuration, containing
         any plugin to be loaded with the corresponding configuration
+    podSecurityContext : PostgresqlCnpgIoV1ClusterSpecPodSecurityContext, default is Undefined, optional
+        pod security context
+    podSelectorRefs : [PostgresqlCnpgIoV1ClusterSpecPodSelectorRefsItems0], default is Undefined, optional
+        PodSelectorRefs defines named pod label selectors that can be referenced
+        in pg_hba rules using the ${podselector:NAME} syntax in the address field.
+        The operator resolves matching pod IPs and the instance manager expands
+        pg_hba lines accordingly. Only pods in the Cluster's own namespace are considered.
     postgresGID : int, default is 26, optional
         The GID of the `postgres` user inside the image, defaults to `26`
     postgresUID : int, default is 26, optional
@@ -136,7 +143,10 @@ schema PostgresqlCnpgIoV1ClusterSpec:
     primaryUpdateMethod : str, default is "restart", optional
         Method to follow to upgrade the primary server during a rolling
         update procedure, after all replicas have been successfully updated:
-        it can be with a switchover (`switchover`) or in-place (`restart` - default)
+        it can be with a switchover (`switchover`) or in-place (`restart` - default).
+        Note: when using `switchover`, the operator will reject updates that change both
+        the image name and PostgreSQL configuration parameters simultaneously to avoid
+        configuration mismatches during the switchover process.
     primaryUpdateStrategy : str, default is "unsupervised", optional
         Deployment strategy to follow to upgrade the primary server during a rolling
         update procedure, after all replicas have been successfully updated:
@@ -163,6 +173,15 @@ schema PostgresqlCnpgIoV1ClusterSpec:
         https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/
     seccompProfile : PostgresqlCnpgIoV1ClusterSpecSeccompProfile, default is Undefined, optional
         seccomp profile
+    securityContext : PostgresqlCnpgIoV1ClusterSpecSecurityContext, default is Undefined, optional
+        security context
+    serviceAccountName : str, default is Undefined, optional
+        Name of an existing ServiceAccount in the same namespace to use for the cluster.
+        When specified, the operator will not create a new ServiceAccount
+        but will use the provided one. This is useful for sharing a single
+        ServiceAccount across multiple clusters (e.g., for cloud IAM configurations).
+        If not specified, a ServiceAccount will be created with the cluster name.
+        Mutually exclusive with ServiceAccountTemplate.
     serviceAccountTemplate : PostgresqlCnpgIoV1ClusterSpecServiceAccountTemplate, default is Undefined, optional
         service account template
     smartShutdownTimeout : int, default is 180, optional
@@ -222,6 +241,8 @@ schema PostgresqlCnpgIoV1ClusterSpec:
     monitoring?: PostgresqlCnpgIoV1ClusterSpecMonitoring
     nodeMaintenanceWindow?: PostgresqlCnpgIoV1ClusterSpecNodeMaintenanceWindow
     plugins?: [PostgresqlCnpgIoV1ClusterSpecPluginsItems0]
+    podSecurityContext?: PostgresqlCnpgIoV1ClusterSpecPodSecurityContext
+    podSelectorRefs?: [PostgresqlCnpgIoV1ClusterSpecPodSelectorRefsItems0]
     postgresGID?: int = 26
     postgresUID?: int = 26
     postgresql?: PostgresqlCnpgIoV1ClusterSpecPostgresql
@@ -235,6 +256,8 @@ schema PostgresqlCnpgIoV1ClusterSpec:
     resources?: PostgresqlCnpgIoV1ClusterSpecResources
     schedulerName?: str
     seccompProfile?: PostgresqlCnpgIoV1ClusterSpecSeccompProfile
+    securityContext?: PostgresqlCnpgIoV1ClusterSpecSecurityContext
+    serviceAccountName?: str
     serviceAccountTemplate?: PostgresqlCnpgIoV1ClusterSpecServiceAccountTemplate
     smartShutdownTimeout?: int = 180
     startDelay?: int = 3600
@@ -250,6 +273,8 @@ schema PostgresqlCnpgIoV1ClusterSpec:
         instances >= 1
         maxSyncReplicas >= 0 if maxSyncReplicas not in [None, Undefined]
         minSyncReplicas >= 0 if minSyncReplicas not in [None, Undefined]
+        len(serviceAccountName) <= 253 if serviceAccountName
+        _regex_match(str(serviceAccountName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if serviceAccountName
 
 schema PostgresqlCnpgIoV1ClusterSpecAffinity:
     r"""
@@ -1120,9 +1145,10 @@ schema PostgresqlCnpgIoV1ClusterSpecAffinityTolerationsItems0:
         If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
         Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
         Exists is equivalent to wildcard for value, so that a pod can
         tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
     tolerationSeconds : int, default is Undefined, optional
         TolerationSeconds represents the period of time the toleration (which must be
         of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
@@ -1235,12 +1261,16 @@ schema PostgresqlCnpgIoV1ClusterSpecBackupBarmanObjectStoreAzureCredentials:
         storage key
     storageSasToken : PostgresqlCnpgIoV1ClusterSpecBackupBarmanObjectStoreAzureCredentialsStorageSasToken, default is Undefined, optional
         storage sas token
+    useDefaultAzureCredentials : bool, default is Undefined, optional
+        Use the default Azure authentication flow, which includes DefaultAzureCredential.
+        This allows authentication using environment variables and managed identities.
     """
     connectionString?: PostgresqlCnpgIoV1ClusterSpecBackupBarmanObjectStoreAzureCredentialsConnectionString
     inheritFromAzureAD?: bool
     storageAccount?: PostgresqlCnpgIoV1ClusterSpecBackupBarmanObjectStoreAzureCredentialsStorageAccount
     storageKey?: PostgresqlCnpgIoV1ClusterSpecBackupBarmanObjectStoreAzureCredentialsStorageKey
     storageSasToken?: PostgresqlCnpgIoV1ClusterSpecBackupBarmanObjectStoreAzureCredentialsStorageSasToken
+    useDefaultAzureCredentials?: bool
 
 schema PostgresqlCnpgIoV1ClusterSpecBackupBarmanObjectStoreAzureCredentialsConnectionString:
     r"""
@@ -1664,6 +1694,7 @@ schema PostgresqlCnpgIoV1ClusterSpecBootstrapInitdb:
         Available from PostgreSQL 16.
     options : [str], default is Undefined, optional
         The list of options that must be passed to initdb when creating the cluster.
+
         Deprecated: This could lead to inconsistent configurations,
         please use the explicit provided parameters instead.
         If defined, explicit values will be ignored.
@@ -1730,15 +1761,43 @@ schema PostgresqlCnpgIoV1ClusterSpecBootstrapInitdbImport:
     databases : [str], default is Undefined, required
         The databases to import
     pgDumpExtraOptions : [str], default is Undefined, optional
-        List of custom options to pass to the `pg_dump` command. IMPORTANT:
-        Use these options with caution and at your own risk, as the operator
-        does not validate their content. Be aware that certain options may
-        conflict with the operator's intended functionality or design.
+        List of custom options to pass to the `pg_dump` command.
+
+        IMPORTANT: Use with caution. The operator does not validate these options,
+        and certain flags may interfere with its intended functionality or design.
+        You are responsible for ensuring that the provided options are compatible
+        with your environment and desired behavior.
+    pgRestoreDataOptions : [str], default is Undefined, optional
+        Custom options to pass to the `pg_restore` command during the `data`
+        section. This setting overrides the generic `pgRestoreExtraOptions` value.
+
+        IMPORTANT: Use with caution. The operator does not validate these options,
+        and certain flags may interfere with its intended functionality or design.
+        You are responsible for ensuring that the provided options are compatible
+        with your environment and desired behavior.
     pgRestoreExtraOptions : [str], default is Undefined, optional
-        List of custom options to pass to the `pg_restore` command. IMPORTANT:
-        Use these options with caution and at your own risk, as the operator
-        does not validate their content. Be aware that certain options may
-        conflict with the operator's intended functionality or design.
+        List of custom options to pass to the `pg_restore` command.
+
+        IMPORTANT: Use with caution. The operator does not validate these options,
+        and certain flags may interfere with its intended functionality or design.
+        You are responsible for ensuring that the provided options are compatible
+        with your environment and desired behavior.
+    pgRestorePostdataOptions : [str], default is Undefined, optional
+        Custom options to pass to the `pg_restore` command during the `post-data`
+        section. This setting overrides the generic `pgRestoreExtraOptions` value.
+
+        IMPORTANT: Use with caution. The operator does not validate these options,
+        and certain flags may interfere with its intended functionality or design.
+        You are responsible for ensuring that the provided options are compatible
+        with your environment and desired behavior.
+    pgRestorePredataOptions : [str], default is Undefined, optional
+        Custom options to pass to the `pg_restore` command during the `pre-data`
+        section. This setting overrides the generic `pgRestoreExtraOptions` value.
+
+        IMPORTANT: Use with caution. The operator does not validate these options,
+        and certain flags may interfere with its intended functionality or design.
+        You are responsible for ensuring that the provided options are compatible
+        with your environment and desired behavior.
     postImportApplicationSQL : [str], default is Undefined, optional
         List of SQL queries to be executed as a superuser in the application
         database right after is imported - to be used with extreme care
@@ -1756,7 +1815,10 @@ schema PostgresqlCnpgIoV1ClusterSpecBootstrapInitdbImport:
     databases: [str]
 
     pgDumpExtraOptions?: [str]
+    pgRestoreDataOptions?: [str]
     pgRestoreExtraOptions?: [str]
+    pgRestorePostdataOptions?: [str]
+    pgRestorePredataOptions?: [str]
     postImportApplicationSQL?: [str]
     roles?: [str]
     schemaOnly?: bool
@@ -2077,7 +2139,8 @@ schema PostgresqlCnpgIoV1ClusterSpecBootstrapRecoveryRecoveryTarget:
     targetTLI : str, default is Undefined, optional
         The target timeline ("latest" or a positive integer)
     targetTime : str, default is Undefined, optional
-        The target time as a timestamp in the RFC3339 standard
+        The target time as a timestamp in RFC3339 format or PostgreSQL timestamp format.
+        Timestamps without an explicit timezone are interpreted as UTC.
     targetXID : str, default is Undefined, optional
         The target transaction ID
     """
@@ -2625,7 +2688,7 @@ schema PostgresqlCnpgIoV1ClusterSpecEphemeralVolumeSourceVolumeClaimTemplateSpec
 schema PostgresqlCnpgIoV1ClusterSpecEphemeralVolumeSourceVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -2808,12 +2871,16 @@ schema PostgresqlCnpgIoV1ClusterSpecExternalClustersItems0BarmanObjectStoreAzure
         storage key
     storageSasToken : PostgresqlCnpgIoV1ClusterSpecExternalClustersItems0BarmanObjectStoreAzureCredentialsStorageSasToken, default is Undefined, optional
         storage sas token
+    useDefaultAzureCredentials : bool, default is Undefined, optional
+        Use the default Azure authentication flow, which includes DefaultAzureCredential.
+        This allows authentication using environment variables and managed identities.
     """
     connectionString?: PostgresqlCnpgIoV1ClusterSpecExternalClustersItems0BarmanObjectStoreAzureCredentialsConnectionString
     inheritFromAzureAD?: bool
     storageAccount?: PostgresqlCnpgIoV1ClusterSpecExternalClustersItems0BarmanObjectStoreAzureCredentialsStorageAccount
     storageKey?: PostgresqlCnpgIoV1ClusterSpecExternalClustersItems0BarmanObjectStoreAzureCredentialsStorageKey
     storageSasToken?: PostgresqlCnpgIoV1ClusterSpecExternalClustersItems0BarmanObjectStoreAzureCredentialsStorageSasToken
+    useDefaultAzureCredentials?: bool
 
 schema PostgresqlCnpgIoV1ClusterSpecExternalClustersItems0BarmanObjectStoreAzureCredentialsConnectionString:
     r"""
@@ -3797,6 +3864,12 @@ schema PostgresqlCnpgIoV1ClusterSpecMonitoring:
 
         Deprecated: This feature will be removed in an upcoming release. If
         you need this functionality, you can create a PodMonitor manually.
+    metricsQueriesTTL : str, default is Undefined, optional
+        The interval during which metrics computed from queries are considered current.
+        Once it is exceeded, a new scrape will trigger a rerun
+        of the queries.
+        If not set, defaults to 30 seconds, in line with Prometheus scraping defaults.
+        Setting this to zero disables the caching mechanism and can cause heavy load on the PostgreSQL server.
     podMonitorMetricRelabelings : [PostgresqlCnpgIoV1ClusterSpecMonitoringPodMonitorMetricRelabelingsItems0], default is Undefined, optional
         The list of metric relabelings for the `PodMonitor`. Applied to samples before ingestion.
 
@@ -3814,6 +3887,7 @@ schema PostgresqlCnpgIoV1ClusterSpecMonitoring:
     customQueriesSecret?: [PostgresqlCnpgIoV1ClusterSpecMonitoringCustomQueriesSecretItems0]
     disableDefaultQueries?: bool = False
     enablePodMonitor?: bool = False
+    metricsQueriesTTL?: str
     podMonitorMetricRelabelings?: [PostgresqlCnpgIoV1ClusterSpecMonitoringPodMonitorMetricRelabelingsItems0]
     podMonitorRelabelings?: [PostgresqlCnpgIoV1ClusterSpecMonitoringPodMonitorRelabelingsItems0]
     tls?: PostgresqlCnpgIoV1ClusterSpecMonitoringTLS
@@ -4000,6 +4074,302 @@ schema PostgresqlCnpgIoV1ClusterSpecPluginsItems0:
 
     parameters?: {str:str}
 
+schema PostgresqlCnpgIoV1ClusterSpecPodSecurityContext:
+    r"""
+    Override the PodSecurityContext applied to every Pod of the cluster.
+    When set, this overrides the operator's default PodSecurityContext for the cluster.
+    If omitted, the operator defaults are used.
+    This field doesn't have any effect if SecurityContextConstraints are present.
+
+    Attributes
+    ----------
+    appArmorProfile : PostgresqlCnpgIoV1ClusterSpecPodSecurityContextAppArmorProfile, default is Undefined, optional
+        app armor profile
+    fsGroup : int, default is Undefined, optional
+        A special supplemental group that applies to all containers in a pod.
+        Some volume types allow the Kubelet to change the ownership of that volume
+        to be owned by the pod:
+
+        1. The owning GID will be the FSGroup
+        2. The setgid bit is set (new files created in the volume will be owned by FSGroup)
+        3. The permission bits are OR'd with rw-rw----
+
+        If unset, the Kubelet will not modify the ownership and permissions of any volume.
+        Note that this field cannot be set when spec.os.name is windows.
+    fsGroupChangePolicy : str, default is Undefined, optional
+        fsGroupChangePolicy defines behavior of changing ownership and permission of the volume
+        before being exposed inside Pod. This field will only apply to
+        volume types which support fsGroup based ownership(and permissions).
+        It will have no effect on ephemeral volume types such as: secret, configmaps
+        and emptydir.
+        Valid values are "OnRootMismatch" and "Always". If not specified, "Always" is used.
+        Note that this field cannot be set when spec.os.name is windows.
+    runAsGroup : int, default is Undefined, optional
+        The GID to run the entrypoint of the container process.
+        Uses runtime default if unset.
+        May also be set in SecurityContext.  If set in both SecurityContext and
+        PodSecurityContext, the value specified in SecurityContext takes precedence
+        for that container.
+        Note that this field cannot be set when spec.os.name is windows.
+    runAsNonRoot : bool, default is Undefined, optional
+        Indicates that the container must run as a non-root user.
+        If true, the Kubelet will validate the image at runtime to ensure that it
+        does not run as UID 0 (root) and fail to start the container if it does.
+        If unset or false, no such validation will be performed.
+        May also be set in SecurityContext.  If set in both SecurityContext and
+        PodSecurityContext, the value specified in SecurityContext takes precedence.
+    runAsUser : int, default is Undefined, optional
+        The UID to run the entrypoint of the container process.
+        Defaults to user specified in image metadata if unspecified.
+        May also be set in SecurityContext.  If set in both SecurityContext and
+        PodSecurityContext, the value specified in SecurityContext takes precedence
+        for that container.
+        Note that this field cannot be set when spec.os.name is windows.
+    seLinuxChangePolicy : str, default is Undefined, optional
+        seLinuxChangePolicy defines how the container's SELinux label is applied to all volumes used by the Pod.
+        It has no effect on nodes that do not support SELinux or to volumes does not support SELinux.
+        Valid values are "MountOption" and "Recursive".
+
+        "Recursive" means relabeling of all files on all Pod volumes by the container runtime.
+        This may be slow for large volumes, but allows mixing privileged and unprivileged Pods sharing the same volume on the same node.
+
+        "MountOption" mounts all eligible Pod volumes with `-o context` mount option.
+        This requires all Pods that share the same volume to use the same SELinux label.
+        It is not possible to share the same volume among privileged and unprivileged Pods.
+        Eligible volumes are in-tree FibreChannel and iSCSI volumes, and all CSI volumes
+        whose CSI driver announces SELinux support by setting spec.seLinuxMount: true in their
+        CSIDriver instance. Other volumes are always re-labelled recursively.
+        "MountOption" value is allowed only when SELinuxMount feature gate is enabled.
+
+        If not specified and SELinuxMount feature gate is enabled, "MountOption" is used.
+        If not specified and SELinuxMount feature gate is disabled, "MountOption" is used for ReadWriteOncePod volumes
+        and "Recursive" for all other volumes.
+
+        This field affects only Pods that have SELinux label set, either in PodSecurityContext or in SecurityContext of all containers.
+
+        All Pods that use the same volume should use the same seLinuxChangePolicy, otherwise some pods can get stuck in ContainerCreating state.
+        Note that this field cannot be set when spec.os.name is windows.
+    seLinuxOptions : PostgresqlCnpgIoV1ClusterSpecPodSecurityContextSeLinuxOptions, default is Undefined, optional
+        se linux options
+    seccompProfile : PostgresqlCnpgIoV1ClusterSpecPodSecurityContextSeccompProfile, default is Undefined, optional
+        seccomp profile
+    supplementalGroups : [int], default is Undefined, optional
+        A list of groups applied to the first process run in each container, in
+        addition to the container's primary GID and fsGroup (if specified).  If
+        the SupplementalGroupsPolicy feature is enabled, the
+        supplementalGroupsPolicy field determines whether these are in addition
+        to or instead of any group memberships defined in the container image.
+        If unspecified, no additional groups are added, though group memberships
+        defined in the container image may still be used, depending on the
+        supplementalGroupsPolicy field.
+        Note that this field cannot be set when spec.os.name is windows.
+    supplementalGroupsPolicy : str, default is Undefined, optional
+        Defines how supplemental groups of the first container processes are calculated.
+        Valid values are "Merge" and "Strict". If not specified, "Merge" is used.
+        (Alpha) Using the field requires the SupplementalGroupsPolicy feature gate to be enabled
+        and the container runtime must implement support for this feature.
+        Note that this field cannot be set when spec.os.name is windows.
+    sysctls : [PostgresqlCnpgIoV1ClusterSpecPodSecurityContextSysctlsItems0], default is Undefined, optional
+        Sysctls hold a list of namespaced sysctls used for the pod. Pods with unsupported
+        sysctls (by the container runtime) might fail to launch.
+        Note that this field cannot be set when spec.os.name is windows.
+    windowsOptions : PostgresqlCnpgIoV1ClusterSpecPodSecurityContextWindowsOptions, default is Undefined, optional
+        windows options
+    """
+    appArmorProfile?: PostgresqlCnpgIoV1ClusterSpecPodSecurityContextAppArmorProfile
+    fsGroup?: int
+    fsGroupChangePolicy?: str
+    runAsGroup?: int
+    runAsNonRoot?: bool
+    runAsUser?: int
+    seLinuxChangePolicy?: str
+    seLinuxOptions?: PostgresqlCnpgIoV1ClusterSpecPodSecurityContextSeLinuxOptions
+    seccompProfile?: PostgresqlCnpgIoV1ClusterSpecPodSecurityContextSeccompProfile
+    supplementalGroups?: [int]
+    supplementalGroupsPolicy?: str
+    sysctls?: [PostgresqlCnpgIoV1ClusterSpecPodSecurityContextSysctlsItems0]
+    windowsOptions?: PostgresqlCnpgIoV1ClusterSpecPodSecurityContextWindowsOptions
+
+schema PostgresqlCnpgIoV1ClusterSpecPodSecurityContextAppArmorProfile:
+    r"""
+    appArmorProfile is the AppArmor options to use by the containers in this pod.
+    Note that this field cannot be set when spec.os.name is windows.
+
+    Attributes
+    ----------
+    localhostProfile : str, default is Undefined, optional
+        localhostProfile indicates a profile loaded on the node that should be used.
+        The profile must be preconfigured on the node to work.
+        Must match the loaded name of the profile.
+        Must be set if and only if type is "Localhost".
+    $type : str, default is Undefined, required
+        type indicates which kind of AppArmor profile will be applied.
+        Valid options are:
+          Localhost - a profile pre-loaded on the node.
+          RuntimeDefault - the container runtime's default profile.
+          Unconfined - no AppArmor enforcement.
+    """
+    localhostProfile?: str
+    $type: str
+
+schema PostgresqlCnpgIoV1ClusterSpecPodSecurityContextSeLinuxOptions:
+    r"""
+    The SELinux context to be applied to all containers.
+    If unspecified, the container runtime will allocate a random SELinux context for each
+    container.  May also be set in SecurityContext.  If set in
+    both SecurityContext and PodSecurityContext, the value specified in SecurityContext
+    takes precedence for that container.
+    Note that this field cannot be set when spec.os.name is windows.
+
+    Attributes
+    ----------
+    level : str, default is Undefined, optional
+        Level is SELinux level label that applies to the container.
+    role : str, default is Undefined, optional
+        Role is a SELinux role label that applies to the container.
+    $type : str, default is Undefined, optional
+        Type is a SELinux type label that applies to the container.
+    user : str, default is Undefined, optional
+        User is a SELinux user label that applies to the container.
+    """
+    level?: str
+    role?: str
+    $type?: str
+    user?: str
+
+schema PostgresqlCnpgIoV1ClusterSpecPodSecurityContextSeccompProfile:
+    r"""
+    The seccomp options to use by the containers in this pod.
+    Note that this field cannot be set when spec.os.name is windows.
+
+    Attributes
+    ----------
+    localhostProfile : str, default is Undefined, optional
+        localhostProfile indicates a profile defined in a file on the node should be used.
+        The profile must be preconfigured on the node to work.
+        Must be a descending path, relative to the kubelet's configured seccomp profile location.
+        Must be set if type is "Localhost". Must NOT be set for any other type.
+    $type : str, default is Undefined, required
+        type indicates which kind of seccomp profile will be applied.
+        Valid options are:
+
+        Localhost - a profile defined in a file on the node should be used.
+        RuntimeDefault - the container runtime default profile should be used.
+        Unconfined - no profile should be applied.
+    """
+    localhostProfile?: str
+    $type: str
+
+schema PostgresqlCnpgIoV1ClusterSpecPodSecurityContextSysctlsItems0:
+    r"""
+    Sysctl defines a kernel parameter to be set
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of a property to set
+    value : str, default is Undefined, required
+        Value of a property to set
+    """
+    name: str
+
+    value: str
+
+schema PostgresqlCnpgIoV1ClusterSpecPodSecurityContextWindowsOptions:
+    r"""
+    The Windows specific settings applied to all containers.
+    If unspecified, the options within a container's SecurityContext will be used.
+    If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.
+    Note that this field cannot be set when spec.os.name is linux.
+
+    Attributes
+    ----------
+    gmsaCredentialSpec : str, default is Undefined, optional
+        GMSACredentialSpec is where the GMSA admission webhook
+        (https://github.com/kubernetes-sigs/windows-gmsa) inlines the contents of the
+        GMSA credential spec named by the GMSACredentialSpecName field.
+    gmsaCredentialSpecName : str, default is Undefined, optional
+        GMSACredentialSpecName is the name of the GMSA credential spec to use.
+    hostProcess : bool, default is Undefined, optional
+        HostProcess determines if a container should be run as a 'Host Process' container.
+        All of a Pod's containers must have the same effective HostProcess value
+        (it is not allowed to have a mix of HostProcess containers and non-HostProcess containers).
+        In addition, if HostProcess is true then HostNetwork must also be set to true.
+    runAsUserName : str, default is Undefined, optional
+        The UserName in Windows to run the entrypoint of the container process.
+        Defaults to the user specified in image metadata if unspecified.
+        May also be set in PodSecurityContext. If set in both SecurityContext and
+        PodSecurityContext, the value specified in SecurityContext takes precedence.
+    """
+    gmsaCredentialSpec?: str
+    gmsaCredentialSpecName?: str
+    hostProcess?: bool
+    runAsUserName?: str
+
+schema PostgresqlCnpgIoV1ClusterSpecPodSelectorRefsItems0:
+    r"""
+    PodSelectorRef defines a named pod label selector for use in pg_hba rules.
+    Pods matching the selector in the Cluster's namespace will have their IPs
+    resolved and made available for pg_hba address expansion via the
+    `${podselector:NAME}` syntax.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name is the identifier used to reference this selector in pg_hba rules
+        via the ${podselector:NAME} syntax in the address field.
+    selector : PostgresqlCnpgIoV1ClusterSpecPodSelectorRefsItems0Selector, default is Undefined, required
+        selector
+    """
+    name: str
+
+    selector: PostgresqlCnpgIoV1ClusterSpecPodSelectorRefsItems0Selector
+
+    check:
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z]([a-z0-9_-]*[a-z0-9])?$")
+
+schema PostgresqlCnpgIoV1ClusterSpecPodSelectorRefsItems0Selector:
+    r"""
+    Selector is a label selector that identifies the pods whose IPs
+    should be resolved. Only pods in the Cluster's namespace are considered.
+
+    Attributes
+    ----------
+    matchExpressions : [PostgresqlCnpgIoV1ClusterSpecPodSelectorRefsItems0SelectorMatchExpressionsItems0], default is Undefined, optional
+        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+    matchLabels : {str:str}, default is Undefined, optional
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
+    """
+    matchExpressions?: [PostgresqlCnpgIoV1ClusterSpecPodSelectorRefsItems0SelectorMatchExpressionsItems0]
+    matchLabels?: {str:str}
+
+schema PostgresqlCnpgIoV1ClusterSpecPodSelectorRefsItems0SelectorMatchExpressionsItems0:
+    r"""
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the label key that the selector applies to.
+    operator : str, default is Undefined, required
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
+    values : [str], default is Undefined, optional
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
+    """
+    key: str
+
+    operator: str
+
+    values?: [str]
+
 schema PostgresqlCnpgIoV1ClusterSpecPostgresql:
     r"""
     Configuration of the PostgreSQL server
@@ -4019,7 +4389,9 @@ schema PostgresqlCnpgIoV1ClusterSpecPostgresql:
         PostgreSQL configuration options (postgresql.conf)
     pg_hba : [str], default is Undefined, optional
         PostgreSQL Host Based Authentication rules (lines to be appended
-        to the pg_hba.conf file)
+        to the pg_hba.conf file).
+        Use the ${podselector:NAME} syntax to reference a pod selector;
+        the rule will be expanded for each Pod IP matching that selector.
     pg_ident : [str], default is Undefined, optional
         PostgreSQL User Name Maps rules (lines to be appended
         to the pg_ident.conf file)
@@ -4052,33 +4424,72 @@ schema PostgresqlCnpgIoV1ClusterSpecPostgresqlExtensionsItems0:
 
     Attributes
     ----------
+    bin_path : [str], default is Undefined, optional
+        A list of directories within the image to be appended to the
+        PostgreSQL process's `PATH` environment variable.
     dynamic_library_path : [str], default is Undefined, optional
         The list of directories inside the image which should be added to dynamic_library_path.
         If not defined, defaults to "/lib".
+    env : [PostgresqlCnpgIoV1ClusterSpecPostgresqlExtensionsItems0EnvItems0], default is Undefined, optional
+        Env is a list of custom environment variables to be set in the
+        PostgreSQL process for this extension. It is the responsibility of the
+        cluster administrator to ensure the variables are correct for the
+        specific extension. Note that changes to these variables require
+        a manual cluster restart to take effect.
     extension_control_path : [str], default is Undefined, optional
         The list of directories inside the image which should be added to extension_control_path.
         If not defined, defaults to "/share".
-    image : PostgresqlCnpgIoV1ClusterSpecPostgresqlExtensionsItems0Image, default is Undefined, required
+    image : PostgresqlCnpgIoV1ClusterSpecPostgresqlExtensionsItems0Image, default is Undefined, optional
         image
     ld_library_path : [str], default is Undefined, optional
         The list of directories inside the image which should be added to ld_library_path.
     name : str, default is Undefined, required
         The name of the extension, required
     """
+    bin_path?: [str]
     dynamic_library_path?: [str]
+    env?: [PostgresqlCnpgIoV1ClusterSpecPostgresqlExtensionsItems0EnvItems0]
     extension_control_path?: [str]
-    image: PostgresqlCnpgIoV1ClusterSpecPostgresqlExtensionsItems0Image
-
+    image?: PostgresqlCnpgIoV1ClusterSpecPostgresqlExtensionsItems0Image
     ld_library_path?: [str]
     name: str
 
     check:
         len(name) >= 1
-        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$")
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9_]*[a-z0-9])?$")
+
+schema PostgresqlCnpgIoV1ClusterSpecPostgresqlExtensionsItems0EnvItems0:
+    r"""
+    ExtensionEnvVar defines an environment variable for a specific extension
+    image volume.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the environment variable to be injected into the
+        PostgreSQL process.
+    value : str, default is Undefined, required
+        Value of the environment variable. CloudNativePG performs a direct
+        replacement of this value, with support for placeholder expansion.
+        The ${`image_root`} placeholder resolves to the absolute mount path
+        of the extension's volume (e.g., `/extensions/my-extension`). This
+        is particularly useful for allowing applications or libraries to
+        locate specific directories within the mounted image.
+        Unrecognized placeholders are rejected. To include a literal ${...}
+        in the value, escape it as $${...}.
+    """
+    name: str
+
+    value: str
+
+    check:
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-zA-Z_][a-zA-Z0-9_]*$")
+        len(value) >= 1
 
 schema PostgresqlCnpgIoV1ClusterSpecPostgresqlExtensionsItems0Image:
     r"""
-    The image containing the extension, required
+    The image containing the extension.
 
     Attributes
     ----------
@@ -4215,6 +4626,10 @@ schema PostgresqlCnpgIoV1ClusterSpecPostgresqlSynchronous:
         if replicas become unavailable. This setting relaxes strict durability enforcement
         to allow for operational continuity. This setting is only applicable if both
         `standbyNamesPre` and `standbyNamesPost` are unset (empty).
+    failoverQuorum : bool, default is Undefined, optional
+        FailoverQuorum enables a quorum-based check before failover, improving
+        data durability and safety during failover events in CloudNativePG-managed
+        PostgreSQL clusters.
     maxStandbyNamesFromCluster : int, default is Undefined, optional
         Specifies the maximum number of local cluster pods that can be
         automatically included in the `synchronous_standby_names` option in
@@ -4236,6 +4651,7 @@ schema PostgresqlCnpgIoV1ClusterSpecPostgresqlSynchronous:
         only useful for priority-based synchronous replication).
     """
     dataDurability?: "required" | "preferred"
+    failoverQuorum?: bool
     maxStandbyNamesFromCluster?: int
     method: "any" | "first"
 
@@ -4776,6 +5192,20 @@ schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0PodCerti
         longer than 24 hours.
     signerName : str, default is Undefined, required
         Kubelet's generated CSRs will be addressed to this signer.
+    userAnnotations : {str:str}, default is Undefined, optional
+        userAnnotations allow pod authors to pass additional information to
+        the signer implementation.  Kubernetes does not restrict or validate this
+        metadata in any way.
+
+        These values are copied verbatim into the `spec.unverifiedUserAnnotations` field of
+        the PodCertificateRequest objects that Kubelet creates.
+
+        Entries are subject to the same validation as object metadata annotations,
+        with the addition that all keys must be domain-prefixed. No restrictions
+        are placed on values, except an overall size limitation on the entire field.
+
+        Signers should document the keys and values they support. Signers should
+        deny requests that contain keys they do not recognize.
     """
     certificateChainPath?: str
     credentialBundlePath?: str
@@ -4784,6 +5214,8 @@ schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0PodCerti
 
     maxExpirationSeconds?: int
     signerName: str
+
+    userAnnotations?: {str:str}
 
 schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0Secret:
     r"""
@@ -5047,6 +5479,199 @@ schema PostgresqlCnpgIoV1ClusterSpecSeccompProfile:
     localhostProfile?: str
     $type: str
 
+schema PostgresqlCnpgIoV1ClusterSpecSecurityContext:
+    r"""
+    Override the SecurityContext applied to every Container in the Pod of the cluster.
+    When set, this overrides the operator's default Container SecurityContext.
+    If omitted, the operator defaults are used.
+
+    Attributes
+    ----------
+    allowPrivilegeEscalation : bool, default is Undefined, optional
+        AllowPrivilegeEscalation controls whether a process can gain more
+        privileges than its parent process. This bool directly controls if
+        the no_new_privs flag will be set on the container process.
+        AllowPrivilegeEscalation is true always when the container is:
+        1) run as Privileged
+        2) has CAP_SYS_ADMIN
+        Note that this field cannot be set when spec.os.name is windows.
+    appArmorProfile : PostgresqlCnpgIoV1ClusterSpecSecurityContextAppArmorProfile, default is Undefined, optional
+        app armor profile
+    capabilities : PostgresqlCnpgIoV1ClusterSpecSecurityContextCapabilities, default is Undefined, optional
+        capabilities
+    privileged : bool, default is Undefined, optional
+        Run container in privileged mode.
+        Processes in privileged containers are essentially equivalent to root on the host.
+        Defaults to false.
+        Note that this field cannot be set when spec.os.name is windows.
+    procMount : str, default is Undefined, optional
+        procMount denotes the type of proc mount to use for the containers.
+        The default value is Default which uses the container runtime defaults for
+        readonly paths and masked paths.
+        This requires the ProcMountType feature flag to be enabled.
+        Note that this field cannot be set when spec.os.name is windows.
+    readOnlyRootFilesystem : bool, default is Undefined, optional
+        Whether this container has a read-only root filesystem.
+        Default is false.
+        Note that this field cannot be set when spec.os.name is windows.
+    runAsGroup : int, default is Undefined, optional
+        The GID to run the entrypoint of the container process.
+        Uses runtime default if unset.
+        May also be set in PodSecurityContext.  If set in both SecurityContext and
+        PodSecurityContext, the value specified in SecurityContext takes precedence.
+        Note that this field cannot be set when spec.os.name is windows.
+    runAsNonRoot : bool, default is Undefined, optional
+        Indicates that the container must run as a non-root user.
+        If true, the Kubelet will validate the image at runtime to ensure that it
+        does not run as UID 0 (root) and fail to start the container if it does.
+        If unset or false, no such validation will be performed.
+        May also be set in PodSecurityContext.  If set in both SecurityContext and
+        PodSecurityContext, the value specified in SecurityContext takes precedence.
+    runAsUser : int, default is Undefined, optional
+        The UID to run the entrypoint of the container process.
+        Defaults to user specified in image metadata if unspecified.
+        May also be set in PodSecurityContext.  If set in both SecurityContext and
+        PodSecurityContext, the value specified in SecurityContext takes precedence.
+        Note that this field cannot be set when spec.os.name is windows.
+    seLinuxOptions : PostgresqlCnpgIoV1ClusterSpecSecurityContextSeLinuxOptions, default is Undefined, optional
+        se linux options
+    seccompProfile : PostgresqlCnpgIoV1ClusterSpecSecurityContextSeccompProfile, default is Undefined, optional
+        seccomp profile
+    windowsOptions : PostgresqlCnpgIoV1ClusterSpecSecurityContextWindowsOptions, default is Undefined, optional
+        windows options
+    """
+    allowPrivilegeEscalation?: bool
+    appArmorProfile?: PostgresqlCnpgIoV1ClusterSpecSecurityContextAppArmorProfile
+    capabilities?: PostgresqlCnpgIoV1ClusterSpecSecurityContextCapabilities
+    privileged?: bool
+    procMount?: str
+    readOnlyRootFilesystem?: bool
+    runAsGroup?: int
+    runAsNonRoot?: bool
+    runAsUser?: int
+    seLinuxOptions?: PostgresqlCnpgIoV1ClusterSpecSecurityContextSeLinuxOptions
+    seccompProfile?: PostgresqlCnpgIoV1ClusterSpecSecurityContextSeccompProfile
+    windowsOptions?: PostgresqlCnpgIoV1ClusterSpecSecurityContextWindowsOptions
+
+schema PostgresqlCnpgIoV1ClusterSpecSecurityContextAppArmorProfile:
+    r"""
+    appArmorProfile is the AppArmor options to use by this container. If set, this profile
+    overrides the pod's appArmorProfile.
+    Note that this field cannot be set when spec.os.name is windows.
+
+    Attributes
+    ----------
+    localhostProfile : str, default is Undefined, optional
+        localhostProfile indicates a profile loaded on the node that should be used.
+        The profile must be preconfigured on the node to work.
+        Must match the loaded name of the profile.
+        Must be set if and only if type is "Localhost".
+    $type : str, default is Undefined, required
+        type indicates which kind of AppArmor profile will be applied.
+        Valid options are:
+          Localhost - a profile pre-loaded on the node.
+          RuntimeDefault - the container runtime's default profile.
+          Unconfined - no AppArmor enforcement.
+    """
+    localhostProfile?: str
+    $type: str
+
+schema PostgresqlCnpgIoV1ClusterSpecSecurityContextCapabilities:
+    r"""
+    The capabilities to add/drop when running containers.
+    Defaults to the default set of capabilities granted by the container runtime.
+    Note that this field cannot be set when spec.os.name is windows.
+
+    Attributes
+    ----------
+    add : [str], default is Undefined, optional
+        Added capabilities
+    drop : [str], default is Undefined, optional
+        Removed capabilities
+    """
+    add?: [str]
+    drop?: [str]
+
+schema PostgresqlCnpgIoV1ClusterSpecSecurityContextSeLinuxOptions:
+    r"""
+    The SELinux context to be applied to the container.
+    If unspecified, the container runtime will allocate a random SELinux context for each
+    container.  May also be set in PodSecurityContext.  If set in both SecurityContext and
+    PodSecurityContext, the value specified in SecurityContext takes precedence.
+    Note that this field cannot be set when spec.os.name is windows.
+
+    Attributes
+    ----------
+    level : str, default is Undefined, optional
+        Level is SELinux level label that applies to the container.
+    role : str, default is Undefined, optional
+        Role is a SELinux role label that applies to the container.
+    $type : str, default is Undefined, optional
+        Type is a SELinux type label that applies to the container.
+    user : str, default is Undefined, optional
+        User is a SELinux user label that applies to the container.
+    """
+    level?: str
+    role?: str
+    $type?: str
+    user?: str
+
+schema PostgresqlCnpgIoV1ClusterSpecSecurityContextSeccompProfile:
+    r"""
+    The seccomp options to use by this container. If seccomp options are
+    provided at both the pod & container level, the container options
+    override the pod options.
+    Note that this field cannot be set when spec.os.name is windows.
+
+    Attributes
+    ----------
+    localhostProfile : str, default is Undefined, optional
+        localhostProfile indicates a profile defined in a file on the node should be used.
+        The profile must be preconfigured on the node to work.
+        Must be a descending path, relative to the kubelet's configured seccomp profile location.
+        Must be set if type is "Localhost". Must NOT be set for any other type.
+    $type : str, default is Undefined, required
+        type indicates which kind of seccomp profile will be applied.
+        Valid options are:
+
+        Localhost - a profile defined in a file on the node should be used.
+        RuntimeDefault - the container runtime default profile should be used.
+        Unconfined - no profile should be applied.
+    """
+    localhostProfile?: str
+    $type: str
+
+schema PostgresqlCnpgIoV1ClusterSpecSecurityContextWindowsOptions:
+    r"""
+    The Windows specific settings applied to all containers.
+    If unspecified, the options from the PodSecurityContext will be used.
+    If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence.
+    Note that this field cannot be set when spec.os.name is linux.
+
+    Attributes
+    ----------
+    gmsaCredentialSpec : str, default is Undefined, optional
+        GMSACredentialSpec is where the GMSA admission webhook
+        (https://github.com/kubernetes-sigs/windows-gmsa) inlines the contents of the
+        GMSA credential spec named by the GMSACredentialSpecName field.
+    gmsaCredentialSpecName : str, default is Undefined, optional
+        GMSACredentialSpecName is the name of the GMSA credential spec to use.
+    hostProcess : bool, default is Undefined, optional
+        HostProcess determines if a container should be run as a 'Host Process' container.
+        All of a Pod's containers must have the same effective HostProcess value
+        (it is not allowed to have a mix of HostProcess containers and non-HostProcess containers).
+        In addition, if HostProcess is true then HostNetwork must also be set to true.
+    runAsUserName : str, default is Undefined, optional
+        The UserName in Windows to run the entrypoint of the container process.
+        Defaults to the user specified in image metadata if unspecified.
+        May also be set in PodSecurityContext. If set in both SecurityContext and
+        PodSecurityContext, the value specified in SecurityContext takes precedence.
+    """
+    gmsaCredentialSpec?: str
+    gmsaCredentialSpecName?: str
+    hostProcess?: bool
+    runAsUserName?: str
+
 schema PostgresqlCnpgIoV1ClusterSpecServiceAccountTemplate:
     r"""
     Configure the generation of the service account
@@ -5232,7 +5857,7 @@ schema PostgresqlCnpgIoV1ClusterSpecStoragePvcTemplateDataSourceRef:
 schema PostgresqlCnpgIoV1ClusterSpecStoragePvcTemplateResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -5494,7 +6119,7 @@ schema PostgresqlCnpgIoV1ClusterSpecTablespacesItems0StoragePvcTemplateDataSourc
 schema PostgresqlCnpgIoV1ClusterSpecTablespacesItems0StoragePvcTemplateResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -5863,7 +6488,7 @@ schema PostgresqlCnpgIoV1ClusterSpecWalStoragePvcTemplateDataSourceRef:
 schema PostgresqlCnpgIoV1ClusterSpecWalStoragePvcTemplateResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -6016,6 +6641,9 @@ schema PostgresqlCnpgIoV1ClusterStatus:
         Reason for the current phase
     pluginStatus : [PostgresqlCnpgIoV1ClusterStatusPluginStatusItems0], default is Undefined, optional
         PluginStatus is the status of the loaded plugins
+    podSelectorRefs : [PostgresqlCnpgIoV1ClusterStatusPodSelectorRefsItems0], default is Undefined, optional
+        PodSelectorRefs contains the resolved pod IPs for each named selector
+        defined in spec.podSelectorRefs.
     poolerIntegrations : PostgresqlCnpgIoV1ClusterStatusPoolerIntegrations, default is Undefined, optional
         pooler integrations
     pvcCount : int, default is Undefined, optional
@@ -6080,6 +6708,7 @@ schema PostgresqlCnpgIoV1ClusterStatus:
     phase?: str
     phaseReason?: str
     pluginStatus?: [PostgresqlCnpgIoV1ClusterStatusPluginStatusItems0]
+    podSelectorRefs?: [PostgresqlCnpgIoV1ClusterStatusPodSelectorRefsItems0]
     poolerIntegrations?: PostgresqlCnpgIoV1ClusterStatusPoolerIntegrations
     pvcCount?: int
     readService?: str
@@ -6277,14 +6906,110 @@ schema PostgresqlCnpgIoV1ClusterStatusPgDataImageInfo:
 
     Attributes
     ----------
+    extensions : [PostgresqlCnpgIoV1ClusterStatusPgDataImageInfoExtensionsItems0], default is Undefined, optional
+        Extensions contains the container image extensions available for the current Image
     image : str, default is Undefined, required
         Image is the image name
     majorVersion : int, default is Undefined, required
         MajorVersion is the major version of the image
     """
+    extensions?: [PostgresqlCnpgIoV1ClusterStatusPgDataImageInfoExtensionsItems0]
     image: str
 
     majorVersion: int
+
+schema PostgresqlCnpgIoV1ClusterStatusPgDataImageInfoExtensionsItems0:
+    r"""
+    ExtensionConfiguration is the configuration used to add
+    PostgreSQL extensions to the Cluster.
+
+    Attributes
+    ----------
+    bin_path : [str], default is Undefined, optional
+        A list of directories within the image to be appended to the
+        PostgreSQL process's `PATH` environment variable.
+    dynamic_library_path : [str], default is Undefined, optional
+        The list of directories inside the image which should be added to dynamic_library_path.
+        If not defined, defaults to "/lib".
+    env : [PostgresqlCnpgIoV1ClusterStatusPgDataImageInfoExtensionsItems0EnvItems0], default is Undefined, optional
+        Env is a list of custom environment variables to be set in the
+        PostgreSQL process for this extension. It is the responsibility of the
+        cluster administrator to ensure the variables are correct for the
+        specific extension. Note that changes to these variables require
+        a manual cluster restart to take effect.
+    extension_control_path : [str], default is Undefined, optional
+        The list of directories inside the image which should be added to extension_control_path.
+        If not defined, defaults to "/share".
+    image : PostgresqlCnpgIoV1ClusterStatusPgDataImageInfoExtensionsItems0Image, default is Undefined, optional
+        image
+    ld_library_path : [str], default is Undefined, optional
+        The list of directories inside the image which should be added to ld_library_path.
+    name : str, default is Undefined, required
+        The name of the extension, required
+    """
+    bin_path?: [str]
+    dynamic_library_path?: [str]
+    env?: [PostgresqlCnpgIoV1ClusterStatusPgDataImageInfoExtensionsItems0EnvItems0]
+    extension_control_path?: [str]
+    image?: PostgresqlCnpgIoV1ClusterStatusPgDataImageInfoExtensionsItems0Image
+    ld_library_path?: [str]
+    name: str
+
+    check:
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9_]*[a-z0-9])?$")
+
+schema PostgresqlCnpgIoV1ClusterStatusPgDataImageInfoExtensionsItems0EnvItems0:
+    r"""
+    ExtensionEnvVar defines an environment variable for a specific extension
+    image volume.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the environment variable to be injected into the
+        PostgreSQL process.
+    value : str, default is Undefined, required
+        Value of the environment variable. CloudNativePG performs a direct
+        replacement of this value, with support for placeholder expansion.
+        The ${`image_root`} placeholder resolves to the absolute mount path
+        of the extension's volume (e.g., `/extensions/my-extension`). This
+        is particularly useful for allowing applications or libraries to
+        locate specific directories within the mounted image.
+        Unrecognized placeholders are rejected. To include a literal ${...}
+        in the value, escape it as $${...}.
+    """
+    name: str
+
+    value: str
+
+    check:
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-zA-Z_][a-zA-Z0-9_]*$")
+        len(value) >= 1
+
+schema PostgresqlCnpgIoV1ClusterStatusPgDataImageInfoExtensionsItems0Image:
+    r"""
+    The image containing the extension.
+
+    Attributes
+    ----------
+    pullPolicy : str, default is Undefined, optional
+        Policy for pulling OCI objects. Possible values are:
+        Always: the kubelet always attempts to pull the reference. Container creation will fail If the pull fails.
+        Never: the kubelet never pulls the reference and only uses a local image or artifact. Container creation will fail if the reference isn't present.
+        IfNotPresent: the kubelet pulls if the reference isn't already present on disk. Container creation will fail if the reference isn't present and the pull fails.
+        Defaults to Always if :latest tag is specified, or IfNotPresent otherwise.
+    reference : str, default is Undefined, optional
+        Required: Image or artifact reference to be used.
+        Behaves in the same way as pod.spec.containers[*].image.
+        Pull secrets will be assembled in the same way as for the container image by looking up node credentials, SA image pull secrets, and pod spec image pull secrets.
+        More info: https://kubernetes.io/docs/concepts/containers/images
+        This field is optional to allow higher level config management to default or override
+        container images in workload controllers like Deployments and StatefulSets.
+    """
+    pullPolicy?: str
+    reference?: str
 
 schema PostgresqlCnpgIoV1ClusterStatusPluginStatusItems0:
     r"""
@@ -6325,6 +7050,21 @@ schema PostgresqlCnpgIoV1ClusterStatusPluginStatusItems0:
     version: str
 
     walCapabilities?: [str]
+
+schema PostgresqlCnpgIoV1ClusterStatusPodSelectorRefsItems0:
+    r"""
+    PodSelectorRefStatus contains the resolved pod IPs for a named selector.
+
+    Attributes
+    ----------
+    ips : [str], default is Undefined, optional
+        IPs is the list of pod IPs matching the selector.
+        Each IP is a single address (no CIDR notation).
+    name : str, default is Undefined, required
+        Name corresponds to the name in the spec's PodSelectorRef.
+    """
+    ips?: [str]
+    name: str
 
 schema PostgresqlCnpgIoV1ClusterStatusPoolerIntegrations:
     r"""
