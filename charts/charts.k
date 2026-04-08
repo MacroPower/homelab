@@ -107,7 +107,7 @@ charts: helm.Charts = {
     openebs: {
         chart = "openebs"
         repoURL = "https://openebs.github.io/openebs"
-        targetRevision = "4.3.3"
+        targetRevision = "4.4.0"
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
     }
