@@ -51,7 +51,7 @@ schema ValuesImage:
     pullPolicy : str, optional, default is "IfNotPresent"
         digest: sha256:1234567
     repository : str, optional, default is "ghcr.io/stakater/reloader"
-    tag : str, optional, default is "v1.4.14"
+    tag : str, optional, default is "v1.4.16"
     """
     [...str]: any
     name?: str
