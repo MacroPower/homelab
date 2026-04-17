@@ -484,7 +484,7 @@ schema GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0:
     backendRefs?: [GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0BackendRefsItems0]
     filters?: [GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0FiltersItems0]
     matches?: [GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0MatchesItems0] = [{
-        "path": {"type": "PathPrefix", "value": "/"}
+        "path": {"value": "/", "type": "PathPrefix"}
     }]
     name?: str
     retry?: GatewayNetworkingK8sIoV1HTTPRouteSpecRulesItems0Retry

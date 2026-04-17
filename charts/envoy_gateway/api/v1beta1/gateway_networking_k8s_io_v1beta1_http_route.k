@@ -178,7 +178,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpec:
     hostnames?: [str]
     parentRefs?: [GatewayNetworkingK8sIoV1beta1HTTPRouteSpecParentRefsItems0]
     rules?: [GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0] = [{"matches": [{
-        "path": {"type": "PathPrefix", "value": "/"}
+        "path": {"value": "/", "type": "PathPrefix"}
     }]}]
     useDefaultGateways?: "All" | "None"
 
@@ -484,7 +484,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0:
     backendRefs?: [GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0]
     filters?: [GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0]
     matches?: [GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0MatchesItems0] = [{
-        "path": {"value": "/", "type": "PathPrefix"}
+        "path": {"type": "PathPrefix", "value": "/"}
     }]
     name?: str
     retry?: GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0Retry

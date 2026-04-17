@@ -523,7 +523,7 @@ schema ValuesGlobalImagesEnvoyGateway:
 
     Attributes
     ----------
-    image : str, optional, default is "docker.io/envoyproxy/gateway:v1.7.1"
+    image : str, optional, default is "docker.io/envoyproxy/gateway:v1.7.2"
         This is the full image name including the hub, repo, and tag.
     pullPolicy : str, optional, default is "IfNotPresent"
         Specify image pull policy if default behavior isn't desired.
@@ -542,7 +542,7 @@ schema ValuesGlobalImagesRatelimit:
 
     Attributes
     ----------
-    image : str, optional, default is "docker.io/envoyproxy/ratelimit:c8765e89"
+    image : str, optional, default is "docker.io/envoyproxy/ratelimit:05c08d03"
         This is the full image name including the hub, repo, and tag.
     pullPolicy : str, optional, default is "IfNotPresent"
         Specify image pull policy if default behavior isn't desired.

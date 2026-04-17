@@ -123,7 +123,7 @@ schema GatewayNetworkingxK8sIoV1alpha1XMeshStatus:
 
     Attributes
     ----------
-    conditions : [GatewayNetworkingxK8sIoV1alpha1XMeshStatusConditionsItems0], default is [{"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted"}, {"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Programmed"}], optional
+    conditions : [GatewayNetworkingxK8sIoV1alpha1XMeshStatusConditionsItems0], default is [{"reason": "Pending", "status": "Unknown", "type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller"}, {"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Programmed"}], optional
         Conditions is the current status from the controller for
         this Mesh.
 
