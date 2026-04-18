@@ -16,7 +16,7 @@ controllers:
       hbbs:
         image:
           repository: rustdesk/rustdesk-server-pro
-          tag: "1.7.7"
+          tag: "1.8.2"
         command:
           - hbbs
         env:
@@ -57,7 +57,7 @@ controllers:
       hbbr:
         image:
           repository: rustdesk/rustdesk-server-pro
-          tag: "1.7.7"
+          tag: "1.8.2"
         command:
           - hbbr
         resources:
