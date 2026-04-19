@@ -19,6 +19,12 @@ schema Values:
         Common labels to apply to all rendered resources.
     daemonsetAnnotations : ValuesDaemonsetAnnotations, optional
         Annotations to add to the DaemonSet.
+    extraInitContainers : [any], optional
+        Add additional initContainers *before* Spegel's own configuration init container
+        to run additional node init configuration tasks
+    extraVolumes : [any], optional
+        Add additional volumes to the daemonset. This can be helpful when adding custom init containers that need
+        host path mounts to different locations than the already configured ones.
     fullnameOverride : str, optional, default is ""
         Overrides the full name of the chart.
     global : ValuesGlobal, optional
@@ -62,6 +68,8 @@ schema Values:
     clusterDomain?: str
     commonLabels?: ValuesCommonLabels
     daemonsetAnnotations?: ValuesDaemonsetAnnotations
+    extraInitContainers?: [any]
+    extraVolumes?: [any]
     fullnameOverride?: str
     global?: ValuesGlobal
     grafanaDashboard?: ValuesGrafanaDashboard
@@ -180,7 +188,7 @@ schema ValuesImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:82f5dd969ed74e3a9cfd6284045099a161778a0d85f9e01a234a62f15eb9d696"
+    digest : str, optional, default is "sha256:1109b33fabac86809b06f831eef7359b12232f5708554aef39efd036dce40748"
         Image digest.
     pullPolicy : str, optional, default is "IfNotPresent"
         Image Pull Policy.
@@ -489,6 +497,8 @@ schema ValuesSpegel:
         Max duration spent finding a mirror.
     mirroredRegistries : [any], optional
         Registries for which mirror configuration will be created. Empty means all registires will be mirrored.
+    persistence : ValuesSpegelPersistence, optional
+        Configuration for Spegel persistence on host used for keeping P2P identity between restarts.
     prependExisting : bool, optional, default is False
         - ".*:latest$"
         - "^docker\\.io/"
@@ -511,9 +521,28 @@ schema ValuesSpegel:
     mirrorResolveRetries?: int
     mirrorResolveTimeout?: str
     mirroredRegistries?: [any]
+    persistence?: ValuesSpegelPersistence
     prependExisting?: bool
     registryFilters?: [any]
     resolveTags?: bool
+
+schema ValuesSpegelPersistence:
+    r"""
+    Configuration for Spegel persistence on host used for keeping P2P identity between restarts.
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+        If true Spegel will persist data on the host.
+    hostPath : str, optional, default is "/var/lib/spegel"
+        Path on host which is mounted to container.
+    path : str, optional, default is "/var/lib/spegel"
+        Path in the container where host path is mounted.
+    """
+    [...str]: any
+    enabled?: bool
+    hostPath?: str
+    path?: str
 
 schema ValuesTolerationsItems0:
     r"""
