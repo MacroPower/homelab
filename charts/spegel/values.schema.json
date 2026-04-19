@@ -37,6 +37,24 @@
       "title": "daemonsetAnnotations",
       "type": "object"
     },
+    "extraInitContainers": {
+      "description": "Add additional initContainers *before* Spegel's own configuration init container\nto run additional node init configuration tasks",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraInitContainers",
+      "type": "array"
+    },
+    "extraVolumes": {
+      "description": "Add additional volumes to the daemonset. This can be helpful when adding custom init containers that need\nhost path mounts to different locations than the already configured ones.",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraVolumes",
+      "type": "array"
+    },
     "fullnameOverride": {
       "default": "",
       "description": "Overrides the full name of the chart.",
@@ -128,7 +146,7 @@
       "additionalProperties": true,
       "properties": {
         "digest": {
-          "default": "sha256:82f5dd969ed74e3a9cfd6284045099a161778a0d85f9e01a234a62f15eb9d696",
+          "default": "sha256:1109b33fabac86809b06f831eef7359b12232f5708554aef39efd036dce40748",
           "description": "Image digest.",
           "required": [],
           "title": "digest",
@@ -591,6 +609,36 @@
           "required": [],
           "title": "mirroredRegistries",
           "type": "array"
+        },
+        "persistence": {
+          "additionalProperties": true,
+          "description": "Configuration for Spegel persistence on host used for keeping P2P identity between restarts.",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "If true Spegel will persist data on the host.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "hostPath": {
+              "default": "/var/lib/spegel",
+              "description": "Path on host which is mounted to container.",
+              "required": [],
+              "title": "hostPath",
+              "type": "string"
+            },
+            "path": {
+              "default": "/var/lib/spegel",
+              "description": "Path in the container where host path is mounted.",
+              "required": [],
+              "title": "path",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "persistence",
+          "type": "object"
         },
         "prependExisting": {
           "default": false,
