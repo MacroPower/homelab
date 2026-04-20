@@ -111,7 +111,7 @@
           "type": "array"
         },
         "extraPorts": {
-          "description": "Extra ports to expose on the Alloy container.",
+          "description": "Extra ports to expose on the Alloy container.\nIf `service.type` is `NodePort`, each item may set `nodePort` to choose the Service NodePort for that port.",
           "items": {
             "required": []
           },
@@ -2002,6 +2002,12 @@
               "title": "digest",
               "type": "string"
             },
+            "pullPolicy": {
+              "description": "Config reloader image pull policy.",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
             "registry": {
               "description": "Config reloader image registry (defaults to docker.io)",
               "required": [],
@@ -2880,6 +2886,12 @@
           "title": "replicas",
           "type": "integer"
         },
+        "revisionHistoryLimit": {
+          "description": "The maximum number of revisions that will be maintained in the Controllers's revision history. The history consists of all revisions not represented by a currently applied reversion.",
+          "required": [],
+          "title": "revisionHistoryLimit",
+          "type": "integer"
+        },
         "terminationGracePeriodSeconds": {
           "description": "Termination grace period in seconds for the Grafana Alloy pods.\nThe default value used by Kubernetes if unspecifed is 30 seconds.",
           "required": [],
@@ -3610,7 +3622,7 @@
     },
     "enabled": {
       "default": true,
-      "description": "Whether to deploy the Beyla DaemonSet. Defaults to true. Set to false to deploy only the Kubernetes metadata cache.",
+      "description": "Deploy this collector. Set to `false` to skip creating the collector's resources without removing the collector\nfrom the values file.",
       "required": [],
       "title": "enabled",
       "type": "boolean"
@@ -4622,6 +4634,13 @@
           "title": "image",
           "type": "object"
         },
+        "imagePullPolicy": {
+          "default": "",
+          "description": "Global image pull policy override.",
+          "required": [],
+          "title": "imagePullPolicy",
+          "type": "string"
+        },
         "imagePullSecrets": {
           "description": "To help compatibility with other charts which use global.imagePullSecrets.\nAllow either an array of {name: pullSecret} maps (k8s-style), or an array of strings (more common helm-style).\nglobal:\n  imagePullSecrets:\n  - name: pullSecret1\n  - name: pullSecret2\nor\nglobal:\n  imagePullSecrets:\n  - pullSecret1\n  - pullSecret2",
           "items": {
@@ -5345,6 +5364,13 @@
       "additionalProperties": true,
       "description": "Options to deploy the Kubernetes metadata cache as a separate service",
       "properties": {
+        "affinity": {
+          "additionalProperties": true,
+          "description": "used for scheduling of cache pods based on affinity rules",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
         "annotations": {
           "additionalProperties": true,
           "description": "Deployment annotations.",
@@ -5446,6 +5472,13 @@
           "title": "internalMetrics",
           "type": "object"
         },
+        "nodeSelector": {
+          "additionalProperties": true,
+          "description": "The nodeSelector field allows user to constrain which nodes cache pods are scheduled to based on labels on the node",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
         "podAnnotations": {
           "additionalProperties": true,
           "description": "Adds custom annotations to the Beyla Kube Cache Pods.",
@@ -5516,6 +5549,15 @@
           "required": [],
           "title": "service",
           "type": "object"
+        },
+        "tolerations": {
+          "description": "Tolerations allow cache pods to be scheduled on nodes with specific taints",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
         }
       },
       "required": [],
@@ -6286,7 +6328,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v0.21.1",
+              "default": "v0.21.2",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -8879,7 +8921,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "1.119.2@sha256:4b8de6e029b9dc1f7e68bdf1cf02fca7649614c23812e51a63820f113ca97b89",
+                  "default": "1.120.0@sha256:c4fbe5f8fad2bc54872350460e705bf9ab43c90efa784a0cdf3a2a39a66b3b82",
                   "description": "Exporter container image tag",
                   "required": [],
                   "title": "tag",
@@ -9172,30 +9214,6 @@
           "required": [],
           "title": "extraMetricProcessingRules",
           "type": "string"
-        },
-        "extraVolumes": {
-          "items": {
-            "additionalProperties": true,
-            "properties": {
-              "emptyDir": {
-                "additionalProperties": true,
-                "required": [],
-                "title": "emptyDir",
-                "type": "object"
-              },
-              "name": {
-                "default": "configs",
-                "required": [],
-                "title": "name",
-                "type": "string"
-              }
-            },
-            "required": [],
-            "type": "object"
-          },
-          "required": [],
-          "title": "extraVolumes",
-          "type": "array"
         },
         "jobLabel": {
           "default": "integrations/opencost",
@@ -9749,36 +9767,6 @@
                   "required": [],
                   "title": "extraEnv",
                   "type": "object"
-                },
-                "extraVolumeMounts": {
-                  "items": {
-                    "additionalProperties": true,
-                    "properties": {
-                      "mountPath": {
-                        "default": "/var/configs",
-                        "required": [],
-                        "title": "mountPath",
-                        "type": "string"
-                      },
-                      "name": {
-                        "default": "configs",
-                        "required": [],
-                        "title": "name",
-                        "type": "string"
-                      },
-                      "readOnly": {
-                        "default": false,
-                        "required": [],
-                        "title": "readOnly",
-                        "type": "boolean"
-                      }
-                    },
-                    "required": [],
-                    "type": "object"
-                  },
-                  "required": [],
-                  "title": "extraVolumeMounts",
-                  "type": "array"
                 }
               },
               "required": [],
@@ -10588,7 +10576,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "1.119.2@sha256:0dba1a93db7ae88e956556caf9a9240879d7fcb1d5a7cb9fec0b83970c0ce50c",
+                  "default": "1.120.0@sha256:2a2ed5d423402b1d3f104398971191618a91bfc293f53c704606bbbd39b2652c",
                   "description": "UI container image tag",
                   "required": [],
                   "title": "tag",
@@ -11370,7 +11358,7 @@
     },
     "podLogsViaLoki": {
       "additionalProperties": true,
-      "description": "Pod logs in Loki format.\nRequires a destination that supports logs.\nTo see the valid options, please see the [Pod Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs).",
+      "description": "Pod logs in Loki format.\nRequires a destination that supports logs.\nTo see the valid options, please see the [Pod Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs-via-loki).",
       "properties": {
         "collector": {
           "default": "",
@@ -11402,7 +11390,7 @@
     },
     "podLogsViaOpenTelemetry": {
       "additionalProperties": true,
-      "description": "Pod logs in OpenTelemetry format.\nRequires a destination that supports logs.\nTo see the valid options, please see the [Pod Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs).",
+      "description": "Pod logs in OpenTelemetry format.\nRequires a destination that supports logs.\nTo see the valid options, please see the [Pod Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs-via-opentelemetry).",
       "properties": {
         "collector": {
           "default": "",
