@@ -125,6 +125,13 @@
       "title": "nodeSelector",
       "type": "object"
     },
+    "podAnnotations": {
+      "additionalProperties": true,
+      "description": "custom pod annotations",
+      "required": [],
+      "title": "podAnnotations",
+      "type": "object"
+    },
     "podLabels": {
       "additionalProperties": true,
       "description": "This is for setting Kubernetes Labels to a Pod.\nFor more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/",
