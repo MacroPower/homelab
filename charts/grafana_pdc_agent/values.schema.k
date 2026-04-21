@@ -40,6 +40,8 @@ schema Values:
         This is to override the chart name.
     nodeSelector : ValuesNodeSelector, optional
         not required, but left in as a choice
+    podAnnotations : ValuesPodAnnotations, optional
+        custom pod annotations
     podLabels : ValuesPodLabels, optional
         This is for setting Kubernetes Labels to a Pod.
         For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
@@ -69,6 +71,7 @@ schema Values:
     metricsPort?: int
     nameOverride?: str
     nodeSelector?: ValuesNodeSelector
+    podAnnotations?: ValuesPodAnnotations
     podLabels?: ValuesPodLabels
     podSecurityContext?: ValuesPodSecurityContext
     replicaCount?: int
@@ -116,6 +119,12 @@ schema ValuesImage:
 schema ValuesNodeSelector:
     r"""
     not required, but left in as a choice
+    """
+    [...str]: any
+
+schema ValuesPodAnnotations:
+    r"""
+    custom pod annotations
     """
     [...str]: any
 
