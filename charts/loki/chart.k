@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "loki"
     repoURL : str, required, default is "https://grafana.github.io/helm-charts"
-    targetRevision : str, optional, default is "6.55.0"
+    targetRevision : str, optional, default is "7.0.0"
     """
     values?: Values | any
     chart: str = "loki"
     repoURL: str = "https://grafana.github.io/helm-charts"
-    targetRevision?: str = "6.55.0"
+    targetRevision?: str = "7.0.0"
 

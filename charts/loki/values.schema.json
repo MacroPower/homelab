@@ -4095,7 +4095,7 @@
         },
         "enabled": {
           "default": false,
-          "description": "Enable enterprise features, license must be provided",
+          "description": "Enterprise features are disabled by default.\nSet to `true` to deploy Grafana Enterprise Logs (GEL) with a valid license via\n`enterprise.license.contents` or `enterprise.useExternalLicense`/`enterprise.externalLicenseName`.",
           "required": [],
           "title": "enabled",
           "type": "boolean"
@@ -4153,7 +4153,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "3.6.7",
+              "default": "3.6.6",
               "description": "Docker image tag",
               "required": [],
               "title": "tag",
@@ -4181,7 +4181,7 @@
         },
         "provisioner": {
           "additionalProperties": true,
-          "description": "Configuration for `provisioner` target\nNote: Uses enterprise.adminToken.secret value to mount the admin token used to call the admin api.",
+          "description": "Configuration for `provisioner` target\nNote: Uses enterprise.adminToken.secret value to mount the admin token used to call the admin api.\nThe provisioner is disabled by default because it requires an out-of-band admin token secret\n(created via GEL `tokengen`) referenced by `enterprise.adminToken.secret`. After creating that\nsecret, set both `enterprise.adminToken.secret` and `enterprise.provisioner.enabled: true`.\nSee production/helm/loki/docs/examples/enterprise/README.md for the full procedure.",
           "properties": {
             "additionalTenants": {
               "description": "Additional tenants to be created. Each tenant will get a read and write policy\nand associated token. Tenant must have a name and a namespace for the secret containting\nthe token to be created in. For example\nadditionalTenants:\n  - name: loki\n    secretNamespace: grafana",
@@ -4221,7 +4221,7 @@
               "type": "string"
             },
             "enabled": {
-              "default": true,
+              "default": false,
               "description": "Whether the job should be part of the deployment",
               "required": [],
               "title": "enabled",
@@ -4395,7 +4395,7 @@
           "type": "boolean"
         },
         "version": {
-          "default": "3.6.5",
+          "default": "3.6.6",
           "description": "Default version of GEL to deploy",
           "required": [],
           "title": "version",
@@ -9902,6 +9902,59 @@
           "title": "enabled",
           "type": "boolean"
         },
+        "image": {
+          "additionalProperties": true,
+          "description": "Override the upstream MinIO, Inc. images with the Pigsty (pgsty) community\nfork to mitigate the unresolved CVE in the abandoned MinIO images.\nSee https://github.com/pgsty/minio for details.",
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "docker.io/pgsty/minio",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "RELEASE.2026-03-14T12-00-00Z",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "mcImage": {
+          "additionalProperties": true,
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "docker.io/pgsty/mc",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "RELEASE.2026-03-13T08-57-32Z",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "mcImage",
+          "type": "object"
+        },
         "persistence": {
           "additionalProperties": true,
           "properties": {
@@ -10679,9 +10732,10 @@
     },
     "namespaceSelector": {
       "additionalProperties": true,
+      "description": "Namespace selector applied to all webhooks. Defaults to restricting to the release namespace.\nSee https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-namespaceselector",
       "properties": {
         "matchExpressions": {
-          "description": "Namespace selector to filter which namespaces the webhooks apply to.\nSee https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-namespaceselector\nExample:\n    matchExpressions:\n      - key: team\n        operator: NotIn\n        values:\n          - team-a",
+          "description": "Example 1 - matchExpressions only: merged with the default release namespace matchLabels.\n  values.yaml:\n    matchExpressions:\n      - key: team\n        operator: NotIn\n        values: [team-a]\n  renders:\n    namespaceSelector:\n      matchLabels:\n        kubernetes.io/metadata.name: \u003crelease-namespace\u003e\n      matchExpressions:\n        - key: team\n          operator: NotIn\n          values: [team-a]\n\nExample 2 - matchLabels set: full selector is user-controlled (matchExpressions also supported).\n  values.yaml:\n    matchLabels:\n      kubernetes.io/metadata.name: logging\n  renders:\n    namespaceSelector:\n      matchLabels:\n        kubernetes.io/metadata.name: logging\n\nExample 3 - set to null: omits namespaceSelector entirely (e.g. when objectSelector alone is sufficient).\n  values.yaml:\n    namespaceSelector: null\n  renders:\n    (nothing)",
           "items": {
             "required": []
           },
@@ -16076,6 +16130,13 @@
           "required": [],
           "title": "selfSignedCertSecretName",
           "type": "string"
+        },
+        "timeoutSeconds": {
+          "default": 10,
+          "description": "Timeout in seconds for the prepare-downscale mutating webhook. Must be between 1 and 30.",
+          "required": [],
+          "title": "timeoutSeconds",
+          "type": "integer"
         }
       },
       "required": [],
