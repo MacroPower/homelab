@@ -254,6 +254,8 @@ schema Values:
     namespaceOverride : any, optional, default is "null"
         Overrides the chart's namespace
     namespaceSelector : ValuesNamespaceSelector, optional
+        Namespace selector applied to all webhooks. Defaults to restricting to the release namespace.
+        See https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-namespaceselector
     networkPolicy : ValuesNetworkPolicy, optional
         #####################################################################################################################
 
@@ -3550,7 +3552,9 @@ schema ValuesEnterprise:
     config : str, optional, default is "{{- if .Values.enterprise.adminApi.enabled }}\nadmin_client:\n  {{ include \"enterprise-logs.adminAPIStorageConfig\" . | nindent 2 }}\n{{ end }}\nauth:\n  type: {{ .Values.enterprise.adminApi.enabled | ternary \"enterprise\" \"trust\" }}\nauth_enabled: {{ .Values.loki.auth_enabled }}\ncluster_name: {{ include \"loki.clusterName\" . }}\nlicense:\n  path: /etc/loki/license/license.jwt\n"
         enterprise specific sections of the config.yaml file
     enabled : bool, optional, default is False
-        Enable enterprise features, license must be provided
+        Enterprise features are disabled by default.
+        Set to `true` to deploy Grafana Enterprise Logs (GEL) with a valid license via
+        `enterprise.license.contents` or `enterprise.useExternalLicense`/`enterprise.externalLicenseName`.
     externalConfigName : str, optional, default is ""
         Name of the external config secret to use
     externalLicenseName : any, optional, default is "null"
@@ -3568,9 +3572,13 @@ schema ValuesEnterprise:
     provisioner : ValuesEnterpriseProvisioner, optional
         Configuration for `provisioner` target
         Note: Uses enterprise.adminToken.secret value to mount the admin token used to call the admin api.
+        The provisioner is disabled by default because it requires an out-of-band admin token secret
+        (created via GEL `tokengen`) referenced by `enterprise.adminToken.secret`. After creating that
+        secret, set both `enterprise.adminToken.secret` and `enterprise.provisioner.enabled: true`.
+        See production/helm/loki/docs/examples/enterprise/README.md for the full procedure.
     useExternalLicense : bool, optional, default is False
         Set to true when providing an external license
-    version : str, optional, default is "3.6.5"
+    version : str, optional, default is "3.6.6"
         Default version of GEL to deploy
     """
     [...str]: any
@@ -3879,7 +3887,7 @@ schema ValuesEnterpriseImage:
         The Docker registry
     repository : str, optional, default is "grafana/enterprise-logs"
         Docker image repository
-    tag : str, optional, default is "3.6.7"
+    tag : str, optional, default is "3.6.6"
         Docker image tag
     """
     [...str]: any
@@ -3909,6 +3917,10 @@ schema ValuesEnterpriseProvisioner:
     r"""
     Configuration for `provisioner` target
     Note: Uses enterprise.adminToken.secret value to mount the admin token used to call the admin api.
+    The provisioner is disabled by default because it requires an out-of-band admin token secret
+    (created via GEL `tokengen`) referenced by `enterprise.adminToken.secret`. After creating that
+    secret, set both `enterprise.adminToken.secret` and `enterprise.provisioner.enabled: true`.
+    See production/helm/loki/docs/examples/enterprise/README.md for the full procedure.
 
     Attributes
     ----------
@@ -3926,7 +3938,7 @@ schema ValuesEnterpriseProvisioner:
         Additional annotations for the `provisioner` Job
     apiUrl : str, optional, default is "{{ include \"loki.address\" . }}"
         url of the admin api to use for the provisioner
-    enabled : bool, optional, default is True
+    enabled : bool, optional, default is False
         Whether the job should be part of the deployment
     env : [any], optional
         Additional Kubernetes environment
@@ -7972,6 +7984,11 @@ schema ValuesMinio:
         https://docs.min.io/docs/minio-erasure-code-quickstart-guide
         Since we only have 1 replica, that means 2 drives must be used.
     enabled : bool, optional, default is False
+    image : ValuesMinioImage, optional
+        Override the upstream MinIO, Inc. images with the Pigsty (pgsty) community
+        fork to mitigate the unresolved CVE in the abandoned MinIO images.
+        See https://github.com/pgsty/minio for details.
+    mcImage : ValuesMinioMcImage, optional
     persistence : ValuesMinioPersistence, optional
     replicas : int, optional, default is 1
     resources : ValuesMinioResources, optional
@@ -7988,6 +8005,8 @@ schema ValuesMinio:
     buckets?: [ValuesMinioBucketsItems0]
     drivesPerNode?: int
     enabled?: bool
+    image?: ValuesMinioImage
+    mcImage?: ValuesMinioMcImage
     persistence?: ValuesMinioPersistence
     replicas?: int
     resources?: ValuesMinioResources
@@ -8009,6 +8028,38 @@ schema ValuesMinioBucketsItems0:
     name?: str
     policy?: str
     purge?: bool
+
+schema ValuesMinioImage:
+    r"""
+    Override the upstream MinIO, Inc. images with the Pigsty (pgsty) community
+    fork to mitigate the unresolved CVE in the abandoned MinIO images.
+    See https://github.com/pgsty/minio for details.
+
+    Attributes
+    ----------
+    pullPolicy : str, optional, default is "IfNotPresent"
+    repository : str, optional, default is "docker.io/pgsty/minio"
+    tag : str, optional, default is "RELEASE.2026-03-14T12-00-00Z"
+    """
+    [...str]: any
+    pullPolicy?: str
+    repository?: str
+    tag?: str
+
+schema ValuesMinioMcImage:
+    r"""
+    ValuesMinioMcImage
+
+    Attributes
+    ----------
+    pullPolicy : str, optional, default is "IfNotPresent"
+    repository : str, optional, default is "docker.io/pgsty/mc"
+    tag : str, optional, default is "RELEASE.2026-03-13T08-57-32Z"
+    """
+    [...str]: any
+    pullPolicy?: str
+    repository?: str
+    tag?: str
 
 schema ValuesMinioPersistence:
     r"""
@@ -8607,19 +8658,41 @@ schema ValuesMonitoringServiceMonitorNamespaceSelector:
 
 schema ValuesNamespaceSelector:
     r"""
-    ValuesNamespaceSelector
+    Namespace selector applied to all webhooks. Defaults to restricting to the release namespace.
+    See https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-namespaceselector
 
     Attributes
     ----------
     matchExpressions : [any], optional
-        Namespace selector to filter which namespaces the webhooks apply to.
-        See https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-namespaceselector
-        Example:
+        Example 1 - matchExpressions only: merged with the default release namespace matchLabels.
+          values.yaml:
             matchExpressions:
               - key: team
                 operator: NotIn
-                values:
-                  - team-a
+                values: [team-a]
+          renders:
+            namespaceSelector:
+              matchLabels:
+                kubernetes.io/metadata.name: <release-namespace>
+              matchExpressions:
+                - key: team
+                  operator: NotIn
+                  values: [team-a]
+
+        Example 2 - matchLabels set: full selector is user-controlled (matchExpressions also supported).
+          values.yaml:
+            matchLabels:
+              kubernetes.io/metadata.name: logging
+          renders:
+            namespaceSelector:
+              matchLabels:
+                kubernetes.io/metadata.name: logging
+
+        Example 3 - set to null: omits namespaceSelector entirely (e.g. when objectSelector alone is sufficient).
+          values.yaml:
+            namespaceSelector: null
+          renders:
+            (nothing)
     """
     [...str]: any
     matchExpressions?: [any]
@@ -12642,12 +12715,15 @@ schema ValuesWebhooks:
         objectSelector to filter which objects the webhooks apply to.
     selfSignedCertSecretName : str, optional, default is "certificate"
         Secret resource name for the TLS certificate to be used with the webhooks
+    timeoutSeconds : int, optional, default is 10
+        Timeout in seconds for the prepare-downscale mutating webhook. Must be between 1 and 30.
     """
     [...str]: any
     enabled?: bool
     failurePolicy?: str
     objectSelector?: ValuesWebhooksObjectSelector
     selfSignedCertSecretName?: str
+    timeoutSeconds?: int
 
 schema ValuesWebhooksObjectSelector:
     r"""
