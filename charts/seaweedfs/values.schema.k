@@ -3625,9 +3625,14 @@ schema ValuesWorker:
     extraVolumes : str, optional, default is ""
     imageOverride : any, optional, default is "null"
     initContainers : str, optional, default is ""
-    jobType : str, optional, default is "vacuum,volume_balance,erasure_coding"
-        Worker job types - comma-separated list
-        Available: vacuum, volume_balance, erasure_coding
+    jobType : str, optional, default is "all"
+        Worker job types - categories or comma-separated list of names/aliases
+        Categories: all, default, heavy
+          default: vacuum, volume_balance, ec_balance, admin_script
+          heavy: erasure_coding, iceberg_maintenance
+          all: every registered job type
+        Examples: "all", "default", "heavy", "default,iceberg" (default+iceberg), "vacuum,volume_balance"
+        Refer: https://github.com/seaweedfs/seaweedfs/wiki/Worker
     livenessProbe : ValuesWorkerLivenessProbe, optional
         Health checks for worker pods
         Workers expose /health (liveness) and /ready (readiness) endpoints on the metricsPort
