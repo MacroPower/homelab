@@ -365,6 +365,9 @@ schema ValuesApplicationSet:
         Assign custom [TopologySpreadConstraints] rules to the ApplicationSet controller
         # Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
         # If labelSelector is left out, it will default to the labelSelector configuration of the deployment
+    vpa : ValuesApplicationSetVpa, optional
+        # ApplicationSet controller Vertical Pod Autoscaler
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
     """
     [...str]: any
     affinity?: ValuesApplicationSetAffinity
@@ -407,6 +410,7 @@ schema ValuesApplicationSet:
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: [any]
+    vpa?: ValuesApplicationSetVpa
 
 schema ValuesApplicationSetAffinity:
     r"""
@@ -995,6 +999,53 @@ schema ValuesApplicationSetServiceLabels:
     """
     [...str]: any
 
+schema ValuesApplicationSetVpa:
+    r"""
+    # ApplicationSet controller Vertical Pod Autoscaler
+    # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
+
+    Attributes
+    ----------
+    annotations : ValuesApplicationSetVpaAnnotations, optional
+        Annotations to be added to ApplicationSet controller vpa
+    containerPolicy : ValuesApplicationSetVpaContainerPolicy, optional
+        Controls how VPA computes the recommended resources for ApplicationSet controller container
+        # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    enabled : bool, optional, default is False
+        Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the ApplicationSet controller
+    labels : ValuesApplicationSetVpaLabels, optional
+        Labels to be added to ApplicationSet controller vpa
+    updateMode : str, optional, default is "Initial"
+        One of the VPA operation modes
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically
+        # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden
+    """
+    [...str]: any
+    annotations?: ValuesApplicationSetVpaAnnotations
+    containerPolicy?: ValuesApplicationSetVpaContainerPolicy
+    enabled?: bool
+    labels?: ValuesApplicationSetVpaLabels
+    updateMode?: str
+
+schema ValuesApplicationSetVpaAnnotations:
+    r"""
+    Annotations to be added to ApplicationSet controller vpa
+    """
+    [...str]: any
+
+schema ValuesApplicationSetVpaContainerPolicy:
+    r"""
+    Controls how VPA computes the recommended resources for ApplicationSet controller container
+    # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    """
+    [...str]: any
+
+schema ValuesApplicationSetVpaLabels:
+    r"""
+    Labels to be added to ApplicationSet controller vpa
+    """
+    [...str]: any
+
 schema ValuesAuthSecretAnnotations:
     r"""
     Annotations for auth secret
@@ -1069,6 +1120,9 @@ schema ValuesCommitServer:
         Assign custom [TopologySpreadConstraints] rules to the commit server
         # Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
         # If labelSelector is left out, it will default to the labelSelector configuration of the deployment
+    vpa : ValuesCommitServerVpa, optional
+        # Commit server Vertical Pod Autoscaler
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
     """
     [...str]: any
     affinity?: ValuesCommitServerAffinity
@@ -1102,6 +1156,7 @@ schema ValuesCommitServer:
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: [any]
+    vpa?: ValuesCommitServerVpa
 
 schema ValuesCommitServerAffinity:
     r"""
@@ -1396,6 +1451,53 @@ schema ValuesCommitServerServiceAnnotations:
 schema ValuesCommitServerServiceLabels:
     r"""
     commit server service labels
+    """
+    [...str]: any
+
+schema ValuesCommitServerVpa:
+    r"""
+    # Commit server Vertical Pod Autoscaler
+    # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
+
+    Attributes
+    ----------
+    annotations : ValuesCommitServerVpaAnnotations, optional
+        Annotations to be added to commit server vpa
+    containerPolicy : ValuesCommitServerVpaContainerPolicy, optional
+        Controls how VPA computes the recommended resources for commit server container
+        # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    enabled : bool, optional, default is False
+        Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the commit server
+    labels : ValuesCommitServerVpaLabels, optional
+        Labels to be added to commit server vpa
+    updateMode : str, optional, default is "Initial"
+        One of the VPA operation modes
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically
+        # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden
+    """
+    [...str]: any
+    annotations?: ValuesCommitServerVpaAnnotations
+    containerPolicy?: ValuesCommitServerVpaContainerPolicy
+    enabled?: bool
+    labels?: ValuesCommitServerVpaLabels
+    updateMode?: str
+
+schema ValuesCommitServerVpaAnnotations:
+    r"""
+    Annotations to be added to commit server vpa
+    """
+    [...str]: any
+
+schema ValuesCommitServerVpaContainerPolicy:
+    r"""
+    Controls how VPA computes the recommended resources for commit server container
+    # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    """
+    [...str]: any
+
+schema ValuesCommitServerVpaLabels:
+    r"""
+    Labels to be added to commit server vpa
     """
     [...str]: any
 
@@ -2745,6 +2847,9 @@ schema ValuesDex:
         Additional volumeMounts to the dex main container
     volumes : [any], optional
         Additional volumes to the dex pod
+    vpa : ValuesDexVpa, optional
+        # Dex Vertical Pod Autoscaler
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
     """
     [...str]: any
     affinity?: ValuesDexAffinity
@@ -2790,6 +2895,7 @@ schema ValuesDex:
     topologySpreadConstraints?: [any]
     volumeMounts?: [any]
     volumes?: [any]
+    vpa?: ValuesDexVpa
 
 schema ValuesDexAffinity:
     r"""
@@ -3264,6 +3370,53 @@ schema ValuesDexServiceAccount:
 schema ValuesDexServiceAccountAnnotations:
     r"""
     Annotations applied to created service account
+    """
+    [...str]: any
+
+schema ValuesDexVpa:
+    r"""
+    # Dex Vertical Pod Autoscaler
+    # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
+
+    Attributes
+    ----------
+    annotations : ValuesDexVpaAnnotations, optional
+        Annotations to be added to Dex server vpa
+    containerPolicy : ValuesDexVpaContainerPolicy, optional
+        Controls how VPA computes the recommended resources for Dex server container
+        # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    enabled : bool, optional, default is False
+        Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Dex server
+    labels : ValuesDexVpaLabels, optional
+        Labels to be added to Dex server vpa
+    updateMode : str, optional, default is "Initial"
+        One of the VPA operation modes
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically
+        # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden
+    """
+    [...str]: any
+    annotations?: ValuesDexVpaAnnotations
+    containerPolicy?: ValuesDexVpaContainerPolicy
+    enabled?: bool
+    labels?: ValuesDexVpaLabels
+    updateMode?: str
+
+schema ValuesDexVpaAnnotations:
+    r"""
+    Annotations to be added to Dex server vpa
+    """
+    [...str]: any
+
+schema ValuesDexVpaContainerPolicy:
+    r"""
+    Controls how VPA computes the recommended resources for Dex server container
+    # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    """
+    [...str]: any
+
+schema ValuesDexVpaLabels:
+    r"""
+    Labels to be added to Dex server vpa
     """
     [...str]: any
 
@@ -4596,6 +4749,9 @@ schema ValuesNotifications:
     triggers : ValuesNotificationsTriggers, optional
         The trigger defines the condition when the notification should be sent
         # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/triggers/
+    vpa : ValuesNotificationsVpa, optional
+        # Notifications controller Vertical Pod Autoscaler
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
     """
     [...str]: any
     affinity?: ValuesNotificationsAffinity
@@ -4642,6 +4798,7 @@ schema ValuesNotifications:
     tolerations?: [any]
     topologySpreadConstraints?: [any]
     triggers?: ValuesNotificationsTriggers
+    vpa?: ValuesNotificationsVpa
 
 schema ValuesNotificationsAffinity:
     r"""
@@ -5134,6 +5291,53 @@ schema ValuesNotificationsTriggers:
     """
     [...str]: any
 
+schema ValuesNotificationsVpa:
+    r"""
+    # Notifications controller Vertical Pod Autoscaler
+    # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
+
+    Attributes
+    ----------
+    annotations : ValuesNotificationsVpaAnnotations, optional
+        Annotations to be added to notifications controller vpa
+    containerPolicy : ValuesNotificationsVpaContainerPolicy, optional
+        Controls how VPA computes the recommended resources for notifications controller container
+        # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    enabled : bool, optional, default is False
+        Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the notifications controller
+    labels : ValuesNotificationsVpaLabels, optional
+        Labels to be added to notifications controller vpa
+    updateMode : str, optional, default is "Initial"
+        One of the VPA operation modes
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically
+        # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden
+    """
+    [...str]: any
+    annotations?: ValuesNotificationsVpaAnnotations
+    containerPolicy?: ValuesNotificationsVpaContainerPolicy
+    enabled?: bool
+    labels?: ValuesNotificationsVpaLabels
+    updateMode?: str
+
+schema ValuesNotificationsVpaAnnotations:
+    r"""
+    Annotations to be added to notifications controller vpa
+    """
+    [...str]: any
+
+schema ValuesNotificationsVpaContainerPolicy:
+    r"""
+    Controls how VPA computes the recommended resources for notifications controller container
+    # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    """
+    [...str]: any
+
+schema ValuesNotificationsVpaLabels:
+    r"""
+    Labels to be added to notifications controller vpa
+    """
+    [...str]: any
+
 schema ValuesOpenshift:
     r"""
     ValuesOpenshift
@@ -5363,6 +5567,9 @@ schema ValuesRedis:
         Additional volumeMounts to the redis container
     volumes : [any], optional
         Additional volumes to the redis pod
+    vpa : ValuesRedisVpa, optional
+        # Redis Vertical Pod Autoscaler
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
     """
     [...str]: any
     affinity?: ValuesRedisAffinity
@@ -5418,6 +5625,7 @@ schema ValuesRedis:
     updateStrategy?: ValuesRedisUpdateStrategy
     volumeMounts?: [any]
     volumes?: [any]
+    vpa?: ValuesRedisVpa
 
 schema ValuesRedisAffinity:
     r"""
@@ -6533,6 +6741,53 @@ schema ValuesRedisUpdateStrategy:
     [...str]: any
     $type?: str
 
+schema ValuesRedisVpa:
+    r"""
+    # Redis Vertical Pod Autoscaler
+    # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
+
+    Attributes
+    ----------
+    annotations : ValuesRedisVpaAnnotations, optional
+        Annotations to be added to Redis vpa
+    containerPolicy : ValuesRedisVpaContainerPolicy, optional
+        Controls how VPA computes the recommended resources for Redis container
+        # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    enabled : bool, optional, default is False
+        Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Redis
+    labels : ValuesRedisVpaLabels, optional
+        Labels to be added to Redis vpa
+    updateMode : str, optional, default is "Initial"
+        One of the VPA operation modes
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically
+        # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden
+    """
+    [...str]: any
+    annotations?: ValuesRedisVpaAnnotations
+    containerPolicy?: ValuesRedisVpaContainerPolicy
+    enabled?: bool
+    labels?: ValuesRedisVpaLabels
+    updateMode?: str
+
+schema ValuesRedisVpaAnnotations:
+    r"""
+    Annotations to be added to Redis vpa
+    """
+    [...str]: any
+
+schema ValuesRedisVpaContainerPolicy:
+    r"""
+    Controls how VPA computes the recommended resources for Redis container
+    # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    """
+    [...str]: any
+
+schema ValuesRedisVpaLabels:
+    r"""
+    Labels to be added to Redis vpa
+    """
+    [...str]: any
+
 schema ValuesRepoServer:
     r"""
     # Repo Server
@@ -6640,6 +6895,9 @@ schema ValuesRepoServer:
         Additional volumeMounts to the repo server main container
     volumes : [any], optional
         Additional volumes to the repo server pod
+    vpa : ValuesRepoServerVpa, optional
+        # Repo server Vertical Pod Autoscaler
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
     """
     [...str]: any
     affinity?: ValuesRepoServerAffinity
@@ -6688,6 +6946,7 @@ schema ValuesRepoServer:
     useEphemeralHelmWorkingDir?: bool
     volumeMounts?: [any]
     volumes?: [any]
+    vpa?: ValuesRepoServerVpa
 
 schema ValuesRepoServerAffinity:
     r"""
@@ -6864,10 +7123,13 @@ schema ValuesRepoServerCopyutil:
 
     Attributes
     ----------
+    extraArgs : str, optional, default is "--update=none"
+        Extra arguments for the cp command in the repo server copyutil initContainer
     resources : ValuesRepoServerCopyutilResources, optional
         Resource limits and requests for the repo server copyutil initContainer
     """
     [...str]: any
+    extraArgs?: str
     resources?: ValuesRepoServerCopyutilResources
 
 schema ValuesRepoServerCopyutilResources:
@@ -7265,6 +7527,53 @@ schema ValuesRepoServerServiceAnnotations:
 schema ValuesRepoServerServiceLabels:
     r"""
     Repo server service labels
+    """
+    [...str]: any
+
+schema ValuesRepoServerVpa:
+    r"""
+    # Repo server Vertical Pod Autoscaler
+    # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
+
+    Attributes
+    ----------
+    annotations : ValuesRepoServerVpaAnnotations, optional
+        Annotations to be added to repo server vpa
+    containerPolicy : ValuesRepoServerVpaContainerPolicy, optional
+        Controls how VPA computes the recommended resources for repo server container
+        # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    enabled : bool, optional, default is False
+        Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the repo server
+    labels : ValuesRepoServerVpaLabels, optional
+        Labels to be added to repo server vpa
+    updateMode : str, optional, default is "Initial"
+        One of the VPA operation modes
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically
+        # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden
+    """
+    [...str]: any
+    annotations?: ValuesRepoServerVpaAnnotations
+    containerPolicy?: ValuesRepoServerVpaContainerPolicy
+    enabled?: bool
+    labels?: ValuesRepoServerVpaLabels
+    updateMode?: str
+
+schema ValuesRepoServerVpaAnnotations:
+    r"""
+    Annotations to be added to repo server vpa
+    """
+    [...str]: any
+
+schema ValuesRepoServerVpaContainerPolicy:
+    r"""
+    Controls how VPA computes the recommended resources for repo server container
+    # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    """
+    [...str]: any
+
+schema ValuesRepoServerVpaLabels:
+    r"""
+    Labels to be added to repo server vpa
     """
     [...str]: any
 
@@ -7684,6 +7993,9 @@ schema ValuesServer:
         Additional volumeMounts to the server main container
     volumes : [any], optional
         Additional volumes to the server pod
+    vpa : ValuesServerVpa, optional
+        # Argo CD server Vertical Pod Autoscaler
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
     """
     [...str]: any
     affinity?: ValuesServerAffinity
@@ -7736,6 +8048,7 @@ schema ValuesServer:
     topologySpreadConstraints?: [any]
     volumeMounts?: [any]
     volumes?: [any]
+    vpa?: ValuesServerVpa
 
 schema ValuesServerAffinity:
     r"""
@@ -8168,7 +8481,7 @@ schema ValuesServerExtensionsImage:
         Image pull policy for extensions
     repository : str, optional, default is "quay.io/argoprojlabs/argocd-extension-installer"
         Repository to use for extension installer image
-    tag : str, optional, default is "v0.0.9"
+    tag : str, optional, default is "v1.0.0"
         Tag to use for extension installer image
     """
     [...str]: any
@@ -8985,6 +9298,53 @@ schema ValuesServerServiceAnnotations:
 schema ValuesServerServiceLabels:
     r"""
     Server service labels
+    """
+    [...str]: any
+
+schema ValuesServerVpa:
+    r"""
+    # Argo CD server Vertical Pod Autoscaler
+    # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
+
+    Attributes
+    ----------
+    annotations : ValuesServerVpaAnnotations, optional
+        Annotations to be added to Argo CD server vpa
+    containerPolicy : ValuesServerVpaContainerPolicy, optional
+        Controls how VPA computes the recommended resources for Argo CD server container
+        # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    enabled : bool, optional, default is False
+        Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Argo CD server
+    labels : ValuesServerVpaLabels, optional
+        Labels to be added to Argo CD server vpa
+    updateMode : str, optional, default is "Initial"
+        One of the VPA operation modes
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically
+        # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden
+    """
+    [...str]: any
+    annotations?: ValuesServerVpaAnnotations
+    containerPolicy?: ValuesServerVpaContainerPolicy
+    enabled?: bool
+    labels?: ValuesServerVpaLabels
+    updateMode?: str
+
+schema ValuesServerVpaAnnotations:
+    r"""
+    Annotations to be added to Argo CD server vpa
+    """
+    [...str]: any
+
+schema ValuesServerVpaContainerPolicy:
+    r"""
+    Controls how VPA computes the recommended resources for Argo CD server container
+    # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    """
+    [...str]: any
+
+schema ValuesServerVpaLabels:
+    r"""
+    Labels to be added to Argo CD server vpa
     """
     [...str]: any
 
