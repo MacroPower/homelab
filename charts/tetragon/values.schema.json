@@ -170,7 +170,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.1.0",
+                  "default": "v1.1.1",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -292,7 +292,7 @@
       "properties": {
         "annotations": {
           "additionalProperties": true,
-          "description": "Annotations for the Tetragon rthooks daemonset",
+          "description": "Affinity for the Tetragon rthooks pod. If this key is omitted, the chart\nfalls back to the top-level `affinity` value. Set it explicitly (including\nto `{}`) to override the top-level affinity for the rthooks DaemonSet only.\naffinity: {}\nAnnotations for the Tetragon rthooks daemonset",
           "required": [],
           "title": "annotations",
           "type": "object"
@@ -773,8 +773,8 @@
           "additionalProperties": true,
           "properties": {
             "address": {
-              "default": "localhost:54321",
-              "description": "The address at which to expose gRPC. Examples: localhost:54321, unix:///var/run/cilum/tetragon/tetragon.sock",
+              "default": "unix:///var/run/tetragon/tetragon.sock",
+              "description": "The address at which to expose gRPC. Examples: localhost:54321, unix:///var/run/tetragon/tetragon.sock",
               "required": [],
               "title": "address",
               "type": "string"
@@ -843,7 +843,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.6.1",
+              "default": "v1.7.0",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -915,7 +915,7 @@
           "properties": {
             "enabled": {
               "default": "",
-              "description": "Comma-separated list of process event types to enable ancestors for.\nSupported event types are: base, kprobe, tracepoint, uprobe, lsm, usdt. Unknown event types will be ignored.\nType \"base\" is required by all other supported event types for correct reference counting.\nSet it to \"\" to disable ancestors completely.",
+              "description": "Comma-separated list of process event types to enable ancestors for.\nSupported event types are: base, kprobe, tracepoint, loader, uprobe, lsm, usdt. Unknown event types will be ignored.\nType \"base\" is required by all other supported event types for correct reference counting.\nSet it to \"\" to disable ancestors completely.",
               "required": [],
               "title": "enabled",
               "type": "string"
@@ -1291,7 +1291,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.6.1",
+              "default": "v1.7.0",
               "required": [],
               "title": "tag",
               "type": "string"
