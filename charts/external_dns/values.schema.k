@@ -29,6 +29,8 @@ schema Values:
         [DNS policy](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy) for the pod, if not set the default will be used.
     domainFilters : any, optional
         Limit possible target zones by domain suffixes.
+    enableGatewayListenerSets : bool, optional
+        if `true`, the Gateway API ListenerSet flag will be enabled.
     enabled : bool, optional
         No effect - reserved for use in sub-charting
     env : any, optional
@@ -46,7 +48,7 @@ schema Values:
     fullnameOverride : str, optional
         Override the full name of the chart.
     gatewayNamespace : str, optional
-        _Gateway API_ gateway namespace to watch.
+        _Gateway API_ gateway namespace to watch. When `namespaced=true`, setting this value avoids creating any cluster-scoped RBAC (no ClusterRole/ClusterRoleBinding) for Gateway sources.
     global : ValuesGlobal, optional
     image : ValuesImage, optional
     imagePullSecrets : [ValuesImagePullSecretsItems0], optional
@@ -67,6 +69,8 @@ schema Values:
         Record types to manage (default: A, AAAA, CNAME)
     nameOverride : str, optional
         Override the name of the chart.
+    namespaceOverride : str, optional
+        Override the namespace that chart resources are rendered into. Defaults to the release namespace. Useful when installing the chart as a subchart that should live in its own namespace, separate from the umbrella release namespace.
     namespaced : bool, optional
         if `true`, _ExternalDNS_ will run in a namespaced scope (`Role`` and `Rolebinding`` will be namespaced too).
     nodeSelector : ValuesNodeSelector, optional
@@ -99,6 +103,8 @@ schema Values:
     serviceMonitor : ValuesServiceMonitor, optional
     shareProcessNamespace : bool, optional
         If `true`, the `Pod` will have [process namespace sharing](https://kubernetes.io/docs/tasks/configure-pod-container/share-process-namespace/) enabled.
+    sourceNamespace : str, optional
+        Source namespace to watch for Kubernetes resources other than Gateway API gateways. Used only when `namespaced=true`. Defaults to Release.Namespace
     sources : [str], optional
         _Kubernetes_ resources to monitor for DNS entries.
     terminationGracePeriodSeconds : int, optional
@@ -127,6 +133,7 @@ schema Values:
     dnsConfig?: any
     dnsPolicy?: str
     domainFilters?: any
+    enableGatewayListenerSets?: bool
     enabled?: bool
     env?: any
     excludeDomains?: any
@@ -147,6 +154,7 @@ schema Values:
     logLevel?: "panic" | "debug" | "info" | "warning" | "error" | "fatal"
     managedRecordTypes?: [any] | str
     nameOverride?: str
+    namespaceOverride?: str
     namespaced?: bool
     nodeSelector?: ValuesNodeSelector
     podAnnotations?: ValuesPodAnnotations
@@ -166,6 +174,7 @@ schema Values:
     serviceAccount?: ValuesServiceAccount
     serviceMonitor?: ValuesServiceMonitor
     shareProcessNamespace?: bool
+    sourceNamespace?: str
     sources?: [str]
     terminationGracePeriodSeconds?: int
     tolerations?: any

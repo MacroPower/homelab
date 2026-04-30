@@ -76,6 +76,11 @@
       "required": [],
       "type": "array"
     },
+    "enableGatewayListenerSets": {
+      "description": "if `true`, the Gateway API ListenerSet flag will be enabled.",
+      "required": [],
+      "type": "boolean"
+    },
     "enabled": {
       "description": "No effect - reserved for use in sub-charting",
       "required": [],
@@ -131,7 +136,7 @@
       ]
     },
     "gatewayNamespace": {
-      "description": "_Gateway API_ gateway namespace to watch.",
+      "description": "_Gateway API_ gateway namespace to watch. When `namespaced=true`, setting this value avoids creating any cluster-scoped RBAC (no ClusterRole/ClusterRoleBinding) for Gateway sources.",
       "required": [],
       "type": [
         "string",
@@ -288,6 +293,14 @@
     },
     "nameOverride": {
       "description": "Override the name of the chart.",
+      "required": [],
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "namespaceOverride": {
+      "description": "Override the namespace that chart resources are rendered into. Defaults to the release namespace. Useful when installing the chart as a subchart that should live in its own namespace, separate from the umbrella release namespace.",
       "required": [],
       "type": [
         "string",
@@ -1001,6 +1014,14 @@
       "description": "If `true`, the `Pod` will have [process namespace sharing](https://kubernetes.io/docs/tasks/configure-pod-container/share-process-namespace/) enabled.",
       "required": [],
       "type": "boolean"
+    },
+    "sourceNamespace": {
+      "description": "Source namespace to watch for Kubernetes resources other than Gateway API gateways. Used only when `namespaced=true`. Defaults to Release.Namespace",
+      "required": [],
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "sources": {
       "description": "_Kubernetes_ resources to monitor for DNS entries.",
