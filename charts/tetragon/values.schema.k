@@ -226,7 +226,7 @@ schema ValuesExportStdoutImage:
     ----------
     override : any, optional, default is "~"
     repository : str, optional, default is "quay.io/cilium/hubble-export-stdout"
-    tag : str, optional, default is "v1.1.0"
+    tag : str, optional, default is "v1.1.1"
     """
     [...str]: any
     override?: any
@@ -278,6 +278,10 @@ schema ValuesRthooks:
     Attributes
     ----------
     annotations : ValuesRthooksAnnotations, optional
+        Affinity for the Tetragon rthooks pod. If this key is omitted, the chart
+        falls back to the top-level `affinity` value. Set it explicitly (including
+        to `{}`) to override the top-level affinity for the rthooks DaemonSet only.
+        affinity: {}
         Annotations for the Tetragon rthooks daemonset
     enabled : bool, optional, default is False
         Enable the Tetragon rthooks daemonset
@@ -346,6 +350,10 @@ schema ValuesRthooks:
 
 schema ValuesRthooksAnnotations:
     r"""
+    Affinity for the Tetragon rthooks pod. If this key is omitted, the chart
+    falls back to the top-level `affinity` value. Set it explicitly (including
+    to `{}`) to override the top-level affinity for the rthooks DaemonSet only.
+    affinity: {}
     Annotations for the Tetragon rthooks daemonset
     """
     [...str]: any
@@ -716,8 +724,8 @@ schema ValuesTetragonGrpc:
 
     Attributes
     ----------
-    address : str, optional, default is "localhost:54321"
-        The address at which to expose gRPC. Examples: localhost:54321, unix:///var/run/cilum/tetragon/tetragon.sock
+    address : str, optional, default is "unix:///var/run/tetragon/tetragon.sock"
+        The address at which to expose gRPC. Examples: localhost:54321, unix:///var/run/tetragon/tetragon.sock
     enabled : bool, optional, default is True
         Whether to enable exposing Tetragon gRPC.
     """
@@ -751,7 +759,7 @@ schema ValuesTetragonImage:
     ----------
     override : any, optional, default is "~"
     repository : str, optional, default is "quay.io/cilium/tetragon"
-    tag : str, optional, default is "v1.6.1"
+    tag : str, optional, default is "v1.7.0"
     """
     [...str]: any
     override?: any
@@ -992,7 +1000,7 @@ schema ValuesTetragonOperatorImage:
     override : any, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/tetragon-operator"
-    tag : str, optional, default is "v1.6.1"
+    tag : str, optional, default is "v1.7.0"
     """
     [...str]: any
     override?: any
@@ -1227,7 +1235,7 @@ schema ValuesTetragonProcessAncestors:
     ----------
     enabled : str, optional, default is ""
         Comma-separated list of process event types to enable ancestors for.
-        Supported event types are: base, kprobe, tracepoint, uprobe, lsm, usdt. Unknown event types will be ignored.
+        Supported event types are: base, kprobe, tracepoint, loader, uprobe, lsm, usdt. Unknown event types will be ignored.
         Type "base" is required by all other supported event types for correct reference counting.
         Set it to "" to disable ancestors completely.
     """
