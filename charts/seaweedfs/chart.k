@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "seaweedfs"
     repoURL : str, required, default is "https://seaweedfs.github.io/seaweedfs/helm"
-    targetRevision : str, optional, default is "4.18.0"
+    targetRevision : str, optional, default is "4.23.0"
     """
     values?: Values | any
     chart: str = "seaweedfs"
     repoURL: str = "https://seaweedfs.github.io/seaweedfs/helm"
-    targetRevision?: str = "4.18.0"
+    targetRevision?: str = "4.23.0"
 
