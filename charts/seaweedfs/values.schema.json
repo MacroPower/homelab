@@ -4735,8 +4735,8 @@
           "type": "string"
         },
         "jobType": {
-          "default": "vacuum,volume_balance,erasure_coding",
-          "description": "Worker job types - comma-separated list\nAvailable: vacuum, volume_balance, erasure_coding",
+          "default": "all",
+          "description": "Worker job types - categories or comma-separated list of names/aliases\nCategories: all, default, heavy\n  default: vacuum, volume_balance, ec_balance, admin_script\n  heavy: erasure_coding, iceberg_maintenance\n  all: every registered job type\nExamples: \"all\", \"default\", \"heavy\", \"default,iceberg\" (default+iceberg), \"vacuum,volume_balance\"\nRefer: https://github.com/seaweedfs/seaweedfs/wiki/Worker",
           "required": [],
           "title": "jobType",
           "type": "string"
