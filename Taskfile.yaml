@@ -18,6 +18,9 @@ includes:
     taskfile: ./.taskfiles/talos/Taskfile.yaml
     dir: "{{.TALOS_DIR}}"
     aliases: [tal]
+  talos-docker:
+    taskfile: ./.taskfiles/talos-docker/Taskfile.yaml
+    aliases: [tald]
   externalsecrets:
     taskfile: .taskfiles/external-secrets/Taskfile.yaml
     aliases: [es]

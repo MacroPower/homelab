@@ -1,26 +1,355 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+#
+# `shell` is a long-lived utility container with its own macvlan IP, reachable
+# directly from the LAN over SSH:
+#
+#     ssh root@10.10.12.2     # or root@fc42:0:0:a::1202
+#
+# Note on the doubled `$$` throughout `command:` -- docker-compose interpolates
+# `$VAR` and `${VAR}` against the host's environment before the shell ever
+# sees them. To get a literal `$` in the running script we have to write `$$`.
+
 services:
-  utils:
-    image: ghcr.io/nicolaka/netshoot:latest
-    container_name: utils
-    hostname: nas01-utils
-    tty: true
-    read_only: true
-    privileged: true
+  shell:
+    image: oci.jacobcolvin.com/shell
+    container_name: shell
+    hostname: shell
+    restart: always
+
+    # The image ships a custom Rust ENTRYPOINT that wraps interactive shells.
+    # It treats its first argument as a script path, so passing `sh` tries to
+    # read a file called `sh` and dies. We sidestep it entirely: PID 1 is now
+    # `sh -c <our script>`, which prepares the environment and execs sshd.
+    entrypoint: ["sh", "-c"]
+
+    command:
+      - |
+        set -e
+
+        # --- idmapped bind mounts ------------------------------------------
+        # For each entry in IDMAPPED_MOUNTS (one "path=uid:gid" per line),
+        # bind-mount the path over itself with a UID/GID translation so writes
+        # by container-root land on the host as the declared owner. Requires
+        # util-linux >= 2.39 (for --map-users), kernel >= 5.12, and a
+        # filesystem that supports idmapped mounts (ZFS >= 2.2). CAP_SYS_ADMIN
+        # is granted via cap_add below. Binding the path over itself is
+        # intentional -- it layers the idmap onto subsequent accesses through
+        # that path.
+        if [ -n "$${IDMAPPED_MOUNTS-}" ]; then
+          # Hard-fail early if util-linux is too old to know --map-users;
+          # otherwise mount errors out with a confusing "unknown option".
+          if ! mount --help 2>&1 | grep -q -- '--map-users'; then
+            echo "fatal: 'mount' lacks --map-users (need util-linux >= 2.39)" >&2
+            exit 1
+          fi
+          while IFS= read -r line || [ -n "$$line" ]; do
+            # Strip leading/trailing whitespace so YAML block-scalar indenting
+            # and stray CRs don't produce confusing failures.
+            line=$$(printf '%s' "$$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$$//')
+            case "$$line" in ''|'#'*) continue ;; esac
+            case "$$line" in
+              *=*) ;;
+              *) echo "fatal: IDMAPPED_MOUNTS entry missing '=': $$line" >&2; exit 1 ;;
+            esac
+            path=$${line%%=*}
+            spec=$${line#*=}
+            case "$$spec" in
+              *:*) ;;
+              *) echo "fatal: IDMAPPED_MOUNTS entry missing ':' in uid:gid: $$line" >&2; exit 1 ;;
+            esac
+            uid=$${spec%%:*}
+            gid=$${spec#*:}
+            if [ -z "$$path" ] || [ -z "$$uid" ] || [ -z "$$gid" ]; then
+              echo "fatal: IDMAPPED_MOUNTS entry has empty field: $$line" >&2
+              exit 1
+            fi
+            if ! mount --bind --map-users "0:$$uid:1" --map-groups "0:$$gid:1" \
+                        "$$path" "$$path"; then
+              echo "fatal: idmapped bind mount failed for $$path -> $$uid:$$gid" >&2
+              exit 1
+            fi
+            echo "idmapped: $$path -> $$uid:$$gid"
+          done <<IDMAP_EOF
+        $$IDMAPPED_MOUNTS
+        IDMAP_EOF
+        fi
+
+        # --- per-mount XDG trash dirs --------------------------------------
+        # gomi (used in interactive ssh sessions) honors the XDG external
+        # trash spec: when deleting a file from a non-home filesystem, it
+        # picks $$topdir/.Trash-$$uid at that filesystem's mount root *if it
+        # already exists* (gomi never creates these itself, see
+        # internal/trash/xdg/storage.go:scanExternalTrashes). We pre-create
+        # one per writable bind mount so deletes stay on the same ZFS
+        # dataset (atomic rename, no cross-device copy into the container
+        # overlay). gomi's home_fallback is set to false on this host via
+        # the dotfiles flake (hosts/linux/container.nix), so a missing
+        # trash dir produces an explicit ErrCrossDevice instead of silently
+        # spilling into /home/dev. Run after IDMAPPED_MOUNTS so the dir's
+        # in-container uid 0 translates to the bind's mapped host uid.
+        if [ -n "$${GOMI_TRASH_MOUNTS-}" ]; then
+          uid=$$(id -u)
+          while IFS= read -r mp || [ -n "$$mp" ]; do
+            mp=$$(printf '%s' "$$mp" | sed 's/^[[:space:]]*//;s/[[:space:]]*$$//')
+            case "$$mp" in ''|'#'*) continue ;; esac
+            if [ ! -d "$$mp" ]; then
+              echo "warning: GOMI_TRASH_MOUNTS path missing, skipping: $$mp" >&2
+              continue
+            fi
+            mkdir -m 0700 -p "$$mp/.Trash-$$uid/files" "$$mp/.Trash-$$uid/info"
+            echo "trash dir ready: $$mp/.Trash-$$uid"
+          done <<TRASH_EOF
+        $$GOMI_TRASH_MOUNTS
+        TRASH_EOF
+        fi
+
+        # --- sshd privilege-separation user --------------------------------
+        # Modern OpenSSH refuses to start without a `sshd` user (used as the
+        # unprivileged child during key exchange). The image doesn't ship one,
+        # so we add stub entries to /etc/passwd and /etc/group. UID 74 is the
+        # conventional sshd UID; the home dir /var/empty exists per below.
+        grep -q '^sshd:' /etc/passwd || echo 'sshd:x:74:74:Privilege-separated SSH:/var/empty:/sbin/nologin' >> /etc/passwd
+        grep -q '^sshd:' /etc/group  || echo 'sshd:x:74:' >> /etc/group
+
+        # --- unlock root in /etc/shadow ------------------------------------
+        # The image ships root with a locked password (`!` or `*` in shadow).
+        # OpenSSH's allowed_user() refuses *all* auth -- including pubkey --
+        # for accounts whose shadow password starts with `!`/`*` or is empty.
+        # There's no sshd flag to bypass it. We don't actually want password
+        # auth (PasswordAuthentication=no below), so we just stamp a random
+        # non-locked stub into the password field. It's never used to verify.
+        if [ -f /etc/shadow ] && awk -F: '$$1=="root" && ($$2=="" || $$2 ~ /^[!*]/) {found=1} END {exit !found}' /etc/shadow; then
+          rnd=$$(head -c 16 /dev/urandom | od -An -tx1 | tr -d ' \n')
+          awk -F: -v OFS=: -v s="x$$rnd" '$$1=="root"{$$2=s}1' /etc/shadow > /etc/shadow.new
+          cat /etc/shadow.new > /etc/shadow
+          rm -f /etc/shadow.new
+        fi
+
+        # --- generate the SSH login wrapper --------------------------------
+        # When you `ssh root@...`, sshd execs this script as root's login
+        # shell. Its job is to recreate the environment that the image's
+        # native entrypoint would have set up (HOME=/home/dev, the
+        # home-manager session vars, PATH with nix-store paths) before
+        # handing control to fish. Without this, fish's *built-in*
+        # config.fish fails immediately on `mkdir`/`tty`/`uname` because
+        # PATH is empty.
+        #
+        # The wrapper also sources /etc/ssh/env if it exists (bind-mounted
+        # below) so per-deployment env vars can be edited on the host
+        # without recreating the container.
+        ROOT_HOME=/home/dev
+        LOGIN_WRAPPER=/etc/ssh/keys/login.sh
+        cat > "$$LOGIN_WRAPPER" <<'LOGIN_EOF'
+        #!/bin/sh
+        # Pull in home-manager's session vars (XDG_*, NIX_SSL_CERT_FILE, etc.).
+        # The exact path varies by home-manager version; try the common ones.
+        for f in \
+          /home/dev/.nix-profile/etc/profile.d/hm-session-vars.sh \
+          /home/dev/.local/state/home-manager/gcroots/current-home/home-path/etc/profile.d/hm-session-vars.sh \
+          /etc/profile.d/hm-session-vars.sh; do
+          [ -r "$$f" ] && . "$$f"
+        done
+
+        # sshd already sets HOME from /etc/passwd field 6 (we rewrite that
+        # below to /home/dev), but pin it here too in case a tool launches
+        # us without it.
+        export HOME=/home/dev
+        [ -z "$$USER" ] && export USER=root
+
+        # If hm-session-vars didn't add the home-manager bin dir to PATH
+        # (some setups manage PATH outside session vars), prepend a known
+        # set of dirs that contains fish, starship, atuin, mkdir, etc.
+        case ":$${PATH-}:" in
+          *:/home/dev/.local/state/home-manager/gcroots/current-home/home-path/bin:*) ;;
+          *) PATH="/home/dev/.local/state/home-manager/gcroots/current-home/home-path/bin:/home/dev/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/usr/bin:/bin$${PATH:+:$$PATH}" ;;
+        esac
+        export PATH
+
+        # User-managed env file. Bind-mounted from the host (see volumes:
+        # below). Parsed line-by-line rather than `. $f`-sourced so a
+        # malformed line can't fail the whole login. Accepts `KEY=value`
+        # and `export KEY=value`; ignores blanks, comments, and anything
+        # that doesn't match `IDENT=...`.
+        if [ -e /etc/ssh/env ] && [ ! -f /etc/ssh/env ]; then
+          echo "warning: /etc/ssh/env exists but is not a regular file (bind-mount likely created a directory); skipping" >&2
+        elif [ -r /etc/ssh/env ]; then
+          while IFS= read -r line || [ -n "$$line" ]; do
+            case "$$line" in
+              ''|'#'*) continue ;;
+              'export '*) line=$${line#export } ;;
+            esac
+            case "$$line" in
+              [a-zA-Z_]*=*) export "$$line" ;;
+            esac
+          done < /etc/ssh/env
+        fi
+
+        # Hand off to fish. With `-c <cmd>` we're being invoked as
+        # `<login_shell> -c <SSH_ORIGINAL_COMMAND>` (e.g. `ssh host ls`);
+        # otherwise it's an interactive login session.
+        FISH=/home/dev/.local/state/home-manager/gcroots/current-home/home-path/bin/fish
+        if [ "$$1" = "-c" ]; then
+          exec "$$FISH" -c "$$2"
+        else
+          exec "$$FISH" -l
+        fi
+        LOGIN_EOF
+        chmod +x "$$LOGIN_WRAPPER"
+
+        # Point root's /etc/passwd entry at the wrapper. Field 6 is HOME
+        # (so SSH sessions see HOME=/home/dev) and field 7 is the login
+        # shell (so sshd execs the wrapper).
+        if [ -d "$$ROOT_HOME" ] && [ -x "$$LOGIN_WRAPPER" ]; then
+          awk -F: -v OFS=: -v h="$$ROOT_HOME" -v sh="$$LOGIN_WRAPPER" \
+            '$$1=="root"{$$6=h; $$7=sh}1' /etc/passwd > /etc/passwd.new
+          cat /etc/passwd.new > /etc/passwd
+          rm -f /etc/passwd.new
+        else
+          echo "warning: $$ROOT_HOME or $$LOGIN_WRAPPER missing; leaving root entry as-is" >&2
+        fi
+
+        # --- sshd runtime prerequisites ------------------------------------
+        # Empty chroot dir for the privsep child.
+        mkdir -p /var/empty
+        chmod 0755 /var/empty
+        chown root:root /var/empty
+
+        # sshd updates /var/log/lastlog on every login. The image doesn't
+        # ship that path; without it, every login logs a harmless but noisy
+        # `lastlog_openseek: Couldn't stat /var/log/lastlog` warning.
+        mkdir -p /var/log
+        [ -e /var/log/lastlog ] || : > /var/log/lastlog
+
+        # Host keys live in the persistent `shell_ssh_keys` named volume so
+        # the server fingerprint is stable across `--force-recreate`. We
+        # only volume-mount /etc/ssh/keys -- not all of /etc/ssh -- so the
+        # image's sshd_config and moduli stay reachable. (sshd's
+        # compiled-in defaults are used anyway, see -f /dev/null below.)
+        # `sshd -D` will not autogenerate host keys; we have to do it.
+        mkdir -p /etc/ssh/keys
+        [ -f /etc/ssh/keys/ssh_host_ed25519_key ] || ssh-keygen -t ed25519 -N '' -f /etc/ssh/keys/ssh_host_ed25519_key
+        [ -f /etc/ssh/keys/ssh_host_rsa_key ]     || ssh-keygen -t rsa -b 4096 -N '' -f /etc/ssh/keys/ssh_host_rsa_key
+
+        # --- authorized_keys from GitHub ----------------------------------
+        # GitHub publishes a user's SSH pubkeys at https://<user>.keys.
+        # We fetch on every container start with retry, validate the body
+        # actually contains pubkeys, and cache successful fetches into the
+        # persistent volume. To rotate keys: edit the GitHub side and
+        # `docker compose restart shell`.
+        #
+        # Fallback semantics:
+        #   - Fetch ok + body has pubkeys: use it, cache it.
+        #   - Fetch ok + body empty/garbage: keep the cached copy, warn.
+        #     (Trades availability for a lag in revocations; an upstream
+        #     "I deleted all my keys" won't lock us out until we manually
+        #     clear the volume.)
+        #   - Fetch failed + cache exists: use cache, warn.
+        #   - Fetch failed + no cache: fatal.
+        tmp=$$(mktemp)
+        fetched=0
+        for attempt in 1 2 3; do
+          if curl -fsSL --max-time 10 https://github.com/MacroPower.keys -o "$$tmp"; then
+            fetched=1; break
+          fi
+          sleep 5
+        done
+        if [ "$$fetched" = 1 ] && grep -qE '^(ssh-|ecdsa-|sk-)' "$$tmp"; then
+          cp "$$tmp" /etc/ssh/keys/authorized_keys
+          chmod 0600 /etc/ssh/keys/authorized_keys
+        elif [ "$$fetched" = 1 ]; then
+          echo "warning: MacroPower.keys returned no valid pubkeys; keeping cached copy" >&2
+          [ -s /etc/ssh/keys/authorized_keys ] || { echo "fatal: no cached keys to fall back to" >&2; exit 1; }
+        elif [ -s /etc/ssh/keys/authorized_keys ]; then
+          echo "warning: github fetch failed after retries, using cached authorized_keys" >&2
+        else
+          echo "fatal: could not fetch MacroPower.keys and no cached authorized_keys exists" >&2
+          exit 1
+        fi
+        rm -f "$$tmp"
+
+        # --- exec sshd ----------------------------------------------------
+        # The image doesn't put sshd at /usr/sbin/sshd; resolve via PATH.
+        sshd_bin=$$(command -v sshd || true)
+        [ -n "$$sshd_bin" ] || { echo "fatal: sshd not found in PATH" >&2; exit 1; }
+
+        # `-f /dev/null` skips the missing /etc/ssh/sshd_config; sshd uses
+        # its compiled-in defaults plus our explicit `-o` overrides.
+        # `-D` keeps it foreground so PID 1 doesn't exit.
+        # `-e` sends logs to stderr (where `docker logs` picks them up).
+        # Notable overrides:
+        #   - HostKey ... -- point at the persistent volume's keys.
+        #   - PermitRootLogin prohibit-password -- key-only root login.
+        #   - StrictModes no -- the authorized_keys file lives in a named
+        #     volume; perms are whatever Docker's overlay gives us, and
+        #     we don't want sshd refusing the key over a `0644` parent.
+        #   - LogLevel VERBOSE -- so failed publickey attempts log a
+        #     reason, not a silent "Permission denied (publickey)".
+        exec "$$sshd_bin" -D -e -f /dev/null \
+          -o "LogLevel VERBOSE" \
+          -o "HostKey /etc/ssh/keys/ssh_host_ed25519_key" \
+          -o "HostKey /etc/ssh/keys/ssh_host_rsa_key" \
+          -o "PermitRootLogin prohibit-password" \
+          -o "PasswordAuthentication no" \
+          -o "KbdInteractiveAuthentication no" \
+          -o "AuthorizedKeysFile /etc/ssh/keys/authorized_keys" \
+          -o "StrictModes no"
+
+    environment:
+      # One "path=uid:gid" per line. The entrypoint above bind-mounts each
+      # path over itself with that UID/GID translation, so root-in-container
+      # writes appear on the TrueNAS host as the declared owner. Only list
+      # writable host-path bind mounts; named volumes have no host UID
+      # ownership to align. Replace the placeholder UID/GID with the actual
+      # owner of each ZFS dataset before applying.
+      IDMAPPED_MOUNTS: |
+        /mnt/main/shared/photos/staging=1000:1000
+
+      # One absolute mountpoint per line. The entrypoint pre-creates
+      # $path/.Trash-$uid/{files,info} (mode 0700) so gomi has a usable
+      # external trash on each writable bind mount. Listed paths must be
+      # bind-mount roots in the container's mount namespace (gomi only
+      # adopts trash dirs that sit at a real mountpoint). Tracked
+      # separately from IDMAPPED_MOUNTS so the two concerns don't get
+      # entangled, even though today they happen to overlap.
+      GOMI_TRASH_MOUNTS: |
+        /mnt/main/shared/photos/staging
+
     cap_add:
-      - NET_ADMIN
-      - NET_RAW
       - SYS_ADMIN
       - SYS_PTRACE
       - SYS_RESOURCE
       - SYSLOG
     security_opt:
       - seccomp=unconfined
+      - apparmor=unconfined
+    devices:
+      - /dev/fuse:/dev/fuse
+
+    # /run is conventionally tmpfs (sshd writes its pid file there). /var/log
+    # holds sshd's lastlog, which is per-session state we don't care to
+    # persist. tmpfs for both keeps stale state from leaking into the
+    # container layer across restarts.
     tmpfs:
       - /tmp
+      - /run
+      - /var/log
+
     volumes:
-      - utils_var:/var
-      - utils_opt:/opt
+      # Persistent shell history and Claude state across recreates.
+      - shell_commandhistory:/commandhistory
+      - shell_claude_state:/claude-state
+      # SSH host keys + cached authorized_keys + login.sh wrapper.
+      - shell_ssh_keys:/etc/ssh/keys
+      # Photo library: parent is read-only, the staging subdir is writable
+      # (the more-specific child mount overrides the parent at that path).
+      - /mnt/main/shared/photos:/mnt/main/shared/photos:ro
+      - /mnt/main/shared/photos/staging:/mnt/main/shared/photos/staging
+      # Optional env file. Edit on the host; new ssh sessions pick up
+      # changes (no container restart needed). Pre-create the file -- a
+      # missing host path becomes an empty *directory*, which would break
+      # the read.
+      - /mnt/main/containers/shell/env:/etc/ssh/env:ro
+
     networks:
       shared_macvlan:
         ipv4_address: "10.10.12.2"
@@ -31,9 +360,12 @@ services:
       - "fc42:0:0:a::"
     cpu_percent: 80
     mem_limit: 32g
+
 volumes:
-  utils_var: {}
-  utils_opt: {}
+  shell_commandhistory: {}
+  shell_claude_state: {}
+  shell_ssh_keys: {}
+
 networks:
   shared_macvlan:
     external: true

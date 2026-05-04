@@ -1,0 +1,81 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+vars:
+  CLUSTER_NAME: '{{.CLUSTER_NAME | default "homelab-test"}}'
+  WORKERS: '{{.WORKERS | default "1"}}'
+  CPUS: '{{.CPUS | default "2"}}'
+  MEMORY: '{{.MEMORY | default "2048"}}'
+  # Talos-in-Docker requires rootful Docker (containers write host
+  # sysctls and /dev/kmsg; rootless forbids this even under --privileged).
+  # Inlined on every call to override any DOCKER_HOST in the user shell.
+  DOCKER_HOST: unix:///run/docker.sock
+
+tasks:
+  up:
+    desc: Create a vanilla Talos-in-Docker test cluster
+    summary: |
+      Args:
+        CLUSTER_NAME: Cluster name (default: homelab-test)
+        WORKERS: Worker node count (default: 1)
+        CPUS: CPUs per node, controlplane and workers (default: 2)
+        MEMORY: Memory MiB per node (default: 2048)
+
+      Notes:
+        - No-op if a cluster with this name already has a controlplane-1
+          container running. Resizing requires `task tald:down` first.
+        - talosctl writes the new context into ~/.kube/config as
+          admin@<CLUSTER_NAME> and switches to it. If you have a real
+          homelab context active, your shell will land on the test cluster
+          after this runs.
+    status:
+      # Check the container is actually running, not merely present — a
+      # stopped/exited controlplane after a host reboot must trigger a
+      # re-create rather than be treated as "already up". docker ps
+      # --filter avoids the Go-template escaping that `docker inspect -f`
+      # would impose on Task.
+      - DOCKER_HOST={{.DOCKER_HOST}} sudo -E docker ps --filter "name=^/{{.CLUSTER_NAME}}-controlplane-1$" --filter status=running --quiet | grep -q .
+    preconditions:
+      - sh: command -v talosctl
+        msg: talosctl is required
+      - sh: DOCKER_HOST={{.DOCKER_HOST}} sudo -E docker info &>/dev/null
+        msg: Rootful Docker daemon must be reachable at {{.DOCKER_HOST}}
+    cmds:
+      - task: clean
+        vars:
+          CLUSTER_NAME: "{{.CLUSTER_NAME}}"
+      - DOCKER_HOST={{.DOCKER_HOST}} sudo -E talosctl cluster create docker
+          --name {{.CLUSTER_NAME}}
+          --workers {{.WORKERS}}
+          --cpus-controlplanes {{.CPUS}}
+          --cpus-workers {{.CPUS}}
+          --memory-controlplanes {{.MEMORY}}
+          --memory-workers {{.MEMORY}}
+      # talosctl ran under sudo -E, so ~/.talos and ~/.kube are root-owned;
+      # chown back so non-sudo kubectl/talosctl work.
+      - sudo chown -R $(id -u):$(id -g) {{.HOME}}/.talos {{.HOME}}/.kube
+      # Refresh sudo ticket so follow-up sudo docker calls in the same
+      # shell don't prompt mid-session.
+      - sudo -v
+      - cmd: echo "Cluster up. Active kube context is $(kubectl config current-context)"
+        silent: true
+
+  down:
+    desc: Destroy the Talos-in-Docker test cluster
+    summary: |
+      Args:
+        CLUSTER_NAME: Cluster name (default: homelab-test)
+    cmds:
+      - DOCKER_HOST={{.DOCKER_HOST}} sudo -E talosctl cluster destroy --name {{.CLUSTER_NAME}}
+      # Belt-and-suspenders: if destroy partially failed and left state
+      # behind, scrub the on-disk dir so the next `up` starts clean.
+      - rm -rf {{.HOME}}/.talos/clusters/{{.CLUSTER_NAME}}
+    ignore_error: true
+
+  clean:
+    internal: true
+    status:
+      - '! test -d {{.HOME}}/.talos/clusters/{{.CLUSTER_NAME}}'
+    cmds:
+      - rm -rf {{.HOME}}/.talos/clusters/{{.CLUSTER_NAME}}
