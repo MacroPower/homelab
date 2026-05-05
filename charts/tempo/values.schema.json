@@ -398,6 +398,1206 @@
       "title": "annotations",
       "type": "object"
     },
+    "backendScheduler": {
+      "additionalProperties": true,
+      "description": "EXPERIMENTAL Feature, disabled by default\nConfiguration for the backend-scheduler",
+      "properties": {
+        "affinity": {
+          "default": "podAntiAffinity:\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"backend-scheduler\") | nindent 12 }}\n        topologyKey: kubernetes.io/hostname\n    - weight: 75\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"backend-scheduler\") | nindent 12 }}\n        topologyKey: topology.kubernetes.io/zone\n",
+          "description": "Affinity for backend-scheduler pods. Passed through `tpl` and, thus, to be configured as string",
+          "required": [],
+          "title": "affinity",
+          "type": "string"
+        },
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations for backend-scheduler StatefulSet",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "config": {
+          "additionalProperties": true,
+          "properties": {
+            "backend_flush_interval": {
+              "default": "1m",
+              "description": "How often to flush the work cache to backend storage",
+              "required": [],
+              "title": "backend_flush_interval",
+              "type": "string"
+            },
+            "job_timeout": {
+              "default": "15s",
+              "description": "How long to wait for a worker to complete a job before timing out internally",
+              "required": [],
+              "title": "job_timeout",
+              "type": "string"
+            },
+            "local_work_path": {
+              "default": "/var/tempo",
+              "description": "Path to store local work cache files",
+              "required": [],
+              "title": "local_work_path",
+              "type": "string"
+            },
+            "maintenance_interval": {
+              "default": "1m",
+              "description": "How often to perform maintenance tasks (pruning old jobs, checking for dead jobs, etc.)",
+              "required": [],
+              "title": "maintenance_interval",
+              "type": "string"
+            },
+            "provider": {
+              "additionalProperties": true,
+              "description": "Provider configuration for job generation",
+              "properties": {
+                "compaction": {
+                  "additionalProperties": true,
+                  "description": "Compaction job configuration",
+                  "properties": {
+                    "compaction": {
+                      "additionalProperties": true,
+                      "description": "Compaction configuration",
+                      "properties": {
+                        "block_retention": {
+                          "default": "48h",
+                          "description": "Duration to keep blocks",
+                          "required": [],
+                          "title": "block_retention",
+                          "type": "string"
+                        },
+                        "compacted_block_retention": {
+                          "default": "1h",
+                          "description": "Duration to keep blocks that have been compacted elsewhere",
+                          "required": [],
+                          "title": "compacted_block_retention",
+                          "type": "string"
+                        },
+                        "compaction_cycle": {
+                          "default": "30s",
+                          "description": "The time between compaction cycles",
+                          "required": [],
+                          "title": "compaction_cycle",
+                          "type": "string"
+                        },
+                        "compaction_window": {
+                          "default": "1h",
+                          "description": "Blocks in this time window will be compacted together",
+                          "required": [],
+                          "title": "compaction_window",
+                          "type": "string"
+                        },
+                        "max_block_bytes": {
+                          "default": 107374182400,
+                          "description": "Maximum size of a compacted block in bytes\nThis should be set to a lower value, ideally 5GB or less\n100GB is a legacy default for v2 storage format which is\nno longer even available as of Tempo 2.1.x\nhttps://github.com/grafana/tempo/discussions/5301",
+                          "required": [],
+                          "title": "max_block_bytes",
+                          "type": "integer"
+                        },
+                        "max_compaction_objects": {
+                          "default": 6000000,
+                          "description": "Maximum number of traces in a compacted block. WARNING: Deprecated. Use max_block_bytes instead.",
+                          "required": [],
+                          "title": "max_compaction_objects",
+                          "type": "integer"
+                        },
+                        "max_time_per_tenant": {
+                          "default": "5m",
+                          "description": "The maximum amount of time to spend compacting a single tenant before moving to the next",
+                          "required": [],
+                          "title": "max_time_per_tenant",
+                          "type": "string"
+                        },
+                        "retention_concurrency": {
+                          "default": 10,
+                          "description": "Number of tenants to process in parallel during retention",
+                          "required": [],
+                          "title": "retention_concurrency",
+                          "type": "integer"
+                        },
+                        "v2_in_buffer_bytes": {
+                          "default": 5242880,
+                          "description": "v2 was removed in Tempo 2.1.x but they haven't been removed from Tempo\nAmount of data to buffer from input blocks",
+                          "required": [],
+                          "title": "v2_in_buffer_bytes",
+                          "type": "integer"
+                        },
+                        "v2_out_buffer_bytes": {
+                          "default": 20971520,
+                          "description": "Flush data to backend when buffer is this large",
+                          "required": [],
+                          "title": "v2_out_buffer_bytes",
+                          "type": "integer"
+                        },
+                        "v2_prefetch_traces_count": {
+                          "default": 1000,
+                          "description": "Number of traces to buffer in memory during compaction",
+                          "required": [],
+                          "title": "v2_prefetch_traces_count",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [],
+                      "title": "compaction",
+                      "type": "object"
+                    },
+                    "max_compaction_level": {
+                      "default": 0,
+                      "description": "Maximum number of compaction jobs to create per tenant",
+                      "required": [],
+                      "title": "max_compaction_level",
+                      "type": "integer"
+                    },
+                    "max_input_blocks": {
+                      "default": 4,
+                      "description": "Maximum number of blocks to compact together",
+                      "required": [],
+                      "title": "max_input_blocks",
+                      "type": "integer"
+                    },
+                    "max_jobs_per_tenant": {
+                      "default": 1000,
+                      "description": "Maximum compaction level (0 means no limit)",
+                      "required": [],
+                      "title": "max_jobs_per_tenant",
+                      "type": "integer"
+                    },
+                    "measure_interval": {
+                      "default": "1m",
+                      "description": "How often to measure tenant block lists and create new compaction jobs",
+                      "required": [],
+                      "title": "measure_interval",
+                      "type": "string"
+                    },
+                    "min_cycle_interval": {
+                      "default": "30s",
+                      "description": "Minimum time between compaction cycles for a tenant",
+                      "required": [],
+                      "title": "min_cycle_interval",
+                      "type": "string"
+                    },
+                    "min_input_blocks": {
+                      "default": 2,
+                      "description": "Minimum number of blocks required for compaction",
+                      "required": [],
+                      "title": "min_input_blocks",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "compaction",
+                  "type": "object"
+                },
+                "retention": {
+                  "additionalProperties": true,
+                  "description": "Retention job configuration",
+                  "properties": {
+                    "interval": {
+                      "default": "1h",
+                      "description": "How often to check for blocks that need to be deleted due to retention",
+                      "required": [],
+                      "title": "interval",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "retention",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "provider",
+              "type": "object"
+            },
+            "work": {
+              "additionalProperties": true,
+              "description": "Work cache configuration",
+              "properties": {
+                "dead_job_timeout": {
+                  "default": "24h",
+                  "description": "After this duration, jobs that have not been updated are considered dead and will be reassigned.",
+                  "required": [],
+                  "title": "dead_job_timeout",
+                  "type": "string"
+                },
+                "prune_age": {
+                  "default": "1h",
+                  "description": "How long to keep completed or failed jobs in the work cache before pruning them.",
+                  "required": [],
+                  "title": "prune_age",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "work",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "config",
+          "type": "object"
+        },
+        "dnsConfigOverides": {
+          "additionalProperties": true,
+          "properties": {
+            "dnsConfig": {
+              "additionalProperties": true,
+              "properties": {
+                "options": {
+                  "items": {
+                    "additionalProperties": true,
+                    "properties": {
+                      "name": {
+                        "default": "ndots",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "3",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  "required": [],
+                  "title": "options",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "dnsConfig",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "dnsConfigOverides",
+          "type": "object"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Specifies whether a backend-scheduler and backend-worker\nshould be deployed. When enabled the compactor is disabled",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraArgs": {
+          "description": "Additional CLI args for the backend-scheduler",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraArgs",
+          "type": "array"
+        },
+        "extraContainers": {
+          "description": "Containers to add to the backend-scheduler pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraContainers",
+          "type": "array"
+        },
+        "extraEnv": {
+          "description": "Environment variables to add to the backend-scheduler pod",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraEnv",
+          "type": "array"
+        },
+        "extraEnvFrom": {
+          "description": "Environment variables from secrets or configmaps to add to the backend-scheduler pod",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraEnvFrom",
+          "type": "array"
+        },
+        "extraPorts": {
+          "description": "Additional ports to expose on the backend-scheduler container\nStandard ports (grpc, http-metrics, http-memberlist) are always added automatically.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraPorts",
+          "type": "array"
+        },
+        "extraVolumeMounts": {
+          "description": "Extra volumes for backend-scheduler pod",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "Extra volumes for backend-scheduler StatefulSet",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumes",
+          "type": "array"
+        },
+        "hostAliases": {
+          "description": "hostAliases to add",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "hostAliases",
+          "type": "array"
+        },
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "pullSecrets": {
+              "description": "Optional list of imagePullSecrets. Overrides `tempo.image.pullSecrets`",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "pullSecrets",
+              "type": "array"
+            },
+            "registry": {
+              "default": "null",
+              "description": "The Docker registry for the backend-scheduler image. Overrides `tempo.image.registry`",
+              "required": [],
+              "title": "registry",
+              "type": "null"
+            },
+            "repository": {
+              "default": "null",
+              "description": "Docker image repository for the backend-scheduler image. Overrides `tempo.image.repository`",
+              "required": [],
+              "title": "repository",
+              "type": "null"
+            },
+            "tag": {
+              "default": "null",
+              "description": "Docker image tag for the backend-scheduler image. Overrides `tempo.image.tag`",
+              "required": [],
+              "title": "tag",
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "initContainers": {
+          "description": " - ip: 1.2.3.4\n   hostnames:\n     - domain.tld\nInit containers to add to the backend-scheduler pod",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "initContainers",
+          "type": "array"
+        },
+        "labels": {
+          "additionalProperties": true,
+          "description": "Labels for the backend-scheduler StatefulSet",
+          "required": [],
+          "title": "labels",
+          "type": "object"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "description": "Liveness probe for backend-scheduler pod. Uses `tempo.livenessProbe` as default if not set.",
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
+        "nodeSelector": {
+          "additionalProperties": true,
+          "description": "Node selector for backend-scheduler pod",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
+        "persistence": {
+          "additionalProperties": true,
+          "description": "Persistence configuration for backend-scheduler",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations for backend-scheduler's persist volume claim",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enableStatefulSetRecreationForSizeChange": {
+              "default": false,
+              "description": "Enable StatefulSetRecreation for changes to PVC size",
+              "required": [],
+              "title": "enableStatefulSetRecreationForSizeChange",
+              "type": "boolean"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable creating PVCs which is required when using boltdb-shipper",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "inMemory": {
+              "default": false,
+              "description": "use emptyDir with ramdisk instead of PVC. **Please note that all data in backend-scheduler will be lost on pod restart**",
+              "required": [],
+              "title": "inMemory",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels for backend-scheduler's persist volume claim",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "size": {
+              "default": "10Gi",
+              "description": "Size of persistent or memory disk",
+              "required": [],
+              "title": "size",
+              "type": "string"
+            },
+            "storageClass": {
+              "default": "null",
+              "description": "Storage class to be used.\nIf defined, storageClassName: \u003cstorageClass\u003e.\nIf set to \"-\", storageClassName: \"\", which disables dynamic provisioning.\nIf empty or set to null, no storageClassName spec is\nset, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).",
+              "required": [],
+              "title": "storageClass",
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "persistence",
+          "type": "object"
+        },
+        "persistentVolumeClaimRetentionPolicy": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable Persistent volume retention policy for StatefulSet",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "whenDeleted": {
+              "default": "Retain",
+              "description": "Volume retention behavior that applies when the StatefulSet is deleted",
+              "required": [],
+              "title": "whenDeleted",
+              "type": "string"
+            },
+            "whenScaled": {
+              "default": "Retain",
+              "description": "Volume retention behavior when the replica count of the StatefulSet is reduced",
+              "required": [],
+              "title": "whenScaled",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "persistentVolumeClaimRetentionPolicy",
+          "type": "object"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "description": "Annotations for backend-scheduler pod",
+          "required": [],
+          "title": "podAnnotations",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "description": "Labels for backend-scheduler pod",
+          "required": [],
+          "title": "podLabels",
+          "type": "object"
+        },
+        "priorityClassName": {
+          "default": "null",
+          "description": "The name of the PriorityClass for backend-scheduler pod",
+          "required": [],
+          "title": "priorityClassName",
+          "type": "null"
+        },
+        "readinessProbe": {
+          "additionalProperties": true,
+          "description": "Readiness probe for backend-scheduler pod. Uses `tempo.readinessProbe` as default if not set.",
+          "required": [],
+          "title": "readinessProbe",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resource requests and limits for the backend-scheduler",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "service": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations for backend-scheduler service",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "service",
+          "type": "object"
+        },
+        "statefulStrategy": {
+          "additionalProperties": true,
+          "description": "updateStrategy of the backend-scheduler statefulset.",
+          "properties": {
+            "rollingUpdate": {
+              "additionalProperties": true,
+              "properties": {
+                "partition": {
+                  "default": 0,
+                  "required": [],
+                  "title": "partition",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "rollingUpdate",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "statefulStrategy",
+          "type": "object"
+        },
+        "terminationGracePeriodSeconds": {
+          "default": 30,
+          "description": "Grace period to allow the backend-scheduler to shutdown before it is killed",
+          "required": [],
+          "title": "terminationGracePeriodSeconds",
+          "type": "integer"
+        },
+        "tolerations": {
+          "description": "Tolerations for backend-scheduler pod",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
+        },
+        "topologySpreadConstraints": {
+          "default": "- maxSkew: 1\n  topologyKey: topology.kubernetes.io/zone\n  whenUnsatisfiable: ScheduleAnyway\n  labelSelector:\n    matchLabels:\n      {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"backend-scheduler\") | nindent 6 }}\n",
+          "description": "topologySpread for backend-scheduler pods. Passed through `tpl` and, thus, to be configured as string",
+          "required": [],
+          "title": "topologySpreadConstraints",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "backendScheduler",
+      "type": "object"
+    },
+    "backendWorker": {
+      "additionalProperties": true,
+      "description": "Configuration for the backend-worker",
+      "properties": {
+        "affinity": {
+          "default": "podAntiAffinity:\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"backend-worker\") | nindent 12 }}\n        topologyKey: kubernetes.io/hostname\n    - weight: 75\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"backend-worker\") | nindent 12 }}\n        topologyKey: topology.kubernetes.io/zone\n",
+          "description": "Affinity for backend-worker pods. Passed through `tpl` and, thus, to be configured as string",
+          "required": [],
+          "title": "affinity",
+          "type": "string"
+        },
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations for backend-worker StatefulSet",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "autoscaling": {
+          "additionalProperties": true,
+          "description": "Autoscaling configurations",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable autoscaling for the backend-worker",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "hpa": {
+              "additionalProperties": true,
+              "description": "Autoscaling via HPA object",
+              "properties": {
+                "behavior": {
+                  "additionalProperties": true,
+                  "description": "Autoscaling behavior configuration for the backend-worker",
+                  "required": [],
+                  "title": "behavior",
+                  "type": "object"
+                },
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "targetCPUUtilizationPercentage": {
+                  "default": 100,
+                  "description": "Target CPU utilisation percentage for the backend-worker",
+                  "required": [],
+                  "title": "targetCPUUtilizationPercentage",
+                  "type": "integer"
+                },
+                "targetMemoryUtilizationPercentage": {
+                  "default": "",
+                  "description": "Target memory utilisation percentage for the backend-worker",
+                  "required": [],
+                  "title": "targetMemoryUtilizationPercentage",
+                  "type": "null"
+                }
+              },
+              "required": [],
+              "title": "hpa",
+              "type": "object"
+            },
+            "keda": {
+              "additionalProperties": true,
+              "description": "Autoscaling via keda/ScaledObject",
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "description": "requires https://keda.sh/",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "triggers": {
+                  "description": "List of autoscaling triggers for the compactor",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "triggers",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "keda",
+              "type": "object"
+            },
+            "maxReplicas": {
+              "default": 3,
+              "description": "Maximum autoscaling replicas for the backend-worker",
+              "required": [],
+              "title": "maxReplicas",
+              "type": "integer"
+            },
+            "minReplicas": {
+              "default": 1,
+              "description": "Minimum autoscaling replicas for the backend-worker",
+              "required": [],
+              "title": "minReplicas",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "autoscaling",
+          "type": "object"
+        },
+        "config": {
+          "additionalProperties": true,
+          "properties": {
+            "backend_scheduler_client": {
+              "additionalProperties": true,
+              "properties": {
+                "grpc_client_config": {
+                  "additionalProperties": true,
+                  "description": "gRPC client configuration",
+                  "required": [],
+                  "title": "grpc_client_config",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "backend_scheduler_client",
+              "type": "object"
+            },
+            "backoff": {
+              "additionalProperties": true,
+              "description": "Backoff configuration for retrying failed jobs",
+              "properties": {
+                "max_period": {
+                  "default": "1m",
+                  "required": [],
+                  "title": "max_period",
+                  "type": "string"
+                },
+                "max_retries": {
+                  "default": 0,
+                  "required": [],
+                  "title": "max_retries",
+                  "type": "integer"
+                },
+                "min_period": {
+                  "default": "100ms",
+                  "required": [],
+                  "title": "min_period",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "backoff",
+              "type": "object"
+            },
+            "compaction": {
+              "additionalProperties": true,
+              "description": "Compaction settings\n.Values.backendScheduler.compaction.compaction will be used",
+              "required": [],
+              "title": "compaction",
+              "type": "object"
+            },
+            "finish_on_shutdown_timeout": {
+              "default": "30s",
+              "description": "Timeout for finishing the current job before shutting down the worker",
+              "required": [],
+              "title": "finish_on_shutdown_timeout",
+              "type": "string"
+            },
+            "max_compaction_level": {
+              "default": 0,
+              "description": "Maximum compaction level (0 means no limit)",
+              "required": [],
+              "title": "max_compaction_level",
+              "type": "integer"
+            },
+            "max_input_blocks": {
+              "default": 4,
+              "description": "Maximum number of blocks to compact together",
+              "required": [],
+              "title": "max_input_blocks",
+              "type": "integer"
+            },
+            "max_jobs_per_tenant": {
+              "default": 1000,
+              "description": "Maximum number of compaction jobs to create per tenant",
+              "required": [],
+              "title": "max_jobs_per_tenant",
+              "type": "integer"
+            },
+            "min_cycle_interval": {
+              "default": "30s",
+              "description": "Minimum time between compaction cycles for a tenant",
+              "required": [],
+              "title": "min_cycle_interval",
+              "type": "string"
+            },
+            "min_input_blocks": {
+              "default": 2,
+              "description": "Minimum number of blocks required for compaction",
+              "required": [],
+              "title": "min_input_blocks",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "config",
+          "type": "object"
+        },
+        "dnsConfigOverides": {
+          "additionalProperties": true,
+          "properties": {
+            "dnsConfig": {
+              "additionalProperties": true,
+              "properties": {
+                "options": {
+                  "items": {
+                    "additionalProperties": true,
+                    "properties": {
+                      "name": {
+                        "default": "ndots",
+                        "required": [],
+                        "title": "name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "3",
+                        "required": [],
+                        "title": "value",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  "required": [],
+                  "title": "options",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "dnsConfig",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "dnsConfigOverides",
+          "type": "object"
+        },
+        "extraArgs": {
+          "description": "Additional CLI args for the backend-worker",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraArgs",
+          "type": "array"
+        },
+        "extraContainers": {
+          "description": "Containers to add to the backend-worker pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraContainers",
+          "type": "array"
+        },
+        "extraEnv": {
+          "description": "Environment variables to add to the backend-worker pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraEnv",
+          "type": "array"
+        },
+        "extraEnvFrom": {
+          "description": "Environment variables from secrets or configmaps to add to the backend-worker pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraEnvFrom",
+          "type": "array"
+        },
+        "extraVolumeMounts": {
+          "description": "Extra volumes for backend-worker pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "Extra volumes for backend-worker StatefulSet",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumes",
+          "type": "array"
+        },
+        "hostAliases": {
+          "description": "hostAliases to add",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "hostAliases",
+          "type": "array"
+        },
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "pullSecrets": {
+              "description": "Optional list of imagePullSecrets. Overrides `tempo.image.pullSecrets`",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "pullSecrets",
+              "type": "array"
+            },
+            "registry": {
+              "default": "null",
+              "description": "The Docker registry for the backend-worker image. Overrides `tempo.image.registry`",
+              "required": [],
+              "title": "registry",
+              "type": "null"
+            },
+            "repository": {
+              "default": "null",
+              "description": "Docker image repository for the backend-worker image. Overrides `tempo.image.repository`",
+              "required": [],
+              "title": "repository",
+              "type": "null"
+            },
+            "tag": {
+              "default": "null",
+              "description": "Docker image tag for the backend-worker image. Overrides `tempo.image.tag`",
+              "required": [],
+              "title": "tag",
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "initContainers": {
+          "description": " - ip: 1.2.3.4\n   hostnames:\n     - domain.tld\nInit containers to add to the backend-worker pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "initContainers",
+          "type": "array"
+        },
+        "labels": {
+          "additionalProperties": true,
+          "description": "Labels for the backend-worker StatefulSet",
+          "required": [],
+          "title": "labels",
+          "type": "object"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "description": "Liveness probe for backend-worker pods. Uses `tempo.livenessProbe` as default if not set.",
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
+        "nodeSelector": {
+          "additionalProperties": true,
+          "description": "Node selector for backend-worker pods",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
+        "persistence": {
+          "additionalProperties": true,
+          "description": "Persistence configuration for backend-worker",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations for backend-worker's persist volume claim",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enableStatefulSetRecreationForSizeChange": {
+              "default": false,
+              "description": "Enable StatefulSetRecreation for changes to PVC size",
+              "required": [],
+              "title": "enableStatefulSetRecreationForSizeChange",
+              "type": "boolean"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable creating PVCs which is required when using boltdb-shipper",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "inMemory": {
+              "default": false,
+              "description": "use emptyDir with ramdisk instead of PVC. **Please note that all data in backend-worker will be lost on pod restart**",
+              "required": [],
+              "title": "inMemory",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels for backend-worker's persist volume claim",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "size": {
+              "default": "10Gi",
+              "description": "Size of persistent or memory disk",
+              "required": [],
+              "title": "size",
+              "type": "string"
+            },
+            "storageClass": {
+              "default": "null",
+              "description": "Storage class to be used.\nIf defined, storageClassName: \u003cstorageClass\u003e.\nIf set to \"-\", storageClassName: \"\", which disables dynamic provisioning.\nIf empty or set to null, no storageClassName spec is\nset, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).",
+              "required": [],
+              "title": "storageClass",
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "persistence",
+          "type": "object"
+        },
+        "persistentVolumeClaimRetentionPolicy": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable Persistent volume retention policy for StatefulSet",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "whenDeleted": {
+              "default": "Retain",
+              "description": "Volume retention behavior that applies when the StatefulSet is deleted",
+              "required": [],
+              "title": "whenDeleted",
+              "type": "string"
+            },
+            "whenScaled": {
+              "default": "Retain",
+              "description": "Volume retention behavior when the replica count of the StatefulSet is reduced",
+              "required": [],
+              "title": "whenScaled",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "persistentVolumeClaimRetentionPolicy",
+          "type": "object"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "description": "Annotations for backend-worker pods",
+          "required": [],
+          "title": "podAnnotations",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "description": "Labels for backend-worker pods",
+          "required": [],
+          "title": "podLabels",
+          "type": "object"
+        },
+        "priorityClassName": {
+          "default": "null",
+          "description": "The name of the PriorityClass for backend-worker pods",
+          "required": [],
+          "title": "priorityClassName",
+          "type": "null"
+        },
+        "readinessProbe": {
+          "additionalProperties": true,
+          "description": "Readiness probe for backend-worker pods. Uses `tempo.readinessProbe` as default if not set.",
+          "required": [],
+          "title": "readinessProbe",
+          "type": "object"
+        },
+        "replicas": {
+          "default": 1,
+          "description": "Number of replicas for the backend-worker",
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resource requests and limits for the backend-worker",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "service": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations for backend-worker service",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "service",
+          "type": "object"
+        },
+        "statefulStrategy": {
+          "additionalProperties": true,
+          "description": "updateStrategy of the backend-worker statefulset.",
+          "properties": {
+            "rollingUpdate": {
+              "additionalProperties": true,
+              "properties": {
+                "partition": {
+                  "default": 0,
+                  "required": [],
+                  "title": "partition",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "rollingUpdate",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "statefulStrategy",
+          "type": "object"
+        },
+        "terminationGracePeriodSeconds": {
+          "default": 30,
+          "description": "Grace period to allow the backend-worker to shutdown before it is killed",
+          "required": [],
+          "title": "terminationGracePeriodSeconds",
+          "type": "integer"
+        },
+        "tolerations": {
+          "description": "Tolerations for backend-worker pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
+        },
+        "topologySpreadConstraints": {
+          "default": "- maxSkew: 1\n  topologyKey: topology.kubernetes.io/zone\n  whenUnsatisfiable: ScheduleAnyway\n  labelSelector:\n    matchLabels:\n      {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"backend-worker\") | nindent 6 }}\n",
+          "description": "topologySpread for backend-worker pods. Passed through `tpl` and, thus, to be configured as string",
+          "required": [],
+          "title": "topologySpreadConstraints",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "backendWorker",
+      "type": "object"
+    },
     "bucketRoot": {
       "default": "",
       "description": "# Override the root directory which the minio server should serve from.\n# If left empty, it defaults to the value of {{ .Values.mountPath }}\n# If defined, it must be a sub-directory of the path specified in {{ .Values.mountPath }}\n#",
@@ -414,7 +1614,7 @@
     },
     "cache": {
       "additionalProperties": true,
-      "description": "Use this block to configure caches available throughout the application.\nMultiple caches can be created and assigned roles which determine how they are used by Tempo.\nhttps://grafana.com/docs/tempo/latest/configuration/#cache",
+      "description": "Use this block to configure caches available throughout the application.\nMultiple caches can be created and assigned roles which determine how they are used by Tempo.\nhttps://grafana.com/docs/tempo/latest/configuration/#cache\nWhen memcached.enabled is true (the default), the cache.caches list is auto-generated from the\nmemcached and per-role memcached sections (memcachedBloom, memcachedParquetFooter, memcachedFrontendSearch).\nWhen memcached.enabled is false, this block is passed through verbatim to allow configuring external caches.",
       "properties": {
         "caches": {
           "items": {
@@ -772,6 +1972,15 @@
           "title": "extraEnvFrom",
           "type": "array"
         },
+        "extraPorts": {
+          "description": "Additional ports to expose on the compactor container.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraPorts",
+          "type": "array"
+        },
         "extraVolumeMounts": {
           "description": "Extra volumes for compactor pods",
           "items": {
@@ -999,7 +2208,7 @@
       "type": "object"
     },
     "config": {
-      "default": "multitenancy_enabled: {{ .Values.multitenancyEnabled }}\n\nstream_over_http_enabled: {{ .Values.streamOverHTTPEnabled }}\n\nusage_report:\n  reporting_enabled: {{ .Values.reportingEnabled }}\n\n{{- if .Values.enterprise.enabled }}\nlicense:\n  path: \"/license/license.jwt\"\n\nadmin_api:\n  leader_election:\n    enabled: true\n    ring:\n      kvstore:\n        store: \"memberlist\"\n\nauth:\n  type: enterprise\n\nhttp_api_prefix: {{get .Values.tempo.structuredConfig \"http_api_prefix\"}}\n\nadmin_client:\n  storage:\n    backend: {{.Values.storage.admin.backend}}\n    {{- if eq .Values.storage.admin.backend \"s3\"}}\n    s3:\n      {{- toYaml .Values.storage.admin.s3 | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"gcs\"}}\n    gcs:\n      {{- toYaml .Values.storage.admin.gcs | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"azure\"}}\n    azure:\n      {{- toYaml .Values.storage.admin.azure | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"swift\"}}\n    swift:\n      {{- toYaml .Values.storage.admin.swift | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"filesystem\"}}\n    filesystem:\n      {{- toYaml .Values.storage.admin.filesystem | nindent 6}}\n    {{- end}}\n{{- end }}\n\n{{- if and .Values.enterprise.enabled .Values.enterpriseGateway.useDefaultProxyURLs }}\ngateway:\n  proxy:\n    admin_api:\n      url: http://{{ template \"tempo.fullname\" . }}-admin-api.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    compactor:\n      url: http://{{ template \"tempo.fullname\" . }}-compactor.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    default:\n      url: http://{{ template \"tempo.fullname\" . }}-admin-api.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    distributor:\n      url: http://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n      otlp/grpc:\n        url: h2c://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:4317\n      otlp/http:\n        url: http://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:4318\n    ingester:\n      url: http://{{ template \"tempo.fullname\" . }}-ingester.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    querier:\n      url: http://{{ template \"tempo.fullname\" . }}-querier.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    query_frontend:\n      url: http://{{ template \"tempo.fullname\" . }}-query-frontend.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}{{get .Values.tempo.structuredConfig \"http_api_prefix\"}}\n{{else}}\n{{- if and .Values.enterprise.enabled .Values.enterpriseGateway.proxy }}\ngateway:\n  proxy: {{- toYaml .Values.enterpriseGateway.proxy | nindent 6 }}\n{{- end }}\n{{- end }}\n\ncompactor:\n  compaction:\n    block_retention: {{ .Values.compactor.config.compaction.block_retention }}\n    compacted_block_retention: {{ .Values.compactor.config.compaction.compacted_block_retention }}\n    compaction_window: {{ .Values.compactor.config.compaction.compaction_window }}\n    v2_in_buffer_bytes: {{ .Values.compactor.config.compaction.v2_in_buffer_bytes }}\n    v2_out_buffer_bytes: {{ .Values.compactor.config.compaction.v2_out_buffer_bytes }}\n    max_compaction_objects: {{ .Values.compactor.config.compaction.max_compaction_objects }}\n    max_block_bytes: {{ .Values.compactor.config.compaction.max_block_bytes }}\n    retention_concurrency: {{ .Values.compactor.config.compaction.retention_concurrency }}\n    v2_prefetch_traces_count: {{ .Values.compactor.config.compaction.v2_prefetch_traces_count }}\n    max_time_per_tenant: {{ .Values.compactor.config.compaction.max_time_per_tenant }}\n    compaction_cycle: {{ .Values.compactor.config.compaction.compaction_cycle }}\n  ring:\n    kvstore:\n      store: memberlist\n{{- if and .Values.enterprise.enabled .Values.enterpriseFederationFrontend.enabled }}\nfederation:\n  proxy_targets:\n    {{- toYaml .Values.enterpriseFederationFrontend.proxy_targets | nindent 6 }}\n{{- end }}\n{{- if .Values.metricsGenerator.enabled }}\nmetrics_generator:\n  ring:\n    kvstore:\n      store: memberlist\n  processor:\n    {{- toYaml .Values.metricsGenerator.config.processor | nindent 6 }}\n  storage:\n    {{- toYaml .Values.metricsGenerator.config.storage | nindent 6 }}\n  traces_storage:\n    {{- toYaml .Values.metricsGenerator.config.traces_storage | nindent 6 }}\n  registry:\n    {{- toYaml .Values.metricsGenerator.config.registry | nindent 6 }}\n  metrics_ingestion_time_range_slack: {{ .Values.metricsGenerator.config.metrics_ingestion_time_range_slack }}\n{{- end }}\ndistributor:\n  {{- if .Values.distributor.config.cost_attribution.enabled }}\n  usage:\n    cost_attribution:\n      enabled: {{ .Values.distributor.config.cost_attribution.enabled }}\n      max_cardinality: {{ .Values.distributor.config.cost_attribution.max_cardinality }}\n      stale_duration: {{ .Values.distributor.config.cost_attribution.stale_duration }}\n  {{- end }}\n  ring:\n    kvstore:\n      store: memberlist\n  receivers:\n    {{- if  or (.Values.traces.jaeger.thriftCompact.enabled) (.Values.traces.jaeger.thriftBinary.enabled) (.Values.traces.jaeger.thriftHttp.enabled) (.Values.traces.jaeger.grpc.enabled) }}\n    jaeger:\n      protocols:\n        {{- if .Values.traces.jaeger.thriftCompact.enabled }}\n        thrift_compact:\n          {{- $mergedJaegerThriftCompactConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:6831\") .Values.traces.jaeger.thriftCompact.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftCompactConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.thriftBinary.enabled }}\n        thrift_binary:\n          {{- $mergedJaegerThriftBinaryConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:6832\") .Values.traces.jaeger.thriftBinary.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftBinaryConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.thriftHttp.enabled }}\n        thrift_http:\n          {{- $mergedJaegerThriftHttpConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:14268\") .Values.traces.jaeger.thriftHttp.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftHttpConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.grpc.enabled }}\n        grpc:\n          {{- $mergedJaegerGrpcConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:14250\") .Values.traces.jaeger.grpc.receiverConfig }}\n          {{- toYaml $mergedJaegerGrpcConfig | nindent 10 }}\n        {{- end }}\n    {{- end }}\n    {{- if .Values.traces.zipkin.enabled }}\n    zipkin:\n      {{- $mergedZipkinReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:9411\") .Values.traces.zipkin.receiverConfig }}\n      {{- toYaml $mergedZipkinReceiverConfig | nindent 6 }}\n    {{- end }}\n    {{- if or (.Values.traces.otlp.http.enabled) (.Values.traces.otlp.grpc.enabled) }}\n    otlp:\n      protocols:\n        {{- if .Values.traces.otlp.http.enabled }}\n        http:\n          {{- $mergedOtlpHttpReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:4318\") .Values.traces.otlp.http.receiverConfig }}\n          {{- toYaml $mergedOtlpHttpReceiverConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.otlp.grpc.enabled }}\n        grpc:\n          {{- $mergedOtlpGrpcReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:4317\") .Values.traces.otlp.grpc.receiverConfig }}\n          {{- toYaml $mergedOtlpGrpcReceiverConfig | nindent 10 }}\n        {{- end }}\n    {{- end }}\n    {{- if .Values.traces.opencensus.enabled }}\n    opencensus:\n      {{- $mergedOpencensusReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:55678\") .Values.traces.opencensus.receiverConfig }}\n      {{- toYaml $mergedOpencensusReceiverConfig | nindent 6 }}\n    {{- end }}\n    {{- if .Values.traces.kafka }}\n    kafka:\n      {{- toYaml .Values.traces.kafka | nindent 6 }}\n    {{- end }}\n  {{- if .Values.distributor.config.log_discarded_spans.enabled }}\n  log_discarded_spans:\n    enabled: {{ .Values.distributor.config.log_discarded_spans.enabled }}\n    include_all_attributes: {{ .Values.distributor.config.log_discarded_spans.include_all_attributes }}\n    filter_by_status_error: {{ .Values.distributor.config.log_discarded_spans.filter_by_status_error }}\n  {{- end }}\n  {{- if or .Values.distributor.config.log_received_traces .Values.distributor.config.log_received_spans.enabled }}\n  log_received_spans:\n    enabled: {{ or .Values.distributor.config.log_received_traces .Values.distributor.config.log_received_spans.enabled }}\n    include_all_attributes: {{ .Values.distributor.config.log_received_spans.include_all_attributes }}\n    filter_by_status_error: {{ .Values.distributor.config.log_received_spans.filter_by_status_error }}\n  {{- end }}\n  {{- if .Values.distributor.config.extend_writes }}\n  extend_writes: {{ .Values.distributor.config.extend_writes }}\n  {{- end }}\n  {{- if not (eq .Values.distributor.config.max_attribute_bytes nil) }}\n  max_attribute_bytes: {{ .Values.distributor.config.max_attribute_bytes }}\n  {{- end }}\nquerier:\n  frontend_worker:\n    frontend_address: {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend-discovery\") }}:9095\n    {{- if .Values.querier.config.frontend_worker.grpc_client_config }}\n    grpc_client_config:\n      {{- toYaml .Values.querier.config.frontend_worker.grpc_client_config | nindent 6 }}\n    {{- end }}\n  trace_by_id:\n    query_timeout: {{ .Values.querier.config.trace_by_id.query_timeout }}\n  search:\n    query_timeout: {{ .Values.querier.config.search.query_timeout }}\n  max_concurrent_queries: {{ .Values.querier.config.max_concurrent_queries }}\nquery_frontend:\n  {{- if not .Values.enterprise.enabled }}\n  mcp_server:\n    enabled: {{ .Values.queryFrontend.mcp_server.enabled }}\n  {{- end }}\n  max_outstanding_per_tenant: {{ .Values.queryFrontend.config.max_outstanding_per_tenant }}\n  max_retries: {{ .Values.queryFrontend.config.max_retries }}\n  search:\n    target_bytes_per_job: {{ .Values.queryFrontend.config.search.target_bytes_per_job }}\n    concurrent_jobs: {{ .Values.queryFrontend.config.search.concurrent_jobs }}\n    max_spans_per_span_set: {{ .Values.queryFrontend.config.search.max_spans_per_span_set }}\n  trace_by_id:\n    query_shards: {{ .Values.queryFrontend.config.trace_by_id.query_shards }}\n  metrics:\n    concurrent_jobs:  {{ .Values.queryFrontend.config.metrics.concurrent_jobs }}\n    target_bytes_per_job:  {{ .Values.queryFrontend.config.metrics.target_bytes_per_job }}\n    max_duration: {{ .Values.queryFrontend.config.metrics.max_duration }}\n    query_backend_after: {{ .Values.queryFrontend.config.metrics.query_backend_after }}\n    interval: {{ .Values.queryFrontend.config.metrics.interval }}\n    duration_slo: {{ .Values.queryFrontend.config.metrics.duration_slo }}\n    throughput_bytes_slo: {{ .Values.queryFrontend.config.metrics.throughput_bytes_slo }}\ningester:\n  lifecycler:\n    ring:\n      replication_factor: {{ .Values.ingester.config.replication_factor }}\n      {{- if .Values.ingester.zoneAwareReplication.enabled }}\n      zone_awareness_enabled: true\n      {{- end }}\n      kvstore:\n        store: memberlist\n    tokens_file_path: /var/tempo/tokens.json\n  {{- if .Values.ingester.config.trace_idle_period }}\n  trace_idle_period: {{ .Values.ingester.config.trace_idle_period }}\n  {{- end }}\n  {{- if .Values.ingester.config.flush_check_period }}\n  flush_check_period: {{ .Values.ingester.config.flush_check_period }}\n  {{- end }}\n  {{- if .Values.ingester.config.max_block_bytes }}\n  max_block_bytes: {{ .Values.ingester.config.max_block_bytes }}\n  {{- end }}\n  {{- if .Values.ingester.config.max_block_duration }}\n  max_block_duration: {{ .Values.ingester.config.max_block_duration }}\n  {{- end }}\n  {{- if .Values.ingester.config.complete_block_timeout }}\n  complete_block_timeout: {{ .Values.ingester.config.complete_block_timeout }}\n  {{- end }}\n  {{- if .Values.ingester.config.flush_all_on_shutdown }}\n  flush_all_on_shutdown: {{ .Values.ingester.config.flush_all_on_shutdown }}\n  {{- end }}\nmemberlist:\n  {{- with .Values.memberlist }}\n    {{- toYaml . | nindent 2 }}\n  {{- end }}\n  join_members:\n    - dns+{{ include \"tempo.fullname\" . }}-gossip-ring:{{ .Values.memberlist.bind_port }}\noverrides:\n  {{- toYaml .Values.overrides | nindent 2 }}\nserver:\n  http_listen_port: {{ .Values.server.httpListenPort }}\n  log_level: {{ .Values.server.logLevel }}\n  log_format: {{ .Values.server.logFormat }}\n  grpc_server_max_recv_msg_size: {{ .Values.server.grpc_server_max_recv_msg_size }}\n  grpc_server_max_send_msg_size: {{ .Values.server.grpc_server_max_send_msg_size }}\n  http_server_read_timeout: {{ .Values.server.http_server_read_timeout }}\n  http_server_write_timeout: {{ .Values.server.http_server_write_timeout }}\ncache:\n{{- toYaml .Values.cache | nindent 2}}\nstorage:\n  trace:\n    {{- if .Values.storage.trace.block.version }}\n    block:\n      version: {{.Values.storage.trace.block.version}}\n      {{- if .Values.storage.trace.block.dedicated_columns}}\n      parquet_dedicated_columns:\n        {{ .Values.storage.trace.block.dedicated_columns | toYaml | nindent 8}}\n      {{- end }}\n    {{- end }}\n    pool:\n      max_workers: {{ .Values.storage.trace.pool.max_workers }}\n      queue_depth: {{ .Values.storage.trace.pool.queue_depth }}\n    backend: {{.Values.storage.trace.backend}}\n    {{- if eq .Values.storage.trace.backend \"s3\"}}\n    s3:\n      {{- toYaml .Values.storage.trace.s3 | nindent 6}}\n    {{- end }}\n    {{- if eq .Values.storage.trace.backend \"gcs\"}}\n    gcs:\n      {{- toYaml .Values.storage.trace.gcs | nindent 6}}\n    {{- end }}\n    {{- if eq .Values.storage.trace.backend \"azure\"}}\n    azure:\n      {{- toYaml .Values.storage.trace.azure | nindent 6}}\n    {{- end }}\n    blocklist_poll: 5m\n    local:\n      path: /var/tempo/traces\n    wal:\n      path: /var/tempo/wal\n    search:\n      {{- toYaml .Values.storage.trace.search | nindent 6}}\n\n    {{- if .Values.storage.trace.blocklist_poll }}\n    blocklist_poll: {{ .Values.storage.trace.blocklist_poll }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_concurrency }}\n    blocklist_poll_concurrency: {{ .Values.storage.trace.blocklist_poll_concurrency }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_fallback }}\n    blocklist_poll_fallback: {{ .Values.storage.trace.blocklist_poll_fallback }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_tenant_index_builders }}\n    blocklist_poll_tenant_index_builders: {{ .Values.storage.trace.blocklist_poll_tenant_index_builders }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_stale_tenant_index }}\n    blocklist_poll_stale_tenant_index: {{ .Values.storage.trace.blocklist_poll_stale_tenant_index }}\n    {{- end }}\n    {{- if .Values.storage.trace.empty_tenant_deletion_age }}\n    empty_tenant_deletion_age: {{ .Values.storage.trace.empty_tenant_deletion_age }}\n    {{- end }}\n    {{- if .Values.storage.trace.empty_tenant_deletion_enabled }}\n    empty_tenant_deletion_enabled: {{ .Values.storage.trace.empty_tenant_deletion_enabled }}\n    {{- end }}\n",
+      "default": "multitenancy_enabled: {{ .Values.multitenancyEnabled }}\n\nstream_over_http_enabled: {{ .Values.streamOverHTTPEnabled }}\n\nusage_report:\n  reporting_enabled: {{ .Values.reportingEnabled }}\n\n{{- if .Values.enterprise.enabled }}\nlicense:\n  path: \"/license/license.jwt\"\n\nadmin_api:\n  leader_election:\n    enabled: true\n    ring:\n      kvstore:\n        store: \"memberlist\"\n\nauth:\n  type: enterprise\n\nhttp_api_prefix: {{get .Values.tempo.structuredConfig \"http_api_prefix\"}}\n\nadmin_client:\n  storage:\n    backend: {{.Values.storage.admin.backend}}\n    {{- if eq .Values.storage.admin.backend \"s3\"}}\n    s3:\n      {{- toYaml .Values.storage.admin.s3 | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"gcs\"}}\n    gcs:\n      {{- toYaml .Values.storage.admin.gcs | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"azure\"}}\n    azure:\n      {{- toYaml .Values.storage.admin.azure | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"swift\"}}\n    swift:\n      {{- toYaml .Values.storage.admin.swift | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"filesystem\"}}\n    filesystem:\n      {{- toYaml .Values.storage.admin.filesystem | nindent 6}}\n    {{- end}}\n{{- end }}\n\n{{- if and .Values.enterprise.enabled .Values.enterpriseGateway.useDefaultProxyURLs }}\ngateway:\n  proxy:\n    admin_api:\n      url: http://{{ template \"tempo.fullname\" . }}-admin-api.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    {{- if .Values.backendScheduler.enabled }}\n    backend_worker:\n      url: http://{{ template \"tempo.fullname\" . }}-backend-worker.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    {{- end }}\n    compactor:\n      url: http://{{ template \"tempo.fullname\" . }}-compactor.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    default:\n      url: http://{{ template \"tempo.fullname\" . }}-admin-api.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    distributor:\n      url: http://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n      otlp/grpc:\n        url: h2c://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:4317\n      otlp/http:\n        url: http://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:4318\n    ingester:\n      url: http://{{ template \"tempo.fullname\" . }}-ingester.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    querier:\n      url: http://{{ template \"tempo.fullname\" . }}-querier.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    query_frontend:\n      url: http://{{ template \"tempo.fullname\" . }}-query-frontend.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}{{get .Values.tempo.structuredConfig \"http_api_prefix\"}}\n{{else}}\n{{- if and .Values.enterprise.enabled .Values.enterpriseGateway.proxy }}\ngateway:\n  proxy: {{- toYaml .Values.enterpriseGateway.proxy | nindent 6 }}\n{{- end }}\n{{- end }}\n\n{{- if .Values.backendScheduler.enabled }}\nbackend_scheduler:\n  work:\n    prune_age: {{ .Values.backendScheduler.config.work.prune_age }}\n    dead_job_timeout: {{ .Values.backendScheduler.config.work.dead_job_timeout }}\n  maintenance_interval: {{ .Values.backendScheduler.config.maintenance_interval }}\n  backend_flush_interval: {{ .Values.backendScheduler.config.backend_flush_interval }}\n  provider:\n    retention:\n      interval: {{ .Values.backendScheduler.config.provider.retention.interval }}\n    compaction:\n      compaction:\n        block_retention: {{ .Values.backendScheduler.config.provider.compaction.compaction.block_retention }}\n        compacted_block_retention: {{ .Values.backendScheduler.config.provider.compaction.compaction.compacted_block_retention }}\n        compaction_cycle: {{ .Values.backendScheduler.config.provider.compaction.compaction.compaction_cycle }}\n        compaction_window: {{ .Values.backendScheduler.config.provider.compaction.compaction.compaction_window }}\n        max_block_bytes: {{ .Values.backendScheduler.config.provider.compaction.compaction.max_block_bytes }}\n        max_compaction_objects: {{ .Values.backendScheduler.config.provider.compaction.compaction.max_compaction_objects }}\n        max_time_per_tenant: {{ .Values.backendScheduler.config.provider.compaction.compaction.max_time_per_tenant }}\n        retention_concurrency: {{ .Values.backendScheduler.config.provider.compaction.compaction.retention_concurrency }}\n        v2_in_buffer_bytes: {{ .Values.backendScheduler.config.provider.compaction.compaction.v2_in_buffer_bytes }}\n        v2_out_buffer_bytes: {{ .Values.backendScheduler.config.provider.compaction.compaction.v2_out_buffer_bytes }}\n        v2_prefetch_traces_count: {{ .Values.backendScheduler.config.provider.compaction.compaction.v2_prefetch_traces_count }}\n      max_jobs_per_tenant: {{ .Values.backendScheduler.config.provider.compaction.max_jobs_per_tenant }}\n      min_input_blocks: {{ .Values.backendScheduler.config.provider.compaction.min_input_blocks }}\n      max_input_blocks: {{ .Values.backendScheduler.config.provider.compaction.max_input_blocks }}\n      max_compaction_level: {{ .Values.backendScheduler.config.provider.compaction.max_compaction_level }}\n      min_cycle_interval: {{ .Values.backendScheduler.config.provider.compaction.min_cycle_interval }}\n  job_timeout: {{ .Values.backendScheduler.config.job_timeout }}\n  local_work_path: {{ .Values.backendScheduler.config.local_work_path }}\n\n{{- with .Values.backendWorker.config.backend_scheduler_client.grpc_client_config }}\nbackend_scheduler_client:\n  grpc_client_config:\n    {{- toYaml . | nindent 6 }}\n\n{{- end }}\nbackend_worker:\n  backend_scheduler_addr: {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"backend-scheduler\") }}:9095\n  backoff:\n    min_period: {{ .Values.backendWorker.config.backoff.min_period }}\n    max_period: {{ .Values.backendWorker.config.backoff.max_period }}\n    max_retries: {{ .Values.backendWorker.config.backoff.max_retries }}\n  {{- $compaction_default := .Values.backendScheduler.config.provider.compaction.compaction }}\n  {{- $worker_overrides := .Values.backendWorker.config.compaction }}\n  {{- $compaction := mergeOverwrite (deepCopy $compaction_default) $worker_overrides }}\n  compaction:\n    {{- toYaml $compaction | nindent 6 }}\n  finish_on_shutdown_timeout: {{ .Values.backendWorker.config.finish_on_shutdown_timeout }}\n  ring:\n    kvstore:\n      store: memberlist\n{{- else }}\ncompactor:\n  compaction:\n    block_retention: {{ .Values.compactor.config.compaction.block_retention }}\n    compacted_block_retention: {{ .Values.compactor.config.compaction.compacted_block_retention }}\n    compaction_window: {{ .Values.compactor.config.compaction.compaction_window }}\n    v2_in_buffer_bytes: {{ .Values.compactor.config.compaction.v2_in_buffer_bytes }}\n    v2_out_buffer_bytes: {{ .Values.compactor.config.compaction.v2_out_buffer_bytes }}\n    max_compaction_objects: {{ .Values.compactor.config.compaction.max_compaction_objects }}\n    max_block_bytes: {{ .Values.compactor.config.compaction.max_block_bytes }}\n    retention_concurrency: {{ .Values.compactor.config.compaction.retention_concurrency }}\n    v2_prefetch_traces_count: {{ .Values.compactor.config.compaction.v2_prefetch_traces_count }}\n    max_time_per_tenant: {{ .Values.compactor.config.compaction.max_time_per_tenant }}\n    compaction_cycle: {{ .Values.compactor.config.compaction.compaction_cycle }}\n  ring:\n    kvstore:\n      store: memberlist\n  # {{- end }}\n{{- if and .Values.enterprise.enabled .Values.enterpriseFederationFrontend.enabled }}\nfederation:\n  proxy_targets:\n    {{- toYaml .Values.enterpriseFederationFrontend.proxy_targets | nindent 6 }}\n{{- end }}\n{{- if .Values.metricsGenerator.enabled }}\nmetrics_generator:\n  ring:\n    kvstore:\n      store: memberlist\n  processor:\n    {{- toYaml .Values.metricsGenerator.config.processor | nindent 6 }}\n  storage:\n    {{- toYaml .Values.metricsGenerator.config.storage | nindent 6 }}\n  traces_storage:\n    {{- toYaml .Values.metricsGenerator.config.traces_storage | nindent 6 }}\n  registry:\n    {{- toYaml .Values.metricsGenerator.config.registry | nindent 6 }}\n  metrics_ingestion_time_range_slack: {{ .Values.metricsGenerator.config.metrics_ingestion_time_range_slack }}\n{{- end }}\ndistributor:\n  {{- if .Values.distributor.config.cost_attribution.enabled }}\n  usage:\n    cost_attribution:\n      enabled: {{ .Values.distributor.config.cost_attribution.enabled }}\n      max_cardinality: {{ .Values.distributor.config.cost_attribution.max_cardinality }}\n      stale_duration: {{ .Values.distributor.config.cost_attribution.stale_duration }}\n  {{- end }}\n  ring:\n    kvstore:\n      store: memberlist\n  receivers:\n    {{- if  or (.Values.traces.jaeger.thriftCompact.enabled) (.Values.traces.jaeger.thriftBinary.enabled) (.Values.traces.jaeger.thriftHttp.enabled) (.Values.traces.jaeger.grpc.enabled) }}\n    jaeger:\n      protocols:\n        {{- if .Values.traces.jaeger.thriftCompact.enabled }}\n        thrift_compact:\n          {{- $mergedJaegerThriftCompactConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:6831\") .Values.traces.jaeger.thriftCompact.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftCompactConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.thriftBinary.enabled }}\n        thrift_binary:\n          {{- $mergedJaegerThriftBinaryConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:6832\") .Values.traces.jaeger.thriftBinary.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftBinaryConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.thriftHttp.enabled }}\n        thrift_http:\n          {{- $mergedJaegerThriftHttpConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:14268\") .Values.traces.jaeger.thriftHttp.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftHttpConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.grpc.enabled }}\n        grpc:\n          {{- $mergedJaegerGrpcConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:14250\") .Values.traces.jaeger.grpc.receiverConfig }}\n          {{- toYaml $mergedJaegerGrpcConfig | nindent 10 }}\n        {{- end }}\n    {{- end }}\n    {{- if .Values.traces.zipkin.enabled }}\n    zipkin:\n      {{- $mergedZipkinReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:9411\") .Values.traces.zipkin.receiverConfig }}\n      {{- toYaml $mergedZipkinReceiverConfig | nindent 6 }}\n    {{- end }}\n    {{- if or (.Values.traces.otlp.http.enabled) (.Values.traces.otlp.grpc.enabled) }}\n    otlp:\n      protocols:\n        {{- if .Values.traces.otlp.http.enabled }}\n        http:\n          {{- $mergedOtlpHttpReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:4318\") .Values.traces.otlp.http.receiverConfig }}\n          {{- toYaml $mergedOtlpHttpReceiverConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.otlp.grpc.enabled }}\n        grpc:\n          {{- $mergedOtlpGrpcReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:4317\") .Values.traces.otlp.grpc.receiverConfig }}\n          {{- toYaml $mergedOtlpGrpcReceiverConfig | nindent 10 }}\n        {{- end }}\n    {{- end }}\n    {{- if .Values.traces.opencensus.enabled }}\n    opencensus:\n      {{- $mergedOpencensusReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:55678\") .Values.traces.opencensus.receiverConfig }}\n      {{- toYaml $mergedOpencensusReceiverConfig | nindent 6 }}\n    {{- end }}\n    {{- if .Values.traces.kafka }}\n    kafka:\n      {{- toYaml .Values.traces.kafka | nindent 6 }}\n    {{- end }}\n  {{- if .Values.distributor.config.log_discarded_spans.enabled }}\n  log_discarded_spans:\n    enabled: {{ .Values.distributor.config.log_discarded_spans.enabled }}\n    include_all_attributes: {{ .Values.distributor.config.log_discarded_spans.include_all_attributes }}\n    filter_by_status_error: {{ .Values.distributor.config.log_discarded_spans.filter_by_status_error }}\n  {{- end }}\n  {{- if or .Values.distributor.config.log_received_traces .Values.distributor.config.log_received_spans.enabled }}\n  log_received_spans:\n    enabled: {{ or .Values.distributor.config.log_received_traces .Values.distributor.config.log_received_spans.enabled }}\n    include_all_attributes: {{ .Values.distributor.config.log_received_spans.include_all_attributes }}\n    filter_by_status_error: {{ .Values.distributor.config.log_received_spans.filter_by_status_error }}\n  {{- end }}\n  {{- if .Values.distributor.config.extend_writes }}\n  extend_writes: {{ .Values.distributor.config.extend_writes }}\n  {{- end }}\n  {{- if not (eq .Values.distributor.config.max_attribute_bytes nil) }}\n  max_attribute_bytes: {{ .Values.distributor.config.max_attribute_bytes }}\n  {{- end }}\nquerier:\n  frontend_worker:\n    frontend_address: {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend-discovery\") }}:9095\n    {{- if .Values.querier.config.frontend_worker.grpc_client_config }}\n    grpc_client_config:\n      {{- toYaml .Values.querier.config.frontend_worker.grpc_client_config | nindent 6 }}\n    {{- end }}\n  trace_by_id:\n    query_timeout: {{ .Values.querier.config.trace_by_id.query_timeout }}\n  search:\n    query_timeout: {{ .Values.querier.config.search.query_timeout }}\n  max_concurrent_queries: {{ .Values.querier.config.max_concurrent_queries }}\nquery_frontend:\n  {{- if not .Values.enterprise.enabled }}\n  mcp_server:\n    enabled: {{ .Values.queryFrontend.mcp_server.enabled }}\n  {{- end }}\n  max_outstanding_per_tenant: {{ .Values.queryFrontend.config.max_outstanding_per_tenant }}\n  max_retries: {{ .Values.queryFrontend.config.max_retries }}\n  search:\n    target_bytes_per_job: {{ .Values.queryFrontend.config.search.target_bytes_per_job }}\n    concurrent_jobs: {{ .Values.queryFrontend.config.search.concurrent_jobs }}\n    max_spans_per_span_set: {{ .Values.queryFrontend.config.search.max_spans_per_span_set }}\n    {{- with .Values.queryFrontend.config.search.max_result_limit }}\n    max_result_limit: {{ . }}\n    {{- end }}\n  trace_by_id:\n    query_shards: {{ .Values.queryFrontend.config.trace_by_id.query_shards }}\n  metrics:\n    concurrent_jobs:  {{ .Values.queryFrontend.config.metrics.concurrent_jobs }}\n    target_bytes_per_job:  {{ .Values.queryFrontend.config.metrics.target_bytes_per_job }}\n    max_duration: {{ .Values.queryFrontend.config.metrics.max_duration }}\n    query_backend_after: {{ .Values.queryFrontend.config.metrics.query_backend_after }}\n    interval: {{ .Values.queryFrontend.config.metrics.interval }}\n    duration_slo: {{ .Values.queryFrontend.config.metrics.duration_slo }}\n    throughput_bytes_slo: {{ .Values.queryFrontend.config.metrics.throughput_bytes_slo }}\ningester:\n  lifecycler:\n    ring:\n      replication_factor: {{ .Values.ingester.config.replication_factor }}\n      {{- if .Values.ingester.zoneAwareReplication.enabled }}\n      zone_awareness_enabled: true\n      {{- end }}\n      kvstore:\n        store: memberlist\n    tokens_file_path: /var/tempo/tokens.json\n  {{- if .Values.ingester.config.trace_idle_period }}\n  trace_idle_period: {{ .Values.ingester.config.trace_idle_period }}\n  {{- end }}\n  {{- if .Values.ingester.config.flush_check_period }}\n  flush_check_period: {{ .Values.ingester.config.flush_check_period }}\n  {{- end }}\n  {{- if .Values.ingester.config.max_block_bytes }}\n  max_block_bytes: {{ .Values.ingester.config.max_block_bytes }}\n  {{- end }}\n  {{- if .Values.ingester.config.max_block_duration }}\n  max_block_duration: {{ .Values.ingester.config.max_block_duration }}\n  {{- end }}\n  {{- if .Values.ingester.config.complete_block_timeout }}\n  complete_block_timeout: {{ .Values.ingester.config.complete_block_timeout }}\n  {{- end }}\n  {{- if .Values.ingester.config.flush_all_on_shutdown }}\n  flush_all_on_shutdown: {{ .Values.ingester.config.flush_all_on_shutdown }}\n  {{- end }}\nmemberlist:\n  {{- with .Values.memberlist }}\n    {{- toYaml . | nindent 2 }}\n  {{- end }}\n  join_members:\n    - dns+{{ include \"tempo.fullname\" . }}-gossip-ring:{{ .Values.memberlist.bind_port }}\noverrides:\n  {{- toYaml .Values.overrides | nindent 2 }}\nserver:\n  http_listen_port: {{ .Values.server.httpListenPort }}\n  log_level: {{ .Values.server.logLevel }}\n  log_format: {{ .Values.server.logFormat }}\n  grpc_server_max_recv_msg_size: {{ .Values.server.grpc_server_max_recv_msg_size }}\n  grpc_server_max_send_msg_size: {{ .Values.server.grpc_server_max_send_msg_size }}\n  http_server_read_timeout: {{ .Values.server.http_server_read_timeout }}\n  http_server_write_timeout: {{ .Values.server.http_server_write_timeout }}\ncache:\n{{- include \"tempo.cacheConfig\" . | nindent 2}}\nstorage:\n  trace:\n    {{- if .Values.storage.trace.block.version }}\n    block:\n      version: {{.Values.storage.trace.block.version}}\n      {{- if .Values.storage.trace.block.dedicated_columns}}\n      parquet_dedicated_columns:\n        {{ .Values.storage.trace.block.dedicated_columns | toYaml | nindent 8}}\n      {{- end }}\n    {{- end }}\n    pool:\n      max_workers: {{ .Values.storage.trace.pool.max_workers }}\n      queue_depth: {{ .Values.storage.trace.pool.queue_depth }}\n    backend: {{.Values.storage.trace.backend}}\n    {{- if eq .Values.storage.trace.backend \"s3\"}}\n    s3:\n      {{- toYaml .Values.storage.trace.s3 | nindent 6}}\n    {{- end }}\n    {{- if eq .Values.storage.trace.backend \"gcs\"}}\n    gcs:\n      {{- toYaml .Values.storage.trace.gcs | nindent 6}}\n    {{- end }}\n    {{- if eq .Values.storage.trace.backend \"azure\"}}\n    azure:\n      {{- toYaml .Values.storage.trace.azure | nindent 6}}\n    {{- end }}\n    blocklist_poll: 5m\n    local:\n      path: /var/tempo/traces\n    wal:\n      path: /var/tempo/wal\n    search:\n      {{- toYaml .Values.storage.trace.search | nindent 6}}\n\n    {{- if .Values.storage.trace.blocklist_poll }}\n    blocklist_poll: {{ .Values.storage.trace.blocklist_poll }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_concurrency }}\n    blocklist_poll_concurrency: {{ .Values.storage.trace.blocklist_poll_concurrency }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_fallback }}\n    blocklist_poll_fallback: {{ .Values.storage.trace.blocklist_poll_fallback }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_tenant_index_builders }}\n    blocklist_poll_tenant_index_builders: {{ .Values.storage.trace.blocklist_poll_tenant_index_builders }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_stale_tenant_index }}\n    blocklist_poll_stale_tenant_index: {{ .Values.storage.trace.blocklist_poll_stale_tenant_index }}\n    {{- end }}\n    {{- if .Values.storage.trace.empty_tenant_deletion_age }}\n    empty_tenant_deletion_age: {{ .Values.storage.trace.empty_tenant_deletion_age }}\n    {{- end }}\n    {{- if .Values.storage.trace.empty_tenant_deletion_enabled }}\n    empty_tenant_deletion_enabled: {{ .Values.storage.trace.empty_tenant_deletion_enabled }}\n    {{- end }}\n",
       "required": [],
       "title": "config",
       "type": "string"
@@ -1215,6 +2424,139 @@
       "required": [],
       "title": "customCommands",
       "type": "null"
+    },
+    "defaults": {
+      "additionalProperties": true,
+      "description": "Default values applied to every pod in this chart.\nThese values are overridden by component-specific settings.",
+      "properties": {
+        "affinity": {
+          "additionalProperties": true,
+          "description": "Default affinity for all pods",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
+        "containerSecurityContext": {
+          "additionalProperties": true,
+          "description": "Default container-level security context for all containers",
+          "required": [],
+          "title": "containerSecurityContext",
+          "type": "object"
+        },
+        "extraArgs": {
+          "description": "Default extra CLI args for all Tempo binary pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraArgs",
+          "type": "array"
+        },
+        "extraEnv": {
+          "description": "Default extra environment variables for all pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraEnv",
+          "type": "array"
+        },
+        "extraEnvFrom": {
+          "description": "Default extra environment variables from ConfigMaps or Secrets for all pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraEnvFrom",
+          "type": "array"
+        },
+        "extraVolumeMounts": {
+          "description": "Default extra volume mounts for all pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "Default extra volumes for all pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumes",
+          "type": "array"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "description": "Default liveness probe for all Tempo binary pods (overrides tempo.livenessProbe)",
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
+        "nodeSelector": {
+          "additionalProperties": true,
+          "description": "Default node selector for all pods",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "description": "Default annotations for all pods",
+          "required": [],
+          "title": "podAnnotations",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "description": "Default labels for all pods",
+          "required": [],
+          "title": "podLabels",
+          "type": "object"
+        },
+        "podSecurityContext": {
+          "additionalProperties": true,
+          "description": "Default pod-level security context for all pods",
+          "required": [],
+          "title": "podSecurityContext",
+          "type": "object"
+        },
+        "priorityClassName": {
+          "default": "",
+          "description": "Default priority class name for all pods",
+          "required": [],
+          "title": "priorityClassName",
+          "type": "string"
+        },
+        "readinessProbe": {
+          "additionalProperties": true,
+          "description": "Default readiness probe for all Tempo binary pods (overrides tempo.readinessProbe)",
+          "required": [],
+          "title": "readinessProbe",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Default resource requests and limits for all pods",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "tolerations": {
+          "description": "Default tolerations for all pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "defaults",
+      "type": "object"
     },
     "distributor": {
       "additionalProperties": true,
@@ -1447,6 +2789,15 @@
           },
           "required": [],
           "title": "extraEnvFrom",
+          "type": "array"
+        },
+        "extraPorts": {
+          "description": "Additional ports to expose on the distributor container (e.g. trace receiver ports).\nStandard ports (http-metrics, http-memberlist) are always added automatically.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraPorts",
           "type": "array"
         },
         "extraVolumeMounts": {
@@ -1783,7 +3134,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v2.8.7",
+              "default": "v2.8.8",
               "description": "Grafana Enterprise Traces container image tag. Note: for Grafana Tempo use the value 'image.tag'",
               "required": [],
               "title": "tag",
@@ -2919,7 +4270,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "1.29-alpine",
+              "default": "1.30-alpine",
               "description": "The gateway image tag",
               "required": [],
               "title": "tag",
@@ -3083,8 +4434,15 @@
         "nginxConfig": {
           "additionalProperties": true,
           "properties": {
+            "enableIPv6": {
+              "default": false,
+              "description": "Configures whether or not NGINX bind IPv6",
+              "required": [],
+              "title": "enableIPv6",
+              "type": "boolean"
+            },
             "file": {
-              "default": "worker_processes  5;  ## Default: 1\nerror_log  /dev/stderr;\npid        /tmp/nginx.pid;\nworker_rlimit_nofile 8192;\n\nevents {\n  worker_connections  4096;  ## Default: 1024\n}\n\nhttp {\n  client_body_temp_path /tmp/client_temp;\n  proxy_temp_path       /tmp/proxy_temp_path;\n  fastcgi_temp_path     /tmp/fastcgi_temp;\n  uwsgi_temp_path       /tmp/uwsgi_temp;\n  scgi_temp_path        /tmp/scgi_temp;\n\n  proxy_http_version    1.1;\n\n  default_type application/octet-stream;\n  log_format   {{ .Values.gateway.nginxConfig.logFormat }}\n\n  {{- if .Values.gateway.verboseLogging }}\n  access_log   /dev/stderr  main;\n  {{- else }}\n\n  map $status $loggable {\n    ~^[23]  0;\n    default 1;\n  }\n  access_log   /dev/stderr  main  if=$loggable;\n  {{- end }}\n\n  sendfile     on;\n  tcp_nopush   on;\n  {{- if .Values.gateway.nginxConfig.resolver }}\n  resolver {{ .Values.gateway.nginxConfig.resolver }};\n  {{- else }}\n  resolver {{ .Values.global.dnsService }}.{{ .Values.global.dnsNamespace }}.svc.{{ .Values.global.clusterDomain }};\n  {{- end }}\n\n  {{- with .Values.gateway.nginxConfig.httpSnippet }}\n  {{ . | nindent 2 }}\n  {{- end }}\n\n  server {\n    listen             8080 {{- if .Values.gateway.nginxConfig.ssl }} ssl{{- end }};\n\n    {{- if .Values.streamOverHTTPEnabled }}\n    http2 on;\n    location /tempopb.StreamingQuerier/ {\n      set $query_frontend {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      grpc_pass   grpc://$query_frontend:3200;\n    }\n    {{- end }}\n\n    {{- if .Values.gateway.basicAuth.enabled }}\n    auth_basic           \"Tempo\";\n    auth_basic_user_file /etc/nginx/secrets/.htpasswd;\n    {{- end }}\n\n    location = / {\n      return 200 'OK';\n      auth_basic off;\n    }\n\n    location = /jaeger/api/traces {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:14268/api/traces;\n    }\n\n    location = /zipkin/spans {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:9411/spans;\n    }\n\n    location = /v1/traces {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:4318/v1/traces;\n    }\n\n    location = /otlp/v1/traces {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:4318/v1/traces;\n    }\n\n    location ^~ /api {\n      set $query_frontend {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$query_frontend:3200$request_uri;\n    }\n\n    location = /flush {\n      set $ingester {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"ingester\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$ingester:3200$request_uri;\n    }\n\n    location = /shutdown {\n      set $ingester {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"ingester\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$ingester:3200$request_uri;\n    }\n\n    location = /distributor/ring {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:3200$request_uri;\n    }\n\n    location = /ingester/ring {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:3200$request_uri;\n    }\n\n    location = /compactor/ring {\n      set $compactor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"compactor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$compactor:3200$request_uri;\n    }\n\n    {{- if .Values.gateway.nginxConfig.ssl }}\n    ssl_certificate     /etc/nginx/ssl/tls.crt;\n    ssl_certificate_key /etc/nginx/ssl/tls.key;\n    {{- end }}\n\n    {{- with .Values.gateway.nginxConfig.serverSnippet }}\n    {{ . | nindent 4 }}\n    {{- end }}\n  }\n\n  {{- if .Values.traces.otlp.grpc.enabled }}\n  # OTLP gRPC\n  server {\n    listen               {{ .Values.traces.otlp.grpc.port }} http2 {{- if .Values.gateway.nginxConfig.ssl }} ssl{{- end }};\n\n    {{- if .Values.gateway.basicAuth.enabled }}\n    auth_basic           \"Tempo\";\n    auth_basic_user_file /etc/nginx/secrets/.htpasswd;\n    {{- end }}\n\n    location = /opentelemetry.proto.collector.trace.v1.TraceService/Export {\n      grpc_pass          grpc://{{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}:{{ .Values.traces.otlp.grpc.port }};\n    }\n\n    location ~ /opentelemetry {\n      grpc_pass          grpc://{{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}:{{ .Values.traces.otlp.grpc.port }};\n    }\n\n    {{- if .Values.gateway.nginxConfig.ssl }}\n    ssl_certificate     /etc/nginx/ssl/tls.crt;\n    ssl_certificate_key /etc/nginx/ssl/tls.key;\n    {{- end }}\n\n    {{- with .Values.gateway.nginxConfig.serverSnippet }}\n    {{ . | nindent 4 }}\n    {{- end }}\n  }\n  {{- end }}\n}\n",
+              "default": "worker_processes  5;  ## Default: 1\nerror_log  /dev/stderr;\npid        /tmp/nginx.pid;\nworker_rlimit_nofile 8192;\n\nevents {\n  worker_connections  4096;  ## Default: 1024\n}\n\nhttp {\n  client_body_temp_path /tmp/client_temp;\n  proxy_temp_path       /tmp/proxy_temp_path;\n  fastcgi_temp_path     /tmp/fastcgi_temp;\n  uwsgi_temp_path       /tmp/uwsgi_temp;\n  scgi_temp_path        /tmp/scgi_temp;\n\n  proxy_http_version    1.1;\n\n  default_type application/octet-stream;\n  log_format   {{ .Values.gateway.nginxConfig.logFormat }}\n\n  {{- if .Values.gateway.verboseLogging }}\n  access_log   /dev/stderr  main;\n  {{- else }}\n\n  map $status $loggable {\n    ~^[23]  0;\n    default 1;\n  }\n  access_log   /dev/stderr  main  if=$loggable;\n  {{- end }}\n\n  sendfile     on;\n  tcp_nopush   on;\n  {{- if .Values.gateway.nginxConfig.resolver }}\n  resolver {{ .Values.gateway.nginxConfig.resolver }};\n  {{- else }}\n  resolver {{ .Values.global.dnsService }}.{{ .Values.global.dnsNamespace }}.svc.{{ .Values.global.clusterDomain }};\n  {{- end }}\n\n  {{- with .Values.gateway.nginxConfig.httpSnippet }}\n  {{ . | nindent 2 }}\n  {{- end }}\n\n  server {\n    listen             8080 {{- if .Values.gateway.nginxConfig.ssl }} ssl{{- end }};\n    {{- if .Values.gateway.nginxConfig.enableIPv6 }}\n    listen             [::]:8080 {{- if .Values.gateway.nginxConfig.ssl }} ssl{{- end }};\n    {{- end }}\n\n    {{- if .Values.streamOverHTTPEnabled }}\n    http2 on;\n    location /tempopb.StreamingQuerier/ {\n      set $query_frontend {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      grpc_pass   grpc://$query_frontend:3200;\n    }\n    {{- end }}\n\n    {{- if .Values.gateway.basicAuth.enabled }}\n    auth_basic           \"Tempo\";\n    auth_basic_user_file /etc/nginx/secrets/.htpasswd;\n    {{- end }}\n\n    location = / {\n      return 200 'OK';\n      auth_basic off;\n    }\n\n    location = /jaeger/api/traces {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:14268/api/traces;\n    }\n\n    location = /zipkin/spans {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:9411/spans;\n    }\n\n    location = /v1/traces {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:4318/v1/traces;\n    }\n\n    location = /otlp/v1/traces {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:4318/v1/traces;\n    }\n\n    location ^~ /api {\n      set $query_frontend {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$query_frontend:3200$request_uri;\n    }\n\n    location = /flush {\n      set $ingester {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"ingester\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$ingester:3200$request_uri;\n    }\n\n    location = /shutdown {\n      set $ingester {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"ingester\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$ingester:3200$request_uri;\n    }\n\n    location = /distributor/ring {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:3200$request_uri;\n    }\n\n    location = /ingester/ring {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:3200$request_uri;\n    }\n\n    location = /compactor/ring {\n      set $compactor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"compactor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$compactor:3200$request_uri;\n    }\n\n    {{- if .Values.backendScheduler.enabled }}\n    location = /backend-worker/ring {\n      set $backend_worker {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"backend-worker\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$backend_worker:3200$request_uri;\n    }\n    {{- end }}\n\n    {{- if .Values.gateway.nginxConfig.ssl }}\n    ssl_certificate     /etc/nginx/ssl/tls.crt;\n    ssl_certificate_key /etc/nginx/ssl/tls.key;\n    {{- end }}\n\n    {{- with .Values.gateway.nginxConfig.serverSnippet }}\n    {{ . | nindent 4 }}\n    {{- end }}\n  }\n\n  {{- if .Values.traces.otlp.grpc.enabled }}\n  # OTLP gRPC\n  server {\n    listen               {{ .Values.traces.otlp.grpc.port }} http2 {{- if .Values.gateway.nginxConfig.ssl }} ssl{{- end }};\n    {{- if .Values.gateway.nginxConfig.enableIPv6 }}\n    listen               [::]:{{ .Values.traces.otlp.grpc.port }} http2 {{- if .Values.gateway.nginxConfig.ssl }} ssl{{- end }};\n    {{- end }}\n\n    {{- if .Values.gateway.basicAuth.enabled }}\n    auth_basic           \"Tempo\";\n    auth_basic_user_file /etc/nginx/secrets/.htpasswd;\n    {{- end }}\n\n    location = /opentelemetry.proto.collector.trace.v1.TraceService/Export {\n      set $distributor  {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      grpc_pass         grpc://$distributor:{{ .Values.traces.otlp.grpc.port }};\n    }\n\n    location ~ /opentelemetry {\n      set $distributor  {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      grpc_pass         grpc://$distributor:{{ .Values.traces.otlp.grpc.port }};\n    }\n\n    {{- if .Values.gateway.nginxConfig.ssl }}\n    ssl_certificate     /etc/nginx/ssl/tls.crt;\n    ssl_certificate_key /etc/nginx/ssl/tls.key;\n    {{- end }}\n\n    {{- with .Values.gateway.nginxConfig.serverSnippet }}\n    {{ . | nindent 4 }}\n    {{- end }}\n  }\n  {{- end }}\n}\n",
               "description": "Config file contents for Nginx. Passed through the `tpl` function to allow templating",
               "required": [],
               "title": "file",
@@ -3236,6 +4594,134 @@
           "title": "resources",
           "type": "object"
         },
+        "route": {
+          "additionalProperties": true,
+          "description": "Gateway API route configuration for the gateway.\nMultiple routes can be added by adding a dictionary key like the 'main' route.",
+          "properties": {
+            "main": {
+              "additionalProperties": true,
+              "properties": {
+                "additionalRules": {
+                  "description": "Additional custom rules that can be added to the route",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "additionalRules",
+                  "type": "array"
+                },
+                "annotations": {
+                  "additionalProperties": true,
+                  "description": "Route annotations",
+                  "required": [],
+                  "title": "annotations",
+                  "type": "object"
+                },
+                "apiVersion": {
+                  "default": "",
+                  "description": "Set the route apiVersion, e.g. gateway.networking.k8s.io/v1 or gateway.networking.k8s.io/v1beta1\nIf not set, the latest available version will be auto-detected",
+                  "required": [],
+                  "title": "apiVersion",
+                  "type": "string"
+                },
+                "enabled": {
+                  "default": false,
+                  "description": "Specifies whether a Gateway API route for the gateway should be created",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "filters": {
+                  "description": "Filters define the filters that are applied to requests that match this rule.",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "filters",
+                  "type": "array"
+                },
+                "hostnames": {
+                  "description": "Hostnames for the route",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "hostnames",
+                  "type": "array"
+                },
+                "kind": {
+                  "default": "HTTPRoute",
+                  "description": "Set the route kind\nValid options are GRPCRoute, HTTPRoute, TCPRoute, TLSRoute, UDPRoute",
+                  "required": [],
+                  "title": "kind",
+                  "type": "string"
+                },
+                "labels": {
+                  "additionalProperties": true,
+                  "description": "Route labels",
+                  "required": [],
+                  "title": "labels",
+                  "type": "object"
+                },
+                "matches": {
+                  "description": "- name: my-gateway\n  namespace: gateway-namespace\nMatches define conditions for matching incoming requests",
+                  "items": {
+                    "additionalProperties": true,
+                    "properties": {
+                      "path": {
+                        "additionalProperties": true,
+                        "properties": {
+                          "type": {
+                            "default": "PathPrefix",
+                            "required": [],
+                            "title": "type",
+                            "type": "string"
+                          },
+                          "value": {
+                            "default": "/",
+                            "required": [],
+                            "title": "value",
+                            "type": "string"
+                          }
+                        },
+                        "required": [],
+                        "title": "path",
+                        "type": "object"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  "required": [],
+                  "title": "matches",
+                  "type": "array"
+                },
+                "parentRefs": {
+                  "description": "- gateway.tempo.example.com\nParent references (gateway to attach to)",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "parentRefs",
+                  "type": "array"
+                },
+                "timeouts": {
+                  "additionalProperties": true,
+                  "description": "Timeouts define the timeouts that can be configured for an HTTP request.\nRef. https://gateway-api.sigs.k8s.io/api-types/httproute/#timeouts-optional",
+                  "required": [],
+                  "title": "timeouts",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "main",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "route",
+          "type": "object"
+        },
         "service": {
           "additionalProperties": true,
           "description": "Gateway service configuration",
@@ -3261,6 +4747,13 @@
               "description": "ClusterIP of the gateway service",
               "required": [],
               "title": "clusterIP",
+              "type": "null"
+            },
+            "grpcNodePort": {
+              "default": "null",
+              "description": "Node port for the gRPC port if service type is NodePort",
+              "required": [],
+              "title": "grpcNodePort",
               "type": "null"
             },
             "labels": {
@@ -3402,6 +4895,28 @@
           "required": [],
           "title": "extraEnvFrom",
           "type": "array"
+        },
+        "goSettings": {
+          "additionalProperties": true,
+          "properties": {
+            "goMemLimitFactor": {
+              "default": 0.85,
+              "description": "Fraction of the container memory limit used to compute GOMEMLIMIT (e.g. 0.85 = 85%).\nSet to 0 to disable automatic GOMEMLIMIT injection.",
+              "required": [],
+              "title": "goMemLimitFactor",
+              "type": "number"
+            },
+            "gogc": {
+              "default": 80,
+              "description": "Value to set for GOGC alongside GOMEMLIMIT. Lowering below the default of 100 reduces\nheap growth between GC cycles, working in tandem with GOMEMLIMIT to smooth memory usage.\nSet to 0 to disable automatic GOGC injection.",
+              "required": [],
+              "title": "gogc",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "goSettings",
+          "type": "object"
         },
         "image": {
           "additionalProperties": true,
@@ -4177,6 +5692,24 @@
         "paths": {
           "additionalProperties": true,
           "properties": {
+            "backend-worker": {
+              "items": {
+                "additionalProperties": true,
+                "properties": {
+                  "path": {
+                    "default": "/backend-worker/ring",
+                    "required": [],
+                    "title": "path",
+                    "type": "string"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "title": "backend-worker",
+              "type": "array"
+            },
             "compactor": {
               "items": {
                 "additionalProperties": true,
@@ -4870,6 +6403,13 @@
           "title": "affinity",
           "type": "string"
         },
+        "consistentHash": {
+          "default": true,
+          "description": "Enable consistent hashing for cache",
+          "required": [],
+          "title": "consistentHash",
+          "type": "boolean"
+        },
         "enabled": {
           "default": true,
           "description": "Specified whether the memcached cachce should be enabled",
@@ -5149,6 +6689,13 @@
           "title": "service",
           "type": "object"
         },
+        "timeout": {
+          "default": "500ms",
+          "description": "Timeout for cache operations",
+          "required": [],
+          "title": "timeout",
+          "type": "string"
+        },
         "tolerations": {
           "description": "Toleration for memcached pods",
           "items": {
@@ -5168,6 +6715,287 @@
       },
       "required": [],
       "title": "memcached",
+      "type": "object"
+    },
+    "memcachedBloom": {
+      "additionalProperties": true,
+      "description": "Configuration for a dedicated memcached cluster for the bloom cache role.\nWhen enabled, bloom cache is served by its own memcached StatefulSet.\nImage is shared with the main `memcached` section.",
+      "properties": {
+        "affinity": {
+          "default": "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached-bloom\") | nindent 10 }}\n      topologyKey: kubernetes.io/hostname\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached-bloom\") | nindent 12 }}\n        topologyKey: topology.kubernetes.io/zone\n",
+          "description": "Affinity for memcached-bloom pods. Passed through `tpl` and, thus, to be configured as string",
+          "required": [],
+          "title": "affinity",
+          "type": "string"
+        },
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations for the memcached-bloom StatefulSet",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "consistentHash": {
+          "default": true,
+          "description": "Enable consistent hashing for bloom cache",
+          "required": [],
+          "title": "consistentHash",
+          "type": "boolean"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Enable a dedicated memcached cluster for the bloom cache role",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraArgs": {
+          "description": "Additional CLI args for memcached",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraArgs",
+          "type": "array"
+        },
+        "extraContainers": {
+          "description": "Containers to add to the memcached-bloom pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraContainers",
+          "type": "array"
+        },
+        "extraEnv": {
+          "description": "Environment variables to add to memcached-bloom pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraEnv",
+          "type": "array"
+        },
+        "extraEnvFrom": {
+          "description": "Environment variables from secrets or configmaps to add to memcached-bloom pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraEnvFrom",
+          "type": "array"
+        },
+        "extraVolumeMounts": {
+          "description": "Extra volume mounts for memcached-bloom pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "Extra volumes for memcached-bloom StatefulSet",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumes",
+          "type": "array"
+        },
+        "initContainers": {
+          "description": "Init containers for the memcached-bloom pod",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "initContainers",
+          "type": "array"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "description": "configuration for liveness probe for memcached-bloom statefulset",
+          "properties": {
+            "failureThreshold": {
+              "default": 6,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "default": 30,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 5,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
+        "maxUnavailable": {
+          "default": 1,
+          "description": "Pod Disruption Budget maxUnavailable",
+          "required": [],
+          "title": "maxUnavailable",
+          "type": "integer"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "description": "Annotations for memcached-bloom pods",
+          "required": [],
+          "title": "podAnnotations",
+          "type": "object"
+        },
+        "podDisruptionBudget": {
+          "additionalProperties": true,
+          "description": "Pod Disruption Budget configuration",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable PodDisruptionBudget for memcached-bloom",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podDisruptionBudget",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "description": "Labels for memcached-bloom pods",
+          "required": [],
+          "title": "podLabels",
+          "type": "object"
+        },
+        "readinessProbe": {
+          "additionalProperties": true,
+          "description": "configuration for readiness probe for memcached-bloom statefulset",
+          "properties": {
+            "failureThreshold": {
+              "default": 6,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "default": 5,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 5,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "tcpSocket": {
+              "additionalProperties": true,
+              "properties": {
+                "port": {
+                  "default": "client",
+                  "required": [],
+                  "title": "port",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "tcpSocket",
+              "type": "object"
+            },
+            "timeoutSeconds": {
+              "default": 3,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "readinessProbe",
+          "type": "object"
+        },
+        "replicas": {
+          "default": 1,
+          "description": "Number of replicas for the bloom memcached StatefulSet",
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resource requests and limits for memcached-bloom",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "service": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations for memcached-bloom service",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "service",
+          "type": "object"
+        },
+        "timeout": {
+          "default": "500ms",
+          "description": "Timeout for bloom cache operations",
+          "required": [],
+          "title": "timeout",
+          "type": "string"
+        },
+        "tolerations": {
+          "description": "Tolerations for memcached-bloom pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
+        },
+        "topologySpreadConstraints": {
+          "default": "- maxSkew: 1\n  topologyKey: topology.kubernetes.io/zone\n  whenUnsatisfiable: ScheduleAnyway\n  labelSelector:\n    matchLabels:\n      {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached-bloom\") | nindent 6 }}\n",
+          "description": "topologySpread for memcached-bloom pods. Passed through `tpl` and, thus, to be configured as string",
+          "required": [],
+          "title": "topologySpreadConstraints",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "memcachedBloom",
       "type": "object"
     },
     "memcachedExporter": {
@@ -5233,7 +7061,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v0.15.5",
+              "default": "v0.16.0",
               "description": "Memcached Exporter Docker image tag",
               "required": [],
               "title": "tag",
@@ -5253,6 +7081,568 @@
       },
       "required": [],
       "title": "memcachedExporter",
+      "type": "object"
+    },
+    "memcachedFrontendSearch": {
+      "additionalProperties": true,
+      "description": "Configuration for a dedicated memcached cluster for the frontend-search cache role.\nWhen enabled, frontend-search cache is served by its own memcached StatefulSet.\nImage is shared with the main `memcached` section.",
+      "properties": {
+        "affinity": {
+          "default": "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached-frontend-search\") | nindent 10 }}\n      topologyKey: kubernetes.io/hostname\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached-frontend-search\") | nindent 12 }}\n        topologyKey: topology.kubernetes.io/zone\n",
+          "description": "Affinity for memcached-frontend-search pods. Passed through `tpl` and, thus, to be configured as string",
+          "required": [],
+          "title": "affinity",
+          "type": "string"
+        },
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations for the memcached-frontend-search StatefulSet",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "consistentHash": {
+          "default": true,
+          "description": "Enable consistent hashing for frontend-search cache",
+          "required": [],
+          "title": "consistentHash",
+          "type": "boolean"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Enable a dedicated memcached cluster for the frontend-search cache role",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraArgs": {
+          "description": "Additional CLI args for memcached",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraArgs",
+          "type": "array"
+        },
+        "extraContainers": {
+          "description": "Containers to add to the memcached-frontend-search pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraContainers",
+          "type": "array"
+        },
+        "extraEnv": {
+          "description": "Environment variables to add to memcached-frontend-search pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraEnv",
+          "type": "array"
+        },
+        "extraEnvFrom": {
+          "description": "Environment variables from secrets or configmaps to add to memcached-frontend-search pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraEnvFrom",
+          "type": "array"
+        },
+        "extraVolumeMounts": {
+          "description": "Extra volume mounts for memcached-frontend-search pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "Extra volumes for memcached-frontend-search StatefulSet",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumes",
+          "type": "array"
+        },
+        "initContainers": {
+          "description": "Init containers for the memcached-frontend-search pod",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "initContainers",
+          "type": "array"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "description": "configuration for liveness probe for memcached-frontend-search statefulset",
+          "properties": {
+            "failureThreshold": {
+              "default": 6,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "default": 30,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 5,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
+        "maxUnavailable": {
+          "default": 1,
+          "description": "Pod Disruption Budget maxUnavailable",
+          "required": [],
+          "title": "maxUnavailable",
+          "type": "integer"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "description": "Annotations for memcached-frontend-search pods",
+          "required": [],
+          "title": "podAnnotations",
+          "type": "object"
+        },
+        "podDisruptionBudget": {
+          "additionalProperties": true,
+          "description": "Pod Disruption Budget configuration",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable PodDisruptionBudget for memcached-frontend-search",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podDisruptionBudget",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "description": "Labels for memcached-frontend-search pods",
+          "required": [],
+          "title": "podLabels",
+          "type": "object"
+        },
+        "readinessProbe": {
+          "additionalProperties": true,
+          "description": "configuration for readiness probe for memcached-frontend-search statefulset",
+          "properties": {
+            "failureThreshold": {
+              "default": 6,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "default": 5,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 5,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "tcpSocket": {
+              "additionalProperties": true,
+              "properties": {
+                "port": {
+                  "default": "client",
+                  "required": [],
+                  "title": "port",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "tcpSocket",
+              "type": "object"
+            },
+            "timeoutSeconds": {
+              "default": 3,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "readinessProbe",
+          "type": "object"
+        },
+        "replicas": {
+          "default": 1,
+          "description": "Number of replicas for the frontend-search memcached StatefulSet",
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resource requests and limits for memcached-frontend-search",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "service": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations for memcached-frontend-search service",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "service",
+          "type": "object"
+        },
+        "timeout": {
+          "default": "500ms",
+          "description": "Timeout for frontend-search cache operations",
+          "required": [],
+          "title": "timeout",
+          "type": "string"
+        },
+        "tolerations": {
+          "description": "Tolerations for memcached-frontend-search pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
+        },
+        "topologySpreadConstraints": {
+          "default": "- maxSkew: 1\n  topologyKey: topology.kubernetes.io/zone\n  whenUnsatisfiable: ScheduleAnyway\n  labelSelector:\n    matchLabels:\n      {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached-frontend-search\") | nindent 6 }}\n",
+          "description": "topologySpread for memcached-frontend-search pods. Passed through `tpl` and, thus, to be configured as string",
+          "required": [],
+          "title": "topologySpreadConstraints",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "memcachedFrontendSearch",
+      "type": "object"
+    },
+    "memcachedParquetFooter": {
+      "additionalProperties": true,
+      "description": "Configuration for a dedicated memcached cluster for the parquet-footer cache role.\nWhen enabled, parquet-footer cache is served by its own memcached StatefulSet.\nImage is shared with the main `memcached` section.",
+      "properties": {
+        "affinity": {
+          "default": "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached-parquet-footer\") | nindent 10 }}\n      topologyKey: kubernetes.io/hostname\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached-parquet-footer\") | nindent 12 }}\n        topologyKey: topology.kubernetes.io/zone\n",
+          "description": "Affinity for memcached-parquet-footer pods. Passed through `tpl` and, thus, to be configured as string",
+          "required": [],
+          "title": "affinity",
+          "type": "string"
+        },
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations for the memcached-parquet-footer StatefulSet",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "consistentHash": {
+          "default": true,
+          "description": "Enable consistent hashing for parquet-footer cache",
+          "required": [],
+          "title": "consistentHash",
+          "type": "boolean"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Enable a dedicated memcached cluster for the parquet-footer cache role",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraArgs": {
+          "description": "Additional CLI args for memcached",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraArgs",
+          "type": "array"
+        },
+        "extraContainers": {
+          "description": "Containers to add to the memcached-parquet-footer pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraContainers",
+          "type": "array"
+        },
+        "extraEnv": {
+          "description": "Environment variables to add to memcached-parquet-footer pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraEnv",
+          "type": "array"
+        },
+        "extraEnvFrom": {
+          "description": "Environment variables from secrets or configmaps to add to memcached-parquet-footer pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraEnvFrom",
+          "type": "array"
+        },
+        "extraVolumeMounts": {
+          "description": "Extra volume mounts for memcached-parquet-footer pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "Extra volumes for memcached-parquet-footer StatefulSet",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraVolumes",
+          "type": "array"
+        },
+        "initContainers": {
+          "description": "Init containers for the memcached-parquet-footer pod",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "initContainers",
+          "type": "array"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "description": "configuration for liveness probe for memcached-parquet-footer statefulset",
+          "properties": {
+            "failureThreshold": {
+              "default": 6,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "default": 30,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 5,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "livenessProbe",
+          "type": "object"
+        },
+        "maxUnavailable": {
+          "default": 1,
+          "description": "Pod Disruption Budget maxUnavailable",
+          "required": [],
+          "title": "maxUnavailable",
+          "type": "integer"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "description": "Annotations for memcached-parquet-footer pods",
+          "required": [],
+          "title": "podAnnotations",
+          "type": "object"
+        },
+        "podDisruptionBudget": {
+          "additionalProperties": true,
+          "description": "Pod Disruption Budget configuration",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable PodDisruptionBudget for memcached-parquet-footer",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podDisruptionBudget",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "description": "Labels for memcached-parquet-footer pods",
+          "required": [],
+          "title": "podLabels",
+          "type": "object"
+        },
+        "readinessProbe": {
+          "additionalProperties": true,
+          "description": "configuration for readiness probe for memcached-parquet-footer statefulset",
+          "properties": {
+            "failureThreshold": {
+              "default": 6,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "default": 5,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 5,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "tcpSocket": {
+              "additionalProperties": true,
+              "properties": {
+                "port": {
+                  "default": "client",
+                  "required": [],
+                  "title": "port",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "tcpSocket",
+              "type": "object"
+            },
+            "timeoutSeconds": {
+              "default": 3,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "readinessProbe",
+          "type": "object"
+        },
+        "replicas": {
+          "default": 1,
+          "description": "Number of replicas for the parquet-footer memcached StatefulSet",
+          "required": [],
+          "title": "replicas",
+          "type": "integer"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resource requests and limits for memcached-parquet-footer",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "service": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations for memcached-parquet-footer service",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "service",
+          "type": "object"
+        },
+        "timeout": {
+          "default": "500ms",
+          "description": "Timeout for parquet-footer cache operations",
+          "required": [],
+          "title": "timeout",
+          "type": "string"
+        },
+        "tolerations": {
+          "description": "Tolerations for memcached-parquet-footer pods",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
+        },
+        "topologySpreadConstraints": {
+          "default": "- maxSkew: 1\n  topologyKey: topology.kubernetes.io/zone\n  whenUnsatisfiable: ScheduleAnyway\n  labelSelector:\n    matchLabels:\n      {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached-parquet-footer\") | nindent 6 }}\n",
+          "description": "topologySpread for memcached-parquet-footer pods. Passed through `tpl` and, thus, to be configured as string",
+          "required": [],
+          "title": "topologySpreadConstraints",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "memcachedParquetFooter",
       "type": "object"
     },
     "metaMonitoring": {
@@ -7058,6 +9448,15 @@
           "title": "extraEnvFrom",
           "type": "array"
         },
+        "extraPorts": {
+          "description": "Additional ports to expose on the querier container.\nStandard ports (http-metrics, http-memberlist) are always added automatically.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraPorts",
+          "type": "array"
+        },
         "extraVolumeMounts": {
           "description": "Extra volumes for querier pods",
           "items": {
@@ -7528,6 +9927,37 @@
           "title": "extraEnvFrom",
           "type": "array"
         },
+        "extraPorts": {
+          "description": "Additional ports to expose on the query-frontend container.\nThe gRPC port is included by default. Standard ports (http-metrics, http-memberlist)\nare always added automatically by the pod template.",
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "containerPort": {
+                "default": 9095,
+                "required": [],
+                "title": "containerPort",
+                "type": "integer"
+              },
+              "name": {
+                "default": "grpc",
+                "required": [],
+                "title": "name",
+                "type": "string"
+              },
+              "protocol": {
+                "default": "TCP",
+                "required": [],
+                "title": "protocol",
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "required": [],
+          "title": "extraPorts",
+          "type": "array"
+        },
         "extraVolumeMounts": {
           "description": "Extra volumes for query-frontend pods",
           "items": {
@@ -7901,6 +10331,134 @@
           "title": "resources",
           "type": "object"
         },
+        "route": {
+          "additionalProperties": true,
+          "description": "Gateway API route configuration for the query-frontend (Jaeger UI).\nMultiple routes can be added by adding a dictionary key like the 'main' route.",
+          "properties": {
+            "main": {
+              "additionalProperties": true,
+              "properties": {
+                "additionalRules": {
+                  "description": "Additional custom rules that can be added to the route",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "additionalRules",
+                  "type": "array"
+                },
+                "annotations": {
+                  "additionalProperties": true,
+                  "description": "Route annotations",
+                  "required": [],
+                  "title": "annotations",
+                  "type": "object"
+                },
+                "apiVersion": {
+                  "default": "",
+                  "description": "Set the route apiVersion, e.g. gateway.networking.k8s.io/v1 or gateway.networking.k8s.io/v1beta1\nIf not set, the latest available version will be auto-detected",
+                  "required": [],
+                  "title": "apiVersion",
+                  "type": "string"
+                },
+                "enabled": {
+                  "default": false,
+                  "description": "Specifies whether a Gateway API route for the query-frontend should be created",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "filters": {
+                  "description": "Filters define the filters that are applied to requests that match this rule.",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "filters",
+                  "type": "array"
+                },
+                "hostnames": {
+                  "description": "Hostnames for the route",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "hostnames",
+                  "type": "array"
+                },
+                "kind": {
+                  "default": "HTTPRoute",
+                  "description": "Set the route kind\nValid options are GRPCRoute, HTTPRoute, TCPRoute, TLSRoute, UDPRoute",
+                  "required": [],
+                  "title": "kind",
+                  "type": "string"
+                },
+                "labels": {
+                  "additionalProperties": true,
+                  "description": "Route labels",
+                  "required": [],
+                  "title": "labels",
+                  "type": "object"
+                },
+                "matches": {
+                  "description": "- name: my-gateway\n  namespace: gateway-namespace\nMatches define conditions for matching incoming requests",
+                  "items": {
+                    "additionalProperties": true,
+                    "properties": {
+                      "path": {
+                        "additionalProperties": true,
+                        "properties": {
+                          "type": {
+                            "default": "PathPrefix",
+                            "required": [],
+                            "title": "type",
+                            "type": "string"
+                          },
+                          "value": {
+                            "default": "/",
+                            "required": [],
+                            "title": "value",
+                            "type": "string"
+                          }
+                        },
+                        "required": [],
+                        "title": "path",
+                        "type": "object"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  "required": [],
+                  "title": "matches",
+                  "type": "array"
+                },
+                "parentRefs": {
+                  "description": "- query.tempo.example.com\nParent references (gateway to attach to)",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "parentRefs",
+                  "type": "array"
+                },
+                "timeouts": {
+                  "additionalProperties": true,
+                  "description": "Timeouts define the timeouts that can be configured for an HTTP request.\nRef. https://gateway-api.sigs.k8s.io/api-types/httproute/#timeouts-optional",
+                  "required": [],
+                  "title": "timeouts",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "main",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "route",
+          "type": "object"
+        },
         "service": {
           "additionalProperties": true,
           "properties": {
@@ -8215,6 +10773,213 @@
       "required": [],
       "title": "rootUser",
       "type": "string"
+    },
+    "route": {
+      "additionalProperties": true,
+      "description": "Gateway API route configuration.\nMultiple routes can be added by adding a dictionary key like the 'main' route.\nThis is useful for creating both HTTPRoute and GRPCRoute resources (e.g. for OTLP HTTP + gRPC).",
+      "properties": {
+        "main": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Route annotations",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "apiVersion": {
+              "default": "",
+              "description": "Set the route apiVersion, e.g. gateway.networking.k8s.io/v1 or gateway.networking.k8s.io/v1beta1\nIf not set, the latest available version will be auto-detected",
+              "required": [],
+              "title": "apiVersion",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Specifies whether a Gateway API route should be created",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "hostnames": {
+              "description": "Hostnames for the route",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "hostnames",
+              "type": "array"
+            },
+            "kind": {
+              "default": "HTTPRoute",
+              "description": "Set the route kind\nValid options are GRPCRoute, HTTPRoute, TCPRoute, TLSRoute, UDPRoute",
+              "required": [],
+              "title": "kind",
+              "type": "string"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Route labels",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "parentRefs": {
+              "description": "- tempo.example.com\nParent references (gateway to attach to)",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "parentRefs",
+              "type": "array"
+            },
+            "paths": {
+              "additionalProperties": true,
+              "description": "- name: my-gateway\n  namespace: gateway-namespace\nPaths to route to backend services. Each key is a service name suffix, and the value is a list of path matches.",
+              "properties": {
+                "backendWorker": {
+                  "items": {
+                    "additionalProperties": true,
+                    "properties": {
+                      "path": {
+                        "default": "/backend-worker/ring",
+                        "required": [],
+                        "title": "path",
+                        "type": "string"
+                      },
+                      "pathType": {
+                        "default": "PathPrefix",
+                        "required": [],
+                        "title": "pathType",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  "required": [],
+                  "title": "backendWorker",
+                  "type": "array"
+                },
+                "compactor": {
+                  "items": {
+                    "additionalProperties": true,
+                    "properties": {
+                      "path": {
+                        "default": "/compactor/ring",
+                        "required": [],
+                        "title": "path",
+                        "type": "string"
+                      },
+                      "pathType": {
+                        "default": "PathPrefix",
+                        "required": [],
+                        "title": "pathType",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  "required": [],
+                  "title": "compactor",
+                  "type": "array"
+                },
+                "distributor": {
+                  "items": {
+                    "additionalProperties": true,
+                    "properties": {
+                      "path": {
+                        "default": "/metrics-generator/ring",
+                        "required": [],
+                        "title": "path",
+                        "type": "string"
+                      },
+                      "pathType": {
+                        "default": "PathPrefix",
+                        "description": "pathType for the match (e.g. PathPrefix, Exact)",
+                        "required": [],
+                        "title": "pathType",
+                        "type": "string"
+                      },
+                      "port": {
+                        "default": 4318,
+                        "description": "OTLP HTTP receiver port. This path is only rendered when traces.otlp.http.enabled is true.",
+                        "required": [],
+                        "title": "port",
+                        "type": "integer"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  "required": [],
+                  "title": "distributor",
+                  "type": "array"
+                },
+                "ingester": {
+                  "items": {
+                    "additionalProperties": true,
+                    "properties": {
+                      "path": {
+                        "default": "/shutdown",
+                        "required": [],
+                        "title": "path",
+                        "type": "string"
+                      },
+                      "pathType": {
+                        "default": "PathPrefix",
+                        "required": [],
+                        "title": "pathType",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  "required": [],
+                  "title": "ingester",
+                  "type": "array"
+                },
+                "query-frontend": {
+                  "items": {
+                    "additionalProperties": true,
+                    "properties": {
+                      "path": {
+                        "default": "/api",
+                        "required": [],
+                        "title": "path",
+                        "type": "string"
+                      },
+                      "pathType": {
+                        "default": "PathPrefix",
+                        "required": [],
+                        "title": "pathType",
+                        "type": "string"
+                      }
+                    },
+                    "required": [],
+                    "type": "object"
+                  },
+                  "required": [],
+                  "title": "query-frontend",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "paths",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "main",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "route",
+      "type": "object"
     },
     "runtimeClassName": {
       "default": "",
@@ -8653,11 +11418,11 @@
               "type": "array"
             },
             "registry": {
-              "default": "docker.io",
-              "description": "The Docker registry",
+              "default": "null",
+              "description": "The Docker registry. Overrides `global.image.registry`",
               "required": [],
               "title": "registry",
-              "type": "string"
+              "type": "null"
             },
             "repository": {
               "default": "grafana/tempo",
