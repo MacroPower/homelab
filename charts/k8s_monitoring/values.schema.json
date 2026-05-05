@@ -111,7 +111,7 @@
           "type": "array"
         },
         "extraPorts": {
-          "description": "Extra ports to expose on the Alloy container.",
+          "description": "Extra ports to expose on the Alloy container.\nIf `service.type` is `NodePort`, each item may set `nodePort` to choose the Service NodePort for that port.",
           "items": {
             "required": []
           },
@@ -499,7 +499,7 @@
       "properties": {
         "collector": {
           "default": "",
-          "description": "Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.",
+          "description": "Which collector to assign this feature to.",
           "required": [],
           "title": "collector",
           "type": "string"
@@ -525,12 +525,16 @@
       "title": "annotationAutodiscovery",
       "type": "object"
     },
+    "annotationSelector": {
+      "default": "logs.grafana.com/pods.enabled",
+      "description": "The annotation to control the behavior of gathering logs from this pod.\nPod annotation to use for controlling log discovery. If a pod has this annotation, it will either enable or disable\ngathering of logs, depending on the value of the discoveryMethod.",
+      "required": [],
+      "title": "annotationSelector",
+      "type": "string"
+    },
     "annotations": {
       "additionalProperties": true,
       "description": "Annotations to add to the Alloy Custom Resource. These annotations are not added to the workload or Pod.",
-      "items": {
-        "required": []
-      },
       "properties": {
         "instance": {
           "default": "k8s.grafana.com/instance",
@@ -619,7 +623,7 @@
       },
       "required": [],
       "title": "annotations",
-      "type": "array"
+      "type": "object"
     },
     "apiServer": {
       "additionalProperties": true,
@@ -655,7 +659,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for the API Server prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides metrics.maxCacheSize",
+          "description": "Sets the max_cache_size for the API Server prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -689,14 +693,14 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "How frequently to scrape metrics from the API Server\nOverrides metrics.scrapeInterval",
+          "description": "How frequently to scrape metrics from the API Server.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
         },
         "scrapeTimeout": {
           "default": "",
-          "description": "The timeout for scraping API Server metrics.",
+          "description": "The timeout for scraping API Server metrics.\nOverrides `global.scrapeTimeout`.",
           "required": [],
           "title": "scrapeTimeout",
           "type": "string"
@@ -712,7 +716,7 @@
       "properties": {
         "collector": {
           "default": "",
-          "description": "Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.",
+          "description": "Which collector to assign this feature to.",
           "required": [],
           "title": "collector",
           "type": "string"
@@ -1072,7 +1076,7 @@
       "properties": {
         "collector": {
           "default": "",
-          "description": "Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.",
+          "description": "Which collector to assign this feature to.",
           "required": [],
           "title": "collector",
           "type": "string"
@@ -1374,7 +1378,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for the prometheus.relabel component for Beyla.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides metrics.maxCacheSize",
+          "description": "Sets the max_cache_size for the prometheus.relabel component for Beyla.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -1449,7 +1453,7 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "How frequently to scrape metrics from Beyla.\nOverrides metrics.scrapeInterval",
+          "description": "How frequently to scrape metrics from Beyla.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
@@ -1532,7 +1536,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for the cAdvisor prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "description": "Sets the max_cache_size for the cAdvisor prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -1660,14 +1664,14 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "How frequently to scrape cAdvisor metrics.",
+          "description": "How frequently to scrape cAdvisor metrics.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
         },
         "scrapeTimeout": {
           "default": "",
-          "description": "The timeout for scraping cAdvisor metrics.",
+          "description": "The timeout for scraping cAdvisor metrics.\nOverrides `global.scrapeTimeout`.",
           "required": [],
           "title": "scrapeTimeout",
           "type": "string"
@@ -1718,6 +1722,13 @@
           "required": [],
           "title": "name",
           "type": "string"
+        },
+        "nameFrom": {
+          "default": "",
+          "description": "A raw Alloy expression for the cluster name. Use this to dynamically set the cluster name, e.g.\n`sys.env(\"CLUSTER_NAME\")`. If set, this takes precedence over `cluster.name`.",
+          "required": [],
+          "title": "nameFrom",
+          "type": "string"
         }
       },
       "required": [],
@@ -1730,7 +1741,7 @@
       "properties": {
         "collector": {
           "default": "",
-          "description": "Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.",
+          "description": "Which collector to assign this feature to.",
           "required": [],
           "title": "collector",
           "type": "string"
@@ -1772,7 +1783,7 @@
       "properties": {
         "collector": {
           "default": "",
-          "description": "Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.",
+          "description": "Which collector to assign this feature to.",
           "required": [],
           "title": "collector",
           "type": "string"
@@ -1804,6 +1815,13 @@
       "required": [],
       "title": "clusterName",
       "type": "string"
+    },
+    "clustering": {
+      "default": false,
+      "description": "Whether to enable clustering for cluster events collection. When `true`, the assigned collector must have\nclustering enabled, and events will be sharded across cluster peers. When `false` (default), the feature should\nrun on a singleton collector.",
+      "required": [],
+      "title": "clustering",
+      "type": "boolean"
     },
     "collectorCommon": {
       "additionalProperties": true,
@@ -1955,11 +1973,90 @@
           "title": "data",
           "type": "object"
         },
+        "excludeNamespaces": {
+          "description": "Namespaces to exclude",
+          "items": {
+            "required": [],
+            "type": "string"
+          },
+          "required": [],
+          "title": "excludeNamespaces",
+          "type": "array"
+        },
+        "logging": {
+          "additionalProperties": true,
+          "properties": {
+            "logDiffs": {
+              "default": "detailed",
+              "description": "Log resource diffs. One of `false`, `compact`, or `detailed`",
+              "required": [],
+              "title": "logDiffs",
+              "type": "string"
+            },
+            "logManifests": {
+              "default": true,
+              "description": "Log the full manifest payload on each change",
+              "required": [],
+              "title": "logManifests",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "logging",
+          "type": "object"
+        },
         "name": {
           "default": "",
           "description": "# -- Provide the name of the external configmap containing the beyla configuration.\n# To create configmap from configuration file, user can use the below command. Note: The name 'beyla-config.yaml' is important.\n# `kubectl create cm --from-file=beyla-config.yaml=\u003cname-of-config-file\u003e -n \u003cnamespace\u003e`\n# If empty, default configuration below is used.",
           "required": [],
           "title": "name",
+          "type": "string"
+        },
+        "namespaces": {
+          "description": "Namespaces to include. Empty means all namespaces",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "namespaces",
+          "type": "array"
+        },
+        "objects": {
+          "description": "List of Kubernetes resources to watch. Each entry requires `apiVersion` and `kind`. At least one object must be provided.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "objects",
+          "type": "array"
+        },
+        "output": {
+          "additionalProperties": true,
+          "properties": {
+            "directory": {
+              "default": "/var/manifests",
+              "description": "Directory to write manifests into",
+              "required": [],
+              "title": "directory",
+              "type": "string"
+            },
+            "format": {
+              "default": "json",
+              "description": "Output format, either `yaml` or `json`",
+              "required": [],
+              "title": "format",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "output",
+          "type": "object"
+        },
+        "refreshInterval": {
+          "default": "24h",
+          "description": "How often to do a full refresh of all resources",
+          "required": [],
+          "title": "refreshInterval",
           "type": "string"
         },
         "skipConfigMapCheck": {
@@ -2000,6 +2097,12 @@
               "description": "SHA256 digest of image to use for config reloading (either in format \"sha256:XYZ\" or \"XYZ\"). When set, will override `configReloader.image.tag`",
               "required": [],
               "title": "digest",
+              "type": "string"
+            },
+            "pullPolicy": {
+              "description": "Config reloader image pull policy.",
+              "required": [],
+              "title": "pullPolicy",
               "type": "string"
             },
             "registry": {
@@ -2880,6 +2983,12 @@
           "title": "replicas",
           "type": "integer"
         },
+        "revisionHistoryLimit": {
+          "description": "The maximum number of revisions that will be maintained in the Controllers's revision history. The history consists of all revisions not represented by a currently applied reversion.",
+          "required": [],
+          "title": "revisionHistoryLimit",
+          "type": "integer"
+        },
         "terminationGracePeriodSeconds": {
           "description": "Termination grace period in seconds for the Grafana Alloy pods.\nThe default value used by Kubernetes if unspecifed is 30 seconds.",
           "required": [],
@@ -2954,7 +3063,7 @@
       "properties": {
         "collector": {
           "default": "",
-          "description": "Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.",
+          "description": "Which collector to assign this feature to.",
           "required": [],
           "title": "collector",
           "type": "string"
@@ -3137,6 +3246,21 @@
               "required": [],
               "title": "azure",
               "type": "object"
+            },
+            "gcp": {
+              "additionalProperties": true,
+              "description": "GCP configuration.",
+              "properties": {
+                "connectionName": {
+                  "description": "The Cloud SQL instance connection name in the format `project:region:instance`,\nfor example `my-project:us-central1:my-db`.",
+                  "required": [],
+                  "title": "connectionName",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "gcp",
+              "type": "object"
             }
           },
           "required": [],
@@ -3161,15 +3285,6 @@
                   "required": [],
                   "title": "enabled",
                   "type": "boolean"
-                },
-                "excludeSchemas": {
-                  "description": "List of schemas to exclude from explain plan collection.",
-                  "items": {
-                    "required": []
-                  },
-                  "required": [],
-                  "title": "excludeSchemas",
-                  "type": "array"
                 },
                 "initialLookback": {
                   "description": "How far back to look for explain plan queries on the first collection interval.",
@@ -3231,7 +3346,7 @@
                   "type": "boolean"
                 },
                 "statementsLimit": {
-                  "description": "Max number of recent queries to collect details for.",
+                  "description": "(number) Max number of recent queries to collect details for.",
                   "required": [],
                   "title": "statementsLimit",
                   "type": "null"
@@ -3275,10 +3390,22 @@
                   "title": "excludeCurrentUser",
                   "type": "boolean"
                 },
+                "sampleMinDuration": {
+                  "description": "Minimum duration for query samples to be collected. Set to \"0s\" to disable\nfiltering and collect all samples regardless of their duration.",
+                  "required": [],
+                  "title": "sampleMinDuration",
+                  "type": "string"
+                },
                 "setupConsumersCheckInterval": {
                   "description": "How frequently to check if setup_consumers are correctly enabled.",
                   "required": [],
                   "title": "setupConsumersCheckInterval",
+                  "type": "string"
+                },
+                "waitEventMinDuration": {
+                  "description": "Minimum duration for a wait event to be collected. Set to \"0s\" to disable\nfiltering and collect all wait events regardless of their duration.",
+                  "required": [],
+                  "title": "waitEventMinDuration",
                   "type": "string"
                 }
               },
@@ -3447,6 +3574,13 @@
       "title": "destinations",
       "type": "object"
     },
+    "discoveryMethod": {
+      "default": "all",
+      "description": "Controls the behavior of discovering pods for logs. Possible values: `all`, `annotation`.\nWhen set to \"all\", every pod (filtered by the namespace and label selectors) will have their logs gathered.\nWhen set to \"annotation\", only pods with the annotation selector set to something other than \"false\", \"no\" or \"skip\"\nwill have their logs gathered.",
+      "required": [],
+      "title": "discoveryMethod",
+      "type": "string"
+    },
     "dnsConfig": {
       "additionalProperties": true,
       "description": "Custom DNS configuration to be added to prometheus-windows-exporter pods",
@@ -3610,7 +3744,7 @@
     },
     "enabled": {
       "default": true,
-      "description": "Whether to deploy the Beyla DaemonSet. Defaults to true. Set to false to deploy only the Kubernetes metadata cache.",
+      "description": "Deploy this collector. Set to `false` to skip creating the collector's resources without removing the collector\nfrom the values file.",
       "required": [],
       "title": "enabled",
       "type": "boolean"
@@ -3665,7 +3799,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for the prometheus.relabel component for Kepler.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "description": "Sets the max_cache_size for the prometheus.relabel component for Kepler.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -3713,14 +3847,14 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "How frequently to scrape metrics from Kepler.\nOverrides global.scrapeInterval.",
+          "description": "How frequently to scrape metrics from Kepler.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
         },
         "scrapeTimeout": {
           "default": "",
-          "description": "The timeout for scraping Kepler metrics.",
+          "description": "The timeout for scraping Kepler metrics.\nOverrides `global.scrapeTimeout`.",
           "required": [],
           "title": "scrapeTimeout",
           "type": "string"
@@ -3957,19 +4091,19 @@
                   "type": "boolean"
                 },
                 "limit": {
-                  "description": "Limit the number of events statements digests, in descending order by last_seen.",
+                  "description": "(number) Limit the number of events statements digests, in descending order by last_seen.",
                   "required": [],
                   "title": "limit",
                   "type": "null"
                 },
                 "textLimit": {
-                  "description": "Maximum length of the normalized statement text.",
+                  "description": "(number) Maximum length of the normalized statement text.",
                   "required": [],
                   "title": "textLimit",
                   "type": "null"
                 },
                 "timeLimit": {
-                  "description": "Limit how old, in seconds, the last_seen events statements can be.",
+                  "description": "(number) Limit how old, in seconds, the last_seen events statements can be.",
                   "required": [],
                   "title": "timeLimit",
                   "type": "null"
@@ -4139,13 +4273,13 @@
                   "type": "boolean"
                 },
                 "limit": {
-                  "description": "Maximum number of statements to fetch.",
+                  "description": "(number) Maximum number of statements to fetch.",
                   "required": [],
                   "title": "limit",
                   "type": "null"
                 },
                 "queryLength": {
-                  "description": "Maximum length of the statement query text.",
+                  "description": "(number) Maximum length of the statement query text.",
                   "required": [],
                   "title": "queryLength",
                   "type": "null"
@@ -4405,6 +4539,15 @@
       "title": "extraDiscoveryRules",
       "type": "string"
     },
+    "extraEnv": {
+      "description": "Extra environment variables to add to the container (e.g. OTLP endpoint settings)",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraEnv",
+      "type": "array"
+    },
     "extraEnvVars": {
       "additionalProperties": true,
       "description": "Extra environment variables",
@@ -4601,6 +4744,12 @@
         "image": {
           "additionalProperties": true,
           "properties": {
+            "pullPolicy": {
+              "description": "Global image pull policy to apply to all containers. Overrides `image.pullPolicy` and `configReloader.image.pullPolicy`.",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
             "pullSecrets": {
               "description": "Optional set of global image pull secrets.",
               "items": {
@@ -4621,6 +4770,13 @@
           "required": [],
           "title": "image",
           "type": "object"
+        },
+        "imagePullPolicy": {
+          "default": "",
+          "description": "Global image pull policy override.",
+          "required": [],
+          "title": "imagePullPolicy",
+          "type": "string"
         },
         "imagePullSecrets": {
           "description": "To help compatibility with other charts which use global.imagePullSecrets.\nAllow either an array of {name: pullSecret} maps (k8s-style), or an array of strings (more common helm-style).\nglobal:\n  imagePullSecrets:\n  - name: pullSecret1\n  - name: pullSecret2\nor\nglobal:\n  imagePullSecrets:\n  - pullSecret1\n  - pullSecret2",
@@ -4654,7 +4810,7 @@
         },
         "namespaceOverride": {
           "default": "",
-          "description": "Global namespace override. When set, all resources will be deployed to this namespace\ninstead of the Helm release namespace. Takes lower precedence than `namespaceOverride`.",
+          "description": "Override the namespace for namespaced resources created by this chart and its feature subcharts.",
           "required": [],
           "title": "namespaceOverride",
           "type": "string"
@@ -4746,7 +4902,7 @@
       "properties": {
         "collector": {
           "default": "",
-          "description": "Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.",
+          "description": "Which collector to assign this feature to.",
           "required": [],
           "title": "collector",
           "type": "string"
@@ -4857,6 +5013,13 @@
           "required": [],
           "title": "digest",
           "type": "null"
+        },
+        "distroless": {
+          "default": false,
+          "description": "Use the distroless image variant.",
+          "required": [],
+          "title": "distroless",
+          "type": "boolean"
         },
         "pullPolicy": {
           "default": "IfNotPresent",
@@ -5093,7 +5256,7 @@
           "type": "object"
         },
         "maxCacheSize": {
-          "description": "Sets the max_cache_size for prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "description": "Sets the max_cache_size for prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -5283,8 +5446,8 @@
       "type": "object"
     },
     "jobLabel": {
-      "default": "integrations/kubernetes/eventhandler",
-      "description": "The value of the job label for scraped metrics and logs",
+      "default": "integrations/kubernetes/manifests",
+      "description": "The value for the job label.",
       "required": [],
       "title": "jobLabel",
       "type": "string"
@@ -5341,10 +5504,56 @@
       "title": "journalLabels",
       "type": "object"
     },
+    "k8s-manifest-tail": {
+      "additionalProperties": true,
+      "description": "k8s-manifest-tail watches and logs Kubernetes manifest changes.",
+      "properties": {
+        "deploy": {
+          "default": false,
+          "description": "Deploy k8s-manifest-tail to watch and log Kubernetes manifest changes.",
+          "required": [],
+          "title": "deploy",
+          "type": "boolean"
+        },
+        "extraEnv": {
+          "description": "Extra environment variables, required for setting the OTLP destination for the manifests.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraEnv",
+          "type": "array"
+        },
+        "podAnnotations": {
+          "additionalProperties": true,
+          "properties": {
+            "logs.grafana.com/pods.enabled": {
+              "default": "false",
+              "required": [],
+              "title": "logs.grafana.com/pods.enabled",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "podAnnotations",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "k8s-manifest-tail",
+      "type": "object"
+    },
     "k8sCache": {
       "additionalProperties": true,
       "description": "Options to deploy the Kubernetes metadata cache as a separate service",
       "properties": {
+        "affinity": {
+          "additionalProperties": true,
+          "description": "used for scheduling of cache pods based on affinity rules",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
         "annotations": {
           "additionalProperties": true,
           "description": "Deployment annotations.",
@@ -5446,6 +5655,13 @@
           "title": "internalMetrics",
           "type": "object"
         },
+        "nodeSelector": {
+          "additionalProperties": true,
+          "description": "The nodeSelector field allows user to constrain which nodes cache pods are scheduled to based on labels on the node",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
         "podAnnotations": {
           "additionalProperties": true,
           "description": "Adds custom annotations to the Beyla Kube Cache Pods.",
@@ -5516,6 +5732,15 @@
           "required": [],
           "title": "service",
           "type": "object"
+        },
+        "tolerations": {
+          "description": "Tolerations allow cache pods to be scheduled on nodes with specific taints",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
         }
       },
       "required": [],
@@ -5732,7 +5957,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for the kube-state-metrics prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "description": "Sets the max_cache_size for the kube-state-metrics prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -5848,14 +6073,14 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "How frequently to scrape kube-state-metrics metrics.",
+          "description": "How frequently to scrape kube-state-metrics metrics.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
         },
         "scrapeTimeout": {
           "default": "",
-          "description": "The timeout for scraping kube-state-metrics metrics.",
+          "description": "The timeout for scraping kube-state-metrics metrics.\nOverrides `global.scrapeTimeout`.",
           "required": [],
           "title": "scrapeTimeout",
           "type": "string"
@@ -5921,7 +6146,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for the Kube Controller Manager prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides metrics.maxCacheSize",
+          "description": "Sets the max_cache_size for the Kube Controller Manager prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -5962,7 +6187,7 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "How frequently to scrape metrics from the Kube Controller Manager\nOverrides metrics.scrapeInterval",
+          "description": "How frequently to scrape metrics from the Kube Controller Manager.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
@@ -6013,7 +6238,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for the KubeDNS prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides metrics.maxCacheSize",
+          "description": "Sets the max_cache_size for the KubeDNS prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -6047,14 +6272,14 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "How frequently to scrape metrics from KubeDNS\nOverrides metrics.scrapeInterval",
+          "description": "How frequently to scrape metrics from KubeDNS.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
         },
         "scrapeTimeout": {
           "default": "",
-          "description": "The timeout for scraping KubeDNS metrics.",
+          "description": "The timeout for scraping KubeDNS metrics.\nOverrides `global.scrapeTimeout`.",
           "required": [],
           "title": "scrapeTimeout",
           "type": "string"
@@ -6098,7 +6323,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for the Kube Proxy prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides metrics.maxCacheSize",
+          "description": "Sets the max_cache_size for the Kube Proxy prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -6139,14 +6364,14 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "How frequently to scrape metrics from the Kube Proxy\nOverrides metrics.scrapeInterval",
+          "description": "How frequently to scrape metrics from the Kube Proxy.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
         },
         "scrapeTimeout": {
           "default": "",
-          "description": "The timeout for scraping Kube Proxy metrics.",
+          "description": "The timeout for scraping Kube Proxy metrics.\nOverrides `global.scrapeTimeout`.",
           "required": [],
           "title": "scrapeTimeout",
           "type": "string"
@@ -6286,7 +6511,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v0.21.1",
+              "default": "v0.22.0",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -6392,7 +6617,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for the Kube Scheduler prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides metrics.maxCacheSize",
+          "description": "Sets the max_cache_size for the Kube Scheduler prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -6433,14 +6658,14 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "How frequently to scrape metrics from the Kube Scheduler\nOverrides metrics.scrapeInterval",
+          "description": "How frequently to scrape metrics from the Kube Scheduler.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
         },
         "scrapeTimeout": {
           "default": "",
-          "description": "The timeout for scraping Kube Scheduler metrics.",
+          "description": "The timeout for scraping Kube Scheduler metrics.\nOverrides `global.scrapeTimeout`.",
           "required": [],
           "title": "scrapeTimeout",
           "type": "string"
@@ -6513,7 +6738,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for the Kubelet prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "description": "Sets the max_cache_size for the Kubelet prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -6561,14 +6786,14 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "How frequently to scrape Kubelet metrics.",
+          "description": "How frequently to scrape Kubelet metrics.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
         },
         "scrapeTimeout": {
           "default": "",
-          "description": "The timeout for scraping Kubelet metrics.",
+          "description": "The timeout for scraping Kubelet metrics.\nOverrides `global.scrapeTimeout`.",
           "required": [],
           "title": "scrapeTimeout",
           "type": "string"
@@ -6612,7 +6837,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for prometheus.relabel components.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "description": "Sets the max_cache_size for prometheus.relabel components.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -6660,14 +6885,14 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "How frequently to scrape Kubelet probe metrics.",
+          "description": "How frequently to scrape Kubelet probe metrics.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
         },
         "scrapeTimeout": {
           "default": "",
-          "description": "The timeout for scraping Kubelet probe metrics.",
+          "description": "The timeout for scraping Kubelet probe metrics.\nOverrides `global.scrapeTimeout`.",
           "required": [],
           "title": "scrapeTimeout",
           "type": "string"
@@ -6711,7 +6936,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for prometheus.relabel components.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "description": "Sets the max_cache_size for prometheus.relabel components.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -6759,14 +6984,14 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "How frequently to scrape Kubelet resource metrics.",
+          "description": "How frequently to scrape Kubelet resource metrics.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
         },
         "scrapeTimeout": {
           "default": "",
-          "description": "The timeout for scraping Kubelet resource metrics.",
+          "description": "The timeout for scraping Kubelet resource metrics.\nOverrides `global.scrapeTimeout`.",
           "required": [],
           "title": "scrapeTimeout",
           "type": "string"
@@ -6774,6 +6999,38 @@
       },
       "required": [],
       "title": "kubeletResource",
+      "type": "object"
+    },
+    "kubernetesManifests": {
+      "additionalProperties": true,
+      "description": "Kubernetes Manifests enables collecting Kubernetes resource manifest files and modifications as logs.\n**Experimental**: This feature is subject to change and may be altered or removed in a future release.\nRequires a logs destination and k8s-manifest-tail deployed via telemetryServices.",
+      "properties": {
+        "collector": {
+          "default": "",
+          "description": "Which collector to assign this feature to.",
+          "required": [],
+          "title": "collector",
+          "type": "string"
+        },
+        "destinations": {
+          "description": "The destinations where Kubernetes manifest logs will be sent. If empty, all logs-capable destinations will be used.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "destinations",
+          "type": "array"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Enable collecting Kubernetes manifest files and modifications.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "kubernetesManifests",
       "type": "object"
     },
     "labelSelectors": {
@@ -6797,9 +7054,6 @@
     "labels": {
       "additionalProperties": true,
       "description": "Labels to add to the Alloy Custom Resource. These labels are not added to the workload or Pod.",
-      "items": {
-        "required": []
-      },
       "properties": {
         "app_kubernetes_io_name": {
           "default": "app.kubernetes.io/name",
@@ -6816,7 +7070,7 @@
       },
       "required": [],
       "title": "labels",
-      "type": "array"
+      "type": "object"
     },
     "leaderElection": {
       "additionalProperties": true,
@@ -6882,7 +7136,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for the Node Exporter prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "description": "Sets the max_cache_size for the Node Exporter prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -6954,14 +7208,14 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "How frequently to scrape Linux host metrics.",
+          "description": "How frequently to scrape Linux host metrics.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
         },
         "scrapeTimeout": {
           "default": "",
-          "description": "The timeout for scraping Linux host metrics.",
+          "description": "The timeout for scraping Linux host metrics.\nOverrides `global.scrapeTimeout`.",
           "required": [],
           "title": "scrapeTimeout",
           "type": "string"
@@ -7141,6 +7395,12 @@
           "title": "namespaces",
           "type": "array"
         },
+        "path": {
+          "description": "A custom path to append to the URL when sending logs. Only used when `protocol` is `http`. Overrides the\ndefault `/v1/logs` path. For example, set `path: v2/log/otlp` to send logs to `\u003curl\u003e/v2/log/otlp`.",
+          "required": [],
+          "title": "path",
+          "type": "string"
+        },
         "target": {
           "description": "The Alloy component reference for sending logs.\n@ section -- Logs",
           "required": [],
@@ -7265,7 +7525,7 @@
     },
     "maxCacheSize": {
       "default": "",
-      "description": "Sets the max_cache_size for cadvisor prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+      "description": "Sets the max_cache_size for cadvisor prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
       "required": [],
       "title": "maxCacheSize",
       "type": "null"
@@ -7381,10 +7641,16 @@
           "type": "object"
         },
         "maxCacheSize": {
-          "description": "Sets the max_cache_size for prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "description": "Sets the max_cache_size for prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
+        },
+        "path": {
+          "description": "A custom path to append to the URL when sending metrics. Only used when `protocol` is `http`. Overrides the\ndefault `/v1/metrics` path. For example, set `path: v2/metric/otlp` to send metrics to `\u003curl\u003e/v2/metric/otlp`.",
+          "required": [],
+          "title": "path",
+          "type": "string"
         },
         "port": {
           "description": "The etcd metrics port number to scrape metrics from. Defined on the etcd pod with:\n`--listen-metrics-urls=http://127.0.0.1:2381`",
@@ -8158,7 +8424,7 @@
       "properties": {
         "collector": {
           "default": "",
-          "description": "Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.",
+          "description": "Which collector to assign this feature to.",
           "required": [],
           "title": "collector",
           "type": "string"
@@ -8879,7 +9145,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "1.119.2@sha256:4b8de6e029b9dc1f7e68bdf1cf02fca7649614c23812e51a63820f113ca97b89",
+                  "default": "1.120.0@sha256:c4fbe5f8fad2bc54872350460e705bf9ab43c90efa784a0cdf3a2a39a66b3b82",
                   "description": "Exporter container image tag",
                   "required": [],
                   "title": "tag",
@@ -9173,30 +9439,6 @@
           "title": "extraMetricProcessingRules",
           "type": "string"
         },
-        "extraVolumes": {
-          "items": {
-            "additionalProperties": true,
-            "properties": {
-              "emptyDir": {
-                "additionalProperties": true,
-                "required": [],
-                "title": "emptyDir",
-                "type": "object"
-              },
-              "name": {
-                "default": "configs",
-                "required": [],
-                "title": "name",
-                "type": "string"
-              }
-            },
-            "required": [],
-            "type": "object"
-          },
-          "required": [],
-          "title": "extraVolumes",
-          "type": "array"
-        },
         "jobLabel": {
           "default": "integrations/opencost",
           "description": "The value for the job label.",
@@ -9213,7 +9455,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for the prometheus.relabel component for OpenCost.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "description": "Sets the max_cache_size for the prometheus.relabel component for OpenCost.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -9749,36 +9991,6 @@
                   "required": [],
                   "title": "extraEnv",
                   "type": "object"
-                },
-                "extraVolumeMounts": {
-                  "items": {
-                    "additionalProperties": true,
-                    "properties": {
-                      "mountPath": {
-                        "default": "/var/configs",
-                        "required": [],
-                        "title": "mountPath",
-                        "type": "string"
-                      },
-                      "name": {
-                        "default": "configs",
-                        "required": [],
-                        "title": "name",
-                        "type": "string"
-                      },
-                      "readOnly": {
-                        "default": false,
-                        "required": [],
-                        "title": "readOnly",
-                        "type": "boolean"
-                      }
-                    },
-                    "required": [],
-                    "type": "object"
-                  },
-                  "required": [],
-                  "title": "extraVolumeMounts",
-                  "type": "array"
                 }
               },
               "required": [],
@@ -10294,14 +10506,14 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "How frequently to scrape metrics from Kepler.\nOverrides global.scrapeInterval.",
+          "description": "How frequently to scrape metrics from Kepler.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
         },
         "scrapeTimeout": {
           "default": "",
-          "description": "The timeout for scraping OpenCost metrics.",
+          "description": "The timeout for scraping OpenCost metrics.\nOverrides `global.scrapeTimeout`.",
           "required": [],
           "title": "scrapeTimeout",
           "type": "string"
@@ -10588,7 +10800,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "1.119.2@sha256:0dba1a93db7ae88e956556caf9a9240879d7fcb1d5a7cb9fec0b83970c0ce50c",
+                  "default": "1.120.0@sha256:2a2ed5d423402b1d3f104398971191618a91bfc293f53c704606bbbd39b2652c",
                   "description": "UI container image tag",
                   "required": [],
                   "title": "tag",
@@ -11310,7 +11522,7 @@
       "properties": {
         "collector": {
           "default": "",
-          "description": "Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.",
+          "description": "Which collector to assign this feature to.",
           "required": [],
           "title": "collector",
           "type": "string"
@@ -11342,7 +11554,7 @@
       "properties": {
         "collector": {
           "default": "",
-          "description": "Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.",
+          "description": "Which collector to assign this feature to.",
           "required": [],
           "title": "collector",
           "type": "string"
@@ -11370,11 +11582,11 @@
     },
     "podLogsViaLoki": {
       "additionalProperties": true,
-      "description": "Pod logs in Loki format.\nRequires a destination that supports logs.\nTo see the valid options, please see the [Pod Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs).",
+      "description": "Pod logs in Loki format.\nRequires a destination that supports logs.\nTo see the valid options, please see the [Pod Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs-via-loki).",
       "properties": {
         "collector": {
           "default": "",
-          "description": "Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.",
+          "description": "Which collector to assign this feature to.",
           "required": [],
           "title": "collector",
           "type": "string"
@@ -11402,11 +11614,11 @@
     },
     "podLogsViaOpenTelemetry": {
       "additionalProperties": true,
-      "description": "Pod logs in OpenTelemetry format.\nRequires a destination that supports logs.\nTo see the valid options, please see the [Pod Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs).",
+      "description": "Pod logs in OpenTelemetry format.\nRequires a destination that supports logs.\nTo see the valid options, please see the [Pod Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs-via-opentelemetry).",
       "properties": {
         "collector": {
           "default": "",
-          "description": "Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.",
+          "description": "Which collector to assign this feature to.",
           "required": [],
           "title": "collector",
           "type": "string"
@@ -11484,7 +11696,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for cadvisor prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "description": "Sets the max_cache_size for cadvisor prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -11527,14 +11739,14 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "The default interval between scraping targets. Used as the default if the target resource doesn’t provide a\nscrape interval.\nOverrides global.scrapeInterval",
+          "description": "The default interval between scraping targets. Used as the default if the target resource doesn’t provide a\nscrape interval.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
         },
         "scrapeTimeout": {
           "default": "",
-          "description": "The default timeout for scrape requests. Used as the default if the target resource doesn’t provide a scrape\ntimeout.",
+          "description": "The default timeout for scrape requests. Used as the default if the target resource doesn’t provide a scrape\ntimeout.\nOverrides `global.scrapeTimeout`.",
           "required": [],
           "title": "scrapeTimeout",
           "type": "string"
@@ -11897,7 +12109,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for cadvisor prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "description": "Sets the max_cache_size for cadvisor prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -11940,14 +12152,14 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "The default interval between scraping targets. Used as the default if the target resource doesn’t provide a\nscrape interval.\nOverrides global.scrapeInterval",
+          "description": "The default interval between scraping targets. Used as the default if the target resource doesn’t provide a\nscrape interval.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
         },
         "scrapeTimeout": {
           "default": "",
-          "description": "The default timeout for scrape requests. Used as the default if the target resource doesn’t provide a scrape\ntimeout.",
+          "description": "The default timeout for scrape requests. Used as the default if the target resource doesn’t provide a scrape\ntimeout.\nOverrides `global.scrapeTimeout`.",
           "required": [],
           "title": "scrapeTimeout",
           "type": "string"
@@ -13019,7 +13231,7 @@
       "properties": {
         "collector": {
           "default": "",
-          "description": "Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.",
+          "description": "Which collector to assign this feature to.",
           "required": [],
           "title": "collector",
           "type": "string"
@@ -13051,7 +13263,7 @@
       "properties": {
         "collector": {
           "default": "",
-          "description": "Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.",
+          "description": "Which collector to assign this feature to.",
           "required": [],
           "title": "collector",
           "type": "string"
@@ -13818,7 +14030,7 @@
       "properties": {
         "collector": {
           "default": "",
-          "description": "Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.",
+          "description": "Which collector to assign this feature to.",
           "required": [],
           "title": "collector",
           "type": "string"
@@ -14766,6 +14978,15 @@
       "title": "remoteWriteProtocol",
       "type": "integer"
     },
+    "replaceComponent": {
+      "description": "*Experimental*: Replace the body of a generated Alloy component with custom content. Each entry must match the\n`type` and `name` of a component that the chart would otherwise render (e.g. `prometheus.relabel \"metricsService\"`).\nThe templated component must end with a `} // \u003ctype\u003e \"\u003cname\u003e\"` close tag for replacement to find it, otherwise the\nrender fails. Set `module: \u003cname\u003e` to scope the replacement to a component inside a `declare \"\u003cmodule\u003e\" { ... }` block.",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "replaceComponent",
+      "type": "array"
+    },
     "replicaCount": {
       "default": 1,
       "description": "How many replicas to use for the Alloy Operator Deployment.",
@@ -14854,6 +15075,110 @@
       "title": "revisionHistoryLimit",
       "type": "integer"
     },
+    "rules": {
+      "additionalProperties": true,
+      "description": "Discover PrometheusRule objects in the cluster and synchronize them with this destination's Ruler API. Uses the\nAlloy [`mimir.rules.kubernetes`](https://grafana.com/docs/alloy/latest/reference/components/mimir/mimir.rules.kubernetes/)\ncomponent. Authentication, tenant ID, and TLS are reused from the destination's other settings.",
+      "properties": {
+        "address": {
+          "description": "The base URL of the Ruler API. If empty, falls back to the destination's `url`.\nSet this when `url` is the remote-write push URL (e.g. ends in `/api/prom/push` or `/api/v1/push`):\n`mimir.rules.kubernetes` expects the Mimir base URL, not the push path.",
+          "required": [],
+          "title": "address",
+          "type": "string"
+        },
+        "addressFrom": {
+          "description": "Raw config for accessing the Ruler API base URL. Equivalent to `urlFrom` but for rule synchronization.",
+          "required": [],
+          "title": "addressFrom",
+          "type": "string"
+        },
+        "collector": {
+          "description": "Which collector hosts rule synchronization. Exactly one collector must own this; otherwise multiple Alloy\ninstances will race when writing to the Ruler API. If empty, the first enabled collector is used.",
+          "required": [],
+          "title": "collector",
+          "type": "string"
+        },
+        "enabled": {
+          "description": "Enable discovery and synchronization of PrometheusRule objects with this destination's Ruler API.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraArguments": {
+          "description": "Extra arguments to add to the mimir.rules.kubernetes component. ([docs](https://grafana.com/docs/alloy/latest/reference/components/mimir/mimir.rules.kubernetes/))\nUse this to set arguments not exposed elsewhere in this block.",
+          "required": [],
+          "title": "extraArguments",
+          "type": "string"
+        },
+        "labelExpressions": {
+          "description": "Complex label selectors for filtering which PrometheusRule objects to use.\nExample: `[{key: \"app.kubernetes.io/name\", operator: \"NotIn\", values: [\"secret-app\", \"admin-app\"]}]`",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "labelExpressions",
+          "type": "array"
+        },
+        "labelSelectors": {
+          "additionalProperties": true,
+          "description": "Label selectors for filtering which PrometheusRule objects to use.\nExample: `app.kubernetes.io/name: my-app`",
+          "required": [],
+          "title": "labelSelectors",
+          "type": "object"
+        },
+        "mimirNamespacePrefix": {
+          "description": "Prefix added to the namespace of each PrometheusRule when sent to the Ruler API. Distinguishes rules created\nby this Alloy instance from rules created by other tools.",
+          "required": [],
+          "title": "mimirNamespacePrefix",
+          "type": "string"
+        },
+        "namespaceLabelExpressions": {
+          "description": "Complex label selectors for filtering which Kubernetes namespaces to look for PrometheusRule objects in.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "namespaceLabelExpressions",
+          "type": "array"
+        },
+        "namespaceLabelSelectors": {
+          "additionalProperties": true,
+          "description": "Label selectors for filtering which Kubernetes namespaces to look for PrometheusRule objects in.",
+          "required": [],
+          "title": "namespaceLabelSelectors",
+          "type": "object"
+        },
+        "namespaces": {
+          "description": "Which namespaces to look for PrometheusRule objects in. An empty list means all namespaces.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "namespaces",
+          "type": "array"
+        },
+        "prometheusHttpPrefix": {
+          "description": "The HTTP path prefix for the Prometheus HTTP API on the Ruler endpoint.",
+          "required": [],
+          "title": "prometheusHttpPrefix",
+          "type": "string"
+        },
+        "syncInterval": {
+          "description": "How often to sync the discovered PrometheusRule objects with the Ruler API.",
+          "required": [],
+          "title": "syncInterval",
+          "type": "string"
+        },
+        "useLegacyRoutes": {
+          "description": "Use the legacy `/api/v1/rules` Ruler endpoints instead of the newer `/config/v1/rules` endpoints.",
+          "required": [],
+          "title": "useLegacyRoutes",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "rules",
+      "type": "object"
+    },
     "scrapeConfigs": {
       "additionalProperties": true,
       "description": "Prometheus Operator ScrapeConfigs",
@@ -14906,7 +15231,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for cadvisor prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "description": "Sets the max_cache_size for cadvisor prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -14949,14 +15274,14 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "The default interval between scraping targets. Used as the default if the target resource doesn’t provide a\nscrape interval.\nOverrides global.scrapeInterval",
+          "description": "The default interval between scraping targets. Used as the default if the target resource doesn’t provide a\nscrape interval.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
         },
         "scrapeTimeout": {
           "default": "",
-          "description": "The default timeout for scrape requests. Used as the default if the target resource doesn’t provide a scrape\ntimeout.",
+          "description": "The default timeout for scrape requests. Used as the default if the target resource doesn’t provide a scrape\ntimeout.\nOverrides `global.scrapeTimeout`.",
           "required": [],
           "title": "scrapeTimeout",
           "type": "string"
@@ -14968,14 +15293,14 @@
     },
     "scrapeInterval": {
       "default": "",
-      "description": "How frequently to scrape metrics from discovered pods and services. Only used if the `k8s.grafana.com/metrics.scrapeInterval` annotation is not set.\nOverrides global.scrapeInterval",
+      "description": "How frequently to scrape metrics from discovered pods and services. Only used if the\n`k8s.grafana.com/metrics.scrapeInterval` annotation is not set.\nOverrides `global.scrapeInterval`.",
       "required": [],
       "title": "scrapeInterval",
       "type": "string"
     },
     "scrapeTimeout": {
       "default": "",
-      "description": "The scrape timeout for discovered pods and services. Only used if the `k8s.grafana.com/metrics.scrapeTimeout` annotation is not set.\nOverrides global.scrapeTimeout",
+      "description": "The scrape timeout for discovered pods and services. Only used if the `k8s.grafana.com/metrics.scrapeTimeout`\nannotation is not set.\nOverrides `global.scrapeTimeout`.",
       "required": [],
       "title": "scrapeTimeout",
       "type": "string"
@@ -15955,7 +16280,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for cadvisor prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "description": "Sets the max_cache_size for cadvisor prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -15998,14 +16323,14 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "The default interval between scraping targets. Used as the default if the target resource doesn’t provide a\nscrape interval.\nOverrides global.scrapeInterval",
+          "description": "The default interval between scraping targets. Used as the default if the target resource doesn’t provide a\nscrape interval.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
         },
         "scrapeTimeout": {
           "default": "",
-          "description": "The default timeout for scrape requests. Used as the default if the target resource doesn’t provide a scrape\ntimeout.",
+          "description": "The default timeout for scrape requests. Used as the default if the target resource doesn’t provide a scrape\ntimeout.\nOverrides `global.scrapeTimeout`.",
           "required": [],
           "title": "scrapeTimeout",
           "type": "string"
@@ -16090,7 +16415,7 @@
           "type": "object"
         },
         "maxCacheSize": {
-          "description": "Sets the max_cache_size for prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "description": "Sets the max_cache_size for prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -16307,6 +16632,22 @@
       "additionalProperties": true,
       "description": "\nTelemetry Services\nThis is where additional services can be deployed to the Kubernetes cluster to instrument, generate, or gather\ntelemetry data from other workloads on the Kubernetes cluster, or from the cluster itself.\n",
       "properties": {
+        "k8s-manifest-tail": {
+          "additionalProperties": true,
+          "description": "[k8s-manifest-tail](https://github.com/grafana/k8s-manifest-tail) watches and logs Kubernetes resource manifest changes.",
+          "properties": {
+            "deploy": {
+              "default": false,
+              "description": "Deploy k8s-manifest-tail to watch and log Kubernetes manifest changes.",
+              "required": [],
+              "title": "deploy",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "k8s-manifest-tail",
+          "type": "object"
+        },
         "kepler": {
           "additionalProperties": true,
           "description": "[Kepler](https://sustainable-computing.io/) is a service that can gather energy usage metrics from the Kubernetes\nCluster nodes.",
@@ -16668,6 +17009,12 @@
           "title": "filters",
           "type": "object"
         },
+        "path": {
+          "description": "A custom path to append to the URL when sending traces. Only used when `protocol` is `http`. Overrides the\ndefault `/v1/traces` path. For example, set `path: v2/trace/otlp` to send traces to `\u003curl\u003e/v2/trace/otlp`.",
+          "required": [],
+          "title": "path",
+          "type": "string"
+        },
         "setSpanNameSemanticConvention": {
           "default": "1.37.0",
           "description": "Update the names of spans according to the semantic conventions. Set to \"\" to prevent changing span names.",
@@ -16921,7 +17268,7 @@
         },
         "maxCacheSize": {
           "default": "",
-          "description": "Sets the max_cache_size for the Windows Exporter prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))\nOverrides global.maxCacheSize",
+          "description": "Sets the max_cache_size for the Windows Exporter prometheus.relabel component.\nThis should be at least 2x-5x your largest scrape target or samples appended rate.\n([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).\nOverrides `global.maxCacheSize`.",
           "required": [],
           "title": "maxCacheSize",
           "type": "null"
@@ -16976,14 +17323,14 @@
         },
         "scrapeInterval": {
           "default": "",
-          "description": "How frequently to scrape Windows host metrics.",
+          "description": "How frequently to scrape Windows host metrics.\nOverrides `global.scrapeInterval`.",
           "required": [],
           "title": "scrapeInterval",
           "type": "string"
         },
         "scrapeTimeout": {
           "default": "",
-          "description": "The timeout for scraping Windows host metrics.",
+          "description": "The timeout for scraping Windows host metrics.\nOverrides `global.scrapeTimeout`.",
           "required": [],
           "title": "scrapeTimeout",
           "type": "string"
