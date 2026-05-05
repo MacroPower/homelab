@@ -14,14 +14,11 @@ schema Chart(helm.Chart):
     values : Values | any, optional, default is {cluster = {name = "kcl"}, collectors = {prometheusOperator = {enabled = True}}, destinations = {mimir = {$type = "prometheus"}}, prometheusOperatorObjects = {crds = {deploy = True}, enabled = True}}
     chart : str, required, default is "k8s-monitoring"
     repoURL : str, required, default is "https://grafana.github.io/helm-charts"
-    targetRevision : str, optional, default is "4.0.0"
+    targetRevision : str, optional, default is "4.1.0"
     """
-    values?: Values | any = {cluster = {name = "kcl"}, collectors = {
-        prometheusOperator = {enabled = True}
-    }, destinations = {
-        mimir = {$type = "prometheus"}
-    }, prometheusOperatorObjects = {crds = {deploy = True}, enabled = True}}
+
+    values?: Values | any = {cluster = {name = "kcl"}, collectors = {prometheusOperator = {enabled = True}}, destinations = {mimir = {$type = "prometheus"}}, prometheusOperatorObjects = {crds = {deploy = True}, enabled = True}}
     chart: str = "k8s-monitoring"
     repoURL: str = "https://grafana.github.io/helm-charts"
-    targetRevision?: str = "4.0.0"
+    targetRevision?: str = "4.1.0"
 
