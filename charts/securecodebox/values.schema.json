@@ -32,6 +32,24 @@
       "title": "customCACertificate",
       "type": "object"
     },
+    "extraVolumeMounts": {
+      "description": "Additional volume mounts to be mounted to the operator deployment",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraVolumeMounts",
+      "type": "array"
+    },
+    "extraVolumes": {
+      "description": "Additional volumes to be mounted to the operator deployment",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraVolumes",
+      "type": "array"
+    },
     "global": {
       "additionalProperties": true,
       "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
