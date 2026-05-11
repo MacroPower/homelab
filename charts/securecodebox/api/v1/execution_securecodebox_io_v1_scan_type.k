@@ -255,7 +255,7 @@ schema ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecPodFailurePolicyRule
 
     Attributes
     ----------
-    status : str, default is Undefined, required
+    status : str, default is Undefined, optional
         Specifies the required Pod condition status. To match a pod condition
         it is required that the specified status equals the pod condition status.
         Defaults to True.
@@ -263,8 +263,7 @@ schema ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecPodFailurePolicyRule
         Specifies the required Pod condition type. To match a pod condition
         it is required that specified type equals the pod condition type.
     """
-    status: str
-
+    status?: str
     $type: str
 
 schema ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecSelector:
@@ -509,6 +508,8 @@ schema ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpec:
     volumes : [ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0], default is Undefined, optional
         List of volumes that can be mounted by containers belonging to the pod.
         More info: https://kubernetes.io/docs/concepts/storage/volumes
+    workloadRef : ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecWorkloadRef, default is Undefined, optional
+        workload ref
     """
     activeDeadlineSeconds?: int
     affinity?: ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecAffinity
@@ -552,6 +553,7 @@ schema ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpec:
     tolerations?: [ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecTolerationsItems0]
     topologySpreadConstraints?: [ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecTopologySpreadConstraintsItems0]
     volumes?: [ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0]
+    workloadRef?: ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecWorkloadRef
 
     check:
         all _, overhead in overhead {_regex_match(str(overhead), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if overhead} if overhead
@@ -1328,6 +1330,7 @@ schema ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecContaine
         readiness probe
     resizePolicy : [ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecContainersItems0ResizePolicyItems0], default is Undefined, optional
         Resources resize policy for the container.
+        This field cannot be set on ephemeral containers.
     resources : ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
@@ -4067,6 +4070,7 @@ schema ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecInitCont
         readiness probe
     resizePolicy : [ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecInitContainersItems0ResizePolicyItems0], default is Undefined, optional
         Resources resize policy for the container.
+        This field cannot be set on ephemeral containers.
     resources : ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecInitContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
@@ -5672,7 +5676,7 @@ schema ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecTolerati
         If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
         Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
         Exists is equivalent to wildcard for value, so that a pod can
         tolerate all taints of a particular category.
     tolerationSeconds : int, default is Undefined, optional
@@ -6379,6 +6383,9 @@ schema ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecVolumesI
 schema ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
+    Users are allowed to specify resource requirements
+    that are lower than previous value but must still be higher than capacity recorded in the
+    status field of the claim.
 
     Attributes
     ----------
@@ -7064,6 +7071,12 @@ schema ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecVolumesI
         If omitted, kube-apiserver will set it to 86400(24 hours).
     signerName : str, default is Undefined, required
         Kubelet's generated CSRs will be addressed to this signer.
+    userAnnotations : {str:str}, default is Undefined, optional
+        userAnnotations allow pod authors to pass additional information to
+        the signer implementation.  Kubernetes does not restrict or validate this
+        metadata in any way.
+
+        These values are copied verbatim into the `spec.
     """
     certificateChainPath?: str
     credentialBundlePath?: str
@@ -7072,6 +7085,8 @@ schema ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecVolumesI
 
     maxExpirationSeconds?: int
     signerName: str
+
+    userAnnotations?: {str:str}
 
 schema ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0ProjectedSourcesItems0Secret:
     r"""
@@ -7422,6 +7437,33 @@ schema ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecVolumesI
     storagePolicyID?: str
     storagePolicyName?: str
     volumePath: str
+
+schema ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateSpecTemplateSpecWorkloadRef:
+    r"""
+    WorkloadRef provides a reference to the Workload object that this Pod belongs to.
+    This field is used by the scheduler to identify the PodGroup and apply the
+    correct group scheduling policies.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name defines the name of the Workload object this Pod belongs to.
+        Workload must be in the same namespace as the Pod.
+    podGroup : str, default is Undefined, required
+        PodGroup is the name of the PodGroup within the Workload that this Pod
+        belongs to. If it doesn't match any existing PodGroup within the Workload,
+        the Pod will remain unschedulable until the Workload object is recreated
+        and observed by the kube-scheduler.
+    podGroupReplicaKey : str, default is Undefined, optional
+        PodGroupReplicaKey specifies the replica key of the PodGroup to which this
+        Pod belongs. It is used to distinguish pods belonging to different replicas
+        of the same pod group. The pod group policy is applied separately to each replica.
+    """
+    name: str
+
+    podGroup: str
+
+    podGroupReplicaKey?: str
 
 schema ExecutionSecurecodeboxIoV1ScanTypeSpecJobTemplateStatus:
     r"""
