@@ -98,7 +98,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "0.22.2",
+              "default": "0.23.0",
               "required": [],
               "title": "tag",
               "type": "string"
