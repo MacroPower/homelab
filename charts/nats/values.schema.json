@@ -1010,7 +1010,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "2.12.6-alpine",
+              "default": "2.14.0-alpine",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -1267,7 +1267,7 @@
                   "type": "object"
                 },
                 "tag": {
-                  "default": "0.19.3",
+                  "default": "0.19.5",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -1732,7 +1732,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "0.18.0",
+              "default": "0.19.2",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -1863,7 +1863,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "0.21.1",
+              "default": "0.23.0",
               "required": [],
               "title": "tag",
               "type": "string"
