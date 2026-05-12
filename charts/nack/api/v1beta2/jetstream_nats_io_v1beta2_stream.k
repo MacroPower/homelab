@@ -43,6 +43,8 @@ schema JetstreamNatsIoV1beta2StreamSpec:
         Name of the account to which the Stream belongs.
     allowAtomicPublish : bool, default is Undefined, optional
         When true, enables atomic batch publishing.
+    allowBatched : bool, default is Undefined, optional
+        When true, enables fast-ingest batch publishing (nats-server 2.14+).
     allowDirect : bool, default is Undefined, optional
         When true, allow higher performance, direct access to get individual messages.
     allowMsgCounter : bool, default is Undefined, optional
@@ -134,6 +136,7 @@ schema JetstreamNatsIoV1beta2StreamSpec:
     """
     account?: str
     allowAtomicPublish?: bool = False
+    allowBatched?: bool = False
     allowDirect?: bool = False
     allowMsgCounter?: bool = False
     allowMsgSchedules?: bool = False
@@ -211,6 +214,8 @@ schema JetstreamNatsIoV1beta2StreamSpecMirror:
 
     Attributes
     ----------
+    consumer : JetstreamNatsIoV1beta2StreamSpecMirrorConsumer, default is Undefined, optional
+        consumer
     externalApiPrefix : str, default is Undefined, optional
         external Api prefix
     externalDeliverPrefix : str, default is Undefined, optional
@@ -226,6 +231,7 @@ schema JetstreamNatsIoV1beta2StreamSpecMirror:
     subjectTransforms : [JetstreamNatsIoV1beta2StreamSpecMirrorSubjectTransformsItems0], default is Undefined, optional
         List of subject transforms for this mirror.
     """
+    consumer?: JetstreamNatsIoV1beta2StreamSpecMirrorConsumer
     externalApiPrefix?: str
     externalDeliverPrefix?: str
     filterSubject?: str
@@ -233,6 +239,20 @@ schema JetstreamNatsIoV1beta2StreamSpecMirror:
     optStartSeq?: int
     optStartTime?: str
     subjectTransforms?: [JetstreamNatsIoV1beta2StreamSpecMirrorSubjectTransformsItems0]
+
+schema JetstreamNatsIoV1beta2StreamSpecMirrorConsumer:
+    r"""
+    Reference a durable consumer when sourcing/mirroring (nats-server 2.14+).
+
+    Attributes
+    ----------
+    deliverSubject : str, default is Undefined, optional
+        Deliver subject for the durable push consumer.
+    name : str, default is Undefined, required
+        Durable consumer name on the source stream.
+    """
+    deliverSubject?: str
+    name: str
 
 schema JetstreamNatsIoV1beta2StreamSpecMirrorSubjectTransformsItems0:
     r"""
@@ -282,6 +302,8 @@ schema JetstreamNatsIoV1beta2StreamSpecSourcesItems0:
 
     Attributes
     ----------
+    consumer : JetstreamNatsIoV1beta2StreamSpecSourcesItems0Consumer, default is Undefined, optional
+        consumer
     externalApiPrefix : str, default is Undefined, optional
         external Api prefix
     externalDeliverPrefix : str, default is Undefined, optional
@@ -297,6 +319,7 @@ schema JetstreamNatsIoV1beta2StreamSpecSourcesItems0:
     subjectTransforms : [JetstreamNatsIoV1beta2StreamSpecSourcesItems0SubjectTransformsItems0], default is Undefined, optional
         List of subject transforms for this mirror.
     """
+    consumer?: JetstreamNatsIoV1beta2StreamSpecSourcesItems0Consumer
     externalApiPrefix?: str
     externalDeliverPrefix?: str
     filterSubject?: str
@@ -304,6 +327,20 @@ schema JetstreamNatsIoV1beta2StreamSpecSourcesItems0:
     optStartSeq?: int
     optStartTime?: str
     subjectTransforms?: [JetstreamNatsIoV1beta2StreamSpecSourcesItems0SubjectTransformsItems0]
+
+schema JetstreamNatsIoV1beta2StreamSpecSourcesItems0Consumer:
+    r"""
+    Reference a durable consumer when sourcing/mirroring (nats-server 2.14+).
+
+    Attributes
+    ----------
+    deliverSubject : str, default is Undefined, optional
+        Deliver subject for the durable push consumer.
+    name : str, default is Undefined, required
+        Durable consumer name on the source stream.
+    """
+    deliverSubject?: str
+    name: str
 
 schema JetstreamNatsIoV1beta2StreamSpecSourcesItems0SubjectTransformsItems0:
     r"""
