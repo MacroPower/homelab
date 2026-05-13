@@ -98,7 +98,6 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecCredentialInjectionCredenti
     "credential", and the value should be the credential to be injected.
     For example, for basic authentication, the value should be "Basic <base64 encoded username:password>".
     for bearer token, the value should be "Bearer <token>".
-    Note: The secret must be in the same namespace as the HTTPRouteFilter.
 
     Attributes
     ----------
@@ -162,6 +161,7 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponse:
 schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseBody:
     r"""
     Body of the direct response.
+    Supports Envoy command operators for dynamic content (see https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage#command-operators).
 
     Attributes
     ----------
@@ -296,6 +296,12 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseHeaderAddItem
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+        <gateway:experimental:description>
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
+        </gateway:experimental:description>
+
+        <gateway:experimental:validation:Pattern=`^[!-~]+([\t ]?[!-~]+)*$`>
     """
     name: str
 
@@ -325,6 +331,12 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseHeaderSetItem
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+        <gateway:experimental:description>
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
+        </gateway:experimental:description>
+
+        <gateway:experimental:validation:Pattern=`^[!-~]+([\t ]?[!-~]+)*$`>
     """
     name: str
 
@@ -384,11 +396,16 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewrite:
 
     Attributes
     ----------
+    appendXForwardedHost : bool, default is Undefined, optional
+        AppendXForwardedHost controls whether the original Host header value is
+        appended to the X-Forwarded-Host header when hostname rewriting is configured.
+        Defaults to true for backward compatibility.
     hostname : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewriteHostname, default is Undefined, optional
         hostname
     path : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewritePath, default is Undefined, optional
         path
     """
+    appendXForwardedHost?: bool
     hostname?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewriteHostname
     path?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewritePath
 

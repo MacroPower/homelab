@@ -41,10 +41,15 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpec:
 
     Attributes
     ----------
+    admissionControl : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecAdmissionControl, default is Undefined, optional
+        admission control
+    bandwidthLimit : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecBandwidthLimit, default is Undefined, optional
+        bandwidth limit
     circuitBreaker : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCircuitBreaker, default is Undefined, optional
         circuit breaker
     compression : [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCompressionItems0], default is Undefined, optional
         The compression config for the http streams.
+
         Deprecated: Use Compressor instead.
     compressor : [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCompressorItems0], default is Undefined, optional
         The compressor config for the http streams.
@@ -62,7 +67,9 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpec:
         http2
     httpUpgrade : [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHTTPUpgradeItems0], default is Undefined, optional
         HTTPUpgrade defines the configuration for HTTP protocol upgrades.
-        If not specified, the default upgrade configuration(websocket) will be used.
+        If not specified, the default upgrade configuration (websocket) will be used.
+        However, if requestBuffer is configured, the default upgrade configuration
+        will be ignored.
     loadBalancer : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancer, default is Undefined, optional
         load balancer
     mergeType : str, default is Undefined, optional
@@ -85,7 +92,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpec:
     routingType : str, default is Undefined, optional
         RoutingType can be set to "Service" to use the Service Cluster IP for routing to the backend,
         or it can be set to "Endpoint" to use Endpoint routing.
-        When specified, this overrides the EnvoyProxy-level setting for the relevant targeRefs.
+        When specified, this overrides the EnvoyProxy-level setting for the relevant targetRefs.
         If not specified, the EnvoyProxy-level setting is used.
     targetRef : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetRef, default is Undefined, optional
         target ref
@@ -105,6 +112,8 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpec:
         the same HTTP protocol that the incoming request used. Defaults to false, which means
         that Envoy will use the protocol indicated by the attached BackendRef.
     """
+    admissionControl?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecAdmissionControl
+    bandwidthLimit?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecBandwidthLimit
     circuitBreaker?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCircuitBreaker
     compression?: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCompressionItems0]
     compressor?: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCompressorItems0]
@@ -130,6 +139,200 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpec:
     timeout?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTimeout
     useClientProtocol?: bool
 
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecAdmissionControl:
+    r"""
+    AdmissionControl defines the admission control policy to be applied. This configuration
+    probabilistically rejects requests based on the success rate of previous requests in a
+    configurable sliding time window.
+
+    Attributes
+    ----------
+    maxRejectionPercent : int, default is Undefined, optional
+        MaxRejectionPercent represents the upper limit of the rejection probability,
+        expressed as a percentage in the range [0, 100]. Defaults to 80 if not specified.
+    minRequestRate : int, default is Undefined, optional
+        MinRequestRate defines the minimum requests per second below which requests will
+        pass through the filter without rejection. Defaults to 0 if not specified.
+    minSuccessRate : int, default is Undefined, optional
+        MinSuccessRate is the lowest request success rate, as a percentage in the
+        range [1, 100], at which the filter will not reject requests. Defaults to 95 if
+        not specified. Envoy rejects values below 1%, so values lower than 1 are not allowed.
+    rejectionAggression : int, default is Undefined, optional
+        RejectionAggression controls how steeply the rejection probability rises
+        as the observed success rate falls below MinSuccessRate. A value of 1
+        produces a linear curve; higher values reject more aggressively for a
+        given drop in success rate. Must be greater than 0; values below 1 are
+        clamped to 1. Defaults to 1.
+    samplingWindow : str, default is Undefined, optional
+        SamplingWindow defines the time window over which request success rates are calculated.
+        Must be at least 1s; Envoy truncates the window to whole seconds and uses it as the
+        denominator in RPS calculations, so sub-second values would produce a zero denominator.
+        Defaults to 30s if not specified.
+    successCriteria : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecAdmissionControlSuccessCriteria, default is Undefined, optional
+        success criteria
+    """
+    maxRejectionPercent?: int
+    minRequestRate?: int
+    minSuccessRate?: int
+    rejectionAggression?: int
+    samplingWindow?: str
+    successCriteria?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecAdmissionControlSuccessCriteria
+
+    check:
+        maxRejectionPercent <= 100 if maxRejectionPercent not in [None, Undefined]
+        maxRejectionPercent >= 0 if maxRejectionPercent not in [None, Undefined]
+        minRequestRate >= 0 if minRequestRate not in [None, Undefined]
+        minSuccessRate <= 100 if minSuccessRate not in [None, Undefined]
+        minSuccessRate >= 1 if minSuccessRate not in [None, Undefined]
+        rejectionAggression >= 1 if rejectionAggression not in [None, Undefined]
+        _regex_match(str(samplingWindow), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if samplingWindow
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecAdmissionControlSuccessCriteria:
+    r"""
+    SuccessCriteria defines what constitutes a successful request for both HTTP and gRPC.
+
+    Attributes
+    ----------
+    grpc : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecAdmissionControlSuccessCriteriaGrpc, default is Undefined, optional
+        grpc
+    http : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecAdmissionControlSuccessCriteriaHTTP, default is Undefined, optional
+        http
+    """
+    grpc?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecAdmissionControlSuccessCriteriaGrpc
+    http?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecAdmissionControlSuccessCriteriaHTTP
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecAdmissionControlSuccessCriteriaGrpc:
+    r"""
+    GRPC defines success criteria for gRPC requests.
+
+    Attributes
+    ----------
+    statusCodes : [str], default is Undefined, optional
+        StatusCodes defines gRPC status codes that are considered successful.
+        Status codes are defined in https://github.com/grpc/grpc/blob/master/doc/statuscodes.md#status-codes-and-their-use-in-grpc.
+    """
+    statusCodes?: [str]
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecAdmissionControlSuccessCriteriaHTTP:
+    r"""
+    HTTP defines success criteria for HTTP requests.
+
+    Attributes
+    ----------
+    statusCodes : [int], default is Undefined, optional
+        StatusCodes defines HTTP status codes that are considered successful.
+    """
+    statusCodes?: [int]
+
+    check:
+        all statusCodes in statusCodes {statusCodes <= 599 if statusCodes not in [None, Undefined]} if statusCodes
+        all statusCodes in statusCodes {statusCodes >= 100 if statusCodes not in [None, Undefined]} if statusCodes
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecBandwidthLimit:
+    r"""
+    BandwidthLimit allows the user to limit the bandwidth of traffic
+    sent to and received from the backend.
+
+    Attributes
+    ----------
+    request : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecBandwidthLimitRequest, default is Undefined, optional
+        request
+    response : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecBandwidthLimitResponse, default is Undefined, optional
+        response
+    """
+    request?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecBandwidthLimitRequest
+    response?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecBandwidthLimitResponse
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecBandwidthLimitRequest:
+    r"""
+    Request configures bandwidth limits for traffic sent to the backend.
+
+    Attributes
+    ----------
+    limit : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecBandwidthLimitRequestLimit, default is Undefined, required
+        limit
+    """
+    limit: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecBandwidthLimitRequestLimit
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecBandwidthLimitRequestLimit:
+    r"""
+    Limit specifies the bandwidth limit as a bytes-per-unit throughput rate.
+
+    Attributes
+    ----------
+    unit : str, default is Undefined, required
+        Unit specifies the time unit for the bandwidth limit (e.g. Second, Minute, Hour).
+    value : int | str, default is Undefined, required
+        Value specifies the bandwidth limit.
+    """
+    unit: "Second" | "Minute" | "Hour"
+
+    value: int | str
+
+    check:
+        _regex_match(str(value), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$")
+        _regex_match(str(value), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$")
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecBandwidthLimitResponse:
+    r"""
+    Response configures bandwidth limits for traffic sent from the backend.
+
+    Attributes
+    ----------
+    limit : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecBandwidthLimitResponseLimit, default is Undefined, required
+        limit
+    responseTrailers : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecBandwidthLimitResponseResponseTrailers, default is Undefined, optional
+        response trailers
+    """
+    limit: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecBandwidthLimitResponseLimit
+
+    responseTrailers?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecBandwidthLimitResponseResponseTrailers
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecBandwidthLimitResponseLimit:
+    r"""
+    Limit specifies the bandwidth limit as a bytes-per-unit throughput rate.
+
+    Attributes
+    ----------
+    unit : str, default is Undefined, required
+        Unit specifies the time unit for the bandwidth limit (e.g. Second, Minute, Hour).
+    value : int | str, default is Undefined, required
+        Value specifies the bandwidth limit.
+    """
+    unit: "Second" | "Minute" | "Hour"
+
+    value: int | str
+
+    check:
+        _regex_match(str(value), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$")
+        _regex_match(str(value), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$")
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecBandwidthLimitResponseResponseTrailers:
+    r"""
+    ResponseTrailers configures the trailer headers appended to responses
+    when bandwidth limiting introduces delays.
+
+    Attributes
+    ----------
+    prefix : str, default is Undefined, optional
+        Prefix is prepended to each trailer header name.
+        If not set, no prefix is added and the trailers are named as-is.
+        For example, setting "x-eg" produces trailers such as "x-eg-bandwidth-request-delay-ms",
+        while leaving it unset produces "bandwidth-request-delay-ms".
+
+        The following four trailers can be added:
+        "bandwidth-request-delay-ms" is delay time in milliseconds it took for the request stream transfer
+        including request body transfer time and the time added by the filter.
+        "bandwidth-response-delay-ms" is delay time in milliseconds it took for the response stream transfer
+        including response body transfer time and the time added by the filter.
+        "bandwidth-request-filter-delay-ms" is delay time in milliseconds in request stream transfer added by the filter.
+        "bandwidth-response-filter-delay-ms" is delay time in milliseconds that added by the filter.
+    """
+    prefix?: str
+
+    check:
+        _regex_match(str(prefix), r"^[^\r\n\x00]*$") if prefix
+
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCircuitBreaker:
     r"""
     Circuit Breaker settings for the upstream connections and requests.
@@ -150,6 +353,8 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCircuitBreaker:
         Default: unlimited.
     perEndpoint : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCircuitBreakerPerEndpoint, default is Undefined, optional
         per endpoint
+    retryBudget : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCircuitBreakerRetryBudget, default is Undefined, optional
+        retry budget
     """
     maxConnections?: int = 1024
     maxParallelRequests?: int = 1024
@@ -157,6 +362,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCircuitBreaker:
     maxPendingRequests?: int = 1024
     maxRequestsPerConnection?: int
     perEndpoint?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCircuitBreakerPerEndpoint
+    retryBudget?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCircuitBreakerRetryBudget
 
     check:
         maxConnections <= 4294967295 if maxConnections not in [None, Undefined]
@@ -184,6 +390,45 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCircuitBreakerPerEndpo
     check:
         maxConnections <= 4294967295 if maxConnections not in [None, Undefined]
         maxConnections >= 0 if maxConnections not in [None, Undefined]
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCircuitBreakerRetryBudget:
+    r"""
+    RetryBudget provides settings for retry budget, which limits the number of retries in a given percentage.
+    RetryBudget take precedence over maxParallelRetries.
+
+    Attributes
+    ----------
+    minRetryConcurrency : int, default is Undefined, optional
+        MinRetryConcurrency specifies the minimum retry concurrency allowed for the retry budget.
+        For example, a budget of 20% with a minimum retry concurrency of 3
+        will allow 5 active retries while there are 25 active requests.
+        If there are 2 active requests, there are still 3 active retries
+        allowed because of the minimum retry concurrency.
+        Defaults to 3.
+    percent : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCircuitBreakerRetryBudgetPercent, default is Undefined, required
+        percent
+    """
+    minRetryConcurrency?: int
+    percent: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCircuitBreakerRetryBudgetPercent
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCircuitBreakerRetryBudgetPercent:
+    r"""
+    Percent specifies the limit on concurrent retries as a percentage [0, 100] of
+    the sum of active requests and active pending requests.
+
+    Attributes
+    ----------
+    denominator : int, default is 100, optional
+        denominator
+    numerator : int, default is Undefined, required
+        numerator
+    """
+    denominator?: int = 100
+    numerator: int
+
+    check:
+        denominator >= 1 if denominator not in [None, Undefined]
+        numerator >= 0
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecCompressionItems0:
     r"""
@@ -375,6 +620,8 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecFaultInjectionAbort:
     percentage?: float = 100
 
     check:
+        grpcStatus <= 16 if grpcStatus not in [None, Undefined]
+        grpcStatus >= 0 if grpcStatus not in [None, Undefined]
         httpStatus <= 600 if httpStatus not in [None, Undefined]
         httpStatus >= 200 if httpStatus not in [None, Undefined]
 
@@ -464,6 +711,8 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHealthCheckActive:
         Envoy will randomly select a value between 0 and the initial jitter value.
     interval : str, default is "3s", optional
         Interval defines the time between active health checks.
+    overrides : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHealthCheckActiveOverrides, default is Undefined, optional
+        overrides
     tcp : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHealthCheckActiveTCP, default is Undefined, optional
         tcp
     timeout : str, default is "1s", optional
@@ -472,12 +721,16 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHealthCheckActive:
         Type defines the type of health checker.
     unhealthyThreshold : int, default is 3, optional
         UnhealthyThreshold defines the number of unhealthy health checks required before a backend host is marked unhealthy.
+        Without RetriableStatuses configured, any health check failure results in the host being immediately
+        considered unhealthy. When RetriableStatuses is set, health checks returning those statuses are retried
+        up to this threshold before the host is marked unhealthy.
     """
     grpc?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHealthCheckActiveGrpc
     healthyThreshold?: int = 1
     http?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHealthCheckActiveHTTP
     initialJitter?: str
     interval?: str = "3s"
+    overrides?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHealthCheckActiveOverrides
     tcp?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHealthCheckActiveTCP
     timeout?: str = "1s"
     $type: str
@@ -518,19 +771,27 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHealthCheckActiveHTTP:
         ExpectedStatuses defines a list of HTTP response statuses considered healthy.
         Defaults to 200 only
     hostname : str, default is Undefined, optional
-        Hostname defines the HTTP host that will be requested during health checking.
-        Default: HTTPRoute or GRPCRoute hostname.
+        Hostname defines the HTTP Host header used for active HTTP health checks.
+        Host selection uses this order: this field, the associated Backend endpoint
+        hostname if available, then the effective Route hostname.
     method : str, default is Undefined, optional
         Method defines the HTTP method used for health checking.
         Defaults to GET
     path : str, default is Undefined, required
         Path defines the HTTP path that will be requested during health checking.
+    retriableStatuses : [int], default is Undefined, optional
+        RetriableStatuses defines a list of HTTP response statuses considered retriable.
+        Responses matching these statuses count towards the unhealthy threshold but
+        do not result in the host being considered immediately unhealthy.
+        The expected statuses take precedence for any range overlaps with this field.
     """
     expectedResponse?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHealthCheckActiveHTTPExpectedResponse
     expectedStatuses?: [int]
     hostname?: str
     method?: str
     path: str
+
+    retriableStatuses?: [int]
 
     check:
         all expectedStatuses in expectedStatuses {expectedStatuses <= 599 if expectedStatuses not in [None, Undefined]} if expectedStatuses
@@ -540,6 +801,8 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHealthCheckActiveHTTP:
         _regex_match(str(hostname), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if hostname
         len(path) <= 1024
         len(path) >= 1
+        all retriableStatuses in retriableStatuses {retriableStatuses <= 599 if retriableStatuses not in [None, Undefined]} if retriableStatuses
+        all retriableStatuses in retriableStatuses {retriableStatuses >= 100 if retriableStatuses not in [None, Undefined]} if retriableStatuses
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHealthCheckActiveHTTPExpectedResponse:
     r"""
@@ -557,6 +820,26 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHealthCheckActiveHTTPE
     binary?: str
     text?: str
     $type: str
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHealthCheckActiveOverrides:
+    r"""
+    Overrides defines the configuration of the overriding health check settings for all endpoints
+    in the backend cluster. This allows customization of port and other settings that may differ
+    from the main service configuration.
+
+    Attributes
+    ----------
+    port : int, default is Undefined, optional
+        Port overrides the health check port.
+        If not set, the endpoint's serving port is used for health checks.
+        This is useful when health checks are served on a different port than
+        the main service port (e.g., port 443 for service, port 9090 for health checks).
+    """
+    port?: int
+
+    check:
+        port <= 65535 if port not in [None, Undefined]
+        port >= 1 if port not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHealthCheckActiveTCP:
     r"""
@@ -613,6 +896,9 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHealthCheckPassive:
 
     Attributes
     ----------
+    alwaysEjectOneEndpoint : bool, default is Undefined, optional
+        AlwaysEjectOneEndpoint defines whether at least one host should be ejected,
+        regardless of MaxEjectionPercent.
     baseEjectionTime : str, default is "30s", optional
         BaseEjectionTime defines the base duration for which a host will be ejected on consecutive failures.
     consecutive5XxErrors : int, default is 5, optional
@@ -633,6 +919,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHealthCheckPassive:
     splitExternalLocalOriginErrors : bool, default is Undefined, optional
         SplitExternalLocalOriginErrors enables splitting of errors between external and local origin.
     """
+    alwaysEjectOneEndpoint?: bool = False
     baseEjectionTime?: str = "30s"
     consecutive5XxErrors?: int = 5
     consecutiveGatewayErrors?: int
@@ -647,6 +934,8 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHealthCheckPassive:
         failurePercentageThreshold <= 100 if failurePercentageThreshold not in [None, Undefined]
         failurePercentageThreshold >= 0 if failurePercentageThreshold not in [None, Undefined]
         _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
+        maxEjectionPercent <= 100 if maxEjectionPercent not in [None, Undefined]
+        maxEjectionPercent >= 0 if maxEjectionPercent not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHttp2:
     r"""
@@ -654,6 +943,8 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHttp2:
 
     Attributes
     ----------
+    connectionKeepalive : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHttp2ConnectionKeepalive, default is Undefined, optional
+        connection keepalive
     initialConnectionWindowSize : int | str, default is Undefined, optional
         InitialConnectionWindowSize sets the initial window size for HTTP/2 connections.
         If not set, the default value is 1 MiB.
@@ -669,6 +960,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHttp2:
         https://www.envoyproxy.io/docs/envoy/latest/configuration/best_practices/level_two
         Default: TerminateConnection
     """
+    connectionKeepalive?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHttp2ConnectionKeepalive
     initialConnectionWindowSize?: int | str
     initialStreamWindowSize?: int | str
     maxConcurrentStreams?: int
@@ -682,6 +974,34 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHttp2:
         maxConcurrentStreams <= 2147483647 if maxConcurrentStreams not in [None, Undefined]
         maxConcurrentStreams >= 1 if maxConcurrentStreams not in [None, Undefined]
 
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecHttp2ConnectionKeepalive:
+    r"""
+    ConnectionKeepalive configures HTTP/2 connection keepalive using PING frames.
+
+    Attributes
+    ----------
+    idleInterval : str, default is Undefined, optional
+        IdleInterval specifies how long a connection must be idle before a PING is sent.
+    interval : str, default is Undefined, optional
+        Interval specifies how often to send HTTP/2 PING frames to keep the connection alive.
+    intervalJitter : int, default is Undefined, optional
+        IntervalJitter specifies a random jitter percentage added to each interval.
+        Defaults to 15% if not specified.
+    timeout : str, default is Undefined, optional
+        Timeout specifies how long to wait for a PING response before considering the connection dead.
+    """
+    idleInterval?: str
+    interval?: str
+    intervalJitter?: int
+    timeout?: str
+
+    check:
+        _regex_match(str(idleInterval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if idleInterval
+        _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
+        intervalJitter <= 100 if intervalJitter not in [None, Undefined]
+        intervalJitter >= 0 if intervalJitter not in [None, Undefined]
+        _regex_match(str(timeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if timeout
+
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancer:
     r"""
     LoadBalancer policy to apply when routing traffic from the gateway to
@@ -689,8 +1009,12 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancer:
 
     Attributes
     ----------
+    backendUtilization : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerBackendUtilization, default is Undefined, optional
+        backend utilization
     consistentHash : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerConsistentHash, default is Undefined, optional
         consistent hash
+    dynamicModule : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerDynamicModule, default is Undefined, optional
+        dynamic module
     endpointOverride : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerEndpointOverride, default is Undefined, optional
         endpoint override
     slowStart : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerSlowStart, default is Undefined, optional
@@ -701,16 +1025,64 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancer:
         "ConsistentHash",
         "LeastRequest",
         "Random",
-        "RoundRobin".
+        "RoundRobin",
+        "BackendUtilization",
+        "DynamicModule".
     zoneAware : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerZoneAware, default is Undefined, optional
         zone aware
     """
+    backendUtilization?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerBackendUtilization
     consistentHash?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerConsistentHash
+    dynamicModule?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerDynamicModule
     endpointOverride?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerEndpointOverride
     slowStart?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerSlowStart
-    $type: "ConsistentHash" | "LeastRequest" | "Random" | "RoundRobin"
+    $type: "ConsistentHash" | "LeastRequest" | "Random" | "RoundRobin" | "BackendUtilization" | "DynamicModule"
 
     zoneAware?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerZoneAware
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerBackendUtilization:
+    r"""
+    BackendUtilization defines the configuration when the load balancer type is
+    set to BackendUtilization.
+
+    Attributes
+    ----------
+    blackoutPeriod : str, default is Undefined, optional
+        A given endpoint must report load metrics continuously for at least this long before the endpoint weight will be used.
+        Default is 10s.
+    errorUtilizationPenaltyPercent : int, default is Undefined, optional
+        ErrorUtilizationPenaltyPercent adjusts endpoint weights based on the error rate (eps/qps).
+        This is expressed as a percentage-based integer where 100 represents 1.0, 150 represents 1.5, etc.
+
+        For example:
+        - 100 => 1.0x
+        - 120 => 1.2x
+        - 200 => 2.0x
+
+        Must be non-negative.
+    keepResponseHeaders : bool, default is Undefined, optional
+        KeepResponseHeaders keeps the ORCA load report headers/trailers before sending the response to the client.
+        Defaults to false.
+    metricNamesForComputingUtilization : [str], default is Undefined, optional
+        Metric names used to compute utilization if application_utilization is not set.
+        For map fields in ORCA proto, use the form "<map_field>.<key>", e.g., "named_metrics.foo".
+    weightExpirationPeriod : str, default is Undefined, optional
+        If a given endpoint has not reported load metrics in this long, stop using the reported weight. Defaults to 3m.
+    weightUpdatePeriod : str, default is Undefined, optional
+        How often endpoint weights are recalculated. Values less than 100ms are capped at 100ms. Default 1s.
+    """
+    blackoutPeriod?: str
+    errorUtilizationPenaltyPercent?: int
+    keepResponseHeaders?: bool = False
+    metricNamesForComputingUtilization?: [str]
+    weightExpirationPeriod?: str
+    weightUpdatePeriod?: str
+
+    check:
+        _regex_match(str(blackoutPeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if blackoutPeriod
+        errorUtilizationPenaltyPercent >= 0 if errorUtilizationPenaltyPercent not in [None, Undefined]
+        _regex_match(str(weightExpirationPeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if weightExpirationPeriod
+        _regex_match(str(weightUpdatePeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if weightUpdatePeriod
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerConsistentHash:
     r"""
@@ -811,6 +1183,40 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerConsistent
     """
     name: str
 
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerDynamicModule:
+    r"""
+    DynamicModule defines the configuration when the load balancer type is
+    set to DynamicModule. The referenced module must be registered in the
+    EnvoyProxy resource's dynamicModules allowlist.
+
+    Attributes
+    ----------
+    config : any, default is Undefined, optional
+        Config is optional configuration for the module's load balancer
+        implementation. This is serialized and passed to the module's
+        initialization function.
+    lbPolicyName : str, default is Undefined, required
+        LBPolicyName identifies a specific load balancer implementation within
+        the dynamic module. A single shared library can contain multiple LB
+        policy implementations. This value is passed to the module's
+        initialization function to select the appropriate implementation.
+    name : str, default is Undefined, required
+        Name references a dynamic module registered in the EnvoyProxy resource's
+        dynamicModules list. The referenced module must exist in the registry;
+        otherwise, the policy will be rejected.
+    """
+    config?: any
+    lbPolicyName: str
+
+    name: str
+
+    check:
+        len(lbPolicyName) <= 253
+        len(lbPolicyName) >= 1
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$")
+
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerEndpointOverride:
     r"""
     EndpointOverride defines the configuration for endpoint override.
@@ -847,7 +1253,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerSlowStart:
     r"""
     SlowStart defines the configuration related to the slow start load balancer policy.
     If set, during slow start window, traffic sent to the newly added hosts will gradually increase.
-    Currently this is only supported for RoundRobin and LeastRequest load balancers
+    Supported for RoundRobin, LeastRequest, and BackendUtilization load balancers.
 
     Attributes
     ----------
@@ -870,8 +1276,12 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerZoneAware:
     ----------
     preferLocal : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerZoneAwarePreferLocal, default is Undefined, optional
         prefer local
+    weightedZones : [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerZoneAwareWeightedZonesItems0], default is Undefined, optional
+        WeightedZones configures weight-based traffic distribution across locality zones.
+        Traffic is distributed proportionally based on the sum of all zone weights.
     """
     preferLocal?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerZoneAwarePreferLocal
+    weightedZones?: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerZoneAwareWeightedZonesItems0]
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerZoneAwarePreferLocal:
     r"""
@@ -907,6 +1317,26 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerZoneAwareP
     """
     minEndpointsInZoneThreshold?: int
 
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecLoadBalancerZoneAwareWeightedZonesItems0:
+    r"""
+    WeightedZoneConfig defines the weight for a specific locality zone.
+
+    Attributes
+    ----------
+    weight : int, default is Undefined, required
+        Weight defines the weight for this locality.
+        Higher values receive more traffic. The actual traffic distribution
+        is proportional to this value relative to other localities.
+    zone : str, default is Undefined, required
+        Zone specifies the topology zone this weight applies to.
+        The value should match the topology.kubernetes.io/zone label
+        of the nodes where endpoints are running.
+        Zones not listed in the configuration receive a default weight of 1.
+    """
+    weight: int
+
+    zone: str
+
 protocol GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecProxyProtocol:
     r"""
     ProxyProtocol enables the Proxy Protocol when communicating with the backend.
@@ -914,7 +1344,7 @@ protocol GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecProxyProtocol:
     Attributes
     ----------
     version : str, default is Undefined, required
-        Version of ProxyProtol
+        Version of ProxyProtocol
         Valid ProxyProtocolVersion values are
         "V1"
         "V2"
@@ -961,7 +1391,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobal:
     rules: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0]
 
     check:
-        len(rules) <= 128
+        len(rules) <= 256
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0:
     r"""
@@ -998,6 +1428,10 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesIt
         Shared determines whether this rate limit rule applies across all the policy targets.
         If set to true, the rule is treated as a common bucket and is shared across all policy targets (xRoutes).
         Default: false.
+    xRateLimitHeaders : str, default is Undefined, optional
+        XRateLimitHeaders controls whether X-RateLimit response headers are emitted for this rate limit rule.
+        When set, this overrides the global DisableRateLimitHeaders setting in ClientTrafficPolicy for this rule.
+        If not set, the rule inherits the listener-level setting (default behavior).
     """
     clientSelectors?: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0ClientSelectorsItems0]
     cost?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0Cost
@@ -1005,6 +1439,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesIt
 
     shadowMode?: bool
     shared?: bool
+    xRateLimitHeaders?: "Off" | "DraftVersion03"
 
     check:
         len(clientSelectors) <= 8 if clientSelectors
@@ -1039,7 +1474,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesIt
     sourceCIDR?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0ClientSelectorsItems0SourceCIDR
 
     check:
-        len(headers) <= 16 if headers
+        len(headers) <= 64 if headers
         len(queryParams) <= 16 if queryParams
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesItems0ClientSelectorsItems0HeadersItems0:
@@ -1145,6 +1580,9 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesIt
 
     Attributes
     ----------
+    invert : bool, default is Undefined, optional
+        Invert specifies whether the source range match result will be inverted.
+        When true, the rule matches when the client IP is not in the specified range(s).
     $type : str, default is "Exact", optional
         type
     value : str, default is Undefined, required
@@ -1152,6 +1590,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesIt
         These could also be the intermediate addresses through which the request has flown through and is part of the  `X-Forwarded-For` header.
         For example, `192.168.0.1/32`, `192.168.0.0/24`, `001:db8::/64`.
     """
+    invert?: bool = False
     $type?: "Exact" | "Distinct" = "Exact"
     value: str
 
@@ -1272,7 +1711,8 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesIt
     Attributes
     ----------
     requests : int, default is Undefined, required
-        requests
+        Requests is the number of requests (or cost units, when used with
+        cost-based rate limiting) allowed per Unit.
     unit : str, default is Undefined, required
         RateLimitUnit specifies the intervals for setting rate limits.
         Valid RateLimitUnit values are "Second", "Minute", "Hour", "Day", "Month" and "Year".
@@ -1280,6 +1720,10 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitGlobalRulesIt
     requests: int
 
     unit: "Second" | "Minute" | "Hour" | "Day" | "Month" | "Year"
+
+    check:
+        requests <= 4294967295
+        requests >= 1
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocal:
     r"""
@@ -1333,6 +1777,10 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesIte
         Shared determines whether this rate limit rule applies across all the policy targets.
         If set to true, the rule is treated as a common bucket and is shared across all policy targets (xRoutes).
         Default: false.
+    xRateLimitHeaders : str, default is Undefined, optional
+        XRateLimitHeaders controls whether X-RateLimit response headers are emitted for this rate limit rule.
+        When set, this overrides the global DisableRateLimitHeaders setting in ClientTrafficPolicy for this rule.
+        If not set, the rule inherits the listener-level setting (default behavior).
     """
     clientSelectors?: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesItems0ClientSelectorsItems0]
     cost?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesItems0Cost
@@ -1340,6 +1788,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesIte
 
     shadowMode?: bool
     shared?: bool
+    xRateLimitHeaders?: "Off" | "DraftVersion03"
 
     check:
         len(clientSelectors) <= 8 if clientSelectors
@@ -1374,7 +1823,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesIte
     sourceCIDR?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesItems0ClientSelectorsItems0SourceCIDR
 
     check:
-        len(headers) <= 16 if headers
+        len(headers) <= 64 if headers
         len(queryParams) <= 16 if queryParams
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesItems0ClientSelectorsItems0HeadersItems0:
@@ -1480,6 +1929,9 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesIte
 
     Attributes
     ----------
+    invert : bool, default is Undefined, optional
+        Invert specifies whether the source range match result will be inverted.
+        When true, the rule matches when the client IP is not in the specified range(s).
     $type : str, default is "Exact", optional
         type
     value : str, default is Undefined, required
@@ -1487,6 +1939,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesIte
         These could also be the intermediate addresses through which the request has flown through and is part of the  `X-Forwarded-For` header.
         For example, `192.168.0.1/32`, `192.168.0.0/24`, `001:db8::/64`.
     """
+    invert?: bool = False
     $type?: "Exact" | "Distinct" = "Exact"
     value: str
 
@@ -1607,7 +2060,8 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesIte
     Attributes
     ----------
     requests : int, default is Undefined, required
-        requests
+        Requests is the number of requests (or cost units, when used with
+        cost-based rate limiting) allowed per Unit.
     unit : str, default is Undefined, required
         RateLimitUnit specifies the intervals for setting rate limits.
         Valid RateLimitUnit values are "Second", "Minute", "Hour", "Day", "Month" and "Year".
@@ -1615,6 +2069,10 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRateLimitLocalRulesIte
     requests: int
 
     unit: "Second" | "Minute" | "Hour" | "Day" | "Month" | "Year"
+
+    check:
+        requests <= 4294967295
+        requests >= 1
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRequestBuffer:
     r"""
@@ -1626,6 +2084,9 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecRequestBuffer:
 
     When enabling this option, you should also configure your connection buffer size to account for these request buffers. There will also be an
     increase in memory usage for Envoy that should be accounted for in your deployment settings.
+
+    Request buffering is incompatible with streaming APIs and protocol upgrades such as gRPC streaming and WebSocket. Do not enable this option
+    on routes that need those protocols, because requests can hang instead of being forwarded upstream.
 
     Attributes
     ----------
@@ -1653,11 +2114,17 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecResponseOverrideItems0
         redirect
     response : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecResponseOverrideItems0Response, default is Undefined, optional
         response
+    source : str, default is Undefined, optional
+        Source specifies which responses this rule applies to.
+        Local overrides only Envoy-generated responses (e.g. auth failures).
+        Backend overrides only upstream responses.
+        All (default) overrides both.
     """
     match: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecResponseOverrideItems0Match
 
     redirect?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecResponseOverrideItems0Redirect
     response?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecResponseOverrideItems0Response
+    source?: "All" | "Local" | "Backend"
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecResponseOverrideItems0Match:
     r"""
@@ -1957,6 +2424,12 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecResponseOverrideItems0
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+        <gateway:experimental:description>
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
+        </gateway:experimental:description>
+
+        <gateway:experimental:validation:Pattern=`^[!-~]+([\t ]?[!-~]+)*$`>
     """
     name: str
 
@@ -1986,6 +2459,12 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecResponseOverrideItems0
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+        <gateway:experimental:description>
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
+        </gateway:experimental:description>
+
+        <gateway:experimental:validation:Pattern=`^[!-~]+([\t ]?[!-~]+)*$`>
     """
     name: str
 
@@ -2226,13 +2705,16 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetSelectorsItems0:
     matchExpressions : [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetSelectorsItems0MatchExpressionsItems0], default is Undefined, optional
         MatchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
-        MatchLabels are the set of label selectors for identifying the targeted resource
+        MatchLabels are the set of label selectors for identifying the targeted resource.
+    namespaces : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetSelectorsItems0Namespaces, default is Undefined, optional
+        namespaces
     """
     group?: str = "gateway.networking.k8s.io"
     kind: str
 
     matchExpressions?: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetSelectorsItems0MatchExpressionsItems0]
     matchLabels?: {str:str}
+    namespaces?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetSelectorsItems0Namespaces
 
     check:
         len(group) <= 253 if group
@@ -2242,6 +2724,73 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetSelectorsItems0:
         _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$")
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetSelectorsItems0MatchExpressionsItems0:
+    r"""
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the label key that the selector applies to.
+    operator : str, default is Undefined, required
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
+    values : [str], default is Undefined, optional
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
+    """
+    key: str
+
+    operator: str
+
+    values?: [str]
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetSelectorsItems0Namespaces:
+    r"""
+    Namespaces determines which namespaces are considered for target selection.
+
+    If unspecified, only targets in the same namespace as this policy are considered.
+
+    When specified, the effective set of namespaces is always constrained to the
+    namespaces watched by Envoy Gateway.
+
+    Selecting targets across namespaces requires a ReferenceGrant in the target
+    namespace that allows this policy kind to reference the selected target kind.
+    Cross-namespace targets without a matching ReferenceGrant are ignored.
+
+    Attributes
+    ----------
+    from : str, default is "Same", required
+        From indicates how namespaces are selected for this target selector.
+
+        All means all namespaces watched by Envoy Gateway.
+        Selector means namespaces watched by Envoy Gateway that match Selector.
+    selector : GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetSelectorsItems0NamespacesSelector, default is Undefined, optional
+        selector
+    """
+    from: "Same" | "All" | "Selector" = "Same"
+
+    selector?: GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetSelectorsItems0NamespacesSelector
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetSelectorsItems0NamespacesSelector:
+    r"""
+    Selector selects namespaces when From is set to Selector.
+
+    Attributes
+    ----------
+    matchExpressions : [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetSelectorsItems0NamespacesSelectorMatchExpressionsItems0], default is Undefined, optional
+        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+    matchLabels : {str:str}, default is Undefined, optional
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
+    """
+    matchExpressions?: [GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetSelectorsItems0NamespacesSelectorMatchExpressionsItems0]
+    matchLabels?: {str:str}
+
+schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTargetSelectorsItems0NamespacesSelectorMatchExpressionsItems0:
     r"""
     A label selector requirement is a selector that contains values, a key, and an operator that
     relates the key and values.
@@ -2463,17 +3012,22 @@ schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTimeoutHTTP:
         When set to "0s", no max duration is applied and streams can run indefinitely.
     requestTimeout : str, default is Undefined, optional
         RequestTimeout is the time until which entire response is received from the upstream.
+    streamIdleTimeout : str, default is Undefined, optional
+         The stream idle timeout defines the amount of time a stream can exist without any upstream or downstream activity.
+         If not specified, StreamIdleTimeout is inherited from the listener-level setting, which can be configured via ClientTrafficPolicy.
     """
     connectionIdleTimeout?: str
     maxConnectionDuration?: str
     maxStreamDuration?: str
     requestTimeout?: str
+    streamIdleTimeout?: str
 
     check:
         _regex_match(str(connectionIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if connectionIdleTimeout
         _regex_match(str(maxConnectionDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxConnectionDuration
         _regex_match(str(maxStreamDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxStreamDuration
         _regex_match(str(requestTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if requestTimeout
+        _regex_match(str(streamIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if streamIdleTimeout
 
 schema GatewayEnvoyproxyIoV1alpha1BackendTrafficPolicySpecTimeoutTCP:
     r"""

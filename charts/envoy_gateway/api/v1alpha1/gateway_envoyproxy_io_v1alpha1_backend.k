@@ -190,6 +190,8 @@ schema GatewayEnvoyproxyIoV1alpha1BackendSpecTLS:
     ciphers : [str], default is Undefined, optional
         Ciphers specifies the set of cipher suites supported when
         negotiating TLS 1.0 - 1.2. This setting has no effect for TLS 1.3.
+        For the list of supported ciphers, please refer to the Envoy documentation:
+        https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/transport_sockets/tls/v3/common.proto#extensions-transport-sockets-tls-v3-tlsparameters
         In non-FIPS Envoy Proxy builds the default cipher list is:
         - [ECDHE-ECDSA-AES128-GCM-SHA256|ECDHE-ECDSA-CHACHA20-POLY1305]
         - [ECDHE-RSA-AES128-GCM-SHA256|ECDHE-RSA-CHACHA20-POLY1305]
@@ -209,6 +211,17 @@ schema GatewayEnvoyproxyIoV1alpha1BackendSpecTLS:
         - P-256
         In builds using BoringSSL FIPS the default curve is:
         - P-256
+    fingerprints : [str], default is Undefined, optional
+        Fingerprints specifies TLS client fingerprinting.
+        When specified, a JAX fingerprint derived from the client’s TLS handshake
+        is generated. The fingerprint can be logged in access logs or
+        forwarded to upstream services using request headers.
+
+        Fingerprinting is disabled if not specified.
+
+        Supported values are:
+        - JA3
+        - JA4
     insecureSkipVerify : bool, default is Undefined, optional
         InsecureSkipVerify indicates whether the upstream's certificate verification
         should be skipped. Defaults to "false".
@@ -243,18 +256,22 @@ schema GatewayEnvoyproxyIoV1alpha1BackendSpecTLS:
     ciphers?: [str]
     clientCertificateRef?: GatewayEnvoyproxyIoV1alpha1BackendSpecTLSClientCertificateRef
     ecdhCurves?: [str]
+    fingerprints?: [str]
     insecureSkipVerify?: bool = False
     maxVersion?: "Auto" | "1.0" | "1.1" | "1.2" | "1.3"
     minVersion?: "Auto" | "1.0" | "1.1" | "1.2" | "1.3"
     signatureAlgorithms?: [str]
     sni?: str
-    wellKnownCACertificates?: "System"
+    wellKnownCACertificates?: str
 
     check:
         len(caCertificateRefs) <= 8 if caCertificateRefs
         len(sni) <= 253 if sni
         len(sni) >= 1 if sni
         _regex_match(str(sni), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if sni
+        len(wellKnownCACertificates) <= 253 if wellKnownCACertificates
+        len(wellKnownCACertificates) >= 1 if wellKnownCACertificates
+        _regex_match(str(wellKnownCACertificates), r"^(System|([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/([A-Za-z0-9][-A-Za-z0-9_.]{0,61})?[A-Za-z0-9]))$") if wellKnownCACertificates
 
 schema GatewayEnvoyproxyIoV1alpha1BackendSpecTLSCaCertificateRefsItems0:
     r"""

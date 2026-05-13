@@ -51,7 +51,7 @@ schema GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicySpec:
         ServiceImport, or any implementation-specific backendRef) are the only
         valid API target references.
 
-        Currently, a TargetRef can not be scoped to a specific port on a
+        Currently, a TargetRef cannot be scoped to a specific port on a
         Service.
     """
     retryConstraint?: GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicySpecRetryConstraint
@@ -196,7 +196,7 @@ schema GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicySpecSessionPersistenc
         Support: Implementation-specific
     $type : str, default is "Cookie", optional
         Type defines the type of session persistence such as through
-        the use a header or cookie. Defaults to cookie based session
+        the use of a header or cookie. Defaults to cookie based session
         persistence.
 
         Support: Core for "Cookie" type

@@ -54,8 +54,6 @@ schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpec:
         Support: Implementation-specific
     targetRefs : [GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecTargetRefsItems0], default is Undefined, required
         TargetRefs identifies an API object to apply the policy to.
-        Only Services have Extended support. Implementations MAY support
-        additional objects, with Implementation Specific support.
         Note that this config applies to the entire referenced resource
         by default, but this default may change in the future to provide
         a more granular application of the policy.
@@ -76,9 +74,9 @@ schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpec:
           example, a policy with a creation timestamp of "2021-07-15
           01:02:03" MUST be given precedence over a policy with a
           creation timestamp of "2021-07-15 01:02:04".
-        * The policy appearing first in alphabetical order by {name}.
-          For example, a policy named `bar` is given precedence over a
-          policy named `baz`.
+        * The policy appearing first in alphabetical order by {namespace}/{name}.
+          For example, a policy named `foo/bar` is given precedence over a
+          policy named `foo/baz`.
 
         For any BackendTLSPolicy that does not take precedence, the
         implementation MUST ensure the `Accepted` Condition is set to
@@ -90,9 +88,28 @@ schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpec:
         clarified in a future release, the safest approach is to support a single
         targetRef.
 
-        Support: Extended for Kubernetes Service
+        Support Levels:
 
-        Support: Implementation-specific for any other resource
+        * Extended: Kubernetes Service referenced by HTTPRoute backendRefs.
+
+        * Implementation-Specific: Services not connected via HTTPRoute, and any
+          other kind of backend. Implementations MAY use BackendTLSPolicy for:
+          - Services not referenced by any Route (e.g., infrastructure services)
+          - Gateway feature backends (e.g., ExternalAuth, rate-limiting services)
+          - Service mesh workload-to-service communication
+          - Other resource types beyond Service
+
+        Implementations SHOULD aim to ensure that BackendTLSPolicy behavior is consistent,
+        even outside of the extended HTTPRoute -(backendRef) -> Service path.
+        They SHOULD clearly document how BackendTLSPolicy is interpreted in these
+        scenarios, including:
+          - Which resources beyond Service are supported
+          - How the policy is discovered and applied
+          - Any implementation-specific semantics or restrictions
+
+        Note that this config applies to the entire referenced resource
+        by default, but this default may change in the future to provide
+        a more granular application of the policy.
     validation : GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidation, default is Undefined, required
         validation
     """
@@ -230,8 +247,8 @@ schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidation:
 
         Support: Extended
     wellKnownCACertificates : str, default is Undefined, optional
-        WellKnownCACertificates specifies whether system CA certificates may be used in
-        the TLS handshake between the gateway and backend pod.
+        WellKnownCACertificates specifies whether a well-known set of CA certificates
+        may be used in the TLS handshake between the gateway and backend pod.
 
         If WellKnownCACertificates is unspecified or empty (""), then CACertificateRefs
         must be specified with at least one entry for a valid configuration. Only one of
@@ -241,13 +258,20 @@ schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidation:
         `Accepted` Condition on the BackendTLSPolicy is set to `status: False`, with
         a Reason `Invalid`.
 
+        Valid values include:
+        * "System" - indicates that well-known system CA certificates should be used.
+
+        Implementations MAY define their own sets of CA certificates. Such definitions
+        MUST use an implementation-specific, prefixed name, such as
+        `mycompany.com/my-custom-ca-certificates`.
+
         Support: Implementation-specific
     """
     caCertificateRefs?: [GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidationCaCertificateRefsItems0]
     hostname: str
 
     subjectAltNames?: [GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidationSubjectAltNamesItems0]
-    wellKnownCACertificates?: "System"
+    wellKnownCACertificates?: str
 
     check:
         len(caCertificateRefs) <= 8 if caCertificateRefs
@@ -255,6 +279,9 @@ schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidation:
         len(hostname) >= 1
         _regex_match(str(hostname), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
         len(subjectAltNames) <= 5 if subjectAltNames
+        len(wellKnownCACertificates) <= 253 if wellKnownCACertificates
+        len(wellKnownCACertificates) >= 1 if wellKnownCACertificates
+        _regex_match(str(wellKnownCACertificates), r"^(System|([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/([A-Za-z0-9][-A-Za-z0-9_.]{0,61})?[A-Za-z0-9]))$") if wellKnownCACertificates
 
 schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidationCaCertificateRefsItems0:
     r"""

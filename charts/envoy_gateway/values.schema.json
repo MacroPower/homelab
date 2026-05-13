@@ -180,6 +180,13 @@
       "title": "certgen",
       "type": "object"
     },
+    "commonLabels": {
+      "additionalProperties": true,
+      "description": "Labels to apply to all resources",
+      "required": [],
+      "title": "commonLabels",
+      "type": "object"
+    },
     "config": {
       "additionalProperties": true,
       "properties": {
@@ -271,6 +278,15 @@
         "envoyGateway": {
           "additionalProperties": true,
           "properties": {
+            "extraEnv": {
+              "description": "Additional environment variables for the envoy-gateway container.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "extraEnv",
+              "type": "array"
+            },
             "image": {
               "additionalProperties": true,
               "properties": {
@@ -451,6 +467,24 @@
               "title": "annotations",
               "type": "object"
             },
+            "extraVolumeMounts": {
+              "description": "Additional volumeMounts on the deployment definition.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "- name: foo\n  mountPath: \"/etc/foo\"\n  readOnly: true\nAdditional volumes on the deployment definition.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "extraVolumes",
+              "type": "array"
+            },
             "labels": {
               "additionalProperties": true,
               "required": [],
@@ -546,7 +580,7 @@
         },
         "imageRegistry": {
           "default": "",
-          "description": "If set, these take highest precedence and change both envoyGateway and ratelimit's container registry and pull secrets.\nGlobal override for image registry",
+          "description": "If set, these take highest precedence and change envoyGateway, envoyProxy, and ratelimit's container registry and pull secrets.\nGlobal override for image registry",
           "required": [],
           "title": "imageRegistry",
           "type": "string"
@@ -559,7 +593,7 @@
               "additionalProperties": true,
               "properties": {
                 "image": {
-                  "default": "docker.io/envoyproxy/gateway:v1.7.1",
+                  "default": "docker.io/envoyproxy/gateway:v1.8.0",
                   "description": "This is the full image name including the hub, repo, and tag.",
                   "required": [],
                   "title": "image",
@@ -586,11 +620,42 @@
               "title": "envoyGateway",
               "type": "object"
             },
+            "envoyProxy": {
+              "additionalProperties": true,
+              "properties": {
+                "image": {
+                  "default": "",
+                  "description": "This is the full image name including the hub, repo, and tag for the Envoy Proxy data plane.\nIf not specified, uses the default image built into envoy-gateway.",
+                  "required": [],
+                  "title": "image",
+                  "type": "string"
+                },
+                "pullPolicy": {
+                  "default": "",
+                  "description": "Specify image pull policy if default behavior isn't desired.\nDefault behavior: IfNotPresent.",
+                  "required": [],
+                  "title": "pullPolicy",
+                  "type": "string"
+                },
+                "pullSecrets": {
+                  "description": "List of secrets in the same namespace of the component that can be used to pull images from private repositories.",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "pullSecrets",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "envoyProxy",
+              "type": "object"
+            },
             "ratelimit": {
               "additionalProperties": true,
               "properties": {
                 "image": {
-                  "default": "docker.io/envoyproxy/ratelimit:c8765e89",
+                  "default": "docker.io/envoyproxy/ratelimit:ff287602",
                   "description": "This is the full image name including the hub, repo, and tag.",
                   "required": [],
                   "title": "image",
@@ -671,6 +736,13 @@
       "default": "cluster.local",
       "required": [],
       "title": "kubernetesClusterDomain",
+      "type": "string"
+    },
+    "namespaceOverride": {
+      "default": "",
+      "description": "Override the namespace for resources deployed by the chart.\nDefaults to the release namespace.",
+      "required": [],
+      "title": "namespaceOverride",
       "type": "string"
     },
     "podDisruptionBudget": {
