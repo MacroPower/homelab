@@ -421,9 +421,9 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceKustomize:
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationOperationSyncSourceKustomizePatchesItems0], default is Undefined, optional
@@ -801,9 +801,9 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0Kustomize:
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0KustomizePatchesItems0], default is Undefined, optional
@@ -1535,9 +1535,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceKustomize:
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceKustomizePatchesItems0], default is Undefined, optional
@@ -1749,9 +1749,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceKustomize:
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationSpecSourceKustomizePatchesItems0], default is Undefined, optional
@@ -2129,9 +2129,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0Kustomize:
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationSpecSourcesItems0KustomizePatchesItems0], default is Undefined, optional
@@ -2380,6 +2380,7 @@ schema ArgoprojIoV1alpha1ApplicationStatus:
         History contains information about the application's sync history
     observedAt : str, default is Undefined, optional
         ObservedAt indicates when the application state was updated without querying latest git state
+
         Deprecated: controller no longer updates ObservedAt field
     operationState : ArgoprojIoV1alpha1ApplicationStatusOperationState, default is Undefined, optional
         operation state
@@ -2733,9 +2734,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceKustomize:
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceKustomizePatchesItems0], default is Undefined, optional
@@ -3113,9 +3114,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0Kustomize:
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0KustomizePatchesItems0], default is Undefined, optional
@@ -3675,9 +3676,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceKusto
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceKustomizePatchesItems0], default is Undefined, optional
@@ -4055,9 +4056,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0KustomizePatchesItems0], default is Undefined, optional
@@ -4562,9 +4563,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceKustomiz
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceKustomizePatchesItems0], default is Undefined, optional
@@ -4942,9 +4943,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0K
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0KustomizePatchesItems0], default is Undefined, optional
@@ -5436,9 +5437,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHy
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceKustomizePatchesItems0], default is Undefined, optional
@@ -5875,9 +5876,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationS
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceKustomizePatchesItems0], default is Undefined, optional
@@ -6393,9 +6394,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceKustomize:
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceKustomizePatchesItems0], default is Undefined, optional
@@ -6773,9 +6774,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0Kustomize:
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0KustomizePatchesItems0], default is Undefined, optional
