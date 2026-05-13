@@ -361,6 +361,99 @@
           "title": "extraVolumes",
           "type": "array"
         },
+        "httproute": {
+          "additionalProperties": true,
+          "description": "# Gateway API HTTPRoute for the Git Generator webhook\n# Ref: https://argocd-applicationset.readthedocs.io/en/master/Generators-Git/#webhook-configuration)\nNOTE: Gateway API support is in EXPERIMENTAL status\nSupport depends on your Gateway controller implementation\nSome controllers may require additional configuration (e.g., BackendTLSPolicy for HTTPS backends)\nRefer to https://gateway-api.sigs.k8s.io/implementations/ for controller-specific details",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Additional HTTPRoute annotations",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable HTTPRoute resource for Argo CD Applicationset Webhook (Gateway API)",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "hostnames": {
+              "description": "- name: example-gateway\n  namespace: example-gateway-namespace\n  sectionName: https\nList of hostnames for the HTTPRoute",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "hostnames",
+              "type": "array"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Additional HTTPRoute labels",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "parentRefs": {
+              "description": "Gateway API parentRefs for the HTTPRoute\n# Must reference an existing Gateway",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "parentRefs",
+              "type": "array"
+            },
+            "rules": {
+              "description": "- argocd.example.com\nHTTPRoute rules configuration",
+              "items": {
+                "additionalProperties": true,
+                "properties": {
+                  "matches": {
+                    "items": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "path": {
+                          "additionalProperties": true,
+                          "properties": {
+                            "type": {
+                              "default": "PathPrefix",
+                              "required": [],
+                              "title": "type",
+                              "type": "string"
+                            },
+                            "value": {
+                              "default": "/api/webhook",
+                              "required": [],
+                              "title": "value",
+                              "type": "string"
+                            }
+                          },
+                          "required": [],
+                          "title": "path",
+                          "type": "object"
+                        }
+                      },
+                      "required": [],
+                      "type": "object"
+                    },
+                    "required": [],
+                    "title": "matches",
+                    "type": "array"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "title": "rules",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "httproute",
+          "type": "object"
+        },
         "image": {
           "additionalProperties": true,
           "description": "# ApplicationSet controller image",
@@ -1000,6 +1093,50 @@
           "required": [],
           "title": "topologySpreadConstraints",
           "type": "array"
+        },
+        "vpa": {
+          "additionalProperties": true,
+          "description": "# ApplicationSet controller Vertical Pod Autoscaler\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to be added to ApplicationSet controller vpa",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "containerPolicy": {
+              "additionalProperties": true,
+              "description": "Controls how VPA computes the recommended resources for ApplicationSet controller container\n# Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml",
+              "required": [],
+              "title": "containerPolicy",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the ApplicationSet controller",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels to be added to ApplicationSet controller vpa",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "updateMode": {
+              "default": "Initial",
+              "description": "One of the VPA operation modes\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically\n# Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden",
+              "required": [],
+              "title": "updateMode",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "vpa",
+          "type": "object"
         }
       },
       "required": [],
@@ -1540,6 +1677,50 @@
           "required": [],
           "title": "topologySpreadConstraints",
           "type": "array"
+        },
+        "vpa": {
+          "additionalProperties": true,
+          "description": "# Commit server Vertical Pod Autoscaler\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to be added to commit server vpa",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "containerPolicy": {
+              "additionalProperties": true,
+              "description": "Controls how VPA computes the recommended resources for commit server container\n# Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml",
+              "required": [],
+              "title": "containerPolicy",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the commit server",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels to be added to commit server vpa",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "updateMode": {
+              "default": "Initial",
+              "description": "One of the VPA operation modes\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically\n# Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden",
+              "required": [],
+              "title": "updateMode",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "vpa",
+          "type": "object"
         }
       },
       "required": [],
@@ -3883,6 +4064,50 @@
           "required": [],
           "title": "volumes",
           "type": "array"
+        },
+        "vpa": {
+          "additionalProperties": true,
+          "description": "# Dex Vertical Pod Autoscaler\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to be added to Dex server vpa",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "containerPolicy": {
+              "additionalProperties": true,
+              "description": "Controls how VPA computes the recommended resources for Dex server container\n# Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml",
+              "required": [],
+              "title": "containerPolicy",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Dex server",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels to be added to Dex server vpa",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "updateMode": {
+              "default": "Initial",
+              "description": "One of the VPA operation modes\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically\n# Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden",
+              "required": [],
+              "title": "updateMode",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "vpa",
+          "type": "object"
         }
       },
       "required": [],
@@ -6321,6 +6546,50 @@
           "required": [],
           "title": "triggers",
           "type": "object"
+        },
+        "vpa": {
+          "additionalProperties": true,
+          "description": "# Notifications controller Vertical Pod Autoscaler\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to be added to notifications controller vpa",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "containerPolicy": {
+              "additionalProperties": true,
+              "description": "Controls how VPA computes the recommended resources for notifications controller container\n# Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml",
+              "required": [],
+              "title": "containerPolicy",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the notifications controller",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels to be added to notifications controller vpa",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "updateMode": {
+              "default": "Initial",
+              "description": "One of the VPA operation modes\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically\n# Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden",
+              "required": [],
+              "title": "updateMode",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "vpa",
+          "type": "object"
         }
       },
       "required": [],
@@ -6819,7 +7088,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.82.0",
+                  "default": "v1.83.0",
                   "description": "Tag to use for the redis-exporter",
                   "required": [],
                   "title": "tag",
@@ -7654,6 +7923,50 @@
           "required": [],
           "title": "volumes",
           "type": "array"
+        },
+        "vpa": {
+          "additionalProperties": true,
+          "description": "# Redis Vertical Pod Autoscaler\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to be added to Redis vpa",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "containerPolicy": {
+              "additionalProperties": true,
+              "description": "Controls how VPA computes the recommended resources for Redis container\n# Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml",
+              "required": [],
+              "title": "containerPolicy",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Redis",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels to be added to Redis vpa",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "updateMode": {
+              "default": "Initial",
+              "description": "One of the VPA operation modes\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically\n# Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden",
+              "required": [],
+              "title": "updateMode",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "vpa",
+          "type": "object"
         }
       },
       "required": [],
@@ -8465,6 +8778,13 @@
         "copyutil": {
           "additionalProperties": true,
           "properties": {
+            "extraArgs": {
+              "default": "--update=none",
+              "description": "Extra arguments for the cp command in the repo server copyutil initContainer",
+              "required": [],
+              "title": "extraArgs",
+              "type": "string"
+            },
             "resources": {
               "additionalProperties": true,
               "description": "Resource limits and requests for the repo server copyutil initContainer",
@@ -9158,6 +9478,50 @@
           "required": [],
           "title": "volumes",
           "type": "array"
+        },
+        "vpa": {
+          "additionalProperties": true,
+          "description": "# Repo server Vertical Pod Autoscaler\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to be added to repo server vpa",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "containerPolicy": {
+              "additionalProperties": true,
+              "description": "Controls how VPA computes the recommended resources for repo server container\n# Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml",
+              "required": [],
+              "title": "containerPolicy",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the repo server",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels to be added to repo server vpa",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "updateMode": {
+              "default": "Initial",
+              "description": "One of the VPA operation modes\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically\n# Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden",
+              "required": [],
+              "title": "updateMode",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "vpa",
+          "type": "object"
         }
       },
       "required": [],
@@ -10186,7 +10550,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v0.0.9",
+                  "default": "v1.0.0",
                   "description": "Tag to use for extension installer image",
                   "required": [],
                   "title": "tag",
@@ -11389,6 +11753,50 @@
           "required": [],
           "title": "volumes",
           "type": "array"
+        },
+        "vpa": {
+          "additionalProperties": true,
+          "description": "# Argo CD server Vertical Pod Autoscaler\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to be added to Argo CD server vpa",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "containerPolicy": {
+              "additionalProperties": true,
+              "description": "Controls how VPA computes the recommended resources for Argo CD server container\n# Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml",
+              "required": [],
+              "title": "containerPolicy",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Argo CD server",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels to be added to Argo CD server vpa",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "updateMode": {
+              "default": "Initial",
+              "description": "One of the VPA operation modes\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically\n# Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden",
+              "required": [],
+              "title": "updateMode",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "vpa",
+          "type": "object"
         }
       },
       "required": [],
