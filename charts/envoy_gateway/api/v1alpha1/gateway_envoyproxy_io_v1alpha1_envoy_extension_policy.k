@@ -40,6 +40,13 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpec:
 
     Attributes
     ----------
+    dynamicModule : [GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecDynamicModuleItems0], default is Undefined, optional
+        DynamicModule is an ordered list of dynamic module HTTP filters
+        that should be added to the envoy filter chain.
+        Each module must be registered in the EnvoyProxy resource's dynamicModules
+        allowlist.
+        Order matters, as the filters will be loaded in the order they are
+        defined in this list.
     extProc : [GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0], default is Undefined, optional
         ExtProc is an ordered list of external processing filters
         that should be added to the envoy filter chain
@@ -58,6 +65,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpec:
         Order matters, as the extensions will be loaded in the order they are
         defined in this list.
     """
+    dynamicModule?: [GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecDynamicModuleItems0]
     extProc?: [GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0]
     lua?: [GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecLuaItems0]
     targetRef?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecTargetRef
@@ -66,9 +74,49 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpec:
     wasm?: [GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecWasmItems0]
 
     check:
+        len(dynamicModule) <= 16 if dynamicModule
         len(extProc) <= 16 if extProc
         len(lua) <= 16 if lua
         len(wasm) <= 16 if wasm
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecDynamicModuleItems0:
+    r"""
+    DynamicModule defines a dynamic module HTTP filter to be loaded by Envoy.
+    The module must be registered in the EnvoyProxy resource's dynamicModules
+    allowlist by the infrastructure operator.
+
+    Attributes
+    ----------
+    config : any, default is Undefined, optional
+        Config is the configuration for the dynamic module filter.
+        This is serialized as JSON and passed to the module's initialization function.
+    filterName : str, default is Undefined, optional
+        FilterName identifies a specific filter implementation within the dynamic
+        module. A single shared library can contain multiple filter implementations.
+        This value is passed to the module's HTTP filter config init function to
+        select the appropriate implementation.
+        If not specified, defaults to an empty string.
+    name : str, default is Undefined, required
+        Name references a dynamic module registered in the EnvoyProxy resource's
+        dynamicModules list. The referenced module must exist in the registry;
+        otherwise, the policy will be rejected.
+    terminalFilter : bool, default is Undefined, optional
+        TerminalFilter indicates that this dynamic module handles requests without
+        requiring an upstream backend. The module is responsible for generating and
+        sending the response to downstream directly.
+        Defaults to false.
+    """
+    config?: any
+    filterName?: str
+    name: str
+
+    terminalFilter?: bool = False
+
+    check:
+        len(filterName) <= 253 if filterName
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$")
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0:
     r"""
@@ -327,6 +375,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
         Default: unlimited.
     perEndpoint : GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsCircuitBreakerPerEndpoint, default is Undefined, optional
         per endpoint
+    retryBudget : GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsCircuitBreakerRetryBudget, default is Undefined, optional
+        retry budget
     """
     maxConnections?: int = 1024
     maxParallelRequests?: int = 1024
@@ -334,6 +384,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
     maxPendingRequests?: int = 1024
     maxRequestsPerConnection?: int
     perEndpoint?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsCircuitBreakerPerEndpoint
+    retryBudget?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsCircuitBreakerRetryBudget
 
     check:
         maxConnections <= 4294967295 if maxConnections not in [None, Undefined]
@@ -361,6 +412,45 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
     check:
         maxConnections <= 4294967295 if maxConnections not in [None, Undefined]
         maxConnections >= 0 if maxConnections not in [None, Undefined]
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsCircuitBreakerRetryBudget:
+    r"""
+    RetryBudget provides settings for retry budget, which limits the number of retries in a given percentage.
+    RetryBudget take precedence over maxParallelRetries.
+
+    Attributes
+    ----------
+    minRetryConcurrency : int, default is Undefined, optional
+        MinRetryConcurrency specifies the minimum retry concurrency allowed for the retry budget.
+        For example, a budget of 20% with a minimum retry concurrency of 3
+        will allow 5 active retries while there are 25 active requests.
+        If there are 2 active requests, there are still 3 active retries
+        allowed because of the minimum retry concurrency.
+        Defaults to 3.
+    percent : GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsCircuitBreakerRetryBudgetPercent, default is Undefined, required
+        percent
+    """
+    minRetryConcurrency?: int
+    percent: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsCircuitBreakerRetryBudgetPercent
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsCircuitBreakerRetryBudgetPercent:
+    r"""
+    Percent specifies the limit on concurrent retries as a percentage [0, 100] of
+    the sum of active requests and active pending requests.
+
+    Attributes
+    ----------
+    denominator : int, default is 100, optional
+        denominator
+    numerator : int, default is Undefined, required
+        numerator
+    """
+    denominator?: int = 100
+    numerator: int
+
+    check:
+        denominator >= 1 if denominator not in [None, Undefined]
+        numerator >= 0
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsConnection:
     r"""
@@ -494,6 +584,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
         Envoy will randomly select a value between 0 and the initial jitter value.
     interval : str, default is "3s", optional
         Interval defines the time between active health checks.
+    overrides : GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsHealthCheckActiveOverrides, default is Undefined, optional
+        overrides
     tcp : GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsHealthCheckActiveTCP, default is Undefined, optional
         tcp
     timeout : str, default is "1s", optional
@@ -502,12 +594,16 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
         Type defines the type of health checker.
     unhealthyThreshold : int, default is 3, optional
         UnhealthyThreshold defines the number of unhealthy health checks required before a backend host is marked unhealthy.
+        Without RetriableStatuses configured, any health check failure results in the host being immediately
+        considered unhealthy. When RetriableStatuses is set, health checks returning those statuses are retried
+        up to this threshold before the host is marked unhealthy.
     """
     grpc?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsHealthCheckActiveGrpc
     healthyThreshold?: int = 1
     http?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsHealthCheckActiveHTTP
     initialJitter?: str
     interval?: str = "3s"
+    overrides?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsHealthCheckActiveOverrides
     tcp?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsHealthCheckActiveTCP
     timeout?: str = "1s"
     $type: str
@@ -548,19 +644,27 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
         ExpectedStatuses defines a list of HTTP response statuses considered healthy.
         Defaults to 200 only
     hostname : str, default is Undefined, optional
-        Hostname defines the HTTP host that will be requested during health checking.
-        Default: HTTPRoute or GRPCRoute hostname.
+        Hostname defines the HTTP Host header used for active HTTP health checks.
+        Host selection uses this order: this field, the associated Backend endpoint
+        hostname if available, then the effective Route hostname.
     method : str, default is Undefined, optional
         Method defines the HTTP method used for health checking.
         Defaults to GET
     path : str, default is Undefined, required
         Path defines the HTTP path that will be requested during health checking.
+    retriableStatuses : [int], default is Undefined, optional
+        RetriableStatuses defines a list of HTTP response statuses considered retriable.
+        Responses matching these statuses count towards the unhealthy threshold but
+        do not result in the host being considered immediately unhealthy.
+        The expected statuses take precedence for any range overlaps with this field.
     """
     expectedResponse?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsHealthCheckActiveHTTPExpectedResponse
     expectedStatuses?: [int]
     hostname?: str
     method?: str
     path: str
+
+    retriableStatuses?: [int]
 
     check:
         all expectedStatuses in expectedStatuses {expectedStatuses <= 599 if expectedStatuses not in [None, Undefined]} if expectedStatuses
@@ -570,6 +674,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
         _regex_match(str(hostname), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if hostname
         len(path) <= 1024
         len(path) >= 1
+        all retriableStatuses in retriableStatuses {retriableStatuses <= 599 if retriableStatuses not in [None, Undefined]} if retriableStatuses
+        all retriableStatuses in retriableStatuses {retriableStatuses >= 100 if retriableStatuses not in [None, Undefined]} if retriableStatuses
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsHealthCheckActiveHTTPExpectedResponse:
     r"""
@@ -587,6 +693,26 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
     binary?: str
     text?: str
     $type: str
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsHealthCheckActiveOverrides:
+    r"""
+    Overrides defines the configuration of the overriding health check settings for all endpoints
+    in the backend cluster. This allows customization of port and other settings that may differ
+    from the main service configuration.
+
+    Attributes
+    ----------
+    port : int, default is Undefined, optional
+        Port overrides the health check port.
+        If not set, the endpoint's serving port is used for health checks.
+        This is useful when health checks are served on a different port than
+        the main service port (e.g., port 443 for service, port 9090 for health checks).
+    """
+    port?: int
+
+    check:
+        port <= 65535 if port not in [None, Undefined]
+        port >= 1 if port not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsHealthCheckActiveTCP:
     r"""
@@ -643,6 +769,9 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
 
     Attributes
     ----------
+    alwaysEjectOneEndpoint : bool, default is Undefined, optional
+        AlwaysEjectOneEndpoint defines whether at least one host should be ejected,
+        regardless of MaxEjectionPercent.
     baseEjectionTime : str, default is "30s", optional
         BaseEjectionTime defines the base duration for which a host will be ejected on consecutive failures.
     consecutive5XxErrors : int, default is 5, optional
@@ -663,6 +792,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
     splitExternalLocalOriginErrors : bool, default is Undefined, optional
         SplitExternalLocalOriginErrors enables splitting of errors between external and local origin.
     """
+    alwaysEjectOneEndpoint?: bool = False
     baseEjectionTime?: str = "30s"
     consecutive5XxErrors?: int = 5
     consecutiveGatewayErrors?: int
@@ -677,6 +807,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
         failurePercentageThreshold <= 100 if failurePercentageThreshold not in [None, Undefined]
         failurePercentageThreshold >= 0 if failurePercentageThreshold not in [None, Undefined]
         _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
+        maxEjectionPercent <= 100 if maxEjectionPercent not in [None, Undefined]
+        maxEjectionPercent >= 0 if maxEjectionPercent not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsHttp2:
     r"""
@@ -684,6 +816,8 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
 
     Attributes
     ----------
+    connectionKeepalive : GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsHttp2ConnectionKeepalive, default is Undefined, optional
+        connection keepalive
     initialConnectionWindowSize : int | str, default is Undefined, optional
         InitialConnectionWindowSize sets the initial window size for HTTP/2 connections.
         If not set, the default value is 1 MiB.
@@ -699,6 +833,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
         https://www.envoyproxy.io/docs/envoy/latest/configuration/best_practices/level_two
         Default: TerminateConnection
     """
+    connectionKeepalive?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsHttp2ConnectionKeepalive
     initialConnectionWindowSize?: int | str
     initialStreamWindowSize?: int | str
     maxConcurrentStreams?: int
@@ -712,6 +847,34 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
         maxConcurrentStreams <= 2147483647 if maxConcurrentStreams not in [None, Undefined]
         maxConcurrentStreams >= 1 if maxConcurrentStreams not in [None, Undefined]
 
+schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsHttp2ConnectionKeepalive:
+    r"""
+    ConnectionKeepalive configures HTTP/2 connection keepalive using PING frames.
+
+    Attributes
+    ----------
+    idleInterval : str, default is Undefined, optional
+        IdleInterval specifies how long a connection must be idle before a PING is sent.
+    interval : str, default is Undefined, optional
+        Interval specifies how often to send HTTP/2 PING frames to keep the connection alive.
+    intervalJitter : int, default is Undefined, optional
+        IntervalJitter specifies a random jitter percentage added to each interval.
+        Defaults to 15% if not specified.
+    timeout : str, default is Undefined, optional
+        Timeout specifies how long to wait for a PING response before considering the connection dead.
+    """
+    idleInterval?: str
+    interval?: str
+    intervalJitter?: int
+    timeout?: str
+
+    check:
+        _regex_match(str(idleInterval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if idleInterval
+        _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
+        intervalJitter <= 100 if intervalJitter not in [None, Undefined]
+        intervalJitter >= 0 if intervalJitter not in [None, Undefined]
+        _regex_match(str(timeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if timeout
+
 schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancer:
     r"""
     LoadBalancer policy to apply when routing traffic from the gateway to
@@ -719,8 +882,12 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
 
     Attributes
     ----------
+    backendUtilization : GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerBackendUtilization, default is Undefined, optional
+        backend utilization
     consistentHash : GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerConsistentHash, default is Undefined, optional
         consistent hash
+    dynamicModule : GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerDynamicModule, default is Undefined, optional
+        dynamic module
     endpointOverride : GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerEndpointOverride, default is Undefined, optional
         endpoint override
     slowStart : GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerSlowStart, default is Undefined, optional
@@ -731,16 +898,64 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
         "ConsistentHash",
         "LeastRequest",
         "Random",
-        "RoundRobin".
+        "RoundRobin",
+        "BackendUtilization",
+        "DynamicModule".
     zoneAware : GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerZoneAware, default is Undefined, optional
         zone aware
     """
+    backendUtilization?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerBackendUtilization
     consistentHash?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerConsistentHash
+    dynamicModule?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerDynamicModule
     endpointOverride?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerEndpointOverride
     slowStart?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerSlowStart
-    $type: "ConsistentHash" | "LeastRequest" | "Random" | "RoundRobin"
+    $type: "ConsistentHash" | "LeastRequest" | "Random" | "RoundRobin" | "BackendUtilization" | "DynamicModule"
 
     zoneAware?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerZoneAware
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerBackendUtilization:
+    r"""
+    BackendUtilization defines the configuration when the load balancer type is
+    set to BackendUtilization.
+
+    Attributes
+    ----------
+    blackoutPeriod : str, default is Undefined, optional
+        A given endpoint must report load metrics continuously for at least this long before the endpoint weight will be used.
+        Default is 10s.
+    errorUtilizationPenaltyPercent : int, default is Undefined, optional
+        ErrorUtilizationPenaltyPercent adjusts endpoint weights based on the error rate (eps/qps).
+        This is expressed as a percentage-based integer where 100 represents 1.0, 150 represents 1.5, etc.
+
+        For example:
+        - 100 => 1.0x
+        - 120 => 1.2x
+        - 200 => 2.0x
+
+        Must be non-negative.
+    keepResponseHeaders : bool, default is Undefined, optional
+        KeepResponseHeaders keeps the ORCA load report headers/trailers before sending the response to the client.
+        Defaults to false.
+    metricNamesForComputingUtilization : [str], default is Undefined, optional
+        Metric names used to compute utilization if application_utilization is not set.
+        For map fields in ORCA proto, use the form "<map_field>.<key>", e.g., "named_metrics.foo".
+    weightExpirationPeriod : str, default is Undefined, optional
+        If a given endpoint has not reported load metrics in this long, stop using the reported weight. Defaults to 3m.
+    weightUpdatePeriod : str, default is Undefined, optional
+        How often endpoint weights are recalculated. Values less than 100ms are capped at 100ms. Default 1s.
+    """
+    blackoutPeriod?: str
+    errorUtilizationPenaltyPercent?: int
+    keepResponseHeaders?: bool = False
+    metricNamesForComputingUtilization?: [str]
+    weightExpirationPeriod?: str
+    weightUpdatePeriod?: str
+
+    check:
+        _regex_match(str(blackoutPeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if blackoutPeriod
+        errorUtilizationPenaltyPercent >= 0 if errorUtilizationPenaltyPercent not in [None, Undefined]
+        _regex_match(str(weightExpirationPeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if weightExpirationPeriod
+        _regex_match(str(weightUpdatePeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if weightUpdatePeriod
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerConsistentHash:
     r"""
@@ -841,6 +1056,40 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
     """
     name: str
 
+schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerDynamicModule:
+    r"""
+    DynamicModule defines the configuration when the load balancer type is
+    set to DynamicModule. The referenced module must be registered in the
+    EnvoyProxy resource's dynamicModules allowlist.
+
+    Attributes
+    ----------
+    config : any, default is Undefined, optional
+        Config is optional configuration for the module's load balancer
+        implementation. This is serialized and passed to the module's
+        initialization function.
+    lbPolicyName : str, default is Undefined, required
+        LBPolicyName identifies a specific load balancer implementation within
+        the dynamic module. A single shared library can contain multiple LB
+        policy implementations. This value is passed to the module's
+        initialization function to select the appropriate implementation.
+    name : str, default is Undefined, required
+        Name references a dynamic module registered in the EnvoyProxy resource's
+        dynamicModules list. The referenced module must exist in the registry;
+        otherwise, the policy will be rejected.
+    """
+    config?: any
+    lbPolicyName: str
+
+    name: str
+
+    check:
+        len(lbPolicyName) <= 253
+        len(lbPolicyName) >= 1
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$")
+
 schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerEndpointOverride:
     r"""
     EndpointOverride defines the configuration for endpoint override.
@@ -877,7 +1126,7 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
     r"""
     SlowStart defines the configuration related to the slow start load balancer policy.
     If set, during slow start window, traffic sent to the newly added hosts will gradually increase.
-    Currently this is only supported for RoundRobin and LeastRequest load balancers
+    Supported for RoundRobin, LeastRequest, and BackendUtilization load balancers.
 
     Attributes
     ----------
@@ -900,8 +1149,12 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
     ----------
     preferLocal : GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerZoneAwarePreferLocal, default is Undefined, optional
         prefer local
+    weightedZones : [GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerZoneAwareWeightedZonesItems0], default is Undefined, optional
+        WeightedZones configures weight-based traffic distribution across locality zones.
+        Traffic is distributed proportionally based on the sum of all zone weights.
     """
     preferLocal?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerZoneAwarePreferLocal
+    weightedZones?: [GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerZoneAwareWeightedZonesItems0]
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerZoneAwarePreferLocal:
     r"""
@@ -937,6 +1190,26 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
     """
     minEndpointsInZoneThreshold?: int
 
+schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsLoadBalancerZoneAwareWeightedZonesItems0:
+    r"""
+    WeightedZoneConfig defines the weight for a specific locality zone.
+
+    Attributes
+    ----------
+    weight : int, default is Undefined, required
+        Weight defines the weight for this locality.
+        Higher values receive more traffic. The actual traffic distribution
+        is proportional to this value relative to other localities.
+    zone : str, default is Undefined, required
+        Zone specifies the topology zone this weight applies to.
+        The value should match the topology.kubernetes.io/zone label
+        of the nodes where endpoints are running.
+        Zones not listed in the configuration receive a default weight of 1.
+    """
+    weight: int
+
+    zone: str
+
 protocol GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsProxyProtocol:
     r"""
     ProxyProtocol enables the Proxy Protocol when communicating with the backend.
@@ -944,7 +1217,7 @@ protocol GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0Backend
     Attributes
     ----------
     version : str, default is Undefined, required
-        Version of ProxyProtol
+        Version of ProxyProtocol
         Valid ProxyProtocolVersion values are
         "V1"
         "V2"
@@ -1097,17 +1370,22 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSe
         When set to "0s", no max duration is applied and streams can run indefinitely.
     requestTimeout : str, default is Undefined, optional
         RequestTimeout is the time until which entire response is received from the upstream.
+    streamIdleTimeout : str, default is Undefined, optional
+         The stream idle timeout defines the amount of time a stream can exist without any upstream or downstream activity.
+         If not specified, StreamIdleTimeout is inherited from the listener-level setting, which can be configured via ClientTrafficPolicy.
     """
     connectionIdleTimeout?: str
     maxConnectionDuration?: str
     maxStreamDuration?: str
     requestTimeout?: str
+    streamIdleTimeout?: str
 
     check:
         _regex_match(str(connectionIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if connectionIdleTimeout
         _regex_match(str(maxConnectionDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxConnectionDuration
         _regex_match(str(maxStreamDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxStreamDuration
         _regex_match(str(requestTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if requestTimeout
+        _regex_match(str(streamIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if streamIdleTimeout
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecExtProcItems0BackendSettingsTimeoutTCP:
     r"""
@@ -1374,13 +1652,16 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecTargetSelectorsItems0:
     matchExpressions : [GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecTargetSelectorsItems0MatchExpressionsItems0], default is Undefined, optional
         MatchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
-        MatchLabels are the set of label selectors for identifying the targeted resource
+        MatchLabels are the set of label selectors for identifying the targeted resource.
+    namespaces : GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecTargetSelectorsItems0Namespaces, default is Undefined, optional
+        namespaces
     """
     group?: str = "gateway.networking.k8s.io"
     kind: str
 
     matchExpressions?: [GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecTargetSelectorsItems0MatchExpressionsItems0]
     matchLabels?: {str:str}
+    namespaces?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecTargetSelectorsItems0Namespaces
 
     check:
         len(group) <= 253 if group
@@ -1390,6 +1671,73 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecTargetSelectorsItems0:
         _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$")
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecTargetSelectorsItems0MatchExpressionsItems0:
+    r"""
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the label key that the selector applies to.
+    operator : str, default is Undefined, required
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
+    values : [str], default is Undefined, optional
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
+    """
+    key: str
+
+    operator: str
+
+    values?: [str]
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecTargetSelectorsItems0Namespaces:
+    r"""
+    Namespaces determines which namespaces are considered for target selection.
+
+    If unspecified, only targets in the same namespace as this policy are considered.
+
+    When specified, the effective set of namespaces is always constrained to the
+    namespaces watched by Envoy Gateway.
+
+    Selecting targets across namespaces requires a ReferenceGrant in the target
+    namespace that allows this policy kind to reference the selected target kind.
+    Cross-namespace targets without a matching ReferenceGrant are ignored.
+
+    Attributes
+    ----------
+    from : str, default is "Same", required
+        From indicates how namespaces are selected for this target selector.
+
+        All means all namespaces watched by Envoy Gateway.
+        Selector means namespaces watched by Envoy Gateway that match Selector.
+    selector : GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecTargetSelectorsItems0NamespacesSelector, default is Undefined, optional
+        selector
+    """
+    from: "Same" | "All" | "Selector" = "Same"
+
+    selector?: GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecTargetSelectorsItems0NamespacesSelector
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecTargetSelectorsItems0NamespacesSelector:
+    r"""
+    Selector selects namespaces when From is set to Selector.
+
+    Attributes
+    ----------
+    matchExpressions : [GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecTargetSelectorsItems0NamespacesSelectorMatchExpressionsItems0], default is Undefined, optional
+        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+    matchLabels : {str:str}, default is Undefined, optional
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
+    """
+    matchExpressions?: [GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecTargetSelectorsItems0NamespacesSelectorMatchExpressionsItems0]
+    matchLabels?: {str:str}
+
+schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecTargetSelectorsItems0NamespacesSelectorMatchExpressionsItems0:
     r"""
     A label selector requirement is a selector that contains values, a key, and an operator that
     relates the key and values.
@@ -1525,13 +1873,12 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecWasmItems0CodeHTTPTLS:
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecWasmItems0CodeHTTPTLSCaCertificateRef:
     r"""
-    CACertificateRef contains a references to
+    CACertificateRef contains a reference to
     Kubernetes objects that contain TLS certificates of
     the Certificate Authorities that can be used
     as a trust anchor to validate the certificates presented by the Wasm code source.
 
-    Kubernetes ConfigMap and Kubernetes Secret are supported.
-    Note: The ConfigMap or Secret must be in the same namespace as the EnvoyExtensionPolicy.
+    Kubernetes ConfigMap, Kubernetes Secret, and Kubernetes ClusterTrustBundle are supported.
 
     Attributes
     ----------
@@ -1602,7 +1949,6 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecWasmItems0CodeImage:
 schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecWasmItems0CodeImagePullSecretRef:
     r"""
     PullSecretRef is a reference to the secret containing the credentials to pull the image.
-    Only support Kubernetes Secret resource from the same namespace.
 
     Attributes
     ----------
@@ -1655,13 +2001,12 @@ schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecWasmItems0CodeImageTLS
 
 schema GatewayEnvoyproxyIoV1alpha1EnvoyExtensionPolicySpecWasmItems0CodeImageTLSCaCertificateRef:
     r"""
-    CACertificateRef contains a references to
+    CACertificateRef contains a reference to
     Kubernetes objects that contain TLS certificates of
     the Certificate Authorities that can be used
     as a trust anchor to validate the certificates presented by the Wasm code source.
 
-    Kubernetes ConfigMap and Kubernetes Secret are supported.
-    Note: The ConfigMap or Secret must be in the same namespace as the EnvoyExtensionPolicy.
+    Kubernetes ConfigMap, Kubernetes Secret, and Kubernetes ClusterTrustBundle are supported.
 
     Attributes
     ----------

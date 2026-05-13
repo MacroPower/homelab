@@ -53,32 +53,6 @@ schema GatewayNetworkingK8sIoV1alpha3TLSRouteSpec:
         1. IPs are not allowed in SNI hostnames per RFC 6066.
         2. A hostname may be prefixed with a wildcard label (`*.`). The wildcard
            label must appear by itself as the first label.
-
-        If a hostname is specified by both the Listener and TLSRoute, there
-        must be at least one intersecting hostname for the TLSRoute to be
-        attached to the Listener. For example:
-
-        * A Listener with `test.example.com` as the hostname matches TLSRoutes
-          that have specified at least one of `test.example.com` or
-          `*.example.com`.
-        * A Listener with `*.example.com` as the hostname matches TLSRoutes
-          that have specified at least one hostname that matches the Listener
-          hostname. For example, `test.example.com` and `*.example.com` would both
-          match. On the other hand, `example.com` and `test.example.net` would not
-          match.
-
-        If both the Listener and TLSRoute have specified hostnames, any
-        TLSRoute hostnames that do not match the Listener hostname MUST be
-        ignored. For example, if a Listener specified `*.example.com`, and the
-        TLSRoute specified `test.example.com` and `test.example.net`,
-        `test.example.net` must not be considered for a match.
-
-        If both the Listener and TLSRoute have specified hostnames, and none
-        match with the criteria above, then the TLSRoute is not accepted. The
-        implementation must raise an 'Accepted' Condition with a status of
-        `False` in the corresponding RouteParentStatus.
-
-        Support: Core
     parentRefs : [GatewayNetworkingK8sIoV1alpha3TLSRouteSpecParentRefsItems0], default is Undefined, optional
         ParentRefs references the resources (usually Gateways) that a Route wants
         to be attached to. Note that the referenced parent resource needs to
@@ -328,10 +302,9 @@ schema GatewayNetworkingK8sIoV1alpha3TLSRouteSpecRulesItems0:
         a Service with no endpoints), the rule performs no forwarding; if no
         filters are specified that would result in a response being sent, the
         underlying implementation must actively reject request attempts to this
-        backend, by rejecting the connection or returning a 500 status code.
-        Request rejections must respect weight; if an invalid backend is
-        requested to have 80% of requests, then 80% of requests must be rejected
-        instead.
+        backend, by rejecting the connection. Request rejections must respect
+        weight; if an invalid backend is requested to have 80% of requests, then
+        80% of requests must be rejected instead.
 
         Support: Core for Kubernetes Service
 
@@ -342,8 +315,6 @@ schema GatewayNetworkingK8sIoV1alpha3TLSRouteSpecRulesItems0:
         Support for weight: Extended
     name : str, default is Undefined, optional
         Name is the name of the route rule. This name MUST be unique within a Route if it is set.
-
-        Support: Extended
     """
     backendRefs: [GatewayNetworkingK8sIoV1alpha3TLSRouteSpecRulesItems0BackendRefsItems0]
 
@@ -516,7 +487,7 @@ schema GatewayNetworkingK8sIoV1alpha3TLSRouteStatusParentsItems0:
 
         * The Route refers to a nonexistent parent.
         * The Route is of a type that the controller does not support.
-        * The Route is in a namespace the controller does not have access to.
+        * The Route is in a namespace to which the controller does not have access.
     controllerName : str, default is Undefined, required
         ControllerName is a domain/path string that indicates the name of the
         controller that wrote this status. This corresponds with the

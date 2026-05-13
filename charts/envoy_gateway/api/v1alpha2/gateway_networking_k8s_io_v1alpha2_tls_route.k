@@ -14,9 +14,6 @@ schema TLSRoute:
     to match against TLS-specific metadata. This allows more flexibility
     in matching streams for a given TLS listener.
 
-    If you need to forward traffic to a single target for a TLS listener, you
-    could choose to use a TCPRoute with a TLS listener.
-
     Attributes
     ----------
     apiVersion : str, default is "gateway.networking.k8s.io/v1alpha2", required
@@ -326,10 +323,9 @@ schema GatewayNetworkingK8sIoV1alpha2TLSRouteSpecRulesItems0:
         a Service with no endpoints), the rule performs no forwarding; if no
         filters are specified that would result in a response being sent, the
         underlying implementation must actively reject request attempts to this
-        backend, by rejecting the connection or returning a 500 status code.
-        Request rejections must respect weight; if an invalid backend is
-        requested to have 80% of requests, then 80% of requests must be rejected
-        instead.
+        backend, by rejecting the connection. Request rejections must respect
+        weight; if an invalid backend is requested to have 80% of requests, then
+        80% of requests must be rejected instead.
 
         Support: Core for Kubernetes Service
 
@@ -340,8 +336,6 @@ schema GatewayNetworkingK8sIoV1alpha2TLSRouteSpecRulesItems0:
         Support for weight: Extended
     name : str, default is Undefined, optional
         Name is the name of the route rule. This name MUST be unique within a Route if it is set.
-
-        Support: Extended
     """
     backendRefs: [GatewayNetworkingK8sIoV1alpha2TLSRouteSpecRulesItems0BackendRefsItems0]
 
@@ -514,7 +508,7 @@ schema GatewayNetworkingK8sIoV1alpha2TLSRouteStatusParentsItems0:
 
         * The Route refers to a nonexistent parent.
         * The Route is of a type that the controller does not support.
-        * The Route is in a namespace the controller does not have access to.
+        * The Route is in a namespace to which the controller does not have access.
     controllerName : str, default is Undefined, required
         ControllerName is a domain/path string that indicates the name of the
         controller that wrote this status. This corresponds with the

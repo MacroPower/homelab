@@ -11,6 +11,8 @@ schema Values:
     ----------
     certgen : ValuesCertgen, optional
         Certgen is used to generate the certificates required by EnvoyGateway. If you want to construct a custom certificate, you can generate a custom certificate through Cert-Manager before installing EnvoyGateway. Certgen will not overwrite the custom certificate. Please do not manually modify `values.yaml` to disable certgen, it may cause EnvoyGateway OIDC,OAuth2,etc. to not work as expected.
+    commonLabels : ValuesCommonLabels, optional
+        Labels to apply to all resources
     config : ValuesConfig, optional
     createNamespace : bool, optional, default is False
     deployment : ValuesDeployment, optional
@@ -18,18 +20,23 @@ schema Values:
         Global settings
     hpa : ValuesHpa, optional
     kubernetesClusterDomain : str, optional, default is "cluster.local"
+    namespaceOverride : str, optional, default is ""
+        Override the namespace for resources deployed by the chart.
+        Defaults to the release namespace.
     podDisruptionBudget : ValuesPodDisruptionBudget, optional
     service : ValuesService, optional
     topologyInjector : ValuesTopologyInjector, optional
     """
     [...str]: any
     certgen?: ValuesCertgen
+    commonLabels?: ValuesCommonLabels
     config?: ValuesConfig
     createNamespace?: bool
     deployment?: ValuesDeployment
     global?: ValuesGlobal
     hpa?: ValuesHpa
     kubernetesClusterDomain?: str
+    namespaceOverride?: str
     podDisruptionBudget?: ValuesPodDisruptionBudget
     service?: ValuesService
     topologyInjector?: ValuesTopologyInjector
@@ -195,6 +202,12 @@ schema ValuesCertgenRbacLabels:
     """
     [...str]: any
 
+schema ValuesCommonLabels:
+    r"""
+    Labels to apply to all resources
+    """
+    [...str]: any
+
 schema ValuesConfig:
     r"""
     ValuesConfig
@@ -307,6 +320,8 @@ schema ValuesDeploymentEnvoyGateway:
 
     Attributes
     ----------
+    extraEnv : [any], optional
+        Additional environment variables for the envoy-gateway container.
     image : ValuesDeploymentEnvoyGatewayImage, optional
     imagePullPolicy : str, optional, default is ""
     imagePullSecrets : [any], optional
@@ -314,6 +329,7 @@ schema ValuesDeploymentEnvoyGateway:
     securityContext : ValuesDeploymentEnvoyGatewaySecurityContext, optional
     """
     [...str]: any
+    extraEnv?: [any]
     image?: ValuesDeploymentEnvoyGatewayImage
     imagePullPolicy?: str
     imagePullSecrets?: [any]
@@ -424,6 +440,13 @@ schema ValuesDeploymentPod:
     ----------
     affinity : ValuesDeploymentPodAffinity, optional
     annotations : ValuesDeploymentPodAnnotations, optional
+    extraVolumeMounts : [any], optional
+        Additional volumeMounts on the deployment definition.
+    extraVolumes : [any], optional
+        - name: foo
+          mountPath: "/etc/foo"
+          readOnly: true
+        Additional volumes on the deployment definition.
     labels : ValuesDeploymentPodLabels, optional
     nodeSelector : ValuesDeploymentPodNodeSelector, optional
     tolerations : [any], optional
@@ -432,6 +455,8 @@ schema ValuesDeploymentPod:
     [...str]: any
     affinity?: ValuesDeploymentPodAffinity
     annotations?: ValuesDeploymentPodAnnotations
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
     labels?: ValuesDeploymentPodLabels
     nodeSelector?: ValuesDeploymentPodNodeSelector
     tolerations?: [any]
@@ -492,7 +517,7 @@ schema ValuesGlobal:
     imagePullSecrets : [any], optional
         Global override for image pull secrets
     imageRegistry : str, optional, default is ""
-        If set, these take highest precedence and change both envoyGateway and ratelimit's container registry and pull secrets.
+        If set, these take highest precedence and change envoyGateway, envoyProxy, and ratelimit's container registry and pull secrets.
         Global override for image registry
     images : ValuesGlobalImages, optional
         If set, these override image-specific values: useful when installing the chart in a private registry environment.
@@ -511,10 +536,12 @@ schema ValuesGlobalImages:
     Attributes
     ----------
     envoyGateway : ValuesGlobalImagesEnvoyGateway, optional
+    envoyProxy : ValuesGlobalImagesEnvoyProxy, optional
     ratelimit : ValuesGlobalImagesRatelimit, optional
     """
     [...str]: any
     envoyGateway?: ValuesGlobalImagesEnvoyGateway
+    envoyProxy?: ValuesGlobalImagesEnvoyProxy
     ratelimit?: ValuesGlobalImagesRatelimit
 
 schema ValuesGlobalImagesEnvoyGateway:
@@ -523,11 +550,31 @@ schema ValuesGlobalImagesEnvoyGateway:
 
     Attributes
     ----------
-    image : str, optional, default is "docker.io/envoyproxy/gateway:v1.7.1"
+    image : str, optional, default is "docker.io/envoyproxy/gateway:v1.8.0"
         This is the full image name including the hub, repo, and tag.
     pullPolicy : str, optional, default is "IfNotPresent"
         Specify image pull policy if default behavior isn't desired.
         Default behavior: latest images will be Always else IfNotPresent.
+    pullSecrets : [any], optional
+        List of secrets in the same namespace of the component that can be used to pull images from private repositories.
+    """
+    [...str]: any
+    image?: str
+    pullPolicy?: str
+    pullSecrets?: [any]
+
+schema ValuesGlobalImagesEnvoyProxy:
+    r"""
+    ValuesGlobalImagesEnvoyProxy
+
+    Attributes
+    ----------
+    image : str, optional, default is ""
+        This is the full image name including the hub, repo, and tag for the Envoy Proxy data plane.
+        If not specified, uses the default image built into envoy-gateway.
+    pullPolicy : str, optional, default is ""
+        Specify image pull policy if default behavior isn't desired.
+        Default behavior: IfNotPresent.
     pullSecrets : [any], optional
         List of secrets in the same namespace of the component that can be used to pull images from private repositories.
     """
@@ -542,7 +589,7 @@ schema ValuesGlobalImagesRatelimit:
 
     Attributes
     ----------
-    image : str, optional, default is "docker.io/envoyproxy/ratelimit:c8765e89"
+    image : str, optional, default is "docker.io/envoyproxy/ratelimit:ff287602"
         This is the full image name including the hub, repo, and tag.
     pullPolicy : str, optional, default is "IfNotPresent"
         Specify image pull policy if default behavior isn't desired.

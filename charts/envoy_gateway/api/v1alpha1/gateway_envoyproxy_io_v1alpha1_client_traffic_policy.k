@@ -52,6 +52,8 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpec:
         is closed.
 
         Deprecated: Use ProxyProtocol instead.
+    grpc : GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecGrpc, default is Undefined, optional
+        grpc
     headers : GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeaders, default is Undefined, optional
         headers
     healthCheck : GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHealthCheck, default is Undefined, optional
@@ -93,6 +95,7 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpec:
     clientIPDetection?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecClientIPDetection
     connection?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecConnection
     enableProxyProtocol?: bool
+    grpc?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecGrpc
     headers?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeaders
     healthCheck?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHealthCheck
     http1?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp1
@@ -253,6 +256,24 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecConnectionConnectionLim
         _regex_match(str(maxStreamDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxStreamDuration
         value >= 1 if value not in [None, Undefined]
 
+schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecGrpc:
+    r"""
+    GRPC provides gRPC configuration on the listener.
+
+    Attributes
+    ----------
+    enableWeb : bool, default is Undefined, optional
+        EnableWeb configures the gRPC-web filter on the listener.
+        The gRPC-web filter allows clients (typically browsers) to make gRPC calls
+        using HTTP/1.1 or HTTP/2.
+
+        This is enabled by default for GRPCRoute and opt-in for HTTPRoute.
+        In general, gRPC traffic should be handled via GRPCRoute, but there are cases where
+        users want to route gRPC using HTTPRoute for its richer matching capabilities.
+        Therefore, we enable this behavior only when it is explicitly opted in.
+    """
+    enableWeb?: bool
+
 schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeaders:
     r"""
     HeaderSettings provides configuration for header management.
@@ -273,6 +294,7 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeaders:
         PreserveXRequestID configures Envoy to keep the X-Request-ID header if passed for a request that is edge
         (Edge request is the request from external clients to front Envoy) and not reset it, which is the current Envoy behaviour.
         Defaults to false and cannot be combined with RequestID.
+
         Deprecated: use RequestID=PreserveOrGenerate instead
     requestID : str, default is Undefined, optional
         RequestID configures Envoy's behavior for handling the `X-Request-ID` header.
@@ -408,6 +430,12 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHead
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+        <gateway:experimental:description>
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
+        </gateway:experimental:description>
+
+        <gateway:experimental:validation:Pattern=`^[!-~]+([\t ]?[!-~]+)*$`>
     """
     name: str
 
@@ -437,6 +465,12 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHead
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+        <gateway:experimental:description>
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
+        </gateway:experimental:description>
+
+        <gateway:experimental:validation:Pattern=`^[!-~]+([\t ]?[!-~]+)*$`>
     """
     name: str
 
@@ -486,6 +520,12 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersEarlyRequestHead
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+        <gateway:experimental:description>
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
+        </gateway:experimental:description>
+
+        <gateway:experimental:validation:Pattern=`^[!-~]+([\t ]?[!-~]+)*$`>
     """
     name: str
 
@@ -611,6 +651,12 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHead
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+        <gateway:experimental:description>
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
+        </gateway:experimental:description>
+
+        <gateway:experimental:validation:Pattern=`^[!-~]+([\t ]?[!-~]+)*$`>
     """
     name: str
 
@@ -640,6 +686,12 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHead
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+        <gateway:experimental:description>
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
+        </gateway:experimental:description>
+
+        <gateway:experimental:validation:Pattern=`^[!-~]+([\t ]?[!-~]+)*$`>
     """
     name: str
 
@@ -689,6 +741,12 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHeadersLateResponseHead
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+        <gateway:experimental:description>
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
+        </gateway:experimental:description>
+
+        <gateway:experimental:validation:Pattern=`^[!-~]+([\t ]?[!-~]+)*$`>
     """
     name: str
 
@@ -764,6 +822,15 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp1:
         EnableTrailers defines if HTTP/1 trailers should be proxied by Envoy.
     http10 : GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp1Http10, default is Undefined, optional
         http10
+    ignoredUpgradeTypes : [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp1IgnoredUpgradeTypesItems0], default is Undefined, optional
+        IgnoredUpgradeTypes specifies a list of upgrade types for which
+        HTTP/1.1 Upgrade requests should be ignored by Envoy instead of being
+        rejected with a 403 response. When a client sends an HTTP/1.1 request
+        with Connection: Upgrade and an Upgrade header matching one of these
+        matchers, Envoy will strip the upgrade headers and process the request
+        as a normal HTTP/1.1 request.
+
+        Example: To ignore TLS upgrade requests (RFC 2817), use a Prefix match with value "TLS/".
     preserveHeaderCase : bool, default is Undefined, optional
         PreserveHeaderCase defines if Envoy should preserve the letter case of headers.
         By default, Envoy will lowercase all the headers.
@@ -771,6 +838,7 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp1:
     disableSafeMaxConnectionDuration?: bool
     enableTrailers?: bool
     http10?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp1Http10
+    ignoredUpgradeTypes?: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp1IgnoredUpgradeTypesItems0]
     preserveHeaderCase?: bool
 
 schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp1Http10:
@@ -795,12 +863,34 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp1Http10:
     """
     useDefaultHost?: bool
 
+schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp1IgnoredUpgradeTypesItems0:
+    r"""
+    StringMatch defines how to match any strings.
+    This is a general purpose match condition that can be used by other EG APIs
+    that need to match against a string.
+
+    Attributes
+    ----------
+    $type : str, default is "Exact", optional
+        Type specifies how to match against a string.
+    value : str, default is Undefined, required
+        Value specifies the string value that the match must have.
+    """
+    $type?: "Exact" | "Prefix" | "Suffix" | "RegularExpression" = "Exact"
+    value: str
+
+    check:
+        len(value) <= 1024
+        len(value) >= 1
+
 schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp2:
     r"""
     HTTP2 provides HTTP/2 configuration on the listener.
 
     Attributes
     ----------
+    connectionKeepalive : GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp2ConnectionKeepalive, default is Undefined, optional
+        connection keepalive
     initialConnectionWindowSize : int | str, default is Undefined, optional
         InitialConnectionWindowSize sets the initial window size for HTTP/2 connections.
         If not set, the default value is 1 MiB.
@@ -816,6 +906,7 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp2:
         https://www.envoyproxy.io/docs/envoy/latest/configuration/best_practices/level_two
         Default: TerminateConnection
     """
+    connectionKeepalive?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp2ConnectionKeepalive
     initialConnectionWindowSize?: int | str
     initialStreamWindowSize?: int | str
     maxConcurrentStreams?: int
@@ -828,6 +919,34 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp2:
         _regex_match(str(initialStreamWindowSize), r"^[1-9]+[0-9]*([EPTGMK]i|[EPTGMk])?$") if initialStreamWindowSize
         maxConcurrentStreams <= 2147483647 if maxConcurrentStreams not in [None, Undefined]
         maxConcurrentStreams >= 1 if maxConcurrentStreams not in [None, Undefined]
+
+schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecHttp2ConnectionKeepalive:
+    r"""
+    ConnectionKeepalive configures HTTP/2 connection keepalive using PING frames.
+
+    Attributes
+    ----------
+    idleInterval : str, default is Undefined, optional
+        IdleInterval specifies how long a connection must be idle before a PING is sent.
+    interval : str, default is Undefined, optional
+        Interval specifies how often to send HTTP/2 PING frames to keep the connection alive.
+    intervalJitter : int, default is Undefined, optional
+        IntervalJitter specifies a random jitter percentage added to each interval.
+        Defaults to 15% if not specified.
+    timeout : str, default is Undefined, optional
+        Timeout specifies how long to wait for a PING response before considering the connection dead.
+    """
+    idleInterval?: str
+    interval?: str
+    intervalJitter?: int
+    timeout?: str
+
+    check:
+        _regex_match(str(idleInterval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if idleInterval
+        _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
+        intervalJitter <= 100 if intervalJitter not in [None, Undefined]
+        intervalJitter >= 0 if intervalJitter not in [None, Undefined]
+        _regex_match(str(timeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if timeout
 
 schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecPath:
     r"""
@@ -919,6 +1038,8 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLS:
     ciphers : [str], default is Undefined, optional
         Ciphers specifies the set of cipher suites supported when
         negotiating TLS 1.0 - 1.2. This setting has no effect for TLS 1.3.
+        For the list of supported ciphers, please refer to the Envoy documentation:
+        https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/transport_sockets/tls/v3/common.proto#extensions-transport-sockets-tls-v3-tlsparameters
         In non-FIPS Envoy Proxy builds the default cipher list is:
         - [ECDHE-ECDSA-AES128-GCM-SHA256|ECDHE-ECDSA-CHACHA20-POLY1305]
         - [ECDHE-RSA-AES128-GCM-SHA256|ECDHE-RSA-CHACHA20-POLY1305]
@@ -938,6 +1059,17 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLS:
         - P-256
         In builds using BoringSSL FIPS the default curve is:
         - P-256
+    fingerprints : [str], default is Undefined, optional
+        Fingerprints specifies TLS client fingerprinting.
+        When specified, a JAX fingerprint derived from the client’s TLS handshake
+        is generated. The fingerprint can be logged in access logs or
+        forwarded to upstream services using request headers.
+
+        Fingerprinting is disabled if not specified.
+
+        Supported values are:
+        - JA3
+        - JA4
     maxVersion : str, default is Undefined, optional
         Max specifies the maximal TLS protocol version to allow
         The default is TLS 1.3 if this is not specified.
@@ -954,6 +1086,7 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLS:
     ciphers?: [str]
     clientValidation?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidation
     ecdhCurves?: [str]
+    fingerprints?: [str]
     maxVersion?: "Auto" | "1.0" | "1.1" | "1.2" | "1.3"
     minVersion?: "Auto" | "1.0" | "1.1" | "1.2" | "1.3"
     session?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSSession
@@ -984,9 +1117,14 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidation:
         one of the specified values.
     crl : GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidationCrl, default is Undefined, optional
         crl
+    mode : str, default is Undefined, optional
+        Mode defines how the Gateway or Listener validates client certificates.
+        If not specified, defaults to RequireAndVerify.
     optional : bool, default is Undefined, optional
         Optional set to true accepts connections even when a client doesn't present a certificate.
         Defaults to false, which rejects connections without a valid client certificate.
+
+        Deprecated: Use Mode instead.
     spkiHashes : [str], default is Undefined, optional
         An optional list of base64-encoded SHA-256 hashes. If specified, Envoy will
         verify that the SHA-256 of the DER-encoded Subject Public Key Information
@@ -997,6 +1135,7 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidation:
     caCertificateRefs?: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidationCaCertificateRefsItems0]
     certificateHashes?: [str]
     crl?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidationCrl
+    mode?: "Request" | "RequireAny" | "VerifyIfGiven" | "RequireAndVerify"
     optional?: bool
     spkiHashes?: [str]
     subjectAltNames?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTLSClientValidationSubjectAltNames
@@ -1400,13 +1539,16 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetSelectorsItems0:
     matchExpressions : [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetSelectorsItems0MatchExpressionsItems0], default is Undefined, optional
         MatchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
-        MatchLabels are the set of label selectors for identifying the targeted resource
+        MatchLabels are the set of label selectors for identifying the targeted resource.
+    namespaces : GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetSelectorsItems0Namespaces, default is Undefined, optional
+        namespaces
     """
     group?: str = "gateway.networking.k8s.io"
     kind: str
 
     matchExpressions?: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetSelectorsItems0MatchExpressionsItems0]
     matchLabels?: {str:str}
+    namespaces?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetSelectorsItems0Namespaces
 
     check:
         len(group) <= 253 if group
@@ -1416,6 +1558,73 @@ schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetSelectorsItems0:
         _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$")
 
 schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetSelectorsItems0MatchExpressionsItems0:
+    r"""
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the label key that the selector applies to.
+    operator : str, default is Undefined, required
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
+    values : [str], default is Undefined, optional
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
+    """
+    key: str
+
+    operator: str
+
+    values?: [str]
+
+schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetSelectorsItems0Namespaces:
+    r"""
+    Namespaces determines which namespaces are considered for target selection.
+
+    If unspecified, only targets in the same namespace as this policy are considered.
+
+    When specified, the effective set of namespaces is always constrained to the
+    namespaces watched by Envoy Gateway.
+
+    Selecting targets across namespaces requires a ReferenceGrant in the target
+    namespace that allows this policy kind to reference the selected target kind.
+    Cross-namespace targets without a matching ReferenceGrant are ignored.
+
+    Attributes
+    ----------
+    from : str, default is "Same", required
+        From indicates how namespaces are selected for this target selector.
+
+        All means all namespaces watched by Envoy Gateway.
+        Selector means namespaces watched by Envoy Gateway that match Selector.
+    selector : GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetSelectorsItems0NamespacesSelector, default is Undefined, optional
+        selector
+    """
+    from: "Same" | "All" | "Selector" = "Same"
+
+    selector?: GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetSelectorsItems0NamespacesSelector
+
+schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetSelectorsItems0NamespacesSelector:
+    r"""
+    Selector selects namespaces when From is set to Selector.
+
+    Attributes
+    ----------
+    matchExpressions : [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetSelectorsItems0NamespacesSelectorMatchExpressionsItems0], default is Undefined, optional
+        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+    matchLabels : {str:str}, default is Undefined, optional
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
+    """
+    matchExpressions?: [GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetSelectorsItems0NamespacesSelectorMatchExpressionsItems0]
+    matchLabels?: {str:str}
+
+schema GatewayEnvoyproxyIoV1alpha1ClientTrafficPolicySpecTargetSelectorsItems0NamespacesSelectorMatchExpressionsItems0:
     r"""
     A label selector requirement is a selector that contains values, a key, and an operator that
     relates the key and values.
