@@ -94,6 +94,43 @@
           "required": [],
           "type": "array"
         },
+        "livenessProbe": {
+          "properties": {
+            "enabled": {
+              "required": [],
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "required": [],
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "required": [],
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "required": [],
+              "type": "integer"
+            },
+            "port": {
+              "required": [],
+              "type": [
+                "string",
+                "integer"
+              ]
+            },
+            "successThreshold": {
+              "required": [],
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "required": [],
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "type": "object"
+        },
         "log": {
           "properties": {
             "level": {
@@ -112,9 +149,41 @@
           "properties": {
             "listen": {
               "properties": {
+                "auth": {
+                  "properties": {
+                    "enabled": {
+                      "required": [],
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
                 "port": {
                   "required": [],
                   "type": "integer"
+                },
+                "secure": {
+                  "properties": {
+                    "certDir": {
+                      "required": [],
+                      "type": "string"
+                    },
+                    "certFile": {
+                      "required": [],
+                      "type": "string"
+                    },
+                    "enabled": {
+                      "required": [],
+                      "type": "boolean"
+                    },
+                    "keyFile": {
+                      "required": [],
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
                 }
               },
               "required": [],
@@ -205,7 +274,34 @@
               "required": [],
               "type": "string"
             },
+            "enabled": {
+              "required": [],
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "required": [],
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "required": [],
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "required": [],
+              "type": "integer"
+            },
             "port": {
+              "required": [],
+              "type": [
+                "string",
+                "integer"
+              ]
+            },
+            "successThreshold": {
+              "required": [],
+              "type": "integer"
+            },
+            "timeoutSeconds": {
               "required": [],
               "type": "integer"
             }
@@ -602,6 +698,10 @@
       "required": [],
       "type": "boolean"
     },
+    "leaderElectionID": {
+      "required": [],
+      "type": "string"
+    },
     "livenessProbe": {
       "properties": {
         "enabled": {
@@ -681,6 +781,16 @@
       "properties": {
         "listen": {
           "properties": {
+            "auth": {
+              "properties": {
+                "enabled": {
+                  "required": [],
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "type": "object"
+            },
             "port": {
               "required": [],
               "type": "integer"
@@ -831,6 +941,10 @@
           "type": "boolean"
         },
         "create": {
+          "required": [],
+          "type": "boolean"
+        },
+        "serviceAccountTokenCreate": {
           "required": [],
           "type": "boolean"
         },
@@ -1074,6 +1188,20 @@
       "required": [],
       "type": "array"
     },
+    "vault": {
+      "properties": {
+        "enableTokenCache": {
+          "required": [],
+          "type": "boolean"
+        },
+        "tokenCacheSize": {
+          "required": [],
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
     "webhook": {
       "properties": {
         "affinity": {
@@ -1231,6 +1359,43 @@
           "required": [],
           "type": "array"
         },
+        "livenessProbe": {
+          "properties": {
+            "enabled": {
+              "required": [],
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "required": [],
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "required": [],
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "required": [],
+              "type": "integer"
+            },
+            "port": {
+              "required": [],
+              "type": [
+                "string",
+                "integer"
+              ]
+            },
+            "successThreshold": {
+              "required": [],
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "required": [],
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "type": "object"
+        },
         "log": {
           "properties": {
             "level": {
@@ -1253,9 +1418,41 @@
           "properties": {
             "listen": {
               "properties": {
+                "auth": {
+                  "properties": {
+                    "enabled": {
+                      "required": [],
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
                 "port": {
                   "required": [],
                   "type": "integer"
+                },
+                "secure": {
+                  "properties": {
+                    "certDir": {
+                      "required": [],
+                      "type": "string"
+                    },
+                    "certFile": {
+                      "required": [],
+                      "type": "string"
+                    },
+                    "enabled": {
+                      "required": [],
+                      "type": "boolean"
+                    },
+                    "keyFile": {
+                      "required": [],
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
                 }
               },
               "required": [],
@@ -1340,7 +1537,34 @@
               "required": [],
               "type": "string"
             },
+            "enabled": {
+              "required": [],
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "required": [],
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "required": [],
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "required": [],
+              "type": "integer"
+            },
             "port": {
+              "required": [],
+              "type": [
+                "string",
+                "integer"
+              ]
+            },
+            "successThreshold": {
+              "required": [],
+              "type": "integer"
+            },
+            "timeoutSeconds": {
               "required": [],
               "type": "integer"
             }

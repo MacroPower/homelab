@@ -40,6 +40,7 @@ schema Values:
     imagePullSecrets : any, optional
     installCRDs : bool, optional
     leaderElect : bool, optional
+    leaderElectionID : str, optional
     livenessProbe : ValuesLivenessProbe, optional
     log : ValuesLog, optional
     metrics : ValuesMetrics, optional
@@ -74,6 +75,7 @@ schema Values:
     systemAuthDelegator : bool, optional
     tolerations : any, optional
     topologySpreadConstraints : any, optional
+    vault : ValuesVault, optional
     webhook : ValuesWebhook, optional
     """
     affinity?: ValuesAffinity
@@ -107,6 +109,7 @@ schema Values:
     imagePullSecrets?: any
     installCRDs?: bool
     leaderElect?: bool
+    leaderElectionID?: str
     livenessProbe?: ValuesLivenessProbe
     log?: ValuesLog
     metrics?: ValuesMetrics
@@ -141,6 +144,7 @@ schema Values:
     systemAuthDelegator?: bool
     tolerations?: any
     topologySpreadConstraints?: any
+    vault?: ValuesVault
     webhook?: ValuesWebhook
 
 schema ValuesAffinity:
@@ -180,6 +184,7 @@ schema ValuesCertController:
     hostUsers : bool, optional
     image : ValuesCertControllerImage, optional
     imagePullSecrets : any, optional
+    livenessProbe : ValuesCertControllerLivenessProbe, optional
     log : ValuesCertControllerLog, optional
     metrics : ValuesCertControllerMetrics, optional
     nodeSelector : ValuesCertControllerNodeSelector, optional
@@ -214,6 +219,7 @@ schema ValuesCertController:
     hostUsers?: bool
     image?: ValuesCertControllerImage
     imagePullSecrets?: any
+    livenessProbe?: ValuesCertControllerLivenessProbe
     log?: ValuesCertControllerLog
     metrics?: ValuesCertControllerMetrics
     nodeSelector?: ValuesCertControllerNodeSelector
@@ -269,6 +275,28 @@ schema ValuesCertControllerImage:
     repository?: str
     tag?: str
 
+schema ValuesCertControllerLivenessProbe:
+    r"""
+    ValuesCertControllerLivenessProbe
+
+    Attributes
+    ----------
+    enabled : bool, optional
+    failureThreshold : int, optional
+    initialDelaySeconds : int, optional
+    periodSeconds : int, optional
+    port : str | int, optional
+    successThreshold : int, optional
+    timeoutSeconds : int, optional
+    """
+    enabled?: bool
+    failureThreshold?: int
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    port?: str | int
+    successThreshold?: int
+    timeoutSeconds?: int
+
 schema ValuesCertControllerLog:
     r"""
     ValuesCertControllerLog
@@ -299,9 +327,39 @@ schema ValuesCertControllerMetricsListen:
 
     Attributes
     ----------
+    auth : ValuesCertControllerMetricsListenAuth, optional
     port : int, optional
+    secure : ValuesCertControllerMetricsListenSecure, optional
     """
+    auth?: ValuesCertControllerMetricsListenAuth
     port?: int
+    secure?: ValuesCertControllerMetricsListenSecure
+
+schema ValuesCertControllerMetricsListenAuth:
+    r"""
+    ValuesCertControllerMetricsListenAuth
+
+    Attributes
+    ----------
+    enabled : bool, optional
+    """
+    enabled?: bool
+
+schema ValuesCertControllerMetricsListenSecure:
+    r"""
+    ValuesCertControllerMetricsListenSecure
+
+    Attributes
+    ----------
+    certDir : str, optional
+    certFile : str, optional
+    enabled : bool, optional
+    keyFile : str, optional
+    """
+    certDir?: str
+    certFile?: str
+    enabled?: bool
+    keyFile?: str
 
 schema ValuesCertControllerMetricsService:
     r"""
@@ -382,10 +440,22 @@ schema ValuesCertControllerReadinessProbe:
     Attributes
     ----------
     address : str, optional
-    port : int, optional
+    enabled : bool, optional
+    failureThreshold : int, optional
+    initialDelaySeconds : int, optional
+    periodSeconds : int, optional
+    port : str | int, optional
+    successThreshold : int, optional
+    timeoutSeconds : int, optional
     """
     address?: str
-    port?: int
+    enabled?: bool
+    failureThreshold?: int
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    port?: str | int
+    successThreshold?: int
+    timeoutSeconds?: int
 
 schema ValuesCertControllerResources:
     r"""
@@ -759,11 +829,23 @@ schema ValuesMetricsListen:
 
     Attributes
     ----------
+    auth : ValuesMetricsListenAuth, optional
     port : int, optional
     secure : ValuesMetricsListenSecure, optional
     """
+    auth?: ValuesMetricsListenAuth
     port?: int
     secure?: ValuesMetricsListenSecure
+
+schema ValuesMetricsListenAuth:
+    r"""
+    ValuesMetricsListenAuth
+
+    Attributes
+    ----------
+    enabled : bool, optional
+    """
+    enabled?: bool
 
 schema ValuesMetricsListenSecure:
     r"""
@@ -858,11 +940,13 @@ schema ValuesRbac:
     aggregateToEdit : bool, optional
     aggregateToView : bool, optional
     create : bool, optional
+    serviceAccountTokenCreate : bool, optional
     servicebindings : ValuesRbacServicebindings, optional
     """
     aggregateToEdit?: bool
     aggregateToView?: bool
     create?: bool
+    serviceAccountTokenCreate?: bool
     servicebindings?: ValuesRbacServicebindings
 
 schema ValuesRbacServicebindings:
@@ -1047,6 +1131,18 @@ schema ValuesStrategy:
     """
     [...str]: any
 
+schema ValuesVault:
+    r"""
+    ValuesVault
+
+    Attributes
+    ----------
+    enableTokenCache : bool, optional
+    tokenCacheSize : int, optional
+    """
+    enableTokenCache?: bool
+    tokenCacheSize?: int
+
 schema ValuesWebhook:
     r"""
     ValuesWebhook
@@ -1071,6 +1167,7 @@ schema ValuesWebhook:
     hostUsers : bool, optional
     image : ValuesWebhookImage, optional
     imagePullSecrets : any, optional
+    livenessProbe : ValuesWebhookLivenessProbe, optional
     log : ValuesWebhookLog, optional
     lookaheadInterval : str, optional
     metrics : ValuesWebhookMetrics, optional
@@ -1111,6 +1208,7 @@ schema ValuesWebhook:
     hostUsers?: bool
     image?: ValuesWebhookImage
     imagePullSecrets?: any
+    livenessProbe?: ValuesWebhookLivenessProbe
     log?: ValuesWebhookLog
     lookaheadInterval?: str
     metrics?: ValuesWebhookMetrics
@@ -1237,6 +1335,28 @@ schema ValuesWebhookImage:
     repository?: str
     tag?: str
 
+schema ValuesWebhookLivenessProbe:
+    r"""
+    ValuesWebhookLivenessProbe
+
+    Attributes
+    ----------
+    enabled : bool, optional
+    failureThreshold : int, optional
+    initialDelaySeconds : int, optional
+    periodSeconds : int, optional
+    port : str | int, optional
+    successThreshold : int, optional
+    timeoutSeconds : int, optional
+    """
+    enabled?: bool
+    failureThreshold?: int
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    port?: str | int
+    successThreshold?: int
+    timeoutSeconds?: int
+
 schema ValuesWebhookLog:
     r"""
     ValuesWebhookLog
@@ -1267,9 +1387,39 @@ schema ValuesWebhookMetricsListen:
 
     Attributes
     ----------
+    auth : ValuesWebhookMetricsListenAuth, optional
     port : int, optional
+    secure : ValuesWebhookMetricsListenSecure, optional
     """
+    auth?: ValuesWebhookMetricsListenAuth
     port?: int
+    secure?: ValuesWebhookMetricsListenSecure
+
+schema ValuesWebhookMetricsListenAuth:
+    r"""
+    ValuesWebhookMetricsListenAuth
+
+    Attributes
+    ----------
+    enabled : bool, optional
+    """
+    enabled?: bool
+
+schema ValuesWebhookMetricsListenSecure:
+    r"""
+    ValuesWebhookMetricsListenSecure
+
+    Attributes
+    ----------
+    certDir : str, optional
+    certFile : str, optional
+    enabled : bool, optional
+    keyFile : str, optional
+    """
+    certDir?: str
+    certFile?: str
+    enabled?: bool
+    keyFile?: str
 
 schema ValuesWebhookMetricsService:
     r"""
@@ -1340,10 +1490,22 @@ schema ValuesWebhookReadinessProbe:
     Attributes
     ----------
     address : str, optional
-    port : int, optional
+    enabled : bool, optional
+    failureThreshold : int, optional
+    initialDelaySeconds : int, optional
+    periodSeconds : int, optional
+    port : str | int, optional
+    successThreshold : int, optional
+    timeoutSeconds : int, optional
     """
     address?: str
-    port?: int
+    enabled?: bool
+    failureThreshold?: int
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    port?: str | int
+    successThreshold?: int
+    timeoutSeconds?: int
 
 schema ValuesWebhookResources:
     r"""

@@ -41,6 +41,10 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpec:
     controller : str, default is Undefined, optional
         Used to select the correct ESO controller (think: ingress.ingressClassName)
         The ESO controller is instantiated with a specific controller name and filters VDS based on this property
+    getParameters : {str:[str]}, default is Undefined, optional
+        GetParameters are query-string parameters passed to Vault on GET calls.
+        Each key may map to multiple values, matching HTTP query-string semantics.
+        Ignored for non-GET methods; use Parameters for write bodies.
     method : str, default is Undefined, optional
         Vault API method to use (GET/POST/other)
     parameters : any, default is Undefined, optional
@@ -61,6 +65,7 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpec:
     """
     allowEmptyResponse?: bool = False
     controller?: str
+    getParameters?: {str:[str]}
     method?: str
     parameters?: any
     path: str
@@ -276,10 +281,13 @@ schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCert
         in Vault, e.g: "cert"
     secretRef : GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCertSecretRef, default is Undefined, optional
         secret ref
+    vaultRole : str, default is Undefined, optional
+        VaultRole specifies the Vault role to use for TLS certificate authentication.
     """
     clientCert?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCertClientCert
     path?: str = "cert"
     secretRef?: GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCertSecretRef
+    vaultRole?: str
 
 schema GeneratorsExternalSecretsIoV1alpha1VaultDynamicSecretSpecProviderAuthCertClientCert:
     r"""

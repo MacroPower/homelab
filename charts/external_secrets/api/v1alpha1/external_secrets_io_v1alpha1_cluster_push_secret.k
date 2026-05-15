@@ -127,6 +127,8 @@ schema ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpec:
     ----------
     data : [ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataItems0], default is Undefined, optional
         Secret Data that should be pushed to providers
+    dataTo : [ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0], default is Undefined, optional
+        DataTo defines bulk push rules that expand source Secret keys into provider entries.
     deletionPolicy : str, default is "None", optional
         Deletion Policy to handle Secrets in the provider.
     refreshInterval : str, default is "1h0m0s", optional
@@ -141,6 +143,7 @@ schema ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpec:
         UpdatePolicy to handle Secrets in the provider.
     """
     data?: [ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataItems0]
+    dataTo?: [ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0]
     deletionPolicy?: "Delete" | "None" = "None"
     refreshInterval?: str = "1h0m0s"
     secretStoreRefs: [ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecSecretStoreRefsItems0]
@@ -197,6 +200,154 @@ schema ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataItems0Mat
     """
     property?: str
     remoteKey: str
+
+schema ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0:
+    r"""
+    PushSecretDataTo defines how to bulk-push secrets to providers without explicit per-key mappings.
+
+    Attributes
+    ----------
+    conversionStrategy : str, default is "None", optional
+        Used to define a conversion Strategy for the secret keys
+    match : ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0Match, default is Undefined, optional
+        match
+    metadata : any, default is Undefined, optional
+        Metadata is metadata attached to the secret.
+        The structure of metadata is provider specific, please look it up in the provider documentation.
+    remoteKey : str, default is Undefined, optional
+        RemoteKey is the name of the single provider secret that will receive ALL
+        matched keys bundled as a JSON object (e.g. {"DB_HOST":"...","DB_USER":"..."}).
+        When set, per-key expansion is skipped and a single push is performed.
+        The provider's store prefix (if any) is still prepended to this value.
+        When not set, each matched key is pushed as its own individual provider secret.
+    rewrite : [ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0RewriteItems0], default is Undefined, optional
+        Rewrite operations to transform keys before pushing to the provider.
+        Operations are applied sequentially.
+    storeRef : ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0StoreRef, default is Undefined, optional
+        store ref
+    """
+    conversionStrategy?: "None" | "ReverseUnicode" = "None"
+    match?: ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0Match
+    metadata?: any
+    remoteKey?: str
+    rewrite?: [ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0RewriteItems0]
+    storeRef?: ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0StoreRef
+
+schema ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0Match:
+    r"""
+    Match pattern for selecting keys from the source Secret.
+    If not specified, all keys are selected.
+
+    Attributes
+    ----------
+    regexp : str, default is Undefined, optional
+        Regexp matches keys by regular expression.
+        If not specified, all keys are matched.
+    """
+    regexp?: str
+
+schema ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0RewriteItems0:
+    r"""
+    PushSecretRewrite defines how to transform secret keys before pushing.
+
+    Attributes
+    ----------
+    regexp : ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0RewriteItems0Regexp, default is Undefined, optional
+        regexp
+    transform : ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0RewriteItems0Transform, default is Undefined, optional
+        transform
+    """
+    regexp?: ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0RewriteItems0Regexp
+    transform?: ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0RewriteItems0Transform
+
+schema ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0RewriteItems0Regexp:
+    r"""
+    Used to rewrite with regular expressions.
+
+    Attributes
+    ----------
+    source : str, default is Undefined, required
+        Used to define the regular expression of a re.Compiler.
+    target : str, default is Undefined, required
+        Used to define the target pattern of a ReplaceAll operation.
+    """
+    source: str
+
+    target: str
+
+schema ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0RewriteItems0Transform:
+    r"""
+    Used to apply string transformation on the secrets.
+
+    Attributes
+    ----------
+    template : str, default is Undefined, required
+        Used to define the template to apply on the secret name.
+        `.value ` will specify the secret name in the template.
+    """
+    template: str
+
+schema ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0StoreRef:
+    r"""
+    StoreRef specifies which SecretStore to push to. Required.
+
+    Attributes
+    ----------
+    kind : str, default is "SecretStore", optional
+        Kind of the SecretStore resource (SecretStore or ClusterSecretStore)
+    labelSelector : ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0StoreRefLabelSelector, default is Undefined, optional
+        label selector
+    name : str, default is Undefined, optional
+        Optionally, sync to the SecretStore of the given name
+    """
+    kind?: "SecretStore" | "ClusterSecretStore" = "SecretStore"
+    labelSelector?: ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0StoreRefLabelSelector
+    name?: str
+
+    check:
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+
+schema ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0StoreRefLabelSelector:
+    r"""
+    Optionally, sync to secret stores with label selector
+
+    Attributes
+    ----------
+    matchExpressions : [ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0StoreRefLabelSelectorMatchExpressionsItems0], default is Undefined, optional
+        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+    matchLabels : {str:str}, default is Undefined, optional
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
+    """
+    matchExpressions?: [ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0StoreRefLabelSelectorMatchExpressionsItems0]
+    matchLabels?: {str:str}
+
+schema ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecDataToItems0StoreRefLabelSelectorMatchExpressionsItems0:
+    r"""
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the label key that the selector applies to.
+    operator : str, default is Undefined, required
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
+    values : [str], default is Undefined, optional
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
+    """
+    key: str
+
+    operator: str
+
+    values?: [str]
 
 schema ExternalSecretsIoV1alpha1ClusterPushSecretSpecPushSecretSpecSecretStoreRefsItems0:
     r"""
