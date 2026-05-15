@@ -659,6 +659,13 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccess
         externalTokenEndpoint is the endpoint explicitly set up to provide tokens, which will be matched against the
         credential_source.url in the provided credConfig. This field is merely to double-check the external token source
         URL is having the expected value.
+    gcpServiceAccountEmail : str, default is Undefined, optional
+        GCPServiceAccountEmail is the email of the Google Cloud service account to impersonate
+        after Workload Identity Federation. Use this to grant access through the service account's
+        IAM bindings (for example roles/secretmanager.secretAccessor). When set, it overrides
+        service_account_impersonation_url in the external account JSON from credConfig;
+        when serviceAccountRef is set, it also overrides the "iam.gke.io/gcp-service-account" annotation
+        on that ServiceAccount.
     serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthWorkloadIdentityFederationServiceAccountRef, default is Undefined, optional
         service account ref
     """
@@ -666,7 +673,12 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccess
     awsSecurityCredentials?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthWorkloadIdentityFederationAwsSecurityCredentials
     credConfig?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthWorkloadIdentityFederationCredConfig
     externalTokenEndpoint?: str
+    gcpServiceAccountEmail?: str
     serviceAccountRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthWorkloadIdentityFederationServiceAccountRef
+
+    check:
+        len(gcpServiceAccountEmail) >= 1 if gcpServiceAccountEmail
+        _regex_match(str(gcpServiceAccountEmail), r"^.*@.*\.iam\.gserviceaccount\.com$") if gcpServiceAccountEmail
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthWorkloadIdentityFederationAwsSecurityCredentials:
     r"""
@@ -1399,6 +1411,10 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     controller : str, default is Undefined, optional
         Used to select the correct ESO controller (think: ingress.ingressClassName)
         The ESO controller is instantiated with a specific controller name and filters VDS based on this property
+    getParameters : {str:[str]}, default is Undefined, optional
+        GetParameters are query-string parameters passed to Vault on GET calls.
+        Each key may map to multiple values, matching HTTP query-string semantics.
+        Ignored for non-GET methods; use Parameters for write bodies.
     method : str, default is Undefined, optional
         Vault API method to use (GET/POST/other)
     parameters : any, default is Undefined, optional
@@ -1419,6 +1435,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     """
     allowEmptyResponse?: bool = False
     controller?: str
+    getParameters?: {str:[str]}
     method?: str
     parameters?: any
     path: str
@@ -1634,10 +1651,13 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         in Vault, e.g: "cert"
     secretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCertSecretRef, default is Undefined, optional
         secret ref
+    vaultRole : str, default is Undefined, optional
+        VaultRole specifies the Vault role to use for TLS certificate authentication.
     """
     clientCert?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCertClientCert
     path?: str = "cert"
     secretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCertSecretRef
+    vaultRole?: str
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCertClientCert:
     r"""

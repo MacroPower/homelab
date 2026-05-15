@@ -160,6 +160,8 @@ schema ExternalSecretsIoV1ClusterExternalSecretSpecExternalSecretSpecDataFromIte
         Key is the key used in the Provider, mandatory
     metadataPolicy : str, default is "None", optional
         Policy for fetching tags/labels from provider secrets, possible options are Fetch, None. Defaults to None
+    nullBytePolicy : str, default is "Ignore", optional
+        Controls how ESO handles fetched secret data containing NUL bytes for this source.
     property : str, default is Undefined, optional
         Used to select a specific property of the Provider value (if a map), if supported
     version : str, default is Undefined, optional
@@ -170,6 +172,7 @@ schema ExternalSecretsIoV1ClusterExternalSecretSpecExternalSecretSpecDataFromIte
     key: str
 
     metadataPolicy?: "None" | "Fetch" = "None"
+    nullBytePolicy?: "Ignore" | "Fail" = "Ignore"
     property?: str
     version?: str
 
@@ -186,6 +189,8 @@ schema ExternalSecretsIoV1ClusterExternalSecretSpecExternalSecretSpecDataFromIte
         Used to define a decoding Strategy
     name : ExternalSecretsIoV1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0FindName, default is Undefined, optional
         name
+    nullBytePolicy : str, default is "Ignore", optional
+        Controls how ESO handles fetched secret data containing NUL bytes for this find source.
     path : str, default is Undefined, optional
         A root path to start the find operations.
     tags : {str:str}, default is Undefined, optional
@@ -194,6 +199,7 @@ schema ExternalSecretsIoV1ClusterExternalSecretSpecExternalSecretSpecDataFromIte
     conversionStrategy?: "Default" | "Unicode" = "Default"
     decodingStrategy?: "Auto" | "Base64" | "Base64URL" | "None" = "None"
     name?: ExternalSecretsIoV1ClusterExternalSecretSpecExternalSecretSpecDataFromItems0FindName
+    nullBytePolicy?: "Ignore" | "Fail" = "Ignore"
     path?: str
     tags?: {str:str}
 
@@ -380,6 +386,8 @@ schema ExternalSecretsIoV1ClusterExternalSecretSpecExternalSecretSpecDataItems0R
         Key is the key used in the Provider, mandatory
     metadataPolicy : str, default is "None", optional
         Policy for fetching tags/labels from provider secrets, possible options are Fetch, None. Defaults to None
+    nullBytePolicy : str, default is "Ignore", optional
+        Controls how ESO handles fetched secret data containing NUL bytes for this source.
     property : str, default is Undefined, optional
         Used to select a specific property of the Provider value (if a map), if supported
     version : str, default is Undefined, optional
@@ -390,6 +398,7 @@ schema ExternalSecretsIoV1ClusterExternalSecretSpecExternalSecretSpecDataItems0R
     key: str
 
     metadataPolicy?: "None" | "Fetch" = "None"
+    nullBytePolicy?: "Ignore" | "Fail" = "Ignore"
     property?: str
     version?: str
 

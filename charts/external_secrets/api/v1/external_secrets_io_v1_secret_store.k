@@ -181,6 +181,8 @@ schema ExternalSecretsIoV1SecretStoreSpecProvider:
         onepassword s d k
     oracle : ExternalSecretsIoV1SecretStoreSpecProviderOracle, default is Undefined, optional
         oracle
+    ovh : ExternalSecretsIoV1SecretStoreSpecProviderOvh, default is Undefined, optional
+        ovh
     passbolt : ExternalSecretsIoV1SecretStoreSpecProviderPassbolt, default is Undefined, optional
         passbolt
     passworddepot : ExternalSecretsIoV1SecretStoreSpecProviderPassworddepot, default is Undefined, optional
@@ -233,6 +235,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProvider:
     onepassword?: ExternalSecretsIoV1SecretStoreSpecProviderOnepassword
     onepasswordSDK?: ExternalSecretsIoV1SecretStoreSpecProviderOnepasswordSDK
     oracle?: ExternalSecretsIoV1SecretStoreSpecProviderOracle
+    ovh?: ExternalSecretsIoV1SecretStoreSpecProviderOvh
     passbolt?: ExternalSecretsIoV1SecretStoreSpecProviderPassbolt
     passworddepot?: ExternalSecretsIoV1SecretStoreSpecProviderPassworddepot
     previder?: ExternalSecretsIoV1SecretStoreSpecProviderPrevider
@@ -525,6 +528,9 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderAws:
         AdditionalRoles is a chained list of Role ARNs which the provider will sequentially assume before assuming the Role
     auth : ExternalSecretsIoV1SecretStoreSpecProviderAwsAuth, default is Undefined, optional
         auth
+    customSessionTags : {str:str}, default is Undefined, optional
+        CustomSessionTags defines additional STS session tags to include when SessionTagsPolicy is Custom.
+        These are merged with the automatically injected esoNamespace, esoStoreName, and esoStoreKind tags.
     externalID : str, default is Undefined, optional
         AWS External ID set on assumed IAM roles
     prefix : str, default is Undefined, optional
@@ -539,11 +545,18 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderAws:
         Service defines which service should be used to fetch the secrets
     sessionTags : [ExternalSecretsIoV1SecretStoreSpecProviderAwsSessionTagsItems0], default is Undefined, optional
         AWS STS assume role session tags
+    sessionTagsPolicy : str, default is "None", optional
+        SessionTagsPolicy controls whether and how STS session tags are added when assuming roles.
+        None (default): no tags are added.
+        Simple: automatically adds esoNamespace (from the ExternalSecret), esoStoreName, and esoStoreKind tags.
+        Custom: adds esoNamespace, esoStoreName, and esoStoreKind plus any tags defined in CustomSessionTags.
+        Note: the IAM role must have sts:TagSession permission when using Simple or Custom.
     transitiveTagKeys : [str], default is Undefined, optional
         AWS STS assume role transitive session tags. Required when multiple rules are used with the provider
     """
     additionalRoles?: [str]
     auth?: ExternalSecretsIoV1SecretStoreSpecProviderAwsAuth
+    customSessionTags?: {str:str}
     externalID?: str
     prefix?: str
     region: str
@@ -553,6 +566,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderAws:
     service: "SecretsManager" | "ParameterStore"
 
     sessionTags?: [ExternalSecretsIoV1SecretStoreSpecProviderAwsSessionTagsItems0]
+    sessionTagsPolicy?: "None" | "Simple" | "Custom" = "None"
     transitiveTagKeys?: [str]
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderAwsAuth:
@@ -2204,11 +2218,16 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderDvls:
         Set to true only if you understand the security implications.
     serverUrl : str, default is Undefined, required
         ServerURL is the DVLS instance URL (e.g., https://dvls.example.com).
+    vault : str, default is Undefined, optional
+        Vault is the name or UUID of the vault to fetch secrets from.
+        When omitted, the vault must be specified in the secret key using the legacy format "<vault-id>/<entry-id>".
     """
     auth: ExternalSecretsIoV1SecretStoreSpecProviderDvlsAuth
 
     insecure?: bool
     serverUrl: str
+
+    vault?: str
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderDvlsAuth:
     r"""
@@ -2508,6 +2527,13 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderGcpsmAuthWorkloadIdentityFedera
         externalTokenEndpoint is the endpoint explicitly set up to provide tokens, which will be matched against the
         credential_source.url in the provided credConfig. This field is merely to double-check the external token source
         URL is having the expected value.
+    gcpServiceAccountEmail : str, default is Undefined, optional
+        GCPServiceAccountEmail is the email of the Google Cloud service account to impersonate
+        after Workload Identity Federation. Use this to grant access through the service account's
+        IAM bindings (for example roles/secretmanager.secretAccessor). When set, it overrides
+        service_account_impersonation_url in the external account JSON from credConfig;
+        when serviceAccountRef is set, it also overrides the "iam.gke.io/gcp-service-account" annotation
+        on that ServiceAccount.
     serviceAccountRef : ExternalSecretsIoV1SecretStoreSpecProviderGcpsmAuthWorkloadIdentityFederationServiceAccountRef, default is Undefined, optional
         service account ref
     """
@@ -2515,7 +2541,12 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderGcpsmAuthWorkloadIdentityFedera
     awsSecurityCredentials?: ExternalSecretsIoV1SecretStoreSpecProviderGcpsmAuthWorkloadIdentityFederationAwsSecurityCredentials
     credConfig?: ExternalSecretsIoV1SecretStoreSpecProviderGcpsmAuthWorkloadIdentityFederationCredConfig
     externalTokenEndpoint?: str
+    gcpServiceAccountEmail?: str
     serviceAccountRef?: ExternalSecretsIoV1SecretStoreSpecProviderGcpsmAuthWorkloadIdentityFederationServiceAccountRef
+
+    check:
+        len(gcpServiceAccountEmail) >= 1 if gcpServiceAccountEmail
+        _regex_match(str(gcpServiceAccountEmail), r"^.*@.*\.iam\.gserviceaccount\.com$") if gcpServiceAccountEmail
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderGcpsmAuthWorkloadIdentityFederationAwsSecurityCredentials:
     r"""
@@ -2671,6 +2702,11 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderGithub:
         environment will be used to fetch secrets from a particular environment within a github repository
     installationID : int, default is Undefined, required
         installationID specifies the Github APP installation that will be used to authenticate the client
+    orgSecretVisibility : str, default is Undefined, optional
+        orgSecretVisibility controls the visibility of organization secrets pushed via PushSecret.
+        Valid values are "all" or "private".
+        When unset, new secrets are created with visibility "all" and existing secrets preserve
+        whatever visibility they already have in GitHub.
     organization : str, default is Undefined, required
         organization will be used to fetch secrets from the Github organization
     repository : str, default is Undefined, optional
@@ -2687,6 +2723,7 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderGithub:
     environment?: str
     installationID: int
 
+    orgSecretVisibility?: "all" | "private"
     organization: str
 
     repository?: str
@@ -3952,10 +3989,14 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderKeepersecurity:
         auth ref
     folderID : str, default is Undefined, required
         folder ID
+    getByTitleFallback : bool, default is Undefined, optional
+        get by title fallback
     """
     authRef: ExternalSecretsIoV1SecretStoreSpecProviderKeepersecurityAuthRef
 
     folderID: str
+
+    getByTitleFallback?: bool
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderKeepersecurityAuthRef:
     r"""
@@ -4914,6 +4955,207 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderOracleServiceAccountRef:
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
+schema ExternalSecretsIoV1SecretStoreSpecProviderOvh:
+    r"""
+    OVHcloud configures this store to sync secrets using the OVHcloud provider.
+
+    Attributes
+    ----------
+    auth : ExternalSecretsIoV1SecretStoreSpecProviderOvhAuth, default is Undefined, required
+        auth
+    casRequired : bool, default is Undefined, optional
+        Enables or disables check-and-set (CAS) (default: false).
+    okmsTimeout : int, default is 30, optional
+        Setup a timeout in seconds when requests to the KMS are made (default: 30).
+    okmsid : str, default is Undefined, required
+        specifies the OKMS ID.
+    server : str, default is Undefined, required
+        specifies the OKMS server endpoint.
+    """
+    auth: ExternalSecretsIoV1SecretStoreSpecProviderOvhAuth
+
+    casRequired?: bool
+    okmsTimeout?: int = 30
+    okmsid: str
+
+    server: str
+
+    check:
+        okmsTimeout >= 1 if okmsTimeout not in [None, Undefined]
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderOvhAuth:
+    r"""
+    Authentication method (mtls or token).
+
+    Attributes
+    ----------
+    mtls : ExternalSecretsIoV1SecretStoreSpecProviderOvhAuthMtls, default is Undefined, optional
+        mtls
+    token : ExternalSecretsIoV1SecretStoreSpecProviderOvhAuthToken, default is Undefined, optional
+        token
+    """
+    mtls?: ExternalSecretsIoV1SecretStoreSpecProviderOvhAuthMtls
+    token?: ExternalSecretsIoV1SecretStoreSpecProviderOvhAuthToken
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderOvhAuthMtls:
+    r"""
+    OvhClientMTLS defines the configuration required to authenticate to OVHcloud's Secret Manager using mTLS.
+
+    Attributes
+    ----------
+    caBundle : str, default is Undefined, optional
+        ca bundle
+    caProvider : ExternalSecretsIoV1SecretStoreSpecProviderOvhAuthMtlsCaProvider, default is Undefined, optional
+        ca provider
+    certSecretRef : ExternalSecretsIoV1SecretStoreSpecProviderOvhAuthMtlsCertSecretRef, default is Undefined, required
+        cert secret ref
+    keySecretRef : ExternalSecretsIoV1SecretStoreSpecProviderOvhAuthMtlsKeySecretRef, default is Undefined, required
+        key secret ref
+    """
+    caBundle?: str
+    caProvider?: ExternalSecretsIoV1SecretStoreSpecProviderOvhAuthMtlsCaProvider
+    certSecretRef: ExternalSecretsIoV1SecretStoreSpecProviderOvhAuthMtlsCertSecretRef
+
+    keySecretRef: ExternalSecretsIoV1SecretStoreSpecProviderOvhAuthMtlsKeySecretRef
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderOvhAuthMtlsCaProvider:
+    r"""
+    CAProvider provides a custom certificate authority for accessing the provider's store.
+    The CAProvider points to a Secret or ConfigMap resource that contains a PEM-encoded certificate.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        The key where the CA certificate can be found in the Secret or ConfigMap.
+    name : str, default is Undefined, required
+        The name of the object located at the provider type.
+    namespace : str, default is Undefined, optional
+        The namespace the Provider type is in.
+        Can only be defined when used in a ClusterSecretStore.
+    $type : str, default is Undefined, required
+        The type of provider to use such as "Secret", or "ConfigMap".
+    """
+    key?: str
+    name: str
+
+    namespace?: str
+    $type: "Secret" | "ConfigMap"
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderOvhAuthMtlsCertSecretRef:
+    r"""
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
+    In some instances, `key` is a required field.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderOvhAuthMtlsKeySecretRef:
+    r"""
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
+    In some instances, `key` is a required field.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderOvhAuthToken:
+    r"""
+    OvhClientToken defines the configuration required to authenticate to OVHcloud's Secret Manager using a token.
+
+    Attributes
+    ----------
+    tokenSecretRef : ExternalSecretsIoV1SecretStoreSpecProviderOvhAuthTokenTokenSecretRef, default is Undefined, required
+        token secret ref
+    """
+    tokenSecretRef: ExternalSecretsIoV1SecretStoreSpecProviderOvhAuthTokenTokenSecretRef
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderOvhAuthTokenTokenSecretRef:
+    r"""
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
+    In some instances, `key` is a required field.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
 schema ExternalSecretsIoV1SecretStoreSpecProviderPassbolt:
     r"""
     PassboltProvider provides access to Passbolt secrets manager.
@@ -4923,11 +5165,19 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderPassbolt:
     ----------
     auth : ExternalSecretsIoV1SecretStoreSpecProviderPassboltAuth, default is Undefined, required
         auth
+    caBundle : str, default is Undefined, optional
+        PEM encoded CA bundle used to validate Passbolt server certificate. Only used
+        if the Host URL is using HTTPS protocol. If not set the system root certificates
+        are used to validate the TLS connection.
+    caProvider : ExternalSecretsIoV1SecretStoreSpecProviderPassboltCaProvider, default is Undefined, optional
+        ca provider
     host : str, default is Undefined, required
         Host defines the Passbolt Server to connect to
     """
     auth: ExternalSecretsIoV1SecretStoreSpecProviderPassboltAuth
 
+    caBundle?: str
+    caProvider?: ExternalSecretsIoV1SecretStoreSpecProviderPassboltCaProvider
     host: str
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderPassboltAuth:
@@ -5003,6 +5253,39 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderPassboltAuthPrivateKeySecretRef
         len(name) <= 253 if name
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderPassboltCaProvider:
+    r"""
+    The provider for the CA bundle to use to validate Passbolt server certificate.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        The key where the CA certificate can be found in the Secret or ConfigMap.
+    name : str, default is Undefined, required
+        The name of the object located at the provider type.
+    namespace : str, default is Undefined, optional
+        The namespace the Provider type is in.
+        Can only be defined when used in a ClusterSecretStore.
+    $type : str, default is Undefined, required
+        The type of provider to use such as "Secret", or "ConfigMap".
+    """
+    key?: str
+    name: str
+
+    namespace?: str
+    $type: "Secret" | "ConfigMap"
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
@@ -5151,10 +5434,12 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderPulumi:
 
     Attributes
     ----------
-    accessToken : ExternalSecretsIoV1SecretStoreSpecProviderPulumiAccessToken, default is Undefined, required
+    accessToken : ExternalSecretsIoV1SecretStoreSpecProviderPulumiAccessToken, default is Undefined, optional
         access token
     apiUrl : str, default is "https://api.pulumi.com/api/esc", optional
         APIURL is the URL of the Pulumi API.
+    auth : ExternalSecretsIoV1SecretStoreSpecProviderPulumiAuth, default is Undefined, optional
+        auth
     environment : str, default is Undefined, required
         Environment are YAML documents composed of static key-value pairs, programmatic expressions,
         dynamically retrieved values from supported providers including all major clouds,
@@ -5166,9 +5451,9 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderPulumi:
     project : str, default is Undefined, required
         Project is the name of the Pulumi ESC project the environment belongs to.
     """
-    accessToken: ExternalSecretsIoV1SecretStoreSpecProviderPulumiAccessToken
-
+    accessToken?: ExternalSecretsIoV1SecretStoreSpecProviderPulumiAccessToken
     apiUrl?: str = "https://api.pulumi.com/api/esc"
+    auth?: ExternalSecretsIoV1SecretStoreSpecProviderPulumiAuth
     environment: str
 
     organization: str
@@ -5178,6 +5463,8 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderPulumi:
 schema ExternalSecretsIoV1SecretStoreSpecProviderPulumiAccessToken:
     r"""
     AccessToken is the access tokens to sign in to the Pulumi Cloud Console.
+
+    Deprecated: Use auth.accessToken instead.
 
     Attributes
     ----------
@@ -5212,6 +5499,113 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderPulumiAccessTokenSecretRef:
         len(name) <= 253 if name
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderPulumiAuth:
+    r"""
+    Auth configures how the Operator authenticates with the Pulumi API.
+    Either auth or the deprecated accessToken field must be specified.
+
+    Attributes
+    ----------
+    accessToken : ExternalSecretsIoV1SecretStoreSpecProviderPulumiAuthAccessToken, default is Undefined, optional
+        access token
+    oidcConfig : ExternalSecretsIoV1SecretStoreSpecProviderPulumiAuthOidcConfig, default is Undefined, optional
+        oidc config
+    """
+    accessToken?: ExternalSecretsIoV1SecretStoreSpecProviderPulumiAuthAccessToken
+    oidcConfig?: ExternalSecretsIoV1SecretStoreSpecProviderPulumiAuthOidcConfig
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderPulumiAuthAccessToken:
+    r"""
+    AccessToken authenticates using a Pulumi access token stored in a Kubernetes Secret.
+
+    Attributes
+    ----------
+    secretRef : ExternalSecretsIoV1SecretStoreSpecProviderPulumiAuthAccessTokenSecretRef, default is Undefined, optional
+        secret ref
+    """
+    secretRef?: ExternalSecretsIoV1SecretStoreSpecProviderPulumiAuthAccessTokenSecretRef
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderPulumiAuthAccessTokenSecretRef:
+    r"""
+    SecretRef is a reference to a secret containing the Pulumi API token.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderPulumiAuthOidcConfig:
+    r"""
+    OIDCConfig authenticates using Kubernetes ServiceAccount tokens via OIDC.
+
+    Attributes
+    ----------
+    expirationSeconds : int, default is 600, optional
+        ExpirationSeconds sets the token validity duration for service account and OIDC token.
+        Defaults to 10 minutes.
+    organization : str, default is Undefined, required
+        Organization is the name of the Pulumi organization configured for OIDC authentication.
+    serviceAccountRef : ExternalSecretsIoV1SecretStoreSpecProviderPulumiAuthOidcConfigServiceAccountRef, default is Undefined, required
+        service account ref
+    """
+    expirationSeconds?: int = 600
+    organization: str
+
+    serviceAccountRef: ExternalSecretsIoV1SecretStoreSpecProviderPulumiAuthOidcConfigServiceAccountRef
+
+    check:
+        expirationSeconds >= 600 if expirationSeconds not in [None, Undefined]
+
+schema ExternalSecretsIoV1SecretStoreSpecProviderPulumiAuthOidcConfigServiceAccountRef:
+    r"""
+    ServiceAccountRef specifies the Kubernetes ServiceAccount to use for authentication.
+
+    Attributes
+    ----------
+    audiences : [str], default is Undefined, optional
+        Audience specifies the `aud` claim for the service account token
+        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
+        then this audiences will be appended to the list
+    name : str, default is Undefined, required
+        The name of the ServiceAccount resource being referred to.
+    namespace : str, default is Undefined, optional
+        Namespace of the resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    audiences?: [str]
+    name: str
+
+    namespace?: str
+
+    check:
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
@@ -5757,10 +6151,13 @@ schema ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthCert:
         in Vault, e.g: "cert"
     secretRef : ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthCertSecretRef, default is Undefined, optional
         secret ref
+    vaultRole : str, default is Undefined, optional
+        VaultRole specifies the Vault role to use for TLS certificate authentication.
     """
     clientCert?: ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthCertClientCert
     path?: str = "cert"
     secretRef?: ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthCertSecretRef
+    vaultRole?: str
 
 schema ExternalSecretsIoV1SecretStoreSpecProviderVaultAuthCertClientCert:
     r"""
