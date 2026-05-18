@@ -15,6 +15,11 @@ schema Values:
         #
     additionalVolumeMounts : [any], optional
     additionalVolumes : [any], optional
+    additional_env_froms : [any], optional
+        Mirrors runner.additional_env_froms: a list of envFrom entries (secretRef /
+        configMapRef) loaded onto the Holmes pod. Use to share a Secret between the
+        runner and Holmes (e.g. ROBUSTA_UI_TOKEN, SLACK_TOKEN) without declaring
+        each key twice.
     additional_env_vars : [any], optional
     admin : ValuesAdmin, optional
         Use an existing secret for the admin user.
@@ -36,6 +41,11 @@ schema Values:
     annotations : ValuesAnnotations, optional
         Annotations to be added to the deployment/statefulset
     argoRollouts : bool, optional, default is False
+    args : [any], optional
+        Additional arguments to pass to the Holmes server
+        Example:
+        args:
+          - "--config=/etc/holmes/custom-config.yaml"
     assertNoLeakedSecrets : bool, optional, default is True
         assertNoLeakedSecrets is a helper function defined in _helpers.tpl that checks if secret
         values are not exposed in the rendered grafana.ini configmap. It is enabled by default.
@@ -67,6 +77,7 @@ schema Values:
     collectors : [str], optional
         Available collectors for kube-state-metrics.
         By default, all available resources are enabled, comment out to disable.
+    commonAnnotations : ValuesCommonAnnotations, optional
     commonLabels : ValuesCommonLabels, optional
         # Labels to apply to all resources
         #
@@ -83,6 +94,8 @@ schema Values:
     coreDns : ValuesCoreDns, optional
         # Component scraping coreDns. Use either this or kubeDns
         #
+    crdPermissions : ValuesCrdPermissions, optional
+        CRD permissions for common Kubernetes operators and tools
     crds : ValuesCrds, optional
         # Install Prometheus Operator CRDs
         #
@@ -100,6 +113,18 @@ schema Values:
         # custom Rules to override "for" and "severity" in defaultRules
         #
     customServiceAccountName : str, optional, default is ""
+    customSkillPaths : [any], optional
+        Paths inside the Holmes container to scan for custom skills (SKILL.md files).
+        Use this when you mount skill files yourself via `additionalVolumes` /
+        `initContainers`. Each path may be a directory (scanned for SKILL.md files
+        up to 2 levels deep) or an individual SKILL.md file. The chart sets
+        CUSTOM_SKILL_PATHS in the Holmes pod from this list (joined with `customSkills`).
+    customSkills : ValuesCustomSkills, optional
+        Inline skill definitions. When non-empty, the chart creates a ConfigMap
+        named `<release>-holmes-skills` and mounts it at /etc/holmes/skills/, with
+        each entry projected to /etc/holmes/skills/<name>/SKILL.md. The mount path
+        is automatically appended to CUSTOM_SKILL_PATHS, so you do not need to add
+        /etc/holmes/skills to customSkillPaths.
     daemonsetAnnotations : ValuesDaemonsetAnnotations, optional
         Annotations to be added to windows exporter daemonset
     dashboardProviders : ValuesDashboardProviders, optional
@@ -152,14 +177,12 @@ schema Values:
     enablePlatformPlaybooks : bool, optional, default is False
         additional builtin playbooks to enable when using Robusta UI
         these are disabled by default without the UI because they are spammy when sent to slack
-    enablePostProcessing : bool, optional, default is False
     enablePrometheusStack : bool, optional, default is False
         install prometheus, alert-manager, and grafana along with Robusta?
     enableServiceLinks : bool, optional, default is True
         Inject Kubernetes services as environment variables.
         See https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/#environment-variables
     enableServiceMonitors : bool, optional, default is True
-    enableTelemetry : bool, optional, default is True
     enabledManagedConfiguration : bool, optional, default is False
     endpoints : [any], optional
         for deployments that have node_exporter deployed outside of the cluster, list
@@ -244,6 +267,7 @@ schema Values:
         parameters for the renderer service used in robusta runner to render grafana graphs
     headlessService : bool, optional, default is False
         # Create a headless service for the deployment
+    holmes : ValuesHolmes, optional
     hostAliases : [any], optional
         overrides pod.spec.hostAliases in the grafana deployment's pods
     hostIPC : bool, optional, default is False
@@ -262,6 +286,7 @@ schema Values:
         Default values for prometheus-node-exporter.
         This is a YAML-formatted file.
         Declare variables to be passed into your templates.
+    imagePullPolicy : str, optional, default is "IfNotPresent"
     imagePullSecrets : [any], optional
     imageRenderer : ValuesImageRenderer, optional
         # Add a seperate remote image renderer deployment/service
@@ -269,6 +294,7 @@ schema Values:
     initChownData : ValuesInitChownData, optional
     initContainers : [any], optional
         # InitContainers allows injecting additional initContainers.
+    k8sRBAC : bool, optional, default is False
     "kube-prometheus-stack" : ValuesKubePrometheusStack, optional
     "kube-state-metrics" : ValuesKubeStateMetrics, optional
         # Configuration for kube-state-metrics subchart
@@ -354,7 +380,7 @@ schema Values:
         A single '*' can be provided per resource instead to allow any labels, but that has
         severe performance implications (Example: '=pods=[*]').
     modelList : ValuesModelList, optional
-    monitorHelmReleases : bool, optional, default is True
+    monitorHelmReleases : bool, optional, default is False
     nameOverride : str, optional, default is ""
         # Provide a name in place of kube-prometheus-stack for `app:` labels
         #
@@ -384,6 +410,8 @@ schema Values:
         #
     openshift : ValuesOpenshift, optional
         custom parameters for OpenShift clusters
+    operator : ValuesOperator, optional
+        Holmes Operator Configuration
     persistence : ValuesPersistence, optional
         # Enable persistence using Persistent Volume Claims
         # ref: https://kubernetes.io/docs/user-guide/persistent-volumes/
@@ -409,11 +437,13 @@ schema Values:
     podPortName : str, optional, default is "grafana"
         # Pod Labels
         podLabels: {}
+    podSecurityContext : ValuesPodSecurityContext, optional
+        Pod-level security context
+        Applied to spec.securityContext in the Deployment
     podSecurityPolicy : ValuesPodSecurityPolicy, optional
         # Specify if a Pod Security Policy for kube-state-metrics must be created
         # Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/
         #
-    postProcessingPrompt : str, optional, default is "builtin://generic_post_processing.jinja2"
     priorityBuiltinPlaybooks : [ValuesPriorityBuiltinPlaybooksItems0], optional
         priority builtin playbooks for running before all playbooks
     priorityClassName : str, optional, default is ""
@@ -474,7 +504,7 @@ schema Values:
         Enable self metrics configuration for service and Service Monitor
         Default values for telemetry configuration can be overridden
         If you set telemetryNodePort, you must also set service.type to NodePort
-    sentryDSN : str, optional, default is "https://51f9cd9bd2fdee16144db08fc423cd3b@o1120648.ingest.us.sentry.io/4508799804702720"
+    sentryDSN : str, optional, default is ""
     service : ValuesService, optional
         # Service configuration
     serviceAccount : ValuesServiceAccount, optional
@@ -497,6 +527,21 @@ schema Values:
         #
     sinksConfig : [any], optional
         sinks configurations
+        Each sink supports an optional mute_intervals field (parallel to activity) that mutes
+        all notifications during specified date/time ranges. Format: YYYY-MM-DD HH:MM.
+        Example:
+          sinksConfig:
+          - slack_sink:
+              name: my_slack_sink
+              slack_channel: my-channel
+              api_key: xoxb-your-key
+              mute_intervals:
+              - start_date: "2025-12-24 00:00"
+                end_date: "2025-12-26 23:59"
+                timezone: UTC
+              - start_date: "2026-01-01 00:00"
+                end_date: "2026-01-01 23:59"
+                timezone: US/Eastern
     smtp : ValuesSmtp, optional
         # Grafana's SMTP configuration
         # NOTE: To enable, grafana.ini must be configured with smtp.enabled
@@ -504,6 +549,16 @@ schema Values:
     startupProbe : ValuesStartupProbe, optional
         # Startup probe can optionally be enabled.
         #
+    strategy : ValuesStrategy, optional
+        Deployment rollout strategy.
+        Leave unset (empty) to use the Kubernetes default (RollingUpdate with maxSurge=25%, maxUnavailable=25%).
+        Set maxSurge: 0 if you need zero extra capacity during upgrades (e.g. tight resource quotas).
+        Example:
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 0
+              maxUnavailable: 1
     terminationGracePeriodSeconds : any, optional, default is "null"
         Specify grace period for graceful termination of pods. Defaults to 30 if null or not specified
     terminationMessageParams : ValuesTerminationMessageParams, optional
@@ -549,6 +604,7 @@ schema Values:
     additionalPrometheusRulesMap?: ValuesAdditionalPrometheusRulesMap
     additionalVolumeMounts?: [any]
     additionalVolumes?: [any]
+    additional_env_froms?: [any]
     additional_env_vars?: [any]
     admin?: ValuesAdmin
     adminUser?: str
@@ -558,6 +614,7 @@ schema Values:
     alertmanager?: ValuesAlertmanager
     annotations?: ValuesAnnotations
     argoRollouts?: bool
+    args?: [any]
     assertNoLeakedSecrets?: bool
     automountServiceAccountToken?: bool
     autoscaling?: ValuesAutoscaling
@@ -568,12 +625,14 @@ schema Values:
     clusterName?: str
     clusterZone?: str
     collectors?: [str]
+    commonAnnotations?: ValuesCommonAnnotations
     commonLabels?: ValuesCommonLabels
     config?: str
     configmaps?: [any]
     containerSecurityContext?: ValuesContainerSecurityContext
     containers?: [any]
     coreDns?: ValuesCoreDns
+    crdPermissions?: ValuesCrdPermissions
     crds?: ValuesCrds
     createConfigmap?: bool
     createServiceAccount?: bool
@@ -583,6 +642,8 @@ schema Values:
     customResourceState?: ValuesCustomResourceState
     customRules?: ValuesCustomRules
     customServiceAccountName?: str
+    customSkillPaths?: [any]
+    customSkills?: ValuesCustomSkills
     daemonsetAnnotations?: ValuesDaemonsetAnnotations
     dashboardProviders?: ValuesDashboardProviders
     dashboards?: ValuesDashboards
@@ -599,11 +660,9 @@ schema Values:
     enableHolmesGPT?: bool
     enableKubeBackwardCompatibility?: bool
     enablePlatformPlaybooks?: bool
-    enablePostProcessing?: bool
     enablePrometheusStack?: bool
     enableServiceLinks?: bool
     enableServiceMonitors?: bool
-    enableTelemetry?: bool
     enabledManagedConfiguration?: bool
     endpoints?: [any]
     env?: ValuesEnv
@@ -634,6 +693,7 @@ schema Values:
     "grafana.ini"?: ValuesGrafanaIni
     grafanaRenderer?: ValuesGrafanaRenderer
     headlessService?: bool
+    holmes?: ValuesHolmes
     hostAliases?: [any]
     hostIPC?: bool
     hostNetwork?: bool
@@ -642,11 +702,13 @@ schema Values:
     hostRootFsMount?: ValuesHostRootFsMount
     hostSysFsMount?: ValuesHostSysFsMount
     image?: ValuesImage
+    imagePullPolicy?: str
     imagePullSecrets?: [any]
     imageRenderer?: ValuesImageRenderer
     ingress?: ValuesIngress
     initChownData?: ValuesInitChownData
     initContainers?: [any]
+    k8sRBAC?: bool
     "kube-prometheus-stack"?: ValuesKubePrometheusStack
     "kube-state-metrics"?: ValuesKubeStateMetrics
     kubeApiServer?: ValuesKubeApiServer
@@ -686,6 +748,7 @@ schema Values:
     nodeSelector?: ValuesNodeSelector
     notifiers?: ValuesNotifiers
     openshift?: ValuesOpenshift
+    operator?: ValuesOperator
     persistence?: ValuesPersistence
     platformPlaybooks?: [ValuesPlatformPlaybooksItems0]
     playbookRepos?: ValuesPlaybookRepos
@@ -697,8 +760,8 @@ schema Values:
     podDisruptionBudget?: ValuesPodDisruptionBudget
     podLabels?: ValuesPodLabels
     podPortName?: str
+    podSecurityContext?: ValuesPodSecurityContext
     podSecurityPolicy?: ValuesPodSecurityPolicy
-    postProcessingPrompt?: str
     priorityBuiltinPlaybooks?: [ValuesPriorityBuiltinPlaybooksItems0]
     priorityClassName?: str
     prometheus?: ValuesPrometheus
@@ -735,6 +798,7 @@ schema Values:
     sinksConfig?: [any]
     smtp?: ValuesSmtp
     startupProbe?: ValuesStartupProbe
+    strategy?: ValuesStrategy
     terminationGracePeriodSeconds?: any
     terminationMessageParams?: ValuesTerminationMessageParams
     testFramework?: ValuesTestFramework
@@ -2674,6 +2738,12 @@ schema ValuesBuiltinPlaybooksItems0TriggersItems0OnPrometheusAlert:
     k8s_providers?: [str]
     status?: str
 
+schema ValuesCommonAnnotations:
+    r"""
+    ValuesCommonAnnotations
+    """
+    [...str]: any
+
 schema ValuesCommonLabels:
     r"""
     # Labels to apply to all resources
@@ -2847,6 +2917,33 @@ schema ValuesCoreDnsServiceMonitorSelector:
     ValuesCoreDnsServiceMonitorSelector
     """
     [...str]: any
+
+schema ValuesCrdPermissions:
+    r"""
+    CRD permissions for common Kubernetes operators and tools
+
+    Attributes
+    ----------
+    argo : bool, optional, default is True
+    crossplane : bool, optional, default is True
+    externalSecrets : bool, optional, default is True
+    flux : bool, optional, default is True
+    gatewayApi : bool, optional, default is True
+    istio : bool, optional, default is True
+    kafka : bool, optional, default is True
+    keda : bool, optional, default is True
+    velero : bool, optional, default is True
+    """
+    [...str]: any
+    argo?: bool
+    crossplane?: bool
+    externalSecrets?: bool
+    flux?: bool
+    gatewayApi?: bool
+    istio?: bool
+    kafka?: bool
+    keda?: bool
+    velero?: bool
 
 schema ValuesCrds:
     r"""
@@ -3184,6 +3281,16 @@ schema ValuesCustomRules:
     r"""
     # custom Rules to override "for" and "severity" in defaultRules
     #
+    """
+    [...str]: any
+
+schema ValuesCustomSkills:
+    r"""
+    Inline skill definitions. When non-empty, the chart creates a ConfigMap
+    named `<release>-holmes-skills` and mounts it at /etc/holmes/skills/, with
+    each entry projected to /etc/holmes/skills/<name>/SKILL.md. The mount path
+    is automatically appended to CUSTOM_SKILL_PATHS, so you do not need to add
+    /etc/holmes/skills to customSkillPaths.
     """
     [...str]: any
 
@@ -4034,8 +4141,21 @@ schema ValuesDeploymentStrategy:
 schema ValuesDnsConfig:
     r"""
     Custom DNS configuration to be added to prometheus-windows-exporter pods
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+    nameservers : [any], optional
+    options : [any], optional
+    policy : str, optional, default is "ClusterFirst"
+    searches : [any], optional
     """
     [...str]: any
+    enabled?: bool
+    nameservers?: [any]
+    options?: [any]
+    policy?: str
+    searches?: [any]
 
 schema ValuesDownloadDashboards:
     r"""
@@ -4899,6 +5019,17 @@ schema ValuesGrafanaSidecarDatasourcesExemplarTraceIdDestinations:
     # Can be provisioned via additionalDataSources
     """
     [...str]: any
+
+schema ValuesHolmes:
+    r"""
+    ValuesHolmes
+
+    Attributes
+    ----------
+    sentryDSN : str, optional, default is "https://aa95c183188a6ddf134ebfffe85fd108@o4510692373299200.ingest.de.sentry.io/4510707946094672"
+    """
+    [...str]: any
+    sentryDSN?: str
 
 schema ValuesHostProcFsMount:
     r"""
@@ -6406,7 +6537,7 @@ schema ValuesKubePrometheusStackAlertmanagerConfigReceiversItems0WebhookConfigsI
     Attributes
     ----------
     send_resolved : bool, optional, default is True
-    url : str, optional, default is "http://robusta-runner.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}/api/alerts"
+    url : str, optional, default is "http://{{ .Release.Name }}-runner.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}/api/alerts"
     """
     [...str]: any
     send_resolved?: bool
@@ -7659,7 +7790,7 @@ schema ValuesKubewatch:
     createServiceAccount : bool, optional, default is True
     customServiceAccount : str, optional, default is ""
     image : any, optional, default is "~"
-    imageName : str, optional, default is "kubewatch:v2.12.0"
+    imageName : str, optional, default is "kubewatch:v2.14.0"
     imagePullPolicy : str, optional, default is "IfNotPresent"
     imagePullSecrets : [any], optional
     nodeSelector : any, optional, default is "~"
@@ -7958,9 +8089,100 @@ schema ValuesMcpAddons:
     Attributes
     ----------
     aws : ValuesMcpAddonsAws, optional
+    azure : ValuesMcpAddonsAzure, optional
+        Azure MCP Server Configuration
+    confluenceMcp : ValuesMcpAddonsConfluenceMcp, optional
+        Confluence MCP Server Configuration
+        Provides access to Confluence documentation search and retrieval
+        Authentication: Create an Atlassian API token
+          Then create a Kubernetes secret:
+          kubectl create secret generic confluence-mcp-credentials \
+            --from-literal=confluence-username=<YOUR_EMAIL> --from-literal=confluence-api-token=<YOUR_API_TOKEN> -n <NAMESPACE>
+    gcp : ValuesMcpAddonsGcp, optional
+        Google Cloud Platform MCP addon - provides access to GCP services
+        Docker images and deployment scripts: https://github.com/robusta-dev/holmes-mcp-integrations/tree/master/servers/gcp
+
+        AUTHENTICATION:
+        The recommended method is using a service account key file:
+        1. Create a service account key:
+           gcloud iam service-accounts keys create key.json \
+             --iam-account=YOUR_SA
+        2. Create a Kubernetes secret:
+           kubectl create secret generic gcp-sa-key \
+             --from-file=key.json=key.json -n YOUR_NAMESPACE
+        3. Set serviceAccountKey.secretName below to "gcp-sa-key"
+
+        MULTI-PROJECT SUPPORT:
+        The gcloud MCP can query multiple GCP projects. To enable:
+        1. Grant the service account permissions in all target projects:
+           gcloud projects add-iam-policy-binding PROJECT_ID \
+             --member="serviceAccount:SA_EMAIL" --role="roles/viewer"
+        2. Holmes will automatically query across projects when you specify --project flag
+    github : ValuesMcpAddonsGithub, optional
+        GitHub MCP Server Configuration
+        Provides access to GitHub repositories, pull requests, issues, and GitHub Actions
+
+        AUTHENTICATION (choose one):
+        Option 1 - PAT: Deploys a self-hosted MCP server using the standard github-mcp image
+          kubectl create secret generic github-mcp-token --from-literal=token=<YOUR_GITHUB_PAT> -n <NAMESPACE>
+        Option 2 - GitHub App: Deploys a self-hosted MCP server using the github-app-mcp image
+          which generates and auto-refreshes installation tokens from GitHub App credentials
+          kubectl create secret generic holmes-github-app --from-literal=GITHUB_APP_ID=... -n <NAMESPACE>
+
+        GITHUB ENTERPRISE:
+        Set config.host to your GitHub Enterprise hostname (e.g., "github.mycompany.com")
+
+        CUSTOM IMAGE (PAT only):
+        To build your own image, see: https://github.com/robusta-dev/holmes-mcp-integrations/tree/master/servers/github
+    gitlabMcp : ValuesMcpAddonsGitlabMcp, optional
+        GitLab MCP Server Configuration
+        Provides access to GitLab projects, merge requests, issues, pipelines, and code.
+        Supports both gitlab.com (cloud) and self-hosted GitLab instances.
+
+        AUTHENTICATION:
+        Create a GitLab Personal Access Token with scopes: api, read_repository (and write_repository if you
+        want Holmes to create branches/MRs). Then store it in a Kubernetes secret:
+          kubectl create secret generic gitlab-mcp-token --from-literal=token=<YOUR_GITLAB_PAT> -n <NAMESPACE>
+
+        SELF-HOSTED GITLAB:
+        Set config.apiUrl to your instance API URL (e.g., "https://gitlab.mycompany.com/api/v4").
+        For self-signed certificates, mount a CA bundle via config.caCert.secretName (preferred)
+        or disable verification entirely with config.verifySsl: false (insecure).
+    kubernetes : ValuesMcpAddonsKubernetes, optional
+        Kubernetes MCP Server Configuration
+        Provides advanced Kubernetes cluster access via the containers/kubernetes-mcp-server
+        Uses in-cluster ServiceAccount by default. For external clusters, provide a kubeconfig secret.
+        Repository: https://github.com/containers/kubernetes-mcp-server
+    kubernetesRemediation : ValuesMcpAddonsKubernetesRemediation, optional
+        Kubernetes Remediation MCP Server Configuration
+        Provides safe kubectl command execution with security controls
+        WARNING: This addon can execute write operations. Configure allowedCommands carefully.
+    mariadb : ValuesMcpAddonsMariadb, optional
+    prefect : ValuesMcpAddonsPrefect, optional
+        Prefect MCP Server Configuration
+        Provides access to Prefect workflow orchestration for monitoring and troubleshooting
+        Authentication: Create a Prefect Cloud API key (optional for self-hosted)
+          Then create a Kubernetes secret:
+          kubectl create secret generic prefect-mcp-token --from-literal=token=<YOUR_PREFECT_API_KEY> -n <NAMESPACE>
+    sentry : ValuesMcpAddonsSentry, optional
+        Sentry MCP Server Configuration
+        Provides access to Sentry error tracking and monitoring
+        Authentication: Create a Sentry Auth Token with appropriate scopes
+          Then create a Kubernetes secret:
+          kubectl create secret generic sentry-mcp-token --from-literal=token=<YOUR_SENTRY_AUTH_TOKEN> -n <NAMESPACE>
     """
     [...str]: any
     aws?: ValuesMcpAddonsAws
+    azure?: ValuesMcpAddonsAzure
+    confluenceMcp?: ValuesMcpAddonsConfluenceMcp
+    gcp?: ValuesMcpAddonsGcp
+    github?: ValuesMcpAddonsGithub
+    gitlabMcp?: ValuesMcpAddonsGitlabMcp
+    kubernetes?: ValuesMcpAddonsKubernetes
+    kubernetesRemediation?: ValuesMcpAddonsKubernetesRemediation
+    mariadb?: ValuesMcpAddonsMariadb
+    prefect?: ValuesMcpAddonsPrefect
+    sentry?: ValuesMcpAddonsSentry
 
 schema ValuesMcpAddonsAws:
     r"""
@@ -7968,29 +8190,45 @@ schema ValuesMcpAddonsAws:
 
     Attributes
     ----------
+    additionalEnvVars : [any], optional
+        Additional environment variables for the AWS MCP container
     affinity : ValuesMcpAddonsAwsAffinity, optional
     config : ValuesMcpAddonsAwsConfig, optional
     enabled : bool, optional, default is False
-    image : str, optional, default is "aws-api-mcp-server:1.0.1"
+    extraInitContainers : [any], optional
+        Extra init containers to add to the AWS MCP pod
+    extraVolumeMounts : [any], optional
+        Extra volume mounts to add to the AWS MCP container
+    extraVolumes : [any], optional
+        Extra volumes to add to the AWS MCP pod
+    image : str, optional, default is "aws-api-mcp-server:2.0.1"
     llmInstructions : str, optional, default is ""
         Custom LLM instructions (optional)
         Leave empty to use default comprehensive instructions
         Set to override the default investigation patterns and guidelines
+    multiAccount : ValuesMcpAddonsAwsMultiAccount, optional
+        Multi-account configuration
+        When multiAccount.profiles is defined, the chart will use EKS token projection
     networkPolicy : ValuesMcpAddonsAwsNetworkPolicy, optional
         Network policy to restrict access to MCP server
     nodeSelector : ValuesMcpAddonsAwsNodeSelector, optional
-    registry : str, optional, default is "us-central1-docker.pkg.dev/genuine-flight-317411/devel"
+    registry : str, optional, default is "us-central1-docker.pkg.dev/genuine-flight-317411/mcp"
     resources : ValuesMcpAddonsAwsResources, optional
     serviceAccount : ValuesMcpAddonsAwsServiceAccount, optional
         Service account configuration for IRSA (IAM Roles for Service Accounts)
     tolerations : [any], optional
     """
     [...str]: any
+    additionalEnvVars?: [any]
     affinity?: ValuesMcpAddonsAwsAffinity
     config?: ValuesMcpAddonsAwsConfig
     enabled?: bool
+    extraInitContainers?: [any]
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
     image?: str
     llmInstructions?: str
+    multiAccount?: ValuesMcpAddonsAwsMultiAccount
     networkPolicy?: ValuesMcpAddonsAwsNetworkPolicy
     nodeSelector?: ValuesMcpAddonsAwsNodeSelector
     registry?: str
@@ -8018,6 +8256,31 @@ schema ValuesMcpAddonsAwsConfig:
     namespace?: str
     readOnlyMode?: bool
     region?: str
+
+schema ValuesMcpAddonsAwsMultiAccount:
+    r"""
+    Multi-account configuration
+    When multiAccount.profiles is defined, the chart will use EKS token projection
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+    image : str, optional, default is "multi-aws-api-mcp-server:2.0.1"
+    llm_account_descriptions : str, optional, default is ""
+    profiles : ValuesMcpAddonsAwsMultiAccountProfiles, optional
+        See docs/data-sources/builtin-toolsets/aws.md for configuration examples
+    """
+    [...str]: any
+    enabled?: bool
+    image?: str
+    llm_account_descriptions?: str
+    profiles?: ValuesMcpAddonsAwsMultiAccountProfiles
+
+schema ValuesMcpAddonsAwsMultiAccountProfiles:
+    r"""
+    See docs/data-sources/builtin-toolsets/aws.md for configuration examples
+    """
+    [...str]: any
 
 schema ValuesMcpAddonsAwsNetworkPolicy:
     r"""
@@ -8095,6 +8358,1792 @@ schema ValuesMcpAddonsAwsServiceAccountAnnotations:
     ValuesMcpAddonsAwsServiceAccountAnnotations
     """
     [...str]: any
+
+schema ValuesMcpAddonsAzure:
+    r"""
+    Azure MCP Server Configuration
+
+    Attributes
+    ----------
+    additionalEnvVars : [any], optional
+    affinity : ValuesMcpAddonsAzureAffinity, optional
+    config : ValuesMcpAddonsAzureConfig, optional
+    enabled : bool, optional, default is False
+    image : str, optional, default is "azure-cli-mcp:1.0.2"
+    imagePullPolicy : str, optional, default is "IfNotPresent"
+    llmInstructions : str, optional, default is ""
+        Custom LLM instructions (optional) - leave empty to use default
+    networkPolicy : ValuesMcpAddonsAzureNetworkPolicy, optional
+    nodeSelector : ValuesMcpAddonsAzureNodeSelector, optional
+    registry : str, optional, default is "us-central1-docker.pkg.dev/genuine-flight-317411/mcp"
+    resources : ValuesMcpAddonsAzureResources, optional
+    secretName : str, optional, default is "azure-mcp-creds"
+        Secret name for service principal authentication (if using service-principal auth)
+    service : ValuesMcpAddonsAzureService, optional
+    serviceAccount : ValuesMcpAddonsAzureServiceAccount, optional
+        Service account configuration for Azure Workload Identity
+    tolerations : [any], optional
+    """
+    [...str]: any
+    additionalEnvVars?: [any]
+    affinity?: ValuesMcpAddonsAzureAffinity
+    config?: ValuesMcpAddonsAzureConfig
+    enabled?: bool
+    image?: str
+    imagePullPolicy?: str
+    llmInstructions?: str
+    networkPolicy?: ValuesMcpAddonsAzureNetworkPolicy
+    nodeSelector?: ValuesMcpAddonsAzureNodeSelector
+    registry?: str
+    resources?: ValuesMcpAddonsAzureResources
+    secretName?: str
+    service?: ValuesMcpAddonsAzureService
+    serviceAccount?: ValuesMcpAddonsAzureServiceAccount
+    tolerations?: [any]
+
+schema ValuesMcpAddonsAzureAffinity:
+    r"""
+    ValuesMcpAddonsAzureAffinity
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsAzureConfig:
+    r"""
+    ValuesMcpAddonsAzureConfig
+
+    Attributes
+    ----------
+    authMethod : str, optional, default is "workload-identity"
+    clientId : str, optional, default is ""
+    enableSecurityPolicy : bool, optional, default is False
+    namespace : str, optional, default is ""
+    readOnlyMode : bool, optional, default is True
+    subscriptionId : str, optional, default is ""
+    tenantId : str, optional, default is ""
+    timeout : str, optional, default is "120"
+    """
+    [...str]: any
+    authMethod?: str
+    clientId?: str
+    enableSecurityPolicy?: bool
+    namespace?: str
+    readOnlyMode?: bool
+    subscriptionId?: str
+    tenantId?: str
+    timeout?: str
+
+schema ValuesMcpAddonsAzureNetworkPolicy:
+    r"""
+    ValuesMcpAddonsAzureNetworkPolicy
+
+    Attributes
+    ----------
+    additionalEgressRules : [any], optional
+    additionalIngressRules : [any], optional
+    enabled : bool, optional, default is False
+    """
+    [...str]: any
+    additionalEgressRules?: [any]
+    additionalIngressRules?: [any]
+    enabled?: bool
+
+schema ValuesMcpAddonsAzureNodeSelector:
+    r"""
+    ValuesMcpAddonsAzureNodeSelector
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsAzureResources:
+    r"""
+    ValuesMcpAddonsAzureResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsAzureResourcesLimits, optional
+    requests : ValuesMcpAddonsAzureResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsAzureResourcesLimits
+    requests?: ValuesMcpAddonsAzureResourcesRequests
+
+schema ValuesMcpAddonsAzureResourcesLimits:
+    r"""
+    ValuesMcpAddonsAzureResourcesLimits
+
+    Attributes
+    ----------
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    memory?: str
+
+schema ValuesMcpAddonsAzureResourcesRequests:
+    r"""
+    ValuesMcpAddonsAzureResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "100m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsAzureService:
+    r"""
+    ValuesMcpAddonsAzureService
+
+    Attributes
+    ----------
+    port : int, optional, default is 8000
+    """
+    [...str]: any
+    port?: int
+
+schema ValuesMcpAddonsAzureServiceAccount:
+    r"""
+    Service account configuration for Azure Workload Identity
+
+    Attributes
+    ----------
+    annotations : ValuesMcpAddonsAzureServiceAccountAnnotations, optional
+    create : bool, optional, default is True
+    name : str, optional, default is "azure-api-mcp-sa"
+    """
+    [...str]: any
+    annotations?: ValuesMcpAddonsAzureServiceAccountAnnotations
+    create?: bool
+    name?: str
+
+schema ValuesMcpAddonsAzureServiceAccountAnnotations:
+    r"""
+    ValuesMcpAddonsAzureServiceAccountAnnotations
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsConfluenceMcp:
+    r"""
+    Confluence MCP Server Configuration
+    Provides access to Confluence documentation search and retrieval
+    Authentication: Create an Atlassian API token
+      Then create a Kubernetes secret:
+      kubectl create secret generic confluence-mcp-credentials \
+        --from-literal=confluence-username=<YOUR_EMAIL> --from-literal=confluence-api-token=<YOUR_API_TOKEN> -n <NAMESPACE>
+
+    Attributes
+    ----------
+    additionalEnvVars : [any], optional
+        Additional environment variables for the Confluence MCP container
+    affinity : ValuesMcpAddonsConfluenceMcpAffinity, optional
+    auth : ValuesMcpAddonsConfluenceMcpAuth, optional
+    config : ValuesMcpAddonsConfluenceMcpConfig, optional
+    dnsConfig : ValuesMcpAddonsConfluenceMcpDnsConfig, optional
+        Enabled custom DNS configuration for confluenceMcp
+    enabled : bool, optional, default is False
+    image : str, optional, default is "mcp-atlassian:v0.21.2"
+    imagePullPolicy : str, optional, default is "IfNotPresent"
+    llmInstructions : str, optional, default is ""
+    networkPolicy : ValuesMcpAddonsConfluenceMcpNetworkPolicy, optional
+    nodeSelector : ValuesMcpAddonsConfluenceMcpNodeSelector, optional
+    registry : str, optional, default is "us-central1-docker.pkg.dev/genuine-flight-317411/mcp"
+    resources : ValuesMcpAddonsConfluenceMcpResources, optional
+    tolerations : [any], optional
+    """
+    [...str]: any
+    additionalEnvVars?: [any]
+    affinity?: ValuesMcpAddonsConfluenceMcpAffinity
+    auth?: ValuesMcpAddonsConfluenceMcpAuth
+    config?: ValuesMcpAddonsConfluenceMcpConfig
+    dnsConfig?: ValuesMcpAddonsConfluenceMcpDnsConfig
+    enabled?: bool
+    image?: str
+    imagePullPolicy?: str
+    llmInstructions?: str
+    networkPolicy?: ValuesMcpAddonsConfluenceMcpNetworkPolicy
+    nodeSelector?: ValuesMcpAddonsConfluenceMcpNodeSelector
+    registry?: str
+    resources?: ValuesMcpAddonsConfluenceMcpResources
+    tolerations?: [any]
+
+schema ValuesMcpAddonsConfluenceMcpAffinity:
+    r"""
+    ValuesMcpAddonsConfluenceMcpAffinity
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsConfluenceMcpAuth:
+    r"""
+    ValuesMcpAddonsConfluenceMcpAuth
+
+    Attributes
+    ----------
+    secretName : str, optional, default is ""
+    tokenKey : str, optional, default is "confluence-api-token"
+    usernameKey : str, optional, default is "confluence-username"
+    """
+    [...str]: any
+    secretName?: str
+    tokenKey?: str
+    usernameKey?: str
+
+schema ValuesMcpAddonsConfluenceMcpConfig:
+    r"""
+    ValuesMcpAddonsConfluenceMcpConfig
+
+    Attributes
+    ----------
+    enabledTools : str, optional, default is "confluence_search,confluence_get_page,confluence_get_page_content,confluence_get_comments"
+        Restrict available tools (comma-separated, leave empty for all)
+    readOnly : bool, optional, default is True
+        Set to true to disable write operations
+    url : str, optional, default is ""
+        Confluence instance URL (required)
+        Example: "https://your-company.atlassian.net/wiki"
+    """
+    [...str]: any
+    enabledTools?: str
+    readOnly?: bool
+    url?: str
+
+schema ValuesMcpAddonsConfluenceMcpDnsConfig:
+    r"""
+    Enabled custom DNS configuration for confluenceMcp
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+    nameservers : [any], optional
+    options : [any], optional
+    policy : str, optional, default is "ClusterFirst"
+    searches : [any], optional
+    """
+    [...str]: any
+    enabled?: bool
+    nameservers?: [any]
+    options?: [any]
+    policy?: str
+    searches?: [any]
+
+schema ValuesMcpAddonsConfluenceMcpNetworkPolicy:
+    r"""
+    ValuesMcpAddonsConfluenceMcpNetworkPolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMcpAddonsConfluenceMcpNodeSelector:
+    r"""
+    ValuesMcpAddonsConfluenceMcpNodeSelector
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsConfluenceMcpResources:
+    r"""
+    ValuesMcpAddonsConfluenceMcpResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsConfluenceMcpResourcesLimits, optional
+    requests : ValuesMcpAddonsConfluenceMcpResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsConfluenceMcpResourcesLimits
+    requests?: ValuesMcpAddonsConfluenceMcpResourcesRequests
+
+schema ValuesMcpAddonsConfluenceMcpResourcesLimits:
+    r"""
+    ValuesMcpAddonsConfluenceMcpResourcesLimits
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "500m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsConfluenceMcpResourcesRequests:
+    r"""
+    ValuesMcpAddonsConfluenceMcpResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "100m"
+    memory : str, optional, default is "128Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsGcp:
+    r"""
+    Google Cloud Platform MCP addon - provides access to GCP services
+    Docker images and deployment scripts: https://github.com/robusta-dev/holmes-mcp-integrations/tree/master/servers/gcp
+
+    AUTHENTICATION:
+    The recommended method is using a service account key file:
+    1. Create a service account key:
+       gcloud iam service-accounts keys create key.json \
+         --iam-account=YOUR_SA
+    2. Create a Kubernetes secret:
+       kubectl create secret generic gcp-sa-key \
+         --from-file=key.json=key.json -n YOUR_NAMESPACE
+    3. Set serviceAccountKey.secretName below to "gcp-sa-key"
+
+    MULTI-PROJECT SUPPORT:
+    The gcloud MCP can query multiple GCP projects. To enable:
+    1. Grant the service account permissions in all target projects:
+       gcloud projects add-iam-policy-binding PROJECT_ID \
+         --member="serviceAccount:SA_EMAIL" --role="roles/viewer"
+    2. Holmes will automatically query across projects when you specify --project flag
+
+    Attributes
+    ----------
+    config : ValuesMcpAddonsGcpConfig, optional
+    enabled : bool, optional, default is False
+    gcloud : ValuesMcpAddonsGcpGcloud, optional
+        Individual MCP server toggles and configurations
+        gcloud MCP - General GCP management via gcloud CLI
+    imagePullPolicy : str, optional, default is "IfNotPresent"
+    llmInstructions : ValuesMcpAddonsGcpLlmInstructions, optional
+        Custom LLM instructions (optional) - These will override the default instructions for each of the gcp MCPs
+        Leave empty to use default instructions
+    networkPolicy : ValuesMcpAddonsGcpNetworkPolicy, optional
+    observability : ValuesMcpAddonsGcpObservability, optional
+        Observability MCP - Cloud Logging, Monitoring, Trace, Error Reporting
+    registry : str, optional, default is "us-central1-docker.pkg.dev/genuine-flight-317411/mcp"
+        Container registry for GCP MCP images
+        Build images from: https://github.com/robusta-dev/holmes-mcp-integrations/tree/master/servers/gcp
+    serviceAccount : ValuesMcpAddonsGcpServiceAccount, optional
+        Kubernetes service account (for Workload Identity - currently not working with gcloud CLI)
+    serviceAccountKey : ValuesMcpAddonsGcpServiceAccountKey, optional
+        Service account key authentication (recommended)
+    storage : ValuesMcpAddonsGcpStorage, optional
+        Storage MCP - Cloud Storage operations
+    workloadIdentity : ValuesMcpAddonsGcpWorkloadIdentity, optional
+        Workload Identity configuration (works for observability/storage MCPs, not gcloud)
+    """
+    [...str]: any
+    config?: ValuesMcpAddonsGcpConfig
+    enabled?: bool
+    gcloud?: ValuesMcpAddonsGcpGcloud
+    imagePullPolicy?: str
+    llmInstructions?: ValuesMcpAddonsGcpLlmInstructions
+    networkPolicy?: ValuesMcpAddonsGcpNetworkPolicy
+    observability?: ValuesMcpAddonsGcpObservability
+    registry?: str
+    serviceAccount?: ValuesMcpAddonsGcpServiceAccount
+    serviceAccountKey?: ValuesMcpAddonsGcpServiceAccountKey
+    storage?: ValuesMcpAddonsGcpStorage
+    workloadIdentity?: ValuesMcpAddonsGcpWorkloadIdentity
+
+schema ValuesMcpAddonsGcpConfig:
+    r"""
+    ValuesMcpAddonsGcpConfig
+
+    Attributes
+    ----------
+    namespace : str, optional, default is ""
+    project : str, optional, default is ""
+    projectNumber : str, optional, default is ""
+    region : str, optional, default is "us-central1"
+    """
+    [...str]: any
+    namespace?: str
+    project?: str
+    projectNumber?: str
+    region?: str
+
+schema ValuesMcpAddonsGcpGcloud:
+    r"""
+    Individual MCP server toggles and configurations
+    gcloud MCP - General GCP management via gcloud CLI
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    image : str, optional, default is "gcloud-cli-mcp:1.0.9"
+    port : int, optional, default is 8000
+    resources : ValuesMcpAddonsGcpGcloudResources, optional
+    """
+    [...str]: any
+    enabled?: bool
+    image?: str
+    port?: int
+    resources?: ValuesMcpAddonsGcpGcloudResources
+
+schema ValuesMcpAddonsGcpGcloudResources:
+    r"""
+    ValuesMcpAddonsGcpGcloudResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsGcpGcloudResourcesLimits, optional
+    requests : ValuesMcpAddonsGcpGcloudResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsGcpGcloudResourcesLimits
+    requests?: ValuesMcpAddonsGcpGcloudResourcesRequests
+
+schema ValuesMcpAddonsGcpGcloudResourcesLimits:
+    r"""
+    ValuesMcpAddonsGcpGcloudResourcesLimits
+
+    Attributes
+    ----------
+    memory : str, optional, default is "1Gi"
+    """
+    [...str]: any
+    memory?: str
+
+schema ValuesMcpAddonsGcpGcloudResourcesRequests:
+    r"""
+    ValuesMcpAddonsGcpGcloudResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "100m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsGcpLlmInstructions:
+    r"""
+    Custom LLM instructions (optional) - These will override the default instructions for each of the gcp MCPs
+    Leave empty to use default instructions
+
+    Attributes
+    ----------
+    gcloud : str, optional, default is ""
+    observability : str, optional, default is ""
+    storage : str, optional, default is ""
+    """
+    [...str]: any
+    gcloud?: str
+    observability?: str
+    storage?: str
+
+schema ValuesMcpAddonsGcpNetworkPolicy:
+    r"""
+    ValuesMcpAddonsGcpNetworkPolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMcpAddonsGcpObservability:
+    r"""
+    Observability MCP - Cloud Logging, Monitoring, Trace, Error Reporting
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    image : str, optional, default is "gcloud-observability-mcp:1.0.1"
+    port : int, optional, default is 8001
+    resources : ValuesMcpAddonsGcpObservabilityResources, optional
+    """
+    [...str]: any
+    enabled?: bool
+    image?: str
+    port?: int
+    resources?: ValuesMcpAddonsGcpObservabilityResources
+
+schema ValuesMcpAddonsGcpObservabilityResources:
+    r"""
+    ValuesMcpAddonsGcpObservabilityResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsGcpObservabilityResourcesLimits, optional
+    requests : ValuesMcpAddonsGcpObservabilityResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsGcpObservabilityResourcesLimits
+    requests?: ValuesMcpAddonsGcpObservabilityResourcesRequests
+
+schema ValuesMcpAddonsGcpObservabilityResourcesLimits:
+    r"""
+    ValuesMcpAddonsGcpObservabilityResourcesLimits
+
+    Attributes
+    ----------
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    memory?: str
+
+schema ValuesMcpAddonsGcpObservabilityResourcesRequests:
+    r"""
+    ValuesMcpAddonsGcpObservabilityResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "100m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsGcpServiceAccount:
+    r"""
+    Kubernetes service account (for Workload Identity - currently not working with gcloud CLI)
+
+    Attributes
+    ----------
+    annotations : ValuesMcpAddonsGcpServiceAccountAnnotations, optional
+    create : bool, optional, default is True
+    name : str, optional, default is "gcp-mcp-sa"
+    """
+    [...str]: any
+    annotations?: ValuesMcpAddonsGcpServiceAccountAnnotations
+    create?: bool
+    name?: str
+
+schema ValuesMcpAddonsGcpServiceAccountAnnotations:
+    r"""
+    ValuesMcpAddonsGcpServiceAccountAnnotations
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsGcpServiceAccountKey:
+    r"""
+    Service account key authentication (recommended)
+
+    Attributes
+    ----------
+    secretName : str, optional, default is ""
+    """
+    [...str]: any
+    secretName?: str
+
+schema ValuesMcpAddonsGcpStorage:
+    r"""
+    Storage MCP - Cloud Storage operations
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    image : str, optional, default is "gcloud-storage-mcp:1.0.1"
+    port : int, optional, default is 8002
+    resources : ValuesMcpAddonsGcpStorageResources, optional
+    """
+    [...str]: any
+    enabled?: bool
+    image?: str
+    port?: int
+    resources?: ValuesMcpAddonsGcpStorageResources
+
+schema ValuesMcpAddonsGcpStorageResources:
+    r"""
+    ValuesMcpAddonsGcpStorageResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsGcpStorageResourcesLimits, optional
+    requests : ValuesMcpAddonsGcpStorageResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsGcpStorageResourcesLimits
+    requests?: ValuesMcpAddonsGcpStorageResourcesRequests
+
+schema ValuesMcpAddonsGcpStorageResourcesLimits:
+    r"""
+    ValuesMcpAddonsGcpStorageResourcesLimits
+
+    Attributes
+    ----------
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    memory?: str
+
+schema ValuesMcpAddonsGcpStorageResourcesRequests:
+    r"""
+    ValuesMcpAddonsGcpStorageResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "100m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsGcpWorkloadIdentity:
+    r"""
+    Workload Identity configuration (works for observability/storage MCPs, not gcloud)
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMcpAddonsGithub:
+    r"""
+    GitHub MCP Server Configuration
+    Provides access to GitHub repositories, pull requests, issues, and GitHub Actions
+
+    AUTHENTICATION (choose one):
+    Option 1 - PAT: Deploys a self-hosted MCP server using the standard github-mcp image
+      kubectl create secret generic github-mcp-token --from-literal=token=<YOUR_GITHUB_PAT> -n <NAMESPACE>
+    Option 2 - GitHub App: Deploys a self-hosted MCP server using the github-app-mcp image
+      which generates and auto-refreshes installation tokens from GitHub App credentials
+      kubectl create secret generic holmes-github-app --from-literal=GITHUB_APP_ID=... -n <NAMESPACE>
+
+    GITHUB ENTERPRISE:
+    Set config.host to your GitHub Enterprise hostname (e.g., "github.mycompany.com")
+
+    CUSTOM IMAGE (PAT only):
+    To build your own image, see: https://github.com/robusta-dev/holmes-mcp-integrations/tree/master/servers/github
+
+    Attributes
+    ----------
+    affinity : ValuesMcpAddonsGithubAffinity, optional
+    auth : ValuesMcpAddonsGithubAuth, optional
+        Authentication - choose ONE of the two methods below
+    config : ValuesMcpAddonsGithubConfig, optional
+    enabled : bool, optional, default is False
+    image : str, optional, default is "github-mcp:1.0.1"
+    imagePullPolicy : str, optional, default is "IfNotPresent"
+    llmInstructions : str, optional, default is ""
+        Custom LLM instructions (optional) - leave empty to use default
+    networkPolicy : ValuesMcpAddonsGithubNetworkPolicy, optional
+    nodeSelector : ValuesMcpAddonsGithubNodeSelector, optional
+    registry : str, optional, default is "us-central1-docker.pkg.dev/genuine-flight-317411/mcp"
+    resources : ValuesMcpAddonsGithubResources, optional
+    tolerations : [any], optional
+    """
+    [...str]: any
+    affinity?: ValuesMcpAddonsGithubAffinity
+    auth?: ValuesMcpAddonsGithubAuth
+    config?: ValuesMcpAddonsGithubConfig
+    enabled?: bool
+    image?: str
+    imagePullPolicy?: str
+    llmInstructions?: str
+    networkPolicy?: ValuesMcpAddonsGithubNetworkPolicy
+    nodeSelector?: ValuesMcpAddonsGithubNodeSelector
+    registry?: str
+    resources?: ValuesMcpAddonsGithubResources
+    tolerations?: [any]
+
+schema ValuesMcpAddonsGithubAffinity:
+    r"""
+    ValuesMcpAddonsGithubAffinity
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsGithubAuth:
+    r"""
+    Authentication - choose ONE of the two methods below
+
+    Attributes
+    ----------
+    githubApp : ValuesMcpAddonsGithubAuthGithubApp, optional
+        Option 2: GitHub App installation token
+        Deploys a self-hosted MCP server that generates and refreshes installation tokens
+        from GitHub App credentials. Uses a separate image with built-in token management.
+          kubectl create secret generic holmes-github-app \
+            --from-literal=GITHUB_APP_ID=<APP_ID> \
+            --from-literal=GITHUB_APP_INSTALLATION_ID=<INSTALLATION_ID> \
+            --from-file=GITHUB_APP_PRIVATE_KEY=/path/to/private-key.pem \
+            -n <NAMESPACE>
+    secretKey : str, optional, default is "token"
+    secretName : str, optional, default is ""
+        Option 1: Personal Access Token (PAT)
+        Create a secret: kubectl create secret generic github-mcp-token --from-literal=token=<PAT> -n <NAMESPACE>
+    """
+    [...str]: any
+    githubApp?: ValuesMcpAddonsGithubAuthGithubApp
+    secretKey?: str
+    secretName?: str
+
+schema ValuesMcpAddonsGithubAuthGithubApp:
+    r"""
+    Option 2: GitHub App installation token
+    Deploys a self-hosted MCP server that generates and refreshes installation tokens
+    from GitHub App credentials. Uses a separate image with built-in token management.
+      kubectl create secret generic holmes-github-app \
+        --from-literal=GITHUB_APP_ID=<APP_ID> \
+        --from-literal=GITHUB_APP_INSTALLATION_ID=<INSTALLATION_ID> \
+        --from-file=GITHUB_APP_PRIVATE_KEY=/path/to/private-key.pem \
+        -n <NAMESPACE>
+
+    Attributes
+    ----------
+    image : str, optional, default is "github-app-mcp:1.0.2"
+    registry : str, optional, default is "us-central1-docker.pkg.dev/genuine-flight-317411/mcp"
+    secretName : str, optional, default is ""
+    """
+    [...str]: any
+    image?: str
+    registry?: str
+    secretName?: str
+
+schema ValuesMcpAddonsGithubConfig:
+    r"""
+    ValuesMcpAddonsGithubConfig
+
+    Attributes
+    ----------
+    customCACert : ValuesMcpAddonsGithubConfigCustomCacert, optional
+        Custom CA certificate bundle for GitHub Enterprise with internal CA
+    host : str, optional, default is ""
+        GitHub Enterprise hostname (leave empty for github.com)
+        Example: "https://github.mycompany.com"
+    tools : str, optional, default is ""
+        Individual tools to enable (comma-separated, optional).
+        When set, restricts Holmes to EXACTLY this list of tools — takes precedence
+        over `toolsets` above. Leave empty (the default) to expose every tool from
+        the toolsets listed above.
+        Example: "get_file_contents,list_commits,list_workflow_runs"
+    toolsets : str, optional, default is "repos,issues,pull_requests,actions"
+        Toolsets to enable (comma-separated list of toolset names)
+        Available: repos, issues, pull_requests, actions, code_security, users, context, etc.
+        Default: repos, issues, pull_requests, actions (covers most investigation needs)
+        Ignored when `tools` below is set (tools takes precedence as a hard allowlist).
+    """
+    [...str]: any
+    customCACert?: ValuesMcpAddonsGithubConfigCustomCacert
+    host?: str
+    tools?: str
+    toolsets?: str
+
+schema ValuesMcpAddonsGithubConfigCustomCacert:
+    r"""
+    Custom CA certificate bundle for GitHub Enterprise with internal CA
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+    secretKey : str, optional, default is "ca.crt"
+    secretName : str, optional, default is "github-ca-cert"
+    """
+    [...str]: any
+    enabled?: bool
+    secretKey?: str
+    secretName?: str
+
+schema ValuesMcpAddonsGithubNetworkPolicy:
+    r"""
+    ValuesMcpAddonsGithubNetworkPolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMcpAddonsGithubNodeSelector:
+    r"""
+    ValuesMcpAddonsGithubNodeSelector
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsGithubResources:
+    r"""
+    ValuesMcpAddonsGithubResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsGithubResourcesLimits, optional
+    requests : ValuesMcpAddonsGithubResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsGithubResourcesLimits
+    requests?: ValuesMcpAddonsGithubResourcesRequests
+
+schema ValuesMcpAddonsGithubResourcesLimits:
+    r"""
+    ValuesMcpAddonsGithubResourcesLimits
+
+    Attributes
+    ----------
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    memory?: str
+
+schema ValuesMcpAddonsGithubResourcesRequests:
+    r"""
+    ValuesMcpAddonsGithubResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "100m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsGitlabMcp:
+    r"""
+    GitLab MCP Server Configuration
+    Provides access to GitLab projects, merge requests, issues, pipelines, and code.
+    Supports both gitlab.com (cloud) and self-hosted GitLab instances.
+
+    AUTHENTICATION:
+    Create a GitLab Personal Access Token with scopes: api, read_repository (and write_repository if you
+    want Holmes to create branches/MRs). Then store it in a Kubernetes secret:
+      kubectl create secret generic gitlab-mcp-token --from-literal=token=<YOUR_GITLAB_PAT> -n <NAMESPACE>
+
+    SELF-HOSTED GITLAB:
+    Set config.apiUrl to your instance API URL (e.g., "https://gitlab.mycompany.com/api/v4").
+    For self-signed certificates, mount a CA bundle via config.caCert.secretName (preferred)
+    or disable verification entirely with config.verifySsl: false (insecure).
+
+    Attributes
+    ----------
+    additionalEnvVars : [any], optional
+        Additional environment variables to inject into the gitlab-mcp container
+    affinity : ValuesMcpAddonsGitlabMcpAffinity, optional
+    auth : ValuesMcpAddonsGitlabMcpAuth, optional
+    config : ValuesMcpAddonsGitlabMcpConfig, optional
+    enabled : bool, optional, default is False
+    image : str, optional, default is "supercorp/supergateway:3.4.3"
+    imagePullPolicy : str, optional, default is "IfNotPresent"
+    llmInstructions : str, optional, default is ""
+        Custom LLM instructions (optional) - leave empty to use default
+    mcpGitlabVersion : str, optional, default is "2.1.11"
+        Pinned version of the
+    networkPolicy : ValuesMcpAddonsGitlabMcpNetworkPolicy, optional
+    nodeSelector : ValuesMcpAddonsGitlabMcpNodeSelector, optional
+    registry : str, optional, default is "docker.io"
+    resources : ValuesMcpAddonsGitlabMcpResources, optional
+    tolerations : [any], optional
+    """
+    [...str]: any
+    additionalEnvVars?: [any]
+    affinity?: ValuesMcpAddonsGitlabMcpAffinity
+    auth?: ValuesMcpAddonsGitlabMcpAuth
+    config?: ValuesMcpAddonsGitlabMcpConfig
+    enabled?: bool
+    image?: str
+    imagePullPolicy?: str
+    llmInstructions?: str
+    mcpGitlabVersion?: str
+    networkPolicy?: ValuesMcpAddonsGitlabMcpNetworkPolicy
+    nodeSelector?: ValuesMcpAddonsGitlabMcpNodeSelector
+    registry?: str
+    resources?: ValuesMcpAddonsGitlabMcpResources
+    tolerations?: [any]
+
+schema ValuesMcpAddonsGitlabMcpAffinity:
+    r"""
+    ValuesMcpAddonsGitlabMcpAffinity
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsGitlabMcpAuth:
+    r"""
+    ValuesMcpAddonsGitlabMcpAuth
+
+    Attributes
+    ----------
+    secretKey : str, optional, default is "token"
+    secretName : str, optional, default is ""
+        K8s secret holding the GitLab Personal Access Token.
+        kubectl create secret generic gitlab-mcp-token --from-literal=token=<PAT> -n <NAMESPACE>
+    """
+    [...str]: any
+    secretKey?: str
+    secretName?: str
+
+schema ValuesMcpAddonsGitlabMcpConfig:
+    r"""
+    ValuesMcpAddonsGitlabMcpConfig
+
+    Attributes
+    ----------
+    allowedProjectIds : str, optional, default is ""
+    apiUrl : str, optional, default is "https://gitlab.com/api/v4"
+        GitLab API URL — set to your self-hosted instance for on-prem GitLab.
+        Examples: "https://gitlab.com/api/v4", "https://gitlab.mycompany.com/api/v4"
+    caCert : ValuesMcpAddonsGitlabMcpConfigCaCert, optional
+    projectId : str, optional, default is ""
+        Scope the MCP server to specific projects (optional)
+    readOnly : bool, optional, default is False
+        When true, blocks all write operations (no MR/issue creation, no commits).
+    tools : str, optional, default is ""
+    toolsets : str, optional, default is ""
+        Tool exposure (optional). Mirrors the github addon pattern.
+        `toolsets` enables groups of tools; `tools` is a hard allowlist that takes precedence.
+    useMilestone : bool, optional, default is False
+    usePipeline : bool, optional, default is True
+    useWiki : bool, optional, default is False
+        Optional feature toggles for the
+    verifySsl : bool, optional, default is True
+        SSL/TLS for self-hosted GitLab
+        Preferred: mount a trusted CA bundle via the caCert block below.
+        Last resort: set verifySsl: false (disables ALL TLS verification — insecure).
+    """
+    [...str]: any
+    allowedProjectIds?: str
+    apiUrl?: str
+    caCert?: ValuesMcpAddonsGitlabMcpConfigCaCert
+    projectId?: str
+    readOnly?: bool
+    tools?: str
+    toolsets?: str
+    useMilestone?: bool
+    usePipeline?: bool
+    useWiki?: bool
+    verifySsl?: bool
+
+schema ValuesMcpAddonsGitlabMcpConfigCaCert:
+    r"""
+    ValuesMcpAddonsGitlabMcpConfigCaCert
+
+    Attributes
+    ----------
+    secretKey : str, optional, default is "ca.crt"
+    secretName : str, optional, default is ""
+    """
+    [...str]: any
+    secretKey?: str
+    secretName?: str
+
+schema ValuesMcpAddonsGitlabMcpNetworkPolicy:
+    r"""
+    ValuesMcpAddonsGitlabMcpNetworkPolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMcpAddonsGitlabMcpNodeSelector:
+    r"""
+    ValuesMcpAddonsGitlabMcpNodeSelector
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsGitlabMcpResources:
+    r"""
+    ValuesMcpAddonsGitlabMcpResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsGitlabMcpResourcesLimits, optional
+    requests : ValuesMcpAddonsGitlabMcpResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsGitlabMcpResourcesLimits
+    requests?: ValuesMcpAddonsGitlabMcpResourcesRequests
+
+schema ValuesMcpAddonsGitlabMcpResourcesLimits:
+    r"""
+    ValuesMcpAddonsGitlabMcpResourcesLimits
+
+    Attributes
+    ----------
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    memory?: str
+
+schema ValuesMcpAddonsGitlabMcpResourcesRequests:
+    r"""
+    ValuesMcpAddonsGitlabMcpResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "100m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsKubernetes:
+    r"""
+    Kubernetes MCP Server Configuration
+    Provides advanced Kubernetes cluster access via the containers/kubernetes-mcp-server
+    Uses in-cluster ServiceAccount by default. For external clusters, provide a kubeconfig secret.
+    Repository: https://github.com/containers/kubernetes-mcp-server
+
+    Attributes
+    ----------
+    affinity : ValuesMcpAddonsKubernetesAffinity, optional
+    config : ValuesMcpAddonsKubernetesConfig, optional
+    enabled : bool, optional, default is False
+    image : str, optional, default is "kubernetes-mcp-server:v0.0.61-oauth"
+    imagePullPolicy : str, optional, default is "IfNotPresent"
+    llmInstructions : str, optional, default is ""
+    networkPolicy : ValuesMcpAddonsKubernetesNetworkPolicy, optional
+    nodeSelector : ValuesMcpAddonsKubernetesNodeSelector, optional
+    registry : str, optional, default is "us-central1-docker.pkg.dev/genuine-flight-317411/mcp"
+    resources : ValuesMcpAddonsKubernetesResources, optional
+    serviceAccount : ValuesMcpAddonsKubernetesServiceAccount, optional
+    tolerations : [any], optional
+    """
+    [...str]: any
+    affinity?: ValuesMcpAddonsKubernetesAffinity
+    config?: ValuesMcpAddonsKubernetesConfig
+    enabled?: bool
+    image?: str
+    imagePullPolicy?: str
+    llmInstructions?: str
+    networkPolicy?: ValuesMcpAddonsKubernetesNetworkPolicy
+    nodeSelector?: ValuesMcpAddonsKubernetesNodeSelector
+    registry?: str
+    resources?: ValuesMcpAddonsKubernetesResources
+    serviceAccount?: ValuesMcpAddonsKubernetesServiceAccount
+    tolerations?: [any]
+
+schema ValuesMcpAddonsKubernetesAffinity:
+    r"""
+    ValuesMcpAddonsKubernetesAffinity
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsKubernetesConfig:
+    r"""
+    ValuesMcpAddonsKubernetesConfig
+
+    Attributes
+    ----------
+    configSecret : ValuesMcpAddonsKubernetesConfigConfigSecret, optional
+        Reference an externally-managed Secret containing config.toml. Use this
+        if you'd rather create the Secret out-of-band:
+          kubectl create secret generic k8s-mcp-config --from-file=config.toml=/path/to/config.toml -n <NAMESPACE>
+    disableDestructive : bool, optional, default is False
+        Disable destructive operations (delete/update) while allowing other writes
+    extraArgs : [any], optional
+        Extra CLI arguments to pass to the server
+    kubeconfig : ValuesMcpAddonsKubernetesConfigKubeconfig, optional
+        Kubeconfig secret for connecting to external clusters
+        Create a secret: kubectl create secret generic k8s-mcp-kubeconfig --from-file=kubeconfig=/path/to/kubeconfig -n <NAMESPACE>
+    logLevel : str, optional, default is ""
+        Log level (0-9, similar to kubectl verbosity)
+    oauth : ValuesMcpAddonsKubernetesConfigOauth, optional
+        OAuth settings for Holmes → k8s-mcp-server authentication.
+        Passed as-is into the Holmes mcp_servers oauth config.
+        Example for OpenShift OAuth (per-user RBAC):
+          oauth:
+            enabled: true
+            authorization_url: "https://oauth-openshift.apps.<cluster>/oauth/authorize"
+            token_url: "https://oauth-openshift.apps.<cluster>/oauth/token"
+            client_id: "mcp-openshift"
+            client_secret: "{{ env.MCP_OAUTH_CLIENT_SECRET }}"
+            callback_port: 10234
+            scopes: ["user:full"]
+    readOnly : bool, optional, default is True
+        Enable read-only mode (disables all write operations)
+    serverConfig : str, optional, default is ""
+        Inline TOML server config. The chart creates a Secret containing this
+        content and mounts it at /etc/kubernetes-mcp/config.toml. Use this for
+        OAuth/OIDC settings — the kubernetes-mcp-server only accepts those via
+        config.toml (no CLI flags or env vars exist for them).
+        For OAuth mode also set serviceAccount.createClusterRoleBinding=false.
+
+        Example (OpenShift OAuth, opaque-token passthrough):
+          serverConfig: |
+            require_oauth
+            accept_opaque_tokens = true
+            cluster_auth_mode = "passthrough"
+
+        Example (Microsoft Entra ID / Azure AD):
+          serverConfig: |
+            require_oauth
+            authorization_url = "https://login.microsoftonline.com/<TENANT_ID>/v2.0"
+            oauth_audience = "6dae42f8-4368-4678-94ff-3960e28e3630"
+            oauth_scopes = ["6dae42f8-4368-4678-94ff-3960e28e3630/.default", "openid", "profile"]
+            issuer_url = "https://sts.windows.net/<TENANT_ID>/"
+
+        Mutually exclusive with `configSecret.secretName` below.
+    toolsets : str, optional, default is ""
+        Comma-separated list of toolsets to enable
+        Available: config, core, helm, tekton, kubevirt, kiali, kcp
+        Default (empty): enables "config" and "core" toolsets
+    """
+    [...str]: any
+    configSecret?: ValuesMcpAddonsKubernetesConfigConfigSecret
+    disableDestructive?: bool
+    extraArgs?: [any]
+    kubeconfig?: ValuesMcpAddonsKubernetesConfigKubeconfig
+    logLevel?: str
+    oauth?: ValuesMcpAddonsKubernetesConfigOauth
+    readOnly?: bool
+    serverConfig?: str
+    toolsets?: str
+
+schema ValuesMcpAddonsKubernetesConfigConfigSecret:
+    r"""
+    Reference an externally-managed Secret containing config.toml. Use this
+    if you'd rather create the Secret out-of-band:
+      kubectl create secret generic k8s-mcp-config --from-file=config.toml=/path/to/config.toml -n <NAMESPACE>
+
+    Attributes
+    ----------
+    secretKey : str, optional, default is "config.toml"
+    secretName : str, optional, default is ""
+    """
+    [...str]: any
+    secretKey?: str
+    secretName?: str
+
+schema ValuesMcpAddonsKubernetesConfigKubeconfig:
+    r"""
+    Kubeconfig secret for connecting to external clusters
+    Create a secret: kubectl create secret generic k8s-mcp-kubeconfig --from-file=kubeconfig=/path/to/kubeconfig -n <NAMESPACE>
+
+    Attributes
+    ----------
+    secretKey : str, optional, default is "kubeconfig"
+    secretName : str, optional, default is ""
+    """
+    [...str]: any
+    secretKey?: str
+    secretName?: str
+
+schema ValuesMcpAddonsKubernetesConfigOauth:
+    r"""
+    OAuth settings for Holmes → k8s-mcp-server authentication.
+    Passed as-is into the Holmes mcp_servers oauth config.
+    Example for OpenShift OAuth (per-user RBAC):
+      oauth:
+        enabled: true
+        authorization_url: "https://oauth-openshift.apps.<cluster>/oauth/authorize"
+        token_url: "https://oauth-openshift.apps.<cluster>/oauth/token"
+        client_id: "mcp-openshift"
+        client_secret: "{{ env.MCP_OAUTH_CLIENT_SECRET }}"
+        callback_port: 10234
+        scopes: ["user:full"]
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsKubernetesNetworkPolicy:
+    r"""
+    ValuesMcpAddonsKubernetesNetworkPolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMcpAddonsKubernetesNodeSelector:
+    r"""
+    ValuesMcpAddonsKubernetesNodeSelector
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsKubernetesRemediation:
+    r"""
+    Kubernetes Remediation MCP Server Configuration
+    Provides safe kubectl command execution with security controls
+    WARNING: This addon can execute write operations. Configure allowedCommands carefully.
+
+    Attributes
+    ----------
+    affinity : ValuesMcpAddonsKubernetesRemediationAffinity, optional
+    approvalRequiredTools : [str], optional
+        Tools that require user confirmation before execution
+        Use ["*"] to require approval for all tools, or specify tool names
+    config : ValuesMcpAddonsKubernetesRemediationConfig, optional
+    enabled : bool, optional, default is False
+    image : str, optional, default is "kubernetes-remediation-mcp:1.0.0"
+    imagePullPolicy : str, optional, default is "IfNotPresent"
+    llmInstructions : str, optional, default is ""
+    networkPolicy : ValuesMcpAddonsKubernetesRemediationNetworkPolicy, optional
+    nodeSelector : ValuesMcpAddonsKubernetesRemediationNodeSelector, optional
+    registry : str, optional, default is "us-central1-docker.pkg.dev/genuine-flight-317411/mcp"
+    resources : ValuesMcpAddonsKubernetesRemediationResources, optional
+    restrictedTools : [str], optional
+        Tools that can only be called after a runbook invocation (prevents ad-hoc write operations)
+        Use ["*"] to restrict all tools, or specify tool names like ["kubectl", "run_image"]
+    serviceAccount : ValuesMcpAddonsKubernetesRemediationServiceAccount, optional
+    tolerations : [any], optional
+    """
+    [...str]: any
+    affinity?: ValuesMcpAddonsKubernetesRemediationAffinity
+    approvalRequiredTools?: [str]
+    config?: ValuesMcpAddonsKubernetesRemediationConfig
+    enabled?: bool
+    image?: str
+    imagePullPolicy?: str
+    llmInstructions?: str
+    networkPolicy?: ValuesMcpAddonsKubernetesRemediationNetworkPolicy
+    nodeSelector?: ValuesMcpAddonsKubernetesRemediationNodeSelector
+    registry?: str
+    resources?: ValuesMcpAddonsKubernetesRemediationResources
+    restrictedTools?: [str]
+    serviceAccount?: ValuesMcpAddonsKubernetesRemediationServiceAccount
+    tolerations?: [any]
+
+schema ValuesMcpAddonsKubernetesRemediationAffinity:
+    r"""
+    ValuesMcpAddonsKubernetesRemediationAffinity
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsKubernetesRemediationConfig:
+    r"""
+    ValuesMcpAddonsKubernetesRemediationConfig
+
+    Attributes
+    ----------
+    allowedCommands : str, optional, default is "edit,patch,delete,scale,rollout,cordon,uncordon,drain,taint,label,annotate"
+        Comma-separated list of allowed kubectl subcommands
+    allowedImages : str, optional, default is ""
+        Comma-separated list of allowed images for the run_image tool (leave empty to disable)
+    dangerousFlags : str, optional, default is "--kubeconfig,--context,--cluster,--user,--token,--as,--as-group,--as-uid"
+        Comma-separated list of blocked flags
+    logLevel : str, optional, default is "INFO"
+        Log level
+    timeout : str, optional, default is "60"
+        Command timeout in seconds
+    """
+    [...str]: any
+    allowedCommands?: str
+    allowedImages?: str
+    dangerousFlags?: str
+    logLevel?: str
+    timeout?: str
+
+schema ValuesMcpAddonsKubernetesRemediationNetworkPolicy:
+    r"""
+    ValuesMcpAddonsKubernetesRemediationNetworkPolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMcpAddonsKubernetesRemediationNodeSelector:
+    r"""
+    ValuesMcpAddonsKubernetesRemediationNodeSelector
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsKubernetesRemediationResources:
+    r"""
+    ValuesMcpAddonsKubernetesRemediationResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsKubernetesRemediationResourcesLimits, optional
+    requests : ValuesMcpAddonsKubernetesRemediationResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsKubernetesRemediationResourcesLimits
+    requests?: ValuesMcpAddonsKubernetesRemediationResourcesRequests
+
+schema ValuesMcpAddonsKubernetesRemediationResourcesLimits:
+    r"""
+    ValuesMcpAddonsKubernetesRemediationResourcesLimits
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "200m"
+    memory : str, optional, default is "128Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsKubernetesRemediationResourcesRequests:
+    r"""
+    ValuesMcpAddonsKubernetesRemediationResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "50m"
+    memory : str, optional, default is "64Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsKubernetesRemediationServiceAccount:
+    r"""
+    ValuesMcpAddonsKubernetesRemediationServiceAccount
+
+    Attributes
+    ----------
+    annotations : ValuesMcpAddonsKubernetesRemediationServiceAccountAnnotations, optional
+    clusterRole : str, optional, default is "cluster-admin"
+    create : bool, optional, default is True
+    name : str, optional, default is "k8s-remediation-mcp-sa"
+    """
+    [...str]: any
+    annotations?: ValuesMcpAddonsKubernetesRemediationServiceAccountAnnotations
+    clusterRole?: str
+    create?: bool
+    name?: str
+
+schema ValuesMcpAddonsKubernetesRemediationServiceAccountAnnotations:
+    r"""
+    ValuesMcpAddonsKubernetesRemediationServiceAccountAnnotations
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsKubernetesResources:
+    r"""
+    ValuesMcpAddonsKubernetesResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsKubernetesResourcesLimits, optional
+    requests : ValuesMcpAddonsKubernetesResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsKubernetesResourcesLimits
+    requests?: ValuesMcpAddonsKubernetesResourcesRequests
+
+schema ValuesMcpAddonsKubernetesResourcesLimits:
+    r"""
+    ValuesMcpAddonsKubernetesResourcesLimits
+
+    Attributes
+    ----------
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    memory?: str
+
+schema ValuesMcpAddonsKubernetesResourcesRequests:
+    r"""
+    ValuesMcpAddonsKubernetesResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "100m"
+    memory : str, optional, default is "128Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsKubernetesServiceAccount:
+    r"""
+    ValuesMcpAddonsKubernetesServiceAccount
+
+    Attributes
+    ----------
+    annotations : ValuesMcpAddonsKubernetesServiceAccountAnnotations, optional
+    clusterRole : str, optional, default is "view"
+        ClusterRole to bind to the ServiceAccount
+        Use "view" for read-only access or "cluster-admin" for full access
+    create : bool, optional, default is True
+    createClusterRoleBinding : bool, optional, default is True
+        Create a ClusterRoleBinding for the ServiceAccount
+        Set to false for OAuth mode (the OAuth token provides permissions instead)
+    name : str, optional, default is "k8s-mcp-sa"
+    """
+    [...str]: any
+    annotations?: ValuesMcpAddonsKubernetesServiceAccountAnnotations
+    clusterRole?: str
+    create?: bool
+    createClusterRoleBinding?: bool
+    name?: str
+
+schema ValuesMcpAddonsKubernetesServiceAccountAnnotations:
+    r"""
+    ValuesMcpAddonsKubernetesServiceAccountAnnotations
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsMariadb:
+    r"""
+    ValuesMcpAddonsMariadb
+
+    Attributes
+    ----------
+    affinity : ValuesMcpAddonsMariadbAffinity, optional
+    annotations : ValuesMcpAddonsMariadbAnnotations, optional
+    config : ValuesMcpAddonsMariadbConfig, optional
+    enabled : bool, optional, default is False
+    image : str, optional, default is "mariadb-http-mcp-minimal:1.0.6"
+    llmInstructions : str, optional, default is ""
+        Custom LLM instructions (optional). Leave empty to use default instructions
+    networkPolicy : ValuesMcpAddonsMariadbNetworkPolicy, optional
+    nodeSelector : ValuesMcpAddonsMariadbNodeSelector, optional
+    registry : str, optional, default is "us-central1-docker.pkg.dev/genuine-flight-317411/mcp"
+    resources : ValuesMcpAddonsMariadbResources, optional
+    tolerations : [any], optional
+    """
+    [...str]: any
+    affinity?: ValuesMcpAddonsMariadbAffinity
+    annotations?: ValuesMcpAddonsMariadbAnnotations
+    config?: ValuesMcpAddonsMariadbConfig
+    enabled?: bool
+    image?: str
+    llmInstructions?: str
+    networkPolicy?: ValuesMcpAddonsMariadbNetworkPolicy
+    nodeSelector?: ValuesMcpAddonsMariadbNodeSelector
+    registry?: str
+    resources?: ValuesMcpAddonsMariadbResources
+    tolerations?: [any]
+
+schema ValuesMcpAddonsMariadbAffinity:
+    r"""
+    ValuesMcpAddonsMariadbAffinity
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsMariadbAnnotations:
+    r"""
+    ValuesMcpAddonsMariadbAnnotations
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsMariadbConfig:
+    r"""
+    ValuesMcpAddonsMariadbConfig
+
+    Attributes
+    ----------
+    database : str, optional, default is ""
+    host : str, optional, default is ""
+    maxPoolSize : str, optional, default is "5"
+    namespace : str, optional, default is ""
+    password : str, optional, default is ""
+    port : str, optional, default is "3306"
+    readOnlyMode : bool, optional, default is True
+    useSSL : bool, optional, default is True
+    username : str, optional, default is ""
+    """
+    [...str]: any
+    database?: str
+    host?: str
+    maxPoolSize?: str
+    namespace?: str
+    password?: str
+    port?: str
+    readOnlyMode?: bool
+    useSSL?: bool
+    username?: str
+
+schema ValuesMcpAddonsMariadbNetworkPolicy:
+    r"""
+    ValuesMcpAddonsMariadbNetworkPolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMcpAddonsMariadbNodeSelector:
+    r"""
+    ValuesMcpAddonsMariadbNodeSelector
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsMariadbResources:
+    r"""
+    ValuesMcpAddonsMariadbResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsMariadbResourcesLimits, optional
+    requests : ValuesMcpAddonsMariadbResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsMariadbResourcesLimits
+    requests?: ValuesMcpAddonsMariadbResourcesRequests
+
+schema ValuesMcpAddonsMariadbResourcesLimits:
+    r"""
+    ValuesMcpAddonsMariadbResourcesLimits
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "500m"
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsMariadbResourcesRequests:
+    r"""
+    ValuesMcpAddonsMariadbResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "250m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsPrefect:
+    r"""
+    Prefect MCP Server Configuration
+    Provides access to Prefect workflow orchestration for monitoring and troubleshooting
+    Authentication: Create a Prefect Cloud API key (optional for self-hosted)
+      Then create a Kubernetes secret:
+      kubectl create secret generic prefect-mcp-token --from-literal=token=<YOUR_PREFECT_API_KEY> -n <NAMESPACE>
+
+    Attributes
+    ----------
+    affinity : ValuesMcpAddonsPrefectAffinity, optional
+    auth : ValuesMcpAddonsPrefectAuth, optional
+    config : ValuesMcpAddonsPrefectConfig, optional
+    enabled : bool, optional, default is False
+    image : str, optional, default is "prefect-mcp:1.0.0"
+    imagePullPolicy : str, optional, default is "IfNotPresent"
+    llmInstructions : str, optional, default is ""
+    networkPolicy : ValuesMcpAddonsPrefectNetworkPolicy, optional
+    nodeSelector : ValuesMcpAddonsPrefectNodeSelector, optional
+    registry : str, optional, default is "us-central1-docker.pkg.dev/genuine-flight-317411/mcp"
+    resources : ValuesMcpAddonsPrefectResources, optional
+    tolerations : [any], optional
+    """
+    [...str]: any
+    affinity?: ValuesMcpAddonsPrefectAffinity
+    auth?: ValuesMcpAddonsPrefectAuth
+    config?: ValuesMcpAddonsPrefectConfig
+    enabled?: bool
+    image?: str
+    imagePullPolicy?: str
+    llmInstructions?: str
+    networkPolicy?: ValuesMcpAddonsPrefectNetworkPolicy
+    nodeSelector?: ValuesMcpAddonsPrefectNodeSelector
+    registry?: str
+    resources?: ValuesMcpAddonsPrefectResources
+    tolerations?: [any]
+
+schema ValuesMcpAddonsPrefectAffinity:
+    r"""
+    ValuesMcpAddonsPrefectAffinity
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsPrefectAuth:
+    r"""
+    ValuesMcpAddonsPrefectAuth
+
+    Attributes
+    ----------
+    secretKey : str, optional, default is "token"
+    secretName : str, optional, default is ""
+    """
+    [...str]: any
+    secretKey?: str
+    secretName?: str
+
+schema ValuesMcpAddonsPrefectConfig:
+    r"""
+    ValuesMcpAddonsPrefectConfig
+
+    Attributes
+    ----------
+    apiUrl : str, optional, default is ""
+        Prefect API URL (required)
+        Cloud: https://api.prefect.cloud/api/accounts/<ACCOUNT_ID>/workspaces/<WORKSPACE_ID>
+        Self-hosted: http://prefect-server:4200/api
+    """
+    [...str]: any
+    apiUrl?: str
+
+schema ValuesMcpAddonsPrefectNetworkPolicy:
+    r"""
+    ValuesMcpAddonsPrefectNetworkPolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMcpAddonsPrefectNodeSelector:
+    r"""
+    ValuesMcpAddonsPrefectNodeSelector
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsPrefectResources:
+    r"""
+    ValuesMcpAddonsPrefectResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsPrefectResourcesLimits, optional
+    requests : ValuesMcpAddonsPrefectResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsPrefectResourcesLimits
+    requests?: ValuesMcpAddonsPrefectResourcesRequests
+
+schema ValuesMcpAddonsPrefectResourcesLimits:
+    r"""
+    ValuesMcpAddonsPrefectResourcesLimits
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "500m"
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsPrefectResourcesRequests:
+    r"""
+    ValuesMcpAddonsPrefectResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "100m"
+    memory : str, optional, default is "128Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsSentry:
+    r"""
+    Sentry MCP Server Configuration
+    Provides access to Sentry error tracking and monitoring
+    Authentication: Create a Sentry Auth Token with appropriate scopes
+      Then create a Kubernetes secret:
+      kubectl create secret generic sentry-mcp-token --from-literal=token=<YOUR_SENTRY_AUTH_TOKEN> -n <NAMESPACE>
+
+    Attributes
+    ----------
+    affinity : ValuesMcpAddonsSentryAffinity, optional
+    auth : ValuesMcpAddonsSentryAuth, optional
+    config : ValuesMcpAddonsSentryConfig, optional
+    enabled : bool, optional, default is False
+    image : str, optional, default is "sentry-mcp:1.0.1"
+    imagePullPolicy : str, optional, default is "IfNotPresent"
+    llmInstructions : str, optional, default is ""
+    networkPolicy : ValuesMcpAddonsSentryNetworkPolicy, optional
+    nodeSelector : ValuesMcpAddonsSentryNodeSelector, optional
+    registry : str, optional, default is "us-central1-docker.pkg.dev/genuine-flight-317411/mcp"
+    resources : ValuesMcpAddonsSentryResources, optional
+    tolerations : [any], optional
+    """
+    [...str]: any
+    affinity?: ValuesMcpAddonsSentryAffinity
+    auth?: ValuesMcpAddonsSentryAuth
+    config?: ValuesMcpAddonsSentryConfig
+    enabled?: bool
+    image?: str
+    imagePullPolicy?: str
+    llmInstructions?: str
+    networkPolicy?: ValuesMcpAddonsSentryNetworkPolicy
+    nodeSelector?: ValuesMcpAddonsSentryNodeSelector
+    registry?: str
+    resources?: ValuesMcpAddonsSentryResources
+    tolerations?: [any]
+
+schema ValuesMcpAddonsSentryAffinity:
+    r"""
+    ValuesMcpAddonsSentryAffinity
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsSentryAuth:
+    r"""
+    ValuesMcpAddonsSentryAuth
+
+    Attributes
+    ----------
+    secretKey : str, optional, default is "token"
+    secretName : str, optional, default is ""
+    """
+    [...str]: any
+    secretKey?: str
+    secretName?: str
+
+schema ValuesMcpAddonsSentryConfig:
+    r"""
+    ValuesMcpAddonsSentryConfig
+
+    Attributes
+    ----------
+    host : str, optional, default is ""
+        Sentry host URL (leave empty for sentry.io)
+        Set to your self-hosted Sentry URL (e.g., "https://sentry.mycompany.com")
+    """
+    [...str]: any
+    host?: str
+
+schema ValuesMcpAddonsSentryNetworkPolicy:
+    r"""
+    ValuesMcpAddonsSentryNetworkPolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMcpAddonsSentryNodeSelector:
+    r"""
+    ValuesMcpAddonsSentryNodeSelector
+    """
+    [...str]: any
+
+schema ValuesMcpAddonsSentryResources:
+    r"""
+    ValuesMcpAddonsSentryResources
+
+    Attributes
+    ----------
+    limits : ValuesMcpAddonsSentryResourcesLimits, optional
+    requests : ValuesMcpAddonsSentryResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesMcpAddonsSentryResourcesLimits
+    requests?: ValuesMcpAddonsSentryResourcesRequests
+
+schema ValuesMcpAddonsSentryResourcesLimits:
+    r"""
+    ValuesMcpAddonsSentryResourcesLimits
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "500m"
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesMcpAddonsSentryResourcesRequests:
+    r"""
+    ValuesMcpAddonsSentryResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "100m"
+    memory : str, optional, default is "128Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
 
 schema ValuesMcpServers:
     r"""
@@ -8332,6 +10381,100 @@ schema ValuesOpenshift:
     privilegedSccPriority?: any
     sccName?: any
     sccPriority?: any
+
+schema ValuesOperator:
+    r"""
+    Holmes Operator Configuration
+
+    Attributes
+    ----------
+    additionalEnvVars : [any], optional
+        Additional configuration
+    affinity : ValuesOperatorAffinity, optional
+    cleanupCompletedChecks : bool, optional, default is False
+    completedCheckTTLHours : int, optional, default is 24
+    enabled : bool, optional, default is False
+    holmesApiTimeout : int, optional, default is 300
+    holmesApiUrl : str, optional, default is ""
+        Holmes API connection
+    image : str, optional, default is "holmes-operator:0.30.0"
+        Container image
+    imagePullPolicy : str, optional, default is "IfNotPresent"
+    logLevel : str, optional, default is "INFO"
+        Logging
+    maxHistoryItems : int, optional, default is 10
+        History management
+    nodeSelector : ValuesOperatorNodeSelector, optional
+    registry : str, optional, default is "robustadev"
+    resources : ValuesOperatorResources, optional
+        Resources
+    tolerations : [any], optional
+    """
+    [...str]: any
+    additionalEnvVars?: [any]
+    affinity?: ValuesOperatorAffinity
+    cleanupCompletedChecks?: bool
+    completedCheckTTLHours?: int
+    enabled?: bool
+    holmesApiTimeout?: int
+    holmesApiUrl?: str
+    image?: str
+    imagePullPolicy?: str
+    logLevel?: str
+    maxHistoryItems?: int
+    nodeSelector?: ValuesOperatorNodeSelector
+    registry?: str
+    resources?: ValuesOperatorResources
+    tolerations?: [any]
+
+schema ValuesOperatorAffinity:
+    r"""
+    ValuesOperatorAffinity
+    """
+    [...str]: any
+
+schema ValuesOperatorNodeSelector:
+    r"""
+    ValuesOperatorNodeSelector
+    """
+    [...str]: any
+
+schema ValuesOperatorResources:
+    r"""
+    Resources
+
+    Attributes
+    ----------
+    limits : ValuesOperatorResourcesLimits, optional
+    requests : ValuesOperatorResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesOperatorResourcesLimits
+    requests?: ValuesOperatorResourcesRequests
+
+schema ValuesOperatorResourcesLimits:
+    r"""
+    ValuesOperatorResourcesLimits
+
+    Attributes
+    ----------
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    memory?: str
+
+schema ValuesOperatorResourcesRequests:
+    r"""
+    ValuesOperatorResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "100m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
 
 schema ValuesPersistence:
     r"""
@@ -8700,6 +10843,13 @@ schema ValuesPodLabels:
     """
     [...str]: any
     customLableA?: str
+
+schema ValuesPodSecurityContext:
+    r"""
+    Pod-level security context
+    Applied to spec.securityContext in the Deployment
+    """
+    [...str]: any
 
 schema ValuesPodSecurityPolicy:
     r"""
@@ -13279,16 +15429,19 @@ schema ValuesRunner:
     additional_env_vars : [any], optional
     annotations : ValuesRunnerAnnotations, optional
     certificate : str, optional, default is ""
+    crdPermissions : ValuesRunnerCrdPermissions, optional
     createServiceAccount : bool, optional, default is True
     customCRD : [any], optional
     customClusterRoleRules : [any], optional
     customServiceAccount : str, optional, default is ""
+    dnsConfig : ValuesRunnerDnsConfig, optional
+        Enabled custom DNS configuration for runner
     extraVolumeMounts : [any], optional
     extraVolumes : [any], optional
     hardenedFs : bool, optional, default is False
         Enable hardened filesystem security (read-only root filesystem with writable volume mounts)
     image : any, optional, default is "~"
-    imageName : str, optional, default is "robusta-runner:0.29.2"
+    imageName : str, optional, default is "robusta-runner:0.39.0"
     imagePullPolicy : str, optional, default is "IfNotPresent"
     imagePullSecrets : [any], optional
     log_level : str, optional, default is "INFO"
@@ -13298,7 +15451,7 @@ schema ValuesRunner:
     revisionHistoryLimit : int, optional, default is 10
     securityContext : ValuesRunnerSecurityContext, optional
     sendAdditionalTelemetry : bool, optional, default is False
-    sentry_dsn : str, optional, default is "https://4f1a66f025c60830fec303a094dcdf94@o1120648.ingest.sentry.io/6156573"
+    sentry_dsn : str, optional, default is ""
     service : ValuesRunnerService, optional
         k8s service config
     serviceMonitor : ValuesRunnerServiceMonitor, optional
@@ -13310,10 +15463,12 @@ schema ValuesRunner:
     additional_env_vars?: [any]
     annotations?: ValuesRunnerAnnotations
     certificate?: str
+    crdPermissions?: ValuesRunnerCrdPermissions
     createServiceAccount?: bool
     customCRD?: [any]
     customClusterRoleRules?: [any]
     customServiceAccount?: str
+    dnsConfig?: ValuesRunnerDnsConfig
     extraVolumeMounts?: [any]
     extraVolumes?: [any]
     hardenedFs?: bool
@@ -13339,6 +15494,52 @@ schema ValuesRunnerAnnotations:
     ValuesRunnerAnnotations
     """
     [...str]: any
+
+schema ValuesRunnerCrdPermissions:
+    r"""
+    ValuesRunnerCrdPermissions
+
+    Attributes
+    ----------
+    argo : bool, optional, default is True
+    crossplane : bool, optional, default is True
+    externalSecrets : bool, optional, default is True
+    flux : bool, optional, default is True
+    gatewayApi : bool, optional, default is True
+    istio : bool, optional, default is True
+    kafka : bool, optional, default is True
+    keda : bool, optional, default is True
+    velero : bool, optional, default is True
+    """
+    [...str]: any
+    argo?: bool
+    crossplane?: bool
+    externalSecrets?: bool
+    flux?: bool
+    gatewayApi?: bool
+    istio?: bool
+    kafka?: bool
+    keda?: bool
+    velero?: bool
+
+schema ValuesRunnerDnsConfig:
+    r"""
+    Enabled custom DNS configuration for runner
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+    nameservers : [any], optional
+    options : [any], optional
+    policy : str, optional, default is "ClusterFirst"
+    searches : [any], optional
+    """
+    [...str]: any
+    enabled?: bool
+    nameservers?: [any]
+    options?: [any]
+    policy?: str
+    searches?: [any]
 
 schema ValuesRunnerResources:
     r"""
@@ -14646,6 +16847,20 @@ schema ValuesStartupProbeHttpGet:
     httpHeaders?: [any]
     scheme?: str
 
+schema ValuesStrategy:
+    r"""
+    Deployment rollout strategy.
+    Leave unset (empty) to use the Kubernetes default (RollingUpdate with maxSurge=25%, maxUnavailable=25%).
+    Set maxSurge: 0 if you need zero extra capacity during upgrades (e.g. tight resource quotas).
+    Example:
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 0
+          maxUnavailable: 1
+    """
+    [...str]: any
+
 schema ValuesTerminationMessageParams:
     r"""
     Enable or disable container termination message settings
@@ -15629,18 +17844,59 @@ schema ValuesToolsets:
 
     Attributes
     ----------
+    bash : ValuesToolsetsBash, optional
+    connectivity_check : ValuesToolsetsConnectivityCheck, optional
     internet : ValuesToolsetsInternet, optional
     "kubernetes/core" : ValuesToolsetsKubernetescore, optional
     "kubernetes/logs" : ValuesToolsetsKuberneteslogs, optional
     "prometheus/metrics" : ValuesToolsetsPrometheusmetrics, optional
     robusta : ValuesToolsetsRobusta, optional
+    skills : ValuesToolsetsSkills, optional
     """
     [...str]: any
+    bash?: ValuesToolsetsBash
+    connectivity_check?: ValuesToolsetsConnectivityCheck
     internet?: ValuesToolsetsInternet
     "kubernetes/core"?: ValuesToolsetsKubernetescore
     "kubernetes/logs"?: ValuesToolsetsKuberneteslogs
     "prometheus/metrics"?: ValuesToolsetsPrometheusmetrics
     robusta?: ValuesToolsetsRobusta
+    skills?: ValuesToolsetsSkills
+
+schema ValuesToolsetsBash:
+    r"""
+    ValuesToolsetsBash
+
+    Attributes
+    ----------
+    config : ValuesToolsetsBashConfig, optional
+    enabled : bool, optional, default is True
+    """
+    [...str]: any
+    config?: ValuesToolsetsBashConfig
+    enabled?: bool
+
+schema ValuesToolsetsBashConfig:
+    r"""
+    ValuesToolsetsBashConfig
+
+    Attributes
+    ----------
+    builtin_allowlist : str, optional, default is "extended"
+    """
+    [...str]: any
+    builtin_allowlist?: str
+
+schema ValuesToolsetsConnectivityCheck:
+    r"""
+    ValuesToolsetsConnectivityCheck
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    """
+    [...str]: any
+    enabled?: bool
 
 schema ValuesToolsetsInternet:
     r"""
@@ -15689,6 +17945,17 @@ schema ValuesToolsetsPrometheusmetrics:
 schema ValuesToolsetsRobusta:
     r"""
     ValuesToolsetsRobusta
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesToolsetsSkills:
+    r"""
+    ValuesToolsetsSkills
 
     Attributes
     ----------
