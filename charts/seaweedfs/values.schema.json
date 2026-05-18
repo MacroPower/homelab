@@ -469,6 +469,13 @@
           "title": "secret",
           "type": "object"
         },
+        "secretExtraEnvironmentVars": {
+          "additionalProperties": true,
+          "description": "secret env variables (e.g. for injecting OIDC client secret from a Kubernetes Secret)",
+          "required": [],
+          "title": "secretExtraEnvironmentVars",
+          "type": "object"
+        },
         "service": {
           "additionalProperties": true,
           "properties": {
@@ -2347,6 +2354,7 @@
             },
             "securityConfig": {
               "additionalProperties": true,
+              "description": "filerWrite: true mounts security.toml on filer + admin without needing\nenableSecurity (mTLS); required for the Admin UI Users tab.",
               "properties": {
                 "jwtSigning": {
                   "additionalProperties": true,
@@ -4735,8 +4743,8 @@
           "type": "string"
         },
         "jobType": {
-          "default": "vacuum,volume_balance,erasure_coding",
-          "description": "Worker job types - comma-separated list\nAvailable: vacuum, volume_balance, erasure_coding",
+          "default": "all",
+          "description": "Worker job types - categories or comma-separated list of names/aliases\nCategories: all, default, heavy\n  default: vacuum, volume_balance, ec_balance, admin_script\n  heavy: erasure_coding, iceberg_maintenance\n  all: every registered job type\nExamples: \"all\", \"default\", \"heavy\", \"default,iceberg\" (default+iceberg), \"vacuum,volume_balance\"\nRefer: https://github.com/seaweedfs/seaweedfs/wiki/Worker",
           "required": [],
           "title": "jobType",
           "type": "string"

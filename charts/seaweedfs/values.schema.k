@@ -145,6 +145,8 @@ schema ValuesAdmin:
     restartPolicy : any, optional, default is "null"
     secret : ValuesAdminSecret, optional
         Admin authentication
+    secretExtraEnvironmentVars : ValuesAdminSecretExtraEnvironmentVars, optional
+        secret env variables (e.g. for injecting OIDC client secret from a Kubernetes Secret)
     service : ValuesAdminService, optional
     serviceAccountName : str, optional, default is ""
     serviceMonitor : ValuesAdminServiceMonitor, optional
@@ -192,6 +194,7 @@ schema ValuesAdmin:
     resources?: ValuesAdminResources
     restartPolicy?: any
     secret?: ValuesAdminSecret
+    secretExtraEnvironmentVars?: ValuesAdminSecretExtraEnvironmentVars
     service?: ValuesAdminService
     serviceAccountName?: str
     serviceMonitor?: ValuesAdminServiceMonitor
@@ -419,6 +422,12 @@ schema ValuesAdminSecret:
     existingSecret?: str
     pwKey?: str
     userKey?: str
+
+schema ValuesAdminSecretExtraEnvironmentVars:
+    r"""
+    secret env variables (e.g. for injecting OIDC client secret from a Kubernetes Secret)
+    """
+    [...str]: any
 
 schema ValuesAdminService:
     r"""
@@ -1799,6 +1808,8 @@ schema ValuesGlobalSeaweedfs:
         Z number of replica in other servers in the same rack
     restartPolicy : str, optional, default is "Always"
     securityConfig : ValuesGlobalSeaweedfsSecurityConfig, optional
+        filerWrite: true mounts security.toml on filer + admin without needing
+        enableSecurity (mTLS); required for the Admin UI Users tab.
     serviceAccountAnnotations : ValuesGlobalSeaweedfsServiceAccountAnnotations, optional
     serviceAccountName : str, optional, default is "seaweedfs"
         we will use this serviceAccountName for all ClusterRoles/ClusterRoleBindings
@@ -1890,7 +1901,8 @@ schema ValuesGlobalSeaweedfsMonitoringAdditionalLabels:
 
 schema ValuesGlobalSeaweedfsSecurityConfig:
     r"""
-    ValuesGlobalSeaweedfsSecurityConfig
+    filerWrite: true mounts security.toml on filer + admin without needing
+    enableSecurity (mTLS); required for the Admin UI Users tab.
 
     Attributes
     ----------
@@ -3625,9 +3637,14 @@ schema ValuesWorker:
     extraVolumes : str, optional, default is ""
     imageOverride : any, optional, default is "null"
     initContainers : str, optional, default is ""
-    jobType : str, optional, default is "vacuum,volume_balance,erasure_coding"
-        Worker job types - comma-separated list
-        Available: vacuum, volume_balance, erasure_coding
+    jobType : str, optional, default is "all"
+        Worker job types - categories or comma-separated list of names/aliases
+        Categories: all, default, heavy
+          default: vacuum, volume_balance, ec_balance, admin_script
+          heavy: erasure_coding, iceberg_maintenance
+          all: every registered job type
+        Examples: "all", "default", "heavy", "default,iceberg" (default+iceberg), "vacuum,volume_balance"
+        Refer: https://github.com/seaweedfs/seaweedfs/wiki/Worker
     livenessProbe : ValuesWorkerLivenessProbe, optional
         Health checks for worker pods
         Workers expose /health (liveness) and /ready (readiness) endpoints on the metricsPort
