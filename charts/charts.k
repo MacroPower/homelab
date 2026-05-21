@@ -365,4 +365,24 @@ charts: helm.Charts = {
         targetRevision = "4.6.2"
         schemaGenerator = "AUTO"
     }
+    dagger_helm: {
+        chart = "dagger-helm"
+        repoURL = "oci://registry.dagger.io/dagger-helm"
+        targetRevision = "0.20.6"
+        schemaGenerator = "AUTO"
+    }
+    gha_runner_scale_set_controller: {
+        chart = "gha-runner-scale-set-controller"
+        repoURL = "oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller"
+        targetRevision = "0.14.1"
+        schemaGenerator = "AUTO"
+        crdGenerator = "TEMPLATE"
+    }
+    gha_runner_scale_set: {
+        chart = "gha-runner-scale-set"
+        repoURL = "oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set"
+        targetRevision = "0.14.1"
+        schemaGenerator = "NONE"
+        crdGenerator = "NONE"
+    }
 }

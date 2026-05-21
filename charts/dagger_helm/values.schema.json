@@ -1,0 +1,478 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "engine": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "## Alternative: Configure Dagger Engine using TOML format.\n  Configuration using json should be the default choice, and will take\n  precedence over toml if both are provided, however you can use toml for\n  any settings that are not supported in the json format.\n  https://github.com/moby/buildkit/blob/5997099827e676c4b6ce5774c98ade2483e0afe7/cmd/buildkitd/config/config.go\n\nconfig: |\n  debug = true\n  insecure-entitlements = [\"security.insecure\"]\n  [registry.\"registry:5000\"]\n    http = true\n  [registry.\"docker.io\"]\n    mirrors = [\"mirror.gcr.io\"]\n  [log]\n    format = \"json\"",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "args": {
+          "description": "## Customize Dagger Engine start args",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "args",
+          "type": "array"
+        },
+        "env": {
+          "description": "## Customize Dagger Engine environment variables",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "env",
+          "type": "array"
+        },
+        "existingServiceAccount": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "existingServiceAccount",
+          "type": "object"
+        },
+        "hostPath": {
+          "additionalProperties": true,
+          "description": "## HostPath Volume configuration\n",
+          "properties": {
+            "dataVolume": {
+              "additionalProperties": true,
+              "description": "Use hostPath for data volume",
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "description": "When disabled, PVC will be used if configured above",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "dataVolume",
+              "type": "object"
+            },
+            "runVolume": {
+              "additionalProperties": true,
+              "description": "Use hostPath for run volume",
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "description": "When disabled, no run volume will be mounted",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "runVolume",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "hostPath",
+          "type": "object"
+        },
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "## Set a ref if you want to use a custom Dagger image\n  NOTE: you will need to ensure that a compatible dagger CLI is embedded in the image, otherwise readiness and liveness probes will fail\n  In the example below, we are configuring the latest, unreleased bleeding edge version\n\nref: registry.dagger.io/engine:main",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "imagePullSecrets": {
+          "description": "## Image pull secret to use for registry authentication.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "imagePullSecrets",
+          "type": "array"
+        },
+        "kind": {
+          "default": "DaemonSet",
+          "description": "## `DaemonSet` guarantees a single Engine per K8s node (default behaviour)\n\nSet to `StatefulSet` for running multiple Engines per K8s node",
+          "required": [],
+          "title": "kind",
+          "type": "string"
+        },
+        "labels": {
+          "additionalProperties": true,
+          "required": [],
+          "title": "labels",
+          "type": "object"
+        },
+        "lifecycle": {
+          "additionalProperties": true,
+          "description": "## Configure lifecycle hooks for the Dagger Engine\n",
+          "properties": {
+            "preStop": {
+              "default": "",
+              "description": "PreStop hook executed before container termination",
+              "required": [],
+              "title": "preStop",
+              "type": "null"
+            }
+          },
+          "required": [],
+          "title": "lifecycle",
+          "type": "object"
+        },
+        "livenessProbeSettings": {
+          "additionalProperties": true,
+          "properties": {
+            "exec": {
+              "additionalProperties": true,
+              "properties": {
+                "command": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "command",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "exec",
+              "type": "object"
+            },
+            "failureThreshold": {
+              "default": 20,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "default": 5,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 30,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "terminationGracePeriodSeconds": {
+              "default": 30,
+              "required": [],
+              "title": "terminationGracePeriodSeconds",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 29,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "livenessProbeSettings",
+          "type": "object"
+        },
+        "newServiceAccount": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "annotations",
+              "type": "array"
+            },
+            "create": {
+              "default": false,
+              "description": "name: \"dagger-helm\"",
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "newServiceAccount",
+          "type": "object"
+        },
+        "priorityClassName": {
+          "default": "",
+          "description": "## Set priorityClassName to avoid eviction",
+          "required": [],
+          "title": "priorityClassName",
+          "type": "string"
+        },
+        "readinessProbeSettings": {
+          "additionalProperties": true,
+          "properties": {
+            "exec": {
+              "additionalProperties": true,
+              "properties": {
+                "command": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "command",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "exec",
+              "type": "object"
+            },
+            "failureThreshold": {
+              "default": 10,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "default": 5,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 15,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 14,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "readinessProbeSettings",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "properties": {
+            "limits": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": true,
+              "description": "limits:\n   cpu: \"1\"\n   memory: 1Gi",
+              "required": [],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "runtimeClassName": {
+          "default": "",
+          "description": "## Set runtimeClassName to use a custom runtimeClass",
+          "required": [],
+          "title": "runtimeClassName",
+          "type": "string"
+        },
+        "shareProcessNamespace": {
+          "default": false,
+          "description": "## Share process namespace with sidecars for monitoring and observability\nEnables sidecar containers to see processes in the main engine container\nUseful for monitoring tools like Datadog, security scanners, and log collectors",
+          "required": [],
+          "title": "shareProcessNamespace",
+          "type": "boolean"
+        },
+        "statefulSet": {
+          "additionalProperties": true,
+          "description": "## StatefulSet specific configuration\n",
+          "properties": {
+            "persistentVolumeClaim": {
+              "additionalProperties": true,
+              "description": "Use PersistentVolumeClaim for data volume",
+              "properties": {
+                "accessModes": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "accessModes",
+                  "type": "array"
+                },
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "resources": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "requests": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "storage": {
+                          "default": "10Gi",
+                          "required": [],
+                          "title": "storage",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "title": "requests",
+                      "type": "object"
+                    }
+                  },
+                  "required": [],
+                  "title": "resources",
+                  "type": "object"
+                },
+                "storageClassName": {
+                  "default": "",
+                  "description": "PVC specifications",
+                  "required": [],
+                  "title": "storageClassName",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "persistentVolumeClaim",
+              "type": "object"
+            },
+            "persistentVolumeClaimRetentionPolicy": {
+              "additionalProperties": true,
+              "description": "PVC retention policy (applies to all PVCs)\nOnly available in Kubernetes 1.23+",
+              "properties": {
+                "whenDeleted": {
+                  "default": "Retain",
+                  "description": "Options: Delete, Retain",
+                  "required": [],
+                  "title": "whenDeleted",
+                  "type": "string"
+                },
+                "whenScaled": {
+                  "default": "Retain",
+                  "description": "Options: Delete, Retain",
+                  "required": [],
+                  "title": "whenScaled",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "persistentVolumeClaimRetentionPolicy",
+              "type": "object"
+            },
+            "podManagementPolicy": {
+              "default": "OrderedReady",
+              "description": "Controls how pods are created during initial scale up,\nwhen replacing pods, and when scaling down.\nOptions: OrderedReady, Parallel (default: OrderedReady)",
+              "required": [],
+              "title": "podManagementPolicy",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "statefulSet",
+          "type": "object"
+        },
+        "terminationGracePeriodSeconds": {
+          "default": 300,
+          "description": "## The Engine may need to finish operations in flight, or sync its state to a remote destination.\n  We give it ample time by setting this value to 5 mins by default.\n  You may want to adjust this to fit your workloads so that the Engine stops quicker.",
+          "required": [],
+          "title": "terminationGracePeriodSeconds",
+          "type": "integer"
+        },
+        "volumeMounts": {
+          "description": "## Additional volumes to mount in the Dagger Engine container\n\nAdditional volume mounts for the container",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "volumeMounts",
+          "type": "array"
+        },
+        "volumes": {
+          "description": "Additional volumes for the pod",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "volumes",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "engine",
+      "type": "object"
+    },
+    "fullnameOverride": {
+      "default": "",
+      "required": [],
+      "title": "fullnameOverride",
+      "type": "string"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "magicache": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "url": {
+          "default": "https://api.dagger.cloud/magicache",
+          "required": [],
+          "title": "url",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "magicache",
+      "type": "object"
+    },
+    "nameOverride": {
+      "default": "",
+      "required": [],
+      "title": "nameOverride",
+      "type": "string"
+    }
+  },
+  "required": [],
+  "type": "object"
+}

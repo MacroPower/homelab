@@ -1,0 +1,21 @@
+githubConfigUrl: https://github.com/MacroPower/homelab
+githubConfigSecret: github-runner-credentials
+runnerScaleSetName: dagger
+minRunners: 0
+maxRunners: 4
+controllerServiceAccount:
+  namespace: ci-actions-runner-controller
+  name: gha-rs-controller
+template:
+  spec:
+    serviceAccountName: github-runner
+    nodeSelector:
+      openebs.io/engine: mayastor
+    containers:
+      - name: runner
+        image: ghcr.io/actions/actions-runner:latest
+        command:
+          - /home/runner/run.sh
+        env:
+          - name: _EXPERIMENTAL_DAGGER_RUNNER_HOST
+            value: tcp://dagger-engine.ci-dagger-engine.svc.cluster.local:8989

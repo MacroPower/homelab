@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=../../../../charts/gha_runner_scale_set_controller/values.schema.json
+
+fullnameOverride: gha-rs-controller
+replicaCount: 1
+serviceAccount:
+  create: true
+  name: gha-rs-controller
+flags:
+  logLevel: info
+  logFormat: json

@@ -1,0 +1,239 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "affinity": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "affinity",
+      "type": "object"
+    },
+    "env": {
+      "default": "",
+      "required": [],
+      "title": "env",
+      "type": "null"
+    },
+    "flags": {
+      "additionalProperties": true,
+      "description": "# If `metrics:` object is not provided, or commented out, the following flags\n# will be applied the controller-manager and listener pods with empty values:\n# `--metrics-addr`, `--listener-metrics-addr`, `--listener-metrics-endpoint`.\n# This will disable metrics.\n#\n# To enable metrics, uncomment the following lines.\nmetrics:\n  controllerManagerAddr: \":8080\"\n  listenerAddr: \":8080\"\n  listenerEndpoint: \"/metrics\"",
+      "properties": {
+        "logFormat": {
+          "default": "text",
+          "description": "# Log format can be set with one of the following values: \"text\", \"json\"\n# Defaults to \"text\"",
+          "required": [],
+          "title": "logFormat",
+          "type": "string"
+        },
+        "logLevel": {
+          "default": "debug",
+          "description": "# Log level can be set here with one of the following values: \"debug\", \"info\", \"warn\", \"error\".\n# Defaults to \"debug\".",
+          "required": [],
+          "title": "logLevel",
+          "type": "string"
+        },
+        "runnerMaxConcurrentReconciles": {
+          "default": 2,
+          "description": "# The maximum number of concurrent reconciles which can be run by the EphemeralRunner controller.\nIncrease this value to improve the throughput of the controller.\nIt may also increase the load on the API server and the external service (e.g. GitHub API).",
+          "required": [],
+          "title": "runnerMaxConcurrentReconciles",
+          "type": "integer"
+        },
+        "updateStrategy": {
+          "default": "immediate",
+          "description": "# Defines how the controller should handle upgrades while having running jobs.\n#\n# The strategies available are:\n# - \"immediate\": (default) The controller will immediately apply the change causing the\n#   recreation of the listener and ephemeral runner set. This can lead to an\n#   overprovisioning of runners, if there are pending / running jobs. This should not\n#   be a problem at a small scale, but it could lead to a significant increase of\n#   resources if you have a lot of jobs running concurrently.\n#\n# - \"eventual\": The controller will remove the listener and ephemeral runner set\n#   immediately, but will not recreate them (to apply changes) until all\n#   pending / running jobs have completed.\n#   This can lead to a longer time to apply the change but it will ensure\n#   that you don't have any overprovisioning of runners.",
+          "required": [],
+          "title": "updateStrategy",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "flags",
+      "type": "object"
+    },
+    "fullnameOverride": {
+      "default": "",
+      "required": [],
+      "title": "fullnameOverride",
+      "type": "string"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "image": {
+      "additionalProperties": true,
+      "description": "Set the following to dummy values.\nThis is only useful in CI",
+      "properties": {
+        "pullPolicy": {
+          "default": "IfNotPresent",
+          "required": [],
+          "title": "pullPolicy",
+          "type": "string"
+        },
+        "repository": {
+          "default": "ghcr.io/actions/gha-runner-scale-set-controller",
+          "required": [],
+          "title": "repository",
+          "type": "string"
+        },
+        "tag": {
+          "default": "",
+          "description": "Overrides the image tag whose default is the chart appVersion.",
+          "required": [],
+          "title": "tag",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "image",
+      "type": "object"
+    },
+    "imagePullSecrets": {
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "imagePullSecrets",
+      "type": "array"
+    },
+    "labels": {
+      "additionalProperties": true,
+      "description": "Default values for gha-runner-scale-set-controller.\nThis is a YAML-formatted file.\nDeclare variables to be passed into your templates.",
+      "required": [],
+      "title": "labels",
+      "type": "object"
+    },
+    "nameOverride": {
+      "default": "",
+      "required": [],
+      "title": "nameOverride",
+      "type": "string"
+    },
+    "namespaceOverride": {
+      "default": "",
+      "description": "Overrides the default `.Release.Namespace` for all resources in this chart.",
+      "required": [],
+      "title": "namespaceOverride",
+      "type": "string"
+    },
+    "nodeSelector": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "nodeSelector",
+      "type": "object"
+    },
+    "podAnnotations": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podAnnotations",
+      "type": "object"
+    },
+    "podLabels": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podLabels",
+      "type": "object"
+    },
+    "podSecurityContext": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "podSecurityContext",
+      "type": "object"
+    },
+    "priorityClassName": {
+      "default": "",
+      "description": "Leverage a PriorityClass to ensure your pods survive resource shortages\nref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/\nPriorityClass: system-cluster-critical",
+      "required": [],
+      "title": "priorityClassName",
+      "type": "string"
+    },
+    "replicaCount": {
+      "default": 1,
+      "description": "leaderElection will be enabled when replicaCount\u003e1,\nSo, only one replica will in charge of reconciliation at a given time\nleaderElectionId will be set to {{ define gha-runner-scale-set-controller.fullname }}.",
+      "required": [],
+      "title": "replicaCount",
+      "type": "integer"
+    },
+    "resources": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "resources",
+      "type": "object"
+    },
+    "securityContext": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "securityContext",
+      "type": "object"
+    },
+    "serviceAccount": {
+      "additionalProperties": true,
+      "description": "# Define environment variables for the controller pod\n - name: \"ENV_VAR_NAME_1\"\n   value: \"ENV_VAR_VALUE_1\"\n - name: \"ENV_VAR_NAME_2\"\n   valueFrom:\n     secretKeyRef:\n       key: ENV_VAR_NAME_2\n       name: secret-name\n       optional: true",
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations to add to the service account",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "create": {
+          "default": true,
+          "description": "Specifies whether a service account should be created for running the controller pod",
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "name": {
+          "default": "",
+          "description": "The name of the service account to use.\nIf not set and create is true, a name is generated using the fullname template\nYou can not use the default service account for this.",
+          "required": [],
+          "title": "name",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "serviceAccount",
+      "type": "object"
+    },
+    "tolerations": {
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "tolerations",
+      "type": "array"
+    },
+    "topologySpreadConstraints": {
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "topologySpreadConstraints",
+      "type": "array"
+    },
+    "volumeMounts": {
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "volumeMounts",
+      "type": "array"
+    },
+    "volumes": {
+      "description": "Mount volumes in the container.",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "volumes",
+      "type": "array"
+    }
+  },
+  "required": [],
+  "type": "object"
+}

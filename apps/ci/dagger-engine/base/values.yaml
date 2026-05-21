@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=../../../../charts/dagger_helm/values.schema.json
+
+engine:
+  kind: DaemonSet
+  nodeSelector:
+    openebs.io/engine: mayastor
+  hostPath:
+    dataVolume:
+      enabled: false
+    runVolume:
+      enabled: false
+  args:
+    - --addr
+    - tcp://0.0.0.0:8989
+  containerPorts:
+    - name: dagger
+      containerPort: 8989
+      protocol: TCP
+  volumeMounts:
+    - name: data
+      mountPath: /var/lib/dagger
+  volumes:
+    - name: data
+      ephemeral:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: openebs-hostpath
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 50Gi
+  resources:
+    requests:
+      cpu: "2"
+      memory: 4Gi
+    limits:
+      cpu: "4"
+      memory: 8Gi
