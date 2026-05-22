@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "gha-runner-scale-set"
     repoURL : str, required, default is "oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set"
-    targetRevision : str, optional, default is "0.14.1"
+    targetRevision : str, optional, default is "0.14.2"
     """
     values?: Values | any
     chart: str = "gha-runner-scale-set"
     repoURL: str = "oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set"
-    targetRevision?: str = "0.14.1"
+    targetRevision?: str = "0.14.2"
 
