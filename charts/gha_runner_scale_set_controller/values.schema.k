@@ -12,16 +12,6 @@ schema Values:
     affinity : ValuesAffinity, optional
     env : any, optional, default is ""
     flags : ValuesFlags, optional
-        # If `metrics:` object is not provided, or commented out, the following flags
-        # will be applied the controller-manager and listener pods with empty values:
-        # `--metrics-addr`, `--listener-metrics-addr`, `--listener-metrics-endpoint`.
-        # This will disable metrics.
-        #
-        # To enable metrics, uncomment the following lines.
-        metrics:
-          controllerManagerAddr: ":8080"
-          listenerAddr: ":8080"
-          listenerEndpoint: "/metrics"
     fullnameOverride : str, optional, default is ""
     global : ValuesGlobal, optional
         Global values are values that can be accessed from any chart or subchart by exactly the same name.
@@ -40,6 +30,8 @@ schema Values:
     podAnnotations : ValuesPodAnnotations, optional
     podLabels : ValuesPodLabels, optional
     podSecurityContext : ValuesPodSecurityContext, optional
+    pprof : ValuesPprof, optional
+        # To enable pprof, uncomment the addr field below.
     priorityClassName : str, optional, default is ""
         Leverage a PriorityClass to ensure your pods survive resource shortages
         ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
@@ -81,6 +73,7 @@ schema Values:
     podAnnotations?: ValuesPodAnnotations
     podLabels?: ValuesPodLabels
     podSecurityContext?: ValuesPodSecurityContext
+    pprof?: ValuesPprof
     priorityClassName?: str
     replicaCount?: int
     resources?: ValuesResources
@@ -99,16 +92,7 @@ schema ValuesAffinity:
 
 schema ValuesFlags:
     r"""
-    # If `metrics:` object is not provided, or commented out, the following flags
-    # will be applied the controller-manager and listener pods with empty values:
-    # `--metrics-addr`, `--listener-metrics-addr`, `--listener-metrics-endpoint`.
-    # This will disable metrics.
-    #
-    # To enable metrics, uncomment the following lines.
-    metrics:
-      controllerManagerAddr: ":8080"
-      listenerAddr: ":8080"
-      listenerEndpoint: "/metrics"
+    ValuesFlags
 
     Attributes
     ----------
@@ -196,6 +180,12 @@ schema ValuesPodLabels:
 schema ValuesPodSecurityContext:
     r"""
     ValuesPodSecurityContext
+    """
+    [...str]: any
+
+schema ValuesPprof:
+    r"""
+    # To enable pprof, uncomment the addr field below.
     """
     [...str]: any
 
