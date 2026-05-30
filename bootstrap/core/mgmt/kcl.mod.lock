@@ -3,9 +3,16 @@
     name = "argo"
     full_name = "argo_0.1.0"
     version = "0.1.0"
+    reg = "ghcr.io"
+    repo = "kcl-lang/argo"
+    oci_tag = "0.1.0"
   [dependencies.argo_cd]
     name = "argo_cd"
     full_name = "argo_cd_base_0.1.0"
+    version = "0.1.0"
+  [dependencies.argo_shared]
+    name = "argo_shared"
+    full_name = "argo_shared_0.1.0"
     version = "0.1.0"
   [dependencies.argo_tenant]
     name = "argo_tenant"
@@ -87,6 +94,9 @@
     name = "kube"
     full_name = "kube_0.1.0"
     version = "0.1.0"
+    reg = "ghcr.io"
+    repo = "kcl-lang/kube"
+    oci_tag = "0.1.0"
   [dependencies.kube_csr_approver]
     name = "kube_csr_approver"
     full_name = "kube_csr_approver_mgmt_0.1.0"
@@ -94,6 +104,10 @@
   [dependencies.kube_csr_approver_base]
     name = "kube_csr_approver_base"
     full_name = "kube_csr_approver_base_0.1.0"
+    version = "0.1.0"
+  [dependencies.kube_shared]
+    name = "kube_shared"
+    full_name = "kube_shared_0.1.0"
     version = "0.1.0"
   [dependencies.kube_tenant]
     name = "kube_tenant"

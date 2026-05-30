@@ -17,21 +17,40 @@ vars:
     --port-forward-namespace="{{.ARGO_NS}}"
     --plaintext
     {{- end }}
-  DOPPLER_PROJECT: argo-cd
-  DOPPLER_CONFIG: home
-  DOPPLER_CMD: doppler run -p {{.DOPPLER_PROJECT}} -c {{.DOPPLER_CONFIG}}
-
 includes:
   helm: "../helm/Taskfile.yaml"
+  # Shared kcl:bootstrap for the day-0 apply; internal to keep it out of `task -l`.
+  kcl:
+    taskfile: "../kcl/Taskfile.yaml"
+    internal: true
 
 tasks:
   bootstrap:
-    desc: Bootstrap ArgoCD
-    prompt: "Apply ArgoCD bootstrap using the current context?"
+    desc: Render and apply day-0 Argo CD bootstrap for a cluster, then wait for rollout
+    summary: |
+      Args:
+        CLUSTER_NAME: Cluster to bootstrap (required), e.g. mgmt.
+
+      Applies bootstrap/core/<CLUSTER_NAME> -- the same kcl:bootstrap the live
+      talos bring-up and the local tald harness use -- against the CURRENT kube
+      context, then waits for the Argo CD controllers. Supply DOPPLER_TOKEN and
+      DOPPLER_ARGO_CD_TOKEN (e.g. wrap the invocation in `doppler run`) so the
+      bootstrap doppler-credentials Secrets render with real tokens.
+    prompt: "Apply day-0 bootstrap for '{{.CLUSTER_NAME}}' to the current kube context?"
+    requires:
+      vars: [CLUSTER_NAME]
     cmds:
-      - |-
-        {{.DOPPLER_CMD}} -- \
-          bash -c 'cd konfig/bootstrap && kcl run' | kubectl apply -f -
+      - task: kcl:bootstrap
+        vars: { CLUSTER_NAME: "{{.CLUSTER_NAME}}" }
+      # bootstrap/core/* installs Argo CD into the argo-cd namespace (fixed by the
+      # konfig _argo_cd_namespace), independent of this file's ARGO_NS (the CLI's
+      # namespace for day-2 ops).
+      - kubectl -n argo-cd rollout status deploy/argo-cd-server --timeout=300s
+      # The application-controller (a StatefulSet) syncs the `bootstrap`
+      # Application to render appsets/ into the tenants ApplicationSet, so wait
+      # for it too before declaring bootstrap done.
+      - kubectl -n argo-cd rollout status statefulset/argo-cd-application-controller --timeout=300s
+      - kubectl -n argo-cd rollout status deploy/argo-cd-applicationset-controller --timeout=300s
 
   login:
     desc: Login to ArgoCD

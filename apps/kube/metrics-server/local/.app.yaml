@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=../../../../konfig/models/frontend/patch.schema.json
+
+syncPolicy:
+  automated:
+    selfHeal: true

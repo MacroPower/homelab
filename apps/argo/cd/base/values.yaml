@@ -14,11 +14,17 @@ configs:
   cm:
     application.resourceTrackingMethod: annotation
 
+    # Cilium emits these per-pod/per-identity objects on every cluster that runs
+    # the datapath (including the local test cluster), so excluding them from
+    # Argo's resource cache belongs here in base rather than per-overlay. Keep
+    # this list in sync with what the datapath actually produces.
     resource.exclusions: |
       - apiGroups:
           - cilium.io
         kinds:
+          - CiliumEndpoint
           - CiliumIdentity
+          - PodInfo
         clusters:
           - "*"
 

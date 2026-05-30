@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=../../../../charts/openebs/values.schema.json
+
+# Minimal OpenEBS for the Talos-in-Docker test cluster. Storage engines (lvm,
+# zfs, mayastor) are all disabled in base; localpv-provisioner ships
+# unconditionally and already serves openebs-hostpath from a host directory.
+# This overlay only makes that class the cluster default.
+#
+# hostpathClass.basePath defaults to /var/openebs/local, which Talos mounts
+# read-write (unlike /opt), so the provisioner needs no host-path patching.
+localpv-provisioner:
+  hostpathClass:
+    enabled: true
+    isDefaultClass: true

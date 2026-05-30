@@ -63,6 +63,9 @@ spec.json
 .task
 .env
 
+# Local Talos-in-Docker test harness state (kubeconfig, talosconfig, cluster state).
+.cache/
+
 # Python
 env/
 venv/

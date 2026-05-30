@@ -46,11 +46,66 @@ tasks:
       - kcl chart update
 
   bootstrap:
-    desc: Bootstrap a cluster
+    desc: Render and apply the day-0 bootstrap for a live cluster (bootstrap/core/<CLUSTER_NAME>)
+    summary: |
+      The canonical day-0 apply: renders bootstrap/core/<CLUSTER_NAME> (Argo CD,
+      Cilium, the CSR approver, the cluster Secret, and -- on the hub -- the
+      tenants ApplicationSet) and server-side-applies it, retrying while the Argo
+      CRDs in the bundle establish. tald and the live talos/argocd bootstrap all
+      funnel through the same bootstrap-render + apply-retry, so a local cluster
+      and a real one come up through one code path.
+
+      The render reads DOPPLER_TOKEN and DOPPLER_ARGO_CD_TOKEN from the
+      environment for the bootstrap doppler-credentials Secrets; supply them
+      (e.g. `doppler run -- task kcl:bootstrap CLUSTER_NAME=mgmt`) for any cluster
+      whose secret stores are real. On tald they are stubbed.
+    requires:
+      vars: [CLUSTER_NAME]
     vars:
-      F: '{{.F | default "base"}}'
-    dir: "{{.ROOT_DIR}}/bootstrap/core/{{.F}}"
-    dotenv:
-      - .env
+      OUT: "{{.ROOT_DIR}}/.cache/render/bootstrap-{{.CLUSTER_NAME}}.yaml"
+      ARGS: '{{.ARGS | default ""}}'
+      # Passed through to apply-retry (which defaults it to plain `kubectl`). tald
+      # sets its hermetic `kubectl --kubeconfig .cache/...` so the apply targets the
+      # test cluster, letting tald reuse this one canonical day-0 task.
+      KUBECTL_BIN: '{{.KUBECTL_BIN | default ""}}'
     cmds:
-      - kcl run
+      - task: bootstrap-render
+        vars: { CLUSTER_NAME: "{{.CLUSTER_NAME}}", OUT: "{{.OUT}}", ARGS: "{{.ARGS}}" }
+      - task: apply-retry
+        vars: { OUT: "{{.OUT}}", KUBECTL_BIN: "{{.KUBECTL_BIN}}" }
+
+  bootstrap-render:
+    desc: Render bootstrap/core/<CLUSTER_NAME> to OUT (no apply)
+    # OUT must be an ABSOLUTE path: this task cd's into the package dir, so a
+    # relative OUT would resolve under bootstrap/core/<CLUSTER_NAME>.
+    requires:
+      vars: [CLUSTER_NAME, OUT]
+    vars:
+      ARGS: '{{.ARGS | default ""}}'
+    # cd into the package (the kclipper helm plugin resolves chart paths from the
+    # package root) and capture stdout only -- kcl writes diagnostics to stderr,
+    # so the manifest stream stays clean for apply. KCL_RUN_FLAGS matches the CMP.
+    dir: "{{.ROOT_DIR}}/bootstrap/core/{{.CLUSTER_NAME}}"
+    cmds:
+      - cmd: mkdir -p "{{.OUT | dir}}"
+        silent: true
+      - kcl run {{.KCL_RUN_FLAGS}} {{.ARGS}} > "{{.OUT}}"
+      - test -s "{{.OUT}}"
+
+  apply-retry:
+    internal: true
+    requires:
+      vars: [OUT]
+    vars:
+      # A distinct name (not KUBECTL) on purpose: go-task merges every included
+      # taskfile's top-level vars into one global scope, so tald's hermetic
+      # `KUBECTL` would otherwise leak in here and aim a LIVE apply at the .cache
+      # kubeconfig. tald passes KUBECTL_BIN to override.
+      KUBECTL_BIN: '{{.KUBECTL_BIN | default "kubectl"}}'
+      TRIES: '{{.TRIES | default "8"}}'
+      DELAY: '{{.DELAY | default "8"}}'
+    # A bootstrap bundle carries CRDs plus the CRs (AppProject/ApplicationSet)
+    # that use them, so the first server-side apply creates the CRDs and fails on
+    # those CRs; retry the whole apply until the CRDs establish and it goes clean.
+    cmds:
+      - 'for i in $(seq 1 {{.TRIES}}); do {{.KUBECTL_BIN}} apply --server-side --force-conflicts -f "{{.OUT}}" && exit 0; echo "bootstrap apply attempt $i/{{.TRIES}} failed (CRDs may still be establishing); retrying in {{.DELAY}}s" >&2; sleep {{.DELAY}}; done; echo "bootstrap apply did not converge after {{.TRIES}} attempts" >&2; exit 1'

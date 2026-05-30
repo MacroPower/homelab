@@ -5,10 +5,10 @@ import k8s.api.core.v1 as corev1
 
 import argo_cd
 import bootstrap
-import charts.argo_cd.api.v1alpha1 as argov1alpha1
 import cilium_system
+import konfig.argocd
 import konfig.models.frontend.secret
-import konfig.models.utils
+import konfig.models.metadata as kmd
 import kube_csr_approver
 
 _cluster_name = "mgmt"
@@ -62,41 +62,7 @@ app = bootstrap.app | {
         }
     }
 
-    extraResources.bootstrapApp = argov1alpha1.Application {
-        metadata = utils.AppMetadataBuilder({
-            name = "bootstrap"
-            namespace = _argo_cd_namespace
-        }, utils.ArgoCDOptions {
-            compare.ServerSideDiff = True
-            compare.IncludeMutationWebhook = True
-            finalize = False
-        })
-        spec = {
-            project = "default"
-            source = {
-                repoURL = "https://github.com/MacroPower/homelab"
-                targetRevision = "main"
-                path = "appsets"
-                directory.include = "{*.yaml}"
-            }
-            destination = {
-                name = _cluster_name
-                namespace = _argo_cd_namespace
-            }
-            syncPolicy = {
-                automated = {
-                    selfHeal = True
-                }
-                syncOptions = ["ServerSideApply=true"]
-                retry = {
-                    limit = 5
-                    backoff = {
-                        duration = "15s"
-                        factor = 2
-                        maxDuration = "5m"
-                    }
-                }
-            }
-        }
-    }
+    # Day-0 GitOps seam (see konfig.argocd.bootstrapApp); `kmd.context` defaults
+    # to this hub (env=mgmt, GitHub repo/main).
+    extraResources.bootstrapApp = argocd.bootstrapApp(kmd.context)
 }

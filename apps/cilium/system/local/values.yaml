@@ -1,0 +1,44 @@
+# yaml-language-server: $schema=../../../../charts/cilium/values.schema.json
+
+# Docker-safe overrides over apps/cilium/system/base. The base targets
+# bare-metal Talos (netkit, BPF masquerade, host firewall, BGP); none of those
+# survive nested Docker. kubeProxyReplacement and the rest of the datapath
+# config are inherited from base unchanged.
+
+cluster:
+  name: local
+  id: 1
+
+# veth instead of netkit: netkit needs a very recent kernel + privileges the
+# nested docker node does not reliably expose.
+bpf:
+  datapathMode: veth
+  # iptables masquerade: BPF masquerade needs features the nested datapath may lack.
+  masquerade: false
+
+# Host firewall + bandwidth manager hook the host netdevs / qdiscs in ways
+# that fail inside Docker.
+hostFirewall:
+  enabled: false
+bandwidthManager:
+  enabled: false
+
+# The docker provisioner network is IPv4-only.
+ipv6:
+  enabled: false
+
+# No BGP peer and no routable LoadBalancer range in Docker.
+bgpControlPlane:
+  enabled: false
+ingressController:
+  enabled: false
+
+operator:
+  # Single replica: the base runs two with anti-affinity, which strands a
+  # Pending pod on a one-node cluster.
+  replicas: 1
+hubble:
+  relay:
+    enabled: false
+  ui:
+    enabled: false

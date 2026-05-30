@@ -1,0 +1,4 @@
+# yaml-language-server: $schema=../../../../charts/metrics_server/values.schema.json
+
+# Single node: one replica is enough, the base runs two.
+replicas: 1

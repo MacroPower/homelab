@@ -1,0 +1,191 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "crds": {
+      "additionalProperties": true,
+      "description": "# Settings for CRDs\n#",
+      "properties": {
+        "alertmanagerconfigs": {
+          "additionalProperties": true,
+          "description": "# alertmanagerconfigs configures the AlertManagerConfig CRD",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "# enabled defines if the CRD should be installed",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "alertmanagerconfigs",
+          "type": "object"
+        },
+        "alertmanagers": {
+          "additionalProperties": true,
+          "description": "# alertmanagers configures the AlertManager CRD",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "# enabled defines if the CRD should be installed",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "alertmanagers",
+          "type": "object"
+        },
+        "annotations": {
+          "additionalProperties": true,
+          "description": "# annotations add additional annotations to all CRDs",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "podmonitors": {
+          "additionalProperties": true,
+          "description": "# podmonitors configures the PodMonitor CRD",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "# enabled defines if the CRD should be installed",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "podmonitors",
+          "type": "object"
+        },
+        "probes": {
+          "additionalProperties": true,
+          "description": "# probes configures the Probe CRD",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "# enabled defines if the CRD should be installed",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "probes",
+          "type": "object"
+        },
+        "prometheusagents": {
+          "additionalProperties": true,
+          "description": "# prometheusagents configures the PrometheusAgent CRD",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "# enabled defines if the CRD should be installed",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "prometheusagents",
+          "type": "object"
+        },
+        "prometheuses": {
+          "additionalProperties": true,
+          "description": "# prometheuses configures the Prometheus CRD",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "# enabled defines if the CRD should be installed",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "prometheuses",
+          "type": "object"
+        },
+        "prometheusrules": {
+          "additionalProperties": true,
+          "description": "# prometheusrules configures the PrometheusRule CRD",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "# enabled defines if the CRD should be installed",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "prometheusrules",
+          "type": "object"
+        },
+        "scrapeconfigs": {
+          "additionalProperties": true,
+          "description": "# prometheusrules configures the PrometheusRule CRD",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "# enabled defines if the CRD should be installed",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "scrapeconfigs",
+          "type": "object"
+        },
+        "servicemonitors": {
+          "additionalProperties": true,
+          "description": "# servicemonitors configures the ServiceMonitor CRD",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "# enabled defines if the CRD should be installed",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "servicemonitors",
+          "type": "object"
+        },
+        "thanosrulers": {
+          "additionalProperties": true,
+          "description": "# thanosrulers configures the ThanosRuler CRD",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "# enabled defines if the CRD should be installed",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "thanosrulers",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "crds",
+      "type": "object"
+    },
+    "global": {
+      "additionalProperties": true,
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    }
+  },
+  "required": [],
+  "type": "object"
+}

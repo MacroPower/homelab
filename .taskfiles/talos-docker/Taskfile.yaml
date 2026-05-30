@@ -2,80 +2,797 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
+# Local end-to-end test harness: a Talos-in-Docker cluster running Argo CD,
+# made as close to the real clusters as nested Docker allows (cni=none + the
+# real Cilium datapath, kube-proxy replaced, the stock Argo CD + kclipper CMP).
+# Argo CD reconciles your *working tree* (served by an in-cluster git mirror),
+# so you can sync and debug app changes locally before they ever hit GitHub.
+#
+# Quickstart:
+#   task tald:all      # cluster + Cilium + git mirror + Argo CD + stubs
+#   task tald:push     # after editing apps, re-sync your working tree
+#   task tald:status   # cluster + app health
+#   task tald:down     # tear everything down
+#
+# The whole flow is expressed as native Task tasks -- no shell scripts. The
+# user-facing tasks (all/up/cilium/git/bootstrap/push/render/status/down) chain
+# small, single-purpose internal tasks; the readiness polling that Task cannot
+# express declaratively is funnelled through one `wait-for` helper. The day-0
+# bootstrap render + apply go through the SAME canonical kcl:bootstrap task the
+# live clusters use, so a local cluster and a real one come up through one code
+# path -- differing only in the mirror -D and the repo-local kubeconfig (passed
+# to kcl:bootstrap as ARGS and KUBECTL_BIN).
+#
+# Requires the rootful Docker daemon (Talos-in-Docker writes host sysctls and
+# /dev/kmsg, which rootless forbids) reachable via sudo, plus talosctl, kubectl
+# and kclipper (`kcl`) from the devshell.
+
+includes:
+  # Shared kcl:bootstrap for the day-0 render+apply; go-task resolves
+  # cross-taskfile calls only via includes. internal: keeps the duplicated kcl:*
+  # entries out of `task -l`.
+  kcl:
+    taskfile: ../kcl/Taskfile.yaml
+    internal: true
+
 vars:
-  CLUSTER_NAME: '{{.CLUSTER_NAME | default "homelab-test"}}'
-  WORKERS: '{{.WORKERS | default "1"}}'
-  CPUS: '{{.CPUS | default "2"}}'
-  MEMORY: '{{.MEMORY | default "2048"}}'
-  # Talos-in-Docker requires rootful Docker (containers write host
-  # sysctls and /dev/kmsg; rootless forbids this even under --privileged).
-  # Inlined on every call to override any DOCKER_HOST in the user shell.
-  DOCKER_HOST: unix:///run/docker.sock
+  # tald's Docker cluster name. Deliberately NOT named CLUSTER_NAME: go-task
+  # merges every taskfile's top-level vars into one global scope, so a
+  # CLUSTER_NAME default here would leak into the live bootstrap tasks
+  # (talos/argocd/kcl :bootstrap) and silently satisfy their
+  # `requires: [CLUSTER_NAME]` with "homelab-local". Keeping it tald-private lets
+  # those guards actually catch a forgotten CLUSTER_NAME. Override with
+  # TALD_CLUSTER=... for a second local cluster.
+  TALD_CLUSTER: '{{.TALD_CLUSTER | default "homelab-local"}}'
+  WORKERS: '{{.WORKERS | default "0"}}'
+  CPUS: '{{.CPUS | default "4"}}'
+  MEMORY: '{{.MEMORY | default "6144"}}'
+  NODE_IP: '{{.NODE_IP | default "10.5.0.2"}}'
+  SUBNET: '{{.SUBNET | default "10.5.0.0/24"}}'
+  REVISION: '{{.REVISION | default "local"}}'
+  # The live cluster whose pinned Talos/Kubernetes versions the test node tracks.
+  # cluster-create reads talosVersion/kubernetesVersion from this cluster's
+  # talconfig and pins the node to them (see that task), so the node runs the
+  # SAME versions a real cluster does instead of talosctl's built-in defaults
+  # (which drift: this talosctl defaults to Talos v1.12.0 / k8s 1.35.0, while the
+  # live clusters run v1.11.x / v1.34.1). Default `main`, the newest live Talos;
+  # set TALD_TALOS_REF=mgmt (or override TALOS_VERSION/KUBERNETES_VERSION) for a
+  # one-off against a different cluster.
+  TALD_TALOS_REF: '{{.TALD_TALOS_REF | default "main"}}'
+  # In-cluster git mirror the local Argo CD reconciles (a hostNetwork pod on the
+  # node IP; see bootstrap/hack/git-mirror). repoURL/revision are injected into
+  # the bootstrap render and baked into the CMP by the apps/argo/cd/local overlay.
+  # MIRROR_REF (the served mirror branch) follows REVISION (the tracked revision)
+  # by default, so overriding REVISION moves both together -- Argo then tracks
+  # exactly the branch the mirror serves, instead of a revision the mirror lacks.
+  # Override MIRROR_REF alone only to push the snapshot to a differently-named
+  # mirror branch.
+  MIRROR_PORT: '{{.MIRROR_PORT | default "9418"}}'
+  MIRROR_REF: '{{.MIRROR_REF | default .REVISION}}'
+  MIRROR_URL: 'git://{{.NODE_IP}}:{{.MIRROR_PORT}}/homelab.git'
+
+  STATE_DIR: "{{.ROOT_DIR}}/.cache"
+  TALOS_STATE: "{{.ROOT_DIR}}/.cache/talos"
+  RENDER_DIR: "{{.ROOT_DIR}}/.cache/render"
+  CREATE_LOG: "{{.ROOT_DIR}}/.cache/cluster-create.log"
+  CNI_PATCH: "{{.ROOT_DIR}}/.taskfiles/talos-docker/resources/patch-cni-none.yaml"
+
+  # Repo-local kube/talos configs, baked into the kubectl/talosctl invocations
+  # below as explicit `--kubeconfig`/`--talosconfig` flags. A task `env:` is LOWER
+  # priority than a variable already exported in your shell, so relying on the env
+  # block alone would let a `KUBECONFIG` in your environment aim every tald
+  # kubectl -- and `tald:down`'s config cleanup -- at your REAL cluster. The
+  # explicit flags win regardless of the ambient environment.
+  KUBECONFIG_PATH: "{{.STATE_DIR}}/kubeconfig"
+  TALOSCONFIG_PATH: "{{.STATE_DIR}}/talosconfig"
+  KUBECTL: 'kubectl --kubeconfig {{.KUBECONFIG_PATH}}'
+  # Argo CD CLI driven against the in-cluster argo-cd-server over a port-forward,
+  # the same transport the live argocd:* tasks use. Deliberately NOT --core:
+  # argocd-core's in-process API server is unreliable under nested Docker and
+  # mutates the shared kubeconfig context, a write that can wedge a stale lockfile
+  # on the virtiofs-backed .cache. --server-name: the Helm release names the pod
+  # argo-cd-server, not the CLI default argocd-server. KUBECONFIG is forced via
+  # `env` (not a shell prefix) so it survives xargs and an exported KUBECONFIG
+  # can never aim it at a real cluster.
+  ARGOCD: 'env KUBECONFIG={{.KUBECONFIG_PATH}} argocd --port-forward --port-forward-namespace argo-cd --plaintext --server-name argo-cd-server'
+
+  # Talos-in-Docker requires the ROOTFUL daemon, so docker/talosctl run under
+  # `sudo` with DOCKER_HOST forced via `env` (a task `env:` does not reliably
+  # override a DOCKER_HOST already exported in your shell, e.g. a rootless
+  # socket). Set ROOTFUL_DOCKER_HOST if your rootful socket lives elsewhere.
+  DOCKER_HOST: '{{.ROOTFUL_DOCKER_HOST | default "unix:///run/docker.sock"}}'
+  DOCKER_SUDO: 'sudo -E env DOCKER_HOST={{.DOCKER_HOST}} docker' # prompt-capable
+  TALOSCTL_SUDO: 'sudo -E env DOCKER_HOST={{.DOCKER_HOST}} talosctl'
+  # Non-interactive variant for the idempotency `status:` probes: with no cached
+  # sudo ticket it fails cleanly (so the task runs and sudo-auth caches one)
+  # instead of prompting for a password mid up-to-date check.
+  DOCKER_SUDO_N: 'sudo -n -E env DOCKER_HOST={{.DOCKER_HOST}} docker'
+  # talosctl client (no sudo): talks to the node API over the chowned talosconfig.
+  TALOSCTL: 'talosctl --talosconfig {{.TALOSCONFIG_PATH}} -n {{.NODE_IP}} -e {{.NODE_IP}}'
+  # Post-Cilium node-Ready budget, generous for a cold first boot (cilium image
+  # pull + datapath programming); only paid in full on a genuinely stuck bring-up.
+  NODE_READY_TIMEOUT: '{{.NODE_READY_TIMEOUT | default "600s"}}'
+
+env:
+  # Convenience default for subprocesses that read the environment; the explicit
+  # --kubeconfig/--talosconfig flags in the KUBECTL/TALOSCTL vars win regardless,
+  # so an exported KUBECONFIG cannot aim a tald command at your real cluster.
+  KUBECONFIG: "{{.KUBECONFIG_PATH}}"
+  TALOSCONFIG: "{{.TALOSCONFIG_PATH}}"
+  # bootstrap/render packages read these via file.read_env at render time; the
+  # resulting Secrets are never used (shared-tier stores render with a fake
+  # provider on local). Override to render against a real Doppler if ever needed.
+  DOPPLER_TOKEN: '{{.DOPPLER_TOKEN | default "dummy"}}'
+  DOPPLER_ARGO_CD_TOKEN: '{{.DOPPLER_ARGO_CD_TOKEN | default "dummy"}}'
 
 tasks:
-  up:
-    desc: Create a vanilla Talos-in-Docker test cluster
-    summary: |
-      Args:
-        CLUSTER_NAME: Cluster name (default: homelab-test)
-        WORKERS: Worker node count (default: 1)
-        CPUS: CPUs per node, controlplane and workers (default: 2)
-        MEMORY: Memory MiB per node (default: 2048)
+  default:
+    silent: true
+    cmd: task -l
 
-      Notes:
-        - No-op if a cluster with this name already has a controlplane-1
-          container running. Resizing requires `task tald:down` first.
-        - talosctl writes the new context into ~/.kube/config as
-          admin@<CLUSTER_NAME> and switches to it. If you have a real
-          homelab context active, your shell will land on the test cluster
-          after this runs.
+  all:
+    desc: Full bring-up (cluster + Cilium + git mirror + Argo CD)
+    cmds:
+      - task: up
+      - task: bootstrap # deps: [git] -> mirror is deployed and pushed first
+      - task: status
+
+  # --- cluster -------------------------------------------------------------
+
+  up:
+    desc: Create the cni=none Talos-in-Docker cluster and install Cilium
+    # Up-to-date only when the node container runs AND a kubeconfig exists, so a
+    # half-finished bring-up (container up but Cilium/kubeconfig missing) re-runs
+    # the cilium step instead of being skipped as "up to date".
     status:
-      # Check the container is actually running, not merely present — a
-      # stopped/exited controlplane after a host reboot must trigger a
-      # re-create rather than be treated as "already up". docker ps
-      # --filter avoids the Go-template escaping that `docker inspect -f`
-      # would impose on Task.
-      - DOCKER_HOST={{.DOCKER_HOST}} sudo -E docker ps --filter "name=^/{{.CLUSTER_NAME}}-controlplane-1$" --filter status=running --quiet | grep -q .
+      - '{{.DOCKER_SUDO_N}} ps --filter "name=^/{{.TALD_CLUSTER}}-controlplane-1$" --filter status=running -q 2>/dev/null | grep -q .'
+      - test -f "{{.KUBECONFIG_PATH}}"
     preconditions:
       - sh: command -v talosctl
-        msg: talosctl is required
-      - sh: DOCKER_HOST={{.DOCKER_HOST}} sudo -E docker info &>/dev/null
-        msg: Rootful Docker daemon must be reachable at {{.DOCKER_HOST}}
+        msg: talosctl is required (enter the devshell)
+      - sh: command -v kcl
+        msg: kclipper (kcl) is required (enter the devshell)
+      - sh: command -v kubectl
+        msg: kubectl is required (enter the devshell)
+      - sh: command -v yq
+        msg: yq is required to read the pinned Talos/Kubernetes versions (enter the devshell)
     cmds:
-      - task: clean
+      - task: sudo-auth
+      - task: cluster-create
+      - task: wait-apiserver
+      - task: cilium
+
+  cilium:
+    desc: Re-render and apply the Docker-safe Cilium overlay, wait for node Ready
+    cmds:
+      - task: kcl-build
         vars:
-          CLUSTER_NAME: "{{.CLUSTER_NAME}}"
-      - DOCKER_HOST={{.DOCKER_HOST}} sudo -E talosctl cluster create docker
-          --name {{.CLUSTER_NAME}}
-          --workers {{.WORKERS}}
-          --cpus-controlplanes {{.CPUS}}
-          --cpus-workers {{.CPUS}}
-          --memory-controlplanes {{.MEMORY}}
-          --memory-workers {{.MEMORY}}
-      # talosctl ran under sudo -E, so ~/.talos and ~/.kube are root-owned;
-      # chown back so non-sudo kubectl/talosctl work.
-      - sudo chown -R $(id -u):$(id -g) {{.HOME}}/.talos {{.HOME}}/.kube
-      # Refresh sudo ticket so follow-up sudo docker calls in the same
-      # shell don't prompt mid-session.
-      - sudo -v
-      - cmd: echo "Cluster up. Active kube context is $(kubectl config current-context)"
+          DIR: apps/cilium/system/local
+          OUT: "{{.RENDER_DIR}}/cilium.yaml"
+      - task: ensure-ns
+        vars: { NS: cilium-system }
+      - '{{.KUBECTL}} apply --server-side --force-conflicts -f "{{.RENDER_DIR}}/cilium.yaml"'
+      # The kubelet registers the Node object a moment after the apiserver first
+      # answers; `kubectl wait --all` errors ("no matching resources found") if it
+      # runs before any Node exists, so wait for registration, then for Ready.
+      - task: wait-for
+        vars:
+          MSG: "node to register with the apiserver"
+          TRIES: "60"
+          DELAY: "5"
+          CMD: '{{.KUBECTL}} get nodes --no-headers 2>/dev/null | grep -q .'
+      # On timeout, dump node + cilium-system state so a stuck datapath is debuggable.
+      - '{{.KUBECTL}} wait --for=condition=Ready node --all --timeout={{.NODE_READY_TIMEOUT}} || { {{.KUBECTL}} get nodes; {{.KUBECTL}} get pods -n cilium-system; exit 1; }'
+
+  # --- git mirror ----------------------------------------------------------
+
+  git:
+    desc: Deploy the in-cluster git mirror and push the working tree
+    run: once
+    cmds:
+      - task: git-deploy
+      - task: push
+
+  push:
+    desc: Snapshot the working tree to the mirror and hard-refresh Argo CD
+    cmds:
+      - task: git-snapshot
+      - task: git-push
+      - cmd: '{{.KUBECTL}} -n argo-cd annotate applications.argoproj.io --all argocd.argoproj.io/refresh=hard --overwrite'
+        ignore_error: true
+      - cmd: '{{.KUBECTL}} -n argo-cd annotate applicationset/tenants argocd.argoproj.io/application-set-refresh=true --overwrite'
+        ignore_error: true
+      - cmd: 'echo "Working tree pushed; Argo CD refreshing. Watch with: task tald:status"'
         silent: true
 
-  down:
-    desc: Destroy the Talos-in-Docker test cluster
-    summary: |
-      Args:
-        CLUSTER_NAME: Cluster name (default: homelab-test)
-    cmds:
-      - DOCKER_HOST={{.DOCKER_HOST}} sudo -E talosctl cluster destroy --name {{.CLUSTER_NAME}}
-      # Belt-and-suspenders: if destroy partially failed and left state
-      # behind, scrub the on-disk dir so the next `up` starts clean.
-      - rm -rf {{.HOME}}/.talos/clusters/{{.CLUSTER_NAME}}
-    ignore_error: true
+  # --- bootstrap (day-0 layer + tenants ApplicationSet) --------------------
 
-  clean:
-    internal: true
-    status:
-      - '! test -d {{.HOME}}/.talos/clusters/{{.CLUSTER_NAME}}'
+  bootstrap:
+    desc: Install Argo CD and the local ApplicationSet (pointed at the mirror)
+    deps: [git]
+    preconditions:
+      - sh: '{{.DOCKER_SUDO_N}} ps --filter "name=^/{{.TALD_CLUSTER}}-controlplane-1$" --filter status=running -q 2>/dev/null | grep -q .'
+        msg: "cluster is not running -- run 'task tald:up' first"
     cmds:
-      - rm -rf {{.HOME}}/.talos/clusters/{{.CLUSTER_NAME}}
+      # Render + apply the day-0 bundle through the SAME canonical kcl:bootstrap the
+      # live clusters use (bootstrap/core/local: the stock auth-disabled Argo CD
+      # whose CMP bakes this cluster's render context, the CSR approver, the `local`
+      # cluster Secret, and the `bootstrap` Application that Argo syncs to render
+      # appsets/ -> the `tenants` ApplicationSet, exactly as the mgmt hub does). The
+      # mirror -D context and the hermetic KUBECTL_BIN are the only seams: they aim
+      # the apply at this .cache cluster, never your real context. kcl:bootstrap
+      # owns OUT (.cache/render/bootstrap-local.yaml).
+      - task: kcl:bootstrap
+        vars:
+          CLUSTER_NAME: local
+          ARGS: "-D env=local -D repo_url={{.MIRROR_URL}} -D revision={{.REVISION}}"
+          KUBECTL_BIN: "{{.KUBECTL}}"
+      - '{{.KUBECTL}} -n argo-cd rollout status deploy/argo-cd-server --timeout=300s'
+      # The day-0 `bootstrap` Application is reconciled by the application-controller
+      # (a StatefulSet); it must sync to render appsets/ into the `tenants`
+      # ApplicationSet, so wait for it too before kicking the appset chain.
+      - '{{.KUBECTL}} -n argo-cd rollout status statefulset/argo-cd-application-controller --timeout=300s'
+      - '{{.KUBECTL}} -n argo-cd rollout status deploy/argo-cd-applicationset-controller --timeout=300s'
+      - task: kick-appset
+
+  # --- render gate ---------------------------------------------------------
+
+  render:
+    desc: Offline render gate for the local overlays (run with -- --all for the whole repo)
+    silent: true
+    vars:
+      # `-- --all` sweeps every renderable package; the default is the local
+      # cluster's render surface plus the shared prod entrypoints (bootstrap/core/mgmt
+      # + appsets/) the local path reuses. Exact-word match so an unrelated arg
+      # (e.g. --allocation) cannot trip it, while `-- --all --foo` still sweeps.
+      ALL: '{{if has "--all" (splitList " " (trim .CLI_ARGS))}}1{{end}}'
+      # The -D the apps/argo/cd/local CMP bakes at render time (apps/argo/cd/local/main.k).
+      # repo_url/revision reuse MIRROR_URL/REVISION to stay single-sourced with the
+      # bootstrap step; the rest are constants that must equal that overlay.
+      LOCAL_RENDER_ARGS: '-D env=local -D repo_url={{.MIRROR_URL}} -D revision={{.REVISION}} -D app_env_glob=local -D fake_secret_stores=true'
+      # All packages that render in-cluster on the local cluster (every app's
+      # local/ overlay, every tenant base + shared, appsets/, bootstrap/core/local,
+      # the git mirror). Only dirs with a `[profile]` (a kcl run entrypoint) are
+      # kept; the loop emits repo-relative paths to `cd` into.
+      LOCAL_DIRS:
+        sh: |
+          { find apps -path '*/local/kcl.mod'
+            find apps -path '*/_tenant/base/kcl.mod'
+            find apps -path '*/_tenant/shared/kcl.mod'
+            find bootstrap/core/local bootstrap/hack appsets -name kcl.mod
+          } | while read -r m; do grep -q '^\[profile\]' "$m" && dirname "$m"; done | sort -u
+      # Packages rendered with prod-hub context DEFAULTS (no -D). Default: the prod
+      # hub day-0 bundle + the shared appsets source. --all: every renderable package.
+      DEFAULT_DIRS:
+        sh: |
+          if [ -n "{{.ALL}}" ]; then
+            find apps bootstrap appsets -name kcl.mod
+          else
+            find bootstrap/core/mgmt appsets -name kcl.mod
+          fi | while read -r m; do grep -q '^\[profile\]' "$m" && dirname "$m"; done | sort -u
+    cmds:
+      # Guard: a for-loop over an empty split var still fires once with ITEM="",
+      # which would render the repo root. Fail clearly instead.
+      - '[ -n "{{.LOCAL_DIRS}}" ] || { echo "render: no local packages matched" >&2; exit 1; }'
+      - '[ -n "{{.DEFAULT_DIRS}}" ] || { echo "render: no default packages matched" >&2; exit 1; }'
+      # Local-context packages first, under the mirror/local -D the CMP bakes.
+      - for: { var: LOCAL_DIRS, split: "\n" }
+        task: render-check
+        vars: { DIR: "{{.ITEM}}", ARGS: "{{.LOCAL_RENDER_ARGS}}" }
+      - for: { var: DEFAULT_DIRS, split: "\n" }
+        task: render-check
+        vars: { DIR: "{{.ITEM}}" }
+      - task: render-context-check
+        vars: { ARGS: "{{.LOCAL_RENDER_ARGS}}" }
+      - cmd: echo "render gate passed"
+        silent: true
+
+  # --- info / teardown -----------------------------------------------------
+
+  status:
+    desc: Show cluster nodes and Argo CD application health
+    silent: true
+    cmds:
+      - 'echo "# Nodes"; {{.KUBECTL}} get nodes 2>/dev/null || echo "  (cluster unreachable)"'
+      - 'echo; echo "# Argo CD applications"; {{.KUBECTL}} -n argo-cd get applications.argoproj.io -o wide 2>/dev/null || echo "  (Argo CD not installed yet)"'
+      # Tab-separated jsonpath (not custom-columns) so a freshly-generated app with
+      # no .status yet emits empty fields rather than collapsing whitespace and
+      # shifting the columns; awk splits on the tab and defaults the blanks.
+      - |
+        echo; echo "# Summary"
+        {{.KUBECTL}} -n argo-cd get applications.argoproj.io \
+          -o jsonpath='{range .items[*]}{.status.health.status}{"\t"}{.status.sync.status}{"\t"}{.metadata.name}{"\n"}{end}' \
+          2>/dev/null | awk -F'\t' '
+          { total++; h = ($1 == "" ? "Pending" : $1); s = ($2 == "" ? "Pending" : $2)
+            health[h]++; sync[s]++
+            if (h != "Healthy" || s != "Synced") bad[++n] = $3 " -> " h "/" s }
+          END {
+            if (total == 0) { print "  (no applications yet)"; exit }
+            line = "  total=" total "  | health:"; for (k in health) line = line " " k "=" health[k]
+            line = line "  | sync:"; for (k in sync) line = line " " k "=" sync[k]; print line
+            if (n == 0) print "  all Healthy/Synced"
+            else { print "  not Healthy/Synced:"; for (i = 1; i <= n; i++) print "    ! " bad[i] }
+          }'
+      - 'echo; echo "# ApplicationSet"; {{.KUBECTL}} -n argo-cd get applicationset 2>/dev/null || true'
+
+  wait-healthy:
+    desc: Block until every Argo CD application is Healthy (and at least one exists)
+    # A self-contained loop (not the wait-for helper) keeps the awk predicate in a
+    # clean block-scalar context without nested-quote escaping. NOT chained into
+    # `all`: a cold bring-up spends minutes pulling images, so blocking is opt-in.
+    silent: true
+    vars:
+      TRIES: '{{.TRIES | default "120"}}'
+      DELAY: '{{.DELAY | default "5"}}'
+    cmds:
+      - |
+        ready() {
+          {{.KUBECTL}} -n argo-cd get applications.argoproj.io \
+            -o custom-columns=H:.status.health.status --no-headers 2>/dev/null \
+          | awk 'BEGIN { t = 0; bad = 0 } { t++; if ($1 != "Healthy") bad++ } END { exit (t > 0 && bad == 0) ? 0 : 1 }'
+        }
+        for i in $(seq 1 {{.TRIES}}); do
+          if ready; then echo ">> all Argo CD applications are Healthy"; exit 0; fi
+          sleep {{.DELAY}}
+        done
+        echo "timed out waiting for all applications to become Healthy:" >&2
+        {{.KUBECTL}} -n argo-cd get applications.argoproj.io -o wide 2>/dev/null | awk 'NR == 1 || $0 !~ /Healthy/' >&2 || true
+        exit 1
+
+  creds:
+    desc: Print how to reach the (auth-disabled) Argo CD UI
+    silent: true
+    cmds:
+      - |
+        echo "Open the Argo CD UI with:"
+        echo "  {{.KUBECTL}} -n argo-cd port-forward svc/argo-cd-server 8080:80"
+        echo "  then browse http://localhost:8080"
+        echo
+        echo "The local overlay runs auth-disabled (server.insecure + disable.auth),"
+        echo "so the UI needs no login. For the stock admin password if ever enabled:"
+        {{.KUBECTL}} -n argo-cd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' 2>/dev/null | base64 -d || \
+          echo "  (no argocd-initial-admin-secret present -- auth is disabled)"
+
+  kubeconfig:
+    desc: Print the command to use the test cluster's kubeconfig
+    silent: true
+    cmds:
+      - echo "export KUBECONFIG={{.KUBECONFIG_PATH}}"
+
+  ui:
+    desc: Port-forward the local Argo CD UI to http://localhost:8080 (blocks until Ctrl-C)
+    silent: true
+    # TALD_UI_PORT (not PORT): go-task merges every taskfile's vars into one global
+    # scope, so a tald-private name avoids colliding with a future live task's PORT.
+    vars:
+      TALD_UI_PORT: '{{.TALD_UI_PORT | default "8080"}}'
+    cmds:
+      - 'echo "Argo CD UI -> http://localhost:{{.TALD_UI_PORT}} (auth disabled; Ctrl-C to stop)"'
+      - '{{.KUBECTL}} -n argo-cd port-forward svc/argo-cd-server {{.TALD_UI_PORT}}:80'
+
+  logs:
+    desc: Follow the Argo CD controller + repo-server logs (Ctrl-C to stop)
+    silent: true
+    # Handle for watching the cold-start socket-LB race (see kick-appset).
+    # --ignore-errors tolerates a Completed/bootstrap pod the selector also matches.
+    vars:
+      SELECTOR: '{{.SELECTOR | default "app.kubernetes.io/part-of=argocd"}}'
+      SINCE: '{{.SINCE | default "10m"}}'
+      TAIL: '{{.TAIL | default "200"}}'
+    cmds:
+      - '{{.KUBECTL}} -n argo-cd logs -l {{.SELECTOR}} --all-containers --max-log-requests=10 --since={{.SINCE}} --tail={{.TAIL}} --ignore-errors -f'
+
+  debug:
+    desc: Show why an Argo CD Application is unhealthy (status + workload pods/events)
+    silent: true
+    requires:
+      vars: [APP]
+    # Prints the Application's health/sync and conditions, then -- only for a leaf
+    # {tenant}-app whose destination is a workload namespace -- its pods and recent
+    # events. Structural apps (bootstrap, per-tenant, shared) fail in their
+    # conditions, not a workload namespace, so the pod/event dump is skipped.
+    cmds:
+      - |
+        app="{{.APP}}"
+        echo "# Application/$app"
+        {{.KUBECTL}} -n argo-cd get applications.argoproj.io "$app" \
+          -o jsonpath='{"  health:  "}{.status.health.status}{"\n  sync:    "}{.status.sync.status}{"\n  op msg:  "}{.status.operationState.message}{"\n"}' 2>/dev/null \
+          || { echo "  (no such Application)"; exit 1; }
+        echo "  conditions:"
+        {{.KUBECTL}} -n argo-cd get applications.argoproj.io "$app" \
+          -o jsonpath='{range .status.conditions[*]}{"    - "}{.type}{": "}{.message}{"\n"}{end}' 2>/dev/null
+        ns=$({{.KUBECTL}} -n argo-cd get applications.argoproj.io "$app" -o jsonpath='{.spec.destination.namespace}' 2>/dev/null)
+        echo; echo "# destination namespace: ${ns:-<none>}"
+        case "$ns" in
+          ""|argo-cd|default)
+            echo "  (structural app -- see the Application conditions above, not a workload namespace)"
+            ;;
+          *)
+            echo "## Pods"
+            {{.KUBECTL}} -n "$ns" get pods -o wide 2>/dev/null || echo "  (namespace not created yet)"
+            echo "## Events (recent)"
+            {{.KUBECTL}} -n "$ns" get events --sort-by=.lastTimestamp 2>/dev/null | tail -n 20 || true
+            ;;
+        esac
+
+  # --- argo CLI (day-2 inner loop) -----------------------------------------
+  # The bring-up uses kubectl so a cold cluster needs no argocd binary; these
+  # opt-in tasks add the CLI for the inner loop (diff/sync) via the ARGOCD var.
+
+  argo:
+    desc: 'Run any argocd CLI command against the test cluster (e.g. task tald:argo -- app list)'
+    silent: true
+    preconditions:
+      - sh: command -v argocd
+        msg: "argocd CLI is required for tald:argo/diff/sync (brew install argocd, or enter the devshell)"
+    cmds:
+      - '{{.ARGOCD}} {{.CLI_ARGS}}'
+
+  diff:
+    desc: Show what a sync would change for an Argo CD app (argocd app diff via port-forward)
+    silent: true
+    requires:
+      vars: [APP]
+    preconditions:
+      - sh: command -v argocd
+        msg: "argocd CLI is required (brew install argocd, or enter the devshell)"
+    # The mirror already reflects the working tree, so a server-side diff shows
+    # what a sync would apply -- no --local needed, unlike the live argocd:diff.
+    cmds:
+      - '{{.ARGOCD}} app diff "{{.APP}}" --server-side-generate --exit-code=false'
+
+  sync:
+    desc: 'Force-sync Argo CD app(s) via the argocd CLI (APP=<name> for one; default: all)'
+    silent: true
+    preconditions:
+      - sh: command -v argocd
+        msg: "argocd CLI is required (brew install argocd, or enter the devshell)"
+    # Asks Argo to reconcile what is already on the mirror (counterpart to
+    # tald:push, which re-snapshots the working tree). --async returns immediately;
+    # follow with `task tald:status` or `task tald:wait-healthy`.
+    vars:
+      APP: '{{.APP | default ""}}'
+    cmds:
+      - |
+        if [ -n "{{.APP}}" ]; then
+          {{.ARGOCD}} app sync "{{.APP}}" --async
+        else
+          apps=$({{.ARGOCD}} app list -o name 2>/dev/null)
+          [ -n "$apps" ] || { echo "no Argo CD applications yet -- run 'task tald:all' or 'task tald:push' first" >&2; exit 1; }
+          echo "$apps" | xargs {{.ARGOCD}} app sync --async
+        fi
+
+  down:
+    desc: Destroy the cluster, stop the mirror, and clean local state
+    cmds:
+      # Best-effort teardown: the first sudo call prompts and caches a ticket the
+      # rest ride; every step tolerates already-gone resources (ignore_error) so a
+      # partial bring-up still cleans up.
+      - cmd: '{{.KUBECTL}} delete namespace git-system --ignore-not-found --wait=false'
+        ignore_error: true
+      - cmd: '{{.TALOSCTL_SUDO}} cluster destroy --name {{.TALD_CLUSTER}} --state "{{.TALOS_STATE}}"'
+        ignore_error: true
+      - cmd: '{{.DOCKER_SUDO}} rm -f {{.TALD_CLUSTER}}-controlplane-1'
+        ignore_error: true
+      - cmd: '{{.DOCKER_SUDO}} network rm {{.TALD_CLUSTER}}'
+        ignore_error: true
+      # `talosctl cluster destroy` returns before Docker finalizes the container
+      # removal; block until it is truly gone so a back-to-back `tald:down &&
+      # tald:all` does not trip cluster-create's "already exists" precondition.
+      - cmd: 'for i in $(seq 1 30); do {{.DOCKER_SUDO_N}} ps -a --filter "name=^/{{.TALD_CLUSTER}}-controlplane-1$" -q 2>/dev/null | grep -q . || exit 0; sleep 1; done'
+        ignore_error: true
+      # The detached create writes state under --state as root, so remove it with sudo.
+      - cmd: 'sudo rm -rf "{{.TALOS_STATE}}/{{.TALD_CLUSTER}}"'
+        ignore_error: true
+      - rm -rf "{{.RENDER_DIR}}" "{{.CREATE_LOG}}" "{{.KUBECONFIG_PATH}}" "{{.TALOSCONFIG_PATH}}"
+      # A stale `kubectl config` lockfile next to the kubeconfig would break the
+      # next argocd run; remove it if present.
+      - cmd: 'rm -f "{{.KUBECONFIG_PATH}}.lock"'
+        ignore_error: true
+      # Drop the throwaway working-tree snapshot ref git-snapshot created, so a
+      # clean teardown leaves nothing behind in your real .git.
+      - task: git-clean
+
+  # --- internal building blocks --------------------------------------------
+
+  sudo-auth:
+    internal: true
+    # Cache a sudo ticket up front so the detached cluster create and the other
+    # rootful calls never block on a password prompt mid-flow.
+    cmds:
+      - sudo -v
+
+  validate-patch:
+    internal: true
+    # Generate a throwaway machine config with the CNI patch applied and validate
+    # it in CONTAINER mode, so a bad patch fails in ~1s with the exact Talos error
+    # rather than a silent node boot-loop. Needs no sudo (writes only under .cache).
+    vars:
+      GENDIR: "{{.STATE_DIR}}/talos-validate"
+    cmds:
+      - rm -rf "{{.GENDIR}}"
+      - 'talosctl gen config tald-validate https://{{.NODE_IP}}:6443 --config-patch @"{{.CNI_PATCH}}" -o "{{.GENDIR}}" --force >/dev/null 2>&1'
+      - 'talosctl validate -c "{{.GENDIR}}/controlplane.yaml" -m container'
+      - rm -rf "{{.GENDIR}}"
+
+  cluster-create:
+    internal: true
+    # Resolve the node's Talos/Kubernetes versions from the live talconfig of
+    # TALD_TALOS_REF (yq), so the test node is pinned to the SAME versions a real
+    # cluster runs rather than talosctl's drifting defaults. Computed here (not at
+    # the taskfile top level) so the yq calls only fire on an actual create, and a
+    # version-less task like tald:down never depends on yq. Override TALOS_VERSION
+    # or KUBERNETES_VERSION on the CLI for a one-off; either un-set value falls
+    # back to the talconfig.
+    vars:
+      TALOS_VERSION_DEFAULT:
+        sh: yq -r '.talosVersion' "{{.ROOT_DIR}}/clusters/{{.TALD_TALOS_REF}}/talconfig.yaml"
+      KUBERNETES_VERSION_DEFAULT:
+        sh: yq -r '.kubernetesVersion' "{{.ROOT_DIR}}/clusters/{{.TALD_TALOS_REF}}/talconfig.yaml"
+      TALOS_VERSION: '{{.TALOS_VERSION | default .TALOS_VERSION_DEFAULT}}'
+      KUBERNETES_VERSION: '{{.KUBERNETES_VERSION | default .KUBERNETES_VERSION_DEFAULT}}'
+    status:
+      - '{{.DOCKER_SUDO_N}} ps --filter "name=^/{{.TALD_CLUSTER}}-controlplane-1$" --filter status=running -q 2>/dev/null | grep -q .'
+    # A stopped (not running) same-named container would make `cluster create`
+    # fail on the name clash; fail early with a clear pointer to `tald:down`.
+    # NB: test the command substitution directly rather than `! docker ... | grep`
+    # -- go-task's shell (gosh) mis-binds `!` across a pipe and false-positives.
+    # `test -z "$(...)"` is met (empty) exactly when no such container exists.
+    preconditions:
+      - sh: 'test -z "$({{.DOCKER_SUDO_N}} ps -a --filter "name=^/{{.TALD_CLUSTER}}-controlplane-1$" -q 2>/dev/null)"'
+        msg: "a container named {{.TALD_CLUSTER}}-controlplane-1 already exists; run 'task tald:down' first"
+    cmds:
+      # Validate the patch before the create, so a bad patch fails fast instead of
+      # a silent boot-loop + ~10min wait-apiserver timeout.
+      - task: validate-patch
+      - mkdir -p "{{.TALOS_STATE}}"
+      - rm -f "{{.CREATE_LOG}}"
+      # `talosctl cluster create docker` blocks until the node reports Ready,
+      # which never happens without a CNI. Detach it (setsid + `&`, stdin from
+      # /dev/null so sudo can only use the cached ticket) so wait-apiserver and
+      # cilium can run next and bring the datapath up; the detached create then
+      # observes Ready and exits on its own. It is never reaped -- `tald:down`
+      # tears the cluster down regardless -- and its log stays under .cache.
+      - >-
+        setsid {{.TALOSCTL_SUDO}} cluster create docker
+        --name {{.TALD_CLUSTER}}
+        --image ghcr.io/siderolabs/talos:{{.TALOS_VERSION}}
+        --kubernetes-version {{trimPrefix "v" .KUBERNETES_VERSION}}
+        --workers {{.WORKERS}}
+        --cpus-controlplanes {{.CPUS}} --cpus-workers {{.CPUS}}
+        --memory-controlplanes {{.MEMORY}} --memory-workers {{.MEMORY}}
+        --subnet {{.SUBNET}}
+        --config-patch @"{{.CNI_PATCH}}"
+        --state "{{.TALOS_STATE}}"
+        --talosconfig-destination "{{.TALOSCONFIG_PATH}}"
+        >"{{.CREATE_LOG}}" 2>&1 </dev/null &
+
+  wait-apiserver:
+    internal: true
+    # No status gate: this only runs inside `up`, whose own status already
+    # short-circuits an already-running cluster. Re-running is idempotent, and
+    # the chown MUST re-run -- the detached create keeps writing state as root.
+    cmds:
+      # The detached create writes the talosconfig as root; wait for it, take
+      # ownership, pull a kubeconfig from the node, then block until /healthz.
+      - task: wait-for
+        vars:
+          MSG: "talosconfig from the cluster create"
+          CMD: 'sudo -n test -f "{{.TALOSCONFIG_PATH}}"'
+          # The detached create logs here; surface it if the talosconfig never
+          # appears (e.g. the rootful Docker daemon was unreachable), so the
+          # timeout reports its cause instead of a bare "timed out".
+          ON_FAIL: 'tail -n 40 "{{.CREATE_LOG}}" >&2 || true'
+      - sudo -n chown -R "$(id -u):$(id -g)" "{{.TALOS_STATE}}" "{{.TALOSCONFIG_PATH}}"
+      - task: wait-for
+        vars:
+          MSG: "kubeconfig from talosctl"
+          TRIES: "300"
+          CMD: '{{.TALOSCTL}} kubeconfig --force "{{.KUBECONFIG_PATH}}" >/dev/null 2>&1'
+      - task: wait-for
+        vars:
+          MSG: "apiserver /healthz"
+          TRIES: "300"
+          CMD: '{{.KUBECTL}} get --raw=/healthz >/dev/null 2>&1'
+          # Surface the detached create's boot log if the apiserver never answers.
+          ON_FAIL: 'tail -n 40 "{{.CREATE_LOG}}" >&2 || true'
+
+  git-deploy:
+    internal: true
+    cmds:
+      - task: kcl-build
+        vars:
+          DIR: bootstrap/hack/git-mirror
+          OUT: "{{.RENDER_DIR}}/git-mirror.yaml"
+      - '{{.KUBECTL}} apply -f "{{.RENDER_DIR}}/git-mirror.yaml"'
+      - '{{.KUBECTL}} -n git-system rollout status deploy/git --timeout=120s'
+
+  git-snapshot:
+    internal: true
+    dir: "{{.ROOT_DIR}}"
+    # Snapshot the whole working tree (uncommitted edits and new files, honoring
+    # .gitignore) into refs/tald/$MIRROR_REF using a throwaway index, so the real
+    # index/branch/working tree are never touched and nothing lands in history.
+    # The private refs/tald/ namespace cannot collide with an ordinary branch
+    # (e.g. a real `local` branch); git-push maps it to the mirror's refs/heads/.
+    cmds:
+      - |
+        git() { command git -c safe.directory='*' "$@"; }
+        gitdir="$(git rev-parse --git-dir)"
+        tmpidx="$(mktemp)"; trap 'rm -f "$tmpidx"' EXIT
+        [ -f "$gitdir/index" ] && cp "$gitdir/index" "$tmpidx"
+        GIT_INDEX_FILE="$tmpidx" git add -A
+        tree="$(GIT_INDEX_FILE="$tmpidx" git write-tree)"
+        if parent="$(git rev-parse --verify -q HEAD)"; then
+          commit="$(git commit-tree "$tree" -p "$parent" -m 'tald local snapshot')"
+        else
+          commit="$(git commit-tree "$tree" -m 'tald local snapshot')"
+        fi
+        git update-ref "refs/tald/{{.MIRROR_REF}}" "$commit"
+
+  git-push:
+    internal: true
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      # The daemon may still be accepting its first connections; retry briefly.
+      - task: wait-for
+        vars:
+          MSG: "push {{.MIRROR_REF}} to {{.MIRROR_URL}}"
+          TRIES: "10"
+          CMD: "git -c safe.directory='*' push --quiet {{.MIRROR_URL}} +refs/tald/{{.MIRROR_REF}}:refs/heads/{{.MIRROR_REF}} 2>/dev/null"
+
+  git-clean:
+    internal: true
+    dir: "{{.ROOT_DIR}}"
+    # Counterpart to git-snapshot: delete refs/tald/<MIRROR_REF> so a clean
+    # teardown leaves nothing in your real .git.
+    cmds:
+      - cmd: "git -c safe.directory='*' update-ref -d refs/tald/{{.MIRROR_REF}}"
+        ignore_error: true
+
+  appset-nudge:
+    desc: Refresh the bootstrap Application and tenants ApplicationSet (used by kick-appset; also manual recovery)
+    # Refresh the two cold-start choke points: the `bootstrap` Application (whose
+    # sync renders appsets/ into the tenants appset) and the `tenants`
+    # ApplicationSet (which generates the per-tenant Applications). Errors
+    # tolerated: on a cold cluster the tenants appset may not exist until the
+    # bootstrap App has synced, and a controller may be mid-restart.
+    cmds:
+      - '{{.KUBECTL}} -n argo-cd annotate application/bootstrap argocd.argoproj.io/refresh=hard --overwrite >/dev/null 2>&1 || true'
+      - '{{.KUBECTL}} -n argo-cd annotate applicationset/tenants argocd.argoproj.io/application-set-refresh=true --overwrite >/dev/null 2>&1 || true'
+
+  appset-restart:
+    desc: Restart the application + applicationset controllers to clear wedged repo-server dials
+    # The cold-start socket-LB race can wedge EITHER controller's first repo-server
+    # dial (application-controller or applicationset-controller). A cached bad
+    # connection does NOT self-heal -- only a restart (once Cilium has settled)
+    # gives a working one.
+    cmds:
+      - '{{.KUBECTL}} -n argo-cd rollout restart statefulset/argo-cd-application-controller deploy/argo-cd-applicationset-controller >/dev/null 2>&1 || true'
+      - '{{.KUBECTL}} -n argo-cd rollout status statefulset/argo-cd-application-controller --timeout=120s >/dev/null 2>&1 || true'
+      - '{{.KUBECTL}} -n argo-cd rollout status deploy/argo-cd-applicationset-controller --timeout=120s >/dev/null 2>&1 || true'
+
+  kick-appset:
+    internal: true
+    # Nudge the day-0 GitOps chain past the cold-start socket-LB hazard:
+    #   bootstrap Application --sync (application-controller)--> appsets/
+    #     --> tenants ApplicationSet --generate (applicationset-controller)-->
+    #     per-tenant Applications.
+    # On a cold cluster the FIRST repo-server dial of EITHER controller races
+    # Cilium's socket-LB programming for the fresh Argo pods and wedges on
+    # "connect: operation not permitted". That cached connection does NOT
+    # self-heal -- only a controller restart (once Cilium has settled) clears it;
+    # an annotate-refresh alone will not. So: a quick warm-path nudge-and-poll,
+    # then restart-both-to-clear (appset-restart) and poll generously. The
+    # controllers also requeue themselves (~180s), so a timeout here is "not yet",
+    # not "broken" -- it must not fail the bootstrap, hence the exit-0 fall-through.
+    # Terminal success is any per-tenant Application existing (proof the bootstrap
+    # App synced AND the tenants appset generated).
+    cmds:
+      - |
+        # Count Applications other than the day-0 `bootstrap` App; >0 means the
+        # tenants appset has generated the per-tenant Applications (counting all
+        # apps would false-positive on `bootstrap` itself, which exists at once).
+        tenant_apps_exist() {
+          n=$({{.KUBECTL}} -n argo-cd get applications.argoproj.io \
+                -o custom-columns=N:.metadata.name --no-headers 2>/dev/null \
+              | awk '$1 != "bootstrap" { c++ } END { print c + 0 }')
+          [ "${n:-0}" -gt 0 ]
+        }
+        # Nudge, then poll up to ($1 * 5)s for the chain to generate tenant Apps.
+        poll() {
+          task tald:appset-nudge
+          for _ in $(seq 1 "$1"); do
+            tenant_apps_exist && { echo ">> tenants ApplicationSet generated per-tenant Application(s)"; exit 0; }
+            sleep 5
+          done
+        }
+        # Warm fast-path: with no wedged dial the bootstrap App selfHeals and the
+        # appset generates within a reconcile or two; re-runs need no restart.
+        poll 8
+        # Cold path: clear the wedged dial on BOTH controllers, then poll LONGER
+        # than one controller requeue cycle (~180s) -- a restart's own first dial
+        # can re-lose the Cilium race, after which a controller only retries on its
+        # next ~180s requeue, so poll 40 (~200s) outlives it and one restart usually
+        # suffices.
+        for attempt in 1 2 3; do
+          echo "   no tenant Applications yet; restarting the application + applicationset controllers to clear the socket-LB race (attempt $attempt)" >&2
+          task tald:appset-restart
+          poll 40
+        done
+        echo ">> NOTE: no tenant Applications generated yet; the controllers will converge on their next reconcile (~180s). Watch: task tald:status"
+
+  ensure-ns:
+    internal: true
+    requires:
+      vars: [NS]
+    status:
+      - '{{.KUBECTL}} get namespace {{.NS}}'
+    cmds:
+      - '{{.KUBECTL}} create namespace {{.NS}}'
+
+  render-check:
+    internal: true
+    requires:
+      vars: [DIR]
+    silent: true
+    vars:
+      ARGS: '{{.ARGS | default ""}}'
+    # `cd` into the package: the kclipper helm plugin resolves chart paths from
+    # the package root (cwd), so `kcl run <dir>` fails for chart-bearing apps.
+    dir: "{{.DIR}}"
+    cmds:
+      - echo "  render {{.DIR}}{{if .ARGS}} (local -D context){{end}}"
+      # stdout discarded (gate only checks success); KCL_RUN_FLAGS matches the CMP
+      # so a clean local render predicts a clean in-cluster one.
+      - kcl run {{.KCL_RUN_FLAGS}} {{.ARGS}} >/dev/null
+
+  render-context-check:
+    internal: true
+    requires:
+      vars: [ARGS]
+    dir: bootstrap/core/local
+    silent: true
+    # Assert the mirror seam is baked end to end (bootstrap targetRevision AND CMP
+    # args carry the mirror repoURL + REVISION) and that no prod-hub default leaks.
+    # Renders to a file (the bundle is large; $() can overflow ARG_MAX) and greps
+    # value-specific CMP-arg forms so CRD schema prose cannot false-match.
+    cmds:
+      - mkdir -p "{{.RENDER_DIR}}"
+      - kcl run {{.KCL_RUN_FLAGS}} {{.ARGS}} > "{{.RENDER_DIR}}/render-context-check.yaml"
+      - |
+        out="{{.RENDER_DIR}}/render-context-check.yaml"
+        fail=0
+        grep -q "repo_url={{.MIRROR_URL}}" "$out" || { echo "render-context: mirror repo_url not baked into the CMP args" >&2; fail=1; }
+        grep -q "revision={{.REVISION}}" "$out" || { echo "render-context: revision={{.REVISION}} not baked into the CMP args" >&2; fail=1; }
+        if grep -q "revision=main" "$out"; then echo "render-context: prod-default revision=main leaked into the local render" >&2; fail=1; fi
+        if grep -q "targetRevision: main" "$out"; then echo "render-context: prod-default targetRevision: main leaked into the local render" >&2; fail=1; fi
+        if grep -q "repo_url=https://github.com/MacroPower" "$out"; then echo "render-context: prod-default GitHub repo_url leaked into the local render" >&2; fail=1; fi
+        [ "$fail" = 0 ] && echo "  render-context ok (mirror repoURL + revision={{.REVISION}}, no main/GitHub leak)"
+        exit "$fail"
+
+  kcl-build:
+    internal: true
+    requires:
+      vars: [DIR, OUT]
+    vars:
+      ARGS: '{{.ARGS | default ""}}'
+    # `cd` into the package (see render-check) and capture stdout only -- kcl
+    # writes diagnostics to stderr, so the rendered stream stays clean for apply.
+    dir: "{{.DIR}}"
+    cmds:
+      - mkdir -p "$(dirname "{{.OUT}}")"
+      - kcl run {{.KCL_RUN_FLAGS}} {{.ARGS}} > "{{.OUT}}"
+      - test -s "{{.OUT}}"
+
+  wait-for:
+    internal: true
+    requires:
+      vars: [CMD, MSG]
+    vars:
+      TRIES: '{{.TRIES | default "150"}}'
+      DELAY: '{{.DELAY | default "2"}}'
+      # Optional diagnostic command run once if the wait times out (e.g. tail a log).
+      ON_FAIL: '{{.ON_FAIL | default "true"}}'
+    cmds:
+      - 'for i in $(seq 1 {{.TRIES}}); do if {{.CMD}}; then exit 0; fi; sleep {{.DELAY}}; done; echo "timed out waiting for: {{.MSG}}" >&2; {{.ON_FAIL}}; exit 1'

@@ -4,11 +4,25 @@ version: "3"
 
 dotenv: ["{{.ROOT_DIR}}/.env", "{{.HOME}}/.env"]
 
+env:
+  # Vendored KCL paths, inherited by all includes. Mirrors the devshell shellHook
+  # so a `kcl run` resolves the same library/package/cache whether or not direnv
+  # exported them.
+  KCL_LIB_HOME: "{{.ROOT_DIR}}/.nix/kcl/lib"
+  KCL_PKG_PATH: "{{.ROOT_DIR}}/.nix/kcl/kpm"
+  KCL_CACHE_PATH: "{{.ROOT_DIR}}/.nix/kcl/cache"
+
 vars:
   TALOS_DIR: "{{.ROOT_DIR}}/clusters"
   TERRAFORM_DIR: "{{.ROOT_DIR}}/terraform"
-  ARGO_APP_DIR: "{{.ROOT_DIR}}/applications"
   KYVERNO_POLICY_DIR: "{{.ROOT_DIR}}/applications/base/kyverno-policies/policies"
+  # Forwarded to every `kcl run` so local renders are byte-identical to the
+  # in-cluster CMP output (apps/argo/cd/base/values.yaml configs.cmp.plugins.kcl.generate).
+  # --quiet in particular suppresses the "waiting for package-cache lock..." line
+  # kcl can otherwise emit to stdout and corrupt a captured render. The CMP also
+  # passes --log_level=info --log_format=json; omitted here since those shape only
+  # stderr, not the manifest.
+  KCL_RUN_FLAGS: "--no_style --quiet"
 
 includes:
   argocd:

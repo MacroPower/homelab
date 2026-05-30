@@ -174,7 +174,7 @@ schema TenantBackend[inputConfig: frontend.Tenant]:
                     repoURL = kmd.__META_REPO_URL
                     revision = kmd.__META_REVISION
                     files = [{
-                        path = "apps/${config.name}/*/*/.app.yaml"
+                        path = "apps/${config.name}/*/${kmd.context.appEnvGlob}/.app.yaml"
                     }]
                     pathParamPrefix = "app"
                 }

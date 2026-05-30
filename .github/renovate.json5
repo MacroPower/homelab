@@ -32,6 +32,7 @@
   packageRules: [
     {
       matchManagers: ["custom.regex"],
+      matchFileNames: ["charts/charts.k"],
       postUpgradeTasks: {
         commands: ['kcl chart update -q --chart="{{depName}}" --path="{{packageFileDir}}"'],
         executionMode: "update",

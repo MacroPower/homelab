@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=../../../../charts/k8s_monitoring/values.schema.json
+
+# Minimal k8s-monitoring for the management cluster (main.k explains why this
+# overlay exists). Metrics ship nowhere for now: the destination below is a
+# placeholder. Alloy runs and the CRDs install regardless; wire a real
+# destination when mgmt observability is sorted out.
+destinations:
+  noop:
+    type: prometheus
+    url: "http://localhost:9090/api/v1/write"
+
+collectors:
+  alloy-singleton:
+    presets: [singleton]
+
+prometheusOperatorObjects:
+  enabled: true
+  collector: alloy-singleton

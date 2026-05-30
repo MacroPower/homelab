@@ -2,9 +2,13 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
+includes:
+  # Shared kcl:bootstrap for the day-0 apply; internal to keep it out of `task -l`.
+  kcl:
+    taskfile: ../kcl/Taskfile.yaml
+    internal: true
+
 vars:
-  TALOS_SCRIPTS_DIR: "{{.ROOT_DIR}}/.taskfiles/talos/scripts"
-  EXTRAS_DIR: "{{.ROOT_DIR}}/hack/extra"
   DEFAULT_CLUSTER_DOMAIN: cin.macro.network
   DOPPLER_PROJECT: talhelper
   TALOS_DIR: "{{.TALOS_DIR}}"
@@ -96,16 +100,6 @@ tasks:
         kubectl certificate approve \
           $(kubectl get csr --sort-by=.metadata.creationTimestamp | grep Pending | awk '{print $1}')
 
-  apply-extras:
-    desc: Apply extra resources
-    cmds:
-      - for: { var: APPS }
-        task: apply-extra
-        vars:
-          APP: "{{.ITEM}}"
-    vars:
-      APPS: cilium doppler kubelet-csr-approver
-
   upgrade:
     desc: Upgrade Talos cluster
     requires:
@@ -146,7 +140,7 @@ tasks:
         RECOVERY_SNAPSHOT: Snapshot to recover from (default: "")
     dir: *dir
     requires:
-      vars: [INITIAL_NODE]
+      vars: [INITIAL_NODE, CLUSTER_NAME]
     vars:
       RECOVERY_SNAPSHOT: '{{.RECOVERY_SNAPSHOT | default ""}}'
     cmds:
@@ -162,7 +156,11 @@ tasks:
         silent: true
       - sleep 60
       - task: kubeconfig
-      - task: apply-extras
+      # Day-0 layer via bootstrap/core/<CLUSTER_NAME>. Supply
+      # DOPPLER_TOKEN/DOPPLER_ARGO_CD_TOKEN (e.g. wrap in `doppler run`) so the
+      # bootstrap secret stores resolve.
+      - task: kcl:bootstrap
+        vars: { CLUSTER_NAME: "{{.CLUSTER_NAME}}" }
       - sleep 20
       - task: approve-csr
       - talosctl health -n {{.INITIAL_NODE}}
@@ -260,18 +258,6 @@ tasks:
           CLUSTER_NAME: "{{.CLUSTER_NAME}}"
           NODE: "{{.NODE}}"
       - sleep 120
-
-  apply-extra:
-    internal: true
-    dir: "{{.EXTRAS_DIR}}/{{.APP}}"
-    cmds:
-      - |-
-        {{.DOPPLER_CMD}} -- \
-          envsubst < <(kubectl kustomize --enable-helm .) | \
-          kubectl apply --server-side --filename -
-      - defer: rm -rf ./charts
-    requires:
-      vars: [APP]
 
   support:
     desc: Download support bundle

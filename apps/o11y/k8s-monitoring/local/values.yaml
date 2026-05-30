@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=../../../../charts/k8s_monitoring/values.schema.json
+
+# Minimal k8s-monitoring for the Talos-in-Docker test cluster (main.k explains
+# why this overlay exists). Metrics ship nowhere: the destination below is a
+# placeholder. Alloy runs and the CRDs install regardless; the offline cluster
+# has no metrics backend (out of scope, like LoadBalancers and DNS).
+destinations:
+  noop:
+    type: prometheus
+    url: "http://localhost:9090/api/v1/write"
+
+collectors:
+  alloy-singleton:
+    presets: [singleton]
+
+prometheusOperatorObjects:
+  enabled: true
+  collector: alloy-singleton

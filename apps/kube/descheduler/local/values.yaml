@@ -1,0 +1,4 @@
+# yaml-language-server: $schema=../../../../charts/descheduler/values.schema.json
+
+# No Docker-unsafe overrides; the base CronJob is inherited verbatim (see main.k).
+{}

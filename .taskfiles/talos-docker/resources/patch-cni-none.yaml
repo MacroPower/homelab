@@ -1,0 +1,95 @@
+# Talos machine-config patch for the local Docker test cluster (strategic
+# merge, applied at `talosctl cluster create` time).
+#
+# The aim is to keep the node as close to the real clusters' machine config
+# (clusters/<c>/talconfig.yaml) as nested Docker allows: same cni=none +
+# kube-proxy-replaced datapath, same control-plane feature gates and host DNS,
+# same OpenEBS hostpath mount. Only the genuinely Docker-incompatible bits
+# (PodSecurity, the storage/networking the real nodes get from hardware) differ.
+#
+# - Disables the built-in flannel CNI and kube-proxy so Cilium owns the
+#   datapath (kubeProxyReplacement), matching the real clusters. KubePrism
+#   stays enabled by default on the controlplane at localhost:7445, which is
+#   what the Cilium values use for k8sServiceHost.
+# - Mirrors the real clusters' kube-apiserver/scheduler/controller-manager/
+#   kubelet feature gates (clusters/<c>/talconfig.yaml): MemoryQoS,
+#   InPlacePodVerticalScaling, RotateKubeletServerCertificate. These shape the
+#   API/admission surface an app sees, so the test cluster must match -- otherwise
+#   a manifest could validate locally but not in prod (or vice versa). Safe to
+#   replicate verbatim because cluster-create pins the same Kubernetes version.
+#   The same tls-cipher-suites list is pinned so the local apiserver/kubelet
+#   negotiate the same TLS as prod. (The matching `rotate-server-certificates`
+#   kubelet arg is left off: it makes the kubelet request a serving cert via CSR,
+#   coupling node bring-up to the kubelet-csr-approver -- an avoidable cold-start
+#   dependency; the feature GATE alone keeps API parity.)
+# - Enables hostDNS like the real clusters (machine.features.hostDNS.enabled).
+#   The real clusters set forwardKubeDNSToHost=false (bare metal), but Talos'
+#   container mode REQUIRES it true -- the config validator rejects false and the
+#   node boot-loops on "feature HostDNS should forward kube-dns to host in
+#   container mode". So this single field cannot match prod (an irreducible Docker
+#   constraint); hostDNS itself is still enabled, as on the real clusters.
+# - Relaxes PodSecurity to `privileged`; without this the default `baseline`
+#   enforcement rejects privileged Cilium pods. The real clusters empty
+#   admissionControl entirely, but an empty list is a no-op under Talos' strategic
+#   merge, so a privileged default is set instead.
+#   `exemptions` is NOT restated here: Talos concatenates list values on merge, so
+#   repeating `kube-system` would duplicate it and the apiserver rejects
+#   "exemptions.namespaces[1]: Duplicate value".
+# - Recursively bind-mounts (rbind) the OpenEBS LocalPV hostpath into the
+#   kubelet's mount namespace. Talos runs the kubelet in a container that sees
+#   only an explicit set of host paths; without this mount a provisioner pod
+#   creates /var/openebs/local on the real host fs but the kubelet cannot see it
+#   and fails to mount the `local` PV ("path ... does not exist"). rbind carries
+#   nested submounts; rshared propagates the provisioner's per-volume subdirs.
+#   apps/kube/openebs/local serves the default openebs-hostpath StorageClass from
+#   this path.
+machine:
+  features:
+    hostDNS:
+      enabled: true
+      forwardKubeDNSToHost: true
+  kubelet:
+    extraArgs:
+      feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true,RotateKubeletServerCertificate=true
+      tls-cipher-suites: TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    extraMounts:
+      - destination: /var/openebs/local
+        type: bind
+        source: /var/openebs/local
+        options:
+          - rbind
+          - rshared
+          - rw
+cluster:
+  # Single-node cluster: allow workloads on the control plane (otherwise the
+  # NoSchedule taint leaves nothing but tolerating system pods running).
+  allowSchedulingOnControlPlanes: true
+  network:
+    cni:
+      name: none
+  proxy:
+    disabled: true
+  controllerManager:
+    extraArgs:
+      feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true,RotateKubeletServerCertificate=true
+      tls-cipher-suites: TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+  scheduler:
+    extraArgs:
+      feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true,RotateKubeletServerCertificate=true
+      tls-cipher-suites: TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+  apiServer:
+    extraArgs:
+      feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true,RotateKubeletServerCertificate=true
+      tls-cipher-suites: TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    admissionControl:
+      - name: PodSecurity
+        configuration:
+          apiVersion: pod-security.admission.config.k8s.io/v1
+          kind: PodSecurityConfiguration
+          defaults:
+            enforce: privileged
+            enforce-version: latest
+            audit: privileged
+            audit-version: latest
+            warn: privileged
+            warn-version: latest

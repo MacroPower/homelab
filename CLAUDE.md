@@ -44,6 +44,7 @@ kcl chart update -c <chart_key>
 
 ## Development Workflow
 - IMPORTANT: If you update `charts/charts.k`, make sure to run `kcl chart update -c <chart_key>` to re-generate files.
+- Test apps locally before pushing with the Talos-in-Docker + ArgoCD harness: `task tald:all` brings up a single-node cluster (real Cilium datapath) that reconciles your working tree, `task tald:push` re-syncs after edits. An app joins the local set when it has an `apps/<tenant>/<app>/local/` overlay. See [Local Testing](./docs/local-testing.md).
 
 ## KCL Application Overview
 This homelab uses a **KCL-first configuration approach** with a custom `konfig` library for Kubernetes abstractions:

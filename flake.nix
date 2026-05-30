@@ -31,11 +31,13 @@
               pkgs.argocd
               pkgs.auth0-cli
               pkgs.cilium-cli
+              pkgs.kubectl
               pkgs.natscli
               pkgs.spacectl
               pkgs.talosctl
               pkgs.tpi
               pkgs.wrangler
+              pkgs.yq-go
 
               nurPkgs.kat
               nurPkgs.kclipper

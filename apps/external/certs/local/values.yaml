@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=../../../../charts/cert_manager/values.schema.json
+
+# Single node: one replica each (base runs 2 for HA).
+replicaCount: 1
+webhook:
+  replicaCount: 1
+cainjector:
+  replicaCount: 1

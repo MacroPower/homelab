@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=../../../../charts/reloader/values.schema.json
+
+reloader:
+  # No Prometheus operator CRDs in the local test cluster.
+  podMonitor:
+    enabled: false

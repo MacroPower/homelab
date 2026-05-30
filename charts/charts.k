@@ -155,7 +155,25 @@ charts: helm.Charts = {
             }
             prometheusOperatorObjects: {
                 enabled = True
-                crds: {deploy = True}
+            }
+        }
+    }
+    prometheus_operator_crds: {
+        chart = "prometheus-operator-crds"
+        repoURL = "https://prometheus-community.github.io/helm-charts"
+        # appVersion v0.86.2 -- pinned to match the CRDs on the clusters.
+        # k8s-monitoring v4 does not bundle these; this chart owns them in GitOps.
+        targetRevision = "24.0.2"
+        schemaGenerator = "AUTO"
+        crdGenerator = "NONE"
+        values: {
+            crds: {
+                # Argo CD must never prune or delete these CRDs: doing so
+                # cascade-deletes every ServiceMonitor/Prometheus/Alertmanager
+                # CR on the cluster. Stamp the guard on all of them.
+                annotations: {
+                    "argocd.argoproj.io/sync-options" = "Prune=false,Delete=false"
+                }
             }
         }
     }

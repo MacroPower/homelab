@@ -1,5 +1,6 @@
 import charts.external_secrets.api.v1 as externalsecretsv1
 import k8s.api.core.v1
+import models.metadata as kmd
 import models.protocol
 import models.resource
 import models.utils
@@ -15,6 +16,10 @@ mixin SecretMixin for protocol.AppProtocol:
             } for _i, _c in config.secrets]
         }
 
+# `fakeSecretStores` is honored only for the shared-tier ClusterSecretStores
+# (ClusterSecretStoreMixin below). App-level SecretStores and the in-cluster
+# NamespaceSecretStores are left real: no offline-deployed app sets them, and the
+# namespace store's `kubernetes` provider has no external backend to fake.
 mixin SecretStoreMixin for protocol.AppProtocol:
     if config.secretStores:
         kubernetes: resource.ResourceMapping {
@@ -29,10 +34,16 @@ mixin ClusterSecretStoreMixin for protocol.TenantProtocol:
         kubernetes: resource.ResourceMapping {
             ClusterSecretStore = [externalsecretsv1.ClusterSecretStore {
                 metadata = utils.MetadataBuilder(config | _c)
+                # On offline clusters (fakeSecretStores) the store serves a
+                # constant dummy value instead of a real backend, so dependent
+                # ExternalSecrets resolve -- the enumerated keys are the offline limit.
                 spec.conditions = [{
                     namespaceRegexes = ["{}-.+".format(_c.name)]
                 }]
-                spec.provider = _c.provider
+                if kmd.context.fakeSecretStores:
+                    spec.provider.fake.data = [{key = "dummy", value = "dummy"}]
+                else:
+                    spec.provider = _c.provider
             } for _i, _c in config.secretStores]
         }
 
