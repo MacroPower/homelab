@@ -12,10 +12,14 @@ schema Values:
     affinity : ValuesAffinity, optional
          not required, but left in as a choice
     annotations : ValuesAnnotations, optional
-        custom deployment annotations
+        Annotations to add the Deployment resource
     cluster : str, optional, default is ""
         For these values, see https://grafana.com/docs/grafana-cloud/connect-externally-hosted/private-data-source-connect/configure-pdc/#pdc-connection-steps
         The cluster where your Hosted Grafana stack is running
+    clusterSecretKey : str, optional, default is "cluster"
+        Defines the key used to lookup the cluster value in the secret defined by `clusterSecretName`.
+    clusterSecretName : str, optional, default is ""
+        If set, CLUSTER is read from this secret instead of the cluster value above
     debug : bool, optional, default is False
         Enable debug logging for the agent. Useful for seeing SSH debug logs
     extraArgs : [any], optional
@@ -23,25 +27,37 @@ schema Values:
         https://github.com/grafana/pdc-agent/blob/main/pkg/ssh/ssh.go/
         https://github.com/grafana/pdc-agent/blob/main/pkg/pdc/client.go
         https://github.com/grafana/pdc-agent/blob/main/cmd/pdc/main.go
+    extraEnv : [any], optional
+        Extra environment variables to set on the pdc-agent container.
+        Useful for configuring HTTP/HTTPS proxies or other runtime settings.
     fullnameOverride : str, optional, default is ""
     global : ValuesGlobal, optional
         Global values are values that can be accessed from any chart or subchart by exactly the same name.
     hostedGrafanaId : str, optional, default is ""
         The numeric ID of your Hosted Grafana stack
+    hostedGrafanaIdSecretKey : str, optional, default is "hosted-grafana-id"
+        Defines the key used to lookup the hosted Grafana ID value in the secret defined by `hostedGrafanaIdSecretName`.
+    hostedGrafanaIdSecretName : str, optional, default is ""
+        If set, HOSTED_GRAFANA_ID is read from this secret instead of the hostedGrafanaId value above
     image : ValuesImage, optional
         This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
     imagePullSecrets : [any], optional
         This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
     insecureTokenValue : str, optional, default is ""
         insecureTokenValue is used to set the token value directly in the deployment.yaml file. This is useful for testing purposes.
+    labels : ValuesLabels, optional
+        Labels to add to the Deployment resource
     metricsPort : int, optional, default is 8090
         The port where metrics are served from the pdc agent
     nameOverride : str, optional, default is ""
         This is to override the chart name.
     nodeSelector : ValuesNodeSelector, optional
         not required, but left in as a choice
+    podAnnotations : ValuesPodAnnotations, optional
+        Annotations to add to the Pod resource
+        For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
     podLabels : ValuesPodLabels, optional
-        This is for setting Kubernetes Labels to a Pod.
+        Labels to add to the Pod resource
         For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
     podSecurityContext : ValuesPodSecurityContext, optional
     replicaCount : int, optional, default is 3
@@ -49,8 +65,10 @@ schema Values:
     resources : ValuesResources, optional
     securityContext : ValuesSecurityContext, optional
     serviceAccount : ValuesServiceAccount, optional
+    tokenSecretKey : str, optional, default is "token"
+        tokenSecretKey Defines the key that is used to lookup the token value in the secret defined by `tokenSecretName`.
     tokenSecretName : str, optional, default is ""
-        secretName Expects a secret with key `token` which contains the Access Policy token you generated
+        tokenSecretName Expects a secret which contains the Access Policy token you generated. See `tokenSecretKey` for the key name under which the value is expected.
     tolerations : [any], optional
         not required, but left in as a choice
     """
@@ -58,23 +76,31 @@ schema Values:
     affinity?: ValuesAffinity
     annotations?: ValuesAnnotations
     cluster?: str
+    clusterSecretKey?: str
+    clusterSecretName?: str
     debug?: bool
     extraArgs?: [any]
+    extraEnv?: [any]
     fullnameOverride?: str
     global?: ValuesGlobal
     hostedGrafanaId?: str
+    hostedGrafanaIdSecretKey?: str
+    hostedGrafanaIdSecretName?: str
     image?: ValuesImage
     imagePullSecrets?: [any]
     insecureTokenValue?: str
+    labels?: ValuesLabels
     metricsPort?: int
     nameOverride?: str
     nodeSelector?: ValuesNodeSelector
+    podAnnotations?: ValuesPodAnnotations
     podLabels?: ValuesPodLabels
     podSecurityContext?: ValuesPodSecurityContext
     replicaCount?: int
     resources?: ValuesResources
     securityContext?: ValuesSecurityContext
     serviceAccount?: ValuesServiceAccount
+    tokenSecretKey?: str
     tokenSecretName?: str
     tolerations?: [any]
 
@@ -86,7 +112,7 @@ schema ValuesAffinity:
 
 schema ValuesAnnotations:
     r"""
-    custom deployment annotations
+    Annotations to add the Deployment resource
     """
     [...str]: any
 
@@ -113,15 +139,28 @@ schema ValuesImage:
     repository?: str
     tag?: str
 
+schema ValuesLabels:
+    r"""
+    Labels to add to the Deployment resource
+    """
+    [...str]: any
+
 schema ValuesNodeSelector:
     r"""
     not required, but left in as a choice
     """
     [...str]: any
 
+schema ValuesPodAnnotations:
+    r"""
+    Annotations to add to the Pod resource
+    For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+    """
+    [...str]: any
+
 schema ValuesPodLabels:
     r"""
-    This is for setting Kubernetes Labels to a Pod.
+    Labels to add to the Pod resource
     For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
     """
     [...str]: any
