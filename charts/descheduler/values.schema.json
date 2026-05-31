@@ -686,6 +686,12 @@
           "title": "additionalLabels",
           "type": "object"
         },
+        "apiVersion": {
+          "default": "monitoring.coreos.com/v1",
+          "required": [],
+          "title": "apiVersion",
+          "type": "string"
+        },
         "enabled": {
           "default": false,
           "required": [],

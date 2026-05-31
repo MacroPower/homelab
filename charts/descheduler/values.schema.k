@@ -587,6 +587,7 @@ schema ValuesServiceMonitor:
         The namespace where Prometheus expects to find service monitors.
         namespace: ""
         Add custom labels to the ServiceMonitor resource
+    apiVersion : str, optional, default is "monitoring.coreos.com/v1"
     enabled : bool, optional, default is False
     insecureSkipVerify : bool, optional, default is True
         honorLabels: true
@@ -601,6 +602,7 @@ schema ValuesServiceMonitor:
     """
     [...str]: any
     additionalLabels?: ValuesServiceMonitorAdditionalLabels
+    apiVersion?: str
     enabled?: bool
     insecureSkipVerify?: bool
     interval?: str
