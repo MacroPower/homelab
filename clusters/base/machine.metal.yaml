@@ -1,0 +1,20 @@
+# Bare-metal machine config shared by the real clusters (main, mgmt), merged on
+# top of machine.common.yaml. Omitted by the local Talos-in-Docker node:
+#   - rotate-server-certificates couples node-Ready to the kubelet-csr-approver.
+#   - logging ships to a syslog host unreachable from a Docker container.
+#   - vm.nr_hugepages may fail to apply inside the container.
+#   - hostDNS.forwardKubeDNSToHost must be true in container mode (Talos rejects
+#     false); the local node sets it true in clusters/local/machine.yaml.
+machine:
+  kubelet:
+    extraArgs:
+      rotate-server-certificates: "true"
+  logging:
+    destinations:
+      - endpoint: "udp://syslog.cin.macro.network:6051/"
+        format: json_lines
+  sysctls:
+    vm.nr_hugepages: "1024"
+  features:
+    hostDNS:
+      forwardKubeDNSToHost: false

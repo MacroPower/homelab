@@ -1,6 +1,12 @@
+# Container-safe control-plane config shared by every cluster (main, mgmt, and
+# the local Talos-in-Docker node), applied as a controlPlane patch. The pod-CIDR
+# allocation (tuned to the real clusters' dual-stack pod nets) lives in
+# cluster.metal.yaml. The PodSecurity admission below enforces `privileged` (it
+# blocks nothing) and only emits restricted-audit / baseline-warn annotations,
+# with Cilium's namespaces exempt.
 cluster:
   proxy:
-    # Replaced by Cillium.
+    # Replaced by Cilium.
     disabled: true
   apiServer:
     extraArgs:
@@ -29,17 +35,6 @@ cluster:
   controllerManager:
     extraArgs:
       bind-address: 0.0.0.0
-      ## Node CIDR mask size for IPv4 and IPv6.
-      ## One unique subnet of this size will be cut from the clusterPodNets
-      ## for every node.
-      ##
-      node-cidr-mask-size-ipv4: "20"
-      ## The IPv6 node cidr mask size MUST be within 16 bits of the
-      ## clusterPodNets IPv6cidr. By default, the clusterPodNets IPv6 mask
-      ## size is 48 and the clusterPodNets IPv6 cidr is /64 (48+16).
-      ##
-      node-cidr-mask-size-ipv6: "80"
-      allocate-node-cidrs: "true"
       feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true,RotateKubeletServerCertificate=true
       tls-cipher-suites: TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
   etcd:

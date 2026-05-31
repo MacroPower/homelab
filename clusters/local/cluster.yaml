@@ -1,0 +1,7 @@
+# Single-node control-plane delta for the local Talos-in-Docker node, merged on
+# top of ../base/cluster.common.yaml (which supplies the shared apiServer /
+# controllerManager / scheduler config and the PodSecurity admission Cilium needs).
+cluster:
+  # Let workloads run on the single control-plane node, otherwise the NoSchedule
+  # taint leaves nothing but tolerating system pods.
+  allowSchedulingOnControlPlanes: true

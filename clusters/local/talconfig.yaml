@@ -1,0 +1,52 @@
+# talhelper config for the single-node Talos-in-Docker test cluster (tald).
+# Generated in container mode and injected as USERDATA into a plain `docker run`
+# of the Talos image by .taskfiles/talos-docker/Taskfile.yaml -- the Docker
+# provisioner (`talosctl cluster create docker`) cannot consume a pre-generated
+# config, so tald runs the container itself.
+#
+# talosVersion / kubernetesVersion MUST match clusters/main/talconfig.yaml; the
+# tald `genconfig` task asserts this so the test node tracks the same versions a
+# real cluster runs. The node reuses the shared container-safe config fragments
+# (../base/machine.common.yaml as a machine patch, ../base/cluster.common.yaml as
+# a control-plane patch); the container/single-node deltas live in ./machine.yaml
+# (KubePrism, hostDNS forwarding) and ./cluster.yaml (schedule on control plane).
+clusterName: local
+talosVersion: v1.11.5
+kubernetesVersion: v1.34.1
+endpoint: https://10.5.0.2:6443
+
+cniConfig:
+  name: none
+
+# IPv4-only, matching apps/cilium/system/local (the docker provisioner network is
+# IPv4-only). Talos/kube-controller-manager derive the per-node pod CIDR mask from
+# these, so the real clusters' node-cidr-mask args (base/cluster.metal.yaml) stay
+# out -- local includes only base/cluster.common.yaml.
+clusterPodNets:
+  - 10.244.0.0/16
+clusterSvcNets:
+  - 10.96.0.0/12
+
+nodes:
+  - hostname: local
+    ipAddress: 10.5.0.2
+    controlPlane: true
+    # Unused in container mode (no install happens), but talhelper requires a node
+    # to declare one.
+    installDisk: /dev/vda
+    # Emit controlplane.yaml so the tald task can base64 it into USERDATA without
+    # templating the hostname into the filename.
+    filenameTmpl: controlplane.yaml
+
+controlPlane:
+  certSANs:
+    - localhost
+    - "127.0.0.1"
+    - "10.5.0.2"
+  patches:
+    - "@../base/cluster.common.yaml"
+    - "@./cluster.yaml"
+
+patches:
+  - "@../base/machine.common.yaml"
+  - "@./machine.yaml"

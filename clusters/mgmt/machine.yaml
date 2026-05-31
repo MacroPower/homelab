@@ -1,0 +1,8 @@
+# mgmt-specific machine config, merged on top of the shared
+# ../base/machine.{common,metal}.yaml fragments.
+machine:
+  kubelet:
+    nodeIP:
+      validSubnets:
+        - 10.10.0.0/16
+        - fc42:0:0:a::/64

@@ -1,0 +1,21 @@
+# Container/single-node machine deltas for the local Talos-in-Docker node, merged
+# on top of ../base/machine.common.yaml. The bare-metal machine.metal.yaml is not
+# included, so this restates the container-compatible pieces the node still needs.
+machine:
+  kubelet:
+    nodeIP:
+      # The node's only address is 10.5.0.2 on the docker bridge; scope the
+      # kubelet nodeIP to it (IPv4-only, like apps/cilium/system/local).
+      validSubnets:
+        - 10.0.0.0/8
+  features:
+    hostDNS:
+      resolveMemberNames: true
+      # Talos requires this true in container mode (it rejects false and the node
+      # boot-loops). The real clusters set it false in base/machine.metal.yaml.
+      forwardKubeDNSToHost: true
+    # KubePrism backs the Cilium k8sServiceHost (localhost:7445); on the real
+    # clusters it comes from clusters/main/machine.yaml.
+    kubePrism:
+      enabled: true
+      port: 7445

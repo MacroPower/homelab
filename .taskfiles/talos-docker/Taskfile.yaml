@@ -44,20 +44,16 @@ vars:
   # those guards actually catch a forgotten CLUSTER_NAME. Override with
   # TALD_CLUSTER=... for a second local cluster.
   TALD_CLUSTER: '{{.TALD_CLUSTER | default "homelab-local"}}'
-  WORKERS: '{{.WORKERS | default "0"}}'
   CPUS: '{{.CPUS | default "4"}}'
   MEMORY: '{{.MEMORY | default "6144"}}'
   NODE_IP: '{{.NODE_IP | default "10.5.0.2"}}'
   SUBNET: '{{.SUBNET | default "10.5.0.0/24"}}'
   REVISION: '{{.REVISION | default "local"}}'
-  # The live cluster whose pinned Talos/Kubernetes versions the test node tracks.
-  # cluster-create reads talosVersion/kubernetesVersion from this cluster's
-  # talconfig and pins the node to them (see that task), so the node runs the
-  # SAME versions a real cluster does instead of talosctl's built-in defaults
-  # (which drift: this talosctl defaults to Talos v1.12.0 / k8s 1.35.0, while the
-  # live clusters run v1.11.x / v1.34.1). Default `main`, the newest live Talos;
-  # set TALD_TALOS_REF=mgmt (or override TALOS_VERSION/KUBERNETES_VERSION) for a
-  # one-off against a different cluster.
+  # The live cluster the test node tracks. clusters/local/talconfig.yaml carries
+  # the node's pinned talosVersion/kubernetesVersion (talhelper reads them); the
+  # genconfig task asserts they equal this reference cluster's, so the node runs
+  # the SAME versions a real cluster does rather than talosctl's drifting defaults;
+  # set TALD_TALOS_REF=mgmt to assert parity against a different cluster instead.
   TALD_TALOS_REF: '{{.TALD_TALOS_REF | default "main"}}'
   # In-cluster git mirror the local Argo CD reconciles (a hostNetwork pod on the
   # node IP; see bootstrap/hack/git-mirror). repoURL/revision are injected into
@@ -72,10 +68,15 @@ vars:
   MIRROR_URL: 'git://{{.NODE_IP}}:{{.MIRROR_PORT}}/homelab.git'
 
   STATE_DIR: "{{.ROOT_DIR}}/.cache"
-  TALOS_STATE: "{{.ROOT_DIR}}/.cache/talos"
   RENDER_DIR: "{{.ROOT_DIR}}/.cache/render"
-  CREATE_LOG: "{{.ROOT_DIR}}/.cache/cluster-create.log"
-  CNI_PATCH: "{{.ROOT_DIR}}/.taskfiles/talos-docker/resources/patch-cni-none.yaml"
+  # talhelper renders the node's machine config + client talosconfig here (in
+  # container mode, from clusters/local/talconfig.yaml); the node-up task base64s
+  # controlplane.yaml into USERDATA. Throwaway PKI lives in TALSECRET, regenerated
+  # per cold start and wiped by tald:down.
+  CLUSTERCONFIG_DIR: "{{.ROOT_DIR}}/.cache/clusterconfig"
+  TALSECRET: "{{.ROOT_DIR}}/.cache/talsecret.yaml"
+  # The Docker bridge the node attaches to (created by node-up, removed by down).
+  DOCKER_NET: "{{.TALD_CLUSTER}}"
 
   # Repo-local kube/talos configs, baked into the kubectl/talosctl invocations
   # below as explicit `--kubeconfig`/`--talosconfig` flags. A task `env:` is LOWER
@@ -84,7 +85,9 @@ vars:
   # kubectl -- and `tald:down`'s config cleanup -- at your REAL cluster. The
   # explicit flags win regardless of the ambient environment.
   KUBECONFIG_PATH: "{{.STATE_DIR}}/kubeconfig"
-  TALOSCONFIG_PATH: "{{.STATE_DIR}}/talosconfig"
+  # talhelper writes the client config here as part of genconfig; tald talks to the
+  # node over it (see the TALOSCTL var).
+  TALOSCONFIG_PATH: "{{.CLUSTERCONFIG_DIR}}/talosconfig"
   KUBECTL: 'kubectl --kubeconfig {{.KUBECONFIG_PATH}}'
   # Argo CD CLI driven against the in-cluster argo-cd-server over a port-forward,
   # the same transport the live argocd:* tasks use. Deliberately NOT --core:
@@ -102,12 +105,11 @@ vars:
   # socket). Set ROOTFUL_DOCKER_HOST if your rootful socket lives elsewhere.
   DOCKER_HOST: '{{.ROOTFUL_DOCKER_HOST | default "unix:///run/docker.sock"}}'
   DOCKER_SUDO: 'sudo -E env DOCKER_HOST={{.DOCKER_HOST}} docker' # prompt-capable
-  TALOSCTL_SUDO: 'sudo -E env DOCKER_HOST={{.DOCKER_HOST}} talosctl'
   # Non-interactive variant for the idempotency `status:` probes: with no cached
   # sudo ticket it fails cleanly (so the task runs and sudo-auth caches one)
   # instead of prompting for a password mid up-to-date check.
   DOCKER_SUDO_N: 'sudo -n -E env DOCKER_HOST={{.DOCKER_HOST}} docker'
-  # talosctl client (no sudo): talks to the node API over the chowned talosconfig.
+  # talosctl client (no sudo): talks to the node API over talhelper's talosconfig.
   TALOSCTL: 'talosctl --talosconfig {{.TALOSCONFIG_PATH}} -n {{.NODE_IP}} -e {{.NODE_IP}}'
   # Post-Cilium node-Ready budget, generous for a cold first boot (cilium image
   # pull + datapath programming); only paid in full on a genuinely stuck bring-up.
@@ -150,6 +152,8 @@ tasks:
     preconditions:
       - sh: command -v talosctl
         msg: talosctl is required (enter the devshell)
+      - sh: command -v talhelper
+        msg: talhelper is required to generate the node config (enter the devshell)
       - sh: command -v kcl
         msg: kclipper (kcl) is required (enter the devshell)
       - sh: command -v kubectl
@@ -158,7 +162,7 @@ tasks:
         msg: yq is required to read the pinned Talos/Kubernetes versions (enter the devshell)
     cmds:
       - task: sudo-auth
-      - task: cluster-create
+      - task: node-up
       - task: wait-apiserver
       - task: cilium
 
@@ -470,21 +474,20 @@ tasks:
       # partial bring-up still cleans up.
       - cmd: '{{.KUBECTL}} delete namespace git-system --ignore-not-found --wait=false'
         ignore_error: true
-      - cmd: '{{.TALOSCTL_SUDO}} cluster destroy --name {{.TALD_CLUSTER}} --state "{{.TALOS_STATE}}"'
+      # -v reaps the node's six anonymous volumes (/var, /system/state, the four
+      # overlays) so up/down cycles do not orphan them.
+      - cmd: '{{.DOCKER_SUDO}} rm -f -v {{.TALD_CLUSTER}}-controlplane-1'
         ignore_error: true
-      - cmd: '{{.DOCKER_SUDO}} rm -f {{.TALD_CLUSTER}}-controlplane-1'
+      - cmd: '{{.DOCKER_SUDO}} network rm {{.DOCKER_NET}}'
         ignore_error: true
-      - cmd: '{{.DOCKER_SUDO}} network rm {{.TALD_CLUSTER}}'
-        ignore_error: true
-      # `talosctl cluster destroy` returns before Docker finalizes the container
-      # removal; block until it is truly gone so a back-to-back `tald:down &&
-      # tald:all` does not trip cluster-create's "already exists" precondition.
+      # `docker rm -f` can return before Docker finalizes the container removal;
+      # block until it is truly gone so a back-to-back `tald:down && tald:all` does
+      # not trip node-up's "already exists" precondition.
       - cmd: 'for i in $(seq 1 30); do {{.DOCKER_SUDO_N}} ps -a --filter "name=^/{{.TALD_CLUSTER}}-controlplane-1$" -q 2>/dev/null | grep -q . || exit 0; sleep 1; done'
         ignore_error: true
-      # The detached create writes state under --state as root, so remove it with sudo.
-      - cmd: 'sudo rm -rf "{{.TALOS_STATE}}/{{.TALD_CLUSTER}}"'
-        ignore_error: true
-      - rm -rf "{{.RENDER_DIR}}" "{{.CREATE_LOG}}" "{{.KUBECONFIG_PATH}}" "{{.TALOSCONFIG_PATH}}"
+      # Wipe the generated config, throwaway PKI (so the next cold start gets a fresh
+      # CA), and pulled kubeconfig. TALOSCONFIG_PATH lives inside CLUSTERCONFIG_DIR.
+      - rm -rf "{{.RENDER_DIR}}" "{{.CLUSTERCONFIG_DIR}}" "{{.TALSECRET}}" "{{.KUBECONFIG_PATH}}"
       # A stale `kubectl config` lockfile next to the kubeconfig would break the
       # next argocd run; remove it if present.
       - cmd: 'rm -f "{{.KUBECONFIG_PATH}}.lock"'
@@ -497,44 +500,54 @@ tasks:
 
   sudo-auth:
     internal: true
-    # Cache a sudo ticket up front so the detached cluster create and the other
-    # rootful calls never block on a password prompt mid-flow.
+    # Cache a sudo ticket up front so the rootful docker calls (network create,
+    # node run, logs) never block on a password prompt mid-flow.
     cmds:
       - sudo -v
 
-  validate-patch:
+  genconfig:
     internal: true
-    # Generate a throwaway machine config with the CNI patch applied and validate
-    # it in CONTAINER mode, so a bad patch fails in ~1s with the exact Talos error
-    # rather than a silent node boot-loop. Needs no sudo (writes only under .cache).
-    vars:
-      GENDIR: "{{.STATE_DIR}}/talos-validate"
+    # Render the node's machine config with talhelper in CONTAINER mode -- the same
+    # tool + shared fragments the live clusters use (clusters/local/talconfig.yaml
+    # includes ../base/machine.common.yaml + ../base/cluster.common.yaml).
+    # Container-mode validation here fails fast on a bad config rather than a silent
+    # boot-loop. Writes only under .cache (no sudo). Runs from clusters/local so the
+    # talconfig's relative `@../base/...` patch includes resolve.
+    dir: "{{.ROOT_DIR}}/clusters/local"
+    # Pin parity: the local node must track the SAME Talos/Kubernetes versions as
+    # the live cluster TALD_TALOS_REF, so a manifest validated locally matches prod.
+    # talhelper reads the versions from clusters/local/talconfig.yaml; assert they
+    # have not drifted from the reference cluster.
+    preconditions:
+      - sh: 'test "$(yq -r .talosVersion "{{.ROOT_DIR}}/clusters/local/talconfig.yaml")" = "$(yq -r .talosVersion "{{.ROOT_DIR}}/clusters/{{.TALD_TALOS_REF}}/talconfig.yaml")"'
+        msg: "clusters/local talosVersion != clusters/{{.TALD_TALOS_REF}} -- realign clusters/local/talconfig.yaml"
+      - sh: 'test "$(yq -r .kubernetesVersion "{{.ROOT_DIR}}/clusters/local/talconfig.yaml")" = "$(yq -r .kubernetesVersion "{{.ROOT_DIR}}/clusters/{{.TALD_TALOS_REF}}/talconfig.yaml")"'
+        msg: "clusters/local kubernetesVersion != clusters/{{.TALD_TALOS_REF}} -- realign clusters/local/talconfig.yaml"
     cmds:
-      - rm -rf "{{.GENDIR}}"
-      - 'talosctl gen config tald-validate https://{{.NODE_IP}}:6443 --config-patch @"{{.CNI_PATCH}}" -o "{{.GENDIR}}" --force >/dev/null 2>&1'
-      - 'talosctl validate -c "{{.GENDIR}}/controlplane.yaml" -m container'
-      - rm -rf "{{.GENDIR}}"
+      - mkdir -p "{{.CLUSTERCONFIG_DIR}}"
+      # Throwaway PKI for this cluster's lifetime (wiped by tald:down); generate
+      # only if absent so a re-run of `up` reuses the same secrets/CA.
+      - 'test -f "{{.TALSECRET}}" || talhelper gensecret > "{{.TALSECRET}}"'
+      - talhelper validate talconfig talconfig.yaml
+      - >-
+        talhelper genconfig
+        -c talconfig.yaml
+        -s "{{.TALSECRET}}"
+        -m container --offline-mode --no-gitignore
+        -o "{{.CLUSTERCONFIG_DIR}}"
 
-  cluster-create:
+  node-up:
     internal: true
-    # Resolve the node's Talos/Kubernetes versions from the live talconfig of
-    # TALD_TALOS_REF (yq), so the test node is pinned to the SAME versions a real
-    # cluster runs rather than talosctl's drifting defaults. Computed here (not at
-    # the taskfile top level) so the yq calls only fire on an actual create, and a
-    # version-less task like tald:down never depends on yq. Override TALOS_VERSION
-    # or KUBERNETES_VERSION on the CLI for a one-off; either un-set value falls
-    # back to the talconfig.
+    # Resolve the Talos image tag from clusters/local/talconfig.yaml (the same file
+    # genconfig pins to the reference cluster). Computed here so a version-less task
+    # like tald:down never shells out to yq.
     vars:
-      TALOS_VERSION_DEFAULT:
-        sh: yq -r '.talosVersion' "{{.ROOT_DIR}}/clusters/{{.TALD_TALOS_REF}}/talconfig.yaml"
-      KUBERNETES_VERSION_DEFAULT:
-        sh: yq -r '.kubernetesVersion' "{{.ROOT_DIR}}/clusters/{{.TALD_TALOS_REF}}/talconfig.yaml"
-      TALOS_VERSION: '{{.TALOS_VERSION | default .TALOS_VERSION_DEFAULT}}'
-      KUBERNETES_VERSION: '{{.KUBERNETES_VERSION | default .KUBERNETES_VERSION_DEFAULT}}'
+      TALOS_VERSION:
+        sh: yq -r '.talosVersion' "{{.ROOT_DIR}}/clusters/local/talconfig.yaml"
     status:
       - '{{.DOCKER_SUDO_N}} ps --filter "name=^/{{.TALD_CLUSTER}}-controlplane-1$" --filter status=running -q 2>/dev/null | grep -q .'
-    # A stopped (not running) same-named container would make `cluster create`
-    # fail on the name clash; fail early with a clear pointer to `tald:down`.
+    # A stopped (not running) same-named container would clash on `docker run`;
+    # fail early with a clear pointer to `tald:down`.
     # NB: test the command substitution directly rather than `! docker ... | grep`
     # -- go-task's shell (gosh) mis-binds `!` across a pipe and false-positives.
     # `test -z "$(...)"` is met (empty) exactly when no such container exists.
@@ -542,48 +555,69 @@ tasks:
       - sh: 'test -z "$({{.DOCKER_SUDO_N}} ps -a --filter "name=^/{{.TALD_CLUSTER}}-controlplane-1$" -q 2>/dev/null)"'
         msg: "a container named {{.TALD_CLUSTER}}-controlplane-1 already exists; run 'task tald:down' first"
     cmds:
-      # Validate the patch before the create, so a bad patch fails fast instead of
-      # a silent boot-loop + ~10min wait-apiserver timeout.
-      - task: validate-patch
-      - mkdir -p "{{.TALOS_STATE}}"
-      - rm -f "{{.CREATE_LOG}}"
-      # `talosctl cluster create docker` blocks until the node reports Ready,
-      # which never happens without a CNI. Detach it (setsid + `&`, stdin from
-      # /dev/null so sudo can only use the cached ticket) so wait-apiserver and
-      # cilium can run next and bring the datapath up; the detached create then
-      # observes Ready and exits on its own. It is never reaped -- `tald:down`
-      # tears the cluster down regardless -- and its log stays under .cache.
-      - >-
-        setsid {{.TALOSCTL_SUDO}} cluster create docker
-        --name {{.TALD_CLUSTER}}
-        --image ghcr.io/siderolabs/talos:{{.TALOS_VERSION}}
-        --kubernetes-version {{trimPrefix "v" .KUBERNETES_VERSION}}
-        --workers {{.WORKERS}}
-        --cpus-controlplanes {{.CPUS}} --cpus-workers {{.CPUS}}
-        --memory-controlplanes {{.MEMORY}} --memory-workers {{.MEMORY}}
-        --subnet {{.SUBNET}}
-        --config-patch @"{{.CNI_PATCH}}"
-        --state "{{.TALOS_STATE}}"
-        --talosconfig-destination "{{.TALOSCONFIG_PATH}}"
-        >"{{.CREATE_LOG}}" 2>&1 </dev/null &
+      # Generate the config first, so a bad config fails fast (container-mode
+      # validation) instead of a silent boot-loop + long wait-apiserver timeout.
+      - task: genconfig
+      # Idempotent: tolerate an existing net.
+      - cmd: '{{.DOCKER_SUDO}} network create --subnet {{.SUBNET}} --opt com.docker.network.driver.mtu=1500 {{.DOCKER_NET}}'
+        ignore_error: true
+      # Run the Talos image as the control-plane node. `talosctl cluster create
+      # docker` (v1.12) cannot consume a pre-generated config, so we replicate its
+      # container spec (pkg/provision/providers/docker/node.go) and deliver the
+      # talhelper config the way the platform reads it: base64 in the USERDATA env
+      # var (platform/container/container.go). `docker run -d` returns immediately
+      # and the node configures from USERDATA, then waits for `talosctl bootstrap`
+      # (issued by wait-apiserver).
+      #
+      # The tmpfs + anonymous-volume mount set mirrors node.go's
+      # EphemeralMountPoint/StateMountPoint/Overlays for Talos {{.TALOS_VERSION}};
+      # re-verify against node.go on a Talos bump.
+      # silent: the USERDATA arg is the base64 machine config, which carries the
+      # cluster PKI; suppress the command echo so it never lands in scrollback or a
+      # .cache log. The boot log (docker logs) is the real debug surface.
+      - cmd: >-
+          {{.DOCKER_SUDO}} run -d
+          --name {{.TALD_CLUSTER}}-controlplane-1
+          --hostname local
+          --privileged
+          --security-opt seccomp=unconfined
+          --read-only
+          --network {{.DOCKER_NET}} --ip {{.NODE_IP}}
+          --cpus {{.CPUS}} --memory {{.MEMORY}}m
+          --sysctl net.ipv6.conf.all.disable_ipv6=0
+          --label talos.owned=true
+          --label talos.cluster.name={{.TALD_CLUSTER}}
+          --label talos.type=controlplane
+          -e PLATFORM=container
+          -e 'TALOSSKU={{.CPUS}}CPU-{{.MEMORY}}RAM'
+          -e USERDATA="$(base64 -w0 "{{.CLUSTERCONFIG_DIR}}/controlplane.yaml")"
+          --tmpfs /run --tmpfs /system --tmpfs /tmp
+          --mount type=volume,target=/var
+          --mount type=volume,target=/system/state
+          --mount type=volume,target=/etc/cni
+          --mount type=volume,target=/etc/kubernetes
+          --mount type=volume,target=/usr/libexec/kubernetes
+          --mount type=volume,target=/opt
+          -p 127.0.0.1:6443:6443/tcp
+          -p 127.0.0.1:50000:50000/tcp
+          ghcr.io/siderolabs/talos:{{.TALOS_VERSION}}
+        silent: true
 
   wait-apiserver:
     internal: true
     # No status gate: this only runs inside `up`, whose own status already
-    # short-circuits an already-running cluster. Re-running is idempotent, and
-    # the chown MUST re-run -- the detached create keeps writing state as root.
+    # short-circuits an already-running cluster, and every step is idempotent.
     cmds:
-      # The detached create writes the talosconfig as root; wait for it, take
-      # ownership, pull a kubeconfig from the node, then block until /healthz.
+      # Wait for the node API (apid on 50000, authenticated by talhelper's PKI),
+      # bootstrap etcd on the single control-plane node (the docker provisioner did
+      # this implicitly), pull a kubeconfig, then block until the apiserver answers.
       - task: wait-for
         vars:
-          MSG: "talosconfig from the cluster create"
-          CMD: 'sudo -n test -f "{{.TALOSCONFIG_PATH}}"'
-          # The detached create logs here; surface it if the talosconfig never
-          # appears (e.g. the rootful Docker daemon was unreachable), so the
-          # timeout reports its cause instead of a bare "timed out".
-          ON_FAIL: 'tail -n 40 "{{.CREATE_LOG}}" >&2 || true'
-      - sudo -n chown -R "$(id -u):$(id -g)" "{{.TALOS_STATE}}" "{{.TALOSCONFIG_PATH}}"
+          MSG: "Talos node API on {{.NODE_IP}}"
+          TRIES: "120"
+          CMD: '{{.TALOSCTL}} version >/dev/null 2>&1'
+          ON_FAIL: '{{.DOCKER_SUDO}} logs {{.TALD_CLUSTER}}-controlplane-1 2>&1 | tail -n 40 >&2 || true'
+      - task: bootstrap-node
       - task: wait-for
         vars:
           MSG: "kubeconfig from talosctl"
@@ -594,8 +628,23 @@ tasks:
           MSG: "apiserver /healthz"
           TRIES: "300"
           CMD: '{{.KUBECTL}} get --raw=/healthz >/dev/null 2>&1'
-          # Surface the detached create's boot log if the apiserver never answers.
-          ON_FAIL: 'tail -n 40 "{{.CREATE_LOG}}" >&2 || true'
+          ON_FAIL: '{{.DOCKER_SUDO}} logs {{.TALD_CLUSTER}}-controlplane-1 2>&1 | tail -n 40 >&2 || true'
+
+  bootstrap-node:
+    internal: true
+    # Bootstrap etcd on the single control-plane node. Idempotent and retried:
+    # before etcd is ready `talosctl bootstrap` errors transiently; once done a
+    # second call reports "already bootstrapped" -- both treated as terminal.
+    cmds:
+      - |-
+        for i in $(seq 1 60); do
+          out="$({{.TALOSCTL}} bootstrap 2>&1)" && exit 0
+          printf '%s\n' "$out" | grep -qi "already bootstrapped" && exit 0
+          sleep 2
+        done
+        echo "etcd bootstrap did not succeed on {{.NODE_IP}}:" >&2
+        {{.DOCKER_SUDO}} logs {{.TALD_CLUSTER}}-controlplane-1 2>&1 | tail -n 40 >&2 || true
+        exit 1
 
   git-deploy:
     internal: true

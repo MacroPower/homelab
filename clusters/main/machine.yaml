@@ -1,0 +1,14 @@
+# main-specific machine config, merged on top of the shared
+# ../base/machine.{common,metal}.yaml fragments.
+machine:
+  kubelet:
+    nodeIP:
+      validSubnets:
+        - 10.0.0.0/8
+        - fc42::/56
+  features:
+    hostDNS:
+      resolveMemberNames: true
+    kubePrism:
+      enabled: true
+      port: 7445

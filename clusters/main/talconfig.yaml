@@ -389,7 +389,8 @@ controlPlane:
         [plugins."io.containerd.cri.v1.images"]
           discard_unpacked_layers = false
   patches:
-    - "@./talclusterconfig.yaml"
+    - "@../base/cluster.common.yaml"
+    - "@../base/cluster.metal.yaml"
 
 worker:
   certSANs:
@@ -409,4 +410,6 @@ worker:
             maxPods: 250
 
 patches:
-  - "@./talmachineconfig.yaml"
+  - "@../base/machine.common.yaml"
+  - "@../base/machine.metal.yaml"
+  - "@./machine.yaml"

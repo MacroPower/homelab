@@ -1,0 +1,19 @@
+# Pod-CIDR allocation shared by the real clusters (main, mgmt), merged on top of
+# cluster.common.yaml. Omitted by the IPv4-only local Talos-in-Docker
+# node: kube-controller-manager rejects node-cidr-mask-size-ipv6 when no IPv6
+# cluster CIDR is configured, and the local node lets Talos derive the default
+# mask from its own single-stack clusterPodNets.
+cluster:
+  controllerManager:
+    extraArgs:
+      ## Node CIDR mask size for IPv4 and IPv6.
+      ## One unique subnet of this size will be cut from the clusterPodNets
+      ## for every node.
+      ##
+      node-cidr-mask-size-ipv4: "20"
+      ## The IPv6 node cidr mask size MUST be within 16 bits of the
+      ## clusterPodNets IPv6cidr. By default, the clusterPodNets IPv6 mask
+      ## size is 48 and the clusterPodNets IPv6 cidr is /64 (48+16).
+      ##
+      node-cidr-mask-size-ipv6: "80"
+      allocate-node-cidrs: "true"

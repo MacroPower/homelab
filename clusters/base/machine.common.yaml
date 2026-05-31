@@ -1,12 +1,11 @@
+# Container-safe machine config shared by every cluster (main, mgmt, and the
+# local Talos-in-Docker node). Bare-metal-only machine settings live in
+# machine.metal.yaml; per-cluster machine settings (kubelet nodeIP subnets,
+# KubePrism, hostDNS member-name resolution) live in each cluster dir.
 machine:
   kubelet:
-    nodeIP:
-      validSubnets:
-        - 10.0.0.0/8
-        - fc42::/56
     extraArgs:
       feature-gates: MemoryQoS=true,InPlacePodVerticalScaling=true,RotateKubeletServerCertificate=true
-      rotate-server-certificates: "true"
       tls-cipher-suites: TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
     extraMounts:
       - source: /var/openebs/local
@@ -16,10 +15,6 @@ machine:
           - rbind
           - rshared
           - rw
-  logging:
-    destinations:
-      - endpoint: "udp://syslog.cin.macro.network:6051/"
-        format: json_lines
   time:
     disabled: false
     servers:
@@ -27,13 +22,6 @@ machine:
       - 1.north-america.pool.ntp.org
       - 2.north-america.pool.ntp.org
       - 3.north-america.pool.ntp.org
-  sysctls:
-    vm.nr_hugepages: "1024"
   features:
     hostDNS:
       enabled: true
-      resolveMemberNames: true
-      forwardKubeDNSToHost: false
-    kubePrism:
-      enabled: true
-      port: 7445
