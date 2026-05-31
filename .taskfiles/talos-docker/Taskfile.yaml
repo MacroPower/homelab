@@ -165,6 +165,7 @@ tasks:
       - task: node-up
       - task: wait-apiserver
       - task: cilium
+      - task: kubectx
 
   cilium:
     desc: Re-render and apply the Docker-safe Cilium overlay, wait for node Ready
@@ -363,6 +364,34 @@ tasks:
     cmds:
       - echo "export KUBECONFIG={{.KUBECONFIG_PATH}}"
 
+  kubectx:
+    desc: Register the test cluster in the standard kubeconfig (~/.kube/config) for normal kubectl access
+    silent: true
+    # Make the test cluster a normal cluster: fold its self-contained context
+    # (inline cluster-admin creds) into ~/.kube/config -- the standard location
+    # every kubectl/k9s reads with no env vars or flags. tald keeps its own config
+    # under .cache and always passes an explicit --kubeconfig (so its apply/destroy
+    # can never hit a real cluster regardless of ambient KUBECONFIG); this task is
+    # the one seam that exposes the cluster for interactive use. Additive and
+    # idempotent (merge dedups by name; existing contexts and current-context
+    # survive, first-file-wins); tald:down removes it again. Chained into `up`.
+    preconditions:
+      - sh: test -f "{{.KUBECONFIG_PATH}}"
+        msg: "no test-cluster kubeconfig yet -- run 'task tald:up' first"
+    cmds:
+      # Native kubeconfig merge: ~/.kube/config first so its current-context and
+      # existing contexts win, the test config second to contribute its entry;
+      # --flatten inlines the certs so the result is self-contained. Temp + rename
+      # so a torn read never truncates the user's real kubeconfig.
+      - |
+        mkdir -p "$HOME/.kube"
+        KUBECONFIG="$HOME/.kube/config:{{.KUBECONFIG_PATH}}" kubectl config view --flatten > "$HOME/.kube/config.tald.tmp"
+        mv "$HOME/.kube/config.tald.tmp" "$HOME/.kube/config"
+      - |
+        ctx=$({{.KUBECTL}} config view -o jsonpath='{.contexts[0].name}')
+        echo "Registered the test cluster in ~/.kube/config (context: $ctx)."
+        echo "Use it from any shell with: kubectl config use-context $ctx"
+
   ui:
     desc: Port-forward the local Argo CD UI to http://localhost:8080 (blocks until Ctrl-C)
     silent: true
@@ -485,6 +514,10 @@ tasks:
       # not trip node-up's "already exists" precondition.
       - cmd: 'for i in $(seq 1 30); do {{.DOCKER_SUDO_N}} ps -a --filter "name=^/{{.TALD_CLUSTER}}-controlplane-1$" -q 2>/dev/null | grep -q . || exit 0; sleep 1; done'
         ignore_error: true
+      # Drop the test cluster's context from ~/.kube/config before the kubeconfig
+      # it reads the names from is wiped below, so a torn-down cluster stops
+      # appearing in `kubectl config get-contexts`.
+      - task: kubectx-clean
       # Wipe the generated config, throwaway PKI (so the next cold start gets a fresh
       # CA), and pulled kubeconfig. TALOSCONFIG_PATH lives inside CLUSTERCONFIG_DIR.
       - rm -rf "{{.RENDER_DIR}}" "{{.CLUSTERCONFIG_DIR}}" "{{.TALSECRET}}" "{{.KUBECONFIG_PATH}}"
@@ -697,6 +730,23 @@ tasks:
     # teardown leaves nothing in your real .git.
     cmds:
       - cmd: "git -c safe.directory='*' update-ref -d refs/tald/{{.MIRROR_REF}}"
+        ignore_error: true
+
+  kubectx-clean:
+    internal: true
+    # Counterpart to the `kubectx` task: delete the test cluster's context/cluster/
+    # user (by the names in its kubeconfig) from ~/.kube/config with native
+    # `kubectl config delete-*`, leaving any real contexts untouched. Must run while
+    # {{.KUBECONFIG_PATH}} still exists (down wipes it next) so the names are
+    # readable. No-op once the file/kubeconfig is gone. ignore_error: a best-effort
+    # teardown step must never fail the down.
+    cmds:
+      - cmd: |
+          [ -f "$HOME/.kube/config" ] && [ -f "{{.KUBECONFIG_PATH}}" ] || exit 0
+          for n in $({{.KUBECTL}} config view -o jsonpath='{.contexts[*].name}'); do KUBECONFIG="$HOME/.kube/config" kubectl config delete-context "$n" >/dev/null 2>&1 || true; done
+          for n in $({{.KUBECTL}} config view -o jsonpath='{.clusters[*].name}'); do KUBECONFIG="$HOME/.kube/config" kubectl config delete-cluster "$n" >/dev/null 2>&1 || true; done
+          for n in $({{.KUBECTL}} config view -o jsonpath='{.users[*].name}');    do KUBECONFIG="$HOME/.kube/config" kubectl config delete-user    "$n" >/dev/null 2>&1 || true; done
+          true
         ignore_error: true
 
   appset-nudge:

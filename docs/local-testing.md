@@ -36,6 +36,20 @@ export KUBECONFIG="$(git rev-parse --show-toplevel)/.cache/kubeconfig"
 # or: task tald:kubeconfig
 ```
 
+For zero-ceremony access, `tald:up` also merges the cluster into the standard
+`~/.kube/config` (additively, via `kubectl config view --flatten`; `tald:down`
+removes it again) under context `admin@local`, so any shell reaches it with no
+env var and no flag:
+
+```sh
+kubectl config use-context admin@local
+```
+
+Re-run `task tald:kubectx` by hand if the cluster outlives the shell that
+registered it. The harness's own commands always pass an explicit `--kubeconfig`
+under `.cache`, so they target the test cluster regardless of which context is
+current.
+
 ## Quickstart
 
 ```sh
