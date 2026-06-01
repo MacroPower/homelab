@@ -177,7 +177,20 @@ tasks:
           OUT: "{{.RENDER_DIR}}/cilium.yaml"
       - task: ensure-ns
         vars: { NS: cilium-system }
-      - '{{.KUBECTL}} apply --server-side --force-conflicts -f "{{.RENDER_DIR}}/cilium.yaml"'
+      # The overlay bundles the Cilium install with its CiliumLoadBalancerIPPool
+      # and CiliumL2AnnouncementPolicy CRs, but those CRDs are registered by the
+      # cilium-operator only once it is scheduled and running -- minutes on a cold
+      # node, not the sub-second CRD establishment a bootstrap bundle needs. Reuse
+      # the shared CRD-then-CR retry, but with a budget (~6 min) that outlasts the
+      # operator coming up; it exits as soon as the apply lands, so a warm rebuild
+      # pays only the first attempt.
+      - task: kcl:apply-retry
+        vars:
+          OUT: "{{.RENDER_DIR}}/cilium.yaml"
+          KUBECTL_BIN: "{{.KUBECTL}}"
+          LABEL: cilium
+          TRIES: "40"
+          DELAY: "10"
       # The kubelet registers the Node object a moment after the apiserver first
       # answers; `kubectl wait --all` errors ("no matching resources found") if it
       # runs before any Node exists, so wait for registration, then for Ready.

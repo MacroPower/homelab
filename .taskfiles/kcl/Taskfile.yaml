@@ -104,8 +104,13 @@ tasks:
       KUBECTL_BIN: '{{.KUBECTL_BIN | default "kubectl"}}'
       TRIES: '{{.TRIES | default "8"}}'
       DELAY: '{{.DELAY | default "8"}}'
-    # A bootstrap bundle carries CRDs plus the CRs (AppProject/ApplicationSet)
-    # that use them, so the first server-side apply creates the CRDs and fails on
-    # those CRs; retry the whole apply until the CRDs establish and it goes clean.
+      # What is being applied, for the retry log line. The Cilium overlay reuses
+      # this task too (it has the same CRD-then-CR shape), so the message is not
+      # hardcoded to "bootstrap".
+      LABEL: '{{.LABEL | default "bootstrap"}}'
+    # A bundle that carries CRDs plus the CRs that use them (a bootstrap bundle's
+    # AppProject/ApplicationSet, or the Cilium overlay's LB pool / L2 policy) makes
+    # the first server-side apply create the CRDs and fail on those CRs; retry the
+    # whole apply until the CRDs establish and it goes clean.
     cmds:
-      - 'for i in $(seq 1 {{.TRIES}}); do {{.KUBECTL_BIN}} apply --server-side --force-conflicts -f "{{.OUT}}" && exit 0; echo "bootstrap apply attempt $i/{{.TRIES}} failed (CRDs may still be establishing); retrying in {{.DELAY}}s" >&2; sleep {{.DELAY}}; done; echo "bootstrap apply did not converge after {{.TRIES}} attempts" >&2; exit 1'
+      - 'for i in $(seq 1 {{.TRIES}}); do {{.KUBECTL_BIN}} apply --server-side --force-conflicts -f "{{.OUT}}" && exit 0; echo "{{.LABEL}} apply attempt $i/{{.TRIES}} failed (CRDs may still be establishing); retrying in {{.DELAY}}s" >&2; sleep {{.DELAY}}; done; echo "{{.LABEL}} apply did not converge after {{.TRIES}} attempts" >&2; exit 1'
