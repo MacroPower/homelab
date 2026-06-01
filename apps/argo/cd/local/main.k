@@ -13,6 +13,11 @@ import argo_cd_base
 # invocation and break the plugin.
 _generate = argo_cd_base.app.charts.argo_cd.values.configs.cmp.plugins.kcl.generate
 
+# Merge over the base argocd-cmd-params, preserving its keys (dotted param names
+# are string keys, so this must be an explicit dict union rather than an
+# attribute-path assignment).
+_params = argo_cd_base.app.charts.argo_cd.values.configs.params
+
 # Register the anonymous git:// mirror as the `homelab` repo. repo-server's
 # `/healthz?full=true` liveness probe lists refs for every registered repository,
 # so this entry must point at a repo Argo can reach offline; prod registers none
@@ -37,6 +42,40 @@ app = argo_cd_base.app | {
     charts.argo_cd.values.repoServer.readinessProbe = {
         timeoutSeconds = 30
         failureThreshold = 5
+    }
+
+    # After three consecutive failed manifest generations the repo-server stops
+    # retrying an app and replays the cached error for ARGOCD_PAUSE_GEN_MINUTES
+    # (default 60). On this cluster the failures it pauses on are transient -- a
+    # heavy chart still downloading on a cold cache, or contention during a
+    # bring-up render storm -- so a 60-minute pause turns a momentary miss into an
+    # app that sits broken until someone hard-refreshes it. Drop the pause to a
+    # minute so a transient failure self-heals on the next reconcile once the
+    # chart cache warms, instead of needing a manual nudge. Prod's renders do not
+    # download charts at request time, so its failures are real and it keeps the
+    # protective 60-minute pause.
+    charts.argo_cd.values.repoServer.env = [
+        {
+            name = "ARGOCD_PAUSE_GEN_MINUTES"
+            value = "1"
+        }
+    ]
+
+    # Same cold-cache cause, upstream of the pause. A bring-up -- or a repo-server
+    # roll that empties the manifest cache -- makes the controller ask for every
+    # app's manifest at once, and a heavy chart's first render has to download the
+    # chart before it can compile. Under that contention the slow ones can exceed
+    # the default 60s controller -> repo-server deadline and get cut off, and a cut
+    # render counts as a failed generation (three of those trip the pause above).
+    # Widen the deadline, on both the controller and the CLI-driven server path,
+    # so the first cold render finishes instead of being killed. Parallelism is
+    # left unbounded on purpose: the node has cores and memory to spare, so the
+    # herd clears fastest rendering at once, whereas a low limit just queues the
+    # heavy renders until they time out. Prod renders against a warm chart cache
+    # and never hits this, so it keeps the tight chart defaults.
+    charts.argo_cd.values.configs.params = _params | {
+        "controller.repo.server.timeout.seconds" = 180
+        "server.repo.server.timeout.seconds" = 180
     }
 
     charts.argo_cd.values.configs.cmp.plugins.kcl.generate.args = (_generate?.args or []) + [
