@@ -27,11 +27,22 @@ bandwidthManager:
 ipv6:
   enabled: false
 
-# No BGP peer and no routable LoadBalancer range in Docker.
+# No BGP peer in Docker, so LoadBalancer VIPs are announced over L2 (ARP) rather
+# than BGP -- see the CiliumLoadBalancerIPPool + CiliumL2AnnouncementPolicy in
+# main.k.
 bgpControlPlane:
   enabled: false
 ingressController:
   enabled: false
+
+# L2 announcements (ARP) make LoadBalancer VIPs from the bridge subnet reachable
+# from the host, which shares the Docker bridge L2 segment with the node. Lease
+# renewals churn the k8s client, so lift its rate limit off the low default.
+l2announcements:
+  enabled: true
+k8sClientRateLimit:
+  qps: 10
+  burst: 20
 
 operator:
   # Single replica: the base runs two with anti-affinity, which strands a

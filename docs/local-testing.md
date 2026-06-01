@@ -149,9 +149,19 @@ internal tasks:
 2. **Cilium (`tald:cilium`).** Renders `apps/cilium/system/local`,
    a Docker-safe overlay of the real Cilium config: `veth` instead of `netkit`,
    iptables masquerade instead of BPF, no host firewall / bandwidth manager /
-   IPv6 / BGP / LoadBalancer-IPAM, single operator replica. It keeps
-   `kubeProxyReplacement`, the KubePrism endpoint (`localhost:7445`), and
-   tunnel/VXLAN routing, so the datapath is the real one.
+   IPv6 / BGP, single operator replica. It keeps `kubeProxyReplacement`, the
+   KubePrism endpoint (`localhost:7445`), and tunnel/VXLAN routing, so the
+   datapath is the real one. LoadBalancer-IPAM stays on, but VIPs are announced
+   over **L2/ARP** instead of BGP (there is no router on the Docker bridge): the
+   overlay defines a `CiliumLoadBalancerIPPool` carved from the bridge subnet
+   (`10.5.0.240`-`10.5.0.250`, clear of the node at `.2` and the `/24` broadcast)
+   and a `CiliumL2AnnouncementPolicy` announcing on `eth0`. Because the host is the
+   bridge gateway (`10.5.0.1`) on that same L2 segment, it resolves a VIP to the
+   node's MAC and reaches the Service directly -- so `type: LoadBalancer` works
+   here (see the limits section). This is applied imperatively like the rest of
+   the day-0 Cilium layer, so a cold `tald:all` gets it for free; when iterating on
+   the Cilium overlay against a running cluster, re-run `task tald:cilium` (a
+   `tald:push` will not re-apply it, since Argo does not manage Cilium).
 
 3. **Git mirror (`tald:git`).** A `hostNetwork` pod
    (rendered from `bootstrap/hack/git-mirror`) serving the working-tree
@@ -291,8 +301,12 @@ Add a `local/` overlay next to the app's `base/` and `mgmt/`. Use
 Docker-safe overrides to apply in the local `values.yaml`:
 
 - Drop multi-replica HA / PodDisruptionBudgets that would strand a pod on one node.
-- Change `type: LoadBalancer` Services to `ClusterIP`; drop BGP and
-  `CiliumLoadBalancerIPPool` resources. Reach services with `kubectl port-forward`.
+- `type: LoadBalancer` works -- the Cilium overlay hands out VIPs from the bridge
+  subnet over L2/ARP, reachable from the host (see the Cilium step above and the
+  limits section), so keep the Service as-is rather than downgrading to ClusterIP.
+  Drop any app-defined BGP resources (`CiliumLoadBalancerIPPool`,
+  `CiliumBGPAdvertisement`, peer-group Service labels) -- the shared local pool and
+  L2 policy already cover every LoadBalancer Service, and there is no BGP peer.
 - Override unavailable StorageClasses (openebs-zfs, rook, ...) to `openebs-hostpath`,
   or drop `storageClassName` entirely so the PVC takes the default class.
 - Keep ServiceMonitor/PodMonitor (`apps/o11y/k8s-monitoring/local` carries the
@@ -310,9 +324,18 @@ Then `task tald:render` to compile it, `task tald:push` to deploy it, and
   (`ClusterSecretStoreMixin` in `konfig/models/mixins/secret_mixin.k`). Apps whose
   `ExternalSecret`s read other keys stay degraded; truly secret-dependent apps are
   out of scope for the offline cluster.
-- **LoadBalancers / DNS / ingress.** No external IPs and no real DNS. Services of
-  type LoadBalancer stay pending; reach things via port-forward. Treat
-  "LB IP assigned" as out of scope, not as success.
+- **LoadBalancers.** `type: LoadBalancer` works: Cilium LB-IPAM assigns a VIP from
+  `10.5.0.240`-`10.5.0.250` and announces it over L2/ARP on the node's `eth0`. The
+  host shares the Docker bridge L2 segment (gateway `10.5.0.1`), so it reaches the
+  VIP directly -- `curl http://10.5.0.24x` from the host hits the Service with no
+  port-forward. Limits: VIPs are reachable only from the host and other containers
+  on the `homelab-local` bridge (not from outside the Docker host); the pool holds
+  ~11 addresses; and there is no `externalTrafficPolicy: Local` source-IP
+  preservation guarantee on a single node. The mechanism differs from prod (L2/ARP
+  vs BGP to the UniFi router) but exercises the same LB-IPAM and datapath.
+- **DNS / ingress.** No real DNS and no external ingress. Reach a VIP by IP, or
+  port-forward. TLS listeners serve self-signed certs from the local
+  `selfsigned-issuer` (`apps/external/certs/local`), not real ACME certs.
 - **Storage.** `openebs-hostpath` only (RWO hostpath, the default class served by
   `apps/kube/openebs/local`). No `ReadWriteMany`, no ZFS / Ceph / object storage.
 - **Single node.** No anti-affinity spread, no multi-node failure testing. The
