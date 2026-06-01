@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=../../../../charts/tetragon/values.schema.json
+
+# Single node: one operator replica, and no failover lease (it only matters when
+# running multiple replicas).
+tetragonOperator:
+  replicas: 1
+  failoverLease:
+    enabled: false
