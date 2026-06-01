@@ -19,3 +19,30 @@ machine:
     kubePrism:
       enabled: true
       port: 7445
+  # Route image pulls through the host's persistent pull-through caches
+  # (`task tald:cache-up` runs one stock `registry:2` per registry, each on a
+  # named Docker volume that outlives `tald:down`), so a rebuild reuses cached
+  # layers instead of re-pulling from the internet. The endpoints are the Docker
+  # bridge gateway (the host) on the per-registry ports cache-up publishes; this
+  # assumes the default 10.5.0.0/24 SUBNET, whose gateway Docker assigns .1. Ports
+  # MUST stay in lockstep with cache-up's table. skipFallback is left at its
+  # default (false), so a stopped or empty cache transparently falls back to the
+  # upstream registry -- the cache is a pure optimization, never a hard dependency
+  # that could wedge a bring-up. Local-only: the real clusters pull directly.
+  registries:
+    mirrors:
+      docker.io:
+        endpoints:
+          - http://10.5.0.1:5000
+      ghcr.io:
+        endpoints:
+          - http://10.5.0.1:5001
+      quay.io:
+        endpoints:
+          - http://10.5.0.1:5002
+      registry.k8s.io:
+        endpoints:
+          - http://10.5.0.1:5003
+      gcr.io:
+        endpoints:
+          - http://10.5.0.1:5004

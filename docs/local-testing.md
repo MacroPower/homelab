@@ -340,9 +340,19 @@ Then `task tald:render` to compile it, `task tald:push` to deploy it, and
   `apps/kube/openebs/local`). No `ReadWriteMany`, no ZFS / Ceph / object storage.
 - **Single node.** No anti-affinity spread, no multi-node failure testing. The
   control plane is schedulable and runs everything.
-- **Images pulled live.** First bring-up is slow while images and charts download
-  (e.g. the Cilium operator image is ~60 MB from quay.io); subsequent runs reuse
-  the node's containerd cache and the KCL chart cache.
+- **Images pulled live, but cached across rebuilds.** A cold first bring-up still
+  downloads images and charts (e.g. the Cilium operator image is ~60 MB from
+  quay.io). Container images are then cached for every subsequent rebuild by a set
+  of persistent host-side pull-through registries: `tald:up` runs `tald:cache-up`,
+  which starts one stock `registry:2` per upstream (docker.io, ghcr.io, quay.io,
+  registry.k8s.io, gcr.io) on a named Docker volume, and `clusters/local/machine.yaml`
+  points the node's containerd at them via `machine.registries.mirrors`. The
+  containers and volumes survive `tald:down`, so `tald:down && tald:all` re-pulls
+  only cache misses. The mirrors leave Talos's `skipFallback` at its default, so a
+  stopped or empty cache transparently falls back to the upstream -- the cache is a
+  pure speedup, never a hard dependency. Purge it with `task tald:cache-clean`. The
+  KCL chart cache is still per-cluster (the kclipper sidecar's `emptyDir`); only
+  container images persist across rebuilds.
 
 ## Troubleshooting
 

@@ -162,6 +162,7 @@ tasks:
         msg: yq is required to read the pinned Talos/Kubernetes versions (enter the devshell)
     cmds:
       - task: sudo-auth
+      - task: cache-up
       - task: node-up
       - task: wait-apiserver
       - task: cilium
@@ -188,6 +189,65 @@ tasks:
           CMD: '{{.KUBECTL}} get nodes --no-headers 2>/dev/null | grep -q .'
       # On timeout, dump node + cilium-system state so a stuck datapath is debuggable.
       - '{{.KUBECTL}} wait --for=condition=Ready node --all --timeout={{.NODE_READY_TIMEOUT}} || { {{.KUBECTL}} get nodes; {{.KUBECTL}} get pods -n cilium-system; exit 1; }'
+
+  # --- image registry caches (persist across down) -------------------------
+
+  cache-up:
+    desc: Start the persistent pull-through image caches (idempotent; survives down)
+    # One stock `registry:2` per upstream, in pull-through proxy mode, each backed
+    # by a named Docker volume. clusters/local/machine.yaml points the matching
+    # registry at http://<gateway>:<port> via machine.registries.mirrors, so the
+    # node's containerd pulls land here and a rebuild reuses cached layers. Both
+    # the containers (--restart unless-stopped) and their named volumes outlive
+    # `tald:down`; `tald:cache-clean` is the only thing that removes them. The
+    # caches are pure optimization -- machine.yaml leaves skipFallback at its
+    # default, so the node falls back to the upstream when a cache is absent, and a
+    # bring-up that skips this task still works (just re-pulls from the internet).
+    #
+    # name / published host port / upstream -- the ports MUST match the endpoints
+    # in clusters/local/machine.yaml. Published on 0.0.0.0 because the bridge
+    # gateway IP does not exist until node-up creates the network; the node reaches
+    # them via that gateway (10.5.0.1) once it is up.
+    vars:
+      IMAGE_CACHES: |
+        docker 5000 https://registry-1.docker.io
+        ghcr   5001 https://ghcr.io
+        quay   5002 https://quay.io
+        k8s    5003 https://registry.k8s.io
+        gcr    5004 https://gcr.io
+    cmds:
+      - task: sudo-auth
+      - cmd: |
+          printf '%s' '{{.IMAGE_CACHES}}' | while read -r name port url; do
+            [ -n "$name" ] || continue
+            c="tald-cache-$name"
+            if {{.DOCKER_SUDO_N}} ps -q -f "name=^/${c}$" -f status=running | grep -q .; then
+              continue
+            fi
+            # Reap a stopped leftover so `run` cannot clash on the name.
+            {{.DOCKER_SUDO}} rm -f "$c" >/dev/null 2>&1 || true
+            echo "  starting image cache $c -> $url (host :$port)"
+            {{.DOCKER_SUDO}} run -d \
+              --name "$c" \
+              --restart unless-stopped \
+              --label tald.cache=true \
+              -e REGISTRY_PROXY_REMOTEURL="$url" \
+              -v "${c}:/var/lib/registry" \
+              -p "0.0.0.0:${port}:5000" \
+              registry:2 >/dev/null
+          done
+        silent: true
+
+  cache-clean:
+    desc: Remove the persistent pull-through image caches and their cached layers
+    cmds:
+      - task: sudo-auth
+      - cmd: |
+          ids=$({{.DOCKER_SUDO_N}} ps -aq -f label=tald.cache=true)
+          [ -n "$ids" ] && { {{.DOCKER_SUDO}} rm -f $ids >/dev/null; echo "  removed image cache containers"; } || true
+          vols=$({{.DOCKER_SUDO_N}} volume ls -q -f 'name=^tald-cache-')
+          [ -n "$vols" ] && { {{.DOCKER_SUDO}} volume rm $vols >/dev/null; echo "  removed image cache volumes"; } || true
+        silent: true
 
   # --- git mirror ----------------------------------------------------------
 
@@ -497,6 +557,9 @@ tasks:
 
   down:
     desc: Destroy the cluster, stop the mirror, and clean local state
+    # The pull-through image caches (tald-cache-* containers + volumes) are
+    # deliberately left running so the next bring-up reuses their layers; purge
+    # them explicitly with `task tald:cache-clean`.
     cmds:
       # Best-effort teardown: the first sudo call prompts and caches a ticket the
       # rest ride; every step tolerates already-gone resources (ignore_error) so a
