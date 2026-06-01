@@ -222,35 +222,43 @@ tasks:
     # in clusters/local/machine.yaml. Published on 0.0.0.0 because the bridge
     # gateway IP does not exist until node-up creates the network; the node reaches
     # them via that gateway (10.5.0.1) once it is up.
+    # `<name> <port> <upstream>` per line, single-space separated (image-cache
+    # splits on the space). Ports MUST match the endpoints in
+    # clusters/local/machine.yaml.
     vars:
-      IMAGE_CACHES: |
+      IMAGE_CACHES: |-
         docker 5000 https://registry-1.docker.io
-        ghcr   5001 https://ghcr.io
-        quay   5002 https://quay.io
-        k8s    5003 https://registry.k8s.io
-        gcr    5004 https://gcr.io
+        ghcr 5001 https://ghcr.io
+        quay 5002 https://quay.io
+        k8s 5003 https://registry.k8s.io
+        gcr 5004 https://gcr.io
     cmds:
       - task: sudo-auth
-      - cmd: |
-          printf '%s' '{{.IMAGE_CACHES}}' | while read -r name port url; do
-            [ -n "$name" ] || continue
-            c="tald-cache-$name"
-            if {{.DOCKER_SUDO_N}} ps -q -f "name=^/${c}$" -f status=running | grep -q .; then
-              continue
-            fi
-            # Reap a stopped leftover so `run` cannot clash on the name.
-            {{.DOCKER_SUDO}} rm -f "$c" >/dev/null 2>&1 || true
-            echo "  starting image cache $c -> $url (host :$port)"
-            {{.DOCKER_SUDO}} run -d \
-              --name "$c" \
-              --restart unless-stopped \
-              --label tald.cache=true \
-              -e REGISTRY_PROXY_REMOTEURL="$url" \
-              -v "${c}:/var/lib/registry" \
-              -p "0.0.0.0:${port}:5000" \
-              registry:2 >/dev/null
-          done
+      - for: { var: IMAGE_CACHES, split: "\n" }
+        task: image-cache
+        vars: { SPEC: "{{.ITEM}}" }
+
+  image-cache:
+    internal: true
+    # Start one stock registry:2 pull-through cache for a single
+    # "<name> <port> <upstream>" SPEC line from cache-up. status gates on the
+    # container already running, so a warm bring-up skips it entirely; otherwise
+    # reap any stopped leftover (so `run` cannot clash on the name) and start it.
+    requires:
+      vars: [SPEC]
+    vars:
+      NAME: '{{index (splitList " " .SPEC) 0}}'
+      PORT: '{{index (splitList " " .SPEC) 1}}'
+      URL: '{{index (splitList " " .SPEC) 2}}'
+      C: "tald-cache-{{.NAME}}"
+    status:
+      - '{{.DOCKER_SUDO_N}} ps -q -f "name=^/{{.C}}$" -f status=running | grep -q .'
+    cmds:
+      - cmd: '{{.DOCKER_SUDO}} rm -f {{.C}} >/dev/null 2>&1'
+        ignore_error: true
+      - cmd: 'echo "  starting image cache {{.C}} -> {{.URL}} (host :{{.PORT}})"'
         silent: true
+      - '{{.DOCKER_SUDO}} run -d --name {{.C}} --restart unless-stopped --label tald.cache=true -e REGISTRY_PROXY_REMOTEURL={{.URL}} -v {{.C}}:/var/lib/registry -p 0.0.0.0:{{.PORT}}:5000 registry:2 >/dev/null'
 
   kcl-cache-up:
     desc: Create the persistent KCL/chart cache volume (idempotent; survives down)
@@ -264,30 +272,30 @@ tasks:
     # bind mount regardless of names).
     vars:
       KCL_CACHE_VOL: tald-cache-kcl
+    # status short-circuits once the volume exists, so later bring-ups leave its
+    # contents untouched; a cold run creates it and chowns to the sidecar's uid 999
+    # (the numeric uid carries across the bind mount regardless of names).
+    status:
+      - '{{.DOCKER_SUDO_N}} volume inspect {{.KCL_CACHE_VOL}} >/dev/null 2>&1'
     cmds:
       - task: sudo-auth
-      - cmd: |
-          v='{{.KCL_CACHE_VOL}}'
-          if {{.DOCKER_SUDO_N}} volume inspect "$v" >/dev/null 2>&1; then
-            exit 0
-          fi
-          {{.DOCKER_SUDO}} volume create "$v" >/dev/null
-          {{.DOCKER_SUDO}} run --rm -v "$v:/c" busybox chown -R 999:999 /c >/dev/null
-          echo "  created KCL cache volume $v (chowned to uid 999)"
+      - '{{.DOCKER_SUDO}} volume create {{.KCL_CACHE_VOL}} >/dev/null'
+      - '{{.DOCKER_SUDO}} run --rm -v {{.KCL_CACHE_VOL}}:/c busybox chown -R 999:999 /c >/dev/null'
+      - cmd: 'echo "  created KCL cache volume {{.KCL_CACHE_VOL}} (chowned to uid 999)"'
         silent: true
 
   cache-clean:
     desc: Remove the persistent caches -- pull-through image layers and the KCL/chart cache
     cmds:
       - task: sudo-auth
-      - cmd: |
-          ids=$({{.DOCKER_SUDO_N}} ps -aq -f label=tald.cache=true)
-          [ -n "$ids" ] && { {{.DOCKER_SUDO}} rm -f $ids >/dev/null; echo "  removed image cache containers"; } || true
-          # Reaps the registry caches (tald-cache-<registry>) and the KCL/chart
-          # cache (tald-cache-kcl) -- both share the tald-cache- volume prefix.
-          vols=$({{.DOCKER_SUDO_N}} volume ls -q -f 'name=^tald-cache-')
-          [ -n "$vols" ] && { {{.DOCKER_SUDO}} volume rm $vols >/dev/null; echo "  removed cache volumes"; } || true
-        silent: true
+      # Reap the cache containers (label tald.cache=true) and every cache volume --
+      # the registry caches (tald-cache-<registry>) and the KCL/chart cache
+      # (tald-cache-kcl) share the tald-cache- volume prefix. xargs -r no-ops on an
+      # empty list; ignore_error tolerates an already-clean machine.
+      - cmd: '{{.DOCKER_SUDO_N}} ps -aq -f label=tald.cache=true | xargs -r {{.DOCKER_SUDO}} rm -f >/dev/null'
+        ignore_error: true
+      - cmd: "{{.DOCKER_SUDO_N}} volume ls -q -f 'name=^tald-cache-' | xargs -r {{.DOCKER_SUDO}} volume rm >/dev/null"
+        ignore_error: true
 
   # --- git mirror ----------------------------------------------------------
 
@@ -422,27 +430,25 @@ tasks:
 
   wait-healthy:
     desc: Block until every Argo CD application is Healthy (and at least one exists)
-    # A self-contained loop (not the wait-for helper) keeps the awk predicate in a
-    # clean block-scalar context without nested-quote escaping. NOT chained into
-    # `all`: a cold bring-up spends minutes pulling images, so blocking is opt-in.
+    # Polls through the shared wait-for helper, like every other readiness gate.
+    # NOT chained into `all`: a cold bring-up spends minutes pulling images, so
+    # blocking is opt-in. Healthy iff at least one Application exists AND no health
+    # line is anything but Healthy -- a still-Pending app has an empty health field,
+    # which `grep -vxq Healthy` (full-line, inverted) counts as not-yet. The trailing
+    # echo runs only on success; on timeout wait-for exits non-zero and aborts first.
     silent: true
     vars:
       TRIES: '{{.TRIES | default "120"}}'
       DELAY: '{{.DELAY | default "5"}}'
     cmds:
-      - |
-        ready() {
-          {{.KUBECTL}} -n argo-cd get applications.argoproj.io \
-            -o custom-columns=H:.status.health.status --no-headers 2>/dev/null \
-          | awk 'BEGIN { t = 0; bad = 0 } { t++; if ($1 != "Healthy") bad++ } END { exit (t > 0 && bad == 0) ? 0 : 1 }'
-        }
-        for i in $(seq 1 {{.TRIES}}); do
-          if ready; then echo ">> all Argo CD applications are Healthy"; exit 0; fi
-          sleep {{.DELAY}}
-        done
-        echo "timed out waiting for all applications to become Healthy:" >&2
-        {{.KUBECTL}} -n argo-cd get applications.argoproj.io -o wide 2>/dev/null | awk 'NR == 1 || $0 !~ /Healthy/' >&2 || true
-        exit 1
+      - task: wait-for
+        vars:
+          MSG: "all Argo CD applications to become Healthy"
+          TRIES: "{{.TRIES}}"
+          DELAY: "{{.DELAY}}"
+          CMD: 'apps="$({{.KUBECTL}} -n argo-cd get applications.argoproj.io -o custom-columns=H:.status.health.status --no-headers 2>/dev/null)"; [ -n "$apps" ] && ! echo "$apps" | grep -vxq Healthy'
+          ON_FAIL: '{{.KUBECTL}} -n argo-cd get applications.argoproj.io -o wide >&2 || true'
+      - 'echo ">> all Argo CD applications are Healthy"'
 
   creds:
     desc: Print how to reach the (auth-disabled) Argo CD UI
@@ -478,19 +484,21 @@ tasks:
     preconditions:
       - sh: test -f "{{.KUBECONFIG_PATH}}"
         msg: "no test-cluster kubeconfig yet -- run 'task tald:up' first"
+    vars:
+      # The test cluster's context name (its kubeconfig has exactly one). Read
+      # tolerantly so a missing config yields empty rather than failing the var;
+      # the precondition above guarantees it is present on the real run.
+      CTX:
+        sh: '{{.KUBECTL}} config view -o jsonpath="{.contexts[0].name}" 2>/dev/null || true'
     cmds:
       # Native kubeconfig merge: ~/.kube/config first so its current-context and
       # existing contexts win, the test config second to contribute its entry;
       # --flatten inlines the certs so the result is self-contained. Temp + rename
       # so a torn read never truncates the user's real kubeconfig.
-      - |
-        mkdir -p "$HOME/.kube"
-        KUBECONFIG="$HOME/.kube/config:{{.KUBECONFIG_PATH}}" kubectl config view --flatten > "$HOME/.kube/config.tald.tmp"
-        mv "$HOME/.kube/config.tald.tmp" "$HOME/.kube/config"
-      - |
-        ctx=$({{.KUBECTL}} config view -o jsonpath='{.contexts[0].name}')
-        echo "Registered the test cluster in ~/.kube/config (context: $ctx)."
-        echo "Use it from any shell with: kubectl config use-context $ctx"
+      - mkdir -p "$HOME/.kube"
+      - KUBECONFIG="$HOME/.kube/config:{{.KUBECONFIG_PATH}}" kubectl config view --flatten > "$HOME/.kube/config.tald.tmp" && mv "$HOME/.kube/config.tald.tmp" "$HOME/.kube/config"
+      - 'echo "Registered the test cluster in ~/.kube/config (context: {{.CTX}})."'
+      - 'echo "Use it from any shell with: kubectl config use-context {{.CTX}}"'
 
   ui:
     desc: Port-forward the local Argo CD UI to http://localhost:8080 (blocks until Ctrl-C)
@@ -615,7 +623,12 @@ tasks:
       # `docker rm -f` can return before Docker finalizes the container removal;
       # block until it is truly gone so a back-to-back `tald:down && tald:all` does
       # not trip node-up's "already exists" precondition.
-      - cmd: 'for i in $(seq 1 30); do {{.DOCKER_SUDO_N}} ps -a --filter "name=^/{{.TALD_CLUSTER}}-controlplane-1$" -q 2>/dev/null | grep -q . || exit 0; sleep 1; done'
+      - task: wait-for
+        vars:
+          MSG: "{{.TALD_CLUSTER}}-controlplane-1 container removal"
+          TRIES: "30"
+          DELAY: "1"
+          CMD: 'test -z "$({{.DOCKER_SUDO_N}} ps -a --filter "name=^/{{.TALD_CLUSTER}}-controlplane-1$" -q 2>/dev/null)"'
         ignore_error: true
       # Drop the test cluster's context from ~/.kube/config before the kubeconfig
       # it reads the names from is wiped below, so a torn-down cluster stops
@@ -769,19 +782,18 @@ tasks:
 
   bootstrap-node:
     internal: true
-    # Bootstrap etcd on the single control-plane node. Idempotent and retried:
-    # before etcd is ready `talosctl bootstrap` errors transiently; once done a
-    # second call reports "already bootstrapped" -- both treated as terminal.
+    # Bootstrap etcd on the single control-plane node, through the shared wait-for
+    # helper. Idempotent and retried: before etcd is ready `talosctl bootstrap`
+    # errors transiently; once done it reports "already bootstrapped". The CMD is
+    # satisfied when bootstrap exits 0 OR its output already says bootstrapped --
+    # both terminal. wait-for's default 2s delay matches the old loop.
     cmds:
-      - |-
-        for i in $(seq 1 60); do
-          out="$({{.TALOSCTL}} bootstrap 2>&1)" && exit 0
-          printf '%s\n' "$out" | grep -qi "already bootstrapped" && exit 0
-          sleep 2
-        done
-        echo "etcd bootstrap did not succeed on {{.NODE_IP}}:" >&2
-        {{.DOCKER_SUDO}} logs {{.TALD_CLUSTER}}-controlplane-1 2>&1 | tail -n 40 >&2 || true
-        exit 1
+      - task: wait-for
+        vars:
+          MSG: "etcd to bootstrap on {{.NODE_IP}}"
+          TRIES: "60"
+          CMD: "out=\"$({{.TALOSCTL}} bootstrap 2>&1)\" || echo \"$out\" | grep -qi 'already bootstrapped'"
+          ON_FAIL: '{{.DOCKER_SUDO}} logs {{.TALD_CLUSTER}}-controlplane-1 2>&1 | tail -n 40 >&2 || true'
 
   git-deploy:
     internal: true
@@ -839,19 +851,32 @@ tasks:
   kubectx-clean:
     internal: true
     # Counterpart to the `kubectx` task: delete the test cluster's context/cluster/
-    # user (by the names in its kubeconfig) from ~/.kube/config with native
-    # `kubectl config delete-*`, leaving any real contexts untouched. Must run while
-    # {{.KUBECONFIG_PATH}} still exists (down wipes it next) so the names are
-    # readable. No-op once the file/kubeconfig is gone. ignore_error: a best-effort
-    # teardown step must never fail the down.
+    # user (by the names in its kubeconfig) from ~/.kube/config, leaving any real
+    # contexts untouched. Must run while {{.KUBECONFIG_PATH}} still exists (down
+    # wipes it next) so the names are readable; once it is gone kubeconfig-prune
+    # reads an empty list and no-ops. One pass per kind via the helper below.
+    vars:
+      KINDS: "context cluster user"
     cmds:
-      - cmd: |
-          [ -f "$HOME/.kube/config" ] && [ -f "{{.KUBECONFIG_PATH}}" ] || exit 0
-          for n in $({{.KUBECTL}} config view -o jsonpath='{.contexts[*].name}'); do KUBECONFIG="$HOME/.kube/config" kubectl config delete-context "$n" >/dev/null 2>&1 || true; done
-          for n in $({{.KUBECTL}} config view -o jsonpath='{.clusters[*].name}'); do KUBECONFIG="$HOME/.kube/config" kubectl config delete-cluster "$n" >/dev/null 2>&1 || true; done
-          for n in $({{.KUBECTL}} config view -o jsonpath='{.users[*].name}');    do KUBECONFIG="$HOME/.kube/config" kubectl config delete-user    "$n" >/dev/null 2>&1 || true; done
-          true
-        ignore_error: true
+      - for: { var: KINDS, split: " " }
+        task: kubeconfig-prune
+        vars: { KIND: "{{.ITEM}}" }
+
+  kubeconfig-prune:
+    internal: true
+    requires:
+      vars: [KIND]
+    # Delete every ~/.kube/config entry of one KIND (context/cluster/user) whose
+    # name appears in the test kubeconfig, with native `kubectl config delete-*`.
+    # NAMES is read tolerantly (|| true) so an absent/wiped test config yields an
+    # empty list; each delete is `|| true` so an already-absent entry never fails
+    # the best-effort teardown.
+    vars:
+      NAMES:
+        sh: '{{.KUBECTL}} config view -o jsonpath="{.{{.KIND}}s[*].name}" 2>/dev/null || true'
+    cmds:
+      - for: { var: NAMES, split: " " }
+        cmd: 'KUBECONFIG="$HOME/.kube/config" kubectl config delete-{{.KIND}} "{{.ITEM}}" >/dev/null 2>&1 || true'
 
   appset-nudge:
     desc: Refresh the bootstrap Application and tenants ApplicationSet (used by kick-appset; also manual recovery)
