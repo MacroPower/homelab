@@ -163,6 +163,7 @@ tasks:
     cmds:
       - task: sudo-auth
       - task: cache-up
+      - task: kcl-cache-up
       - task: node-up
       - task: wait-apiserver
       - task: cilium
@@ -251,15 +252,41 @@ tasks:
           done
         silent: true
 
+  kcl-cache-up:
+    desc: Create the persistent KCL/chart cache volume (idempotent; survives down)
+    # The repo-server's kclipper sidecar renders every app, downloading KCL deps
+    # and Helm charts on a cold cache. Back that cache with a named Docker volume
+    # mounted into the node at /var/kcl-cache (node-up) and hostPath'd into the
+    # sidecar (apps/argo/cd/local) so it survives rebuilds. Named tald-cache-kcl so
+    # `tald:cache-clean` reaps it with the image caches. Created once and left
+    # alone on later bring-ups so its contents persist; the sidecar runs as uid
+    # 999, so the fresh volume is chowned to match (numeric uid carries across the
+    # bind mount regardless of names).
+    vars:
+      KCL_CACHE_VOL: tald-cache-kcl
+    cmds:
+      - task: sudo-auth
+      - cmd: |
+          v='{{.KCL_CACHE_VOL}}'
+          if {{.DOCKER_SUDO_N}} volume inspect "$v" >/dev/null 2>&1; then
+            exit 0
+          fi
+          {{.DOCKER_SUDO}} volume create "$v" >/dev/null
+          {{.DOCKER_SUDO}} run --rm -v "$v:/c" busybox chown -R 999:999 /c >/dev/null
+          echo "  created KCL cache volume $v (chowned to uid 999)"
+        silent: true
+
   cache-clean:
-    desc: Remove the persistent pull-through image caches and their cached layers
+    desc: Remove the persistent caches -- pull-through image layers and the KCL/chart cache
     cmds:
       - task: sudo-auth
       - cmd: |
           ids=$({{.DOCKER_SUDO_N}} ps -aq -f label=tald.cache=true)
           [ -n "$ids" ] && { {{.DOCKER_SUDO}} rm -f $ids >/dev/null; echo "  removed image cache containers"; } || true
+          # Reaps the registry caches (tald-cache-<registry>) and the KCL/chart
+          # cache (tald-cache-kcl) -- both share the tald-cache- volume prefix.
           vols=$({{.DOCKER_SUDO_N}} volume ls -q -f 'name=^tald-cache-')
-          [ -n "$vols" ] && { {{.DOCKER_SUDO}} volume rm $vols >/dev/null; echo "  removed image cache volumes"; } || true
+          [ -n "$vols" ] && { {{.DOCKER_SUDO}} volume rm $vols >/dev/null; echo "  removed cache volumes"; } || true
         silent: true
 
   # --- git mirror ----------------------------------------------------------
@@ -702,6 +729,7 @@ tasks:
           -e USERDATA="$(base64 -w0 "{{.CLUSTERCONFIG_DIR}}/controlplane.yaml")"
           --tmpfs /run --tmpfs /system --tmpfs /tmp
           --mount type=volume,target=/var
+          --mount type=volume,source=tald-cache-kcl,target=/var/kcl-cache
           --mount type=volume,target=/system/state
           --mount type=volume,target=/etc/cni
           --mount type=volume,target=/etc/kubernetes

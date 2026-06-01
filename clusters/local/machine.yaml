@@ -8,6 +8,21 @@ machine:
       # kubelet nodeIP to it (IPv4-only, like apps/cilium/system/local).
       validSubnets:
         - 10.0.0.0/8
+    # Expose the persistent KCL/chart cache to pods so the repo-server's kclipper
+    # sidecar can hostPath it across rebuilds: tald:kcl-cache-up mounts a named
+    # Docker volume into the node at /var/kcl-cache, and this rbind/rshared mount
+    # (the same shape base uses for the openebs hostpath dir) makes it visible in
+    # the kubelet's mount namespace. talhelper APPENDS this to the base
+    # machine.common.yaml extraMounts (the openebs bind), so only the new mount
+    # belongs here -- restating openebs would duplicate it.
+    extraMounts:
+      - source: /var/kcl-cache
+        destination: /var/kcl-cache
+        type: bind
+        options:
+          - rbind
+          - rshared
+          - rw
   features:
     hostDNS:
       resolveMemberNames: true
