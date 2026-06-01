@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=../../../../charts/seaweedfs/values.schema.json
+
+# Drop the prod overlay's `kubernetes.io/hostname: knas01` pin; the single test
+# node runs every component. Storage classes/sizes are inherited from prod.
+master:
+  nodeSelector: ""
+
+filer:
+  nodeSelector: ""
+
+volume:
+  nodeSelector: ""
