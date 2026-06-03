@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=../../../../charts/gha_runner_scale_set/values.schema.json
+
+# Docker-safe overrides only; everything else inherited from base.
+# The mayastor nodeSelector never matches the single tald node — drop it so the
+# runner pod can schedule. json_merge_patch deletes keys set to null.
+template:
+  spec:
+    nodeSelector: null
