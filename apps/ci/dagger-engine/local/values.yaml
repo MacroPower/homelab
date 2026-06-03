@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=../../../../charts/dagger_helm/values.schema.json
+
+# Docker-safe overrides only; everything else inherited from base.
+# The mayastor nodeSelector is cleared in main.k (typed override on the
+# inherited chart values). No additional values overrides are required.
+{}
