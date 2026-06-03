@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=../../../../charts/restic/values.schema.json
+
+# Docker-safe overrides only; everything else inherited from base.
+# The base mounts /auth (secret) and /tmp (emptyDir). main/ adds the backup repo
+# at /data backed by a NAS hostPath on knas01, which does not exist on the single
+# tald node. Replace it with a small openebs-hostpath PVC so the REST server has a
+# writable repo and schedules on the only available node.
+persistence:
+  data:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    storageClass: openebs-hostpath
+    globalMounts:
+      - path: /data
