@@ -317,7 +317,10 @@ tasks:
       - task: git-push
       - cmd: '{{.KUBECTL}} -n argo-cd annotate applications.argoproj.io --all argocd.argoproj.io/refresh=hard --overwrite'
         ignore_error: true
-      - cmd: '{{.KUBECTL}} -n argo-cd annotate applicationset/tenants argocd.argoproj.io/application-set-refresh=true --overwrite'
+      # All appsets, not just tenants: the {tenant}-apps git-file generators must
+      # re-read .app.yaml so enable/disable toggles act now, not on the ~3 min
+      # requeue.
+      - cmd: '{{.KUBECTL}} -n argo-cd annotate applicationset --all argocd.argoproj.io/application-set-refresh=true --overwrite'
         ignore_error: true
       - cmd: 'echo "Working tree pushed; Argo CD refreshing. Watch with: task tald:status"'
         silent: true
@@ -606,6 +609,57 @@ tasks:
           [ -n "$apps" ] || { echo "no Argo CD applications yet -- run 'task tald:all' or 'task tald:push' first" >&2; exit 1; }
           echo "$apps" | xargs {{.ARGOCD}} app sync --async
         fi
+
+  # --- app enable/disable ----------------------------------------------------
+  # `.app.yaml` carries an optional `enabled` field; the shared {tenant}-apps
+  # ApplicationSet's generator post-selector drops files where it is false, so a
+  # disabled app is not generated at all -- it costs no CMP renders and its
+  # Application (with workloads) is removed. These tasks are structured edits of
+  # the working tree; like any other edit, `task tald:push` makes them live.
+
+  enable:
+    desc: 'Re-enable an app in the local set (APP=<tenant>/<app>, e.g. APP=o11y/loki); follow with tald:push'
+    silent: true
+    requires:
+      vars: [APP]
+    vars:
+      APP_FILE: '{{.ROOT_DIR}}/apps/{{.APP}}/local/.app.yaml'
+    preconditions:
+      - sh: test -f "{{.APP_FILE}}"
+        msg: "no local overlay at apps/{{.APP}}/local/.app.yaml (APP takes <tenant>/<app>)"
+    cmds:
+      - yq -i 'del(.enabled)' "{{.APP_FILE}}"
+      - cmd: 'echo "enabled apps/{{.APP}}/local -- make it live with: task tald:push"'
+        silent: true
+
+  disable:
+    desc: 'Disable an app in the local set (APP=<tenant>/<app>; its Application and workloads are removed); follow with tald:push'
+    silent: true
+    requires:
+      vars: [APP]
+    vars:
+      APP_FILE: '{{.ROOT_DIR}}/apps/{{.APP}}/local/.app.yaml'
+    preconditions:
+      - sh: test -f "{{.APP_FILE}}"
+        msg: "no local overlay at apps/{{.APP}}/local/.app.yaml (APP takes <tenant>/<app>)"
+    cmds:
+      - yq -i '.enabled = false' "{{.APP_FILE}}"
+      - cmd: 'echo "disabled apps/{{.APP}}/local -- make it live with: task tald:push"'
+        silent: true
+
+  apps:
+    desc: List the local overlays and whether each is enabled
+    silent: true
+    cmds:
+      - |
+        printf '%-40s %s\n' "APP" "ENABLED"
+        for f in {{.ROOT_DIR}}/apps/*/*/local/.app.yaml; do
+          app=$(echo "$f" | sed 's|.*/apps/||; s|/local/.app.yaml||')
+          # `!= false` not `// true`: yq's alternative operator treats an
+          # explicit false as empty and would report disabled apps as enabled.
+          enabled=$(yq -r '.enabled != false' "$f")
+          printf '%-40s %s\n' "$app" "$enabled"
+        done
 
   down:
     desc: Destroy the cluster, stop the mirror, and clean local state
