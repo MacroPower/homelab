@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=../../../../charts/robusta/values.schema.json
+
+# Make the robusta-config secretRef optional so the runner does not crashloop
+# while the fake (dummy) ExternalSecret is materializing offline.
+runner:
+  additional_env_froms:
+    - secretRef:
+        name: robusta-config
+        optional: true
