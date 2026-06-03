@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=../../../../charts/grafana_pdc_agent/values.schema.json
+
+# HA -> single replica: the single tald node can't spread 3 PDC agent pods.
+replicaCount: 1
+
+# No real Grafana Cloud stack offline; use dummy connection params so the agent
+# renders/deploys but does not reach Grafana Cloud (degraded, expected).
+cluster: "local"
+hostedGrafanaId: "dummy"
