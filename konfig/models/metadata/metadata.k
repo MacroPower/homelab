@@ -28,12 +28,23 @@ schema RenderContext:
         instead of their real backend -- for offline clusters with no secret
         manager. Passed via `-D fake_secret_stores=`, parsed as a KCL bool, so it
         must be lowercase `true`/`false`; any other value fails the render.
+    minimizeRequests: bool.
+        When true, every rendered workload manifest with a `resources` block has
+        its container `resources.requests` overridden to a minimal `cpu = "1m",
+        memory = "1Mi"` -- for the single-node local test cluster, where the
+        production requests would not all fit. Limits are left untouched, so the
+        node keeps its protection against runaway pods; setting requests
+        explicitly (rather than dropping them) sidesteps Kubernetes defaulting
+        absent requests back up to the limits. Containers with no resources stay
+        BestEffort. Passed via `-D minimize_requests=`, parsed as a KCL bool, so
+        it must be lowercase `true`/`false`; any other value fails the render.
     """
     env: str = "mgmt"
     repoURL: str = "https://github.com/MacroPower/homelab"
     revision: str = "main"
     appEnvGlob: str = "*"
     fakeSecretStores: bool = False
+    minimizeRequests: bool = False
 
 # Explicit defaults rather than truthiness-guards, so a field that ever defaults
 # to a truthy value can still be overridden. Defaults match the schema above.
@@ -43,6 +54,7 @@ context: RenderContext = RenderContext {
     revision = option("revision", default="main")
     appEnvGlob = option("app_env_glob", default="*")
     fakeSecretStores = option("fake_secret_stores", default=False)
+    minimizeRequests = option("minimize_requests", default=False)
 }
 
 __META_REPO_URL = context.repoURL
