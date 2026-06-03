@@ -1,0 +1,4 @@
+# yaml-language-server: $schema=../../../../charts/gha_runner_scale_set_controller/values.schema.json
+
+# No Docker-unsafe items; everything inherited from base.
+{}
