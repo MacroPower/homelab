@@ -123,5 +123,7 @@ app = argo_cd_base.app | {
         "app_env_glob=local"
         "-D"
         "fake_secret_stores=true"
+        "-D"
+        "minimize_requests=true"
     ]
 }
