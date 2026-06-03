@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=../../../../charts/sonarr/values.schema.json
+
+# Docker-safe overrides only; everything else inherited from base.
+
+controllers:
+  sonarr:
+    pod:
+      # The single tald node has no kubernetes.io/hostname: knas01 label.
+      # json_merge_patch treats {} as a no-op merge, so null deletes the key.
+      nodeSelector: null
+
+persistence:
+  # The NAS media hostPath (/var/media/video/tv) does not exist on the tald
+  # node; back the media mount with an emptyDir so the pod can schedule.
+  media:
+    type: emptyDir
+    hostPath: null
