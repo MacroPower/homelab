@@ -1,0 +1,55 @@
+# yaml-language-server: $schema=../../../../charts/mimir/values.schema.json
+
+# Docker-safe overrides for single-node Talos-in-Docker. Everything else is
+# inherited from base via json_merge_patch.
+#
+# - All HA components collapse to a single replica (one node can't spread them).
+# - ingester / store_gateway: drop the required zone anti-affinity and disable
+#   zone-aware replication so pods aren't stranded waiting for distinct zones.
+# - Shrink PVCs to fit hostpath; keep the openebs-hostpath storage class.
+
+alertmanager:
+  replicas: 1
+
+distributor:
+  replicas: 1
+
+query_scheduler:
+  replicas: 1
+
+compactor:
+  persistentVolume:
+    size: 5Gi
+
+ingester:
+  replicas: 1
+  persistentVolume:
+    size: 10Gi
+  topologySpreadConstraints: {}
+  affinity: null
+  zoneAwareReplication:
+    enabled: false
+
+store_gateway:
+  replicas: 1
+  persistentVolume:
+    size: 5Gi
+  topologySpreadConstraints: {}
+  affinity: null
+  zoneAwareReplication:
+    enabled: false
+
+admin-cache:
+  replicas: 1
+
+chunks-cache:
+  replicas: 1
+
+index-cache:
+  replicas: 1
+
+metadata-cache:
+  replicas: 1
+
+results-cache:
+  replicas: 1
