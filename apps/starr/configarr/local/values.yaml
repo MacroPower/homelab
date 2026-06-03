@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=../../../../charts/configarr/values.schema.json
+
+# Docker-safe overrides only; everything else inherited from base.
+# The base chart values need no local changes (CronJob with openebs-hostpath PVC
+# and emptyDir tmp; no HA, anti-affinity, hardware nodeSelectors, or LB VIPs).
+{}
