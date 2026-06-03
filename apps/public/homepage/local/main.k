@@ -1,0 +1,39 @@
+import file
+import yaml
+
+import konfig.files
+import konfig.objects
+
+import public_homepage_base
+import cluster
+import charts.homepage
+
+_baseValues = public_homepage_base.app.charts.homepage.values
+_envValues = files.read_yaml(file.current(), "values.yaml")
+_values = objects.json_merge_patch(_baseValues, _envValues)
+
+_settings = public_homepage_base.settings | {
+    title = "${cluster.FRIENDLY_NAME} Home"
+    background.image = "https://images.unsplash.com/photo-1509226704106-8a5a71ffbfa4?auto=format&fit=crop&w=2560&q=80"
+}
+
+_widgets = public_homepage_base.widgets
+_widgets[1].greeting.text = cluster.FRIENDLY_NAME
+
+# Clean app: emptyDir volumes only, no ExternalSecrets, no hardware nodeSelectors.
+# Inherit the real app and swap the cluster dep to clusters/local so domainName,
+# the allowed-host, and the dashboard title resolve to the local.test domain.
+app = public_homepage_base.app | {
+    domainName = cluster.DOMAIN_NAME
+    charts.homepage.values = _values | homepage.Values {
+        controllers.app.containers.app.env: {
+            HOMEPAGE_ALLOWED_HOSTS = {
+                value = "homepage.${domainName}"
+            }
+        }
+    }
+    configMaps.homepageConfig.data: {
+        "settings.yaml" = yaml.encode(_settings)
+        "widgets.yaml" = yaml.encode(_widgets)
+    }
+}
