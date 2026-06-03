@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=../../../../charts/adguard/values.schema.json
+
+# Single tald node: run one replica (base runs 2). Everything else inherited.
+controllers:
+  app:
+    replicas: 1
