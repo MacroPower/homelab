@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=../../../../charts/prowlarr/values.schema.json
+
+# Docker-safe overrides only; everything else inherited from base.
+# Base already uses emptyDir persistence and a single replica, so nothing extra
+# is needed here.
+{}
