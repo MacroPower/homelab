@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=../../../../charts/seaweedfs/values.schema.json
+
+# Docker-safe overrides for the single-node tald cluster:
+# - clear the knas01 hardware nodeSelector (string field -> "") on every component
+# - shrink the PVCs to fit hostpath on one node
+# - keep storageClass openebs-hostpath (the only/default class)
+
+master:
+  replicas: 1
+  data:
+    type: persistentVolumeClaim
+    storageClass: openebs-hostpath
+    size: 1Gi
+  nodeSelector: ""
+
+filer:
+  replicas: 1
+  data:
+    type: persistentVolumeClaim
+    storageClass: openebs-hostpath
+    size: 2Gi
+  nodeSelector: ""
+
+volume:
+  replicas: 1
+  dataDirs:
+    - name: data1
+      type: persistentVolumeClaim
+      storageClass: openebs-hostpath
+      size: 10Gi
+      maxVolumes: 128
+  idx:
+    type: persistentVolumeClaim
+    storageClass: openebs-hostpath
+    size: 2Gi
+  nodeSelector: ""
