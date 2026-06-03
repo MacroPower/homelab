@@ -189,8 +189,9 @@ internal tasks:
 
    The render context (`RenderContext` in
    `konfig/models/metadata/metadata.k`) carries `env`, `repoURL`, `revision`,
-   `appEnvGlob`, and `fakeSecretStores`, each defaulting to the prod-hub value --
-   so a `kcl run` with no `-D` is byte-for-byte the production output. The
+   `appEnvGlob`, `fakeSecretStores`, and `minimizeRequests`, each defaulting to
+   the prod-hub value -- so a `kcl run` with no `-D` is byte-for-byte the
+   production output. The
    bootstrap render takes `env`/`repoURL`/`revision` as `-D`, and the argo-cd
    overlay bakes `env`, the mirror seam, the env glob, and the fake-store flag
    into the CMP's `kcl run` args, so **in-cluster** renders (the bootstrap
@@ -215,6 +216,16 @@ established -- exactly as prod does:
   the rest) render with a `fake` provider because the render context sets
   `fakeSecretStores=true`, so dependent `ExternalSecret`s resolve offline with no
   Doppler backend -- no hand-written stub.
+- **Resources.** The render context sets `minimizeRequests=true`, so every
+  rendered workload (Deployments, StatefulSets, DaemonSets, CronJobs, Jobs,
+  plus the CNPG `Cluster` and `EnvoyProxy` CRs) that carries a container
+  `resources` block has its requests overridden to `cpu: 1m` / `memory: 1Mi`
+  while its limits keep their prod values. Prod-sized requests would
+  overcommit the single node and strand pods Pending; setting them explicitly
+  (rather than dropping the block) keeps the limits' protection against a
+  runaway pod and avoids Kubernetes defaulting requests back to limits.
+  Containers that ship without a resources block stay BestEffort, untouched.
+  Local overlays never need to override resource values.
 - **Prometheus operator CRDs.** Carried by `apps/o11y/k8s-monitoring/local`, via
   the pinned `prometheus-operator-crds` chart it inherits from base, so
   ServiceMonitor/PodMonitor resources apply.
@@ -270,9 +281,11 @@ The single knob that makes this fit one cluster is the render context's
 local CMP sets it to `local`, so the generator matches only `local/` overlays and
 its `destination.name` (the env-dir basename) resolves to the one registered
 `local` cluster. So an app is in the local set exactly when it has a `local/`
-overlay, and it runs under the same scoped `{tenant}-apps` project, the same
-`{tenant}-{app}-local` naming, and the same `tenant`/`app` labels as prod -- all
-produced by the unmodified `TenantBackend`, not re-implemented in the harness.
+overlay whose `.app.yaml` does not set `enabled: false` (see "Enabling and
+disabling apps" below), and it runs under the same scoped `{tenant}-apps`
+project, the same `{tenant}-{app}-local` naming, and the same `tenant`/`app`
+labels as prod -- all produced by the unmodified `TenantBackend`, not
+re-implemented in the harness.
 
 The `{tenant}-shared` tier runs too: it renders each tenant's `SharedApp`, whose
 `ClusterSecretStore` becomes a `fake` provider via `fakeSecretStores`. The cost
@@ -301,6 +314,11 @@ Add a `local/` overlay next to the app's `base/` and `mgmt/`. Use
 Docker-safe overrides to apply in the local `values.yaml`:
 
 - Drop multi-replica HA / PodDisruptionBudgets that would strand a pod on one node.
+- Leave resource requests/limits alone: the local render context minimizes
+  every workload's requests to 1m/1Mi while keeping its limits
+  (`minimizeRequests`, see above), so prod sizing never blocks scheduling
+  here. Anti-affinity, hardware nodeSelectors, and storage classes still need
+  the overrides below -- the transform touches only `resources.requests`.
 - `type: LoadBalancer` works -- the Cilium overlay hands out VIPs from the bridge
   subnet over L2/ARP, reachable from the host (see the Cilium step above and the
   limits section), so keep the Service as-is rather than downgrading to ClusterIP.
@@ -316,6 +334,35 @@ Docker-safe overrides to apply in the local `values.yaml`:
 
 Then `task tald:render` to compile it, `task tald:push` to deploy it, and
 `task tald:status` to watch it reconcile.
+
+## Enabling and disabling apps
+
+An `.app.yaml` carries an optional `enabled` field (default true). The shared
+`{tenant}-apps` ApplicationSet's git-file generator has a post-selector that
+drops files where it is `false`, so a disabled app is **not generated at all**:
+it costs no CMP renders, and an existing Application -- with its workloads --
+is removed. This is the knob for "don't deploy them all at once": every app
+keeps its `local/` overlay (and stays in the `tald:render` gate), while the
+live set is whatever is enabled.
+
+```sh
+task tald:apps                      # list every local overlay and its enabled state
+task tald:disable APP=o11y/mimir    # set enabled: false in the overlay's .app.yaml
+task tald:enable  APP=o11y/loki     # remove the field (default-on)
+task tald:push                      # make the toggle live (snapshot + refresh)
+```
+
+The toggles are structured edits of the working tree, like any other inner-loop
+edit; `tald:push` makes them live. The heavy stacks ship disabled by default so
+a stock bring-up converges comfortably: `o11y/loki`, `o11y/mimir`,
+`o11y/tempo`, `o11y/seaweedfs`, `public/opencloud`, and
+`securecodebox/seaweedfs`. Enable the one you are testing; the single node
+hosts the light set plus about one heavy stack at a time.
+
+Because the selector lives in the shared `TenantBackend`, the field also works
+on prod overlays, where `enabled: false` is an explicit "remove this app's
+workloads without deleting the overlay" switch -- absent the field, nothing
+changes.
 
 ## Known limits and differences from prod
 
@@ -339,7 +386,12 @@ Then `task tald:render` to compile it, `task tald:push` to deploy it, and
 - **Storage.** `openebs-hostpath` only (RWO hostpath, the default class served by
   `apps/kube/openebs/local`). No `ReadWriteMany`, no ZFS / Ceph / object storage.
 - **Single node.** No anti-affinity spread, no multi-node failure testing. The
-  control plane is schedulable and runs everything.
+  control plane is schedulable and runs everything. The node runs with
+  `--cpus 8 --memory 12288m` by default (`CPUS=`/`MEMORY=` override both, e.g.
+  `task tald:up CPUS=12 MEMORY=16384`); KCL renders through the CMP are the
+  CPU-bound path, so CPUS governs how fast a refresh herd clears. Sized for the
+  default local set plus about one enabled heavy stack -- enable several at
+  once and syncs slow down before they fail.
 - **Images pulled live, but cached across rebuilds.** A cold first bring-up still
   downloads images and charts (e.g. the Cilium operator image is ~60 MB from
   quay.io). Container images are then cached for every subsequent rebuild by a set
@@ -351,8 +403,9 @@ Then `task tald:render` to compile it, `task tald:push` to deploy it, and
   only cache misses. The mirrors leave Talos's `skipFallback` at its default, so a
   stopped or empty cache transparently falls back to the upstream -- the cache is a
   pure speedup, never a hard dependency. Purge it with `task tald:cache-clean`. The
-  KCL chart cache is still per-cluster (the kclipper sidecar's `emptyDir`); only
-  container images persist across rebuilds.
+  KCL/chart cache persists the same way: the repo-server's kclipper sidecar mounts
+  the `tald-cache-kcl` volume (created by `tald:kcl-cache-up`), so chart downloads
+  also survive `tald:down`.
 
 ## Troubleshooting
 
