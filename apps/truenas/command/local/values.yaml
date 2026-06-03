@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=../../../../charts/truecommand/values.schema.json
+
+# Docker-safe overrides only; everything else inherited from base.
+persistence:
+  data:
+    # openebs-mayastor doesn't exist on the single tald node; use the default
+    # hostpath class instead.
+    storageClass: openebs-hostpath
