@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=../../../../charts/radarr/values.schema.json
+
+# Docker-safe overrides only; everything else inherited from base.
+controllers:
+  radarr:
+    pod:
+      # The knas01 hostname selector never matches the single tald node.
+      nodeSelector:
+        kubernetes.io/hostname: null
+
+persistence:
+  # The NAS movies path does not exist on the tald node; use scratch space.
+  media:
+    type: emptyDir
+    hostPath: null
