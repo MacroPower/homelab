@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=../../../../charts/external_dns/values.schema.json
+
+# No chart values overrides needed for local; serviceMonitor is already disabled
+# in base, and external-dns has no HA/storage/nodeSelector concerns. Everything
+# is inherited from base.
+{}
