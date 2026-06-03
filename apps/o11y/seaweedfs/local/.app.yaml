@@ -3,3 +3,7 @@
 syncPolicy:
   automated:
     selfHeal: true
+
+# Heavy stack: disabled by default so a stock local bring-up stays within the
+# single node's budget. Test it with: task tald:enable APP=o11y/seaweedfs && task tald:push
+enabled: false
