@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=../../../../charts/qbittorrent/values.schema.json
+
+# This app's base App re-reads only its own values.yaml, so Docker-safe chart
+# value overrides are applied as typed patches in main.k instead.
+{}
