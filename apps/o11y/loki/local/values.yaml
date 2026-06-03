@@ -6,6 +6,10 @@
 # openebs-hostpath (the only/default class locally).
 ingester:
   replicas: 1
+  # Zone-aware replication renders three zone StatefulSets with required
+  # anti-affinity, which strands two of them Pending on the single node.
+  zoneAwareReplication:
+    enabled: false
   persistence:
     enabled: true
     claims:
