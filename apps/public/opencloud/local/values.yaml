@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=../../../../charts/opencloud/values.schema.json
+
+# Docker-safe overrides only; everything else inherited from base.
+# Repoint all external hostnames onto the local *.local.test domain so the
+# routes are reachable on the tald cluster.
+global:
+  domain:
+    collabora: collabora.local.test
+    companion: companion.local.test
+    minio: minio.local.test
+    onlyoffice: onlyoffice.local.test
+    opencloud: opencloud.local.test
+    wopi: wopi.local.test
+    keycloak: auth.local.test
