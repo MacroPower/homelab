@@ -366,7 +366,7 @@ tasks:
       # The -D the apps/argo/cd/local CMP bakes at render time (apps/argo/cd/local/main.k).
       # repo_url/revision reuse MIRROR_URL/REVISION to stay single-sourced with the
       # bootstrap step; the rest are constants that must equal that overlay.
-      LOCAL_RENDER_ARGS: '-D env=local -D repo_url={{.MIRROR_URL}} -D revision={{.REVISION}} -D app_env_glob=local -D fake_secret_stores=true'
+      LOCAL_RENDER_ARGS: '-D env=local -D repo_url={{.MIRROR_URL}} -D revision={{.REVISION}} -D app_env_glob=local -D fake_secret_stores=true -D minimize_requests=true'
       # All packages that render in-cluster on the local cluster (every app's
       # local/ overlay, every tenant base + shared, appsets/, bootstrap/core/local,
       # the git mirror). Only dirs with a `[profile]` (a kcl run entrypoint) are
@@ -997,6 +997,7 @@ tasks:
         fail=0
         grep -q "repo_url={{.MIRROR_URL}}" "$out" || { echo "render-context: mirror repo_url not baked into the CMP args" >&2; fail=1; }
         grep -q "revision={{.REVISION}}" "$out" || { echo "render-context: revision={{.REVISION}} not baked into the CMP args" >&2; fail=1; }
+        grep -q "minimize_requests=true" "$out" || { echo "render-context: minimize_requests=true not baked into the CMP args" >&2; fail=1; }
         if grep -q "revision=main" "$out"; then echo "render-context: prod-default revision=main leaked into the local render" >&2; fail=1; fi
         if grep -q "targetRevision: main" "$out"; then echo "render-context: prod-default targetRevision: main leaked into the local render" >&2; fail=1; fi
         if grep -q "repo_url=https://github.com/MacroPower" "$out"; then echo "render-context: prod-default GitHub repo_url leaked into the local render" >&2; fail=1; fi
