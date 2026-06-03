@@ -1,0 +1,7 @@
+# yaml-language-server: $schema=../../../../charts/crossplane/values.schema.json
+
+# Single-node tald cluster: no HA, run one replica of each component.
+replicas: 1
+
+rbacManager:
+  replicas: 1
