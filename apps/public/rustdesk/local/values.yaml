@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=../../../../charts/rustdesk/values.schema.json
+
+# Mirror the main overlay: tell hbbs where the relay (hbbr) lives. Base already
+# runs single replicas with openebs-hostpath storage, so no further Docker-safe
+# value overrides are needed.
+controllers:
+  hbbs:
+    containers:
+      hbbs:
+        args:
+          - -r
+          - "rustdesk-hbbr:21117"
