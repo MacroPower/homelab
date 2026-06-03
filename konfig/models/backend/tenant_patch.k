@@ -4,6 +4,11 @@ schema BackendTenantPatch:
 
     Parameters
     ----------
+    enabled: bool, optional
+        Whether the Application is generated at all. Defaults to true; set to
+        false to remove the app from the ApplicationSet's output (the
+        Application and its workloads are deleted) without deleting the
+        overlay. Filtered by the generator's post-selector.
     source: BackendTenantPatchSource, optional
         Git repository used to extract the desired Application manifests.
     syncPolicy: BackendTenantPatchSyncPolicy, optional
@@ -13,6 +18,7 @@ schema BackendTenantPatch:
     info: [BackendTenantPatchInfo], optional
         Additional information to display on the Argo CD dashboard.
     """
+    enabled?: bool
     source?: BackendTenantPatchSource
     syncPolicy?: BackendTenantPatchSyncPolicy
     ignoreDifferences?: [BackendTenantPatchIgnoreDifferences]

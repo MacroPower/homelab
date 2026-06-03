@@ -150,6 +150,11 @@
   },
   "description": "Application-level patch.",
   "properties": {
+    "enabled": {
+      "default": "",
+      "description": "Whether the Application is generated at all. Defaults to true; set to\nfalse to remove the app from the ApplicationSet's output (the\nApplication and its workloads are deleted) without deleting the\noverlay. Filtered by the generator's post-selector.",
+      "type": "boolean"
+    },
     "ignoreDifferences": {
       "default": "",
       "description": "List of differences to ignore during synchronization.",

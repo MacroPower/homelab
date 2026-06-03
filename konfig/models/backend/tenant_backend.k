@@ -178,6 +178,19 @@ schema TenantBackend[inputConfig: frontend.Tenant]:
                     }]
                     pathParamPrefix = "app"
                 }
+                # Post-filter: an .app.yaml opts out of generation with
+                # `enabled: false`. The controller flattens file values to
+                # strings before label-selector matching, and NotIn matches a
+                # missing key, so apps without the field stay enabled. A
+                # disabled app is not generated at all: it costs no renders,
+                # and an existing Application (with its workloads) is removed.
+                selector: {
+                    matchExpressions = [{
+                        key = "enabled"
+                        operator = "NotIn"
+                        values = ["false"]
+                    }]
+                }
             }]
             template.metadata: utils.AppMetadataBuilder(_metadata | {
                 name = "${config.name}-{{index .app.path.segments 2}}-{{.app.path.basename}}"
