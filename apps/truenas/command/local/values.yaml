@@ -6,3 +6,12 @@ persistence:
     # openebs-mayastor doesn't exist on the single tald node; use the default
     # hostpath class instead.
     storageClass: openebs-hostpath
+
+controllers:
+  truecommand:
+    pod:
+      nodeSelector:
+        # Drop the amd64 pin (json_merge_patch deletes null keys): the tald node
+        # may be any arch, so this hardware arch constraint must not gate
+        # scheduling. The inherited kubernetes.io/os: linux selector still matches.
+        kubernetes.io/arch: null
