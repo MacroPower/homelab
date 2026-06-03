@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=../../../../charts/spegel/values.schema.json
+
+# Drop the hardware region selector so the DaemonSet schedules on the single
+# tald node. json_merge_patch deletes keys set to null, leaving nodeSelector empty.
+nodeSelector:
+  topology.kubernetes.io/region: null
