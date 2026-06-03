@@ -44,8 +44,12 @@ vars:
   # those guards actually catch a forgotten CLUSTER_NAME. Override with
   # TALD_CLUSTER=... for a second local cluster.
   TALD_CLUSTER: '{{.TALD_CLUSTER | default "homelab-local"}}'
-  CPUS: '{{.CPUS | default "4"}}'
-  MEMORY: '{{.MEMORY | default "6144"}}'
+  # Node sizing (docker run --cpus/--memory, MiB). The defaults host the full
+  # default local set plus one enabled heavy stack; KCL renders through the CMP
+  # are the CPU-bound path, so CPUS is what governs how fast a refresh herd
+  # clears. Override per-invocation: task tald:up CPUS=12 MEMORY=16384.
+  CPUS: '{{.CPUS | default "8"}}'
+  MEMORY: '{{.MEMORY | default "12288"}}'
   NODE_IP: '{{.NODE_IP | default "10.5.0.2"}}'
   SUBNET: '{{.SUBNET | default "10.5.0.0/24"}}'
   REVISION: '{{.REVISION | default "local"}}'
