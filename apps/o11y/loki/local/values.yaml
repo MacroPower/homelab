@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=../../../../charts/loki/values.schema.json
+
+# Docker-safe overrides: collapse every Distributed component to a single replica
+# (the single tald node can't satisfy HA spreads), drop maxUnavailable to 1, and
+# shrink the openebs-hostpath PVCs to small sizes. StorageClass stays
+# openebs-hostpath (the only/default class locally).
+ingester:
+  replicas: 1
+  persistence:
+    enabled: true
+    claims:
+      - name: data
+        storageClass: openebs-hostpath
+        size: 2Gi
+        accessModes:
+          - ReadWriteOnce
+      - name: wal
+        storageClass: openebs-hostpath
+        size: 2Gi
+        accessModes:
+          - ReadWriteOnce
+querier:
+  replicas: 1
+  maxUnavailable: 1
+queryFrontend:
+  replicas: 1
+  maxUnavailable: 1
+queryScheduler:
+  replicas: 1
+distributor:
+  replicas: 1
+  maxUnavailable: 1
+indexGateway:
+  replicas: 1
+  maxUnavailable: 1
+  persistence:
+    enabled: true
+    storageClass: openebs-hostpath
+    size: 2Gi
