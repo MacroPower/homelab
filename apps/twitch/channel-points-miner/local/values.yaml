@@ -1,0 +1,4 @@
+# yaml-language-server: $schema=../../../../charts/tcpm/values.schema.json
+
+# Docker-safe overrides only; everything else inherited from base.
+{}
