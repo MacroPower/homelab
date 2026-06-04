@@ -4,6 +4,23 @@
 # (the single tald node can't satisfy HA spreads), drop maxUnavailable to 1, and
 # shrink the openebs-hostpath PVCs to small sizes. StorageClass stays
 # openebs-hostpath (the only/default class locally).
+loki:
+  # The chart default replication_factor (3) can never find quorum on the single
+  # local ingester, 500-ing every write and read; pin it to the replica count.
+  commonConfig:
+    replication_factor: 1
+  # Object storage: the local o11y/seaweedfs overlay (heavy stack, enable with
+  # task tald:enable APP=o11y/seaweedfs) serves S3 with the literal dummy/dummy
+  # credentials the s3-config ExternalSecret resolves offline, so chunks/index
+  # flush for real when it is up. Mirrors main/values.yaml apart from the creds.
+  storage:
+    s3:
+      endpoint: seaweedfs-s3.o11y-seaweedfs.svc:8333
+      accessKeyId: "${S3_ACCESS_KEY}"
+      secretAccessKey: "${S3_SECRET_KEY}"
+      insecure: true
+      s3ForcePathStyle: true
+
 ingester:
   replicas: 1
   # Zone-aware replication renders three zone StatefulSets with required
