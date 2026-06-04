@@ -7,6 +7,27 @@
 # - ingester / store_gateway: drop the required zone anti-affinity and disable
 #   zone-aware replication so pods aren't stranded waiting for distinct zones.
 # - Shrink PVCs to fit hostpath; keep the openebs-hostpath storage class.
+# - S3: same endpoint as main/values.yaml. Without it the six store-dependent
+#   components fail config validation ("no s3 endpoint in config file") before
+#   attempting any connection. The local o11y/seaweedfs overlay serves this
+#   endpoint with the literal dummy/dummy credentials the s3-config
+#   ExternalSecret resolves offline, so block storage works when it is enabled.
+
+mimir:
+  structuredConfig:
+    common:
+      storage:
+        s3:
+          endpoint: seaweedfs-s3.o11y-seaweedfs.svc:8333
+          access_key_id: "${S3_ACCESS_KEY}"
+          secret_access_key: "${S3_SECRET_KEY}"
+          insecure: true
+    # The default replication_factor (3) can never reach write quorum on the
+    # single local ingester: remote_write 500s ("at least 2 live replicas
+    # required") and series queries fail on the ring; pin it to 1.
+    ingester:
+      ring:
+        replication_factor: 1
 
 alertmanager:
   replicas: 1
