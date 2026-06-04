@@ -30,16 +30,6 @@ app = o11y_mimir_base.app | {
     externalSecrets.s3Config = _s3Config
 
     charts.mimir.values = _values | mimir.Values {
-        global.extraEnv: [
-            {
-                name = "S3_ACCESS_KEY"
-                valueFrom = _s3Config.getSecretKeyEnvRef("S3_ACCESS_KEY")
-            }
-            {
-                name = "S3_SECRET_KEY"
-                valueFrom = _s3Config.getSecretKeyEnvRef("S3_SECRET_KEY")
-            }
-        ]
         metaMonitoring.serviceMonitor.clusterLabel = cluster.NAME
     }
 }
