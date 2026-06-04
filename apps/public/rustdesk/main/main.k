@@ -11,11 +11,5 @@ _envValues = files.read_yaml(file.current(), "values.yaml")
 _values = objects.json_merge_patch(_baseValues, _envValues)
 
 app = public_rustdesk_base.app | {
-    domainName = "jacobcolvin.com"
     charts.rustdesk.values = _values
-
-    routes.rustdeskWeb.gatewayRef = {
-        name = "public-gateway"
-        namespace = "envoy-gateway"
-    }
 }

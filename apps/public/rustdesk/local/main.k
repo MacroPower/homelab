@@ -24,11 +24,6 @@ app = public_rustdesk_base.app | {
     domainName = cluster.DOMAIN_NAME
     charts.rustdesk.values = _values
 
-    routes.rustdeskWeb.gatewayRef = {
-        name = "public-gateway"
-        namespace = "envoy-gateway"
-    }
-
     externalSecrets.keypair.data: {
         RUSTDESK_KEY_PRIV.remoteRef.key = "dummy"
         RUSTDESK_KEY_PUB.remoteRef.key = "dummy"

@@ -195,6 +195,7 @@ _keypair = secret.ExternalSecret {
 app = frontend.App {
     name = _appName
     tenantName = public_shared.tenant.name
+    domainName = "jacobcolvin.com"
     secretStore = public_shared.shared.secretStores.default.name
     externalSecrets.keypair = _keypair
 
@@ -239,7 +240,10 @@ app = frontend.App {
     }
 
     routes.rustdeskWeb = gateway.Route {
-        gatewayRef = public_shared.tenant.gateways.default
+        gatewayRef = {
+            name = _gwRef.name
+            namespace = _gwRef.namespace
+        }
         services.rustdeskWeb = {
             name = "${name}-web"
             port = 21114
