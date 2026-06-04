@@ -3,18 +3,6 @@
 # Docker-safe overrides: collapse every HA component to a single replica with
 # maxUnavailable 1 (one tald node cannot spread the distributed Tempo ring).
 # Persistence already uses openebs-hostpath in base; sizes shrunk to 5Gi.
-# S3 storage + metrics-generator remote_write mirror the main overlay so the
-# expand-env config still resolves (the backends themselves are absent locally).
-
-storage:
-  trace:
-    backend: s3
-    s3:
-      endpoint: seaweedfs-s3.o11y-seaweedfs.svc:8333
-      access_key: "${S3_ACCESS_KEY}"
-      secret_key: "${S3_SECRET_KEY}"
-      bucket: tempo-traces
-      insecure: true
 
 distributor:
   replicas: 1
@@ -48,8 +36,3 @@ metricsGenerator:
     enabled: true
     storageClass: openebs-hostpath
     size: "5Gi"
-  config:
-    storage:
-      remote_write:
-        - url: http://mimir-distributed-gateway.o11y-mimir.svc/api/v1/push
-          send_exemplars: true
