@@ -4,16 +4,6 @@ cluster:
   name: main
   id: 2
 
-k8sClientRateLimit:
-  qps: 10
-  burst: 20
-
-ingressController:
-  enabled: true
-  loadbalancerMode: shared
-  defaultSecretNamespace: "external-certs"
-  defaultSecretName: "cluster-ingress"
-
 bpf:
   preallocateMaps: true
   distributedLRU:

@@ -17,6 +17,16 @@ ipv6:
 externalIPs:
   enabled: true
 
+ingressController:
+  enabled: true
+  loadbalancerMode: shared
+  defaultSecretNamespace: "external-certs"
+  defaultSecretName: "cluster-ingress"
+
+k8sClientRateLimit:
+  qps: 10
+  burst: 20
+
 nodePort:
   enabled: true
 

@@ -36,13 +36,9 @@ ingressController:
   enabled: false
 
 # L2 announcements (ARP) make LoadBalancer VIPs from the bridge subnet reachable
-# from the host, which shares the Docker bridge L2 segment with the node. Lease
-# renewals churn the k8s client, so lift its rate limit off the low default.
+# from the host, which shares the Docker bridge L2 segment with the node.
 l2announcements:
   enabled: true
-k8sClientRateLimit:
-  qps: 10
-  burst: 20
 
 operator:
   # Single replica: the base runs two with anti-affinity, which strands a
