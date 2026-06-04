@@ -64,4 +64,18 @@ app = frontend.App {
     name = "dns"
     tenantName = external_shared.tenant.name
     secretStore = external_shared.shared.secretStores.default.name
+    externalSecrets: {
+        cloudflareCreds = cloudflareCreds
+        unifiCreds = unifiCreds
+    }
+    charts: {
+        external_dns_unifi = external_dns.Chart {
+            values: unifiValues | {
+                extraArgs = [
+                    "--crd-source-apiversion=externaldns.k8s.io/v1alpha1"
+                    "--crd-source-kind=DNSEndpoint"
+                ]
+            }
+        }
+    }
 }
