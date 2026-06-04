@@ -1,9 +1,18 @@
 # yaml-language-server: $schema=../../../../charts/dragonfly_operator/values.schema.json
 
+replicaCount: 1
+
 manager:
   image:
     repository: docker.dragonflydb.io/dragonflydb/operator
     tag: v1.5.0
+  resources:
+    requests:
+      cpu: 10m
+      memory: 150Mi
+    limits:
+      cpu: 500m
+      memory: 150Mi
 
 serviceMonitor:
   # When set true then use a ServiceMonitor to configure scraping
