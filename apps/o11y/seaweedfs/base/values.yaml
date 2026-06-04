@@ -8,9 +8,19 @@ global:
 master:
   logs: &logs
     type: emptyDir
+  replicas: 1
+  data:
+    type: persistentVolumeClaim
+    storageClass: openebs-hostpath
+    size: 10Gi
 
 filer:
   logs: *logs
+  replicas: 1
+  data:
+    type: persistentVolumeClaim
+    storageClass: openebs-hostpath
+    size: 50Gi
   s3:
     enabled: true
     enableAuth: true
@@ -24,3 +34,24 @@ filer:
 
 volume:
   logs: *logs
+  replicas: 1
+  dataDirs:
+    - name: data1
+      type: persistentVolumeClaim
+      storageClass: openebs-hostpath
+      size: 500Gi
+      maxVolumes: 128
+    - name: data2
+      type: persistentVolumeClaim
+      storageClass: openebs-hostpath
+      size: 500Gi
+      maxVolumes: 128
+    - name: data3
+      type: persistentVolumeClaim
+      storageClass: openebs-hostpath
+      size: 500Gi
+      maxVolumes: 128
+  idx:
+    type: persistentVolumeClaim
+    storageClass: openebs-hostpath
+    size: 50Gi
