@@ -7,9 +7,7 @@ _baseValues = external_certs_base.app.charts.cert_manager.values
 
 app = external_certs_base.app | {
     domainName = cluster.DOMAIN_NAME
-    charts.cert_manager.values = _baseValues | cert_manager.Values {
-        replicaCount = 2
-    }
+    charts.cert_manager.values = _baseValues | cert_manager.Values {}
     extraResources.cloudflareClusterIngress = certmanagerv1.Certificate {
         metadata.name = "cluster-ingress"
         spec: {
