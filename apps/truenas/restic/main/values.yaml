@@ -5,10 +5,3 @@ controllers:
     pod:
       nodeSelector:
         kubernetes.io/hostname: knas01
-
-persistence:
-  data:
-    type: hostPath
-    hostPath: /var/archive/backups/repos
-    globalMounts:
-      - path: /data

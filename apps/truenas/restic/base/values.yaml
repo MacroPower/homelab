@@ -54,6 +54,11 @@ service:
         port: 8000
 
 persistence:
+  data:
+    type: hostPath
+    hostPath: /var/archive/backups/repos
+    globalMounts:
+      - path: /data
   auth:
     type: secret
     name: restic-credentials
