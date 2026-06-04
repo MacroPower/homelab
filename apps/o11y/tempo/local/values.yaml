@@ -10,6 +10,11 @@ distributor:
 
 ingester:
   replicas: 1
+  # The chart default replication_factor (3) can never reach write quorum on
+  # the single local ingester: OTLP pushes 503 ("at least 2 live replicas
+  # required") and trace reads 500; pin it to the replica count.
+  config:
+    replication_factor: 1
   persistence:
     enabled: true
     storageClass: openebs-hostpath
