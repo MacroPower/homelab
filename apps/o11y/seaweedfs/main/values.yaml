@@ -6,14 +6,11 @@ master:
   tolerations: &tolerations |
     - key: "node-role.kubernetes.io/storage"
       effect: "NoSchedule"
-  affinity: &affinity ""
 
 filer:
   nodeSelector: *nodeSelector
   tolerations: *tolerations
-  affinity: *affinity
 
 volume:
   nodeSelector: *nodeSelector
   tolerations: *tolerations
-  affinity: *affinity

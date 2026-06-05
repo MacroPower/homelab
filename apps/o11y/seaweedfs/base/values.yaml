@@ -8,6 +8,9 @@ global:
 master:
   logs: &logs
     type: emptyDir
+  # Single-replica components everywhere (prod pins them to one node), so the
+  # chart's default per-component anti-affinity is suppressed cluster-wide.
+  affinity: &affinity ""
   replicas: 1
   data:
     type: persistentVolumeClaim
@@ -16,6 +19,7 @@ master:
 
 filer:
   logs: *logs
+  affinity: *affinity
   replicas: 1
   data:
     type: persistentVolumeClaim
@@ -34,6 +38,7 @@ filer:
 
 volume:
   logs: *logs
+  affinity: *affinity
   replicas: 1
   dataDirs:
     - name: data1
