@@ -22,6 +22,12 @@ loki:
     bucketNames:
       chunks: loki-chunks
       ruler: loki-ruler
+    s3:
+      endpoint: seaweedfs-s3.o11y-seaweedfs.svc:8333
+      accessKeyId: "${S3_ACCESS_KEY}"
+      secretAccessKey: "${S3_SECRET_KEY}"
+      insecure: true
+      s3ForcePathStyle: true
   auth_enabled: false
 
 deploymentMode: Distributed
