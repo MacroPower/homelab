@@ -20,11 +20,7 @@ configs:
     # exclusions for per-pod/per-identity churn objects (Cilium datapath,
     # Crossplane usage tracking, kyverno/trivy report CRs). Hub-only concerns
     # (OIDC, RBAC, HA sizing) stay in the mgmt overlay.
-    ## Configured for improved Crossplane support
     ## Ref: https://docs.crossplane.io/knowledge-base/integrations/argo-cd-crossplane/
-    ##
-    ## Use existing system-level ignoreDifferences customizations to ignore
-    ## resource updates.
     resource.compareoptions: |
       ignoreDifferencesOnResourceUpdates: true
     resource.exclusions: |
