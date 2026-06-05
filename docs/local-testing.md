@@ -380,6 +380,17 @@ changes.
   ~11 addresses; and there is no `externalTrafficPolicy: Local` source-IP
   preservation guarantee on a single node. The mechanism differs from prod (L2/ARP
   vs BGP to the UniFi router) but exercises the same LB-IPAM and datapath.
+- **Host-side TLS interception in sandboxed shells.** If the host shell driving
+  tald sits inside an egress-filtering sandbox (e.g. an agent harness that
+  nftables-redirects outbound TCP :80/:443/:53 into a local proxy), a host
+  `curl https://10.5.0.24x` resets right after the TLS ClientHello -- the
+  sandbox proxy, not Cilium, terminates and resets the IP-literal connection
+  (plain HTTP may answer with a proxy error page instead; ports outside the
+  intercept set, like NodePorts, are unaffected). The VIP datapath itself is
+  healthy: verify HTTPS from inside the cluster
+  (`kubectl run t --rm --image=curlimages/curl --restart=Never -- curl -ks
+  https://10.5.0.24x`) or from a host without the sandbox. A property of the
+  environment, not the harness.
 - **DNS / ingress.** No real DNS and no external ingress. Reach a VIP by IP, or
   port-forward. TLS listeners serve self-signed certs from the local
   `selfsigned-issuer` (`apps/external/certs/local`), not real ACME certs.
