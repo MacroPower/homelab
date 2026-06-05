@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=../../../../konfig/models/frontend/patch.schema.json
+
+# Adopt the bootstrap-applied Argo CD as a self-managed app, exactly as the
+# mgmt hub manages itself. The rendered overlay is what tald:bootstrap already
+# applied, so adoption converges without restarts; day-2 config edits (e.g.
+# resource customizations) then reconcile through Argo like any other app.
+syncPolicy:
+  automated:
+    selfHeal: true
