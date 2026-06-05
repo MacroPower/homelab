@@ -12,12 +12,13 @@ import cluster
 # pipeline, while still inheriting the prometheus_operator_crds chart from base
 # -- which is the point: the curated local apps create ServiceMonitors and need
 # the CRDs, delivered here by Argo CD exactly as the real clusters get them.
+# The base kubernetesMixin PrometheusRule is inherited too: its CRD ships with
+# this app, so it applies cleanly (inert without a Prometheus backend, but it
+# keeps the local render close to prod at zero runtime cost).
 _values = files.read_yaml(file.current(), "values.yaml")
 
 app = o11y_k8s_monitoring_base.app | {
     charts.k8s_monitoring.values = _values | k8s_monitoring.Values {
         cluster.name = cluster.NAME
     }
-
-    extraResources = {}
 }
