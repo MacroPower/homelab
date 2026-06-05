@@ -628,7 +628,11 @@ tasks:
       - sh: test -f "{{.APP_FILE}}"
         msg: "no local overlay at apps/{{.APP}}/local/.app.yaml (APP takes <tenant>/<app>)"
     cmds:
-      - yq -i 'del(.enabled)' "{{.APP_FILE}}"
+      # Set `enabled: true` rather than deleting the key: yq's value assignment
+      # preserves the key's head comment (the "Heavy stack: ..." blocks), while
+      # del(.enabled) destroys it. The ApplicationSet selector (`enabled NotIn
+      # ["false"]`) treats an explicit true and an absent key identically.
+      - yq -i '.enabled = true' "{{.APP_FILE}}"
       - cmd: 'echo "enabled apps/{{.APP}}/local -- make it live with: task tald:push"'
         silent: true
 
