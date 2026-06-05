@@ -111,6 +111,19 @@ The schema reference MUST match the chart used by the base. An empty `{}` means 
 
 Overlays without a Helm chart have no `values.yaml`.
 
+## Convergence with Production
+
+Config that every cluster should share belongs in `base/`, not duplicated
+across overlays: when two overlays (or an overlay and the `local/` test
+overlay) carry the same block, hoist it to base and re-render each prod
+overlay to confirm the output is unchanged. Overlays should hold only what is
+genuinely cluster-specific.
+
+Two RFC 7396 semantics matter when moving config between base and overlays:
+a `null` value in an overlay `values.yaml` deletes the base key, and any
+list-valued key is replaced wholesale (never element-merged) -- so hoists or
+deletions that touch lists need a render diff to prove neutrality.
+
 ## Cluster Config
 
 Cluster packages at `clusters/<cluster>/main.k` export:

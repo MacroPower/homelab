@@ -200,8 +200,12 @@ internal tasks:
    secret stores -- **no edits to the prod-synced tree's rendered output**.
 
 Beyond the day-0 bootstrap layer (Cilium, Argo CD, the CSR approver -- applied
-imperatively by `tald:bootstrap` and not re-adopted as Argo apps), there is no
-imperative seed step. Every app-tier cluster
+imperatively by `tald:bootstrap`), there is no imperative seed step. Argo CD
+itself is then re-adopted as a self-managed app: `apps/argo/cd/local/.app.yaml`
+puts it in the `argo-apps` ApplicationSet exactly as the mgmt hub manages
+itself, so day-2 edits to the Argo CD overlay reconcile through Argo (the
+rendered overlay is what `tald:bootstrap` applied, so adoption converges in
+place). Cilium and the CSR approver stay imperative-only. Every app-tier cluster
 dependency that the real clusters get from an app rides a `local/` overlay, and
 Argo CD applies it -- retrying until prerequisites (CRDs, namespaces) are
 established -- exactly as prod does:
@@ -331,6 +335,21 @@ Docker-safe overrides to apply in the local `values.yaml`:
   CRDs) and the
   CiliumNetworkPolicies (they use the `kube-apiserver`/`kube-dns` entities, which
   resolve locally).
+
+Keeping local close to prod is a structural rule, not just a values diet:
+
+- Shared, Docker-safe, cluster-agnostic prod config belongs in `base/`, not in a
+  prod overlay that local then hand-copies (the copy drifts). When a prod
+  overlay merely duplicates or adds such config, hoist it to base -- verified
+  render-neutral for `main`/`mgmt` -- and every environment, local included,
+  inherits it.
+- Local overlays import `../base`, never `../main` (the securecodebox overlays
+  are a legacy exception): layering on a prod overlay re-imposes every
+  Docker-unsafe prod setting just to unwind it, and RFC 7396 merges replace
+  arrays wholesale, so the unwind re-states whole lists.
+- Local must never be *more* restrictive than prod: tightened limits, dropped
+  prod features that work offline, or stubs for things the cluster actually has
+  are divergence, not Docker-safety.
 
 Then `task tald:render` to compile it, `task tald:push` to deploy it, and
 `task tald:status` to watch it reconcile.
