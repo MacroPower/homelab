@@ -1,6 +1,12 @@
 # yaml-language-server: $schema=../../../../charts/reloader/values.schema.json
 
 reloader:
-  # No Prometheus operator CRDs in the local test cluster.
-  podMonitor:
+  # Single node: drop the base's HA pair and its PodDisruptionBudget per the
+  # local overlay guidance (docs/local-testing.md, Docker-safe overrides). The
+  # base podMonitor applies as-is: the prometheus-operator CRDs are installed
+  # locally by o11y/k8s-monitoring.
+  enableHA: false
+  deployment:
+    replicas: 1
+  podDisruptionBudget:
     enabled: false
