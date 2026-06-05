@@ -67,6 +67,9 @@
     name = "kube"
     full_name = "kube_0.1.0"
     version = "0.1.0"
+    reg = "ghcr.io"
+    repo = "kcl-lang/kube"
+    oci_tag = "0.1.0"
   [dependencies.kube_csr_approver]
     name = "kube_csr_approver"
     full_name = "kube_csr_approver_main_0.1.0"
