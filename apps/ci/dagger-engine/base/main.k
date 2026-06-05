@@ -62,12 +62,22 @@ app = frontend.App {
         registryEgress = networkpolicy.NetworkPolicy {
             name = "registry-egress"
             egress = [{
+                # Registries 307-redirect blob downloads to CDN hosts, which
+                # need allowing alongside the registry API hosts themselves:
+                # docker.io blobs come from production.cloudfront.docker.com,
+                # ghcr.io blobs from the BARE pkg-containers.githubusercontent.com
+                # (Cilium's "*." patterns require a subdomain, so the bare host
+                # needs its own matchName), and quay.io blobs from cdn0X.quay.io.
                 toFQDNs = [
                     {matchName = "registry.dagger.io"}
                     {matchName = "registry-1.docker.io"}
                     {matchPattern = "*.docker.io"}
+                    {matchName = "production.cloudfront.docker.com"}
                     {matchName = "ghcr.io"}
+                    {matchName = "pkg-containers.githubusercontent.com"}
                     {matchPattern = "*.pkg-containers.githubusercontent.com"}
+                    {matchName = "quay.io"}
+                    {matchPattern = "cdn*.quay.io"}
                 ]
             }]
         }
