@@ -1,5 +1,7 @@
 # yaml-language-server: $schema=../../../../charts/truecommand/values.schema.json
 
+# The 4Gi memory limit is inherited from base; only prod sizing for requests
+# lives here.
 controllers:
   truecommand:
     containers:
@@ -8,5 +10,3 @@ controllers:
           requests:
             cpu: 100m
             memory: 2Gi
-          limits:
-            memory: 4Gi
