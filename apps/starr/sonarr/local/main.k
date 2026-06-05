@@ -12,8 +12,9 @@ _envValues = files.read_yaml(file.current(), "values.yaml")
 _values = objects.json_merge_patch(_baseValues, _envValues)
 
 # Docker-safe local overlay:
-# - clear the knas01 nodeSelector and switch the media hostPath volume to emptyDir
-#   (handled in values.yaml; the tald node has neither the label nor the NAS path)
+# - clear the kubernetes.io/hostname: knas01 nodeSelector and switch the media
+#   hostPath volume to emptyDir (handled in values.yaml; the tald node has
+#   neither the label nor the NAS path)
 # - drop the OpenTofu ProviderConfig/Workspace extraResources: those CRDs and the
 #   sonarr API they target are not available offline
 # - point every ExternalSecret remoteRef.key at the constant "dummy" the fake

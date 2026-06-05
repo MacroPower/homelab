@@ -12,8 +12,8 @@ _values = objects.json_merge_patch(_baseValues, _envValues)
 
 # Simple exporter with no Docker-unsafe items. The prometheus-operator CRDs
 # (ServiceMonitor/PrometheusRule) are installed on the local cluster, so the
-# base monitoring resources are kept verbatim. No GE data is reachable offline,
-# so the exporter is Healthy but emits no scraped metrics.
+# base monitoring resources are kept verbatim. Outbound internet works from
+# tald pods, so the exporter serves live GE price metrics here too.
 app = o11y_osrs_ge_exporter_base.app | {
     charts.osrs_ge_exporter.values = _values | osrs_ge_exporter.Values {}
 }

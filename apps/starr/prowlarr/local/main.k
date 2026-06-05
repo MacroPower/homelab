@@ -16,8 +16,9 @@ _values = objects.json_merge_patch(_baseValues, _envValues)
 #     OpenTofu provider CRDs are not installed on the local tald cluster.
 #   - Point every ExternalSecret remoteRef.key at "dummy" so the fake offline
 #     ClusterSecretStore (which only serves key="dummy") can resolve them.
-#   - Persistence is already emptyDir in base; postgres lives in starr-system and
-#     is absent locally, so the app runs degraded (no DB backend).
+#   - Persistence is already emptyDir in base; postgres lives in starr-system,
+#     which deploys locally too, and both sides resolve the same "dummy"
+#     password, so the DB backend works here.
 app = starr_prowlarr_base.app | {
     domainName = cluster.DOMAIN_NAME
     charts.prowlarr.values = _values | prowlarr.Values {}

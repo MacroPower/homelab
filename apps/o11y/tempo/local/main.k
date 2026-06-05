@@ -12,9 +12,11 @@ _envValues = files.read_yaml(file.current(), "values.yaml")
 _values = objects.json_merge_patch(_baseValues, _envValues)
 
 # Offline: point the s3-config ExternalSecret at the fake provider's "dummy"
-# key for every data entry so the local secret store can answer it. The real
-# Tempo S3 backend (seaweedfs) is not present locally, so trace persistence is
-# degraded, but the chart still renders and pods start.
+# key for every data entry so the local secret store can answer it. The base S3
+# endpoint targets the local o11y/seaweedfs overlay, whose single identity uses
+# the same literal dummy/dummy credentials, so traces persist for real when
+# that heavy stack is enabled. Tempo validates the object store at startup
+# (ListObjects) and crashes without it -- enable o11y/seaweedfs alongside.
 _s3Config = secret.ExternalSecret {
     name = "s3-config"
     data: {
