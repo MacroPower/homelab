@@ -21,7 +21,8 @@ app = twitch_channel_points_miner_base.app | {
         "client-secret" = {remoteRef.key = "dummy"}
     }
     externalSecrets.twitchCookie.data: {
-        "Cookie.pkl" = {remoteRef.key = "dummy"}
+        # Merge (not replace) so the base remoteRef keeps decodingStrategy=Base64.
+        "Cookie.pkl": {remoteRef.key = "dummy"}
     }
     charts.tcpm.values = _values | tcpm.Values {}
 }
