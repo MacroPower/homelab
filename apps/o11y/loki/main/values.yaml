@@ -1,4 +1,5 @@
 # yaml-language-server: $schema=../../../../charts/loki/values.schema.json
 
-# Everything (including the seaweedfs S3 endpoint) is inherited from base.
+# The seaweedfs S3 endpoint and all other config are inherited from base; this
+# overlay adds nothing.
 {}
