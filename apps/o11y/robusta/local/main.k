@@ -18,9 +18,10 @@ app = o11y_robusta_base.app | {
     }
 
     # No Doppler offline: point every robusta-config key at the fake provider's
-    # "dummy" key so the local fake secret store can answer them. The runner gets
-    # placeholder signing key / account id / UI sink token (degraded: cannot
-    # authenticate to the Robusta SaaS UI, but the runner starts).
+    # "dummy" key so the local fake secret store can answer them. The UI sink
+    # that would consume the token is dropped in values.yaml ("dummy" is not a
+    # valid base64 RobustaToken and crashes the runner at startup), so the
+    # runner serves as a local event processor with no SaaS sink.
     externalSecrets.robustaConfig.data.ROBUSTA_SIGNING_KEY.remoteRef.key = "dummy"
     externalSecrets.robustaConfig.data.ROBUSTA_ACCOUNT_ID.remoteRef.key = "dummy"
     externalSecrets.robustaConfig.data.ROBUSTA_UI_SINK_TOKEN.remoteRef.key = "dummy"

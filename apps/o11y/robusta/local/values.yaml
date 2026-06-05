@@ -1,5 +1,14 @@
 # yaml-language-server: $schema=../../../../charts/robusta/values.schema.json
 
+# Replace the base's robusta_ui_sink: its token resolves to the fake-store
+# literal "dummy", which is not a valid base64 RobustaToken and aborts the
+# runner at sink construction. The chart requires at least one sink, so swap in
+# a file_sink with no file_name -- findings go to the runner's stdout, with no
+# external dependency -- and the runner runs Healthy as a local event processor.
+sinksConfig:
+  - file_sink:
+      name: stdout_sink
+
 # Make the robusta-config secretRef optional so the runner does not crashloop
 # while the fake (dummy) ExternalSecret is materializing offline.
 runner:
