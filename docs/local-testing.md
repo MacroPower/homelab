@@ -336,7 +336,7 @@ Docker-safe overrides to apply in the local `values.yaml`:
   CiliumNetworkPolicies (they use the `kube-apiserver`/`kube-dns` entities, which
   resolve locally).
 
-Keeping local close to prod is a structural rule, not just a values diet:
+Keeping local close to prod is structural, beyond the per-app values diet:
 
 - Shared, Docker-safe, cluster-agnostic prod config belongs in `base/`, not in a
   prod overlay that local then hand-copies (the copy drifts). When a prod
