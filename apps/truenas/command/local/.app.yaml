@@ -3,3 +3,8 @@
 syncPolicy:
   automated:
     selfHeal: true
+# The truecommand image is amd64-only (exec format error on an arm64 tald
+# node) and it manages a real NAS that is unreachable offline -- doubly
+# non-functional locally.
+# Test it with: task tald:enable APP=truenas/command && task tald:push
+enabled: false

@@ -3,3 +3,8 @@
 syncPolicy:
   automated:
     selfHeal: true
+# This app deploys only the Grafana Cloud PDC agent, which needs a real Grafana
+# Cloud token; with the fake-store "dummy" it crashloops and the Application
+# stays Progressing forever. Nothing to exercise offline.
+# Test it with: task tald:enable APP=o11y/grafana && task tald:push
+enabled: false

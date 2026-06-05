@@ -3,3 +3,9 @@
 syncPolicy:
   automated:
     selfHeal: true
+# The macropower/wakatime-exporter image is published amd64-only (every tag is
+# a single-platform manifest), so it dies with an exec format error on an arm64
+# tald node, and upstream is dormant with no multi-arch build. It is degraded
+# locally anyway: the fake-store "dummy" API key gets a 401 from WakaTime.
+# Test it with: task tald:enable APP=o11y/wakatime-exporter && task tald:push
+enabled: false

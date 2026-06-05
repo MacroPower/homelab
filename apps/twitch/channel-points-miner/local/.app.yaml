@@ -3,3 +3,8 @@
 syncPolicy:
   automated:
     selfHeal: true
+# Needs real Twitch credentials: with the fake-store "dummy" the miner
+# crashloops on login/cookie bootstrap, wasting restarts and hammering Twitch
+# endpoints. Nothing to exercise offline.
+# Test it with: task tald:enable APP=twitch/channel-points-miner && task tald:push
+enabled: false
