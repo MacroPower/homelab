@@ -20,9 +20,9 @@ _settings = public_homepage_base.settings | {
 _widgets = public_homepage_base.widgets
 _widgets[1].greeting.text = cluster.FRIENDLY_NAME
 
-# Clean app: emptyDir volumes only, no ExternalSecrets, no hardware nodeSelectors.
-# Inherit the real app and swap the cluster dep to clusters/local so domainName,
-# the allowed-host, and the dashboard title resolve to the local.test domain.
+# No Docker-unsafe items anywhere in this app; inherit the real app and swap the
+# cluster dep to clusters/local so domainName, the allowed-host, and the
+# dashboard title resolve to the local.test domain.
 app = public_homepage_base.app | {
     domainName = cluster.DOMAIN_NAME
     charts.homepage.values = _values | homepage.Values {

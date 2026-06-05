@@ -11,9 +11,9 @@ _envValues = files.read_yaml(file.current(), "values.yaml")
 _values = objects.json_merge_patch(_baseValues, _envValues)
 
 # Inherit the real reloader app (including its CiliumNetworkPolicies, which use
-# the kube-apiserver/kube-dns entities and resolve fine on the local cluster);
-# only the monitoring hook is trimmed because no Prometheus operator CRDs are
-# installed by default in the local environment.
+# the kube-apiserver/kube-dns entities and resolve fine on the local cluster,
+# and the PodMonitor, whose CRDs o11y/k8s-monitoring carries locally); only the
+# single-node HA overrides in values.yaml (enableHA, replicas, PDB) are applied.
 app = kube_reloader_base.app | {
     charts.reloader.values = _values | reloader.Values {}
 }
