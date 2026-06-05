@@ -5,6 +5,7 @@ import konfig.models.frontend.configmap
 import konfig.files
 
 import securecodebox_shared
+import charts.securecodebox.api.v1 as securecodeboxv1
 import charts.securecodebox_kube_hunter
 import charts.securecodebox_nmap
 import charts.securecodebox_generic_webhook
@@ -64,6 +65,25 @@ app = frontend.App {
         data: {
             "hooks.yaml" = files.read_file(file.current(), "config/hooks.yaml")
             "stdout.sh" = files.read_file(file.current(), "config/stdout.sh")
+        }
+    }
+
+    # The in-cluster kube-hunter scan is cluster-agnostic, so every environment
+    # (including local) runs it; scans against environment-specific network
+    # targets (e.g. nmap) live in the env overlays.
+    extraResources.kubeHunter = securecodeboxv1.ScheduledScan {
+        metadata.name = "kube-hunter"
+        spec: {
+            interval = "24h"
+            successfulJobsHistoryLimit = 3
+            failedJobsHistoryLimit = 5
+            scanSpec: {
+                scanType = "kube-hunter"
+                resourceMode = "clusterWide"
+                parameters = [
+                    "--pod"
+                ]
+            }
         }
     }
 }

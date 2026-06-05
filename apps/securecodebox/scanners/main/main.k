@@ -2,23 +2,10 @@ import charts.securecodebox.api.v1 as securecodeboxv1
 
 import securecodebox_scanners_base
 
+# The kube-hunter ScheduledScan is inherited from base; only the scan against
+# the env-specific network target lives here.
 app = securecodebox_scanners_base.app | {
     extraResources: {
-        kubeHunter = securecodeboxv1.ScheduledScan {
-            metadata.name = "kube-hunter"
-            spec: {
-                interval = "24h"
-                successfulJobsHistoryLimit = 3
-                failedJobsHistoryLimit = 5
-                scanSpec: {
-                    scanType = "kube-hunter"
-                    resourceMode = "clusterWide"
-                    parameters = [
-                        "--pod"
-                    ]
-                }
-            }
-        }
         nmap = securecodeboxv1.ScheduledScan {
             metadata.name = "nmap"
             spec: {
