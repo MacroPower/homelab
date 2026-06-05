@@ -25,6 +25,10 @@ mkdir -p "$REPO"
 if [ ! -d "$REPO/objects" ]; then
   git init --bare "$REPO"
 fi
+# Argo CD's repo connectivity test resolves HEAD via ls-remote; point HEAD at
+# the local branch the mirror serves so `argocd repo list` reports Successful
+# instead of a (cosmetic) HEAD-resolution failure.
+git -C "$REPO" symbolic-ref HEAD refs/heads/local
 git config --global --add safe.directory "$REPO"
 exec git daemon --verbose --reuseaddr --enable=receive-pack --base-path=/srv/git --export-all --listen=0.0.0.0 --port=9418
 """
