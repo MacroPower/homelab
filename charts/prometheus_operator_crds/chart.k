@@ -14,7 +14,7 @@ schema Chart(helm.Chart):
     values : Values | any, optional, default is {crds = {annotations = {"argocd.argoproj.io/sync-options" = "Prune=false,Delete=false"}}}
     chart : str, required, default is "prometheus-operator-crds"
     repoURL : str, required, default is "https://prometheus-community.github.io/helm-charts"
-    targetRevision : str, optional, default is "24.0.2"
+    targetRevision : str, optional, default is "26.0.1"
     """
     values?: Values | any = {
         crds = {
@@ -23,5 +23,5 @@ schema Chart(helm.Chart):
     }
     chart: str = "prometheus-operator-crds"
     repoURL: str = "https://prometheus-community.github.io/helm-charts"
-    targetRevision?: str = "24.0.2"
+    targetRevision?: str = "26.0.1"
 
