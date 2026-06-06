@@ -392,7 +392,7 @@ charts: helm.Charts = {
     gha_runner_scale_set_controller: {
         chart = "gha-runner-scale-set-controller"
         repoURL = "oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller"
-        targetRevision = "0.14.1"
+        targetRevision = "0.14.2"
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
     }

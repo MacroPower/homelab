@@ -16,7 +16,6 @@
     },
     "flags": {
       "additionalProperties": true,
-      "description": "# If `metrics:` object is not provided, or commented out, the following flags\n# will be applied the controller-manager and listener pods with empty values:\n# `--metrics-addr`, `--listener-metrics-addr`, `--listener-metrics-endpoint`.\n# This will disable metrics.\n#\n# To enable metrics, uncomment the following lines.\nmetrics:\n  controllerManagerAddr: \":8080\"\n  listenerAddr: \":8080\"\n  listenerEndpoint: \"/metrics\"",
       "properties": {
         "logFormat": {
           "default": "text",
@@ -142,6 +141,13 @@
       "additionalProperties": true,
       "required": [],
       "title": "podSecurityContext",
+      "type": "object"
+    },
+    "pprof": {
+      "additionalProperties": true,
+      "description": "# To enable pprof, uncomment the addr field below.",
+      "required": [],
+      "title": "pprof",
       "type": "object"
     },
     "priorityClassName": {
