@@ -48,7 +48,7 @@ schema DragonflydbIoV1alpha1DragonflySpec:
     affinity : DragonflydbIoV1alpha1DragonflySpecAffinity, default is Undefined, optional
         affinity
     annotations : {str:str}, default is Undefined, optional
-        (Optional) Annotations to add to the Dragonfly pods.
+        Deprecated: use spec.podMetadata.annotations instead.
     args : [str], default is Undefined, optional
         (Optional) Dragonfly container args to pass to the container
         Refer to the Dragonfly documentation for the list of supported args
@@ -56,6 +56,12 @@ schema DragonflydbIoV1alpha1DragonflySpec:
         authentication
     containerSecurityContext : DragonflydbIoV1alpha1DragonflySpecContainerSecurityContext, default is Undefined, optional
         container security context
+    customLivenessProbeConfigMap : DragonflydbIoV1alpha1DragonflySpecCustomLivenessProbeConfigMap, default is Undefined, optional
+        custom liveness probe config map
+    customReadinessProbeConfigMap : DragonflydbIoV1alpha1DragonflySpecCustomReadinessProbeConfigMap, default is Undefined, optional
+        custom readiness probe config map
+    customStartupProbeConfigMap : DragonflydbIoV1alpha1DragonflySpecCustomStartupProbeConfigMap, default is Undefined, optional
+        custom startup probe config map
     enableReplicationReadinessGate : bool, default is Undefined, optional
         (Optional) When enabled, adds a custom readiness gate to pods that prevents
         them from being considered Ready until replication is fully synced.
@@ -72,7 +78,7 @@ schema DragonflydbIoV1alpha1DragonflySpec:
     initContainers : [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0], default is Undefined, optional
         (Optional) Dragonfly pod init containers
     labels : {str:str}, default is Undefined, optional
-        (Optional) Labels to add to the Dragonfly pods.
+        Deprecated: use spec.podMetadata.labels instead.
     memcachedPort : int, default is Undefined, optional
         (Optional) Dragonfly memcached port
     networkPolicyEnabled : bool, default is True, optional
@@ -85,6 +91,8 @@ schema DragonflydbIoV1alpha1DragonflySpec:
         owned objects metadata
     pdb : DragonflydbIoV1alpha1DragonflySpecPdb, default is Undefined, optional
         pdb
+    podMetadata : DragonflydbIoV1alpha1DragonflySpecPodMetadata, default is Undefined, optional
+        pod metadata
     podSecurityContext : DragonflydbIoV1alpha1DragonflySpecPodSecurityContext, default is Undefined, optional
         pod security context
     priorityClassName : str, default is Undefined, optional
@@ -118,6 +126,9 @@ schema DragonflydbIoV1alpha1DragonflySpec:
     args?: [str]
     authentication?: DragonflydbIoV1alpha1DragonflySpecAuthentication
     containerSecurityContext?: DragonflydbIoV1alpha1DragonflySpecContainerSecurityContext
+    customLivenessProbeConfigMap?: DragonflydbIoV1alpha1DragonflySpecCustomLivenessProbeConfigMap
+    customReadinessProbeConfigMap?: DragonflydbIoV1alpha1DragonflySpecCustomReadinessProbeConfigMap
+    customStartupProbeConfigMap?: DragonflydbIoV1alpha1DragonflySpecCustomStartupProbeConfigMap
     enableReplicationReadinessGate?: bool
     env?: [DragonflydbIoV1alpha1DragonflySpecEnvItems0]
     image?: str
@@ -130,6 +141,7 @@ schema DragonflydbIoV1alpha1DragonflySpec:
     nodeSelector?: {str:str}
     ownedObjectsMetadata?: DragonflydbIoV1alpha1DragonflySpecOwnedObjectsMetadata
     pdb?: DragonflydbIoV1alpha1DragonflySpecPdb
+    podMetadata?: DragonflydbIoV1alpha1DragonflySpecPodMetadata
     podSecurityContext?: DragonflydbIoV1alpha1DragonflySpecPodSecurityContext
     priorityClassName?: str
     replicas?: int
@@ -4422,6 +4434,54 @@ schema DragonflydbIoV1alpha1DragonflySpecContainerSecurityContextWindowsOptions:
     hostProcess?: bool
     runAsUserName?: str
 
+schema DragonflydbIoV1alpha1DragonflySpecCustomLivenessProbeConfigMap:
+    r"""
+    Custom ConfigMap providing key "liveness-check.sh" to override the default liveness probe.
+    An additionalVolumes entry named "liveness-probe" takes precedence.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+    """
+    name?: str = ""
+
+schema DragonflydbIoV1alpha1DragonflySpecCustomReadinessProbeConfigMap:
+    r"""
+    Custom ConfigMap providing key "readiness-check.sh" to override the default readiness probe.
+    An additionalVolumes entry named "readiness-probe" takes precedence.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+    """
+    name?: str = ""
+
+schema DragonflydbIoV1alpha1DragonflySpecCustomStartupProbeConfigMap:
+    r"""
+    Custom ConfigMap providing key "startup-check.sh" to override the default startup probe.
+    An additionalVolumes entry named "startup-probe" takes precedence.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+    """
+    name?: str = ""
+
 schema DragonflydbIoV1alpha1DragonflySpecEnvItems0:
     r"""
     EnvVar represents an environment variable present in a Container.
@@ -5957,7 +6017,7 @@ schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0VolumeMountsItems0:
 
 schema DragonflydbIoV1alpha1DragonflySpecOwnedObjectsMetadata:
     r"""
-    (Optional) Dragonfly direct child resources additional annotations and labels
+    (Optional) Labels and annotations to add to all owned resources (StatefulSet, Service, PDB, etc).
 
     Attributes
     ----------
@@ -5986,6 +6046,20 @@ schema DragonflydbIoV1alpha1DragonflySpecPdb:
     """
     maxUnavailable?: int | str
     minAvailable?: int | str
+
+schema DragonflydbIoV1alpha1DragonflySpecPodMetadata:
+    r"""
+    (Optional) Labels and annotations to add to the Dragonfly pods.
+
+    Attributes
+    ----------
+    annotations : {str:str}, default is Undefined, optional
+        annotations
+    labels : {str:str}, default is Undefined, optional
+        labels
+    """
+    annotations?: {str:str}
+    labels?: {str:str}
 
 schema DragonflydbIoV1alpha1DragonflySpecPodSecurityContext:
     r"""

@@ -151,13 +151,8 @@ schema ValuesGrafanaDashboardGrafanaOperator:
 schema ValuesGrafanaDashboardGrafanaOperatorMatchLabels:
     r"""
     Selected labels for Grafana instance
-
-    Attributes
-    ----------
-    dashboards : str, optional, default is "grafana"
     """
     [...str]: any
-    dashboards?: str
 
 schema ValuesGrafanaDashboardLabels:
     r"""
@@ -468,11 +463,14 @@ schema ValuesService:
 
     Attributes
     ----------
+    annotations : ValuesServiceAnnotations, optional
+        Annotations to add to the operator Service
     metricsPort : int, optional, default is 8080
     port : int, optional, default is 8443
     $type : str, optional, default is "ClusterIP"
     """
     [...str]: any
+    annotations?: ValuesServiceAnnotations
     metricsPort?: int
     port?: int
     $type?: str
@@ -502,6 +500,12 @@ schema ValuesServiceAccount:
 schema ValuesServiceAccountAnnotations:
     r"""
     Annotations to add to the service account
+    """
+    [...str]: any
+
+schema ValuesServiceAnnotations:
+    r"""
+    Annotations to add to the operator Service
     """
     [...str]: any
 
