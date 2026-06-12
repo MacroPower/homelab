@@ -121,14 +121,6 @@
             "matchLabels": {
               "additionalProperties": true,
               "description": "Selected labels for Grafana instance",
-              "properties": {
-                "dashboards": {
-                  "default": "grafana",
-                  "required": [],
-                  "title": "dashboards",
-                  "type": "string"
-                }
-              },
               "required": [],
               "title": "matchLabels",
               "type": "object"
@@ -534,6 +526,13 @@
     "service": {
       "additionalProperties": true,
       "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations to add to the operator Service",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
         "metricsPort": {
           "default": 8080,
           "required": [],
