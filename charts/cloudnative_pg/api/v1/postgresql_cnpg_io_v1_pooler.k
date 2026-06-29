@@ -145,21 +145,30 @@ schema PostgresqlCnpgIoV1PoolerSpecMonitoring:
     r"""
     The configuration of the monitoring infrastructure of this pooler.
 
-    Deprecated: This feature will be removed in an upcoming release. If
-    you need this functionality, you can create a PodMonitor manually.
-
     Attributes
     ----------
     enablePodMonitor : bool, default is Undefined, optional
         Enable or disable the `PodMonitor`
+
+        Deprecated: This feature will be removed in an upcoming release. If
+        you need this functionality, you can create a PodMonitor manually.
     podMonitorMetricRelabelings : [PostgresqlCnpgIoV1PoolerSpecMonitoringPodMonitorMetricRelabelingsItems0], default is Undefined, optional
         The list of metric relabelings for the `PodMonitor`. Applied to samples before ingestion.
+
+        Deprecated: This feature will be removed in an upcoming release. If
+        you need this functionality, you can create a PodMonitor manually.
     podMonitorRelabelings : [PostgresqlCnpgIoV1PoolerSpecMonitoringPodMonitorRelabelingsItems0], default is Undefined, optional
         The list of relabelings for the `PodMonitor`. Applied to samples before scraping.
+
+        Deprecated: This feature will be removed in an upcoming release. If
+        you need this functionality, you can create a PodMonitor manually.
+    tls : PostgresqlCnpgIoV1PoolerSpecMonitoringTLS, default is Undefined, optional
+        tls
     """
     enablePodMonitor?: bool = False
     podMonitorMetricRelabelings?: [PostgresqlCnpgIoV1PoolerSpecMonitoringPodMonitorMetricRelabelingsItems0]
     podMonitorRelabelings?: [PostgresqlCnpgIoV1PoolerSpecMonitoringPodMonitorRelabelingsItems0]
+    tls?: PostgresqlCnpgIoV1PoolerSpecMonitoringTLS
 
 schema PostgresqlCnpgIoV1PoolerSpecMonitoringPodMonitorMetricRelabelingsItems0:
     r"""
@@ -259,6 +268,19 @@ schema PostgresqlCnpgIoV1PoolerSpecMonitoringPodMonitorRelabelingsItems0:
     sourceLabels?: [str]
     targetLabel?: str
 
+schema PostgresqlCnpgIoV1PoolerSpecMonitoringTLS:
+    r"""
+    Configure TLS communication for the metrics endpoint.
+    Changing tls.enabled option will force a rollout of all instances.
+
+    Attributes
+    ----------
+    enabled : bool, default is Undefined, optional
+        Enable TLS for the monitoring endpoint.
+        Changing this option will force a rollout of all instances.
+    """
+    enabled?: bool = False
+
 schema PostgresqlCnpgIoV1PoolerSpecPgbouncer:
     r"""
     The PgBouncer configuration
@@ -276,6 +298,12 @@ schema PostgresqlCnpgIoV1PoolerSpecPgbouncer:
         client c a secret
     clientTLSSecret : PostgresqlCnpgIoV1PoolerSpecPgbouncerClientTLSSecret, default is Undefined, optional
         client TLS secret
+    image : str, default is Undefined, optional
+        Image is the pgbouncer container image to use. When set, it takes
+        precedence over ImageCatalogRef and the operator default, but is
+        overridden by an explicit image set in the pod template.
+    imageCatalogRef : PostgresqlCnpgIoV1PoolerSpecPgbouncerImageCatalogRef, default is Undefined, optional
+        image catalog ref
     parameters : {str:str}, default is Undefined, optional
         Additional parameters to be passed to PgBouncer - please check
         the CNPG documentation for a list of options you can configure
@@ -298,6 +326,8 @@ schema PostgresqlCnpgIoV1PoolerSpecPgbouncer:
     authQuerySecret?: PostgresqlCnpgIoV1PoolerSpecPgbouncerAuthQuerySecret
     clientCASecret?: PostgresqlCnpgIoV1PoolerSpecPgbouncerClientCASecret
     clientTLSSecret?: PostgresqlCnpgIoV1PoolerSpecPgbouncerClientTLSSecret
+    image?: str
+    imageCatalogRef?: PostgresqlCnpgIoV1PoolerSpecPgbouncerImageCatalogRef
     parameters?: {str:str}
     paused?: bool = False
     pg_hba?: [str]
@@ -344,6 +374,35 @@ schema PostgresqlCnpgIoV1PoolerSpecPgbouncerClientTLSSecret:
         Name of the referent.
     """
     name: str
+
+schema PostgresqlCnpgIoV1PoolerSpecPgbouncerImageCatalogRef:
+    r"""
+    ImageCatalogRef points to an entry in an ImageCatalog or ClusterImageCatalog.
+    Mutually exclusive with Image.
+
+    Attributes
+    ----------
+    apiGroup : str, default is Undefined, optional
+        APIGroup is the group for the resource being referenced.
+        If APIGroup is not specified, the specified Kind must be in the core API group.
+        For any other third-party types, APIGroup is required.
+    key : str, default is Undefined, required
+        Key identifies the entry within the catalog's componentImages list.
+    kind : str, default is Undefined, required
+        Kind is the type of resource being referenced
+    name : str, default is Undefined, required
+        Name is the name of resource being referenced
+    """
+    apiGroup?: str
+    key: str
+
+    kind: str
+
+    name: str
+
+    check:
+        len(key) <= 63
+        _regex_match(str(key), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$")
 
 schema PostgresqlCnpgIoV1PoolerSpecPgbouncerServerCASecret:
     r"""
@@ -814,7 +873,6 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpec:
         When set to false, a new userns is created for the pod. Setting false is useful for
         mitigating container breakout vulnerabilities even allowing users to run their
         containers as root without actually having root privileges on the host.
-        This field is alpha-level and is only honored by servers that enable the UserNamespacesSupport feature.
     hostname : str, default is Undefined, optional
         Specifies the hostname of the Pod
         If not specified, the pod's hostname will be set to a system-defined value.
@@ -921,6 +979,8 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpec:
         scheduler will not attempt to schedule the pod.
 
         SchedulingGates can only be set at pod creation time, and be removed only afterwards.
+    schedulingGroup : PostgresqlCnpgIoV1PoolerSpecTemplateSpecSchedulingGroup, default is Undefined, optional
+        scheduling group
     securityContext : PostgresqlCnpgIoV1PoolerSpecTemplateSpecSecurityContext, default is Undefined, optional
         security context
     serviceAccount : str, default is Undefined, optional
@@ -962,8 +1022,6 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpec:
     volumes : [PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0], default is Undefined, optional
         List of volumes that can be mounted by containers belonging to the pod.
         More info: https://kubernetes.io/docs/concepts/storage/volumes
-    workloadRef : PostgresqlCnpgIoV1PoolerSpecTemplateSpecWorkloadRef, default is Undefined, optional
-        workload ref
     """
     activeDeadlineSeconds?: int
     affinity?: PostgresqlCnpgIoV1PoolerSpecTemplateSpecAffinity
@@ -997,6 +1055,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpec:
     runtimeClassName?: str
     schedulerName?: str
     schedulingGates?: [PostgresqlCnpgIoV1PoolerSpecTemplateSpecSchedulingGatesItems0]
+    schedulingGroup?: PostgresqlCnpgIoV1PoolerSpecTemplateSpecSchedulingGroup
     securityContext?: PostgresqlCnpgIoV1PoolerSpecTemplateSpecSecurityContext
     serviceAccount?: str
     serviceAccountName?: str
@@ -1007,7 +1066,6 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpec:
     tolerations?: [PostgresqlCnpgIoV1PoolerSpecTemplateSpecTolerationsItems0]
     topologySpreadConstraints?: [PostgresqlCnpgIoV1PoolerSpecTemplateSpecTopologySpreadConstraintsItems0]
     volumes?: [PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0]
-    workloadRef?: PostgresqlCnpgIoV1PoolerSpecTemplateSpecWorkloadRef
 
     check:
         all _, overhead in overhead {_regex_match(str(overhead), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if overhead} if overhead
@@ -2935,7 +2993,6 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0SecurityContext:
         procMount denotes the type of proc mount to use for the containers.
         The default value is Default which uses the container runtime defaults for
         readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
         Note that this field cannot be set when spec.os.name is windows.
     readOnlyRootFilesystem : bool, default is Undefined, optional
         Whether this container has a read-only root filesystem.
@@ -4437,7 +4494,6 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0Security
         procMount denotes the type of proc mount to use for the containers.
         The default value is Default which uses the container runtime defaults for
         readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
         Note that this field cannot be set when spec.os.name is windows.
     readOnlyRootFilesystem : bool, default is Undefined, optional
         Whether this container has a read-only root filesystem.
@@ -5947,7 +6003,6 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0SecurityConte
         procMount denotes the type of proc mount to use for the containers.
         The default value is Default which uses the container runtime defaults for
         readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
         Note that this field cannot be set when spec.os.name is windows.
     readOnlyRootFilesystem : bool, default is Undefined, optional
         Whether this container has a read-only root filesystem.
@@ -6400,6 +6455,14 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecResourceClaimsItems0:
     It adds a name to it that uniquely identifies the ResourceClaim inside the Pod.
     Containers that need access to the ResourceClaim reference it with this name.
 
+    When the DRAWorkloadResourceClaims feature gate is enabled and this Pod
+    belongs to a PodGroup, a PodResourceClaim is matched to a
+    PodGroupResourceClaim if all of their fields are equal (Name,
+    ResourceClaimName, and ResourceClaimTemplateName). A matched claim references
+    a single ResourceClaim shared across all Pods in the PodGroup, reserved for
+    the PodGroup in ResourceClaimStatus.ReservedFor rather than for individual
+    Pods.
+
     Attributes
     ----------
     name : str, default is Undefined, required
@@ -6420,6 +6483,16 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecResourceClaimsItems0:
         will also be deleted. The pod name and resource name, along with a
         generated component, will be used to form a unique name for the
         ResourceClaim, which will be recorded in pod.status.resourceClaimStatuses.
+
+        When the DRAWorkloadResourceClaims feature gate is enabled and the pod
+        belongs to a PodGroup that defines a PodGroupResourceClaim with the same
+        Name and ResourceClaimTemplateName, this PodResourceClaim resolves to the
+        ResourceClaim generated for the PodGroup. All pods in the group that
+        define an equivalent PodResourceClaim matching the
+        PodGroupResourceClaim's Name and ResourceClaimTemplateName share the same
+        generated ResourceClaim. ResourceClaims generated for a PodGroup are
+        owned by the PodGroup and their lifecycles are tied to the PodGroup
+        instead of any individual pod.
 
         This field is immutable and no changes will be made to the
         corresponding ResourceClaim by the control plane after creating the
@@ -6502,6 +6575,30 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecSchedulingGatesItems0:
         Each scheduling gate must have a unique name field.
     """
     name: str
+
+schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecSchedulingGroup:
+    r"""
+    SchedulingGroup provides a reference to the immediate scheduling runtime
+    grouping object that this Pod belongs to.
+    This field is used by the scheduler to identify the group and apply the
+    correct group scheduling policies. The association with a group also
+    impacts other lifecycle aspects of a Pod that are relevant in a wider context
+    of scheduling like preemption, resource attachment, etc. If not specified,
+    the Pod is treated as a single unit in all of these aspects.
+    The group object referenced by this field may not exist at the time the
+    Pod is created.
+    This field is immutable, but a group object with the same name may be
+    recreated with different policies. Doing this during pod scheduling
+    may result in the placement not conforming to the expected policies.
+
+    Attributes
+    ----------
+    podGroupName : str, default is Undefined, optional
+        PodGroupName specifies the name of the standalone PodGroup object
+        that represents the runtime instance of this group.
+        Must be a DNS subdomain.
+    """
+    podGroupName?: str
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecSecurityContext:
     r"""
@@ -7895,7 +7992,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0Image:
     A failure to resolve or pull the image during pod startup will block containers from starting and may add significant latency. Failures will be retried using normal volume backoff and will be reported on the pod reason and message.
     The types of objects that may be mounted by this volume are defined by the container runtime implementation on a host machine and at minimum must include all valid types supported by the container image field.
     The OCI object gets mounted in a single directory (spec.containers[*].volumeMounts.mountPath) by merging the manifest layers in the same way as for container images.
-    The volume will be mounted read-only (ro) and non-executable files (noexec).
+    The volume will be mounted read-only (ro).
     Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath) before 1.33.
     The field spec.securityContext.fsGroupChangePolicy has no effect on this volume type.
 
@@ -8050,8 +8147,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0PortworxVolume:
     r"""
     portworxVolume represents a portworx volume attached and mounted on kubelets host machine.
     Deprecated: PortworxVolume is deprecated. All operations for the in-tree portworxVolume type
-    are redirected to the pxd.portworx.com CSI driver when the CSIMigrationPortworx feature-gate
-    is on.
+    are redirected to the pxd.portworx.com CSI driver.
 
     Attributes
     ----------
@@ -8818,41 +8914,6 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0VsphereVolume:
     storagePolicyName?: str
     volumePath: str
 
-schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecWorkloadRef:
-    r"""
-    WorkloadRef provides a reference to the Workload object that this Pod belongs to.
-    This field is used by the scheduler to identify the PodGroup and apply the
-    correct group scheduling policies. The Workload object referenced
-    by this field may not exist at the time the Pod is created.
-    This field is immutable, but a Workload object with the same name
-    may be recreated with different policies. Doing this during pod scheduling
-    may result in the placement not conforming to the expected policies.
-
-    Attributes
-    ----------
-    name : str, default is Undefined, required
-        Name defines the name of the Workload object this Pod belongs to.
-        Workload must be in the same namespace as the Pod.
-        If it doesn't match any existing Workload, the Pod will remain unschedulable
-        until a Workload object is created and observed by the kube-scheduler.
-        It must be a DNS subdomain.
-    podGroup : str, default is Undefined, required
-        PodGroup is the name of the PodGroup within the Workload that this Pod
-        belongs to. If it doesn't match any existing PodGroup within the Workload,
-        the Pod will remain unschedulable until the Workload object is recreated
-        and observed by the kube-scheduler. It must be a DNS label.
-    podGroupReplicaKey : str, default is Undefined, optional
-        PodGroupReplicaKey specifies the replica key of the PodGroup to which this
-        Pod belongs. It is used to distinguish pods belonging to different replicas
-        of the same pod group. The pod group policy is applied separately to each replica.
-        When set, it must be a DNS label.
-    """
-    name: str
-
-    podGroup: str
-
-    podGroupReplicaKey?: str
-
 schema PostgresqlCnpgIoV1PoolerStatus:
     r"""
     Most recently observed status of the Pooler. This data may not be up to
@@ -8861,12 +8922,29 @@ schema PostgresqlCnpgIoV1PoolerStatus:
 
     Attributes
     ----------
+    error : str, default is Undefined, optional
+        Error is the latest admission validation error
+    image : str, default is Undefined, optional
+        Image is the resolved pgbouncer container image that the operator is
+        using for this Pooler, including any override coming from spec.template.
+        While Phase is Active or Paused this field reflects what the Deployment
+        actually runs; while Phase is Inactive or Failed it may carry the last
+        successfully resolved value (or be empty if the Pooler has never reconciled
+        successfully).
     instances : int, default is Undefined, optional
         The number of pods trying to be scheduled
+    phase : str, default is Undefined, optional
+        Phase summarizes the overall lifecycle state of the Pooler.
+    phaseReason : str, default is Undefined, optional
+        PhaseReason is a human-readable explanation of the current Phase.
     secrets : PostgresqlCnpgIoV1PoolerStatusSecrets, default is Undefined, optional
         secrets
     """
+    error?: str
+    image?: str
     instances?: int
+    phase?: "active" | "paused" | "inactive" | "failed"
+    phaseReason?: str
     secrets?: PostgresqlCnpgIoV1PoolerStatusSecrets
 
 schema PostgresqlCnpgIoV1PoolerStatusSecrets:
