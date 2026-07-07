@@ -23,7 +23,16 @@ schema Values:
     affinity : ValuesAffinity, optional
         Pod affinity configuration
     annotations : ValuesAnnotations, optional
-        Annotations for the Deployment
+        Additional annotations to add to the deployment
+    backendScheduler : ValuesBackendScheduler, optional
+        EXPERIMENTAL Feature, disabled by default
+        Configuration for the backend-scheduler
+    backendWorker : ValuesBackendWorker, optional
+        Configuration for the backend-worker
+    blockBuilder : ValuesBlockBuilder, optional
+        Configuration for the block-builder (Tempo 3.0+)
+        Consumes spans from Kafka and writes blocks to object storage.
+        One replica per Kafka partition — replica count must equal ingest.kafka.auto_create_topic_default_partitions.
     bucketRoot : str, optional, default is ""
         # Override the root directory which the minio server should serve from.
         # If left empty, it defaults to the value of {{ .Values.mountPath }}
@@ -36,6 +45,9 @@ schema Values:
         Use this block to configure caches available throughout the application.
         Multiple caches can be created and assigned roles which determine how they are used by Tempo.
         https://grafana.com/docs/tempo/latest/configuration/#cache
+        When memcached.enabled is true (the default), the cache.caches list is auto-generated from the
+        memcached and per-role memcached sections (memcachedBloom, memcachedParquetFooter, memcachedFrontendSearch).
+        When memcached.enabled is false, this block is passed through verbatim to allow configuring external caches.
     certsPath : str, optional, default is "/etc/minio/certs/"
         # Directory on the MinIO pof
     clusterDomain : str, optional, default is "cluster.local"
@@ -43,7 +55,7 @@ schema Values:
         #
     compactor : ValuesCompactor, optional
         Configuration for the compactor
-    config : str, optional, default is "multitenancy_enabled: {{ .Values.multitenancyEnabled }}\n\nstream_over_http_enabled: {{ .Values.streamOverHTTPEnabled }}\n\nusage_report:\n  reporting_enabled: {{ .Values.reportingEnabled }}\n\n{{- if .Values.enterprise.enabled }}\nlicense:\n  path: \"/license/license.jwt\"\n\nadmin_api:\n  leader_election:\n    enabled: true\n    ring:\n      kvstore:\n        store: \"memberlist\"\n\nauth:\n  type: enterprise\n\nhttp_api_prefix: {{get .Values.tempo.structuredConfig \"http_api_prefix\"}}\n\nadmin_client:\n  storage:\n    backend: {{.Values.storage.admin.backend}}\n    {{- if eq .Values.storage.admin.backend \"s3\"}}\n    s3:\n      {{- toYaml .Values.storage.admin.s3 | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"gcs\"}}\n    gcs:\n      {{- toYaml .Values.storage.admin.gcs | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"azure\"}}\n    azure:\n      {{- toYaml .Values.storage.admin.azure | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"swift\"}}\n    swift:\n      {{- toYaml .Values.storage.admin.swift | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"filesystem\"}}\n    filesystem:\n      {{- toYaml .Values.storage.admin.filesystem | nindent 6}}\n    {{- end}}\n{{- end }}\n\n{{- if and .Values.enterprise.enabled .Values.enterpriseGateway.useDefaultProxyURLs }}\ngateway:\n  proxy:\n    admin_api:\n      url: http://{{ template \"tempo.fullname\" . }}-admin-api.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    compactor:\n      url: http://{{ template \"tempo.fullname\" . }}-compactor.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    default:\n      url: http://{{ template \"tempo.fullname\" . }}-admin-api.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    distributor:\n      url: http://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n      otlp/grpc:\n        url: h2c://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:4317\n      otlp/http:\n        url: http://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:4318\n    ingester:\n      url: http://{{ template \"tempo.fullname\" . }}-ingester.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    querier:\n      url: http://{{ template \"tempo.fullname\" . }}-querier.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    query_frontend:\n      url: http://{{ template \"tempo.fullname\" . }}-query-frontend.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}{{get .Values.tempo.structuredConfig \"http_api_prefix\"}}\n{{else}}\n{{- if and .Values.enterprise.enabled .Values.enterpriseGateway.proxy }}\ngateway:\n  proxy: {{- toYaml .Values.enterpriseGateway.proxy | nindent 6 }}\n{{- end }}\n{{- end }}\n\ncompactor:\n  compaction:\n    block_retention: {{ .Values.compactor.config.compaction.block_retention }}\n    compacted_block_retention: {{ .Values.compactor.config.compaction.compacted_block_retention }}\n    compaction_window: {{ .Values.compactor.config.compaction.compaction_window }}\n    v2_in_buffer_bytes: {{ .Values.compactor.config.compaction.v2_in_buffer_bytes }}\n    v2_out_buffer_bytes: {{ .Values.compactor.config.compaction.v2_out_buffer_bytes }}\n    max_compaction_objects: {{ .Values.compactor.config.compaction.max_compaction_objects }}\n    max_block_bytes: {{ .Values.compactor.config.compaction.max_block_bytes }}\n    retention_concurrency: {{ .Values.compactor.config.compaction.retention_concurrency }}\n    v2_prefetch_traces_count: {{ .Values.compactor.config.compaction.v2_prefetch_traces_count }}\n    max_time_per_tenant: {{ .Values.compactor.config.compaction.max_time_per_tenant }}\n    compaction_cycle: {{ .Values.compactor.config.compaction.compaction_cycle }}\n  ring:\n    kvstore:\n      store: memberlist\n{{- if and .Values.enterprise.enabled .Values.enterpriseFederationFrontend.enabled }}\nfederation:\n  proxy_targets:\n    {{- toYaml .Values.enterpriseFederationFrontend.proxy_targets | nindent 6 }}\n{{- end }}\n{{- if .Values.metricsGenerator.enabled }}\nmetrics_generator:\n  ring:\n    kvstore:\n      store: memberlist\n  processor:\n    {{- toYaml .Values.metricsGenerator.config.processor | nindent 6 }}\n  storage:\n    {{- toYaml .Values.metricsGenerator.config.storage | nindent 6 }}\n  traces_storage:\n    {{- toYaml .Values.metricsGenerator.config.traces_storage | nindent 6 }}\n  registry:\n    {{- toYaml .Values.metricsGenerator.config.registry | nindent 6 }}\n  metrics_ingestion_time_range_slack: {{ .Values.metricsGenerator.config.metrics_ingestion_time_range_slack }}\n{{- end }}\ndistributor:\n  {{- if .Values.distributor.config.cost_attribution.enabled }}\n  usage:\n    cost_attribution:\n      enabled: {{ .Values.distributor.config.cost_attribution.enabled }}\n      max_cardinality: {{ .Values.distributor.config.cost_attribution.max_cardinality }}\n      stale_duration: {{ .Values.distributor.config.cost_attribution.stale_duration }}\n  {{- end }}\n  ring:\n    kvstore:\n      store: memberlist\n  receivers:\n    {{- if  or (.Values.traces.jaeger.thriftCompact.enabled) (.Values.traces.jaeger.thriftBinary.enabled) (.Values.traces.jaeger.thriftHttp.enabled) (.Values.traces.jaeger.grpc.enabled) }}\n    jaeger:\n      protocols:\n        {{- if .Values.traces.jaeger.thriftCompact.enabled }}\n        thrift_compact:\n          {{- $mergedJaegerThriftCompactConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:6831\") .Values.traces.jaeger.thriftCompact.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftCompactConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.thriftBinary.enabled }}\n        thrift_binary:\n          {{- $mergedJaegerThriftBinaryConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:6832\") .Values.traces.jaeger.thriftBinary.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftBinaryConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.thriftHttp.enabled }}\n        thrift_http:\n          {{- $mergedJaegerThriftHttpConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:14268\") .Values.traces.jaeger.thriftHttp.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftHttpConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.grpc.enabled }}\n        grpc:\n          {{- $mergedJaegerGrpcConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:14250\") .Values.traces.jaeger.grpc.receiverConfig }}\n          {{- toYaml $mergedJaegerGrpcConfig | nindent 10 }}\n        {{- end }}\n    {{- end }}\n    {{- if .Values.traces.zipkin.enabled }}\n    zipkin:\n      {{- $mergedZipkinReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:9411\") .Values.traces.zipkin.receiverConfig }}\n      {{- toYaml $mergedZipkinReceiverConfig | nindent 6 }}\n    {{- end }}\n    {{- if or (.Values.traces.otlp.http.enabled) (.Values.traces.otlp.grpc.enabled) }}\n    otlp:\n      protocols:\n        {{- if .Values.traces.otlp.http.enabled }}\n        http:\n          {{- $mergedOtlpHttpReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:4318\") .Values.traces.otlp.http.receiverConfig }}\n          {{- toYaml $mergedOtlpHttpReceiverConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.otlp.grpc.enabled }}\n        grpc:\n          {{- $mergedOtlpGrpcReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:4317\") .Values.traces.otlp.grpc.receiverConfig }}\n          {{- toYaml $mergedOtlpGrpcReceiverConfig | nindent 10 }}\n        {{- end }}\n    {{- end }}\n    {{- if .Values.traces.opencensus.enabled }}\n    opencensus:\n      {{- $mergedOpencensusReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:55678\") .Values.traces.opencensus.receiverConfig }}\n      {{- toYaml $mergedOpencensusReceiverConfig | nindent 6 }}\n    {{- end }}\n    {{- if .Values.traces.kafka }}\n    kafka:\n      {{- toYaml .Values.traces.kafka | nindent 6 }}\n    {{- end }}\n  {{- if .Values.distributor.config.log_discarded_spans.enabled }}\n  log_discarded_spans:\n    enabled: {{ .Values.distributor.config.log_discarded_spans.enabled }}\n    include_all_attributes: {{ .Values.distributor.config.log_discarded_spans.include_all_attributes }}\n    filter_by_status_error: {{ .Values.distributor.config.log_discarded_spans.filter_by_status_error }}\n  {{- end }}\n  {{- if or .Values.distributor.config.log_received_traces .Values.distributor.config.log_received_spans.enabled }}\n  log_received_spans:\n    enabled: {{ or .Values.distributor.config.log_received_traces .Values.distributor.config.log_received_spans.enabled }}\n    include_all_attributes: {{ .Values.distributor.config.log_received_spans.include_all_attributes }}\n    filter_by_status_error: {{ .Values.distributor.config.log_received_spans.filter_by_status_error }}\n  {{- end }}\n  {{- if .Values.distributor.config.extend_writes }}\n  extend_writes: {{ .Values.distributor.config.extend_writes }}\n  {{- end }}\n  {{- if not (eq .Values.distributor.config.max_attribute_bytes nil) }}\n  max_attribute_bytes: {{ .Values.distributor.config.max_attribute_bytes }}\n  {{- end }}\nquerier:\n  frontend_worker:\n    frontend_address: {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend-discovery\") }}:9095\n    {{- if .Values.querier.config.frontend_worker.grpc_client_config }}\n    grpc_client_config:\n      {{- toYaml .Values.querier.config.frontend_worker.grpc_client_config | nindent 6 }}\n    {{- end }}\n  trace_by_id:\n    query_timeout: {{ .Values.querier.config.trace_by_id.query_timeout }}\n  search:\n    query_timeout: {{ .Values.querier.config.search.query_timeout }}\n  max_concurrent_queries: {{ .Values.querier.config.max_concurrent_queries }}\nquery_frontend:\n  {{- if not .Values.enterprise.enabled }}\n  mcp_server:\n    enabled: {{ .Values.queryFrontend.mcp_server.enabled }}\n  {{- end }}\n  max_outstanding_per_tenant: {{ .Values.queryFrontend.config.max_outstanding_per_tenant }}\n  max_retries: {{ .Values.queryFrontend.config.max_retries }}\n  search:\n    target_bytes_per_job: {{ .Values.queryFrontend.config.search.target_bytes_per_job }}\n    concurrent_jobs: {{ .Values.queryFrontend.config.search.concurrent_jobs }}\n    max_spans_per_span_set: {{ .Values.queryFrontend.config.search.max_spans_per_span_set }}\n  trace_by_id:\n    query_shards: {{ .Values.queryFrontend.config.trace_by_id.query_shards }}\n  metrics:\n    concurrent_jobs:  {{ .Values.queryFrontend.config.metrics.concurrent_jobs }}\n    target_bytes_per_job:  {{ .Values.queryFrontend.config.metrics.target_bytes_per_job }}\n    max_duration: {{ .Values.queryFrontend.config.metrics.max_duration }}\n    query_backend_after: {{ .Values.queryFrontend.config.metrics.query_backend_after }}\n    interval: {{ .Values.queryFrontend.config.metrics.interval }}\n    duration_slo: {{ .Values.queryFrontend.config.metrics.duration_slo }}\n    throughput_bytes_slo: {{ .Values.queryFrontend.config.metrics.throughput_bytes_slo }}\ningester:\n  lifecycler:\n    ring:\n      replication_factor: {{ .Values.ingester.config.replication_factor }}\n      {{- if .Values.ingester.zoneAwareReplication.enabled }}\n      zone_awareness_enabled: true\n      {{- end }}\n      kvstore:\n        store: memberlist\n    tokens_file_path: /var/tempo/tokens.json\n  {{- if .Values.ingester.config.trace_idle_period }}\n  trace_idle_period: {{ .Values.ingester.config.trace_idle_period }}\n  {{- end }}\n  {{- if .Values.ingester.config.flush_check_period }}\n  flush_check_period: {{ .Values.ingester.config.flush_check_period }}\n  {{- end }}\n  {{- if .Values.ingester.config.max_block_bytes }}\n  max_block_bytes: {{ .Values.ingester.config.max_block_bytes }}\n  {{- end }}\n  {{- if .Values.ingester.config.max_block_duration }}\n  max_block_duration: {{ .Values.ingester.config.max_block_duration }}\n  {{- end }}\n  {{- if .Values.ingester.config.complete_block_timeout }}\n  complete_block_timeout: {{ .Values.ingester.config.complete_block_timeout }}\n  {{- end }}\n  {{- if .Values.ingester.config.flush_all_on_shutdown }}\n  flush_all_on_shutdown: {{ .Values.ingester.config.flush_all_on_shutdown }}\n  {{- end }}\nmemberlist:\n  {{- with .Values.memberlist }}\n    {{- toYaml . | nindent 2 }}\n  {{- end }}\n  join_members:\n    - dns+{{ include \"tempo.fullname\" . }}-gossip-ring:{{ .Values.memberlist.bind_port }}\noverrides:\n  {{- toYaml .Values.overrides | nindent 2 }}\nserver:\n  http_listen_port: {{ .Values.server.httpListenPort }}\n  log_level: {{ .Values.server.logLevel }}\n  log_format: {{ .Values.server.logFormat }}\n  grpc_server_max_recv_msg_size: {{ .Values.server.grpc_server_max_recv_msg_size }}\n  grpc_server_max_send_msg_size: {{ .Values.server.grpc_server_max_send_msg_size }}\n  http_server_read_timeout: {{ .Values.server.http_server_read_timeout }}\n  http_server_write_timeout: {{ .Values.server.http_server_write_timeout }}\ncache:\n{{- toYaml .Values.cache | nindent 2}}\nstorage:\n  trace:\n    {{- if .Values.storage.trace.block.version }}\n    block:\n      version: {{.Values.storage.trace.block.version}}\n      {{- if .Values.storage.trace.block.dedicated_columns}}\n      parquet_dedicated_columns:\n        {{ .Values.storage.trace.block.dedicated_columns | toYaml | nindent 8}}\n      {{- end }}\n    {{- end }}\n    pool:\n      max_workers: {{ .Values.storage.trace.pool.max_workers }}\n      queue_depth: {{ .Values.storage.trace.pool.queue_depth }}\n    backend: {{.Values.storage.trace.backend}}\n    {{- if eq .Values.storage.trace.backend \"s3\"}}\n    s3:\n      {{- toYaml .Values.storage.trace.s3 | nindent 6}}\n    {{- end }}\n    {{- if eq .Values.storage.trace.backend \"gcs\"}}\n    gcs:\n      {{- toYaml .Values.storage.trace.gcs | nindent 6}}\n    {{- end }}\n    {{- if eq .Values.storage.trace.backend \"azure\"}}\n    azure:\n      {{- toYaml .Values.storage.trace.azure | nindent 6}}\n    {{- end }}\n    blocklist_poll: 5m\n    local:\n      path: /var/tempo/traces\n    wal:\n      path: /var/tempo/wal\n    search:\n      {{- toYaml .Values.storage.trace.search | nindent 6}}\n\n    {{- if .Values.storage.trace.blocklist_poll }}\n    blocklist_poll: {{ .Values.storage.trace.blocklist_poll }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_concurrency }}\n    blocklist_poll_concurrency: {{ .Values.storage.trace.blocklist_poll_concurrency }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_fallback }}\n    blocklist_poll_fallback: {{ .Values.storage.trace.blocklist_poll_fallback }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_tenant_index_builders }}\n    blocklist_poll_tenant_index_builders: {{ .Values.storage.trace.blocklist_poll_tenant_index_builders }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_stale_tenant_index }}\n    blocklist_poll_stale_tenant_index: {{ .Values.storage.trace.blocklist_poll_stale_tenant_index }}\n    {{- end }}\n    {{- if .Values.storage.trace.empty_tenant_deletion_age }}\n    empty_tenant_deletion_age: {{ .Values.storage.trace.empty_tenant_deletion_age }}\n    {{- end }}\n    {{- if .Values.storage.trace.empty_tenant_deletion_enabled }}\n    empty_tenant_deletion_enabled: {{ .Values.storage.trace.empty_tenant_deletion_enabled }}\n    {{- end }}\n"
+    config : str, optional, default is "multitenancy_enabled: {{ .Values.multitenancyEnabled }}\n\nstream_over_http_enabled: {{ .Values.streamOverHTTPEnabled }}\n\nusage_report:\n  reporting_enabled: {{ .Values.reportingEnabled }}\n\n{{- if .Values.enterprise.enabled }}\nlicense:\n  path: \"/license/license.jwt\"\n\nadmin_api:\n  leader_election:\n    enabled: true\n    ring:\n      kvstore:\n        store: \"memberlist\"\n\nauth:\n  type: enterprise\n\nhttp_api_prefix: {{get .Values.tempo.structuredConfig \"http_api_prefix\"}}\n\nadmin_client:\n  storage:\n    backend: {{.Values.storage.admin.backend}}\n    {{- if eq .Values.storage.admin.backend \"s3\"}}\n    s3:\n      {{- toYaml .Values.storage.admin.s3 | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"gcs\"}}\n    gcs:\n      {{- toYaml .Values.storage.admin.gcs | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"azure\"}}\n    azure:\n      {{- toYaml .Values.storage.admin.azure | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"swift\"}}\n    swift:\n      {{- toYaml .Values.storage.admin.swift | nindent 6}}\n    {{- end}}\n    {{- if eq .Values.storage.admin.backend \"filesystem\"}}\n    filesystem:\n      {{- toYaml .Values.storage.admin.filesystem | nindent 6}}\n    {{- end}}\n{{- end }}\n\n{{- if and .Values.enterprise.enabled .Values.enterpriseGateway.useDefaultProxyURLs }}\ngateway:\n  proxy:\n    admin_api:\n      url: http://{{ template \"tempo.fullname\" . }}-admin-api.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    {{- if .Values.backendScheduler.enabled }}\n    backend_worker:\n      url: http://{{ template \"tempo.fullname\" . }}-backend-worker.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    {{- end }}\n    compactor:\n      url: http://{{ template \"tempo.fullname\" . }}-compactor.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    default:\n      url: http://{{ template \"tempo.fullname\" . }}-admin-api.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    distributor:\n      url: http://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n      otlp/grpc:\n        url: h2c://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:4317\n      otlp/http:\n        url: http://{{ template \"tempo.fullname\" . }}-distributor.{{ .Release.Namespace }}.svc:4318\n    ingester:\n      url: http://{{ template \"tempo.fullname\" . }}-ingester.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    querier:\n      url: http://{{ template \"tempo.fullname\" . }}-querier.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}\n    query_frontend:\n      url: http://{{ template \"tempo.fullname\" . }}-query-frontend.{{ .Release.Namespace }}.svc:{{ include \"tempo.serverHttpListenPort\" . }}{{get .Values.tempo.structuredConfig \"http_api_prefix\"}}\n{{else}}\n{{- if and .Values.enterprise.enabled .Values.enterpriseGateway.proxy }}\ngateway:\n  proxy: {{- toYaml .Values.enterpriseGateway.proxy | nindent 6 }}\n{{- end }}\n{{- end }}\n\n{{- if .Values.backendScheduler.enabled }}\nbackend_scheduler:\n  work:\n    prune_age: {{ .Values.backendScheduler.config.work.prune_age }}\n    dead_job_timeout: {{ .Values.backendScheduler.config.work.dead_job_timeout }}\n  maintenance_interval: {{ .Values.backendScheduler.config.maintenance_interval }}\n  backend_flush_interval: {{ .Values.backendScheduler.config.backend_flush_interval }}\n  provider:\n    retention:\n      interval: {{ .Values.backendScheduler.config.provider.retention.interval }}\n    compaction:\n      compaction:\n        block_retention: {{ .Values.backendScheduler.config.provider.compaction.compaction.block_retention }}\n        compacted_block_retention: {{ .Values.backendScheduler.config.provider.compaction.compaction.compacted_block_retention }}\n        compaction_cycle: {{ .Values.backendScheduler.config.provider.compaction.compaction.compaction_cycle }}\n        compaction_window: {{ .Values.backendScheduler.config.provider.compaction.compaction.compaction_window }}\n        max_block_bytes: {{ .Values.backendScheduler.config.provider.compaction.compaction.max_block_bytes }}\n        max_compaction_objects: {{ .Values.backendScheduler.config.provider.compaction.compaction.max_compaction_objects }}\n        max_time_per_tenant: {{ .Values.backendScheduler.config.provider.compaction.compaction.max_time_per_tenant }}\n        retention_concurrency: {{ .Values.backendScheduler.config.provider.compaction.compaction.retention_concurrency }}\n        v2_in_buffer_bytes: {{ .Values.backendScheduler.config.provider.compaction.compaction.v2_in_buffer_bytes }}\n        v2_out_buffer_bytes: {{ .Values.backendScheduler.config.provider.compaction.compaction.v2_out_buffer_bytes }}\n        v2_prefetch_traces_count: {{ .Values.backendScheduler.config.provider.compaction.compaction.v2_prefetch_traces_count }}\n      max_jobs_per_tenant: {{ .Values.backendScheduler.config.provider.compaction.max_jobs_per_tenant }}\n      min_input_blocks: {{ .Values.backendScheduler.config.provider.compaction.min_input_blocks }}\n      max_input_blocks: {{ .Values.backendScheduler.config.provider.compaction.max_input_blocks }}\n      max_compaction_level: {{ .Values.backendScheduler.config.provider.compaction.max_compaction_level }}\n      min_cycle_interval: {{ .Values.backendScheduler.config.provider.compaction.min_cycle_interval }}\n  job_timeout: {{ .Values.backendScheduler.config.job_timeout }}\n  local_work_path: {{ .Values.backendScheduler.config.local_work_path }}\n\n{{- with .Values.backendWorker.config.backend_scheduler_client.grpc_client_config }}\nbackend_scheduler_client:\n  grpc_client_config:\n    {{- toYaml . | nindent 6 }}\n\n{{- end }}\nbackend_worker:\n  backend_scheduler_addr: {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"backend-scheduler\") }}:9095\n  backoff:\n    min_period: {{ .Values.backendWorker.config.backoff.min_period }}\n    max_period: {{ .Values.backendWorker.config.backoff.max_period }}\n    max_retries: {{ .Values.backendWorker.config.backoff.max_retries }}\n  {{- $compaction_default := .Values.backendScheduler.config.provider.compaction.compaction }}\n  {{- $worker_overrides := .Values.backendWorker.config.compaction }}\n  {{- $compaction := mergeOverwrite (deepCopy $compaction_default) $worker_overrides }}\n  compaction:\n    {{- toYaml $compaction | nindent 6 }}\n  finish_on_shutdown_timeout: {{ .Values.backendWorker.config.finish_on_shutdown_timeout }}\n  ring:\n    kvstore:\n      store: memberlist\n{{- end }}\n{{- if and .Values.blockBuilder.enabled .Values.liveStore.enabled }}\npartition_ring_live_store: true\n{{- end }}\n{{- if .Values.blockBuilder.enabled }}\nblock_builder:\n  partitions_per_instance: {{ .Values.blockBuilder.config.partitions_per_instance }}\n{{- end }}\n{{- if .Values.liveStore.enabled }}\nlive_store:\n  {{- with .Values.liveStore.config }}\n  {{- toYaml . | nindent 4 }}\n  {{- end }}\n{{- end }}\n{{- if not .Values.backendScheduler.enabled }}\ncompactor:\n  compaction:\n    block_retention: {{ .Values.compactor.config.compaction.block_retention }}\n    compacted_block_retention: {{ .Values.compactor.config.compaction.compacted_block_retention }}\n    compaction_window: {{ .Values.compactor.config.compaction.compaction_window }}\n    max_compaction_objects: {{ .Values.compactor.config.compaction.max_compaction_objects }}\n    max_block_bytes: {{ .Values.compactor.config.compaction.max_block_bytes }}\n    retention_concurrency: {{ .Values.compactor.config.compaction.retention_concurrency }}\n    max_time_per_tenant: {{ .Values.compactor.config.compaction.max_time_per_tenant }}\n    compaction_cycle: {{ .Values.compactor.config.compaction.compaction_cycle }}\n    v2_in_buffer_bytes: {{ .Values.compactor.config.compaction.v2_in_buffer_bytes }}\n    v2_out_buffer_bytes: {{ .Values.compactor.config.compaction.v2_out_buffer_bytes }}\n    v2_prefetch_traces_count: {{ .Values.compactor.config.compaction.v2_prefetch_traces_count }}\n  ring:\n    kvstore:\n      store: memberlist\n  # {{- end }}\n{{- if and .Values.enterprise.enabled .Values.enterpriseFederationFrontend.enabled }}\nfederation:\n  proxy_targets:\n    {{- toYaml .Values.enterpriseFederationFrontend.proxy_targets | nindent 6 }}\n{{- end }}\n{{- if .Values.metricsGenerator.enabled }}\nmetrics_generator:\n  ring:\n    kvstore:\n      store: memberlist\n  processor:\n    {{- toYaml .Values.metricsGenerator.config.processor | nindent 6 }}\n  storage:\n    {{- toYaml .Values.metricsGenerator.config.storage | nindent 6 }}\n  traces_storage:\n    {{- toYaml .Values.metricsGenerator.config.traces_storage | nindent 6 }}\n  registry:\n    {{- toYaml .Values.metricsGenerator.config.registry | nindent 6 }}\n  metrics_ingestion_time_range_slack: {{ .Values.metricsGenerator.config.metrics_ingestion_time_range_slack }}\n{{- end }}\ndistributor:\n  {{- if .Values.distributor.config.cost_attribution.enabled }}\n  usage:\n    cost_attribution:\n      enabled: {{ .Values.distributor.config.cost_attribution.enabled }}\n      max_cardinality: {{ .Values.distributor.config.cost_attribution.max_cardinality }}\n      stale_duration: {{ .Values.distributor.config.cost_attribution.stale_duration }}\n  {{- end }}\n  ring:\n    kvstore:\n      store: memberlist\n  receivers:\n    {{- if  or (.Values.traces.jaeger.thriftCompact.enabled) (.Values.traces.jaeger.thriftBinary.enabled) (.Values.traces.jaeger.thriftHttp.enabled) (.Values.traces.jaeger.grpc.enabled) }}\n    jaeger:\n      protocols:\n        {{- if .Values.traces.jaeger.thriftCompact.enabled }}\n        thrift_compact:\n          {{- $mergedJaegerThriftCompactConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:6831\") .Values.traces.jaeger.thriftCompact.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftCompactConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.thriftBinary.enabled }}\n        thrift_binary:\n          {{- $mergedJaegerThriftBinaryConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:6832\") .Values.traces.jaeger.thriftBinary.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftBinaryConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.thriftHttp.enabled }}\n        thrift_http:\n          {{- $mergedJaegerThriftHttpConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:14268\") .Values.traces.jaeger.thriftHttp.receiverConfig }}\n          {{- toYaml $mergedJaegerThriftHttpConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.jaeger.grpc.enabled }}\n        grpc:\n          {{- $mergedJaegerGrpcConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:14250\") .Values.traces.jaeger.grpc.receiverConfig }}\n          {{- toYaml $mergedJaegerGrpcConfig | nindent 10 }}\n        {{- end }}\n    {{- end }}\n    {{- if .Values.traces.zipkin.enabled }}\n    zipkin:\n      {{- $mergedZipkinReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:9411\") .Values.traces.zipkin.receiverConfig }}\n      {{- toYaml $mergedZipkinReceiverConfig | nindent 6 }}\n    {{- end }}\n    {{- if or (.Values.traces.otlp.http.enabled) (.Values.traces.otlp.grpc.enabled) }}\n    otlp:\n      protocols:\n        {{- if .Values.traces.otlp.http.enabled }}\n        http:\n          {{- $mergedOtlpHttpReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:4318\") .Values.traces.otlp.http.receiverConfig }}\n          {{- toYaml $mergedOtlpHttpReceiverConfig | nindent 10 }}\n        {{- end }}\n        {{- if .Values.traces.otlp.grpc.enabled }}\n        grpc:\n          {{- $mergedOtlpGrpcReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:4317\") .Values.traces.otlp.grpc.receiverConfig }}\n          {{- toYaml $mergedOtlpGrpcReceiverConfig | nindent 10 }}\n        {{- end }}\n    {{- end }}\n    {{- if .Values.traces.opencensus.enabled }}\n    opencensus:\n      {{- $mergedOpencensusReceiverConfig := mustMergeOverwrite (dict \"endpoint\" \"0.0.0.0:55678\") .Values.traces.opencensus.receiverConfig }}\n      {{- toYaml $mergedOpencensusReceiverConfig | nindent 6 }}\n    {{- end }}\n    {{- if .Values.traces.kafka }}\n    kafka:\n      {{- toYaml .Values.traces.kafka | nindent 6 }}\n    {{- end }}\n  {{- if .Values.distributor.config.log_discarded_spans.enabled }}\n  log_discarded_spans:\n    enabled: {{ .Values.distributor.config.log_discarded_spans.enabled }}\n    include_all_attributes: {{ .Values.distributor.config.log_discarded_spans.include_all_attributes }}\n    filter_by_status_error: {{ .Values.distributor.config.log_discarded_spans.filter_by_status_error }}\n  {{- end }}\n  {{- if or .Values.distributor.config.log_received_traces .Values.distributor.config.log_received_spans.enabled }}\n  log_received_spans:\n    enabled: {{ or .Values.distributor.config.log_received_traces .Values.distributor.config.log_received_spans.enabled }}\n    include_all_attributes: {{ .Values.distributor.config.log_received_spans.include_all_attributes }}\n    filter_by_status_error: {{ .Values.distributor.config.log_received_spans.filter_by_status_error }}\n  {{- end }}\n  {{- if .Values.distributor.config.extend_writes }}\n  extend_writes: {{ .Values.distributor.config.extend_writes }}\n  {{- end }}\n  {{- if not (eq .Values.distributor.config.max_attribute_bytes nil) }}\n  max_attribute_bytes: {{ .Values.distributor.config.max_attribute_bytes }}\n  {{- end }}\n  {{- if .Values.ingest.kafka.address }}\n  kafka_write_path_enabled: true\n  {{- if not .Values.ingester.enabled }}\n  ingester_write_path_enabled: false\n  {{- end }}\n  {{- end }}\nquerier:\n  frontend_worker:\n    frontend_address: {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend-discovery\") }}:9095\n    {{- if .Values.querier.config.frontend_worker.grpc_client_config }}\n    grpc_client_config:\n      {{- toYaml .Values.querier.config.frontend_worker.grpc_client_config | nindent 6 }}\n    {{- end }}\n  trace_by_id:\n    query_timeout: {{ .Values.querier.config.trace_by_id.query_timeout }}\n  search:\n    query_timeout: {{ .Values.querier.config.search.query_timeout }}\n  max_concurrent_queries: {{ .Values.querier.config.max_concurrent_queries }}\n  {{- if .Values.liveStore.enabled }}\n  query_live_store: true\n  {{- end }}\nquery_frontend:\n  {{- if not .Values.enterprise.enabled }}\n  mcp_server:\n    enabled: {{ .Values.queryFrontend.mcp_server.enabled }}\n  {{- end }}\n  max_outstanding_per_tenant: {{ .Values.queryFrontend.config.max_outstanding_per_tenant }}\n  max_retries: {{ .Values.queryFrontend.config.max_retries }}\n  search:\n    target_bytes_per_job: {{ .Values.queryFrontend.config.search.target_bytes_per_job }}\n    concurrent_jobs: {{ .Values.queryFrontend.config.search.concurrent_jobs }}\n    max_spans_per_span_set: {{ .Values.queryFrontend.config.search.max_spans_per_span_set }}\n    {{- with .Values.queryFrontend.config.search.max_result_limit }}\n    max_result_limit: {{ . }}\n    {{- end }}\n  trace_by_id:\n    query_shards: {{ .Values.queryFrontend.config.trace_by_id.query_shards }}\n  metrics:\n    concurrent_jobs:  {{ .Values.queryFrontend.config.metrics.concurrent_jobs }}\n    target_bytes_per_job:  {{ .Values.queryFrontend.config.metrics.target_bytes_per_job }}\n    max_duration: {{ .Values.queryFrontend.config.metrics.max_duration }}\n    query_backend_after: {{ .Values.queryFrontend.config.metrics.query_backend_after }}\n    interval: {{ .Values.queryFrontend.config.metrics.interval }}\n    duration_slo: {{ .Values.queryFrontend.config.metrics.duration_slo }}\n    throughput_bytes_slo: {{ .Values.queryFrontend.config.metrics.throughput_bytes_slo }}\n{{- with .Values.ingest.kafka.address }}\ningest:\n  enabled: true\n  kafka:\n    address: {{ . }}\n    topic: {{ $.Values.ingest.kafka.topic }}\n    auto_create_topic_enabled: {{ $.Values.ingest.kafka.auto_create_topic_enabled }}\n    auto_create_topic_default_partitions: {{ $.Values.ingest.kafka.auto_create_topic_default_partitions }}\n{{- end }}\n{{- if .Values.ingester.enabled }}\ningester:\n  lifecycler:\n    ring:\n      replication_factor: {{ .Values.ingester.config.replication_factor }}\n      {{- if .Values.ingester.zoneAwareReplication.enabled }}\n      zone_awareness_enabled: true\n      {{- end }}\n      kvstore:\n        store: memberlist\n    tokens_file_path: /var/tempo/tokens.json\n  {{- if .Values.ingester.config.trace_idle_period }}\n  trace_idle_period: {{ .Values.ingester.config.trace_idle_period }}\n  {{- end }}\n  {{- if .Values.ingester.config.flush_check_period }}\n  flush_check_period: {{ .Values.ingester.config.flush_check_period }}\n  {{- end }}\n  {{- if .Values.ingester.config.max_block_bytes }}\n  max_block_bytes: {{ .Values.ingester.config.max_block_bytes }}\n  {{- end }}\n  {{- if .Values.ingester.config.max_block_duration }}\n  max_block_duration: {{ .Values.ingester.config.max_block_duration }}\n  {{- end }}\n  {{- if .Values.ingester.config.complete_block_timeout }}\n  complete_block_timeout: {{ .Values.ingester.config.complete_block_timeout }}\n  {{- end }}\n  {{- if .Values.ingester.config.flush_all_on_shutdown }}\n  flush_all_on_shutdown: {{ .Values.ingester.config.flush_all_on_shutdown }}\n  {{- end }}\n{{- end }}\nmemberlist:\n  {{- with .Values.memberlist }}\n    {{- toYaml . | nindent 2 }}\n  {{- end }}\n  join_members:\n    - dns+{{ include \"tempo.fullname\" . }}-gossip-ring:{{ .Values.memberlist.bind_port }}\noverrides:\n  {{- toYaml .Values.overrides | nindent 2 }}\nserver:\n  http_listen_port: {{ .Values.server.httpListenPort }}\n  log_level: {{ .Values.server.logLevel }}\n  log_format: {{ .Values.server.logFormat }}\n  grpc_server_max_recv_msg_size: {{ .Values.server.grpc_server_max_recv_msg_size }}\n  grpc_server_max_send_msg_size: {{ .Values.server.grpc_server_max_send_msg_size }}\n  http_server_read_timeout: {{ .Values.server.http_server_read_timeout }}\n  http_server_write_timeout: {{ .Values.server.http_server_write_timeout }}\ncache:\n{{- include \"tempo.cacheConfig\" . | nindent 2}}\nstorage:\n  trace:\n    {{- if .Values.storage.trace.block.version }}\n    block:\n      version: {{.Values.storage.trace.block.version}}\n      {{- if .Values.storage.trace.block.dedicated_columns}}\n      parquet_dedicated_columns:\n        {{ .Values.storage.trace.block.dedicated_columns | toYaml | nindent 8}}\n      {{- end }}\n    {{- end }}\n    pool:\n      max_workers: {{ .Values.storage.trace.pool.max_workers }}\n      queue_depth: {{ .Values.storage.trace.pool.queue_depth }}\n    backend: {{.Values.storage.trace.backend}}\n    {{- if eq .Values.storage.trace.backend \"s3\"}}\n    s3:\n      {{- toYaml .Values.storage.trace.s3 | nindent 6}}\n    {{- end }}\n    {{- if eq .Values.storage.trace.backend \"gcs\"}}\n    gcs:\n      {{- toYaml .Values.storage.trace.gcs | nindent 6}}\n    {{- end }}\n    {{- if eq .Values.storage.trace.backend \"azure\"}}\n    azure:\n      {{- toYaml .Values.storage.trace.azure | nindent 6}}\n    {{- end }}\n    blocklist_poll: 5m\n    local:\n      path: /var/tempo/traces\n    wal:\n      path: /var/tempo/wal\n    search:\n      {{- toYaml .Values.storage.trace.search | nindent 6}}\n\n    {{- if .Values.storage.trace.blocklist_poll }}\n    blocklist_poll: {{ .Values.storage.trace.blocklist_poll }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_concurrency }}\n    blocklist_poll_concurrency: {{ .Values.storage.trace.blocklist_poll_concurrency }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_fallback }}\n    blocklist_poll_fallback: {{ .Values.storage.trace.blocklist_poll_fallback }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_tenant_index_builders }}\n    blocklist_poll_tenant_index_builders: {{ .Values.storage.trace.blocklist_poll_tenant_index_builders }}\n    {{- end }}\n    {{- if .Values.storage.trace.blocklist_poll_stale_tenant_index }}\n    blocklist_poll_stale_tenant_index: {{ .Values.storage.trace.blocklist_poll_stale_tenant_index }}\n    {{- end }}\n    {{- if .Values.storage.trace.empty_tenant_deletion_age }}\n    empty_tenant_deletion_age: {{ .Values.storage.trace.empty_tenant_deletion_age }}\n    {{- end }}\n    {{- if .Values.storage.trace.empty_tenant_deletion_enabled }}\n    empty_tenant_deletion_enabled: {{ .Values.storage.trace.empty_tenant_deletion_enabled }}\n    {{- end }}\n"
     configPathmc : str, optional, default is "/etc/minio/mc/"
     configStorageType : str, optional, default is "ConfigMap"
         Defines what kind of object stores the configuration, a ConfigMap or a Secret.
@@ -53,11 +65,31 @@ schema Values:
     consoleService : ValuesConsoleService, optional
     containerSecurityContext : ValuesContainerSecurityContext, optional
         Container security context (allowPrivilegeEscalation, etc.)
+    crds : ValuesCrds, optional
+        # CRD management.
+        # rollout-operator always requires its CRDs (ReplicaTemplate, NoDownscale) to
+        # be present in the cluster — the operator will not start without them. This
+        # flag controls only whether *this chart* installs them via the bundled
+        # `crds` subchart.
+        #
+        # Leave `enabled: true` (default) for standalone installs.
+        #
+        # Set `enabled: false` only when CRDs are managed out of band, for example:
+        #   * a single shared rollout-operator instance owns the CRDs cluster-wide
+        #     and other releases should not contend with them;
+        #   * CRDs are reconciled by a GitOps controller, an umbrella chart, or a
+        #     separate Helm release dedicated to CRDs;
+        #   * cluster RBAC forbids the release's service account from creating CRDs.
+        # In all of these cases you are responsible for ensuring the CRDs exist
+        # before installing/upgrading this chart.
     customCommandJob : ValuesCustomCommandJob, optional
         # Additional Annotations for the Kubernetes Job customCommandJob
     customCommands : any, optional, default is ""
         # List of command to run after minio install
         # NOTE: the mc command TARGET is always "myminio"
+    defaults : ValuesDefaults, optional
+        Default values applied to every pod in this chart.
+        These values are overridden by component-specific settings.
     distributor : ValuesDistributor, optional
         Configuration for the distributor
     drivesPerNode : int, optional, default is 1
@@ -127,6 +159,11 @@ schema Values:
         # Set default image, imageTag, and imagePullPolicy. mode is used to indicate the
         #
     imagePullSecrets : [any], optional
+    ingest : ValuesIngest, optional
+        Ingest configuration. Sets the top-level `ingest:` block in tempo.yaml.
+        Required for Tempo 3.0 microservices mode. Distributors write spans to Kafka;
+        block-builders and live-stores consume from it.
+        The number of block-builder and live-store replicas must equal the Kafka partition count.
     ingester : ValuesIngester, optional
         Configuration for the ingester
     ingress : ValuesIngress, optional
@@ -141,6 +178,10 @@ schema Values:
         license, either by providing the contents of the license.jwt, or the name Kubernetes Secret that contains your license.jwt.
         To set the license contents, use the flag `--set-file 'license.contents=./license.jwt'`
         To use your own Kubernetes Secret, `--set license.external=true`.
+    liveStore : ValuesLiveStore, optional
+        Configuration for the live-store (Tempo 3.0+)
+        Consumes spans from Kafka and serves recent-data queries (last ~30 minutes).
+        One replica per Kafka partition — replica count must equal ingest.kafka.auto_create_topic_default_partitions.
     makeBucketJob : ValuesMakeBucketJob, optional
         # Additional Annotations for the Kubernetes Job makeBucketJob
     makePolicyJob : ValuesMakePolicyJob, optional
@@ -206,7 +247,19 @@ schema Values:
     memcached : ValuesMemcached, optional
         memcached is for all of the Tempo pieces to coordinate with each other.
         you can use your own self deployed memcached by setting `memcached.enabled` to false and `memcached.host` + `memcached.service`
+    memcachedBloom : ValuesMemcachedBloom, optional
+        Configuration for a dedicated memcached cluster for the bloom cache role.
+        When enabled, bloom cache is served by its own memcached StatefulSet.
+        Image is shared with the main `memcached` section.
     memcachedExporter : ValuesMemcachedExporter, optional
+    memcachedFrontendSearch : ValuesMemcachedFrontendSearch, optional
+        Configuration for a dedicated memcached cluster for the frontend-search cache role.
+        When enabled, frontend-search cache is served by its own memcached StatefulSet.
+        Image is shared with the main `memcached` section.
+    memcachedParquetFooter : ValuesMemcachedParquetFooter, optional
+        Configuration for a dedicated memcached cluster for the parquet-footer cache role.
+        When enabled, parquet-footer cache is served by its own memcached StatefulSet.
+        Image is shared with the main `memcached` section.
     metaMonitoring : ValuesMetaMonitoring, optional
     metrics : ValuesMetrics, optional
     metricsGenerator : ValuesMetricsGenerator, optional
@@ -293,6 +346,10 @@ schema Values:
         # AccessKey and secretKey is generated when not set
         # Distributed MinIO ref: https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-multi-node-multi-drive.html
         #
+    route : ValuesRoute, optional
+        Gateway API route configuration.
+        Multiple routes can be added by adding a dictionary key like the 'main' route.
+        This is useful for creating both HTTPRoute and GRPCRoute resources (e.g. for OTLP HTTP + gRPC).
     runtimeClassName : str, optional, default is ""
         # Pod runtime class name
         # ref https://kubernetes.io/docs/concepts/containers/runtime-class/
@@ -325,6 +382,7 @@ schema Values:
         Enable streaming over HTTP for tempo and Tempo gateway(nginx)
     tempo : ValuesTempo, optional
     test : ValuesTest, optional
+    tests : ValuesTests, optional
     tls : ValuesTls, optional
         # TLS Settings for MinIO
     tokengenJob : ValuesTokengenJob, optional
@@ -357,6 +415,9 @@ schema Values:
     adminApi?: ValuesAdminApi
     affinity?: ValuesAffinity
     annotations?: ValuesAnnotations
+    backendScheduler?: ValuesBackendScheduler
+    backendWorker?: ValuesBackendWorker
+    blockBuilder?: ValuesBlockBuilder
     bucketRoot?: str
     buckets?: any
     cache?: ValuesCache
@@ -369,8 +430,10 @@ schema Values:
     consoleIngress?: ValuesConsoleIngress
     consoleService?: ValuesConsoleService
     containerSecurityContext?: ValuesContainerSecurityContext
+    crds?: ValuesCrds
     customCommandJob?: ValuesCustomCommandJob
     customCommands?: any
+    defaults?: ValuesDefaults
     distributor?: ValuesDistributor
     drivesPerNode?: int
     enterprise?: ValuesEnterprise
@@ -396,18 +459,23 @@ schema Values:
     ignoreChartChecksums?: bool
     image?: ValuesImage
     imagePullSecrets?: [any]
+    ingest?: ValuesIngest
     ingester?: ValuesIngester
     ingress?: ValuesIngress
     kubectlImage?: ValuesKubectlImage
     kubeletService?: ValuesKubeletService
     license?: ValuesLicense
+    liveStore?: ValuesLiveStore
     makeBucketJob?: ValuesMakeBucketJob
     makePolicyJob?: ValuesMakePolicyJob
     makeUserJob?: ValuesMakeUserJob
     mcImage?: ValuesMcImage
     memberlist?: ValuesMemberlist
     memcached?: ValuesMemcached
+    memcachedBloom?: ValuesMemcachedBloom
     memcachedExporter?: ValuesMemcachedExporter
+    memcachedFrontendSearch?: ValuesMemcachedFrontendSearch
+    memcachedParquetFooter?: ValuesMemcachedParquetFooter
     metaMonitoring?: ValuesMetaMonitoring
     metrics?: ValuesMetrics
     metricsGenerator?: ValuesMetricsGenerator
@@ -445,6 +513,7 @@ schema Values:
     rollout_operator?: ValuesRolloutOperator
     rootPassword?: str
     rootUser?: str
+    route?: ValuesRoute
     runtimeClassName?: str
     securityContext?: ValuesSecurityContext
     server?: ValuesServer
@@ -455,6 +524,7 @@ schema Values:
     streamOverHTTPEnabled?: bool
     tempo?: ValuesTempo
     test?: ValuesTest
+    tests?: ValuesTests
     tls?: ValuesTls
     tokengenJob?: ValuesTokengenJob
     tolerations?: [any]
@@ -738,15 +808,1208 @@ schema ValuesAffinity:
 
 schema ValuesAnnotations:
     r"""
-    Annotations for the Deployment
+    Additional annotations to add to the deployment
     """
     [...str]: any
+
+schema ValuesBackendScheduler:
+    r"""
+    EXPERIMENTAL Feature, disabled by default
+    Configuration for the backend-scheduler
+
+    Attributes
+    ----------
+    affinity : str, optional, default is "podAntiAffinity:\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"backend-scheduler\") | nindent 12 }}\n        topologyKey: kubernetes.io/hostname\n    - weight: 75\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"backend-scheduler\") | nindent 12 }}\n        topologyKey: topology.kubernetes.io/zone\n"
+        Affinity for backend-scheduler pods. Passed through `tpl` and, thus, to be configured as string
+    annotations : ValuesBackendSchedulerAnnotations, optional
+        Annotations for backend-scheduler StatefulSet
+    config : ValuesBackendSchedulerConfig, optional
+    dnsConfig : ValuesBackendSchedulerDnsConfig, optional
+         - ip: 1.2.3.4
+           hostnames:
+             - domain.tld
+        Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
+    dnsConfigOverides : ValuesBackendSchedulerDnsConfigOverides, optional
+    enabled : bool, optional, default is False
+        Specifies whether a backend-scheduler and backend-worker
+        should be deployed. When enabled the compactor is disabled
+    extraArgs : [any], optional
+        Additional CLI args for the backend-scheduler
+    extraContainers : [any], optional
+        Containers to add to the backend-scheduler pods
+    extraEnv : [any], optional
+        Environment variables to add to the backend-scheduler pod
+    extraEnvFrom : [any], optional
+        Environment variables from secrets or configmaps to add to the backend-scheduler pod
+    extraPorts : [any], optional
+        Additional ports to expose on the backend-scheduler container
+        Standard ports (grpc, http-metrics, http-memberlist) are always added automatically.
+    extraVolumeMounts : [any], optional
+        Extra volumes for backend-scheduler pod
+    extraVolumes : [any], optional
+        Extra volumes for backend-scheduler StatefulSet
+    hostAliases : [any], optional
+        hostAliases to add
+    image : ValuesBackendSchedulerImage, optional
+    initContainers : [any], optional
+        Init containers to add to the backend-scheduler pod
+    labels : ValuesBackendSchedulerLabels, optional
+        Labels for the backend-scheduler StatefulSet
+    livenessProbe : ValuesBackendSchedulerLivenessProbe, optional
+        Liveness probe for backend-scheduler pod. Uses `tempo.livenessProbe` as default if not set.
+    nodeSelector : ValuesBackendSchedulerNodeSelector, optional
+        Node selector for backend-scheduler pod
+    persistence : ValuesBackendSchedulerPersistence, optional
+        Persistence configuration for backend-scheduler
+    persistentVolumeClaimRetentionPolicy : ValuesBackendSchedulerPersistentVolumeClaimRetentionPolicy, optional
+    podAnnotations : ValuesBackendSchedulerPodAnnotations, optional
+        Annotations for backend-scheduler pod
+    podLabels : ValuesBackendSchedulerPodLabels, optional
+        Labels for backend-scheduler pod
+    priorityClassName : any, optional, default is "null"
+        The name of the PriorityClass for backend-scheduler pod
+    readinessProbe : ValuesBackendSchedulerReadinessProbe, optional
+        Readiness probe for backend-scheduler pod. Uses `tempo.readinessProbe` as default if not set.
+    resources : ValuesBackendSchedulerResources, optional
+        Resource requests and limits for the backend-scheduler
+    service : ValuesBackendSchedulerService, optional
+    statefulStrategy : ValuesBackendSchedulerStatefulStrategy, optional
+        updateStrategy of the backend-scheduler statefulset.
+    terminationGracePeriodSeconds : int, optional, default is 30
+        Grace period to allow the backend-scheduler to shutdown before it is killed
+    tolerations : [any], optional
+        Tolerations for backend-scheduler pod
+    topologySpreadConstraints : str, optional, default is "- maxSkew: 1\n  topologyKey: topology.kubernetes.io/zone\n  whenUnsatisfiable: ScheduleAnyway\n  labelSelector:\n    matchLabels:\n      {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"backend-scheduler\") | nindent 6 }}\n"
+        topologySpread for backend-scheduler pods. Passed through `tpl` and, thus, to be configured as string
+    """
+    [...str]: any
+    affinity?: str
+    annotations?: ValuesBackendSchedulerAnnotations
+    config?: ValuesBackendSchedulerConfig
+    dnsConfig?: ValuesBackendSchedulerDnsConfig
+    dnsConfigOverides?: ValuesBackendSchedulerDnsConfigOverides
+    enabled?: bool
+    extraArgs?: [any]
+    extraContainers?: [any]
+    extraEnv?: [any]
+    extraEnvFrom?: [any]
+    extraPorts?: [any]
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
+    hostAliases?: [any]
+    image?: ValuesBackendSchedulerImage
+    initContainers?: [any]
+    labels?: ValuesBackendSchedulerLabels
+    livenessProbe?: ValuesBackendSchedulerLivenessProbe
+    nodeSelector?: ValuesBackendSchedulerNodeSelector
+    persistence?: ValuesBackendSchedulerPersistence
+    persistentVolumeClaimRetentionPolicy?: ValuesBackendSchedulerPersistentVolumeClaimRetentionPolicy
+    podAnnotations?: ValuesBackendSchedulerPodAnnotations
+    podLabels?: ValuesBackendSchedulerPodLabels
+    priorityClassName?: any
+    readinessProbe?: ValuesBackendSchedulerReadinessProbe
+    resources?: ValuesBackendSchedulerResources
+    service?: ValuesBackendSchedulerService
+    statefulStrategy?: ValuesBackendSchedulerStatefulStrategy
+    terminationGracePeriodSeconds?: int
+    tolerations?: [any]
+    topologySpreadConstraints?: str
+
+schema ValuesBackendSchedulerAnnotations:
+    r"""
+    Annotations for backend-scheduler StatefulSet
+    """
+    [...str]: any
+
+schema ValuesBackendSchedulerConfig:
+    r"""
+    ValuesBackendSchedulerConfig
+
+    Attributes
+    ----------
+    backend_flush_interval : str, optional, default is "1m"
+        How often to flush the work cache to backend storage
+    job_timeout : str, optional, default is "15s"
+        How long to wait for a worker to complete a job before timing out internally
+    local_work_path : str, optional, default is "/var/tempo"
+        Path to store local work cache files
+    maintenance_interval : str, optional, default is "1m"
+        How often to perform maintenance tasks (pruning old jobs, checking for dead jobs, etc.)
+    provider : ValuesBackendSchedulerConfigProvider, optional
+        Provider configuration for job generation
+    work : ValuesBackendSchedulerConfigWork, optional
+        Work cache configuration
+    """
+    [...str]: any
+    backend_flush_interval?: str
+    job_timeout?: str
+    local_work_path?: str
+    maintenance_interval?: str
+    provider?: ValuesBackendSchedulerConfigProvider
+    work?: ValuesBackendSchedulerConfigWork
+
+schema ValuesBackendSchedulerConfigProvider:
+    r"""
+    Provider configuration for job generation
+
+    Attributes
+    ----------
+    compaction : ValuesBackendSchedulerConfigProviderCompaction, optional
+        Compaction job configuration
+    retention : ValuesBackendSchedulerConfigProviderRetention, optional
+        Retention job configuration
+    """
+    [...str]: any
+    compaction?: ValuesBackendSchedulerConfigProviderCompaction
+    retention?: ValuesBackendSchedulerConfigProviderRetention
+
+schema ValuesBackendSchedulerConfigProviderCompaction:
+    r"""
+    Compaction job configuration
+
+    Attributes
+    ----------
+    compaction : ValuesBackendSchedulerConfigProviderCompactionCompaction, optional
+        Compaction configuration
+    max_compaction_level : int, optional, default is 0
+        Maximum number of compaction jobs to create per tenant
+    max_input_blocks : int, optional, default is 4
+        Maximum number of blocks to compact together
+    max_jobs_per_tenant : int, optional, default is 1000
+        Maximum compaction level (0 means no limit)
+    measure_interval : str, optional, default is "1m"
+        How often to measure tenant block lists and create new compaction jobs
+    min_cycle_interval : str, optional, default is "30s"
+        Minimum time between compaction cycles for a tenant
+    min_input_blocks : int, optional, default is 2
+        Minimum number of blocks required for compaction
+    """
+    [...str]: any
+    compaction?: ValuesBackendSchedulerConfigProviderCompactionCompaction
+    max_compaction_level?: int
+    max_input_blocks?: int
+    max_jobs_per_tenant?: int
+    measure_interval?: str
+    min_cycle_interval?: str
+    min_input_blocks?: int
+
+schema ValuesBackendSchedulerConfigProviderCompactionCompaction:
+    r"""
+    Compaction configuration
+
+    Attributes
+    ----------
+    block_retention : str, optional, default is "48h"
+        Duration to keep blocks
+    compacted_block_retention : str, optional, default is "1h"
+        Duration to keep blocks that have been compacted elsewhere
+    compaction_cycle : str, optional, default is "30s"
+        The time between compaction cycles
+    compaction_window : str, optional, default is "1h"
+        Blocks in this time window will be compacted together
+    max_block_bytes : int, optional, default is 107374182400
+        Maximum size of a compacted block in bytes
+        This should be set to a lower value, ideally 5GB or less
+        100GB is a legacy default for v2 storage format which is
+        no longer even available as of Tempo 2.1.x
+        https://github.com/grafana/tempo/discussions/5301
+    max_compaction_objects : int, optional, default is 6000000
+        Maximum number of traces in a compacted block. WARNING: Deprecated. Use max_block_bytes instead.
+    max_time_per_tenant : str, optional, default is "5m"
+        The maximum amount of time to spend compacting a single tenant before moving to the next
+    retention_concurrency : int, optional, default is 10
+        Number of tenants to process in parallel during retention
+    """
+    [...str]: any
+    block_retention?: str
+    compacted_block_retention?: str
+    compaction_cycle?: str
+    compaction_window?: str
+    max_block_bytes?: int
+    max_compaction_objects?: int
+    max_time_per_tenant?: str
+    retention_concurrency?: int
+
+schema ValuesBackendSchedulerConfigProviderRetention:
+    r"""
+    Retention job configuration
+
+    Attributes
+    ----------
+    interval : str, optional, default is "1h"
+        How often to check for blocks that need to be deleted due to retention
+    """
+    [...str]: any
+    interval?: str
+
+schema ValuesBackendSchedulerConfigWork:
+    r"""
+    Work cache configuration
+
+    Attributes
+    ----------
+    dead_job_timeout : str, optional, default is "24h"
+        After this duration, jobs that have not been updated are considered dead and will be reassigned.
+    prune_age : str, optional, default is "1h"
+        How long to keep completed or failed jobs in the work cache before pruning them.
+    """
+    [...str]: any
+    dead_job_timeout?: str
+    prune_age?: str
+
+schema ValuesBackendSchedulerDnsConfig:
+    r"""
+     - ip: 1.2.3.4
+       hostnames:
+         - domain.tld
+    Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
+    """
+    [...str]: any
+
+schema ValuesBackendSchedulerDnsConfigOverides:
+    r"""
+    ValuesBackendSchedulerDnsConfigOverides
+
+    Attributes
+    ----------
+    dnsConfig : ValuesBackendSchedulerDnsConfigOveridesDnsConfig, optional
+    enabled : bool, optional, default is False
+    """
+    [...str]: any
+    dnsConfig?: ValuesBackendSchedulerDnsConfigOveridesDnsConfig
+    enabled?: bool
+
+schema ValuesBackendSchedulerDnsConfigOveridesDnsConfig:
+    r"""
+    ValuesBackendSchedulerDnsConfigOveridesDnsConfig
+
+    Attributes
+    ----------
+    options : [ValuesBackendSchedulerDnsConfigOveridesDnsConfigOptionsItems0], optional
+    """
+    [...str]: any
+    options?: [ValuesBackendSchedulerDnsConfigOveridesDnsConfigOptionsItems0]
+
+schema ValuesBackendSchedulerDnsConfigOveridesDnsConfigOptionsItems0:
+    r"""
+    ValuesBackendSchedulerDnsConfigOveridesDnsConfigOptionsItems0
+
+    Attributes
+    ----------
+    name : str, optional, default is "ndots"
+    value : str, optional, default is "3"
+    """
+    [...str]: any
+    name?: str
+    value?: str
+
+schema ValuesBackendSchedulerImage:
+    r"""
+    ValuesBackendSchedulerImage
+
+    Attributes
+    ----------
+    pullSecrets : [any], optional
+        Optional list of imagePullSecrets. Overrides `tempo.image.pullSecrets`
+    registry : any, optional, default is "null"
+        The Docker registry for the backend-scheduler image. Overrides `tempo.image.registry`
+    repository : any, optional, default is "null"
+        Docker image repository for the backend-scheduler image. Overrides `tempo.image.repository`
+    tag : any, optional, default is "null"
+        Docker image tag for the backend-scheduler image. Overrides `tempo.image.tag`
+    """
+    [...str]: any
+    pullSecrets?: [any]
+    registry?: any
+    repository?: any
+    tag?: any
+
+schema ValuesBackendSchedulerLabels:
+    r"""
+    Labels for the backend-scheduler StatefulSet
+    """
+    [...str]: any
+
+schema ValuesBackendSchedulerLivenessProbe:
+    r"""
+    Liveness probe for backend-scheduler pod. Uses `tempo.livenessProbe` as default if not set.
+    """
+    [...str]: any
+
+schema ValuesBackendSchedulerNodeSelector:
+    r"""
+    Node selector for backend-scheduler pod
+    """
+    [...str]: any
+
+schema ValuesBackendSchedulerPersistence:
+    r"""
+    Persistence configuration for backend-scheduler
+
+    Attributes
+    ----------
+    annotations : ValuesBackendSchedulerPersistenceAnnotations, optional
+        Annotations for backend-scheduler's persist volume claim
+    enableStatefulSetRecreationForSizeChange : bool, optional, default is False
+        Enable StatefulSetRecreation for changes to PVC size
+    enabled : bool, optional, default is False
+        Enable creating PVCs which is required when using boltdb-shipper
+    inMemory : bool, optional, default is False
+        use emptyDir with ramdisk instead of PVC. **Please note that all data in backend-scheduler will be lost on pod restart**
+    labels : ValuesBackendSchedulerPersistenceLabels, optional
+        Labels for backend-scheduler's persist volume claim
+    size : str, optional, default is "10Gi"
+        Size of persistent or memory disk
+    storageClass : any, optional, default is "null"
+        Storage class to be used.
+        If defined, storageClassName: <storageClass>.
+        If set to "-", storageClassName: "", which disables dynamic provisioning.
+        If empty or set to null, no storageClassName spec is
+        set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).
+    """
+    [...str]: any
+    annotations?: ValuesBackendSchedulerPersistenceAnnotations
+    enableStatefulSetRecreationForSizeChange?: bool
+    enabled?: bool
+    inMemory?: bool
+    labels?: ValuesBackendSchedulerPersistenceLabels
+    size?: str
+    storageClass?: any
+
+schema ValuesBackendSchedulerPersistenceAnnotations:
+    r"""
+    Annotations for backend-scheduler's persist volume claim
+    """
+    [...str]: any
+
+schema ValuesBackendSchedulerPersistenceLabels:
+    r"""
+    Labels for backend-scheduler's persist volume claim
+    """
+    [...str]: any
+
+schema ValuesBackendSchedulerPersistentVolumeClaimRetentionPolicy:
+    r"""
+    ValuesBackendSchedulerPersistentVolumeClaimRetentionPolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Enable Persistent volume retention policy for StatefulSet
+    whenDeleted : str, optional, default is "Retain"
+        Volume retention behavior that applies when the StatefulSet is deleted
+    whenScaled : str, optional, default is "Retain"
+        Volume retention behavior when the replica count of the StatefulSet is reduced
+    """
+    [...str]: any
+    enabled?: bool
+    whenDeleted?: str
+    whenScaled?: str
+
+schema ValuesBackendSchedulerPodAnnotations:
+    r"""
+    Annotations for backend-scheduler pod
+    """
+    [...str]: any
+
+schema ValuesBackendSchedulerPodLabels:
+    r"""
+    Labels for backend-scheduler pod
+    """
+    [...str]: any
+
+schema ValuesBackendSchedulerReadinessProbe:
+    r"""
+    Readiness probe for backend-scheduler pod. Uses `tempo.readinessProbe` as default if not set.
+    """
+    [...str]: any
+
+schema ValuesBackendSchedulerResources:
+    r"""
+    Resource requests and limits for the backend-scheduler
+    """
+    [...str]: any
+
+schema ValuesBackendSchedulerService:
+    r"""
+    ValuesBackendSchedulerService
+
+    Attributes
+    ----------
+    annotations : ValuesBackendSchedulerServiceAnnotations, optional
+        Annotations for backend-scheduler service
+    """
+    [...str]: any
+    annotations?: ValuesBackendSchedulerServiceAnnotations
+
+schema ValuesBackendSchedulerServiceAnnotations:
+    r"""
+    Annotations for backend-scheduler service
+    """
+    [...str]: any
+
+schema ValuesBackendSchedulerStatefulStrategy:
+    r"""
+    updateStrategy of the backend-scheduler statefulset.
+
+    Attributes
+    ----------
+    rollingUpdate : ValuesBackendSchedulerStatefulStrategyRollingUpdate, optional
+    """
+    [...str]: any
+    rollingUpdate?: ValuesBackendSchedulerStatefulStrategyRollingUpdate
+
+schema ValuesBackendSchedulerStatefulStrategyRollingUpdate:
+    r"""
+    ValuesBackendSchedulerStatefulStrategyRollingUpdate
+
+    Attributes
+    ----------
+    partition : int, optional, default is 0
+    """
+    [...str]: any
+    partition?: int
+
+schema ValuesBackendWorker:
+    r"""
+    Configuration for the backend-worker
+
+    Attributes
+    ----------
+    affinity : str, optional, default is "podAntiAffinity:\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"backend-worker\") | nindent 12 }}\n        topologyKey: kubernetes.io/hostname\n    - weight: 75\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"backend-worker\") | nindent 12 }}\n        topologyKey: topology.kubernetes.io/zone\n"
+        Affinity for backend-worker pods. Passed through `tpl` and, thus, to be configured as string
+    annotations : ValuesBackendWorkerAnnotations, optional
+        Annotations for backend-worker StatefulSet
+    autoscaling : ValuesBackendWorkerAutoscaling, optional
+        Autoscaling configurations
+    config : ValuesBackendWorkerConfig, optional
+    dnsConfig : ValuesBackendWorkerDnsConfig, optional
+         - ip: 1.2.3.4
+           hostnames:
+             - domain.tld
+        Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
+    dnsConfigOverides : ValuesBackendWorkerDnsConfigOverides, optional
+    extraArgs : [any], optional
+        Additional CLI args for the backend-worker
+    extraContainers : [any], optional
+        Containers to add to the backend-worker pods
+    extraEnv : [any], optional
+        Environment variables to add to the backend-worker pods
+    extraEnvFrom : [any], optional
+        Environment variables from secrets or configmaps to add to the backend-worker pods
+    extraVolumeMounts : [any], optional
+        Extra volumes for backend-worker pods
+    extraVolumes : [any], optional
+        Extra volumes for backend-worker StatefulSet
+    hostAliases : [any], optional
+        hostAliases to add
+    image : ValuesBackendWorkerImage, optional
+    initContainers : [any], optional
+        Init containers to add to the backend-worker pods
+    labels : ValuesBackendWorkerLabels, optional
+        Labels for the backend-worker StatefulSet
+    livenessProbe : ValuesBackendWorkerLivenessProbe, optional
+        Liveness probe for backend-worker pods. Uses `tempo.livenessProbe` as default if not set.
+    nodeSelector : ValuesBackendWorkerNodeSelector, optional
+        Node selector for backend-worker pods
+    persistence : ValuesBackendWorkerPersistence, optional
+        Persistence configuration for backend-worker
+    persistentVolumeClaimRetentionPolicy : ValuesBackendWorkerPersistentVolumeClaimRetentionPolicy, optional
+    podAnnotations : ValuesBackendWorkerPodAnnotations, optional
+        Annotations for backend-worker pods
+    podLabels : ValuesBackendWorkerPodLabels, optional
+        Labels for backend-worker pods
+    priorityClassName : any, optional, default is "null"
+        The name of the PriorityClass for backend-worker pods
+    readinessProbe : ValuesBackendWorkerReadinessProbe, optional
+        Readiness probe for backend-worker pods. Uses `tempo.readinessProbe` as default if not set.
+    replicas : int, optional, default is 1
+        Number of replicas for the backend-worker
+    resources : ValuesBackendWorkerResources, optional
+        Resource requests and limits for the backend-worker
+    service : ValuesBackendWorkerService, optional
+    statefulStrategy : ValuesBackendWorkerStatefulStrategy, optional
+        updateStrategy of the backend-worker statefulset.
+    terminationGracePeriodSeconds : int, optional, default is 30
+        Grace period to allow the backend-worker to shutdown before it is killed
+    tolerations : [any], optional
+        Tolerations for backend-worker pods
+    topologySpreadConstraints : str, optional, default is "- maxSkew: 1\n  topologyKey: topology.kubernetes.io/zone\n  whenUnsatisfiable: ScheduleAnyway\n  labelSelector:\n    matchLabels:\n      {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"backend-worker\") | nindent 6 }}\n"
+        topologySpread for backend-worker pods. Passed through `tpl` and, thus, to be configured as string
+    """
+    [...str]: any
+    affinity?: str
+    annotations?: ValuesBackendWorkerAnnotations
+    autoscaling?: ValuesBackendWorkerAutoscaling
+    config?: ValuesBackendWorkerConfig
+    dnsConfig?: ValuesBackendWorkerDnsConfig
+    dnsConfigOverides?: ValuesBackendWorkerDnsConfigOverides
+    extraArgs?: [any]
+    extraContainers?: [any]
+    extraEnv?: [any]
+    extraEnvFrom?: [any]
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
+    hostAliases?: [any]
+    image?: ValuesBackendWorkerImage
+    initContainers?: [any]
+    labels?: ValuesBackendWorkerLabels
+    livenessProbe?: ValuesBackendWorkerLivenessProbe
+    nodeSelector?: ValuesBackendWorkerNodeSelector
+    persistence?: ValuesBackendWorkerPersistence
+    persistentVolumeClaimRetentionPolicy?: ValuesBackendWorkerPersistentVolumeClaimRetentionPolicy
+    podAnnotations?: ValuesBackendWorkerPodAnnotations
+    podLabels?: ValuesBackendWorkerPodLabels
+    priorityClassName?: any
+    readinessProbe?: ValuesBackendWorkerReadinessProbe
+    replicas?: int
+    resources?: ValuesBackendWorkerResources
+    service?: ValuesBackendWorkerService
+    statefulStrategy?: ValuesBackendWorkerStatefulStrategy
+    terminationGracePeriodSeconds?: int
+    tolerations?: [any]
+    topologySpreadConstraints?: str
+
+schema ValuesBackendWorkerAnnotations:
+    r"""
+    Annotations for backend-worker StatefulSet
+    """
+    [...str]: any
+
+schema ValuesBackendWorkerAutoscaling:
+    r"""
+    Autoscaling configurations
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Enable autoscaling for the backend-worker
+    hpa : ValuesBackendWorkerAutoscalingHpa, optional
+        Autoscaling via HPA object
+    keda : ValuesBackendWorkerAutoscalingKeda, optional
+        Autoscaling via keda/ScaledObject
+    maxReplicas : int, optional, default is 3
+        Maximum autoscaling replicas for the backend-worker
+    minReplicas : int, optional, default is 1
+        Minimum autoscaling replicas for the backend-worker
+    """
+    [...str]: any
+    enabled?: bool
+    hpa?: ValuesBackendWorkerAutoscalingHpa
+    keda?: ValuesBackendWorkerAutoscalingKeda
+    maxReplicas?: int
+    minReplicas?: int
+
+schema ValuesBackendWorkerAutoscalingHpa:
+    r"""
+    Autoscaling via HPA object
+
+    Attributes
+    ----------
+    behavior : ValuesBackendWorkerAutoscalingHpaBehavior, optional
+        Autoscaling behavior configuration for the backend-worker
+    enabled : bool, optional, default is False
+    targetCPUUtilizationPercentage : int, optional, default is 100
+        Target CPU utilisation percentage for the backend-worker
+    targetMemoryUtilizationPercentage : any, optional, default is ""
+        Target memory utilisation percentage for the backend-worker
+    """
+    [...str]: any
+    behavior?: ValuesBackendWorkerAutoscalingHpaBehavior
+    enabled?: bool
+    targetCPUUtilizationPercentage?: int
+    targetMemoryUtilizationPercentage?: any
+
+schema ValuesBackendWorkerAutoscalingHpaBehavior:
+    r"""
+    Autoscaling behavior configuration for the backend-worker
+    """
+    [...str]: any
+
+schema ValuesBackendWorkerAutoscalingKeda:
+    r"""
+    Autoscaling via keda/ScaledObject
+
+    Attributes
+    ----------
+    advanced : ValuesBackendWorkerAutoscalingKedaAdvanced, optional
+        Optional. Section to specify advanced options
+    annotations : ValuesBackendWorkerAutoscalingKedaAnnotations, optional
+    cooldownPeriod : any, optional, default is "null"
+    enabled : bool, optional, default is False
+        requires https://keda.sh/
+    fallback : ValuesBackendWorkerAutoscalingKedaFallback, optional
+          # Optional. Section to specify advanced options
+          horizontalPodAutoscalerConfig:
+            # Optional. Default: keda-hpa-{scaled-object-name}
+            name: null
+            # Optional. Use to modify HPA's scaling behavior
+            behavior: null
+              # scaleDown:
+              #   stabilizationWindowSeconds: 300
+          # Optional. Section to specify scaling modifiers
+          scalingModifiers:
+            target: null           # Mandatory. New target if metrics are anyhow composed together
+            activationTarget: null # Optional. New activation target if metrics are anyhow composed together
+            metricType:  null      # Optional. Metric type to be used if metrics are anyhow composed together
+            formula: null          # Mandatory. Formula for calculation
+    initialCooldownPeriod : any, optional, default is "null"
+    pollingInterval : any, optional, default is "null"
+          scaledobject.keda.sh/transfer-hpa-ownership: "true" # Use to transfer an existing HPA ownership to this ScaledObject
+          validations.keda.sh/hpa-ownership: "true"           # Use to disable HPA ownership validation on this ScaledObject
+          autoscaling.keda.sh/paused: "true"                  # Use to pause autoscaling of objects explicitly
+    triggers : [any], optional
+          failureThreshold: null # Mandatory if fallback section is included
+          replicas: null         # Mandatory if fallback section is included
+          behavior: null         # Optional. Default: "static"
+        List of autoscaling triggers for the compactor
+    """
+    [...str]: any
+    advanced?: ValuesBackendWorkerAutoscalingKedaAdvanced
+    annotations?: ValuesBackendWorkerAutoscalingKedaAnnotations
+    cooldownPeriod?: any
+    enabled?: bool
+    fallback?: ValuesBackendWorkerAutoscalingKedaFallback
+    initialCooldownPeriod?: any
+    pollingInterval?: any
+    triggers?: [any]
+
+schema ValuesBackendWorkerAutoscalingKedaAdvanced:
+    r"""
+    Optional. Section to specify advanced options
+    """
+    [...str]: any
+
+schema ValuesBackendWorkerAutoscalingKedaAnnotations:
+    r"""
+    ValuesBackendWorkerAutoscalingKedaAnnotations
+    """
+    [...str]: any
+
+schema ValuesBackendWorkerAutoscalingKedaFallback:
+    r"""
+      # Optional. Section to specify advanced options
+      horizontalPodAutoscalerConfig:
+        # Optional. Default: keda-hpa-{scaled-object-name}
+        name: null
+        # Optional. Use to modify HPA's scaling behavior
+        behavior: null
+          # scaleDown:
+          #   stabilizationWindowSeconds: 300
+      # Optional. Section to specify scaling modifiers
+      scalingModifiers:
+        target: null           # Mandatory. New target if metrics are anyhow composed together
+        activationTarget: null # Optional. New activation target if metrics are anyhow composed together
+        metricType:  null      # Optional. Metric type to be used if metrics are anyhow composed together
+        formula: null          # Mandatory. Formula for calculation
+    """
+    [...str]: any
+
+schema ValuesBackendWorkerConfig:
+    r"""
+    ValuesBackendWorkerConfig
+
+    Attributes
+    ----------
+    backend_scheduler_client : ValuesBackendWorkerConfigBackendSchedulerClient, optional
+    backoff : ValuesBackendWorkerConfigBackoff, optional
+        Backoff configuration for retrying failed jobs
+    compaction : ValuesBackendWorkerConfigCompaction, optional
+        Compaction settings
+        .Values.backendScheduler.compaction.compaction will be used
+    finish_on_shutdown_timeout : str, optional, default is "30s"
+        Timeout for finishing the current job before shutting down the worker
+    """
+    [...str]: any
+    backend_scheduler_client?: ValuesBackendWorkerConfigBackendSchedulerClient
+    backoff?: ValuesBackendWorkerConfigBackoff
+    compaction?: ValuesBackendWorkerConfigCompaction
+    finish_on_shutdown_timeout?: str
+
+schema ValuesBackendWorkerConfigBackendSchedulerClient:
+    r"""
+    ValuesBackendWorkerConfigBackendSchedulerClient
+
+    Attributes
+    ----------
+    grpc_client_config : ValuesBackendWorkerConfigBackendSchedulerClientGrpcClientConfig, optional
+        gRPC client configuration
+    """
+    [...str]: any
+    grpc_client_config?: ValuesBackendWorkerConfigBackendSchedulerClientGrpcClientConfig
+
+schema ValuesBackendWorkerConfigBackendSchedulerClientGrpcClientConfig:
+    r"""
+    gRPC client configuration
+    """
+    [...str]: any
+
+schema ValuesBackendWorkerConfigBackoff:
+    r"""
+    Backoff configuration for retrying failed jobs
+
+    Attributes
+    ----------
+    max_period : str, optional, default is "1m"
+    max_retries : int, optional, default is 0
+    min_period : str, optional, default is "100ms"
+    """
+    [...str]: any
+    max_period?: str
+    max_retries?: int
+    min_period?: str
+
+schema ValuesBackendWorkerConfigCompaction:
+    r"""
+    Compaction settings
+    .Values.backendScheduler.compaction.compaction will be used
+    """
+    [...str]: any
+
+schema ValuesBackendWorkerDnsConfig:
+    r"""
+     - ip: 1.2.3.4
+       hostnames:
+         - domain.tld
+    Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
+    """
+    [...str]: any
+
+schema ValuesBackendWorkerDnsConfigOverides:
+    r"""
+    ValuesBackendWorkerDnsConfigOverides
+
+    Attributes
+    ----------
+    dnsConfig : ValuesBackendWorkerDnsConfigOveridesDnsConfig, optional
+    enabled : bool, optional, default is False
+    """
+    [...str]: any
+    dnsConfig?: ValuesBackendWorkerDnsConfigOveridesDnsConfig
+    enabled?: bool
+
+schema ValuesBackendWorkerDnsConfigOveridesDnsConfig:
+    r"""
+    ValuesBackendWorkerDnsConfigOveridesDnsConfig
+
+    Attributes
+    ----------
+    options : [ValuesBackendWorkerDnsConfigOveridesDnsConfigOptionsItems0], optional
+    """
+    [...str]: any
+    options?: [ValuesBackendWorkerDnsConfigOveridesDnsConfigOptionsItems0]
+
+schema ValuesBackendWorkerDnsConfigOveridesDnsConfigOptionsItems0:
+    r"""
+    ValuesBackendWorkerDnsConfigOveridesDnsConfigOptionsItems0
+
+    Attributes
+    ----------
+    name : str, optional, default is "ndots"
+    value : str, optional, default is "3"
+    """
+    [...str]: any
+    name?: str
+    value?: str
+
+schema ValuesBackendWorkerImage:
+    r"""
+    ValuesBackendWorkerImage
+
+    Attributes
+    ----------
+    pullSecrets : [any], optional
+        Optional list of imagePullSecrets. Overrides `tempo.image.pullSecrets`
+    registry : any, optional, default is "null"
+        The Docker registry for the backend-worker image. Overrides `tempo.image.registry`
+    repository : any, optional, default is "null"
+        Docker image repository for the backend-worker image. Overrides `tempo.image.repository`
+    tag : any, optional, default is "null"
+        Docker image tag for the backend-worker image. Overrides `tempo.image.tag`
+    """
+    [...str]: any
+    pullSecrets?: [any]
+    registry?: any
+    repository?: any
+    tag?: any
+
+schema ValuesBackendWorkerLabels:
+    r"""
+    Labels for the backend-worker StatefulSet
+    """
+    [...str]: any
+
+schema ValuesBackendWorkerLivenessProbe:
+    r"""
+    Liveness probe for backend-worker pods. Uses `tempo.livenessProbe` as default if not set.
+    """
+    [...str]: any
+
+schema ValuesBackendWorkerNodeSelector:
+    r"""
+    Node selector for backend-worker pods
+    """
+    [...str]: any
+
+schema ValuesBackendWorkerPersistence:
+    r"""
+    Persistence configuration for backend-worker
+
+    Attributes
+    ----------
+    annotations : ValuesBackendWorkerPersistenceAnnotations, optional
+        Annotations for backend-worker's persist volume claim
+    enableStatefulSetRecreationForSizeChange : bool, optional, default is False
+        Enable StatefulSetRecreation for changes to PVC size
+    enabled : bool, optional, default is False
+        Enable creating PVCs which is required when using boltdb-shipper
+    inMemory : bool, optional, default is False
+        use emptyDir with ramdisk instead of PVC. **Please note that all data in backend-worker will be lost on pod restart**
+    labels : ValuesBackendWorkerPersistenceLabels, optional
+        Labels for backend-worker's persist volume claim
+    size : str, optional, default is "10Gi"
+        Size of persistent or memory disk
+    storageClass : any, optional, default is "null"
+        Storage class to be used.
+        If defined, storageClassName: <storageClass>.
+        If set to "-", storageClassName: "", which disables dynamic provisioning.
+        If empty or set to null, no storageClassName spec is
+        set, choosing the default provisioner (gp2 on AWS, standard on GKE, AWS, and OpenStack).
+    """
+    [...str]: any
+    annotations?: ValuesBackendWorkerPersistenceAnnotations
+    enableStatefulSetRecreationForSizeChange?: bool
+    enabled?: bool
+    inMemory?: bool
+    labels?: ValuesBackendWorkerPersistenceLabels
+    size?: str
+    storageClass?: any
+
+schema ValuesBackendWorkerPersistenceAnnotations:
+    r"""
+    Annotations for backend-worker's persist volume claim
+    """
+    [...str]: any
+
+schema ValuesBackendWorkerPersistenceLabels:
+    r"""
+    Labels for backend-worker's persist volume claim
+    """
+    [...str]: any
+
+schema ValuesBackendWorkerPersistentVolumeClaimRetentionPolicy:
+    r"""
+    ValuesBackendWorkerPersistentVolumeClaimRetentionPolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Enable Persistent volume retention policy for StatefulSet
+    whenDeleted : str, optional, default is "Retain"
+        Volume retention behavior that applies when the StatefulSet is deleted
+    whenScaled : str, optional, default is "Retain"
+        Volume retention behavior when the replica count of the StatefulSet is reduced
+    """
+    [...str]: any
+    enabled?: bool
+    whenDeleted?: str
+    whenScaled?: str
+
+schema ValuesBackendWorkerPodAnnotations:
+    r"""
+    Annotations for backend-worker pods
+    """
+    [...str]: any
+
+schema ValuesBackendWorkerPodLabels:
+    r"""
+    Labels for backend-worker pods
+    """
+    [...str]: any
+
+schema ValuesBackendWorkerReadinessProbe:
+    r"""
+    Readiness probe for backend-worker pods. Uses `tempo.readinessProbe` as default if not set.
+    """
+    [...str]: any
+
+schema ValuesBackendWorkerResources:
+    r"""
+    Resource requests and limits for the backend-worker
+    """
+    [...str]: any
+
+schema ValuesBackendWorkerService:
+    r"""
+    ValuesBackendWorkerService
+
+    Attributes
+    ----------
+    annotations : ValuesBackendWorkerServiceAnnotations, optional
+        Annotations for backend-worker service
+    """
+    [...str]: any
+    annotations?: ValuesBackendWorkerServiceAnnotations
+
+schema ValuesBackendWorkerServiceAnnotations:
+    r"""
+    Annotations for backend-worker service
+    """
+    [...str]: any
+
+schema ValuesBackendWorkerStatefulStrategy:
+    r"""
+    updateStrategy of the backend-worker statefulset.
+
+    Attributes
+    ----------
+    rollingUpdate : ValuesBackendWorkerStatefulStrategyRollingUpdate, optional
+    """
+    [...str]: any
+    rollingUpdate?: ValuesBackendWorkerStatefulStrategyRollingUpdate
+
+schema ValuesBackendWorkerStatefulStrategyRollingUpdate:
+    r"""
+    ValuesBackendWorkerStatefulStrategyRollingUpdate
+
+    Attributes
+    ----------
+    partition : int, optional, default is 0
+    """
+    [...str]: any
+    partition?: int
+
+schema ValuesBlockBuilder:
+    r"""
+    Configuration for the block-builder (Tempo 3.0+)
+    Consumes spans from Kafka and writes blocks to object storage.
+    One replica per Kafka partition — replica count must equal ingest.kafka.auto_create_topic_default_partitions.
+
+    Attributes
+    ----------
+    affinity : str, optional, default is "podAntiAffinity:\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"block-builder\") | nindent 12 }}\n        topologyKey: kubernetes.io/hostname\n"
+        Affinity for block-builder pods. Passed through `tpl`.
+    annotations : ValuesBlockBuilderAnnotations, optional
+        Annotations for the block-builder StatefulSet
+    config : ValuesBlockBuilderConfig, optional
+    dnsConfig : ValuesBlockBuilderDnsConfig, optional
+        Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
+    enabled : bool, optional, default is False
+        Enable the block-builder. Requires ingest.kafka.address to be set.
+    extraArgs : [any], optional
+        Additional CLI args for the block-builder
+    extraContainers : [any], optional
+        Containers to add to the block-builder pods
+    extraEnv : [any], optional
+        Environment variables to add to the block-builder pods
+    extraEnvFrom : [any], optional
+        Environment variables from secrets or configmaps to add to the block-builder pods
+    extraPorts : [any], optional
+        Additional ports to expose on the block-builder container
+    extraVolumeMounts : [any], optional
+        Extra volumes for block-builder pods
+    extraVolumes : [any], optional
+        Extra volumes for block-builder StatefulSet
+    hostAliases : [any], optional
+        hostAliases to add
+    image : ValuesBlockBuilderImage, optional
+    initContainers : [any], optional
+        Init containers to add to the block-builder pod
+    labels : ValuesBlockBuilderLabels, optional
+        Labels for the block-builder StatefulSet
+    livenessProbe : ValuesBlockBuilderLivenessProbe, optional
+        Liveness probe for block-builder pods. Uses `tempo.livenessProbe` as default if not set.
+    nodeSelector : ValuesBlockBuilderNodeSelector, optional
+        Node selector for block-builder pods
+    podAnnotations : ValuesBlockBuilderPodAnnotations, optional
+        Annotations for block-builder pods
+    podLabels : ValuesBlockBuilderPodLabels, optional
+        Labels for block-builder pods
+    priorityClassName : any, optional, default is "null"
+        The name of the PriorityClass for block-builder pods
+    readinessProbe : ValuesBlockBuilderReadinessProbe, optional
+        Readiness probe for block-builder pods. Uses `tempo.readinessProbe` as default if not set.
+    replicas : int, optional, default is 3
+        Number of replicas. Must equal the Kafka partition count.
+    resources : ValuesBlockBuilderResources, optional
+        Resource requests and limits for the block-builder
+    service : ValuesBlockBuilderService, optional
+    statefulStrategy : ValuesBlockBuilderStatefulStrategy, optional
+        updateStrategy of the block-builder StatefulSet
+    terminationGracePeriodSeconds : int, optional, default is 300
+        Grace period to allow the block-builder to flush its WAL before being killed
+    tolerations : [any], optional
+        Tolerations for block-builder pods
+    topologySpreadConstraints : str, optional, default is "- maxSkew: 1\n  topologyKey: topology.kubernetes.io/zone\n  whenUnsatisfiable: ScheduleAnyway\n  labelSelector:\n    matchLabels:\n      {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"block-builder\") | nindent 6 }}\n"
+        topologySpread for block-builder pods. Passed through `tpl`.
+    """
+    [...str]: any
+    affinity?: str
+    annotations?: ValuesBlockBuilderAnnotations
+    config?: ValuesBlockBuilderConfig
+    dnsConfig?: ValuesBlockBuilderDnsConfig
+    enabled?: bool
+    extraArgs?: [any]
+    extraContainers?: [any]
+    extraEnv?: [any]
+    extraEnvFrom?: [any]
+    extraPorts?: [any]
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
+    hostAliases?: [any]
+    image?: ValuesBlockBuilderImage
+    initContainers?: [any]
+    labels?: ValuesBlockBuilderLabels
+    livenessProbe?: ValuesBlockBuilderLivenessProbe
+    nodeSelector?: ValuesBlockBuilderNodeSelector
+    podAnnotations?: ValuesBlockBuilderPodAnnotations
+    podLabels?: ValuesBlockBuilderPodLabels
+    priorityClassName?: any
+    readinessProbe?: ValuesBlockBuilderReadinessProbe
+    replicas?: int
+    resources?: ValuesBlockBuilderResources
+    service?: ValuesBlockBuilderService
+    statefulStrategy?: ValuesBlockBuilderStatefulStrategy
+    terminationGracePeriodSeconds?: int
+    tolerations?: [any]
+    topologySpreadConstraints?: str
+
+schema ValuesBlockBuilderAnnotations:
+    r"""
+    Annotations for the block-builder StatefulSet
+    """
+    [...str]: any
+
+schema ValuesBlockBuilderConfig:
+    r"""
+    ValuesBlockBuilderConfig
+
+    Attributes
+    ----------
+    partitions_per_instance : int, optional, default is 1
+        Number of Kafka partitions each block-builder instance consumes.
+        Each pod consumes this many partitions starting from its ordinal * partitions_per_instance.
+    """
+    [...str]: any
+    partitions_per_instance?: int
+
+schema ValuesBlockBuilderDnsConfig:
+    r"""
+    Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
+    """
+    [...str]: any
+
+schema ValuesBlockBuilderImage:
+    r"""
+    ValuesBlockBuilderImage
+
+    Attributes
+    ----------
+    pullSecrets : [any], optional
+        Optional list of imagePullSecrets. Overrides `tempo.image.pullSecrets`
+    registry : any, optional, default is "null"
+        The Docker registry for the block-builder image. Overrides `tempo.image.registry`
+    repository : any, optional, default is "null"
+        Docker image repository for the block-builder image. Overrides `tempo.image.repository`
+    tag : any, optional, default is "null"
+        Docker image tag for the block-builder image. Overrides `tempo.image.tag`
+    """
+    [...str]: any
+    pullSecrets?: [any]
+    registry?: any
+    repository?: any
+    tag?: any
+
+schema ValuesBlockBuilderLabels:
+    r"""
+    Labels for the block-builder StatefulSet
+    """
+    [...str]: any
+
+schema ValuesBlockBuilderLivenessProbe:
+    r"""
+    Liveness probe for block-builder pods. Uses `tempo.livenessProbe` as default if not set.
+    """
+    [...str]: any
+
+schema ValuesBlockBuilderNodeSelector:
+    r"""
+    Node selector for block-builder pods
+    """
+    [...str]: any
+
+schema ValuesBlockBuilderPodAnnotations:
+    r"""
+    Annotations for block-builder pods
+    """
+    [...str]: any
+
+schema ValuesBlockBuilderPodLabels:
+    r"""
+    Labels for block-builder pods
+    """
+    [...str]: any
+
+schema ValuesBlockBuilderReadinessProbe:
+    r"""
+    Readiness probe for block-builder pods. Uses `tempo.readinessProbe` as default if not set.
+    """
+    [...str]: any
+
+schema ValuesBlockBuilderResources:
+    r"""
+    Resource requests and limits for the block-builder
+    """
+    [...str]: any
+
+schema ValuesBlockBuilderService:
+    r"""
+    ValuesBlockBuilderService
+
+    Attributes
+    ----------
+    annotations : ValuesBlockBuilderServiceAnnotations, optional
+        Annotations for block-builder service
+    """
+    [...str]: any
+    annotations?: ValuesBlockBuilderServiceAnnotations
+
+schema ValuesBlockBuilderServiceAnnotations:
+    r"""
+    Annotations for block-builder service
+    """
+    [...str]: any
+
+schema ValuesBlockBuilderStatefulStrategy:
+    r"""
+    updateStrategy of the block-builder StatefulSet
+
+    Attributes
+    ----------
+    rollingUpdate : ValuesBlockBuilderStatefulStrategyRollingUpdate, optional
+    """
+    [...str]: any
+    rollingUpdate?: ValuesBlockBuilderStatefulStrategyRollingUpdate
+
+schema ValuesBlockBuilderStatefulStrategyRollingUpdate:
+    r"""
+    ValuesBlockBuilderStatefulStrategyRollingUpdate
+
+    Attributes
+    ----------
+    partition : int, optional, default is 0
+    """
+    [...str]: any
+    partition?: int
 
 schema ValuesCache:
     r"""
     Use this block to configure caches available throughout the application.
     Multiple caches can be created and assigned roles which determine how they are used by Tempo.
     https://grafana.com/docs/tempo/latest/configuration/#cache
+    When memcached.enabled is true (the default), the cache.caches list is auto-generated from the
+    memcached and per-role memcached sections (memcachedBloom, memcachedParquetFooter, memcachedFrontendSearch).
+    When memcached.enabled is false, this block is passed through verbatim to allow configuring external caches.
 
     Attributes
     ----------
@@ -798,6 +2061,11 @@ schema ValuesCompactor:
     autoscaling : ValuesCompactorAutoscaling, optional
         Autoscaling configurations
     config : ValuesCompactorConfig, optional
+    dnsConfig : ValuesCompactorDnsConfig, optional
+         - ip: 1.2.3.4
+           hostnames:
+             - domain.tld
+        Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
     dnsConfigOverides : ValuesCompactorDnsConfigOverides, optional
     extraArgs : [any], optional
         Additional CLI args for the compactor
@@ -807,6 +2075,8 @@ schema ValuesCompactor:
         Environment variables to add to the compactor pods
     extraEnvFrom : [any], optional
         Environment variables from secrets or configmaps to add to the compactor pods
+    extraPorts : [any], optional
+        Additional ports to expose on the compactor container.
     extraVolumeMounts : [any], optional
         Extra volumes for compactor pods
     extraVolumes : [any], optional
@@ -814,9 +2084,6 @@ schema ValuesCompactor:
     hostAliases : [any], optional
         hostAliases to add
     image : ValuesCompactorImage, optional
-         - ip: 1.2.3.4
-           hostnames:
-             - domain.tld
     initContainers : [any], optional
         Init containers to add to the compactor pod
     livenessProbe : ValuesCompactorLivenessProbe, optional
@@ -854,11 +2121,13 @@ schema ValuesCompactor:
     annotations?: ValuesCompactorAnnotations
     autoscaling?: ValuesCompactorAutoscaling
     config?: ValuesCompactorConfig
+    dnsConfig?: ValuesCompactorDnsConfig
     dnsConfigOverides?: ValuesCompactorDnsConfigOverides
     extraArgs?: [any]
     extraContainers?: [any]
     extraEnv?: [any]
     extraEnvFrom?: [any]
+    extraPorts?: [any]
     extraVolumeMounts?: [any]
     extraVolumes?: [any]
     hostAliases?: [any]
@@ -942,14 +2211,78 @@ schema ValuesCompactorAutoscalingKeda:
 
     Attributes
     ----------
+    advanced : ValuesCompactorAutoscalingKedaAdvanced, optional
+        Optional. Section to specify advanced options
+    annotations : ValuesCompactorAutoscalingKedaAnnotations, optional
+    cooldownPeriod : any, optional, default is "null"
     enabled : bool, optional, default is False
         requires https://keda.sh/
+    fallback : ValuesCompactorAutoscalingKedaFallback, optional
+          # Optional. Section to specify advanced options
+          horizontalPodAutoscalerConfig:
+            # Optional. Default: keda-hpa-{scaled-object-name}
+            name: null
+            # Optional. Use to modify HPA's scaling behavior
+            behavior: null
+              # scaleDown:
+              #   stabilizationWindowSeconds: 300
+          # Optional. Section to specify scaling modifiers
+          scalingModifiers:
+            target: null           # Mandatory. New target if metrics are anyhow composed together
+            activationTarget: null # Optional. New activation target if metrics are anyhow composed together
+            metricType:  null      # Optional. Metric type to be used if metrics are anyhow composed together
+            formula: null          # Mandatory. Formula for calculation
+    initialCooldownPeriod : any, optional, default is "null"
+    pollingInterval : any, optional, default is "null"
+          scaledobject.keda.sh/transfer-hpa-ownership: "true" # Use to transfer an existing HPA ownership to this ScaledObject
+          validations.keda.sh/hpa-ownership: "true"           # Use to disable HPA ownership validation on this ScaledObject
+          autoscaling.keda.sh/paused: "true"                  # Use to pause autoscaling of objects explicitly
     triggers : [any], optional
+          failureThreshold: null # Mandatory if fallback section is included
+          replicas: null         # Mandatory if fallback section is included
+          behavior: null         # Optional. Default: "static"
         List of autoscaling triggers for the compactor
     """
     [...str]: any
+    advanced?: ValuesCompactorAutoscalingKedaAdvanced
+    annotations?: ValuesCompactorAutoscalingKedaAnnotations
+    cooldownPeriod?: any
     enabled?: bool
+    fallback?: ValuesCompactorAutoscalingKedaFallback
+    initialCooldownPeriod?: any
+    pollingInterval?: any
     triggers?: [any]
+
+schema ValuesCompactorAutoscalingKedaAdvanced:
+    r"""
+    Optional. Section to specify advanced options
+    """
+    [...str]: any
+
+schema ValuesCompactorAutoscalingKedaAnnotations:
+    r"""
+    ValuesCompactorAutoscalingKedaAnnotations
+    """
+    [...str]: any
+
+schema ValuesCompactorAutoscalingKedaFallback:
+    r"""
+      # Optional. Section to specify advanced options
+      horizontalPodAutoscalerConfig:
+        # Optional. Default: keda-hpa-{scaled-object-name}
+        name: null
+        # Optional. Use to modify HPA's scaling behavior
+        behavior: null
+          # scaleDown:
+          #   stabilizationWindowSeconds: 300
+      # Optional. Section to specify scaling modifiers
+      scalingModifiers:
+        target: null           # Mandatory. New target if metrics are anyhow composed together
+        activationTarget: null # Optional. New activation target if metrics are anyhow composed together
+        metricType:  null      # Optional. Metric type to be used if metrics are anyhow composed together
+        formula: null          # Mandatory. Formula for calculation
+    """
+    [...str]: any
 
 schema ValuesCompactorConfig:
     r"""
@@ -1004,6 +2337,15 @@ schema ValuesCompactorConfigCompaction:
     v2_out_buffer_bytes?: int
     v2_prefetch_traces_count?: int
 
+schema ValuesCompactorDnsConfig:
+    r"""
+     - ip: 1.2.3.4
+       hostnames:
+         - domain.tld
+    Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
+    """
+    [...str]: any
+
 schema ValuesCompactorDnsConfigOverides:
     r"""
     ValuesCompactorDnsConfigOverides
@@ -1043,9 +2385,7 @@ schema ValuesCompactorDnsConfigOveridesDnsConfigOptionsItems0:
 
 schema ValuesCompactorImage:
     r"""
-     - ip: 1.2.3.4
-       hostnames:
-         - domain.tld
+    ValuesCompactorImage
 
     Attributes
     ----------
@@ -1090,9 +2430,12 @@ schema ValuesCompactorPodDisruptionBudget:
     ----------
     enabled : bool, optional, default is True
         Enable PodDisruptionBudget for compactor
+    unhealthyPodEvictionPolicy : str, optional, default is ""
+        Set unhealthyPodEvictionPolicy for the compactor PodDisruptionBudget. Requires policy/v1.
     """
     [...str]: any
     enabled?: bool
+    unhealthyPodEvictionPolicy?: str
 
 schema ValuesCompactorPodLabels:
     r"""
@@ -1218,6 +2561,35 @@ schema ValuesContainerSecurityContext:
     """
     [...str]: any
 
+schema ValuesCrds:
+    r"""
+    # CRD management.
+    # rollout-operator always requires its CRDs (ReplicaTemplate, NoDownscale) to
+    # be present in the cluster — the operator will not start without them. This
+    # flag controls only whether *this chart* installs them via the bundled
+    # `crds` subchart.
+    #
+    # Leave `enabled: true` (default) for standalone installs.
+    #
+    # Set `enabled: false` only when CRDs are managed out of band, for example:
+    #   * a single shared rollout-operator instance owns the CRDs cluster-wide
+    #     and other releases should not contend with them;
+    #   * CRDs are reconciled by a GitOps controller, an umbrella chart, or a
+    #     separate Helm release dedicated to CRDs;
+    #   * cluster RBAC forbids the release's service account from creating CRDs.
+    # In all of these cases you are responsible for ensuring the CRDs exist
+    # before installing/upgrading this chart.
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+        Install CRDs as part of the chart (via the bundled `crds` subchart).
+        Set to `false` only when CRDs are managed out of band — see the comment
+        above for guidance.
+    """
+    [...str]: any
+    enabled?: bool
+
 schema ValuesCustomCommandJob:
     r"""
     # Additional Annotations for the Kubernetes Job customCommandJob
@@ -1307,6 +2679,127 @@ schema ValuesCustomCommandJobSecurityContext:
     runAsGroup?: int
     runAsUser?: int
 
+schema ValuesDefaults:
+    r"""
+    Default values applied to every pod in this chart.
+    These values are overridden by component-specific settings.
+
+    Attributes
+    ----------
+    affinity : ValuesDefaultsAffinity, optional
+        Default affinity for all pods
+    containerSecurityContext : ValuesDefaultsContainerSecurityContext, optional
+        Default container-level security context for all containers
+    dnsConfig : ValuesDefaultsDnsConfig, optional
+        Default pod DNS config for all pods. Overridden per component by `<component>.dnsConfig`; falls back to `tempo.dnsConfig`.
+    extraArgs : [any], optional
+        Default extra CLI args for all Tempo binary pods
+    extraEnv : [any], optional
+        Default extra environment variables for all pods
+    extraEnvFrom : [any], optional
+        Default extra environment variables from ConfigMaps or Secrets for all pods
+    extraVolumeMounts : [any], optional
+        Default extra volume mounts for all pods
+    extraVolumes : [any], optional
+        Default extra volumes for all pods
+    livenessProbe : ValuesDefaultsLivenessProbe, optional
+        Default liveness probe for all Tempo binary pods (overrides tempo.livenessProbe)
+    nodeSelector : ValuesDefaultsNodeSelector, optional
+        Default node selector for all pods
+    podAnnotations : ValuesDefaultsPodAnnotations, optional
+        Default annotations for all pods
+    podLabels : ValuesDefaultsPodLabels, optional
+        Default labels for all pods
+    podSecurityContext : ValuesDefaultsPodSecurityContext, optional
+        Default pod-level security context for all pods
+    priorityClassName : str, optional, default is ""
+        Default priority class name for all pods
+    readinessProbe : ValuesDefaultsReadinessProbe, optional
+        Default readiness probe for all Tempo binary pods (overrides tempo.readinessProbe)
+    resources : ValuesDefaultsResources, optional
+        Default resource requests and limits for all pods
+    tolerations : [any], optional
+        Default tolerations for all pods
+    """
+    [...str]: any
+    affinity?: ValuesDefaultsAffinity
+    containerSecurityContext?: ValuesDefaultsContainerSecurityContext
+    dnsConfig?: ValuesDefaultsDnsConfig
+    extraArgs?: [any]
+    extraEnv?: [any]
+    extraEnvFrom?: [any]
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
+    livenessProbe?: ValuesDefaultsLivenessProbe
+    nodeSelector?: ValuesDefaultsNodeSelector
+    podAnnotations?: ValuesDefaultsPodAnnotations
+    podLabels?: ValuesDefaultsPodLabels
+    podSecurityContext?: ValuesDefaultsPodSecurityContext
+    priorityClassName?: str
+    readinessProbe?: ValuesDefaultsReadinessProbe
+    resources?: ValuesDefaultsResources
+    tolerations?: [any]
+
+schema ValuesDefaultsAffinity:
+    r"""
+    Default affinity for all pods
+    """
+    [...str]: any
+
+schema ValuesDefaultsContainerSecurityContext:
+    r"""
+    Default container-level security context for all containers
+    """
+    [...str]: any
+
+schema ValuesDefaultsDnsConfig:
+    r"""
+    Default pod DNS config for all pods. Overridden per component by `<component>.dnsConfig`; falls back to `tempo.dnsConfig`.
+    """
+    [...str]: any
+
+schema ValuesDefaultsLivenessProbe:
+    r"""
+    Default liveness probe for all Tempo binary pods (overrides tempo.livenessProbe)
+    """
+    [...str]: any
+
+schema ValuesDefaultsNodeSelector:
+    r"""
+    Default node selector for all pods
+    """
+    [...str]: any
+
+schema ValuesDefaultsPodAnnotations:
+    r"""
+    Default annotations for all pods
+    """
+    [...str]: any
+
+schema ValuesDefaultsPodLabels:
+    r"""
+    Default labels for all pods
+    """
+    [...str]: any
+
+schema ValuesDefaultsPodSecurityContext:
+    r"""
+    Default pod-level security context for all pods
+    """
+    [...str]: any
+
+schema ValuesDefaultsReadinessProbe:
+    r"""
+    Default readiness probe for all Tempo binary pods (overrides tempo.readinessProbe)
+    """
+    [...str]: any
+
+schema ValuesDefaultsResources:
+    r"""
+    Default resource requests and limits for all pods
+    """
+    [...str]: any
+
 schema ValuesDeploymentUpdate:
     r"""
     # Update strategy for Deployments
@@ -1335,10 +2828,12 @@ schema ValuesDistributor:
     appProtocol : ValuesDistributorAppProtocol, optional
         Adds the appProtocol field to the distributor service. This allows distributor to work with istio protocol selection.
     autoscaling : ValuesDistributorAutoscaling, optional
+    config : ValuesDistributorConfig, optional
+    dnsConfig : ValuesDistributorDnsConfig, optional
          - ip: 1.2.3.4
            hostnames:
              - domain.tld
-    config : ValuesDistributorConfig, optional
+        Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
     extraArgs : [any], optional
         Additional CLI args for the distributor
     extraContainers : [any], optional
@@ -1347,6 +2842,9 @@ schema ValuesDistributor:
         Environment variables to add to the distributor pods
     extraEnvFrom : [any], optional
         Environment variables from secrets or configmaps to add to the distributor pods
+    extraPorts : [any], optional
+        Additional ports to expose on the distributor container (e.g. trace receiver ports).
+        Standard ports (http-metrics, http-memberlist) are always added automatically.
     extraVolumeMounts : [any], optional
         Extra volumes for distributor pods
     extraVolumes : [any], optional
@@ -1382,6 +2880,9 @@ schema ValuesDistributor:
         Resource requests and limits for the distributor
     service : ValuesDistributorService, optional
     serviceDiscovery : ValuesDistributorServiceDiscovery, optional
+    shutdownDelay : str, optional, default is "0s"
+        On SIGTERM, report not-ready and wait this long before shutdown so the LB drains the pod before connections are cut.
+        "0s" (default) disables. When enabling, keep terminationGracePeriodSeconds above shutdownDelay + server.graceful_shutdown_timeout.
     strategy : ValuesDistributorStrategy, optional
         Strategy of updating pods
     terminationGracePeriodSeconds : int, optional, default is 30
@@ -1397,10 +2898,12 @@ schema ValuesDistributor:
     appProtocol?: ValuesDistributorAppProtocol
     autoscaling?: ValuesDistributorAutoscaling
     config?: ValuesDistributorConfig
+    dnsConfig?: ValuesDistributorDnsConfig
     extraArgs?: [any]
     extraContainers?: [any]
     extraEnv?: [any]
     extraEnvFrom?: [any]
+    extraPorts?: [any]
     extraVolumeMounts?: [any]
     extraVolumes?: [any]
     hostAliases?: [any]
@@ -1420,6 +2923,7 @@ schema ValuesDistributor:
     resources?: ValuesDistributorResources
     service?: ValuesDistributorService
     serviceDiscovery?: ValuesDistributorServiceDiscovery
+    shutdownDelay?: str
     strategy?: ValuesDistributorStrategy
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
@@ -1445,9 +2949,7 @@ protocol ValuesDistributorAppProtocol:
 
 schema ValuesDistributorAutoscaling:
     r"""
-     - ip: 1.2.3.4
-       hostnames:
-         - domain.tld
+    ValuesDistributorAutoscaling
 
     Attributes
     ----------
@@ -1556,6 +3058,15 @@ schema ValuesDistributorConfigLogReceivedSpans:
     filter_by_status_error?: bool
     include_all_attributes?: bool
 
+schema ValuesDistributorDnsConfig:
+    r"""
+     - ip: 1.2.3.4
+       hostnames:
+         - domain.tld
+    Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
+    """
+    [...str]: any
+
 schema ValuesDistributorImage:
     r"""
     ValuesDistributorImage
@@ -1609,9 +3120,12 @@ schema ValuesDistributorPodDisruptionBudget:
     ----------
     enabled : bool, optional, default is True
         Enable PodDisruptionBudget for distributor
+    unhealthyPodEvictionPolicy : str, optional, default is ""
+        Set unhealthyPodEvictionPolicy for the distributor PodDisruptionBudget. Requires policy/v1.
     """
     [...str]: any
     enabled?: bool
+    unhealthyPodEvictionPolicy?: str
 
 schema ValuesDistributorPodLabels:
     r"""
@@ -2309,7 +3823,7 @@ schema ValuesEnterpriseImage:
     ----------
     repository : str, optional, default is "grafana/enterprise-traces"
         Grafana Enterprise Traces container image repository. Note: for Grafana Tempo use the value 'image.repository'
-    tag : str, optional, default is "v2.8.7"
+    tag : str, optional, default is "v2.8.10"
         Grafana Enterprise Traces container image tag. Note: for Grafana Tempo use the value 'image.tag'
     """
     [...str]: any
@@ -2394,6 +3908,9 @@ schema ValuesGateway:
         Number of replicas for the gateway
     resources : ValuesGatewayResources, optional
         Resource requests and limits for the gateway
+    route : ValuesGatewayRoute, optional
+        Gateway API route configuration for the gateway.
+        Multiple routes can be added by adding a dictionary key like the 'main' route.
     service : ValuesGatewayService, optional
         Gateway service configuration
     terminationGracePeriodSeconds : int, optional, default is 30
@@ -2433,6 +3950,7 @@ schema ValuesGateway:
     readinessProbe?: ValuesGatewayReadinessProbe
     replicas?: int
     resources?: ValuesGatewayResources
+    route?: ValuesGatewayRoute
     service?: ValuesGatewayService
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
@@ -2521,7 +4039,7 @@ schema ValuesGatewayImage:
         The Docker registry for the gateway image. Overrides `global.image.registry`
     repository : str, optional, default is "nginxinc/nginx-unprivileged"
         The gateway image repository
-    tag : str, optional, default is "1.29-alpine"
+    tag : str, optional, default is "1.31-alpine"
         The gateway image tag
     """
     [...str]: any
@@ -2642,12 +4160,16 @@ schema ValuesGatewayNginxConfig:
 
     Attributes
     ----------
-    file : str, optional, default is "worker_processes  5;  ## Default: 1\nerror_log  /dev/stderr;\npid        /tmp/nginx.pid;\nworker_rlimit_nofile 8192;\n\nevents {\n  worker_connections  4096;  ## Default: 1024\n}\n\nhttp {\n  client_body_temp_path /tmp/client_temp;\n  proxy_temp_path       /tmp/proxy_temp_path;\n  fastcgi_temp_path     /tmp/fastcgi_temp;\n  uwsgi_temp_path       /tmp/uwsgi_temp;\n  scgi_temp_path        /tmp/scgi_temp;\n\n  proxy_http_version    1.1;\n\n  default_type application/octet-stream;\n  log_format   {{ .Values.gateway.nginxConfig.logFormat }}\n\n  {{- if .Values.gateway.verboseLogging }}\n  access_log   /dev/stderr  main;\n  {{- else }}\n\n  map $status $loggable {\n    ~^[23]  0;\n    default 1;\n  }\n  access_log   /dev/stderr  main  if=$loggable;\n  {{- end }}\n\n  sendfile     on;\n  tcp_nopush   on;\n  {{- if .Values.gateway.nginxConfig.resolver }}\n  resolver {{ .Values.gateway.nginxConfig.resolver }};\n  {{- else }}\n  resolver {{ .Values.global.dnsService }}.{{ .Values.global.dnsNamespace }}.svc.{{ .Values.global.clusterDomain }};\n  {{- end }}\n\n  {{- with .Values.gateway.nginxConfig.httpSnippet }}\n  {{ . | nindent 2 }}\n  {{- end }}\n\n  server {\n    listen             8080 {{- if .Values.gateway.nginxConfig.ssl }} ssl{{- end }};\n\n    {{- if .Values.streamOverHTTPEnabled }}\n    http2 on;\n    location /tempopb.StreamingQuerier/ {\n      set $query_frontend {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      grpc_pass   grpc://$query_frontend:3200;\n    }\n    {{- end }}\n\n    {{- if .Values.gateway.basicAuth.enabled }}\n    auth_basic           \"Tempo\";\n    auth_basic_user_file /etc/nginx/secrets/.htpasswd;\n    {{- end }}\n\n    location = / {\n      return 200 'OK';\n      auth_basic off;\n    }\n\n    location = /jaeger/api/traces {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:14268/api/traces;\n    }\n\n    location = /zipkin/spans {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:9411/spans;\n    }\n\n    location = /v1/traces {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:4318/v1/traces;\n    }\n\n    location = /otlp/v1/traces {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:4318/v1/traces;\n    }\n\n    location ^~ /api {\n      set $query_frontend {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$query_frontend:3200$request_uri;\n    }\n\n    location = /flush {\n      set $ingester {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"ingester\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$ingester:3200$request_uri;\n    }\n\n    location = /shutdown {\n      set $ingester {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"ingester\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$ingester:3200$request_uri;\n    }\n\n    location = /distributor/ring {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:3200$request_uri;\n    }\n\n    location = /ingester/ring {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:3200$request_uri;\n    }\n\n    location = /compactor/ring {\n      set $compactor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"compactor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$compactor:3200$request_uri;\n    }\n\n    {{- if .Values.gateway.nginxConfig.ssl }}\n    ssl_certificate     /etc/nginx/ssl/tls.crt;\n    ssl_certificate_key /etc/nginx/ssl/tls.key;\n    {{- end }}\n\n    {{- with .Values.gateway.nginxConfig.serverSnippet }}\n    {{ . | nindent 4 }}\n    {{- end }}\n  }\n\n  {{- if .Values.traces.otlp.grpc.enabled }}\n  # OTLP gRPC\n  server {\n    listen               {{ .Values.traces.otlp.grpc.port }} http2 {{- if .Values.gateway.nginxConfig.ssl }} ssl{{- end }};\n\n    {{- if .Values.gateway.basicAuth.enabled }}\n    auth_basic           \"Tempo\";\n    auth_basic_user_file /etc/nginx/secrets/.htpasswd;\n    {{- end }}\n\n    location = /opentelemetry.proto.collector.trace.v1.TraceService/Export {\n      grpc_pass          grpc://{{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}:{{ .Values.traces.otlp.grpc.port }};\n    }\n\n    location ~ /opentelemetry {\n      grpc_pass          grpc://{{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}:{{ .Values.traces.otlp.grpc.port }};\n    }\n\n    {{- if .Values.gateway.nginxConfig.ssl }}\n    ssl_certificate     /etc/nginx/ssl/tls.crt;\n    ssl_certificate_key /etc/nginx/ssl/tls.key;\n    {{- end }}\n\n    {{- with .Values.gateway.nginxConfig.serverSnippet }}\n    {{ . | nindent 4 }}\n    {{- end }}\n  }\n  {{- end }}\n}\n"
+    enableIPv6 : bool, optional, default is False
+        Configures whether or not NGINX bind IPv6
+    file : str, optional, default is "worker_processes  5;  ## Default: 1\nerror_log  /dev/stderr;\npid        /tmp/nginx.pid;\nworker_rlimit_nofile 8192;\n\n{{- with .Values.gateway.nginxConfig.mainSnippet }}\n{{ . | nindent 0 }}\n{{- end }}\n\nevents {\n  worker_connections  4096;  ## Default: 1024\n}\n\nhttp {\n  client_body_temp_path /tmp/client_temp;\n  proxy_temp_path       /tmp/proxy_temp_path;\n  fastcgi_temp_path     /tmp/fastcgi_temp;\n  uwsgi_temp_path       /tmp/uwsgi_temp;\n  scgi_temp_path        /tmp/scgi_temp;\n\n  proxy_http_version    1.1;\n\n  default_type application/octet-stream;\n  log_format   {{ .Values.gateway.nginxConfig.logFormat }}\n\n  {{- if .Values.gateway.verboseLogging }}\n  access_log   /dev/stderr  main;\n  {{- else }}\n\n  map $status $loggable {\n    ~^[23]  0;\n    default 1;\n  }\n  access_log   /dev/stderr  main  if=$loggable;\n  {{- end }}\n\n  sendfile     on;\n  tcp_nopush   on;\n  {{- if .Values.gateway.nginxConfig.resolver }}\n  resolver {{ .Values.gateway.nginxConfig.resolver }};\n  {{- else }}\n  resolver {{ .Values.global.dnsService }}.{{ .Values.global.dnsNamespace }}.svc.{{ .Values.global.clusterDomain }};\n  {{- end }}\n\n  {{- with .Values.gateway.nginxConfig.httpSnippet }}\n  {{ . | nindent 2 }}\n  {{- end }}\n\n  server {\n    listen             8080 {{- if .Values.gateway.nginxConfig.ssl }} ssl{{- end }};\n    {{- if .Values.gateway.nginxConfig.enableIPv6 }}\n    listen             [::]:8080 {{- if .Values.gateway.nginxConfig.ssl }} ssl{{- end }};\n    {{- end }}\n\n    {{- if .Values.streamOverHTTPEnabled }}\n    http2 on;\n    location /tempopb.StreamingQuerier/ {\n      set $query_frontend {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      grpc_pass   grpc://$query_frontend:3200;\n    }\n    {{- end }}\n\n    {{- if .Values.gateway.basicAuth.enabled }}\n    auth_basic           \"Tempo\";\n    auth_basic_user_file /etc/nginx/secrets/.htpasswd;\n    {{- end }}\n\n    location = / {\n      return 200 'OK';\n      auth_basic off;\n    }\n\n    location = /jaeger/api/traces {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:14268/api/traces;\n    }\n\n    location = /zipkin/spans {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:9411/spans;\n    }\n\n    location = /v1/traces {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:4318/v1/traces;\n    }\n\n    location = /otlp/v1/traces {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:4318/v1/traces;\n    }\n\n    location ^~ /api {\n      set $query_frontend {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"query-frontend\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$query_frontend:3200$request_uri;\n    }\n\n    location = /flush {\n      set $ingester {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"ingester\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$ingester:3200$request_uri;\n    }\n\n    location = /shutdown {\n      set $ingester {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"ingester\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$ingester:3200$request_uri;\n    }\n\n    location = /distributor/ring {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:3200$request_uri;\n    }\n\n    location = /ingester/ring {\n      set $distributor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$distributor:3200$request_uri;\n    }\n\n    location = /compactor/ring {\n      set $compactor {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"compactor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$compactor:3200$request_uri;\n    }\n\n    {{- if .Values.backendScheduler.enabled }}\n    location = /backend-worker/ring {\n      set $backend_worker {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"backend-worker\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      proxy_pass       http://$backend_worker:3200$request_uri;\n    }\n    {{- end }}\n\n    {{- if .Values.gateway.nginxConfig.ssl }}\n    ssl_certificate     /etc/nginx/ssl/tls.crt;\n    ssl_certificate_key /etc/nginx/ssl/tls.key;\n    {{- end }}\n\n    {{- with .Values.gateway.nginxConfig.serverSnippet }}\n    {{ . | nindent 4 }}\n    {{- end }}\n  }\n\n  {{- if .Values.traces.otlp.grpc.enabled }}\n  # OTLP gRPC\n  server {\n    listen               {{ .Values.traces.otlp.grpc.port }} http2 {{- if .Values.gateway.nginxConfig.ssl }} ssl{{- end }};\n    {{- if .Values.gateway.nginxConfig.enableIPv6 }}\n    listen               [::]:{{ .Values.traces.otlp.grpc.port }} http2 {{- if .Values.gateway.nginxConfig.ssl }} ssl{{- end }};\n    {{- end }}\n\n    {{- if .Values.gateway.basicAuth.enabled }}\n    auth_basic           \"Tempo\";\n    auth_basic_user_file /etc/nginx/secrets/.htpasswd;\n    {{- end }}\n\n    location = /opentelemetry.proto.collector.trace.v1.TraceService/Export {\n      set $distributor  {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      grpc_pass         grpc://$distributor:{{ .Values.traces.otlp.grpc.port }};\n    }\n\n    location ~ /opentelemetry {\n      set $distributor  {{ include \"tempo.resourceName\" (dict \"ctx\" . \"component\" \"distributor\") }}.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }};\n      grpc_pass         grpc://$distributor:{{ .Values.traces.otlp.grpc.port }};\n    }\n\n    {{- if .Values.gateway.nginxConfig.ssl }}\n    ssl_certificate     /etc/nginx/ssl/tls.crt;\n    ssl_certificate_key /etc/nginx/ssl/tls.key;\n    {{- end }}\n\n    {{- with .Values.gateway.nginxConfig.serverSnippet }}\n    {{ . | nindent 4 }}\n    {{- end }}\n  }\n  {{- end }}\n}\n"
         Config file contents for Nginx. Passed through the `tpl` function to allow templating
     httpSnippet : str, optional, default is ""
         Allows appending custom configuration to the http block
     logFormat : str, optional, default is "main '$remote_addr - $remote_user [$time_local]  $status '\n        '\"$request\" $body_bytes_sent \"$http_referer\" '\n        '\"$http_user_agent\" \"$http_x_forwarded_for\"';"
         NGINX log format
+    mainSnippet : str, optional, default is ""
+        Allows appending custom configuration to the main context
     resolver : str, optional, default is ""
         Allows overriding the DNS resolver address nginx will use
     serverSnippet : str, optional, default is ""
@@ -2658,9 +4180,11 @@ schema ValuesGatewayNginxConfig:
         TLS secret name containing the certificate and key to be used if ssl is enabled. The secret must contain 'tls.crt' and 'tls.key'. Required if ssl is true.
     """
     [...str]: any
+    enableIPv6?: bool
     file?: str
     httpSnippet?: str
     logFormat?: str
+    mainSnippet?: str
     resolver?: str
     serverSnippet?: str
     ssl?: bool
@@ -2686,9 +4210,12 @@ schema ValuesGatewayPodDisruptionBudget:
     ----------
     enabled : bool, optional, default is True
         Enable PodDisruptionBudget for gateway
+    unhealthyPodEvictionPolicy : str, optional, default is ""
+        Set unhealthyPodEvictionPolicy for the gateway PodDisruptionBudget. Requires policy/v1.
     """
     [...str]: any
     enabled?: bool
+    unhealthyPodEvictionPolicy?: str
 
 schema ValuesGatewayPodLabels:
     r"""
@@ -2730,6 +4257,109 @@ schema ValuesGatewayResources:
     """
     [...str]: any
 
+schema ValuesGatewayRoute:
+    r"""
+    Gateway API route configuration for the gateway.
+    Multiple routes can be added by adding a dictionary key like the 'main' route.
+
+    Attributes
+    ----------
+    main : ValuesGatewayRouteMain, optional
+    """
+    [...str]: any
+    main?: ValuesGatewayRouteMain
+
+schema ValuesGatewayRouteMain:
+    r"""
+    ValuesGatewayRouteMain
+
+    Attributes
+    ----------
+    additionalRules : [any], optional
+        Additional custom rules that can be added to the route
+    annotations : ValuesGatewayRouteMainAnnotations, optional
+        Route annotations
+    apiVersion : str, optional, default is ""
+        Set the route apiVersion, e.g. gateway.networking.k8s.io/v1 or gateway.networking.k8s.io/v1beta1
+        If not set, the latest available version will be auto-detected
+    enabled : bool, optional, default is False
+        Specifies whether a Gateway API route for the gateway should be created
+    filters : [any], optional
+        Filters define the filters that are applied to requests that match this rule.
+    hostnames : [any], optional
+        Hostnames for the route
+    kind : str, optional, default is "HTTPRoute"
+        Set the route kind
+        Valid options are GRPCRoute, HTTPRoute, TCPRoute, TLSRoute, UDPRoute
+    labels : ValuesGatewayRouteMainLabels, optional
+        Route labels
+    matches : [ValuesGatewayRouteMainMatchesItems0], optional
+        - name: my-gateway
+          namespace: gateway-namespace
+        Matches define conditions for matching incoming requests
+    parentRefs : [any], optional
+        - gateway.tempo.example.com
+        Parent references (gateway to attach to)
+    timeouts : ValuesGatewayRouteMainTimeouts, optional
+        Timeouts define the timeouts that can be configured for an HTTP request.
+        Ref. https://gateway-api.sigs.k8s.io/api-types/httproute/#timeouts-optional
+    """
+    [...str]: any
+    additionalRules?: [any]
+    annotations?: ValuesGatewayRouteMainAnnotations
+    apiVersion?: str
+    enabled?: bool
+    filters?: [any]
+    hostnames?: [any]
+    kind?: str
+    labels?: ValuesGatewayRouteMainLabels
+    matches?: [ValuesGatewayRouteMainMatchesItems0]
+    parentRefs?: [any]
+    timeouts?: ValuesGatewayRouteMainTimeouts
+
+schema ValuesGatewayRouteMainAnnotations:
+    r"""
+    Route annotations
+    """
+    [...str]: any
+
+schema ValuesGatewayRouteMainLabels:
+    r"""
+    Route labels
+    """
+    [...str]: any
+
+schema ValuesGatewayRouteMainMatchesItems0:
+    r"""
+    ValuesGatewayRouteMainMatchesItems0
+
+    Attributes
+    ----------
+    path : ValuesGatewayRouteMainMatchesItems0Path, optional
+    """
+    [...str]: any
+    path?: ValuesGatewayRouteMainMatchesItems0Path
+
+schema ValuesGatewayRouteMainMatchesItems0Path:
+    r"""
+    ValuesGatewayRouteMainMatchesItems0Path
+
+    Attributes
+    ----------
+    $type : str, optional, default is "PathPrefix"
+    value : str, optional, default is "/"
+    """
+    [...str]: any
+    $type?: str
+    value?: str
+
+schema ValuesGatewayRouteMainTimeouts:
+    r"""
+    Timeouts define the timeouts that can be configured for an HTTP request.
+    Ref. https://gateway-api.sigs.k8s.io/api-types/httproute/#timeouts-optional
+    """
+    [...str]: any
+
 schema ValuesGatewayService:
     r"""
     Gateway service configuration
@@ -2742,6 +4372,8 @@ schema ValuesGatewayService:
         Annotations for the gateway service
     clusterIP : any, optional, default is "null"
         ClusterIP of the gateway service
+    grpcNodePort : any, optional, default is "null"
+        Node port for the gRPC port if service type is NodePort
     labels : ValuesGatewayServiceLabels, optional
         Labels for gateway service
     loadBalancerIP : any, optional, default is "null"
@@ -2757,6 +4389,7 @@ schema ValuesGatewayService:
     additionalPorts?: [any]
     annotations?: ValuesGatewayServiceAnnotations
     clusterIP?: any
+    grpcNodePort?: any
     labels?: ValuesGatewayServiceLabels
     loadBalancerIP?: any
     nodePort?: any
@@ -2798,6 +4431,7 @@ schema ValuesGlobal:
     extraEnvFrom : [any], optional
         Common environment variables which come from a ConfigMap or Secret to add to all pods directly managed by this chart.
         scope: admin-api, compactor, distributor, enterprise-federation-frontend, gateway, ingester, memcached, metrics-generator, querier, query-frontend, tokengen
+    goSettings : ValuesGlobalGoSettings, optional
     image : ValuesGlobalImage, optional
     labels : ValuesGlobalLabels, optional
         Adding labels to K8S resources (excluding pods)
@@ -2816,6 +4450,7 @@ schema ValuesGlobal:
     extraArgs?: [any]
     extraEnv?: [any]
     extraEnvFrom?: [any]
+    goSettings?: ValuesGlobalGoSettings
     image?: ValuesGlobalImage
     labels?: ValuesGlobalLabels
     podLabels?: ValuesGlobalPodLabels
@@ -2827,6 +4462,24 @@ schema ValuesGlobalCommonLabels:
     Adding common labels to all K8S resources including pods
     """
     [...str]: any
+
+schema ValuesGlobalGoSettings:
+    r"""
+    ValuesGlobalGoSettings
+
+    Attributes
+    ----------
+    goMemLimitFactor : float, optional, default is 0.85
+        Fraction of the container memory limit used to compute GOMEMLIMIT (e.g. 0.85 = 85%).
+        Set to 0 to disable automatic GOMEMLIMIT injection.
+    gogc : int, optional, default is 80
+        Value to set for GOGC alongside GOMEMLIMIT. Lowering below the default of 100 reduces
+        heap growth between GC cycles, working in tandem with GOMEMLIMIT to smooth memory usage.
+        Set to 0 to disable automatic GOGC injection.
+    """
+    [...str]: any
+    goMemLimitFactor?: float
+    gogc?: int
 
 schema ValuesGlobalImage:
     r"""
@@ -2884,6 +4537,42 @@ schema ValuesImage:
     repository?: str
     tag?: str
 
+schema ValuesIngest:
+    r"""
+    Ingest configuration. Sets the top-level `ingest:` block in tempo.yaml.
+    Required for Tempo 3.0 microservices mode. Distributors write spans to Kafka;
+    block-builders and live-stores consume from it.
+    The number of block-builder and live-store replicas must equal the Kafka partition count.
+
+    Attributes
+    ----------
+    kafka : ValuesIngestKafka, optional
+    """
+    [...str]: any
+    kafka?: ValuesIngestKafka
+
+schema ValuesIngestKafka:
+    r"""
+    ValuesIngestKafka
+
+    Attributes
+    ----------
+    address : str, optional, default is ""
+        Kafka broker address (e.g. "kafka.kafka-namespace.svc.cluster.local:9092")
+    auto_create_topic_default_partitions : int, optional, default is 3
+        Number of partitions for the auto-created topic.
+        Block-builder and live-store replica count must match this value.
+    auto_create_topic_enabled : bool, optional, default is True
+        Automatically create the topic if it does not exist
+    topic : str, optional, default is "tempo-traces"
+        Kafka topic name for trace data
+    """
+    [...str]: any
+    address?: str
+    auto_create_topic_default_partitions?: int
+    auto_create_topic_enabled?: bool
+    topic?: str
+
 schema ValuesIngester:
     r"""
     Configuration for the ingester
@@ -2898,6 +4587,14 @@ schema ValuesIngester:
         Adds the appProtocol field to the ingester service. This allows ingester to work with istio protocol selection.
     autoscaling : ValuesIngesterAutoscaling, optional
     config : ValuesIngesterConfig, optional
+    dnsConfig : ValuesIngesterDnsConfig, optional
+         - ip: 1.2.3.4
+           hostnames:
+             - domain.tld
+        Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
+    enabled : bool, optional, default is True
+        Enable the ingester. Set to false when using the Tempo 3.0 block-builder/live-store
+        write path. Ingesters are not part of the Tempo 3.0 microservices architecture.
     extraArgs : [any], optional
         Additional CLI args for the ingester
     extraContainers : [any], optional
@@ -2906,6 +4603,8 @@ schema ValuesIngester:
         Environment variables to add to the ingester pods
     extraEnvFrom : [any], optional
         Environment variables from secrets or configmaps to add to the ingester pods
+    extraPorts : [ValuesIngesterExtraPortsItems0], optional
+        Extra ports to add to the ingester container. The grpc port is included by default.
     extraVolumeMounts : [any], optional
         Extra volumes for ingester pods
     extraVolumes : [any], optional
@@ -2914,9 +4613,6 @@ schema ValuesIngester:
         hostAliases to add
     image : ValuesIngesterImage, optional
     initContainers : [any], optional
-         - ip: 1.2.3.4
-           hostnames:
-             - domain.tld
     labels : ValuesIngesterLabels, optional
         Labels for the ingester StatefulSet
     livenessProbe : ValuesIngesterLivenessProbe, optional
@@ -2963,10 +4659,13 @@ schema ValuesIngester:
     appProtocol?: ValuesIngesterAppProtocol
     autoscaling?: ValuesIngesterAutoscaling
     config?: ValuesIngesterConfig
+    dnsConfig?: ValuesIngesterDnsConfig
+    enabled?: bool
     extraArgs?: [any]
     extraContainers?: [any]
     extraEnv?: [any]
     extraEnvFrom?: [any]
+    extraPorts?: [ValuesIngesterExtraPortsItems0]
     extraVolumeMounts?: [any]
     extraVolumes?: [any]
     hostAliases?: [any]
@@ -3072,6 +4771,30 @@ schema ValuesIngesterConfig:
     max_block_duration?: any
     replication_factor?: int
     trace_idle_period?: any
+
+schema ValuesIngesterDnsConfig:
+    r"""
+     - ip: 1.2.3.4
+       hostnames:
+         - domain.tld
+    Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
+    """
+    [...str]: any
+
+schema ValuesIngesterExtraPortsItems0:
+    r"""
+    ValuesIngesterExtraPortsItems0
+
+    Attributes
+    ----------
+    containerPort : int, optional, default is 9095
+    name : str, optional, default is "grpc"
+    $protocol : str, optional, default is "TCP"
+    """
+    [...str]: any
+    containerPort?: int
+    name?: str
+    $protocol?: str
 
 schema ValuesIngesterImage:
     r"""
@@ -3192,9 +4915,12 @@ schema ValuesIngesterPodDisruptionBudget:
     ----------
     enabled : bool, optional, default is True
         Enable PodDisruptionBudget for ingester
+    unhealthyPodEvictionPolicy : str, optional, default is ""
+        Set unhealthyPodEvictionPolicy for the ingester PodDisruptionBudget. Requires policy/v1.
     """
     [...str]: any
     enabled?: bool
+    unhealthyPodEvictionPolicy?: str
 
 schema ValuesIngesterPodLabels:
     r"""
@@ -3401,16 +5127,29 @@ schema ValuesIngressPaths:
 
     Attributes
     ----------
+    "backend-worker" : [ValuesIngressPathsBackendWorkerItems0], optional
     compactor : [ValuesIngressPathsCompactorItems0], optional
     distributor : [ValuesIngressPathsDistributorItems0], optional
     ingester : [ValuesIngressPathsIngesterItems0], optional
     "query-frontend" : [ValuesIngressPathsQueryFrontendItems0], optional
     """
     [...str]: any
+    "backend-worker"?: [ValuesIngressPathsBackendWorkerItems0]
     compactor?: [ValuesIngressPathsCompactorItems0]
     distributor?: [ValuesIngressPathsDistributorItems0]
     ingester?: [ValuesIngressPathsIngesterItems0]
     "query-frontend"?: [ValuesIngressPathsQueryFrontendItems0]
+
+schema ValuesIngressPathsBackendWorkerItems0:
+    r"""
+    ValuesIngressPathsBackendWorkerItems0
+
+    Attributes
+    ----------
+    path : str, optional, default is "/backend-worker/ring"
+    """
+    [...str]: any
+    path?: str
 
 schema ValuesIngressPathsCompactorItems0:
     r"""
@@ -3504,6 +5243,276 @@ schema ValuesLicense:
     contents?: str
     external?: bool
     secretName?: str
+
+schema ValuesLiveStore:
+    r"""
+    Configuration for the live-store (Tempo 3.0+)
+    Consumes spans from Kafka and serves recent-data queries (last ~30 minutes).
+    One replica per Kafka partition — replica count must equal ingest.kafka.auto_create_topic_default_partitions.
+
+    Attributes
+    ----------
+    affinity : str, optional, default is "podAntiAffinity:\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"live-store\") | nindent 12 }}\n        topologyKey: kubernetes.io/hostname\n"
+        Affinity for live-store pods. Passed through `tpl`.
+    annotations : ValuesLiveStoreAnnotations, optional
+        Annotations for the live-store StatefulSet
+    config : ValuesLiveStoreConfig, optional
+        Extra live-store configuration. Merged verbatim into the `live_store:` config block.
+        See https://grafana.com/docs/tempo/latest/configuration/#live-store for available fields.
+    dnsConfig : ValuesLiveStoreDnsConfig, optional
+        Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
+    enabled : bool, optional, default is False
+        Enable the live-store. Requires ingest.kafka.address to be set.
+    extraArgs : [any], optional
+        Additional CLI args for the live-store
+    extraContainers : [any], optional
+        Containers to add to the live-store pods
+    extraEnv : [any], optional
+        Environment variables to add to the live-store pods
+    extraEnvFrom : [any], optional
+        Environment variables from secrets or configmaps to add to the live-store pods
+    extraPorts : [any], optional
+        Additional ports to expose on the live-store container
+    extraVolumeMounts : [any], optional
+        Extra volumes for live-store pods
+    extraVolumes : [any], optional
+        Extra volumes for live-store StatefulSet
+    hostAliases : [any], optional
+        hostAliases to add
+    image : ValuesLiveStoreImage, optional
+    initContainers : [any], optional
+        Init containers to add to the live-store pod
+    labels : ValuesLiveStoreLabels, optional
+        Labels for the live-store StatefulSet
+    livenessProbe : ValuesLiveStoreLivenessProbe, optional
+        Liveness probe for live-store pods. Uses `tempo.livenessProbe` as default if not set.
+    nodeSelector : ValuesLiveStoreNodeSelector, optional
+        Node selector for live-store pods
+    podAnnotations : ValuesLiveStorePodAnnotations, optional
+        Annotations for live-store pods
+    podLabels : ValuesLiveStorePodLabels, optional
+        Labels for live-store pods
+    priorityClassName : any, optional, default is "null"
+        The name of the PriorityClass for live-store pods
+    readinessProbe : ValuesLiveStoreReadinessProbe, optional
+        Readiness probe for live-store pods. Uses `tempo.readinessProbe` as default if not set.
+    replicas : int, optional, default is 3
+        Number of replicas. Must equal the Kafka partition count.
+    resources : ValuesLiveStoreResources, optional
+        Resource requests and limits for the live-store
+    service : ValuesLiveStoreService, optional
+    statefulStrategy : ValuesLiveStoreStatefulStrategy, optional
+        updateStrategy of the live-store StatefulSet
+    terminationGracePeriodSeconds : int, optional, default is 60
+        Grace period to allow the live-store to shut down before being killed
+    tolerations : [any], optional
+        Tolerations for live-store pods
+    topologySpreadConstraints : str, optional, default is "- maxSkew: 1\n  topologyKey: topology.kubernetes.io/zone\n  whenUnsatisfiable: ScheduleAnyway\n  labelSelector:\n    matchLabels:\n      {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"live-store\") | nindent 6 }}\n"
+        topologySpread for live-store pods. Passed through `tpl`.
+    """
+    [...str]: any
+    affinity?: str
+    annotations?: ValuesLiveStoreAnnotations
+    config?: ValuesLiveStoreConfig
+    dnsConfig?: ValuesLiveStoreDnsConfig
+    enabled?: bool
+    extraArgs?: [any]
+    extraContainers?: [any]
+    extraEnv?: [any]
+    extraEnvFrom?: [any]
+    extraPorts?: [any]
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
+    hostAliases?: [any]
+    image?: ValuesLiveStoreImage
+    initContainers?: [any]
+    labels?: ValuesLiveStoreLabels
+    livenessProbe?: ValuesLiveStoreLivenessProbe
+    nodeSelector?: ValuesLiveStoreNodeSelector
+    podAnnotations?: ValuesLiveStorePodAnnotations
+    podLabels?: ValuesLiveStorePodLabels
+    priorityClassName?: any
+    readinessProbe?: ValuesLiveStoreReadinessProbe
+    replicas?: int
+    resources?: ValuesLiveStoreResources
+    service?: ValuesLiveStoreService
+    statefulStrategy?: ValuesLiveStoreStatefulStrategy
+    terminationGracePeriodSeconds?: int
+    tolerations?: [any]
+    topologySpreadConstraints?: str
+
+schema ValuesLiveStoreAnnotations:
+    r"""
+    Annotations for the live-store StatefulSet
+    """
+    [...str]: any
+
+schema ValuesLiveStoreConfig:
+    r"""
+    Extra live-store configuration. Merged verbatim into the `live_store:` config block.
+    See https://grafana.com/docs/tempo/latest/configuration/#live-store for available fields.
+
+    Attributes
+    ----------
+    partition_ring : ValuesLiveStoreConfigPartitionRing, optional
+    ring : ValuesLiveStoreConfigRing, optional
+    """
+    [...str]: any
+    partition_ring?: ValuesLiveStoreConfigPartitionRing
+    ring?: ValuesLiveStoreConfigRing
+
+schema ValuesLiveStoreConfigPartitionRing:
+    r"""
+    ValuesLiveStoreConfigPartitionRing
+
+    Attributes
+    ----------
+    kvstore : ValuesLiveStoreConfigPartitionRingKvstore, optional
+    """
+    [...str]: any
+    kvstore?: ValuesLiveStoreConfigPartitionRingKvstore
+
+schema ValuesLiveStoreConfigPartitionRingKvstore:
+    r"""
+    ValuesLiveStoreConfigPartitionRingKvstore
+
+    Attributes
+    ----------
+    store : str, optional, default is "memberlist"
+    """
+    [...str]: any
+    store?: str
+
+schema ValuesLiveStoreConfigRing:
+    r"""
+    ValuesLiveStoreConfigRing
+
+    Attributes
+    ----------
+    kvstore : ValuesLiveStoreConfigRingKvstore, optional
+    """
+    [...str]: any
+    kvstore?: ValuesLiveStoreConfigRingKvstore
+
+schema ValuesLiveStoreConfigRingKvstore:
+    r"""
+    ValuesLiveStoreConfigRingKvstore
+
+    Attributes
+    ----------
+    store : str, optional, default is "memberlist"
+    """
+    [...str]: any
+    store?: str
+
+schema ValuesLiveStoreDnsConfig:
+    r"""
+    Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
+    """
+    [...str]: any
+
+schema ValuesLiveStoreImage:
+    r"""
+    ValuesLiveStoreImage
+
+    Attributes
+    ----------
+    pullSecrets : [any], optional
+        Optional list of imagePullSecrets. Overrides `tempo.image.pullSecrets`
+    registry : any, optional, default is "null"
+        The Docker registry for the live-store image. Overrides `tempo.image.registry`
+    repository : any, optional, default is "null"
+        Docker image repository for the live-store image. Overrides `tempo.image.repository`
+    tag : any, optional, default is "null"
+        Docker image tag for the live-store image. Overrides `tempo.image.tag`
+    """
+    [...str]: any
+    pullSecrets?: [any]
+    registry?: any
+    repository?: any
+    tag?: any
+
+schema ValuesLiveStoreLabels:
+    r"""
+    Labels for the live-store StatefulSet
+    """
+    [...str]: any
+
+schema ValuesLiveStoreLivenessProbe:
+    r"""
+    Liveness probe for live-store pods. Uses `tempo.livenessProbe` as default if not set.
+    """
+    [...str]: any
+
+schema ValuesLiveStoreNodeSelector:
+    r"""
+    Node selector for live-store pods
+    """
+    [...str]: any
+
+schema ValuesLiveStorePodAnnotations:
+    r"""
+    Annotations for live-store pods
+    """
+    [...str]: any
+
+schema ValuesLiveStorePodLabels:
+    r"""
+    Labels for live-store pods
+    """
+    [...str]: any
+
+schema ValuesLiveStoreReadinessProbe:
+    r"""
+    Readiness probe for live-store pods. Uses `tempo.readinessProbe` as default if not set.
+    """
+    [...str]: any
+
+schema ValuesLiveStoreResources:
+    r"""
+    Resource requests and limits for the live-store
+    """
+    [...str]: any
+
+schema ValuesLiveStoreService:
+    r"""
+    ValuesLiveStoreService
+
+    Attributes
+    ----------
+    annotations : ValuesLiveStoreServiceAnnotations, optional
+        Annotations for live-store service
+    """
+    [...str]: any
+    annotations?: ValuesLiveStoreServiceAnnotations
+
+schema ValuesLiveStoreServiceAnnotations:
+    r"""
+    Annotations for live-store service
+    """
+    [...str]: any
+
+schema ValuesLiveStoreStatefulStrategy:
+    r"""
+    updateStrategy of the live-store StatefulSet
+
+    Attributes
+    ----------
+    rollingUpdate : ValuesLiveStoreStatefulStrategyRollingUpdate, optional
+    """
+    [...str]: any
+    rollingUpdate?: ValuesLiveStoreStatefulStrategyRollingUpdate
+
+schema ValuesLiveStoreStatefulStrategyRollingUpdate:
+    r"""
+    ValuesLiveStoreStatefulStrategyRollingUpdate
+
+    Attributes
+    ----------
+    partition : int, optional, default is 0
+    """
+    [...str]: any
+    partition?: int
 
 schema ValuesMakeBucketJob:
     r"""
@@ -3909,6 +5918,8 @@ schema ValuesMemcached:
     ----------
     affinity : str, optional, default is "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached\") | nindent 10 }}\n      topologyKey: kubernetes.io/hostname\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached\") | nindent 12 }}\n        topologyKey: topology.kubernetes.io/zone\n"
         Affinity for memcached pods. Passed through `tpl` and, thus, to be configured as string
+    consistentHash : bool, optional, default is True
+        Enable consistent hashing for cache
     enabled : bool, optional, default is True
         Specified whether the memcached cachce should be enabled
     extraArgs : [any], optional
@@ -3944,6 +5955,8 @@ schema ValuesMemcached:
     resources : ValuesMemcachedResources, optional
         Resource requests and limits for memcached
     service : ValuesMemcachedService, optional
+    timeout : str, optional, default is "500ms"
+        Timeout for cache operations
     tolerations : [any], optional
         Toleration for memcached pods
     topologySpreadConstraints : str, optional, default is "- maxSkew: 1\n  topologyKey: topology.kubernetes.io/zone\n  whenUnsatisfiable: ScheduleAnyway\n  labelSelector:\n    matchLabels:\n      {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached\") | nindent 6 }}\n"
@@ -3951,6 +5964,7 @@ schema ValuesMemcached:
     """
     [...str]: any
     affinity?: str
+    consistentHash?: bool
     enabled?: bool
     extraArgs?: [any]
     extraContainers?: [any]
@@ -3970,8 +5984,193 @@ schema ValuesMemcached:
     replicas?: int
     resources?: ValuesMemcachedResources
     service?: ValuesMemcachedService
+    timeout?: str
     tolerations?: [any]
     topologySpreadConstraints?: str
+
+schema ValuesMemcachedBloom:
+    r"""
+    Configuration for a dedicated memcached cluster for the bloom cache role.
+    When enabled, bloom cache is served by its own memcached StatefulSet.
+    Image is shared with the main `memcached` section.
+
+    Attributes
+    ----------
+    affinity : str, optional, default is "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached-bloom\") | nindent 10 }}\n      topologyKey: kubernetes.io/hostname\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached-bloom\") | nindent 12 }}\n        topologyKey: topology.kubernetes.io/zone\n"
+        Affinity for memcached-bloom pods. Passed through `tpl` and, thus, to be configured as string
+    annotations : ValuesMemcachedBloomAnnotations, optional
+        Annotations for the memcached-bloom StatefulSet
+    consistentHash : bool, optional, default is True
+        Enable consistent hashing for bloom cache
+    enabled : bool, optional, default is False
+        Enable a dedicated memcached cluster for the bloom cache role
+    extraArgs : [any], optional
+        Additional CLI args for memcached
+    extraContainers : [any], optional
+        Containers to add to the memcached-bloom pods
+    extraEnv : [any], optional
+        Environment variables to add to memcached-bloom pods
+    extraEnvFrom : [any], optional
+        Environment variables from secrets or configmaps to add to memcached-bloom pods
+    extraVolumeMounts : [any], optional
+        Extra volume mounts for memcached-bloom pods
+    extraVolumes : [any], optional
+        Extra volumes for memcached-bloom StatefulSet
+    initContainers : [any], optional
+        Init containers for the memcached-bloom pod
+    livenessProbe : ValuesMemcachedBloomLivenessProbe, optional
+        configuration for liveness probe for memcached-bloom statefulset
+    maxUnavailable : int, optional, default is 1
+        Pod Disruption Budget maxUnavailable
+    podAnnotations : ValuesMemcachedBloomPodAnnotations, optional
+        Annotations for memcached-bloom pods
+    podDisruptionBudget : ValuesMemcachedBloomPodDisruptionBudget, optional
+        Pod Disruption Budget configuration
+    podLabels : ValuesMemcachedBloomPodLabels, optional
+        Labels for memcached-bloom pods
+    readinessProbe : ValuesMemcachedBloomReadinessProbe, optional
+        configuration for readiness probe for memcached-bloom statefulset
+    replicas : int, optional, default is 1
+        Number of replicas for the bloom memcached StatefulSet
+    resources : ValuesMemcachedBloomResources, optional
+        Resource requests and limits for memcached-bloom
+    service : ValuesMemcachedBloomService, optional
+    timeout : str, optional, default is "500ms"
+        Timeout for bloom cache operations
+    tolerations : [any], optional
+        Tolerations for memcached-bloom pods
+    topologySpreadConstraints : str, optional, default is "- maxSkew: 1\n  topologyKey: topology.kubernetes.io/zone\n  whenUnsatisfiable: ScheduleAnyway\n  labelSelector:\n    matchLabels:\n      {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached-bloom\") | nindent 6 }}\n"
+        topologySpread for memcached-bloom pods. Passed through `tpl` and, thus, to be configured as string
+    """
+    [...str]: any
+    affinity?: str
+    annotations?: ValuesMemcachedBloomAnnotations
+    consistentHash?: bool
+    enabled?: bool
+    extraArgs?: [any]
+    extraContainers?: [any]
+    extraEnv?: [any]
+    extraEnvFrom?: [any]
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
+    initContainers?: [any]
+    livenessProbe?: ValuesMemcachedBloomLivenessProbe
+    maxUnavailable?: int
+    podAnnotations?: ValuesMemcachedBloomPodAnnotations
+    podDisruptionBudget?: ValuesMemcachedBloomPodDisruptionBudget
+    podLabels?: ValuesMemcachedBloomPodLabels
+    readinessProbe?: ValuesMemcachedBloomReadinessProbe
+    replicas?: int
+    resources?: ValuesMemcachedBloomResources
+    service?: ValuesMemcachedBloomService
+    timeout?: str
+    tolerations?: [any]
+    topologySpreadConstraints?: str
+
+schema ValuesMemcachedBloomAnnotations:
+    r"""
+    Annotations for the memcached-bloom StatefulSet
+    """
+    [...str]: any
+
+schema ValuesMemcachedBloomLivenessProbe:
+    r"""
+    configuration for liveness probe for memcached-bloom statefulset
+
+    Attributes
+    ----------
+    failureThreshold : int, optional, default is 6
+    initialDelaySeconds : int, optional, default is 30
+    periodSeconds : int, optional, default is 10
+    successThreshold : int, optional, default is 1
+    timeoutSeconds : int, optional, default is 5
+    """
+    [...str]: any
+    failureThreshold?: int
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+
+schema ValuesMemcachedBloomPodAnnotations:
+    r"""
+    Annotations for memcached-bloom pods
+    """
+    [...str]: any
+
+schema ValuesMemcachedBloomPodDisruptionBudget:
+    r"""
+    Pod Disruption Budget configuration
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+        Enable PodDisruptionBudget for memcached-bloom
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMemcachedBloomPodLabels:
+    r"""
+    Labels for memcached-bloom pods
+    """
+    [...str]: any
+
+schema ValuesMemcachedBloomReadinessProbe:
+    r"""
+    configuration for readiness probe for memcached-bloom statefulset
+
+    Attributes
+    ----------
+    failureThreshold : int, optional, default is 6
+    initialDelaySeconds : int, optional, default is 5
+    periodSeconds : int, optional, default is 5
+    successThreshold : int, optional, default is 1
+    tcpSocket : ValuesMemcachedBloomReadinessProbeTcpSocket, optional
+    timeoutSeconds : int, optional, default is 3
+    """
+    [...str]: any
+    failureThreshold?: int
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    tcpSocket?: ValuesMemcachedBloomReadinessProbeTcpSocket
+    timeoutSeconds?: int
+
+schema ValuesMemcachedBloomReadinessProbeTcpSocket:
+    r"""
+    ValuesMemcachedBloomReadinessProbeTcpSocket
+
+    Attributes
+    ----------
+    port : str, optional, default is "client"
+    """
+    [...str]: any
+    port?: str
+
+schema ValuesMemcachedBloomResources:
+    r"""
+    Resource requests and limits for memcached-bloom
+    """
+    [...str]: any
+
+schema ValuesMemcachedBloomService:
+    r"""
+    ValuesMemcachedBloomService
+
+    Attributes
+    ----------
+    annotations : ValuesMemcachedBloomServiceAnnotations, optional
+        Annotations for memcached-bloom service
+    """
+    [...str]: any
+    annotations?: ValuesMemcachedBloomServiceAnnotations
+
+schema ValuesMemcachedBloomServiceAnnotations:
+    r"""
+    Annotations for memcached-bloom service
+    """
+    [...str]: any
 
 schema ValuesMemcachedExporter:
     r"""
@@ -4014,7 +6213,7 @@ schema ValuesMemcachedExporterImage:
         The Docker registry for the Memcached Exporter image. Overrides `global.image.registry`
     repository : str, optional, default is "prom/memcached-exporter"
         Memcached Exporter Docker image repository
-    tag : str, optional, default is "v0.15.5"
+    tag : str, optional, default is "v0.16.0"
         Memcached Exporter Docker image tag
     """
     [...str]: any
@@ -4027,6 +6226,190 @@ schema ValuesMemcachedExporterImage:
 schema ValuesMemcachedExporterResources:
     r"""
     ValuesMemcachedExporterResources
+    """
+    [...str]: any
+
+schema ValuesMemcachedFrontendSearch:
+    r"""
+    Configuration for a dedicated memcached cluster for the frontend-search cache role.
+    When enabled, frontend-search cache is served by its own memcached StatefulSet.
+    Image is shared with the main `memcached` section.
+
+    Attributes
+    ----------
+    affinity : str, optional, default is "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached-frontend-search\") | nindent 10 }}\n      topologyKey: kubernetes.io/hostname\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached-frontend-search\") | nindent 12 }}\n        topologyKey: topology.kubernetes.io/zone\n"
+        Affinity for memcached-frontend-search pods. Passed through `tpl` and, thus, to be configured as string
+    annotations : ValuesMemcachedFrontendSearchAnnotations, optional
+        Annotations for the memcached-frontend-search StatefulSet
+    consistentHash : bool, optional, default is True
+        Enable consistent hashing for frontend-search cache
+    enabled : bool, optional, default is False
+        Enable a dedicated memcached cluster for the frontend-search cache role
+    extraArgs : [any], optional
+        Additional CLI args for memcached
+    extraContainers : [any], optional
+        Containers to add to the memcached-frontend-search pods
+    extraEnv : [any], optional
+        Environment variables to add to memcached-frontend-search pods
+    extraEnvFrom : [any], optional
+        Environment variables from secrets or configmaps to add to memcached-frontend-search pods
+    extraVolumeMounts : [any], optional
+        Extra volume mounts for memcached-frontend-search pods
+    extraVolumes : [any], optional
+        Extra volumes for memcached-frontend-search StatefulSet
+    initContainers : [any], optional
+        Init containers for the memcached-frontend-search pod
+    livenessProbe : ValuesMemcachedFrontendSearchLivenessProbe, optional
+        configuration for liveness probe for memcached-frontend-search statefulset
+    maxUnavailable : int, optional, default is 1
+        Pod Disruption Budget maxUnavailable
+    podAnnotations : ValuesMemcachedFrontendSearchPodAnnotations, optional
+        Annotations for memcached-frontend-search pods
+    podDisruptionBudget : ValuesMemcachedFrontendSearchPodDisruptionBudget, optional
+        Pod Disruption Budget configuration
+    podLabels : ValuesMemcachedFrontendSearchPodLabels, optional
+        Labels for memcached-frontend-search pods
+    readinessProbe : ValuesMemcachedFrontendSearchReadinessProbe, optional
+        configuration for readiness probe for memcached-frontend-search statefulset
+    replicas : int, optional, default is 1
+        Number of replicas for the frontend-search memcached StatefulSet
+    resources : ValuesMemcachedFrontendSearchResources, optional
+        Resource requests and limits for memcached-frontend-search
+    service : ValuesMemcachedFrontendSearchService, optional
+    timeout : str, optional, default is "500ms"
+        Timeout for frontend-search cache operations
+    tolerations : [any], optional
+        Tolerations for memcached-frontend-search pods
+    topologySpreadConstraints : str, optional, default is "- maxSkew: 1\n  topologyKey: topology.kubernetes.io/zone\n  whenUnsatisfiable: ScheduleAnyway\n  labelSelector:\n    matchLabels:\n      {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached-frontend-search\") | nindent 6 }}\n"
+        topologySpread for memcached-frontend-search pods. Passed through `tpl` and, thus, to be configured as string
+    """
+    [...str]: any
+    affinity?: str
+    annotations?: ValuesMemcachedFrontendSearchAnnotations
+    consistentHash?: bool
+    enabled?: bool
+    extraArgs?: [any]
+    extraContainers?: [any]
+    extraEnv?: [any]
+    extraEnvFrom?: [any]
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
+    initContainers?: [any]
+    livenessProbe?: ValuesMemcachedFrontendSearchLivenessProbe
+    maxUnavailable?: int
+    podAnnotations?: ValuesMemcachedFrontendSearchPodAnnotations
+    podDisruptionBudget?: ValuesMemcachedFrontendSearchPodDisruptionBudget
+    podLabels?: ValuesMemcachedFrontendSearchPodLabels
+    readinessProbe?: ValuesMemcachedFrontendSearchReadinessProbe
+    replicas?: int
+    resources?: ValuesMemcachedFrontendSearchResources
+    service?: ValuesMemcachedFrontendSearchService
+    timeout?: str
+    tolerations?: [any]
+    topologySpreadConstraints?: str
+
+schema ValuesMemcachedFrontendSearchAnnotations:
+    r"""
+    Annotations for the memcached-frontend-search StatefulSet
+    """
+    [...str]: any
+
+schema ValuesMemcachedFrontendSearchLivenessProbe:
+    r"""
+    configuration for liveness probe for memcached-frontend-search statefulset
+
+    Attributes
+    ----------
+    failureThreshold : int, optional, default is 6
+    initialDelaySeconds : int, optional, default is 30
+    periodSeconds : int, optional, default is 10
+    successThreshold : int, optional, default is 1
+    timeoutSeconds : int, optional, default is 5
+    """
+    [...str]: any
+    failureThreshold?: int
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+
+schema ValuesMemcachedFrontendSearchPodAnnotations:
+    r"""
+    Annotations for memcached-frontend-search pods
+    """
+    [...str]: any
+
+schema ValuesMemcachedFrontendSearchPodDisruptionBudget:
+    r"""
+    Pod Disruption Budget configuration
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+        Enable PodDisruptionBudget for memcached-frontend-search
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMemcachedFrontendSearchPodLabels:
+    r"""
+    Labels for memcached-frontend-search pods
+    """
+    [...str]: any
+
+schema ValuesMemcachedFrontendSearchReadinessProbe:
+    r"""
+    configuration for readiness probe for memcached-frontend-search statefulset
+
+    Attributes
+    ----------
+    failureThreshold : int, optional, default is 6
+    initialDelaySeconds : int, optional, default is 5
+    periodSeconds : int, optional, default is 5
+    successThreshold : int, optional, default is 1
+    tcpSocket : ValuesMemcachedFrontendSearchReadinessProbeTcpSocket, optional
+    timeoutSeconds : int, optional, default is 3
+    """
+    [...str]: any
+    failureThreshold?: int
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    tcpSocket?: ValuesMemcachedFrontendSearchReadinessProbeTcpSocket
+    timeoutSeconds?: int
+
+schema ValuesMemcachedFrontendSearchReadinessProbeTcpSocket:
+    r"""
+    ValuesMemcachedFrontendSearchReadinessProbeTcpSocket
+
+    Attributes
+    ----------
+    port : str, optional, default is "client"
+    """
+    [...str]: any
+    port?: str
+
+schema ValuesMemcachedFrontendSearchResources:
+    r"""
+    Resource requests and limits for memcached-frontend-search
+    """
+    [...str]: any
+
+schema ValuesMemcachedFrontendSearchService:
+    r"""
+    ValuesMemcachedFrontendSearchService
+
+    Attributes
+    ----------
+    annotations : ValuesMemcachedFrontendSearchServiceAnnotations, optional
+        Annotations for memcached-frontend-search service
+    """
+    [...str]: any
+    annotations?: ValuesMemcachedFrontendSearchServiceAnnotations
+
+schema ValuesMemcachedFrontendSearchServiceAnnotations:
+    r"""
+    Annotations for memcached-frontend-search service
     """
     [...str]: any
 
@@ -4044,7 +6427,7 @@ schema ValuesMemcachedImage:
         The Docker registry for the Memcached image. Overrides `global.image.registry`
     repository : str, optional, default is "memcached"
         Memcached Docker image repository
-    tag : str, optional, default is "1.6.41-alpine"
+    tag : str, optional, default is "1.6.43-alpine"
         Memcached Docker image tag
     """
     [...str]: any
@@ -4073,6 +6456,190 @@ schema ValuesMemcachedLivenessProbe:
     successThreshold?: int
     timeoutSeconds?: int
 
+schema ValuesMemcachedParquetFooter:
+    r"""
+    Configuration for a dedicated memcached cluster for the parquet-footer cache role.
+    When enabled, parquet-footer cache is served by its own memcached StatefulSet.
+    Image is shared with the main `memcached` section.
+
+    Attributes
+    ----------
+    affinity : str, optional, default is "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached-parquet-footer\") | nindent 10 }}\n      topologyKey: kubernetes.io/hostname\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached-parquet-footer\") | nindent 12 }}\n        topologyKey: topology.kubernetes.io/zone\n"
+        Affinity for memcached-parquet-footer pods. Passed through `tpl` and, thus, to be configured as string
+    annotations : ValuesMemcachedParquetFooterAnnotations, optional
+        Annotations for the memcached-parquet-footer StatefulSet
+    consistentHash : bool, optional, default is True
+        Enable consistent hashing for parquet-footer cache
+    enabled : bool, optional, default is False
+        Enable a dedicated memcached cluster for the parquet-footer cache role
+    extraArgs : [any], optional
+        Additional CLI args for memcached
+    extraContainers : [any], optional
+        Containers to add to the memcached-parquet-footer pods
+    extraEnv : [any], optional
+        Environment variables to add to memcached-parquet-footer pods
+    extraEnvFrom : [any], optional
+        Environment variables from secrets or configmaps to add to memcached-parquet-footer pods
+    extraVolumeMounts : [any], optional
+        Extra volume mounts for memcached-parquet-footer pods
+    extraVolumes : [any], optional
+        Extra volumes for memcached-parquet-footer StatefulSet
+    initContainers : [any], optional
+        Init containers for the memcached-parquet-footer pod
+    livenessProbe : ValuesMemcachedParquetFooterLivenessProbe, optional
+        configuration for liveness probe for memcached-parquet-footer statefulset
+    maxUnavailable : int, optional, default is 1
+        Pod Disruption Budget maxUnavailable
+    podAnnotations : ValuesMemcachedParquetFooterPodAnnotations, optional
+        Annotations for memcached-parquet-footer pods
+    podDisruptionBudget : ValuesMemcachedParquetFooterPodDisruptionBudget, optional
+        Pod Disruption Budget configuration
+    podLabels : ValuesMemcachedParquetFooterPodLabels, optional
+        Labels for memcached-parquet-footer pods
+    readinessProbe : ValuesMemcachedParquetFooterReadinessProbe, optional
+        configuration for readiness probe for memcached-parquet-footer statefulset
+    replicas : int, optional, default is 1
+        Number of replicas for the parquet-footer memcached StatefulSet
+    resources : ValuesMemcachedParquetFooterResources, optional
+        Resource requests and limits for memcached-parquet-footer
+    service : ValuesMemcachedParquetFooterService, optional
+    timeout : str, optional, default is "500ms"
+        Timeout for parquet-footer cache operations
+    tolerations : [any], optional
+        Tolerations for memcached-parquet-footer pods
+    topologySpreadConstraints : str, optional, default is "- maxSkew: 1\n  topologyKey: topology.kubernetes.io/zone\n  whenUnsatisfiable: ScheduleAnyway\n  labelSelector:\n    matchLabels:\n      {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"memcached-parquet-footer\") | nindent 6 }}\n"
+        topologySpread for memcached-parquet-footer pods. Passed through `tpl` and, thus, to be configured as string
+    """
+    [...str]: any
+    affinity?: str
+    annotations?: ValuesMemcachedParquetFooterAnnotations
+    consistentHash?: bool
+    enabled?: bool
+    extraArgs?: [any]
+    extraContainers?: [any]
+    extraEnv?: [any]
+    extraEnvFrom?: [any]
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
+    initContainers?: [any]
+    livenessProbe?: ValuesMemcachedParquetFooterLivenessProbe
+    maxUnavailable?: int
+    podAnnotations?: ValuesMemcachedParquetFooterPodAnnotations
+    podDisruptionBudget?: ValuesMemcachedParquetFooterPodDisruptionBudget
+    podLabels?: ValuesMemcachedParquetFooterPodLabels
+    readinessProbe?: ValuesMemcachedParquetFooterReadinessProbe
+    replicas?: int
+    resources?: ValuesMemcachedParquetFooterResources
+    service?: ValuesMemcachedParquetFooterService
+    timeout?: str
+    tolerations?: [any]
+    topologySpreadConstraints?: str
+
+schema ValuesMemcachedParquetFooterAnnotations:
+    r"""
+    Annotations for the memcached-parquet-footer StatefulSet
+    """
+    [...str]: any
+
+schema ValuesMemcachedParquetFooterLivenessProbe:
+    r"""
+    configuration for liveness probe for memcached-parquet-footer statefulset
+
+    Attributes
+    ----------
+    failureThreshold : int, optional, default is 6
+    initialDelaySeconds : int, optional, default is 30
+    periodSeconds : int, optional, default is 10
+    successThreshold : int, optional, default is 1
+    timeoutSeconds : int, optional, default is 5
+    """
+    [...str]: any
+    failureThreshold?: int
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+
+schema ValuesMemcachedParquetFooterPodAnnotations:
+    r"""
+    Annotations for memcached-parquet-footer pods
+    """
+    [...str]: any
+
+schema ValuesMemcachedParquetFooterPodDisruptionBudget:
+    r"""
+    Pod Disruption Budget configuration
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+        Enable PodDisruptionBudget for memcached-parquet-footer
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesMemcachedParquetFooterPodLabels:
+    r"""
+    Labels for memcached-parquet-footer pods
+    """
+    [...str]: any
+
+schema ValuesMemcachedParquetFooterReadinessProbe:
+    r"""
+    configuration for readiness probe for memcached-parquet-footer statefulset
+
+    Attributes
+    ----------
+    failureThreshold : int, optional, default is 6
+    initialDelaySeconds : int, optional, default is 5
+    periodSeconds : int, optional, default is 5
+    successThreshold : int, optional, default is 1
+    tcpSocket : ValuesMemcachedParquetFooterReadinessProbeTcpSocket, optional
+    timeoutSeconds : int, optional, default is 3
+    """
+    [...str]: any
+    failureThreshold?: int
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    tcpSocket?: ValuesMemcachedParquetFooterReadinessProbeTcpSocket
+    timeoutSeconds?: int
+
+schema ValuesMemcachedParquetFooterReadinessProbeTcpSocket:
+    r"""
+    ValuesMemcachedParquetFooterReadinessProbeTcpSocket
+
+    Attributes
+    ----------
+    port : str, optional, default is "client"
+    """
+    [...str]: any
+    port?: str
+
+schema ValuesMemcachedParquetFooterResources:
+    r"""
+    Resource requests and limits for memcached-parquet-footer
+    """
+    [...str]: any
+
+schema ValuesMemcachedParquetFooterService:
+    r"""
+    ValuesMemcachedParquetFooterService
+
+    Attributes
+    ----------
+    annotations : ValuesMemcachedParquetFooterServiceAnnotations, optional
+        Annotations for memcached-parquet-footer service
+    """
+    [...str]: any
+    annotations?: ValuesMemcachedParquetFooterServiceAnnotations
+
+schema ValuesMemcachedParquetFooterServiceAnnotations:
+    r"""
+    Annotations for memcached-parquet-footer service
+    """
+    [...str]: any
+
 schema ValuesMemcachedPodAnnotations:
     r"""
     Annotations for memcached pods
@@ -4087,9 +6654,12 @@ schema ValuesMemcachedPodDisruptionBudget:
     ----------
     enabled : bool, optional, default is True
         Enable PodDisruptionBudget for memcached
+    unhealthyPodEvictionPolicy : str, optional, default is ""
+        Set unhealthyPodEvictionPolicy for the memcached PodDisruptionBudget. Requires policy/v1.
     """
     [...str]: any
     enabled?: bool
+    unhealthyPodEvictionPolicy?: str
 
 schema ValuesMemcachedPodLabels:
     r"""
@@ -4458,6 +7028,11 @@ schema ValuesMetricsGenerator:
         Adds the appProtocol field to the metricsGenerator service. This allows metricsGenerator to work with istio protocol selection.
     config : ValuesMetricsGeneratorConfig, optional
         More information on configuration: https://grafana.com/docs/tempo/latest/configuration/#metrics-generator
+    dnsConfig : ValuesMetricsGeneratorDnsConfig, optional
+         - ip: 1.2.3.4
+           hostnames:
+             - domain.tld
+        Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
     enabled : bool, optional, default is False
         Specifies whether a metrics-generator should be deployed
     extraArgs : [any], optional
@@ -4480,9 +7055,6 @@ schema ValuesMetricsGenerator:
         hostAliases to add
     image : ValuesMetricsGeneratorImage, optional
     initContainers : [any], optional
-         - ip: 1.2.3.4
-           hostnames:
-             - domain.tld
         Init containers for the metrics generator pod
     kind : str, optional, default is "Deployment"
         Kind of deployment [StatefulSet/Deployment]
@@ -4527,6 +7099,7 @@ schema ValuesMetricsGenerator:
     annotations?: ValuesMetricsGeneratorAnnotations
     appProtocol?: ValuesMetricsGeneratorAppProtocol
     config?: ValuesMetricsGeneratorConfig
+    dnsConfig?: ValuesMetricsGeneratorDnsConfig
     enabled?: bool
     extraArgs?: [any]
     extraContainers?: [any]
@@ -4699,6 +7272,15 @@ schema ValuesMetricsGeneratorConfigTracesStorage:
     [...str]: any
     path?: str
 
+schema ValuesMetricsGeneratorDnsConfig:
+    r"""
+     - ip: 1.2.3.4
+       hostnames:
+         - domain.tld
+    Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
+    """
+    [...str]: any
+
 schema ValuesMetricsGeneratorImage:
     r"""
     ValuesMetricsGeneratorImage
@@ -4802,9 +7384,12 @@ schema ValuesMetricsGeneratorPodDisruptionBudget:
     ----------
     enabled : bool, optional, default is True
         Enable PodDisruptionBudget for metrics-generator
+    unhealthyPodEvictionPolicy : str, optional, default is ""
+        Set unhealthyPodEvictionPolicy for the metrics-generator PodDisruptionBudget. Requires policy/v1.
     """
     [...str]: any
     enabled?: bool
+    unhealthyPodEvictionPolicy?: str
 
 schema ValuesMetricsGeneratorPodLabels:
     r"""
@@ -4927,6 +7512,8 @@ schema ValuesMinio:
     configPathmc : str, optional, default is "/tmp/minio/mc/"
         Changed the mc config path to '/tmp' from '/etc' as '/etc' is only writable by root and OpenShift will not permit this.
     enabled : bool, optional, default is False
+    image : ValuesMinioImage, optional
+        renovate: docker=docker.io/pgsty/minio
     mode : str, optional, default is "standalone"
     persistence : ValuesMinioPersistence, optional
     resources : ValuesMinioResources, optional
@@ -4937,6 +7524,7 @@ schema ValuesMinio:
     buckets?: [ValuesMinioBucketsItems0]
     configPathmc?: str
     enabled?: bool
+    image?: ValuesMinioImage
     mode?: str
     persistence?: ValuesMinioPersistence
     resources?: ValuesMinioResources
@@ -4957,6 +7545,21 @@ schema ValuesMinioBucketsItems0:
     name?: str
     policy?: str
     purge?: bool
+
+schema ValuesMinioImage:
+    r"""
+    renovate: docker=docker.io/pgsty/minio
+
+    Attributes
+    ----------
+    pullPolicy : str, optional, default is "IfNotPresent"
+    repository : str, optional, default is "pgsty/minio"
+    tag : str, optional, default is "RELEASE.2026-04-17T00-00-00Z"
+    """
+    [...str]: any
+    pullPolicy?: str
+    repository?: str
+    tag?: str
 
 schema ValuesMinioPersistence:
     r"""
@@ -5367,14 +7970,16 @@ schema ValuesQuerier:
     affinity : str, optional, default is "podAntiAffinity:\n  requiredDuringSchedulingIgnoredDuringExecution:\n    - labelSelector:\n        matchLabels:\n          {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"querier\" \"memberlist\" true) | nindent 10 }}\n      topologyKey: kubernetes.io/hostname\n  preferredDuringSchedulingIgnoredDuringExecution:\n    - weight: 100\n      podAffinityTerm:\n        labelSelector:\n          matchLabels:\n            {{- include \"tempo.selectorLabels\" (dict \"ctx\" . \"component\" \"querier\" \"memberlist\" true) | nindent 12 }}\n        topologyKey: topology.kubernetes.io/zone\n"
         Affinity for querier pods. Passed through `tpl` and, thus, to be configured as string
     annotations : ValuesQuerierAnnotations, optional
-         - ip: 1.2.3.4
-           hostnames:
-             - domain.tld
         Annotations for querier deployment
     appProtocol : ValuesQuerierAppProtocol, optional
         Adds the appProtocol field to the querier service. This allows querier to work with istio protocol selection.
     autoscaling : ValuesQuerierAutoscaling, optional
     config : ValuesQuerierConfig, optional
+    dnsConfig : ValuesQuerierDnsConfig, optional
+         - ip: 1.2.3.4
+           hostnames:
+             - domain.tld
+        Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
     extraArgs : [any], optional
         Additional CLI args for the querier
     extraContainers : [any], optional
@@ -5383,6 +7988,9 @@ schema ValuesQuerier:
         Environment variables to add to the querier pods
     extraEnvFrom : [any], optional
         Environment variables from secrets or configmaps to add to the querier pods
+    extraPorts : [any], optional
+        Additional ports to expose on the querier container.
+        Standard ports (http-metrics, http-memberlist) are always added automatically.
     extraVolumeMounts : [any], optional
         Extra volumes for querier pods
     extraVolumes : [any], optional
@@ -5431,10 +8039,12 @@ schema ValuesQuerier:
     appProtocol?: ValuesQuerierAppProtocol
     autoscaling?: ValuesQuerierAutoscaling
     config?: ValuesQuerierConfig
+    dnsConfig?: ValuesQuerierDnsConfig
     extraArgs?: [any]
     extraContainers?: [any]
     extraEnv?: [any]
     extraEnvFrom?: [any]
+    extraPorts?: [any]
     extraVolumeMounts?: [any]
     extraVolumes?: [any]
     hostAliases?: [any]
@@ -5460,9 +8070,6 @@ schema ValuesQuerier:
 
 schema ValuesQuerierAnnotations:
     r"""
-     - ip: 1.2.3.4
-       hostnames:
-         - domain.tld
     Annotations for querier deployment
     """
     [...str]: any
@@ -5572,6 +8179,15 @@ schema ValuesQuerierConfigTraceById:
     [...str]: any
     query_timeout?: str
 
+schema ValuesQuerierDnsConfig:
+    r"""
+     - ip: 1.2.3.4
+       hostnames:
+         - domain.tld
+    Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
+    """
+    [...str]: any
+
 schema ValuesQuerierImage:
     r"""
     ValuesQuerierImage
@@ -5619,9 +8235,12 @@ schema ValuesQuerierPodDisruptionBudget:
     ----------
     enabled : bool, optional, default is True
         Enable PodDisruptionBudget for querier
+    unhealthyPodEvictionPolicy : str, optional, default is ""
+        Set unhealthyPodEvictionPolicy for the querier PodDisruptionBudget. Requires policy/v1.
     """
     [...str]: any
     enabled?: bool
+    unhealthyPodEvictionPolicy?: str
 
 schema ValuesQuerierPodLabels:
     r"""
@@ -5685,9 +8304,11 @@ schema ValuesQueryFrontend:
         Adds the appProtocol field to the queryFrontend service. This allows queryFrontend to work with istio protocol selection.
     autoscaling : ValuesQueryFrontendAutoscaling, optional
     config : ValuesQueryFrontendConfig, optional
+    dnsConfig : ValuesQueryFrontendDnsConfig, optional
          - ip: 1.2.3.4
            hostnames:
              - domain.tld
+        Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
     extraArgs : [any], optional
         Additional CLI args for the query-frontend
     extraContainers : [any], optional
@@ -5696,6 +8317,10 @@ schema ValuesQueryFrontend:
         Environment variables to add to the query-frontend pods
     extraEnvFrom : [any], optional
         Environment variables from secrets or configmaps to add to the query-frontend pods
+    extraPorts : [ValuesQueryFrontendExtraPortsItems0], optional
+        Additional ports to expose on the query-frontend container.
+        The gRPC port is included by default. Standard ports (http-metrics, http-memberlist)
+        are always added automatically by the pod template.
     extraVolumeMounts : [any], optional
         Extra volumes for query-frontend pods
     extraVolumes : [any], optional
@@ -5730,6 +8355,9 @@ schema ValuesQueryFrontend:
         Number of replicas for the query-frontend
     resources : ValuesQueryFrontendResources, optional
         Resource requests and limits for the query-frontend
+    route : ValuesQueryFrontendRoute, optional
+        Gateway API route configuration for the query-frontend (Jaeger UI).
+        Multiple routes can be added by adding a dictionary key like the 'main' route.
     service : ValuesQueryFrontendService, optional
     serviceDiscovery : ValuesQueryFrontendServiceDiscovery, optional
     terminationGracePeriodSeconds : int, optional, default is 30
@@ -5745,10 +8373,12 @@ schema ValuesQueryFrontend:
     appProtocol?: ValuesQueryFrontendAppProtocol
     autoscaling?: ValuesQueryFrontendAutoscaling
     config?: ValuesQueryFrontendConfig
+    dnsConfig?: ValuesQueryFrontendDnsConfig
     extraArgs?: [any]
     extraContainers?: [any]
     extraEnv?: [any]
     extraEnvFrom?: [any]
+    extraPorts?: [ValuesQueryFrontendExtraPortsItems0]
     extraVolumeMounts?: [any]
     extraVolumes?: [any]
     hostAliases?: [any]
@@ -5768,6 +8398,7 @@ schema ValuesQueryFrontend:
     readinessProbe?: ValuesQueryFrontendReadinessProbe
     replicas?: int
     resources?: ValuesQueryFrontendResources
+    route?: ValuesQueryFrontendRoute
     service?: ValuesQueryFrontendService
     serviceDiscovery?: ValuesQueryFrontendServiceDiscovery
     terminationGracePeriodSeconds?: int
@@ -5827,9 +8458,7 @@ schema ValuesQueryFrontendAutoscalingBehavior:
 
 schema ValuesQueryFrontendConfig:
     r"""
-     - ip: 1.2.3.4
-       hostnames:
-         - domain.tld
+    ValuesQueryFrontendConfig
 
     Attributes
     ----------
@@ -5914,6 +8543,30 @@ schema ValuesQueryFrontendConfigTraceById:
     """
     [...str]: any
     query_shards?: int
+
+schema ValuesQueryFrontendDnsConfig:
+    r"""
+     - ip: 1.2.3.4
+       hostnames:
+         - domain.tld
+    Pod DNS config for this component. Falls back to `defaults.dnsConfig`, then `tempo.dnsConfig`.
+    """
+    [...str]: any
+
+schema ValuesQueryFrontendExtraPortsItems0:
+    r"""
+    ValuesQueryFrontendExtraPortsItems0
+
+    Attributes
+    ----------
+    containerPort : int, optional, default is 9095
+    name : str, optional, default is "grpc"
+    $protocol : str, optional, default is "TCP"
+    """
+    [...str]: any
+    containerPort?: int
+    name?: str
+    $protocol?: str
 
 schema ValuesQueryFrontendImage:
     r"""
@@ -6042,9 +8695,12 @@ schema ValuesQueryFrontendPodDisruptionBudget:
     ----------
     enabled : bool, optional, default is True
         Enable PodDisruptionBudget for query-frontend
+    unhealthyPodEvictionPolicy : str, optional, default is ""
+        Set unhealthyPodEvictionPolicy for the query-frontend PodDisruptionBudget. Requires policy/v1.
     """
     [...str]: any
     enabled?: bool
+    unhealthyPodEvictionPolicy?: str
 
 schema ValuesQueryFrontendPodLabels:
     r"""
@@ -6122,6 +8778,109 @@ schema ValuesQueryFrontendReadinessProbe:
 schema ValuesQueryFrontendResources:
     r"""
     Resource requests and limits for the query-frontend
+    """
+    [...str]: any
+
+schema ValuesQueryFrontendRoute:
+    r"""
+    Gateway API route configuration for the query-frontend (Jaeger UI).
+    Multiple routes can be added by adding a dictionary key like the 'main' route.
+
+    Attributes
+    ----------
+    main : ValuesQueryFrontendRouteMain, optional
+    """
+    [...str]: any
+    main?: ValuesQueryFrontendRouteMain
+
+schema ValuesQueryFrontendRouteMain:
+    r"""
+    ValuesQueryFrontendRouteMain
+
+    Attributes
+    ----------
+    additionalRules : [any], optional
+        Additional custom rules that can be added to the route
+    annotations : ValuesQueryFrontendRouteMainAnnotations, optional
+        Route annotations
+    apiVersion : str, optional, default is ""
+        Set the route apiVersion, e.g. gateway.networking.k8s.io/v1 or gateway.networking.k8s.io/v1beta1
+        If not set, the latest available version will be auto-detected
+    enabled : bool, optional, default is False
+        Specifies whether a Gateway API route for the query-frontend should be created
+    filters : [any], optional
+        Filters define the filters that are applied to requests that match this rule.
+    hostnames : [any], optional
+        Hostnames for the route
+    kind : str, optional, default is "HTTPRoute"
+        Set the route kind
+        Valid options are GRPCRoute, HTTPRoute, TCPRoute, TLSRoute, UDPRoute
+    labels : ValuesQueryFrontendRouteMainLabels, optional
+        Route labels
+    matches : [ValuesQueryFrontendRouteMainMatchesItems0], optional
+        - name: my-gateway
+          namespace: gateway-namespace
+        Matches define conditions for matching incoming requests
+    parentRefs : [any], optional
+        - query.tempo.example.com
+        Parent references (gateway to attach to)
+    timeouts : ValuesQueryFrontendRouteMainTimeouts, optional
+        Timeouts define the timeouts that can be configured for an HTTP request.
+        Ref. https://gateway-api.sigs.k8s.io/api-types/httproute/#timeouts-optional
+    """
+    [...str]: any
+    additionalRules?: [any]
+    annotations?: ValuesQueryFrontendRouteMainAnnotations
+    apiVersion?: str
+    enabled?: bool
+    filters?: [any]
+    hostnames?: [any]
+    kind?: str
+    labels?: ValuesQueryFrontendRouteMainLabels
+    matches?: [ValuesQueryFrontendRouteMainMatchesItems0]
+    parentRefs?: [any]
+    timeouts?: ValuesQueryFrontendRouteMainTimeouts
+
+schema ValuesQueryFrontendRouteMainAnnotations:
+    r"""
+    Route annotations
+    """
+    [...str]: any
+
+schema ValuesQueryFrontendRouteMainLabels:
+    r"""
+    Route labels
+    """
+    [...str]: any
+
+schema ValuesQueryFrontendRouteMainMatchesItems0:
+    r"""
+    ValuesQueryFrontendRouteMainMatchesItems0
+
+    Attributes
+    ----------
+    path : ValuesQueryFrontendRouteMainMatchesItems0Path, optional
+    """
+    [...str]: any
+    path?: ValuesQueryFrontendRouteMainMatchesItems0Path
+
+schema ValuesQueryFrontendRouteMainMatchesItems0Path:
+    r"""
+    ValuesQueryFrontendRouteMainMatchesItems0Path
+
+    Attributes
+    ----------
+    $type : str, optional, default is "PathPrefix"
+    value : str, optional, default is "/"
+    """
+    [...str]: any
+    $type?: str
+    value?: str
+
+schema ValuesQueryFrontendRouteMainTimeouts:
+    r"""
+    Timeouts define the timeouts that can be configured for an HTTP request.
+    Ref. https://gateway-api.sigs.k8s.io/api-types/httproute/#timeouts-optional
     """
     [...str]: any
 
@@ -6324,6 +9083,159 @@ schema ValuesRolloutOperatorSecurityContextCapabilities:
     """
     [...str]: any
     drop?: [str]
+
+schema ValuesRoute:
+    r"""
+    Gateway API route configuration.
+    Multiple routes can be added by adding a dictionary key like the 'main' route.
+    This is useful for creating both HTTPRoute and GRPCRoute resources (e.g. for OTLP HTTP + gRPC).
+
+    Attributes
+    ----------
+    main : ValuesRouteMain, optional
+    """
+    [...str]: any
+    main?: ValuesRouteMain
+
+schema ValuesRouteMain:
+    r"""
+    ValuesRouteMain
+
+    Attributes
+    ----------
+    annotations : ValuesRouteMainAnnotations, optional
+        Route annotations
+    apiVersion : str, optional, default is ""
+        Set the route apiVersion, e.g. gateway.networking.k8s.io/v1 or gateway.networking.k8s.io/v1beta1
+        If not set, the latest available version will be auto-detected
+    enabled : bool, optional, default is False
+        Specifies whether a Gateway API route should be created
+    hostnames : [any], optional
+        Hostnames for the route
+    kind : str, optional, default is "HTTPRoute"
+        Set the route kind
+        Valid options are GRPCRoute, HTTPRoute, TCPRoute, TLSRoute, UDPRoute
+    labels : ValuesRouteMainLabels, optional
+        Route labels
+    parentRefs : [any], optional
+        - tempo.example.com
+        Parent references (gateway to attach to)
+    paths : ValuesRouteMainPaths, optional
+        - name: my-gateway
+          namespace: gateway-namespace
+        Paths to route to backend services. Each key is a service name suffix, and the value is a list of path matches.
+    """
+    [...str]: any
+    annotations?: ValuesRouteMainAnnotations
+    apiVersion?: str
+    enabled?: bool
+    hostnames?: [any]
+    kind?: str
+    labels?: ValuesRouteMainLabels
+    parentRefs?: [any]
+    paths?: ValuesRouteMainPaths
+
+schema ValuesRouteMainAnnotations:
+    r"""
+    Route annotations
+    """
+    [...str]: any
+
+schema ValuesRouteMainLabels:
+    r"""
+    Route labels
+    """
+    [...str]: any
+
+schema ValuesRouteMainPaths:
+    r"""
+    - name: my-gateway
+      namespace: gateway-namespace
+    Paths to route to backend services. Each key is a service name suffix, and the value is a list of path matches.
+
+    Attributes
+    ----------
+    backendWorker : [ValuesRouteMainPathsBackendWorkerItems0], optional
+    compactor : [ValuesRouteMainPathsCompactorItems0], optional
+    distributor : [ValuesRouteMainPathsDistributorItems0], optional
+    ingester : [ValuesRouteMainPathsIngesterItems0], optional
+    "query-frontend" : [ValuesRouteMainPathsQueryFrontendItems0], optional
+    """
+    [...str]: any
+    backendWorker?: [ValuesRouteMainPathsBackendWorkerItems0]
+    compactor?: [ValuesRouteMainPathsCompactorItems0]
+    distributor?: [ValuesRouteMainPathsDistributorItems0]
+    ingester?: [ValuesRouteMainPathsIngesterItems0]
+    "query-frontend"?: [ValuesRouteMainPathsQueryFrontendItems0]
+
+schema ValuesRouteMainPathsBackendWorkerItems0:
+    r"""
+    ValuesRouteMainPathsBackendWorkerItems0
+
+    Attributes
+    ----------
+    path : str, optional, default is "/backend-worker/ring"
+    pathType : str, optional, default is "PathPrefix"
+    """
+    [...str]: any
+    path?: str
+    pathType?: str
+
+schema ValuesRouteMainPathsCompactorItems0:
+    r"""
+    ValuesRouteMainPathsCompactorItems0
+
+    Attributes
+    ----------
+    path : str, optional, default is "/compactor/ring"
+    pathType : str, optional, default is "PathPrefix"
+    """
+    [...str]: any
+    path?: str
+    pathType?: str
+
+schema ValuesRouteMainPathsDistributorItems0:
+    r"""
+    ValuesRouteMainPathsDistributorItems0
+
+    Attributes
+    ----------
+    path : str, optional, default is "/metrics-generator/ring"
+    pathType : str, optional, default is "PathPrefix"
+        pathType for the match (e.g. PathPrefix, Exact)
+    port : int, optional, default is 4318
+        OTLP HTTP receiver port. This path is only rendered when traces.otlp.http.enabled is true.
+    """
+    [...str]: any
+    path?: str
+    pathType?: str
+    port?: int
+
+schema ValuesRouteMainPathsIngesterItems0:
+    r"""
+    ValuesRouteMainPathsIngesterItems0
+
+    Attributes
+    ----------
+    path : str, optional, default is "/shutdown"
+    pathType : str, optional, default is "PathPrefix"
+    """
+    [...str]: any
+    path?: str
+    pathType?: str
+
+schema ValuesRouteMainPathsQueryFrontendItems0:
+    r"""
+    ValuesRouteMainPathsQueryFrontendItems0
+
+    Attributes
+    ----------
+    path : str, optional, default is "/api"
+    pathType : str, optional, default is "PathPrefix"
+    """
+    [...str]: any
+    path?: str
+    pathType?: str
 
 schema ValuesSecurityContext:
     r"""
@@ -6623,6 +9535,8 @@ schema ValuesTempo:
 
     Attributes
     ----------
+    dnsConfig : ValuesTempoDnsConfig, optional
+        Pod DNS config applied to all components. Override per component with `<component>.dnsConfig` or `defaults.dnsConfig`.
     image : ValuesTempoImage, optional
     livenessProbe : ValuesTempoLivenessProbe, optional
     memberlist : ValuesTempoMemberlist, optional
@@ -6643,6 +9557,7 @@ schema ValuesTempo:
         Structured tempo configuration
     """
     [...str]: any
+    dnsConfig?: ValuesTempoDnsConfig
     image?: ValuesTempoImage
     livenessProbe?: ValuesTempoLivenessProbe
     memberlist?: ValuesTempoMemberlist
@@ -6655,6 +9570,12 @@ schema ValuesTempo:
     service?: ValuesTempoService
     structuredConfig?: ValuesTempoStructuredConfig
 
+schema ValuesTempoDnsConfig:
+    r"""
+    Pod DNS config applied to all components. Override per component with `<component>.dnsConfig` or `defaults.dnsConfig`.
+    """
+    [...str]: any
+
 schema ValuesTempoImage:
     r"""
     ValuesTempoImage
@@ -6664,8 +9585,8 @@ schema ValuesTempoImage:
     pullPolicy : str, optional, default is "IfNotPresent"
     pullSecrets : [any], optional
         Optional list of imagePullSecrets. Overrides `global.image.pullSecrets`
-    registry : str, optional, default is "docker.io"
-        The Docker registry
+    registry : any, optional, default is "null"
+        The Docker registry. Overrides `global.image.registry`
     repository : str, optional, default is "grafana/tempo"
         Docker image repository
     tag : any, optional, default is "null"
@@ -6674,7 +9595,7 @@ schema ValuesTempoImage:
     [...str]: any
     pullPolicy?: str
     pullSecrets?: [any]
-    registry?: str
+    registry?: any
     repository?: str
     tag?: any
 
@@ -6873,6 +9794,31 @@ schema ValuesTestImage:
     registry?: str
     repository?: str
     tag?: str
+
+schema ValuesTests:
+    r"""
+    ValuesTests
+
+    Attributes
+    ----------
+    integration : ValuesTestsIntegration, optional
+    """
+    [...str]: any
+    integration?: ValuesTestsIntegration
+
+schema ValuesTestsIntegration:
+    r"""
+    ValuesTestsIntegration
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Enable helm test hooks that run a BATS trace roundtrip against the live cluster.
+        WARNING: enabling this and running `helm test` ingests real trace data into object storage.
+        Traces age out via retention; Tempo has no delete API.
+    """
+    [...str]: any
+    enabled?: bool
 
 schema ValuesTls:
     r"""
