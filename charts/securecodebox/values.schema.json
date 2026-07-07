@@ -9,6 +9,13 @@
       "title": "allowIstioSidecarInjectionInJobs",
       "type": "boolean"
     },
+    "clusterDomain": {
+      "default": "cluster.local",
+      "description": "The cluster domain to use when building the in-cluster Minio endpoint (`\u003crelease\u003e-minio.\u003cnamespace\u003e.svc.\u003cclusterDomain\u003e`). Override this if your cluster uses a custom domain instead of the Kubernetes default `cluster.local`.",
+      "required": [],
+      "title": "clusterDomain",
+      "type": "string"
+    },
     "customCACertificate": {
       "additionalProperties": true,
       "description": "Setup for Custom CA certificates. These are automatically mounted into every secureCodeBox component (lurker, parser \u0026 hooks).\nRequires that every namespace has a configmap with the CA certificate(s)",
@@ -31,6 +38,24 @@
       "required": [],
       "title": "customCACertificate",
       "type": "object"
+    },
+    "extraVolumeMounts": {
+      "description": "Additional volume mounts to be mounted to the operator deployment",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraVolumeMounts",
+      "type": "array"
+    },
+    "extraVolumes": {
+      "description": "Additional volumes to be mounted to the operator deployment",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraVolumes",
+      "type": "array"
     },
     "global": {
       "additionalProperties": true,
