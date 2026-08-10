@@ -228,7 +228,7 @@ charts: helm.Charts = {
     reloader: {
         chart = "reloader"
         repoURL = "https://stakater.github.io/stakater-charts"
-        targetRevision = "2.2.9"
+        targetRevision = "2.2.16"
         schemaGenerator = "VALUE-INFERENCE"
     }
     homepage: {
