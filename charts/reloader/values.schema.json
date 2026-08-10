@@ -55,7 +55,7 @@
           "type": "string"
         },
         "tag": {
-          "default": "v1.4.14",
+          "default": "v1.4.21",
           "required": [],
           "title": "tag",
           "type": "string"
@@ -96,7 +96,7 @@
         },
         "custom_annotations": {
           "additionalProperties": true,
-          "description": "Optional flags to pass to the Reloader entrypoint\nExample:\n  custom_annotations:\n    configmap: \"my.company.com/configmap\"\n    secret: \"my.company.com/secret\"",
+          "description": "Optional flags to pass to the Reloader entrypoint\nExample:\n  custom_annotations:\n    configmap: \"my.company.com/configmap\"\n    secret: \"my.company.com/secret\"\n    ignore: \"my.company.com/reloader-ignore\"",
           "required": [],
           "title": "custom_annotations",
           "type": "object"
@@ -180,6 +180,12 @@
               "title": "gomemlimitOverride",
               "type": "string"
             },
+            "hostUsers": {
+              "default": "null",
+              "required": [],
+              "title": "hostUsers",
+              "type": "null"
+            },
             "labels": {
               "additionalProperties": true,
               "properties": {
@@ -196,7 +202,7 @@
                   "type": "string"
                 },
                 "version": {
-                  "default": "v1.4.14",
+                  "default": "v1.4.21",
                   "required": [],
                   "title": "version",
                   "type": "string"
@@ -265,6 +271,20 @@
               "required": [],
               "title": "revisionHistoryLimit",
               "type": "integer"
+            },
+            "runtimeClassName": {
+              "default": "",
+              "description": "Set the runtimeClassName for the pod",
+              "required": [],
+              "title": "runtimeClassName",
+              "type": "string"
+            },
+            "schedulerName": {
+              "default": "",
+              "description": "Set the schedulerName for the pod",
+              "required": [],
+              "title": "schedulerName",
+              "type": "string"
             },
             "securityContext": {
               "additionalProperties": true,
@@ -448,6 +468,15 @@
           "title": "namespaceSelector",
           "type": "string"
         },
+        "namespaces": {
+          "description": "Scoped mode: explicit list of namespaces to watch. When non-empty (and watchGlobally\nis false), Reloader watches exactly these namespaces and the chart creates a namespace\nscoped Role + RoleBinding in each one — no ClusterRole is created. The release namespace\nis always included automatically. Leave empty ([]) for the default single-namespace or\nglobal behavior controlled by watchGlobally.\nAccepts either a YAML list (e.g. [\"team-a\", \"team-b\"]) or a comma-separated string\n(e.g. \"team-a,team-b\")",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "namespaces",
+          "type": "array"
+        },
         "netpol": {
           "additionalProperties": true,
           "properties": {
@@ -563,7 +592,7 @@
         },
         "rbac": {
           "additionalProperties": true,
-          "description": "labels: {}\nannotations: {}\nport: 9090",
+          "description": "labels: {}\nannotations: {}\nport: 9090\nFor IPv4 and IPv6 dual stack support.\nSpecify the IP family policy for the service. Supported values are SingleStack, PreferDualStack, and RequireDualStack.\nipFamilyPolicy: \"SingleStack\"\nSpecify the IP protocol family or dual-stack preference for the service. Supported values: [\"IPv4\"], [\"IPv6\"], [\"IPv4\",\"IPv6\"], or [\"IPv6\",\"IPv4\"].\nipFamilies: [\"IPv4\"]",
           "properties": {
             "enabled": {
               "default": true,

@@ -51,7 +51,7 @@ schema ValuesImage:
     pullPolicy : str, optional, default is "IfNotPresent"
         digest: sha256:1234567
     repository : str, optional, default is "ghcr.io/stakater/reloader"
-    tag : str, optional, default is "v1.4.14"
+    tag : str, optional, default is "v1.4.21"
     """
     [...str]: any
     name?: str
@@ -83,6 +83,7 @@ schema ValuesReloader:
           custom_annotations:
             configmap: "my.company.com/configmap"
             secret: "my.company.com/secret"
+            ignore: "my.company.com/reloader-ignore"
     deployment : ValuesReloaderDeployment, optional
     enableCSIIntegration : bool, optional, default is False
     enableHA : bool, optional, default is False
@@ -107,6 +108,14 @@ schema ValuesReloader:
     logLevel : str, optional, default is "info"
     matchLabels : ValuesReloaderMatchLabels, optional
     namespaceSelector : str, optional, default is ""
+    namespaces : [any], optional
+        Scoped mode: explicit list of namespaces to watch. When non-empty (and watchGlobally
+        is false), Reloader watches exactly these namespaces and the chart creates a namespace
+        scoped Role + RoleBinding in each one — no ClusterRole is created. The release namespace
+        is always included automatically. Leave empty ([]) for the default single-namespace or
+        global behavior controlled by watchGlobally.
+        Accepts either a YAML list (e.g. ["team-a", "team-b"]) or a comma-separated string
+        (e.g. "team-a,team-b")
     netpol : ValuesReloaderNetpol, optional
     podDisruptionBudget : ValuesReloaderPodDisruptionBudget, optional
     podMonitor : ValuesReloaderPodMonitor, optional
@@ -116,6 +125,11 @@ schema ValuesReloader:
         labels: {}
         annotations: {}
         port: 9090
+        For IPv4 and IPv6 dual stack support.
+        Specify the IP family policy for the service. Supported values are SingleStack, PreferDualStack, and RequireDualStack.
+        ipFamilyPolicy: "SingleStack"
+        Specify the IP protocol family or dual-stack preference for the service. Supported values: ["IPv4"], ["IPv6"], ["IPv4","IPv6"], or ["IPv6","IPv4"].
+        ipFamilies: ["IPv4"]
     readOnlyRootFileSystem : bool, optional, default is False
         Set to true if you have a pod security policy that enforces readOnlyRootFilesystem
     reloadOnCreate : bool, optional, default is False
@@ -152,6 +166,7 @@ schema ValuesReloader:
     logLevel?: str
     matchLabels?: ValuesReloaderMatchLabels
     namespaceSelector?: str
+    namespaces?: [any]
     netpol?: ValuesReloaderNetpol
     podDisruptionBudget?: ValuesReloaderPodDisruptionBudget
     podMonitor?: ValuesReloaderPodMonitor
@@ -177,6 +192,7 @@ schema ValuesReloaderCustomAnnotations:
       custom_annotations:
         configmap: "my.company.com/configmap"
         secret: "my.company.com/secret"
+        ignore: "my.company.com/reloader-ignore"
     """
     [...str]: any
 
@@ -206,6 +222,7 @@ schema ValuesReloaderDeployment:
         Put "0" in either to have go runtime ignore the set value.
         Otherwise, see https://pkg.go.dev/runtime#hdr-Environment_Variables for GOMAXPROCS and GOMEMLIMIT
     gomemlimitOverride : str, optional, default is ""
+    hostUsers : any, optional, default is "null"
     labels : ValuesReloaderDeploymentLabels, optional
     livenessProbe : ValuesReloaderDeploymentLivenessProbe, optional
         Liveness and readiness probe timeout values.
@@ -230,6 +247,10 @@ schema ValuesReloaderDeployment:
             cpu: "10m"
             memory: "128Mi"
     revisionHistoryLimit : int, optional, default is 2
+    runtimeClassName : str, optional, default is ""
+        Set the runtimeClassName for the pod
+    schedulerName : str, optional, default is ""
+        Set the schedulerName for the pod
     securityContext : ValuesReloaderDeploymentSecurityContext, optional
     tolerations : [any], optional
         A list of tolerations to be applied to the Deployment.
@@ -260,6 +281,7 @@ schema ValuesReloaderDeployment:
     env?: ValuesReloaderDeploymentEnv
     gomaxprocsOverride?: str
     gomemlimitOverride?: str
+    hostUsers?: any
     labels?: ValuesReloaderDeploymentLabels
     livenessProbe?: ValuesReloaderDeploymentLivenessProbe
     nodeSelector?: any
@@ -269,6 +291,8 @@ schema ValuesReloaderDeployment:
     replicas?: int
     resources?: ValuesReloaderDeploymentResources
     revisionHistoryLimit?: int
+    runtimeClassName?: str
+    schedulerName?: str
     securityContext?: ValuesReloaderDeploymentSecurityContext
     tolerations?: [any]
     topologySpreadConstraints?: [any]
@@ -342,7 +366,7 @@ schema ValuesReloaderDeploymentLabels:
     ----------
     group : str, optional, default is "com.stakater.platform"
     provider : str, optional, default is "stakater"
-    version : str, optional, default is "v1.4.14"
+    version : str, optional, default is "v1.4.21"
     """
     [...str]: any
     group?: str
@@ -519,6 +543,11 @@ schema ValuesReloaderRbac:
     labels: {}
     annotations: {}
     port: 9090
+    For IPv4 and IPv6 dual stack support.
+    Specify the IP family policy for the service. Supported values are SingleStack, PreferDualStack, and RequireDualStack.
+    ipFamilyPolicy: "SingleStack"
+    Specify the IP protocol family or dual-stack preference for the service. Supported values: ["IPv4"], ["IPv6"], ["IPv4","IPv6"], or ["IPv6","IPv4"].
+    ipFamilies: ["IPv4"]
 
     Attributes
     ----------
