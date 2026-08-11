@@ -18,7 +18,7 @@ schema Values:
     affinity : ValuesAffinity, optional
         Pod affinity configuration
     annotations : ValuesAnnotations, optional
-        Annotations for the Deployment
+        Additional annotations to add to the deployment
     backend : ValuesBackend, optional
          Configuration for the backend pod(s)
     bloomBuilder : ValuesBloomBuilder, optional
@@ -53,6 +53,23 @@ schema Values:
     consoleService : ValuesConsoleService, optional
     containerSecurityContext : ValuesContainerSecurityContext, optional
         Container security context (allowPrivilegeEscalation, etc.)
+    crds : ValuesCrds, optional
+        # CRD management.
+        # rollout-operator always requires its CRDs (ReplicaTemplate, NoDownscale) to
+        # be present in the cluster — the operator will not start without them. This
+        # flag controls only whether *this chart* installs them via the bundled
+        # `crds` subchart.
+        #
+        # Leave `enabled: true` (default) for standalone installs.
+        #
+        # Set `enabled: false` only when CRDs are managed out of band, for example:
+        #   * a single shared rollout-operator instance owns the CRDs cluster-wide
+        #     and other releases should not contend with them;
+        #   * CRDs are reconciled by a GitOps controller, an umbrella chart, or a
+        #     separate Helm release dedicated to CRDs;
+        #   * cluster RBAC forbids the release's service account from creating CRDs.
+        # In all of these cases you are responsible for ensuring the CRDs exist
+        # before installing/upgrading this chart.
     customCommandJob : ValuesCustomCommandJob, optional
         # Additional Annotations for the Kubernetes Job customCommandJob
     customCommands : any, optional, default is ""
@@ -254,6 +271,8 @@ schema Values:
     namespaceOverride : any, optional, default is "null"
         Overrides the chart's namespace
     namespaceSelector : ValuesNamespaceSelector, optional
+        Namespace selector applied to all webhooks. Defaults to restricting to the release namespace.
+        See https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-namespaceselector
     networkPolicy : ValuesNetworkPolicy, optional
         #####################################################################################################################
 
@@ -406,6 +425,7 @@ schema Values:
     consoleIngress?: ValuesConsoleIngress
     consoleService?: ValuesConsoleService
     containerSecurityContext?: ValuesContainerSecurityContext
+    crds?: ValuesCrds
     customCommandJob?: ValuesCustomCommandJob
     customCommands?: any
     deploymentMode?: str
@@ -787,7 +807,7 @@ schema ValuesAffinity:
 
 schema ValuesAnnotations:
     r"""
-    Annotations for the Deployment
+    Additional annotations to add to the deployment
     """
     [...str]: any
 
@@ -2371,7 +2391,7 @@ schema ValuesChunksCacheL2:
     initContainers : [any], optional
         Extra init containers for chunks-cache-l2 pods
     l2ChunkCacheHandoff : str, optional, default is "345600s"
-        The age of chunks should be transfered from l1 cache to l2
+        The age of chunks should be transferred from l1 cache to l2
         4 days
     maxItemMemory : int, optional, default is 5
         Maximum item memory for chunks-cache-l2 (in MB).
@@ -3143,6 +3163,35 @@ schema ValuesContainerSecurityContext:
     [...str]: any
     readOnlyRootFilesystem?: bool
 
+schema ValuesCrds:
+    r"""
+    # CRD management.
+    # rollout-operator always requires its CRDs (ReplicaTemplate, NoDownscale) to
+    # be present in the cluster — the operator will not start without them. This
+    # flag controls only whether *this chart* installs them via the bundled
+    # `crds` subchart.
+    #
+    # Leave `enabled: true` (default) for standalone installs.
+    #
+    # Set `enabled: false` only when CRDs are managed out of band, for example:
+    #   * a single shared rollout-operator instance owns the CRDs cluster-wide
+    #     and other releases should not contend with them;
+    #   * CRDs are reconciled by a GitOps controller, an umbrella chart, or a
+    #     separate Helm release dedicated to CRDs;
+    #   * cluster RBAC forbids the release's service account from creating CRDs.
+    # In all of these cases you are responsible for ensuring the CRDs exist
+    # before installing/upgrading this chart.
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+        Install CRDs as part of the chart (via the bundled `crds` subchart).
+        Set to `false` only when CRDs are managed out of band — see the comment
+        above for guidance.
+    """
+    [...str]: any
+    enabled?: bool
+
 schema ValuesCustomCommandJob:
     r"""
     # Additional Annotations for the Kubernetes Job customCommandJob
@@ -3550,7 +3599,9 @@ schema ValuesEnterprise:
     config : str, optional, default is "{{- if .Values.enterprise.adminApi.enabled }}\nadmin_client:\n  {{ include \"enterprise-logs.adminAPIStorageConfig\" . | nindent 2 }}\n{{ end }}\nauth:\n  type: {{ .Values.enterprise.adminApi.enabled | ternary \"enterprise\" \"trust\" }}\nauth_enabled: {{ .Values.loki.auth_enabled }}\ncluster_name: {{ include \"loki.clusterName\" . }}\nlicense:\n  path: /etc/loki/license/license.jwt\n"
         enterprise specific sections of the config.yaml file
     enabled : bool, optional, default is False
-        Enable enterprise features, license must be provided
+        Enterprise features are disabled by default.
+        Set to `true` to deploy Grafana Enterprise Logs (GEL) with a valid license via
+        `enterprise.license.contents` or `enterprise.useExternalLicense`/`enterprise.externalLicenseName`.
     externalConfigName : str, optional, default is ""
         Name of the external config secret to use
     externalLicenseName : any, optional, default is "null"
@@ -3568,9 +3619,13 @@ schema ValuesEnterprise:
     provisioner : ValuesEnterpriseProvisioner, optional
         Configuration for `provisioner` target
         Note: Uses enterprise.adminToken.secret value to mount the admin token used to call the admin api.
+        The provisioner is disabled by default because it requires an out-of-band admin token secret
+        (created via GEL `tokengen`) referenced by `enterprise.adminToken.secret`. After creating that
+        secret, set both `enterprise.adminToken.secret` and `enterprise.provisioner.enabled: true`.
+        See production/helm/loki/docs/examples/enterprise/README.md for the full procedure.
     useExternalLicense : bool, optional, default is False
         Set to true when providing an external license
-    version : str, optional, default is "3.6.5"
+    version : str, optional, default is "3.6.12"
         Default version of GEL to deploy
     """
     [...str]: any
@@ -3631,7 +3686,7 @@ schema ValuesEnterpriseGateway:
     extraArgs : ValuesEnterpriseGatewayExtraArgs, optional
         Additional CLI arguments for the `gateway` target
     extraContainers : [any], optional
-        Conifgure optional extraContainers
+        Configure optional extraContainers
     extraEnvFrom : [any], optional
         Environment variables from secrets or configmaps to add to the enterprise gateway pods
     extraVolumeMounts : [any], optional
@@ -3879,7 +3934,7 @@ schema ValuesEnterpriseImage:
         The Docker registry
     repository : str, optional, default is "grafana/enterprise-logs"
         Docker image repository
-    tag : str, optional, default is "3.6.7"
+    tag : str, optional, default is "3.6.12"
         Docker image tag
     """
     [...str]: any
@@ -3909,12 +3964,16 @@ schema ValuesEnterpriseProvisioner:
     r"""
     Configuration for `provisioner` target
     Note: Uses enterprise.adminToken.secret value to mount the admin token used to call the admin api.
+    The provisioner is disabled by default because it requires an out-of-band admin token secret
+    (created via GEL `tokengen`) referenced by `enterprise.adminToken.secret`. After creating that
+    secret, set both `enterprise.adminToken.secret` and `enterprise.provisioner.enabled: true`.
+    See production/helm/loki/docs/examples/enterprise/README.md for the full procedure.
 
     Attributes
     ----------
     additionalTenants : [any], optional
         Additional tenants to be created. Each tenant will get a read and write policy
-        and associated token. Tenant must have a name and a namespace for the secret containting
+        and associated token. Tenant must have a name and a namespace for the secret containing
         the token to be created in. For example
         additionalTenants:
           - name: loki
@@ -3926,7 +3985,7 @@ schema ValuesEnterpriseProvisioner:
         Additional annotations for the `provisioner` Job
     apiUrl : str, optional, default is "{{ include \"loki.address\" . }}"
         url of the admin api to use for the provisioner
-    enabled : bool, optional, default is True
+    enabled : bool, optional, default is False
         Whether the job should be part of the deployment
     env : [any], optional
         Additional Kubernetes environment
@@ -5129,7 +5188,7 @@ schema ValuesIngester:
     updateStrategy : ValuesIngesterUpdateStrategy, optional
         UpdateStrategy for the ingester StatefulSets.
     zoneAwareReplication : ValuesIngesterZoneAwareReplication, optional
-        Enabling zone awareness on ingesters will create 3 statefulests where all writes will send a replica to each zone.
+        Enabling zone awareness on ingesters will create 3 StatefulSets where all writes will send a replica to each zone.
         This is primarily intended to accelerate rollout operations by allowing for multiple ingesters within a single
         zone to be shutdown and restart simultaneously (the remaining 2 zones will be guaranteed to have at least one copy
         of the data).
@@ -5525,7 +5584,7 @@ schema ValuesIngesterUpdateStrategy:
 
 schema ValuesIngesterZoneAwareReplication:
     r"""
-    Enabling zone awareness on ingesters will create 3 statefulests where all writes will send a replica to each zone.
+    Enabling zone awareness on ingesters will create 3 StatefulSets where all writes will send a replica to each zone.
     This is primarily intended to accelerate rollout operations by allowing for multiple ingesters within a single
     zone to be shutdown and restart simultaneously (the remaining 2 zones will be guaranteed to have at least one copy
     of the data).
@@ -6287,7 +6346,7 @@ schema ValuesLokiCommonConfig:
     Attributes
     ----------
     compactor_grpc_address : str, optional, default is "{{ include \"loki.compactorAddress\" . }}"
-        The gRPC address of the compactor. The use of compactor_grpc_address is prefered over compactor_address.
+        The gRPC address of the compactor. The use of compactor_grpc_address is preferred over compactor_address.
         If a customized compactor_address is set, compactor_grpc_address should be set to an empty string.
     path_prefix : str, optional, default is "/var/loki"
     replication_factor : int, optional, default is 3
@@ -6391,7 +6450,7 @@ schema ValuesLokiImage:
         The Docker registry
     repository : str, optional, default is "grafana/loki"
         Docker image repository
-    tag : str, optional, default is "3.6.7"
+    tag : str, optional, default is "3.6.11"
         Overrides the image tag whose default is the chart's appVersion
     """
     [...str]: any
@@ -7972,6 +8031,11 @@ schema ValuesMinio:
         https://docs.min.io/docs/minio-erasure-code-quickstart-guide
         Since we only have 1 replica, that means 2 drives must be used.
     enabled : bool, optional, default is False
+    image : ValuesMinioImage, optional
+        Override the upstream MinIO, Inc. images with the Pigsty (pgsty) community
+        fork to mitigate the unresolved CVE in the abandoned MinIO images.
+        See https://github.com/pgsty/minio for details.
+    mcImage : ValuesMinioMcImage, optional
     persistence : ValuesMinioPersistence, optional
     replicas : int, optional, default is 1
     resources : ValuesMinioResources, optional
@@ -7988,6 +8052,8 @@ schema ValuesMinio:
     buckets?: [ValuesMinioBucketsItems0]
     drivesPerNode?: int
     enabled?: bool
+    image?: ValuesMinioImage
+    mcImage?: ValuesMinioMcImage
     persistence?: ValuesMinioPersistence
     replicas?: int
     resources?: ValuesMinioResources
@@ -8009,6 +8075,38 @@ schema ValuesMinioBucketsItems0:
     name?: str
     policy?: str
     purge?: bool
+
+schema ValuesMinioImage:
+    r"""
+    Override the upstream MinIO, Inc. images with the Pigsty (pgsty) community
+    fork to mitigate the unresolved CVE in the abandoned MinIO images.
+    See https://github.com/pgsty/minio for details.
+
+    Attributes
+    ----------
+    pullPolicy : str, optional, default is "IfNotPresent"
+    repository : str, optional, default is "docker.io/pgsty/minio"
+    tag : str, optional, default is "RELEASE.2026-03-14T12-00-00Z"
+    """
+    [...str]: any
+    pullPolicy?: str
+    repository?: str
+    tag?: str
+
+schema ValuesMinioMcImage:
+    r"""
+    ValuesMinioMcImage
+
+    Attributes
+    ----------
+    pullPolicy : str, optional, default is "IfNotPresent"
+    repository : str, optional, default is "docker.io/pgsty/mc"
+    tag : str, optional, default is "RELEASE.2026-03-13T08-57-32Z"
+    """
+    [...str]: any
+    pullPolicy?: str
+    repository?: str
+    tag?: str
 
 schema ValuesMinioPersistence:
     r"""
@@ -8607,19 +8705,41 @@ schema ValuesMonitoringServiceMonitorNamespaceSelector:
 
 schema ValuesNamespaceSelector:
     r"""
-    ValuesNamespaceSelector
+    Namespace selector applied to all webhooks. Defaults to restricting to the release namespace.
+    See https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-namespaceselector
 
     Attributes
     ----------
     matchExpressions : [any], optional
-        Namespace selector to filter which namespaces the webhooks apply to.
-        See https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-namespaceselector
-        Example:
+        Example 1 - matchExpressions only: merged with the default release namespace matchLabels.
+          values.yaml:
             matchExpressions:
               - key: team
                 operator: NotIn
-                values:
-                  - team-a
+                values: [team-a]
+          renders:
+            namespaceSelector:
+              matchLabels:
+                kubernetes.io/metadata.name: <release-namespace>
+              matchExpressions:
+                - key: team
+                  operator: NotIn
+                  values: [team-a]
+
+        Example 2 - matchLabels set: full selector is user-controlled (matchExpressions also supported).
+          values.yaml:
+            matchLabels:
+              kubernetes.io/metadata.name: logging
+          renders:
+            namespaceSelector:
+              matchLabels:
+                kubernetes.io/metadata.name: logging
+
+        Example 3 - set to null: omits namespaceSelector entirely (e.g. when objectSelector alone is sufficient).
+          values.yaml:
+            namespaceSelector: null
+          renders:
+            (nothing)
     """
     [...str]: any
     matchExpressions?: [any]
@@ -10599,7 +10719,7 @@ schema ValuesRead:
         Additional selector labels for each `read` pod
     service : ValuesReadService, optional
     startupProbe : ValuesReadStartupProbe, optional
-        statup probe for the read pods. If empty, applies no startupProbe
+        startup probe for the read pods. If empty, applies no startupProbe
     targetModule : str, optional, default is "read"
         Comma-separated list of Loki modules to load for the read
     terminationGracePeriodSeconds : int, optional, default is 30
@@ -10897,7 +11017,7 @@ schema ValuesReadServiceLabels:
 
 schema ValuesReadStartupProbe:
     r"""
-    statup probe for the read pods. If empty, applies no startupProbe
+    startup probe for the read pods. If empty, applies no startupProbe
     """
     [...str]: any
 
@@ -12642,12 +12762,15 @@ schema ValuesWebhooks:
         objectSelector to filter which objects the webhooks apply to.
     selfSignedCertSecretName : str, optional, default is "certificate"
         Secret resource name for the TLS certificate to be used with the webhooks
+    timeoutSeconds : int, optional, default is 10
+        Timeout in seconds for the prepare-downscale mutating webhook. Must be between 1 and 30.
     """
     [...str]: any
     enabled?: bool
     failurePolicy?: str
     objectSelector?: ValuesWebhooksObjectSelector
     selfSignedCertSecretName?: str
+    timeoutSeconds?: int
 
 schema ValuesWebhooksObjectSelector:
     r"""
