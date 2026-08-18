@@ -14,26 +14,26 @@ schema ServiceImport:
 
     Attributes
     ----------
-    apiVersion : str, default is "multicluster.x-k8s.io/v1alpha1", required
+    apiVersion : str, default is "multicluster.x-k8s.io/v1beta1", required
         APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
     kind : str, default is "ServiceImport", required
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, optional
         metadata
-    spec : MulticlusterxK8sIoV1alpha1ServiceImportSpec, default is Undefined, optional
+    spec : MulticlusterxK8sIoV1beta1ServiceImportSpec, default is Undefined, optional
         spec
-    status : MulticlusterxK8sIoV1alpha1ServiceImportStatus, default is Undefined, optional
+    status : MulticlusterxK8sIoV1beta1ServiceImportStatus, default is Undefined, optional
         status
     """
-    apiVersion: "multicluster.x-k8s.io/v1alpha1" = "multicluster.x-k8s.io/v1alpha1"
+    apiVersion: "multicluster.x-k8s.io/v1beta1" = "multicluster.x-k8s.io/v1beta1"
 
     kind: "ServiceImport" = "ServiceImport"
 
     metadata?: v1.ObjectMeta
-    spec?: MulticlusterxK8sIoV1alpha1ServiceImportSpec
-    status?: MulticlusterxK8sIoV1alpha1ServiceImportStatus
+    spec?: MulticlusterxK8sIoV1beta1ServiceImportSpec
+    status?: MulticlusterxK8sIoV1beta1ServiceImportStatus
 
-schema MulticlusterxK8sIoV1alpha1ServiceImportSpec:
+schema MulticlusterxK8sIoV1beta1ServiceImportSpec:
     r"""
     spec defines the behavior of a ServiceImport.
 
@@ -50,7 +50,7 @@ schema MulticlusterxK8sIoV1alpha1ServiceImportSpec:
         IPFamilies identifies all the IPFamilies assigned for this ServiceImport.
     ips : [str], default is Undefined, optional
         ip will be used as the VIP for this service when type is ClusterSetIP.
-    ports : [MulticlusterxK8sIoV1alpha1ServiceImportSpecPortsItems0], default is Undefined, required
+    ports : [MulticlusterxK8sIoV1beta1ServiceImportSpecPortsItems0], default is Undefined, required
         ports
     sessionAffinity : str, default is Undefined, optional
         Supports "ClientIP" and "None". Used to maintain session affinity.
@@ -59,7 +59,7 @@ schema MulticlusterxK8sIoV1alpha1ServiceImportSpec:
         Defaults to None.
         Ignored when type is Headless
         More info: https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies
-    sessionAffinityConfig : MulticlusterxK8sIoV1alpha1ServiceImportSpecSessionAffinityConfig, default is Undefined, optional
+    sessionAffinityConfig : MulticlusterxK8sIoV1beta1ServiceImportSpecSessionAffinityConfig, default is Undefined, optional
         session affinity config
     trafficDistribution : str, default is Undefined, optional
         TrafficDistribution offers a way to express preferences for how traffic
@@ -75,10 +75,10 @@ schema MulticlusterxK8sIoV1alpha1ServiceImportSpec:
     internalTrafficPolicy?: str
     ipFamilies?: [str]
     ips?: [str]
-    ports: [MulticlusterxK8sIoV1alpha1ServiceImportSpecPortsItems0]
+    ports: [MulticlusterxK8sIoV1beta1ServiceImportSpecPortsItems0]
 
     sessionAffinity?: str
-    sessionAffinityConfig?: MulticlusterxK8sIoV1alpha1ServiceImportSpecSessionAffinityConfig
+    sessionAffinityConfig?: MulticlusterxK8sIoV1beta1ServiceImportSpecSessionAffinityConfig
     trafficDistribution?: str
     $type: "ClusterSetIP" | "Headless"
 
@@ -86,7 +86,7 @@ schema MulticlusterxK8sIoV1alpha1ServiceImportSpec:
         len(ipFamilies) <= 2 if ipFamilies
         len(ips) <= 2 if ips
 
-schema MulticlusterxK8sIoV1alpha1ServiceImportSpecPortsItems0:
+schema MulticlusterxK8sIoV1beta1ServiceImportSpecPortsItems0:
     r"""
     ServicePort represents the port on which the service is exposed
 
@@ -125,18 +125,18 @@ schema MulticlusterxK8sIoV1alpha1ServiceImportSpecPortsItems0:
 
     $protocol?: str
 
-schema MulticlusterxK8sIoV1alpha1ServiceImportSpecSessionAffinityConfig:
+schema MulticlusterxK8sIoV1beta1ServiceImportSpecSessionAffinityConfig:
     r"""
     sessionAffinityConfig contains session affinity configuration.
 
     Attributes
     ----------
-    clientIP : MulticlusterxK8sIoV1alpha1ServiceImportSpecSessionAffinityConfigClientIP, default is Undefined, optional
+    clientIP : MulticlusterxK8sIoV1beta1ServiceImportSpecSessionAffinityConfigClientIP, default is Undefined, optional
         client IP
     """
-    clientIP?: MulticlusterxK8sIoV1alpha1ServiceImportSpecSessionAffinityConfigClientIP
+    clientIP?: MulticlusterxK8sIoV1beta1ServiceImportSpecSessionAffinityConfigClientIP
 
-schema MulticlusterxK8sIoV1alpha1ServiceImportSpecSessionAffinityConfigClientIP:
+schema MulticlusterxK8sIoV1beta1ServiceImportSpecSessionAffinityConfigClientIP:
     r"""
     clientIP contains the configurations of Client IP based session affinity.
 
@@ -149,27 +149,27 @@ schema MulticlusterxK8sIoV1alpha1ServiceImportSpecSessionAffinityConfigClientIP:
     """
     timeoutSeconds?: int
 
-schema MulticlusterxK8sIoV1alpha1ServiceImportStatus:
+schema MulticlusterxK8sIoV1beta1ServiceImportStatus:
     r"""
     status contains information about the exported services that form
     the multi-cluster service referenced by this ServiceImport.
 
     Attributes
     ----------
-    clusters : [MulticlusterxK8sIoV1alpha1ServiceImportStatusClustersItems0], default is Undefined, optional
+    clusters : [MulticlusterxK8sIoV1beta1ServiceImportStatusClustersItems0], default is Undefined, optional
         clusters is the list of exporting clusters from which this service
         was derived.
-    conditions : [MulticlusterxK8sIoV1alpha1ServiceImportStatusConditionsItems0], default is Undefined, optional
+    conditions : [MulticlusterxK8sIoV1beta1ServiceImportStatusConditionsItems0], default is Undefined, optional
         conditions
     endpointSliceObjects : str, default is Undefined, optional
         EndpointSliceObjects indicates whether imported EndpointSlice objects are
         present for this ServiceImport.
     """
-    clusters?: [MulticlusterxK8sIoV1alpha1ServiceImportStatusClustersItems0]
-    conditions?: [MulticlusterxK8sIoV1alpha1ServiceImportStatusConditionsItems0]
+    clusters?: [MulticlusterxK8sIoV1beta1ServiceImportStatusClustersItems0]
+    conditions?: [MulticlusterxK8sIoV1beta1ServiceImportStatusConditionsItems0]
     endpointSliceObjects?: "Present" | "Absent"
 
-schema MulticlusterxK8sIoV1alpha1ServiceImportStatusClustersItems0:
+schema MulticlusterxK8sIoV1beta1ServiceImportStatusClustersItems0:
     r"""
     ClusterStatus contains service configuration mapped to a specific source cluster
 
@@ -181,7 +181,7 @@ schema MulticlusterxK8sIoV1alpha1ServiceImportStatusClustersItems0:
     """
     cluster: str
 
-schema MulticlusterxK8sIoV1alpha1ServiceImportStatusConditionsItems0:
+schema MulticlusterxK8sIoV1beta1ServiceImportStatusConditionsItems0:
     r"""
     Condition contains details for one aspect of the current state of this API Resource.
 

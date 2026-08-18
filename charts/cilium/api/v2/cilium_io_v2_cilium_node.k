@@ -63,8 +63,6 @@ schema CiliumIoV2CiliumNodeSpec:
         some other means of identification.
     ipam : CiliumIoV2CiliumNodeSpecIpam, default is Undefined, optional
         ipam
-    nodeidentity : int, default is Undefined, optional
-        NodeIdentity is the Cilium numeric identity allocated for the node, if any.
     """
     addresses?: [CiliumIoV2CiliumNodeSpecAddressesItems0]
     "alibaba-cloud"?: CiliumIoV2CiliumNodeSpecAlibabaCloud
@@ -76,7 +74,6 @@ schema CiliumIoV2CiliumNodeSpec:
     ingress?: CiliumIoV2CiliumNodeSpecIngress
     "instance-id"?: str
     ipam?: CiliumIoV2CiliumNodeSpecIpam
-    nodeidentity?: int
 
 schema CiliumIoV2CiliumNodeSpecAddressesItems0:
     r"""
@@ -177,40 +174,11 @@ schema CiliumIoV2CiliumNodeSpecEni:
         allocation, e.g. if the node has eth0, eth1, eth2 and
         FirstInterfaceIndex is set to 1, then only eth1 and eth2 will be
         used for IP allocation, eth0 will be ignored for PodIP allocation.
-    "instance-id" : str, default is Undefined, optional
-        InstanceID is the AWS InstanceId of the node. The InstanceID is used
-        to retrieve AWS metadata for the node.
-
-        OBSOLETE: This field is obsolete, please use Spec.InstanceID
     "instance-type" : str, default is Undefined, optional
         InstanceType is the AWS EC2 instance type, e.g. "m5.large"
-    "max-above-watermark" : int, default is Undefined, optional
-        MaxAboveWatermark is the maximum number of addresses to allocate
-        beyond the addresses needed to reach the PreAllocate watermark.
-        Going above the watermark can help reduce the number of API calls to
-        allocate IPs, e.g. when a new ENI is allocated, as many secondary
-        IPs as possible are allocated. Limiting the amount can help reduce
-        waste of IPs.
-
-        OBSOLETE: This field is obsolete, please use Spec.IPAM.MaxAboveWatermark
-    "min-allocate" : int, default is Undefined, optional
-        MinAllocate is the minimum number of IPs that must be allocated when
-        the node is first bootstrapped. It defines the minimum base socket
-        of addresses that must be available. After reaching this watermark,
-        the PreAllocate and MaxAboveWatermark logic takes over to continue
-        allocating IPs.
-
-        OBSOLETE: This field is obsolete, please use Spec.IPAM.MinAllocate
     "node-subnet-id" : str, default is Undefined, optional
         NodeSubnetID is the subnet of the primary ENI the instance was brought up
         with. It is used as a sensible default subnet to create ENIs in.
-    "pre-allocate" : int, default is Undefined, optional
-        PreAllocate defines the number of IP addresses that must be
-        available for allocation in the IPAMspec. It defines the buffer of
-        addresses available immediately without requiring cilium-operator to
-        get involved.
-
-        OBSOLETE: This field is obsolete, please use Spec.IPAM.PreAllocate
     "security-group-tags" : {str:str}, default is Undefined, optional
         SecurityGroupTags is the list of tags to use when evaliating what
         AWS security groups to use for the ENI.
@@ -234,12 +202,8 @@ schema CiliumIoV2CiliumNodeSpecEni:
     "disable-prefix-delegation"?: bool
     "exclude-interface-tags"?: {str:str}
     "first-interface-index"?: int
-    "instance-id"?: str
     "instance-type"?: str
-    "max-above-watermark"?: int
-    "min-allocate"?: int
     "node-subnet-id"?: str
-    "pre-allocate"?: int
     "security-group-tags"?: {str:str}
     "security-groups"?: [str]
     "subnet-ids"?: [str]
@@ -251,12 +215,6 @@ schema CiliumIoV2CiliumNodeSpecEni:
         # Skip validations for "exclude-interface-tags"
         True
         # Skip validations for "first-interface-index"
-        True
-        # Skip validations for "max-above-watermark"
-        True
-        # Skip validations for "min-allocate"
-        True
-        # Skip validations for "pre-allocate"
         True
         # Skip validations for "security-group-tags"
         True
@@ -337,7 +295,7 @@ schema CiliumIoV2CiliumNodeSpecIpam:
         pools
     "pre-allocate" : int, default is Undefined, optional
         PreAllocate defines the number of IP addresses that must be
-        available for allocation in the IPAMspec. It defines the buffer of
+        available for allocation in the IPAMSpec. It defines the buffer of
         addresses available immediately without requiring cilium-operator to
         get involved.
     "static-ip-tags" : {str:str}, default is Undefined, optional
@@ -438,11 +396,17 @@ schema CiliumIoV2CiliumNodeSpecIpamPoolsAllocatedItems0:
 
     Attributes
     ----------
+    allowFirstIP : bool, default is Undefined, optional
+        AllowFirstIP allows the first IP of each allocated CIDR to be used.
+    allowLastIP : bool, default is Undefined, optional
+        AllowLastIP allows the last IP of each allocated CIDR to be used.
     cidrs : [str], default is Undefined, optional
         CIDRs contains a list of pod CIDRs currently allocated from this pool
     pool : str, default is Undefined, required
         Pool is the name of the IPAM pool backing this allocation
     """
+    allowFirstIP?: bool
+    allowLastIP?: bool
     cidrs?: [str]
     pool: str
 
@@ -626,19 +590,22 @@ schema CiliumIoV2CiliumNodeStatusAzureInterfacesItems0:
 
     Attributes
     ----------
-    GatewayIP : str, default is Undefined, optional
-        GatewayIP is the interface's subnet's default route
-
-        OBSOLETE: This field is obsolete, please use Gateway field instead.
     addresses : [CiliumIoV2CiliumNodeStatusAzureInterfacesItems0AddressesItems0], default is Undefined, optional
-        Addresses is the list of all IPs associated with the interface,
-        including all secondary addresses
+        Addresses is the list of secondary IPs associated with the interface.
+        The primary IP is tracked separately in the IP field, but is also
+        included here when the operator is configured to expose it for
+        allocation.
     cidr : str, default is Undefined, optional
         CIDR is the range that the interface belongs to.
+
+        Deprecated: use Subnet.CIDR. Retained for one release so agent/operator
+        rolling upgrades work in either order.
     gateway : str, default is Undefined, optional
         Gateway is the interface's subnet's default route
     id : str, default is Undefined, optional
         ID is the identifier
+    ip : str, default is Undefined, optional
+        IP is the primary IP of the interface
     mac : str, default is Undefined, optional
         MAC is the mac address
     name : str, default is Undefined, optional
@@ -647,16 +614,19 @@ schema CiliumIoV2CiliumNodeStatusAzureInterfacesItems0:
         SecurityGroup is the security group associated with the interface
     state : str, default is Undefined, optional
         State is the provisioning state
+    subnet : CiliumIoV2CiliumNodeStatusAzureInterfacesItems0Subnet, default is Undefined, optional
+        subnet
     """
-    GatewayIP?: str
     addresses?: [CiliumIoV2CiliumNodeStatusAzureInterfacesItems0AddressesItems0]
     cidr?: str
     gateway?: str
     id?: str
+    ip?: str
     mac?: str
     name?: str
     "security-group"?: str
     state?: str
+    subnet?: CiliumIoV2CiliumNodeStatusAzureInterfacesItems0Subnet
 
 schema CiliumIoV2CiliumNodeStatusAzureInterfacesItems0AddressesItems0:
     r"""
@@ -669,11 +639,28 @@ schema CiliumIoV2CiliumNodeStatusAzureInterfacesItems0AddressesItems0:
     state : str, default is Undefined, optional
         State is the provisioning state of the address
     subnet : str, default is Undefined, optional
-        Subnet is the subnet the address belongs to
+        Subnet is the subnet the address belongs to.
+
+        Deprecated: use AzureInterface.Subnet.ID. Populated as a mirror for one
+        release so external consumers of CiliumNode.Status.Azure can migrate.
     """
     ip?: str
     state?: str
     subnet?: str
+
+schema CiliumIoV2CiliumNodeStatusAzureInterfacesItems0Subnet:
+    r"""
+    Subnet is the subnet the interface is attached to.
+
+    Attributes
+    ----------
+    cidr : str, default is Undefined, optional
+        CIDR is the CIDR range associated with the subnet
+    id : str, default is Undefined, optional
+        ID is the resource ID of the subnet
+    """
+    cidr?: str
+    id?: str
 
 schema CiliumIoV2CiliumNodeStatusEni:
     r"""
@@ -705,13 +692,15 @@ schema CiliumIoV2CiliumNodeStatusEniEnisAnon:
         ID is the ENI ID
     ip : str, default is Undefined, optional
         IP is the primary IP of the ENI
+    "ipv6-prefixes" : [str], default is Undefined, optional
+        IPv6Prefixes is the list of all IPv6 /80 delegated prefixes associated with the ENI
     mac : str, default is Undefined, optional
         MAC is the mac address of the ENI
     number : int, default is Undefined, optional
         Number is the interface index, it used in combination with
         FirstInterfaceIndex
     prefixes : [str], default is Undefined, optional
-        Prefixes is the list of all /28 prefixes associated with the ENI
+        Prefixes is the list of all IPv4 /28 delegated prefixes associated with the ENI
     "public-ip" : str, default is Undefined, optional
         PublicIP is the public IP associated with the ENI
     "security-groups" : [str], default is Undefined, optional
@@ -729,6 +718,7 @@ schema CiliumIoV2CiliumNodeStatusEniEnisAnon:
     description?: str
     id?: str
     ip?: str
+    "ipv6-prefixes"?: [str]
     mac?: str
     number?: int
     prefixes?: [str]

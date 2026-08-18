@@ -105,6 +105,46 @@
           "required": [],
           "title": "enabled",
           "type": "boolean"
+        },
+        "nodeSpec": {
+          "additionalProperties": true,
+          "properties": {
+            "securityGroupTags": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "securityGroupTags",
+              "type": "array"
+            },
+            "securityGroups": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "securityGroups",
+              "type": "array"
+            },
+            "vSwitchTags": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "vSwitchTags",
+              "type": "array"
+            },
+            "vSwitches": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "vSwitches",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "nodeSpec",
+          "type": "object"
         }
       },
       "required": [],
@@ -140,7 +180,7 @@
       "description": "Configuration for types of authentication for Cilium (beta)",
       "properties": {
         "enabled": {
-          "default": true,
+          "default": false,
           "description": "Enable authentication processing and garbage collection.\nNote that if disabled, policy enforcement will still block requests that require authentication.\nBut the resulting authentication requests for these requests will not be processed, therefore the requests not be allowed.",
           "required": [],
           "title": "enabled",
@@ -155,7 +195,7 @@
         },
         "mutual": {
           "additionalProperties": true,
-          "description": "Configuration for Cilium's service-to-service mutual authentication using TLS handshakes.\nNote that this is not full mTLS support without also enabling encryption of some form.\nCurrent encryption options are WireGuard or IPsec, configured in encryption block above.",
+          "description": "Configuration for Cilium's service-to-service mutual authentication using TLS handshakes.\nNote that this is not full mTLS support without also enabling encryption of some form.\nCurrent encryption options are WireGuard or IPsec, configured in encryption block above.\n\nDeprecated as of Cilium v1.20, this feature will be removed in Cilium v1.21.\nSee https://github.com/cilium/cilium/issues/47132 for details.",
           "properties": {
             "connectTimeout": {
               "default": "5s",
@@ -237,7 +277,7 @@
                           "description": "SPIRE agent image",
                           "properties": {
                             "digest": {
-                              "default": "sha256:163970884fba18860cac93655dc32b6af85a5dcf2ebb7e3e119a10888eff8fcd",
+                              "default": "sha256:1d042e4040466686e0ee46f74981ff2167c86adfadca19b3835946f4d6047536",
                               "required": [],
                               "title": "digest",
                               "type": "string"
@@ -264,7 +304,7 @@
                               "type": "string"
                             },
                             "tag": {
-                              "default": "1.12.4",
+                              "default": "1.15.2",
                               "required": [],
                               "title": "tag",
                               "type": "string"
@@ -411,7 +451,7 @@
                       "description": "init container image of SPIRE agent and server",
                       "properties": {
                         "digest": {
-                          "default": "sha256:b3255e7dfbcd10cb367af0d409747d511aeb66dfac98cf30e97e87e4207dd76f",
+                          "default": "sha256:dc2d74b28e4cf8984fa52af1f39bc7c3d9c73760b41a74d629f5d11b1ab28616",
                           "required": [],
                           "title": "digest",
                           "type": "string"
@@ -438,7 +478,7 @@
                           "type": "string"
                         },
                         "tag": {
-                          "default": "1.37.0",
+                          "default": "1.38.0",
                           "required": [],
                           "title": "tag",
                           "type": "string"
@@ -566,7 +606,7 @@
                           "description": "SPIRE server image",
                           "properties": {
                             "digest": {
-                              "default": "sha256:34147f27066ab2be5cc10ca1d4bfd361144196467155d46c45f3519f41596e49",
+                              "default": "sha256:aa74ef1be86bc8e0684007d84a4d9859d294384d842c30425048d73429f3216e",
                               "required": [],
                               "title": "digest",
                               "type": "string"
@@ -593,7 +633,7 @@
                               "type": "string"
                             },
                             "tag": {
-                              "default": "1.12.4",
+                              "default": "1.15.2",
                               "required": [],
                               "title": "tag",
                               "type": "string"
@@ -794,6 +834,21 @@
           "required": [],
           "title": "enabled",
           "type": "boolean"
+        },
+        "nodeSpec": {
+          "additionalProperties": true,
+          "description": "usePrimaryAddress: false\nresourceGroup: group1\nsubscriptionID: 00000000-0000-0000-0000-000000000000\ntenantID: 00000000-0000-0000-0000-000000000000\nclientID: 00000000-0000-0000-0000-000000000000\nclientSecret: 00000000-0000-0000-0000-000000000000\nuserAssignedIdentityID: 00000000-0000-0000-0000-000000000000",
+          "properties": {
+            "azureInterfaceName": {
+              "default": "",
+              "required": [],
+              "title": "azureInterfaceName",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "nodeSpec",
+          "type": "object"
         }
       },
       "required": [],
@@ -832,7 +887,7 @@
     },
     "bgpControlPlane": {
       "additionalProperties": true,
-      "description": "This feature set enables virtual BGP routers to be created via\nCiliumBGPPeeringPolicy CRDs.",
+      "description": "This feature set enables virtual BGP routers to be created via BGP CRDs.",
       "properties": {
         "enabled": {
           "default": false,
@@ -843,7 +898,7 @@
         },
         "legacyOriginAttribute": {
           "additionalProperties": true,
-          "description": "Legacy BGP ORIGIN attribute settings (BGPv2 only)",
+          "description": "Legacy BGP ORIGIN attribute settings",
           "properties": {
             "enabled": {
               "default": false,
@@ -905,11 +960,11 @@
         },
         "statusReport": {
           "additionalProperties": true,
-          "description": "Status reporting settings (BGPv2 only)",
+          "description": "Status reporting settings",
           "properties": {
             "enabled": {
               "default": true,
-              "description": "Enable/Disable BGPv2 status reporting\nIt is recommended to enable status reporting in general, but if you have any issue\nsuch as high API server load, you can disable it by setting this to false.",
+              "description": "Enable/Disable BGP status reporting\nIt is recommended to enable status reporting in general, but if you have any issue\nsuch as high API server load, you can disable it by setting this to false.",
               "required": [],
               "title": "enabled",
               "type": "boolean"
@@ -981,7 +1036,7 @@
         },
         "datapathMode": {
           "default": "veth",
-          "description": "(string) Mode for Pod devices for the core datapath (veth, netkit, netkit-l2)",
+          "description": "(string) Mode for Pod devices for the core datapath (auto, veth, netkit, netkit-l2).\nNote netkit is incompatible with TPROXY (`bpf.tproxy`).",
           "required": [],
           "title": "datapathMode",
           "type": "string"
@@ -1022,7 +1077,7 @@
           "properties": {
             "default": {
               "additionalProperties": true,
-              "description": "Default settings for all types of events except dbg and pcap.",
+              "description": "Default settings for all types of events except dbg.",
               "properties": {
                 "burstLimit": {
                   "default": "~",
@@ -1189,6 +1244,18 @@
           "title": "monitorInterval",
           "type": "string"
         },
+        "monitorTraceIPOption": {
+          "default": 0,
+          "description": "Configure the IP tracing option type.\nThis option is used to specify the IP option type to use for tracing.\nThe value must be an integer between 0 and 255.",
+          "maximum": 255,
+          "minimum": 0,
+          "required": [],
+          "title": "monitorTraceIPOption",
+          "type": [
+            "null",
+            "integer"
+          ]
+        },
         "natMax": {
           "default": "~",
           "description": "(int) Configure the maximum number of entries for the NAT table.",
@@ -1229,6 +1296,16 @@
             "integer"
           ]
         },
+        "policyMapPressureMetricsThreshold": {
+          "default": "~",
+          "description": "(float64) Configure threshold for emitting pressure metrics of policy maps.",
+          "required": [],
+          "title": "policyMapPressureMetricsThreshold",
+          "type": [
+            "null",
+            "number"
+          ]
+        },
         "policyStatsMapMax": {
           "default": 65536,
           "description": "Configure the maximum number of entries in global policy stats map.",
@@ -1255,7 +1332,7 @@
         },
         "tproxy": {
           "default": "~",
-          "description": "(bool) Configure the eBPF-based TPROXY (beta) to reduce reliance on iptables rules\nfor implementing Layer 7 policy.",
+          "description": "(bool) Configure the eBPF-based TPROXY (beta) to reduce reliance on iptables rules\nfor implementing Layer 7 policy. Note this is incompatible with netkit (`bpf.datapathMode=netkit`,\n`bpf.datapathMode=netkit-l2`).",
           "required": [],
           "title": "tproxy",
           "type": [
@@ -1317,6 +1394,35 @@
           "title": "annotations",
           "type": "object"
         },
+        "cronJob": {
+          "additionalProperties": true,
+          "properties": {
+            "failedJobsHistoryLimit": {
+              "default": 1,
+              "description": "The number of failed finished jobs to keep",
+              "required": [],
+              "title": "failedJobsHistoryLimit",
+              "type": "integer"
+            },
+            "successfulJobsHistoryLimit": {
+              "default": 3,
+              "description": "The number of successful finished jobs to keep",
+              "required": [],
+              "title": "successfulJobsHistoryLimit",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "cronJob",
+          "type": "object"
+        },
+        "enforceCAValidityThroughoutLeavesDuration": {
+          "default": true,
+          "description": "When set to true, certgen enforces that the certification authority chain\nremains valid for the entire duration of the leaf certificates to be generated,\nand fails with a hard error if that is not the case. This allows to flag early\nsituations in which the CA certificates need to be manually regenerated, before\nthey actually expire.",
+          "required": [],
+          "title": "enforceCAValidityThroughoutLeavesDuration",
+          "type": "boolean"
+        },
         "extraVolumeMounts": {
           "description": "Additional certgen volumeMounts.",
           "items": {
@@ -1346,7 +1452,7 @@
           "additionalProperties": true,
           "properties": {
             "digest": {
-              "default": "sha256:19921f48ee7e2295ea4dca955878a6cd8d70e6d4219d08f688e866ece9d95d4d",
+              "default": "sha256:6213a4c54a1f36e14a9280765f058aaa2017550c28bc122f5b09ad146fd0da2b",
               "required": [],
               "title": "digest",
               "type": "string"
@@ -1373,7 +1479,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v0.3.2",
+              "default": "v0.4.9",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -1427,11 +1533,14 @@
           "type": "array"
         },
         "ttlSecondsAfterFinished": {
-          "default": 1800,
+          "default": "null",
           "description": "Seconds after which the completed job pod will be deleted",
           "required": [],
           "title": "ttlSecondsAfterFinished",
-          "type": "integer"
+          "type": [
+            "null",
+            "integer"
+          ]
         }
       },
       "required": [],
@@ -1741,6 +1850,13 @@
               "title": "etcd",
               "type": "object"
             },
+            "etcdQPS": {
+              "default": 50,
+              "description": "Rate limit for the apiserver container while syncing Kubernetes\nresources from the local cluster to the local etcd.",
+              "required": [],
+              "title": "etcdQPS",
+              "type": "integer"
+            },
             "extraArgs": {
               "description": "Additional clustermesh-apiserver arguments.",
               "items": {
@@ -1789,7 +1905,7 @@
               "description": "Clustermesh API server image.",
               "properties": {
                 "digest": {
-                  "default": "sha256:3d4512153afc5d8ceda3517f9b243619b55a67f9abaebcc92c4be2df94d43cfa",
+                  "default": "sha256:d905d614a332b2058cb81c193e481d1f460902b903f4eb57cc9764640b750fb5",
                   "description": "clustermesh-apiserver-digest",
                   "required": [],
                   "title": "digest",
@@ -1817,7 +1933,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.18.7",
+                  "default": "v1.20.1",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -1842,6 +1958,13 @@
                   "required": [],
                   "title": "enabled",
                   "type": "boolean"
+                },
+                "etcdQPS": {
+                  "default": 100,
+                  "description": "Rate limit for the kvstoremesh container while syncing resources\nfrom all remote clusters to the local etcd.",
+                  "required": [],
+                  "title": "etcdQPS",
+                  "type": "integer"
                 },
                 "extraArgs": {
                   "description": "Additional KVStoreMesh arguments.",
@@ -2380,6 +2503,13 @@
                   "required": [],
                   "title": "externalTrafficPolicy"
                 },
+                "externallyCreated": {
+                  "default": false,
+                  "description": "(bool) Set externallyCreated to true to create the clustermesh-apiserver service outside this helm chart.\nFor example after external load balancer controllers are created.",
+                  "required": [],
+                  "title": "externallyCreated",
+                  "type": "boolean"
+                },
                 "internalTrafficPolicy": {
                   "default": "Cluster",
                   "description": "The internalTrafficPolicy of service used for apiserver access.",
@@ -2428,7 +2558,7 @@
                 },
                 "nodePort": {
                   "default": 32379,
-                  "description": "Optional port to use as the node port for apiserver access.\n\nWARNING: make sure to configure a different NodePort in each cluster if\nkube-proxy replacement is enabled, as Cilium is currently affected by a known\nbug (#24692) when NodePorts are handled by the KPR implementation. If a service\nwith the same NodePort exists both in the local and the remote cluster, all\ntraffic originating from inside the cluster and targeting the corresponding\nNodePort will be redirected to a local backend, regardless of whether the\ndestination node belongs to the local or the remote cluster.",
+                  "description": "Optional port to use as the node port for apiserver access.",
                   "required": [],
                   "title": "nodePort",
                   "type": "integer"
@@ -2455,29 +2585,8 @@
             "tls": {
               "additionalProperties": true,
               "properties": {
-                "admin": {
-                  "additionalProperties": true,
-                  "description": "base64 encoded PEM values for the clustermesh-apiserver admin certificate and private key.\nUsed if 'auto' is not enabled.",
-                  "properties": {
-                    "cert": {
-                      "default": "",
-                      "required": [],
-                      "title": "cert",
-                      "type": "string"
-                    },
-                    "key": {
-                      "default": "",
-                      "required": [],
-                      "title": "key",
-                      "type": "string"
-                    }
-                  },
-                  "required": [],
-                  "title": "admin",
-                  "type": "object"
-                },
                 "authMode": {
-                  "default": "legacy",
+                  "default": "migration",
                   "description": "Configure the clustermesh authentication mode.\nSupported values:\n- legacy:     All clusters access remote clustermesh instances with the same\n              username (i.e., remote). The \"remote\" certificate must be\n              generated with CN=remote if provided manually.\n- migration:  Intermediate mode required to upgrade from legacy to cluster\n              (and vice versa) with no disruption. Specifically, it enables\n              the creation of the per-cluster usernames, while still using\n              the common one for authentication. The \"remote\" certificate must\n              be generated with CN=remote if provided manually (same as legacy).\n- cluster:    Each cluster accesses remote etcd instances with a username\n              depending on the local cluster name (i.e., remote-\u003ccluster-name\u003e).\n              The \"remote\" certificate must be generated with CN=remote-\u003ccluster-name\u003e\n              if provided manually. Cluster mode is meaningful only when the same\n              CA is shared across all clusters part of the mesh.",
                   "required": [],
                   "title": "authMode",
@@ -2495,7 +2604,7 @@
                       "type": "object"
                     },
                     "certValidityDuration": {
-                      "default": 1095,
+                      "default": 365,
                       "description": "Generated certificates validity duration in days.",
                       "required": [],
                       "title": "certValidityDuration",
@@ -2503,7 +2612,7 @@
                     },
                     "enabled": {
                       "default": true,
-                      "description": "When set to true, automatically generate a CA and certificates to\nenable mTLS between clustermesh-apiserver and external workload instances.\nIf set to false, the certs to be provided by setting appropriate values below.",
+                      "description": "When set to true, automatically generate a CA and certificates to\nenable mTLS between clustermesh-apiserver and external workload instances.\n\nWhen set to false you need to pre-create the following secrets:\n- clustermesh-apiserver-server-cert\n- clustermesh-apiserver-admin-cert\n- clustermesh-apiserver-remote-cert\n- clustermesh-apiserver-local-cert\nThe above secret should at least contains the keys `tls.crt` and `tls.key`\nand optionally `ca.crt` if a CA bundle is not configured.",
                       "required": [],
                       "title": "enabled",
                       "type": "boolean"
@@ -2514,98 +2623,58 @@
                       "required": [],
                       "title": "method",
                       "type": "string"
+                    },
+                    "privateKey": {
+                      "additionalProperties": true,
+                      "description": "[Example]\nprivateKey:\n  algorithm: ECDSA\nPrivate key options. These include the key algorithm and size, the used encoding and the rotation policy used when clustermesh.apiserver.tls.auto.method=certmanager.\nhttps://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificatePrivateKey",
+                      "required": [],
+                      "title": "privateKey",
+                      "type": "object"
+                    },
+                    "schedule": {
+                      "default": "0 0 1 */4 *",
+                      "description": "Schedule for certificates regeneration (regardless of their expiration date).\nOnly used if method is \"cronJob\". If nil, then no recurring job will be created.\nInstead, only the one-shot job is deployed to generate the certificates at\ninstallation time.\n\nDue to the out-of-band distribution of client certs to external workloads the\nCA is (re)regenerated only if it is not provided as a helm value and the k8s\nsecret is manually deleted.\n\nDefaults to midnight of the first day of every fourth month. For syntax, see\nhttps://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#schedule-syntax",
+                      "required": [],
+                      "title": "schedule",
+                      "type": "string"
+                    },
+                    "server": {
+                      "additionalProperties": true,
+                      "description": "Extra configurations for the auto generated server certificate.",
+                      "properties": {
+                        "extraDnsNames": {
+                          "description": "Extra DNS names added to certificate when it's auto generated",
+                          "items": {
+                            "required": []
+                          },
+                          "required": [],
+                          "title": "extraDnsNames",
+                          "type": "array"
+                        },
+                        "extraIpAddresses": {
+                          "description": "Extra IP addresses added to certificate when it's auto generated",
+                          "items": {
+                            "required": []
+                          },
+                          "required": [],
+                          "title": "extraIpAddresses",
+                          "type": "array"
+                        }
+                      },
+                      "required": [],
+                      "title": "server",
+                      "type": "object"
+                    },
+                    "subject": {
+                      "additionalProperties": true,
+                      "description": "[Example]\nsubject:\n  countries:\n    - US\n  provinces:\n    - California\nX509Subject Full X509 name specification used when clustermesh.apiserver.tls.auto.method=certmanager.\nhttps://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.X509Subject",
+                      "required": [],
+                      "title": "subject",
+                      "type": "object"
                     }
                   },
                   "required": [],
                   "title": "auto",
-                  "type": "object"
-                },
-                "client": {
-                  "additionalProperties": true,
-                  "description": "base64 encoded PEM values for the clustermesh-apiserver client certificate and private key.\nUsed if 'auto' is not enabled.",
-                  "properties": {
-                    "cert": {
-                      "default": "",
-                      "required": [],
-                      "title": "cert",
-                      "type": "string"
-                    },
-                    "key": {
-                      "default": "",
-                      "required": [],
-                      "title": "key",
-                      "type": "string"
-                    }
-                  },
-                  "required": [],
-                  "title": "client",
-                  "type": "object"
-                },
-                "enableSecrets": {
-                  "default": true,
-                  "description": "Allow users to provide their own certificates\nUsers may need to provide their certificates using\na mechanism that requires they provide their own secrets.\nThis setting does not apply to any of the auto-generated\nmechanisms below, it only restricts the creation of secrets\nvia the `tls-provided` templates.",
-                  "required": [],
-                  "title": "enableSecrets",
-                  "type": "boolean"
-                },
-                "remote": {
-                  "additionalProperties": true,
-                  "description": "base64 encoded PEM values for the clustermesh-apiserver remote cluster certificate and private key.\nUsed if 'auto' is not enabled.",
-                  "properties": {
-                    "cert": {
-                      "default": "",
-                      "required": [],
-                      "title": "cert",
-                      "type": "string"
-                    },
-                    "key": {
-                      "default": "",
-                      "required": [],
-                      "title": "key",
-                      "type": "string"
-                    }
-                  },
-                  "required": [],
-                  "title": "remote",
-                  "type": "object"
-                },
-                "server": {
-                  "additionalProperties": true,
-                  "description": "base64 encoded PEM values for the clustermesh-apiserver server certificate and private key.\nUsed if 'auto' is not enabled.",
-                  "properties": {
-                    "cert": {
-                      "default": "",
-                      "required": [],
-                      "title": "cert",
-                      "type": "string"
-                    },
-                    "extraDnsNames": {
-                      "description": "Extra DNS names added to certificate when it's auto generated",
-                      "items": {
-                        "required": []
-                      },
-                      "required": [],
-                      "title": "extraDnsNames",
-                      "type": "array"
-                    },
-                    "extraIpAddresses": {
-                      "description": "Extra IP addresses added to certificate when it's auto generated",
-                      "items": {
-                        "required": []
-                      },
-                      "required": [],
-                      "title": "extraIpAddresses",
-                      "type": "array"
-                    },
-                    "key": {
-                      "default": "",
-                      "required": [],
-                      "title": "key",
-                      "type": "string"
-                    }
-                  },
-                  "required": [],
-                  "title": "server",
                   "type": "object"
                 }
               },
@@ -2677,18 +2746,29 @@
           "title": "apiserver",
           "type": "object"
         },
+        "cacheTTL": {
+          "default": "0s",
+          "description": "The time to live for the cache of a remote cluster after connectivity is\nlost. If the connection is not re-established within this duration, the\ncached data is revoked to prevent stale state. If not specified or set to\n0s, the cache is never revoked (default).",
+          "required": [],
+          "title": "cacheTTL",
+          "type": "string"
+        },
         "config": {
           "additionalProperties": true,
           "description": "Clustermesh explicit configuration.",
           "properties": {
             "clusters": {
-              "description": "List of clusters to be peered in the mesh.",
+              "additionalProperties": true,
+              "description": "Clusters to be peered in the mesh.",
               "items": {
                 "required": []
               },
               "required": [],
               "title": "clusters",
-              "type": "array"
+              "type": [
+                "object",
+                "array"
+              ]
             },
             "domain": {
               "default": "mesh.cilium.io",
@@ -2699,7 +2779,7 @@
             },
             "enabled": {
               "default": false,
-              "description": "Enable the Clustermesh explicit configuration.",
+              "description": "Enable the Clustermesh explicit configuration.\nIf set to false, you need to provide the following resources yourself:\n- (Secret) cilium-clustermesh (used by cilium-agent/cilium-operator to connect to\n  the local etcd instance if KVStoreMesh is enabled or the remote clusters\n  if KVStoreMesh is disabled)\n- (Secret) cilium-kvstoremesh (used by KVStoreMesh to connect to the remote clusters)\n- (ConfigMap) clustermesh-remote-users (used to create one etcd user per remote cluster\n  if clustermesh-apiserver is used and `clustermesh.apiserver.tls.authMode` is not\n  set to `legacy`)",
               "required": [],
               "title": "enabled",
               "type": "boolean"
@@ -2709,18 +2789,18 @@
           "title": "config",
           "type": "object"
         },
+        "defaultGlobalNamespace": {
+          "default": true,
+          "description": "Default behavior of namespaces in Clustermesh.\n\nA \"global\" namespace means its resources (CiliumEndpoints, CiliumIdentities,\nand Services) are exported and shared across all connected clusters in the mesh.\nThis enables:\n- Cross-cluster pod-to-pod connectivity\n- Cross-cluster network policy enforcement (policies can match labels on pods in remote clusters)\n- Global services and Multi-Cluster Services (MCS-API)\n\nA \"local\" namespace means its resources stay within the cluster and are NOT\nexported to other clusters. Cross-cluster communication and network policies\nwill not work for pods in local namespaces.\n\nIf set to true, all namespaces are considered global by default unless\nexplicitly annotated with clustermesh.cilium.io/global=false.\nIf set to false, all namespaces are considered local by default unless\nexplicitly annotated with clustermesh.cilium.io/global=true.\n\nNote: For cross-cluster communication to work, BOTH the source and destination\nnamespaces must be global. Additionally, for a service to be a Global Service,\nit must both reside in a global namespace AND be annotated with\nservice.cilium.io/global=true.\nThis setting improves scalability by limiting the amount of state synchronized\nacross clusters.\n\nDefaults to true (preserves existing behavior where all namespaces are global).",
+          "required": [],
+          "title": "defaultGlobalNamespace",
+          "type": "boolean"
+        },
         "enableEndpointSliceSynchronization": {
           "default": false,
           "description": "Enable the synchronization of Kubernetes EndpointSlices corresponding to\nthe remote endpoints of appropriately-annotated global services through ClusterMesh",
           "required": [],
           "title": "enableEndpointSliceSynchronization",
-          "type": "boolean"
-        },
-        "enableMCSAPISupport": {
-          "default": false,
-          "description": "Enable Multi-Cluster Services API support",
-          "required": [],
-          "title": "enableMCSAPISupport",
           "type": "boolean"
         },
         "maxConnectedClusters": {
@@ -2730,8 +2810,180 @@
           "title": "maxConnectedClusters",
           "type": "integer"
         },
+        "mcsapi": {
+          "additionalProperties": true,
+          "properties": {
+            "corednsAutoConfigure": {
+              "additionalProperties": true,
+              "properties": {
+                "affinity": {
+                  "additionalProperties": true,
+                  "description": "Affinity for coredns-mcsapi-autoconfig",
+                  "required": [],
+                  "title": "affinity",
+                  "type": "object"
+                },
+                "annotations": {
+                  "additionalProperties": true,
+                  "description": "Annotations to be added to the coredns-mcsapi-autoconfig Job",
+                  "required": [],
+                  "title": "annotations",
+                  "type": "object"
+                },
+                "coredns": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "clusterDomain": {
+                      "default": "cluster.local",
+                      "description": "The cluster domain for the cluster CoreDNS service",
+                      "required": [],
+                      "title": "clusterDomain",
+                      "type": "string"
+                    },
+                    "clustersetDomain": {
+                      "default": "clusterset.local",
+                      "description": "The clusterset domain for the cluster CoreDNS service",
+                      "required": [],
+                      "title": "clustersetDomain",
+                      "type": "string"
+                    },
+                    "configMapName": {
+                      "default": "coredns",
+                      "description": "The ConfigMap name for the cluster CoreDNS service",
+                      "required": [],
+                      "title": "configMapName",
+                      "type": "string"
+                    },
+                    "deploymentName": {
+                      "default": "coredns",
+                      "description": "The Deployment for the cluster CoreDNS service",
+                      "required": [],
+                      "title": "deploymentName",
+                      "type": "string"
+                    },
+                    "namespace": {
+                      "default": "kube-system",
+                      "description": "The namespace for the cluster CoreDNS service",
+                      "required": [],
+                      "title": "namespace",
+                      "type": "string"
+                    },
+                    "serviceAccountName": {
+                      "default": "coredns",
+                      "description": "The Service Account name for the cluster CoreDNS service",
+                      "required": [],
+                      "title": "serviceAccountName",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "coredns",
+                  "type": "object"
+                },
+                "enabled": {
+                  "default": false,
+                  "description": "Enable auto-configuration of CoreDNS for Multi-Cluster Services API.\n   CoreDNS MUST be at least in version v1.12.2 to run this.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "extraArgs": {
+                  "description": "Additional arguments to `clustermesh-apiserver coredns-mcsapi-auto-configure`.",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "extraArgs",
+                  "type": "array"
+                },
+                "extraVolumeMounts": {
+                  "description": "Additional coredns-mcsapi-autoconfig volumeMounts.",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "extraVolumeMounts",
+                  "type": "array"
+                },
+                "extraVolumes": {
+                  "description": "Additional coredns-mcsapi-autoconfig volumes.",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "extraVolumes",
+                  "type": "array"
+                },
+                "nodeSelector": {
+                  "additionalProperties": true,
+                  "description": "Node selector for coredns-mcsapi-autoconfig\nref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector",
+                  "required": [],
+                  "title": "nodeSelector",
+                  "type": "object"
+                },
+                "podLabels": {
+                  "additionalProperties": true,
+                  "description": "Labels to be added to coredns-mcsapi-autoconfig pods",
+                  "required": [],
+                  "title": "podLabels",
+                  "type": "object"
+                },
+                "priorityClassName": {
+                  "default": "",
+                  "description": "Priority class for coredns-mcsapi-autoconfig\nref: https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#priorityclass",
+                  "required": [],
+                  "title": "priorityClassName",
+                  "type": "string"
+                },
+                "resources": {
+                  "additionalProperties": true,
+                  "description": "Resource limits for coredns-mcsapi-autoconfig\nref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers",
+                  "required": [],
+                  "title": "resources",
+                  "type": "object"
+                },
+                "tolerations": {
+                  "description": "Node tolerations for pod assignment on nodes with taints\nref: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "tolerations",
+                  "type": "array"
+                },
+                "ttlSecondsAfterFinished": {
+                  "default": 1800,
+                  "description": "Seconds after which the completed job pod will be deleted",
+                  "required": [],
+                  "title": "ttlSecondsAfterFinished",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "corednsAutoConfigure",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable Multi-Cluster Services API support",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "installCRDs": {
+              "default": true,
+              "description": "Enabled MCS-API CRDs auto-installation",
+              "required": [],
+              "title": "installCRDs",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "mcsapi",
+          "type": "object"
+        },
         "policyDefaultLocalCluster": {
-          "default": false,
+          "default": true,
           "description": "Control whether policy rules assume by default the local cluster if not explicitly selected",
           "required": [],
           "title": "policyDefaultLocalCluster",
@@ -2739,7 +2991,7 @@
         },
         "useAPIServer": {
           "default": false,
-          "description": "Deploy clustermesh-apiserver for clustermesh",
+          "description": "Deploy clustermesh-apiserver for clustermesh. This option is typically\nused with ``clustermesh.config.enabled=true``. Refer to the\n``clustermesh.config.enabled=true``documentation for more information.",
           "required": [],
           "title": "useAPIServer",
           "type": "boolean"
@@ -2860,6 +3112,29 @@
           "additionalProperties": true,
           "description": "Specifies the resources for the cni initContainer",
           "properties": {
+            "limits": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": 1,
+                  "required": [],
+                  "title": "cpu",
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "limits",
+              "type": "object"
+            },
             "requests": {
               "additionalProperties": true,
               "properties": {
@@ -2867,7 +3142,10 @@
                   "default": "100m",
                   "required": [],
                   "title": "cpu",
-                  "type": "string"
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
                 },
                 "memory": {
                   "default": "10Mi",
@@ -2907,6 +3185,38 @@
         "object"
       ]
     },
+    "configDriftDetection": {
+      "additionalProperties": true,
+      "description": "Configuration for the ConfigMap drift detection feature.\nWhen enabled, the agent continuously watches the cilium-config ConfigMap\nand exposes a cilium_drift_checker_config_delta Prometheus metric reporting\nthe number of keys that differ between the ConfigMap and the agent's active\nsettings. A non-zero value indicates that the agent has not yet applied all\ncurrent ConfigMap changes and needs to be restarted.",
+      "properties": {
+        "driftChecker": {
+          "default": true,
+          "description": "Enable the drift checker which compares the DynamicConfig table against\nthe agent's active settings and publishes the\ncilium_drift_checker_config_delta metric.",
+          "required": [],
+          "title": "driftChecker",
+          "type": "boolean"
+        },
+        "enabled": {
+          "default": true,
+          "description": "Enable watching of the cilium-config ConfigMap and reflecting its\ncontents into the agent's internal DynamicConfig table.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "ignoredKeys": {
+          "description": "List of config-map keys to ignore when computing the drift delta.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "ignoredKeys",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "configDriftDetection",
+      "type": "object"
+    },
     "connectivityProbeFrequencyRatio": {
       "default": "~",
       "description": "(float64) Ratio of the connectivity probe frequency vs resource usage, a float in\n[0, 1]. 0 will give more frequent probing, 1 will give less frequent probing. Probing\nfrequency is dynamically adjusted based on the cluster size.",
@@ -2937,22 +3247,6 @@
       "required": [],
       "title": "crdWaitTimeout",
       "type": "string"
-    },
-    "customCalls": {
-      "additionalProperties": true,
-      "description": "Tail call hooks for custom eBPF programs.",
-      "properties": {
-        "enabled": {
-          "default": false,
-          "description": "Enable tail call hooks for custom eBPF programs.",
-          "required": [],
-          "title": "enabled",
-          "type": "boolean"
-        }
-      },
-      "required": [],
-      "title": "customCalls",
-      "type": "object"
     },
     "daemon": {
       "additionalProperties": true,
@@ -3051,6 +3345,29 @@
       "title": "dashboards",
       "type": "object"
     },
+    "datapathPlugins": {
+      "additionalProperties": true,
+      "description": "Plugins to inject custom BPF into the datapath.",
+      "properties": {
+        "enabled": {
+          "default": false,
+          "description": "Enable datapath plugins.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "stateDir": {
+          "default": "/var/run/cilium/plugins",
+          "description": "Parent directory for per-plugin state directories.",
+          "required": [],
+          "title": "stateDir",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "datapathPlugins",
+      "type": "object"
+    },
     "debug": {
       "additionalProperties": true,
       "properties": {
@@ -3073,7 +3390,7 @@
         },
         "verbose": {
           "default": "~",
-          "description": "Configure verbosity levels for debug logging\nThis option is used to enable debug messages for operations related to such\nsub-system such as (e.g. kvstore, envoy, datapath or policy), and flow is\nfor enabling debug messages emitted per request, message and connection.\nMultiple values can be set via a space-separated string (e.g. \"datapath envoy\").\n\nApplicable values:\n- flow\n- kvstore\n- envoy\n- datapath\n- policy",
+          "description": "Configure verbosity levels for debug logging\nThis option is used to enable debug messages for operations related to such\nsub-system such as (e.g. kvstore, envoy, datapath, policy, or tagged), and flow is\nfor enabling debug messages emitted per request, message and connection.\nMultiple values can be set via a space-separated string (e.g. \"datapath envoy\").\n\nApplicable values:\n- flow\n- kvstore\n- envoy\n- datapath\n- policy\n- tagged",
           "required": [],
           "title": "verbose",
           "type": [
@@ -3092,6 +3409,17 @@
       "required": [],
       "title": "defaultLBServiceIPAM",
       "type": "string"
+    },
+    "devices": {
+      "default": "",
+      "description": "Specify which network interfaces can run the eBPF datapath. This means\nthat a packet sent from a pod to a destination outside the cluster will be\nmasqueraded (to an output device IPv4 address), if the output device runs the\nprogram. When not specified, probing will automatically detect devices that have\na non-local route. This should be used only when auto-detection is not suitable.\nThe devices are a comma-separated list and support '+' as a wildcard, e.g.\n\"net0,eth+\" matches \"net0\" and any device starting with \"eth\". A device can be\nexcluded with \"!\", e.g. \"net0,eth+,!eth0\".",
+      "required": [],
+      "title": "devices",
+      "type": [
+        "null",
+        "string",
+        "array"
+      ]
     },
     "directRoutingSkipUnreachable": {
       "default": false,
@@ -3168,7 +3496,7 @@
         },
         "preCache": {
           "default": "",
-          "description": "DNS cache data at this path is preloaded on agent startup.",
+          "description": "DNS cache data at this path is preloaded on agent startup. (deprecated: will be removed in v1.21)",
           "required": [],
           "title": "preCache",
           "type": "string"
@@ -3280,6 +3608,13 @@
       "title": "enableMasqueradeRouteSource",
       "type": "boolean"
     },
+    "enableNoServiceEndpointsRoutable": {
+      "default": true,
+      "description": "Enable routing to a service that has zero endpoints",
+      "required": [],
+      "title": "enableNoServiceEndpointsRoutable",
+      "type": "boolean"
+    },
     "enableNonDefaultDenyPolicies": {
       "default": true,
       "description": "Enable Non-Default-Deny policies",
@@ -3307,13 +3642,6 @@
         "ipsec": {
           "additionalProperties": true,
           "properties": {
-            "encryptedOverlay": {
-              "default": false,
-              "description": "Enable IPsec encrypted overlay",
-              "required": [],
-              "title": "encryptedOverlay",
-              "type": "boolean"
-            },
             "interface": {
               "default": "",
               "description": "The interface to use for encrypted traffic.",
@@ -3370,28 +3698,51 @@
         },
         "strictMode": {
           "additionalProperties": true,
-          "description": "Configure the WireGuard Pod2Pod strict mode.",
+          "description": "Configure the Encryption Pod2Pod strict mode.",
           "properties": {
-            "allowRemoteNodeIdentities": {
-              "default": false,
-              "description": "Allow dynamic lookup of remote node identities.\nThis is required when tunneling is used or direct routing is used and the node CIDR and pod CIDR overlap.",
+            "egress": {
+              "additionalProperties": true,
+              "properties": {
+                "allowRemoteNodeIdentities": {
+                  "default": false,
+                  "description": "Allow dynamic lookup of remote node identities.\nThis is required when tunneling is used or direct routing is used and the node CIDR and pod CIDR overlap.",
+                  "required": [],
+                  "title": "allowRemoteNodeIdentities",
+                  "type": "boolean"
+                },
+                "cidr": {
+                  "default": "",
+                  "description": "CIDR for the Encryption Pod2Pod strict egress mode.",
+                  "required": [],
+                  "title": "cidr",
+                  "type": "string"
+                },
+                "enabled": {
+                  "default": false,
+                  "description": "Enable strict egress encryption.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
               "required": [],
-              "title": "allowRemoteNodeIdentities",
-              "type": "boolean"
+              "title": "egress",
+              "type": "object"
             },
-            "cidr": {
-              "default": "",
-              "description": "CIDR for the WireGuard Pod2Pod strict mode.",
+            "ingress": {
+              "additionalProperties": true,
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "description": "Enable strict ingress encryption.\nWhen enabled, all unencrypted pod-to-pod ingress traffic will be dropped.\nThis option requires WireGuard encryption.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                }
+              },
               "required": [],
-              "title": "cidr",
-              "type": "string"
-            },
-            "enabled": {
-              "default": false,
-              "description": "Enable WireGuard Pod2Pod strict mode.",
-              "required": [],
-              "title": "enabled",
-              "type": "boolean"
+              "title": "ingress",
+              "type": "object"
             }
           },
           "required": [],
@@ -3400,7 +3751,7 @@
         },
         "type": {
           "default": "ipsec",
-          "description": "Encryption method. Can be either ipsec or wireguard.",
+          "description": "Encryption method. Can be one of ipsec, wireguard or ztunnel.",
           "required": [],
           "title": "type",
           "type": "string"
@@ -3418,6 +3769,331 @@
           },
           "required": [],
           "title": "wireguard",
+          "type": "object"
+        },
+        "ztunnel": {
+          "additionalProperties": true,
+          "description": "ztunnel encryption configuration.\nztunnel is Istio's purpose-built, per-node proxy for handling L4 traffic in ambient mesh mode.\nThese settings only apply when encryption.type is set to \"ztunnel\".",
+          "properties": {
+            "affinity": {
+              "additionalProperties": true,
+              "description": "Affinity for ztunnel pods.",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to be added to all ztunnel resources.",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "ca": {
+              "additionalProperties": true,
+              "description": "CA backend used by ztunnel to issue workload identities.",
+              "properties": {
+                "type": {
+                  "default": "internal",
+                  "description": "Type of CA. \"spire\" uses an external SPIRE server (the operator\nthen manages SPIRE entries for enrolled namespaces). \"internal\" uses\nCilium's built-in CA and skips the SPIRE enrollment reconciler.",
+                  "enum": [
+                    "spire",
+                    "internal"
+                  ],
+                  "required": [],
+                  "title": "type"
+                }
+              },
+              "required": [],
+              "title": "ca",
+              "type": "object"
+            },
+            "caAddress": {
+              "default": "https://localhost:15012",
+              "description": "CA server address for certificate requests.",
+              "required": [],
+              "title": "caAddress",
+              "type": "string"
+            },
+            "extraEnv": {
+              "description": "Additional ztunnel container environment variables.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Additional ztunnel volumeMounts.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Additional ztunnel volumes.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "extraVolumes",
+              "type": "array"
+            },
+            "healthPort": {
+              "default": 15021,
+              "description": "TCP port for the health API.",
+              "required": [],
+              "title": "healthPort",
+              "type": "integer"
+            },
+            "image": {
+              "additionalProperties": true,
+              "description": "ztunnel container image.",
+              "properties": {
+                "digest": {
+                  "default": "sha256:884de5adde400e39f58e36c7a729f7690466ca4a8eb4c2a8daa9c1c025115b24",
+                  "required": [],
+                  "title": "digest",
+                  "type": "string"
+                },
+                "override": {
+                  "default": "~",
+                  "required": [],
+                  "title": "override",
+                  "type": [
+                    "null",
+                    "string"
+                  ]
+                },
+                "pullPolicy": {
+                  "default": "IfNotPresent",
+                  "required": [],
+                  "title": "pullPolicy",
+                  "type": "string"
+                },
+                "repository": {
+                  "default": "quay.io/cilium/ztunnel",
+                  "required": [],
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "v1.0.0",
+                  "required": [],
+                  "title": "tag",
+                  "type": "string"
+                },
+                "useDigest": {
+                  "default": true,
+                  "required": [],
+                  "title": "useDigest",
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "title": "image",
+              "type": "object"
+            },
+            "minReadySeconds": {
+              "default": 0,
+              "description": "Minimum number of seconds for which a newly created ztunnel pod should be ready\nbefore it is considered available.",
+              "required": [],
+              "title": "minReadySeconds",
+              "type": "integer"
+            },
+            "nodeSelector": {
+              "additionalProperties": true,
+              "description": "Node selector for ztunnel pods.",
+              "properties": {
+                "kubernetes.io/os": {
+                  "default": "linux",
+                  "required": [],
+                  "title": "kubernetes.io/os",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "nodeSelector",
+              "type": "object"
+            },
+            "podAnnotations": {
+              "additionalProperties": true,
+              "description": "Annotations to be added to ztunnel pods.",
+              "required": [],
+              "title": "podAnnotations",
+              "type": "object"
+            },
+            "podLabels": {
+              "additionalProperties": true,
+              "description": "Labels to be added to ztunnel pods.",
+              "required": [],
+              "title": "podLabels",
+              "type": "object"
+            },
+            "priorityClassName": {
+              "default": "~",
+              "description": "The priority class to use for ztunnel pods.",
+              "required": [],
+              "title": "priorityClassName",
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "readinessProbe": {
+              "additionalProperties": true,
+              "description": "Readiness probe configuration.",
+              "properties": {
+                "failureThreshold": {
+                  "default": 3,
+                  "required": [],
+                  "title": "failureThreshold",
+                  "type": "integer"
+                },
+                "initialDelaySeconds": {
+                  "default": 0,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                },
+                "periodSeconds": {
+                  "default": 10,
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "readinessProbe",
+              "type": "object"
+            },
+            "resources": {
+              "additionalProperties": true,
+              "description": "ztunnel resource limits \u0026 requests.",
+              "properties": {
+                "requests": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "cpu": {
+                      "default": "200m",
+                      "required": [],
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "512Mi",
+                      "required": [],
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            },
+            "secrets": {
+              "additionalProperties": true,
+              "description": "ztunnel secrets configuration.",
+              "properties": {
+                "bootstrapRootCert": {
+                  "default": "~",
+                  "description": "Base64-encoded bootstrap root certificate content.\nIf not provided, the secret must be created manually before deploying.",
+                  "required": [],
+                  "title": "bootstrapRootCert",
+                  "type": [
+                    "null",
+                    "string"
+                  ]
+                }
+              },
+              "required": [],
+              "title": "secrets",
+              "type": "object"
+            },
+            "terminationGracePeriodSeconds": {
+              "default": 30,
+              "description": "Configure termination grace period for ztunnel DaemonSet.",
+              "required": [],
+              "title": "terminationGracePeriodSeconds",
+              "type": "integer"
+            },
+            "tolerations": {
+              "description": "Node tolerations for ztunnel scheduling.",
+              "items": {
+                "additionalProperties": true,
+                "properties": {
+                  "effect": {
+                    "default": "NoExecute",
+                    "required": [],
+                    "title": "effect",
+                    "type": "string"
+                  },
+                  "key": {
+                    "default": "CriticalAddonsOnly",
+                    "required": [],
+                    "title": "key",
+                    "type": "string"
+                  },
+                  "operator": {
+                    "default": "Exists",
+                    "required": [],
+                    "title": "operator",
+                    "type": "string"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "title": "tolerations",
+              "type": "array"
+            },
+            "updateStrategy": {
+              "additionalProperties": true,
+              "description": "ztunnel update strategy.",
+              "properties": {
+                "rollingUpdate": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "maxSurge": {
+                      "default": 1,
+                      "required": [],
+                      "title": "maxSurge",
+                      "type": "integer"
+                    },
+                    "maxUnavailable": {
+                      "default": 0,
+                      "required": [],
+                      "title": "maxUnavailable",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "rollingUpdate",
+                  "type": "object"
+                },
+                "type": {
+                  "default": "RollingUpdate",
+                  "required": [],
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "updateStrategy",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "ztunnel",
           "type": "object"
         }
       },
@@ -3446,6 +4122,13 @@
       "required": [],
       "title": "endpointLockdownOnMapOverflow",
       "type": "boolean"
+    },
+    "endpointPolicyUpdateTimeoutDuration": {
+      "default": "",
+      "description": "Max duration to wait for envoy to respond to configuration changes. Default \"10s\".",
+      "required": [],
+      "title": "endpointPolicyUpdateTimeoutDuration",
+      "type": "string"
     },
     "endpointRoutes": {
       "additionalProperties": true,
@@ -3532,6 +4215,94 @@
           "required": [],
           "title": "instanceTagsFilter",
           "type": "array"
+        },
+        "nodeSpec": {
+          "additionalProperties": true,
+          "description": "NodeSpec configuration for the ENI",
+          "properties": {
+            "deleteOnTermination": {
+              "default": "~",
+              "description": "Delete ENI on termination",
+              "required": [],
+              "title": "deleteOnTermination",
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "disablePrefixDelegation": {
+              "default": false,
+              "description": "Disable prefix delegation for IP allocation",
+              "required": [],
+              "title": "disablePrefixDelegation",
+              "type": "boolean"
+            },
+            "excludeInterfaceTags": {
+              "description": "Exclude interface tags to use for IP allocation",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "excludeInterfaceTags",
+              "type": "array"
+            },
+            "firstInterfaceIndex": {
+              "default": "~",
+              "description": "First interface index to use for IP allocation",
+              "required": [],
+              "title": "firstInterfaceIndex",
+              "type": [
+                "null",
+                "integer"
+              ]
+            },
+            "securityGroupTags": {
+              "description": "Security group tags to use for IP allocation",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "securityGroupTags",
+              "type": "array"
+            },
+            "securityGroups": {
+              "description": "Security groups to use for IP allocation",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "securityGroups",
+              "type": "array"
+            },
+            "subnetIDs": {
+              "description": "Subnet IDs to use for IP allocation",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "subnetIDs",
+              "type": "array"
+            },
+            "subnetTags": {
+              "description": "Subnet tags to use for IP allocation",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "subnetTags",
+              "type": "array"
+            },
+            "usePrimaryAddress": {
+              "default": false,
+              "description": "Use primary address for IP allocation",
+              "required": [],
+              "title": "usePrimaryAddress",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "nodeSpec",
+          "type": "object"
         },
         "subnetIDsFilter": {
           "description": "Filter via subnet IDs which will dictate which subnets are going to be used to create new ENIs\nImportant note: This requires that each instance has an ENI with a matching subnet attached\nwhen Cilium is deployed. If you only want to control subnets for ENIs attached by Cilium,\nuse the CNI configuration file settings (cni.customConf) instead.",
@@ -3750,6 +4521,27 @@
             "string"
           ]
         },
+        "clusterMaxConnections": {
+          "default": 1024,
+          "description": "Maximum number of connections on Envoy clusters",
+          "required": [],
+          "title": "clusterMaxConnections",
+          "type": "integer"
+        },
+        "clusterMaxPendingRequests": {
+          "default": 1024,
+          "description": "Maximum number of pending requests on Envoy clusters",
+          "required": [],
+          "title": "clusterMaxPendingRequests",
+          "type": "integer"
+        },
+        "clusterMaxRequests": {
+          "default": 1024,
+          "description": "Maximum number of requests on Envoy clusters",
+          "required": [],
+          "title": "clusterMaxRequests",
+          "type": "integer"
+        },
         "connectTimeoutSeconds": {
           "default": 2,
           "description": "Time in seconds after which a TCP connection attempt times out",
@@ -3880,7 +4672,10 @@
           "description": "Time in seconds to block Envoy worker thread while an upstream HTTP connection is closing. If set to 0, the connection is closed immediately (with TCP RST). If set to -1, the connection is closed asynchronously in the background.",
           "required": [],
           "title": "httpUpstreamLingerTimeout",
-          "type": "null"
+          "type": [
+            "null",
+            "integer"
+          ]
         },
         "idleTimeoutDurationSeconds": {
           "default": 60,
@@ -3894,7 +4689,7 @@
           "description": "Envoy container image.",
           "properties": {
             "digest": {
-              "default": "sha256:da85124deeb42c8e56e55e9e6e155740f5df00e1064759a244bc246c3addb45d",
+              "default": "sha256:75b8094c7127736a2ffd2dce3945e0931cb6df21b0372ff661940eca26730b91",
               "required": [],
               "title": "digest",
               "type": "string"
@@ -3921,7 +4716,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.35.9-1770554954-8ce3bb4eca04188f4a0a1bfbd0a06a40f90883de",
+              "default": "v1.37.5-1786810558-766ccfb37260a43e9d228837aa84ce3faf9f64e7",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -3936,6 +4731,15 @@
           "required": [],
           "title": "image",
           "type": "object"
+        },
+        "initContainers": {
+          "description": "Init containers added to the cilium Envoy DaemonSet.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "initContainers",
+          "type": "array"
         },
         "initialFetchTimeoutSeconds": {
           "default": 30,
@@ -3961,11 +4765,25 @@
               "title": "failureThreshold",
               "type": "integer"
             },
+            "initialDelaySeconds": {
+              "default": 0,
+              "description": "Initial delay before the liveness probe begins",
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
             "periodSeconds": {
               "default": 30,
               "description": "interval between checks of the liveness probe",
               "required": [],
               "title": "periodSeconds",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 5,
+              "description": "Timeout for the liveness probe",
+              "required": [],
+              "title": "timeoutSeconds",
               "type": "integer"
             }
           },
@@ -3985,6 +4803,13 @@
                 "null",
                 "integer"
               ]
+            },
+            "accessLogEnabled": {
+              "default": true,
+              "description": "Enable access log forwarding for integration with Hubble.",
+              "required": [],
+              "title": "accessLogEnabled",
+              "type": "boolean"
             },
             "defaultLevel": {
               "description": "Default log level of Envoy application log that is configured if Cilium debug / verbose logging isn't enabled.\nThis option allows to have a different log level than the Cilium Agent - e.g. lower it to `critical`.\nPossible values: trace, debug, info, warning, error, critical, off",
@@ -4048,12 +4873,42 @@
           "title": "maxConnectionDurationSeconds",
           "type": "integer"
         },
+        "maxGlobalDownstreamConnections": {
+          "default": 50000,
+          "description": "Maximum number of global downstream connections",
+          "required": [],
+          "title": "maxGlobalDownstreamConnections",
+          "type": "integer"
+        },
         "maxRequestsPerConnection": {
           "default": 0,
           "description": "ProxyMaxRequestsPerConnection specifies the max_requests_per_connection setting for Envoy",
           "required": [],
           "title": "maxRequestsPerConnection",
           "type": "integer"
+        },
+        "minReadySeconds": {
+          "default": 0,
+          "description": "Minimum number of seconds for which a newly created envoy pod should be ready\nbefore it is considered available.",
+          "required": [],
+          "title": "minReadySeconds",
+          "type": "integer"
+        },
+        "nodeLocality": {
+          "additionalProperties": true,
+          "description": "Enable node locality lookup and pass resolved zone to cilium-envoy via `--service-zone`.",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable node-locality support for cilium-envoy.\nWhen enabled, Cilium looks up the node zone from the topology label and passes it to the Envoy process via `--service-zone`.\nStartup fails if the zone cannot be resolved or the label is empty.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "nodeLocality",
+          "type": "object"
         },
         "nodeSelector": {
           "additionalProperties": true,
@@ -4257,11 +5112,25 @@
               "title": "failureThreshold",
               "type": "integer"
             },
+            "initialDelaySeconds": {
+              "default": 0,
+              "description": "Initial delay before the readiness probe begins",
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
             "periodSeconds": {
               "default": 30,
               "description": "interval between checks of the readiness probe",
               "required": [],
               "title": "periodSeconds",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 5,
+              "description": "Timeout for the readiness probe",
+              "required": [],
+              "title": "timeoutSeconds",
               "type": "integer"
             }
           },
@@ -4290,7 +5159,7 @@
               "additionalProperties": true,
               "properties": {
                 "envoy": {
-                  "description": "Capabilities for the `cilium-envoy` container.\nEven though granted to the container, the cilium-envoy-starter wrapper drops\nall capabilities after forking the actual Envoy process.\n`NET_BIND_SERVICE` is the only capability that can be passed to the Envoy process by\nsetting `envoy.securityContext.capabilities.keepNetBindService=true` (in addition to granting the\ncapability to the container).\nNote: In case of embedded envoy, the capability must  be granted to the cilium-agent container.",
+                  "description": "Capabilities for the `cilium-envoy` container.\nEven though granted to the container, the cilium-envoy-starter wrapper drops\nall capabilities after forking the actual Envoy process.\n`NET_BIND_SERVICE` is the only capability that can be passed to the Envoy process by\nsetting `envoy.securityContext.capabilities.keepCapNetBindService=true` (in addition to granting the\ncapability to the container).\nNote: In case of embedded envoy, the capability must  be granted to the cilium-agent container.",
                   "items": {
                     "required": [],
                     "type": "string"
@@ -4362,11 +5231,25 @@
               "title": "failureThreshold",
               "type": "integer"
             },
+            "initialDelaySeconds": {
+              "default": 5,
+              "description": "Initial delay before the startup probe begins",
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
             "periodSeconds": {
               "default": 2,
               "description": "interval between checks of the startup probe",
               "required": [],
               "title": "periodSeconds",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 5,
+              "description": "Timeout for the startup probe",
+              "required": [],
+              "title": "timeoutSeconds",
               "type": "integer"
             }
           },
@@ -4438,6 +5321,24 @@
           "required": [],
           "title": "updateStrategy",
           "type": "object"
+        },
+        "useOriginalSourceAddress": {
+          "default": true,
+          "description": "For cases when CiliumEnvoyConfig is not used directly (Ingress, Gateway), configures Cilium BPF Metadata listener filter\nto use the original source address when extracting the metadata for a request.",
+          "required": [],
+          "title": "useOriginalSourceAddress",
+          "type": "boolean"
+        },
+        "xdsMode": {
+          "description": "xDS server operating mode for Envoy proxy configuration. Supported\nvalues are: \"split\" for the existing per-resource-type xDS,\n\"ads\" for the ADS (Aggregated Discovery Service) xDS, and\n\"strict-ads\" for ADS with strict snapshot cache behavior and generated\nsnapshot consistency checks. Null value omits setting this option.\nCilium Agent defaults missing option to \"split\" to keep upgrades in the legacy mode.",
+          "enum": [
+            "split",
+            "ads",
+            "strict-ads"
+          ],
+          "required": [],
+          "title": "xdsMode",
+          "type": "null"
         },
         "xffNumTrustedHopsL7PolicyEgress": {
           "default": 0,
@@ -4658,7 +5559,10 @@
               "description": "Enable creation of GatewayClass resource\nThe default value is 'auto' which decides according to presence of gateway.networking.k8s.io/v1/GatewayClass in the cluster.\nOther possible values are 'true' and 'false', which will either always or never create the GatewayClass, respectively.",
               "required": [],
               "title": "create",
-              "type": "string"
+              "type": [
+                "boolean",
+                "string"
+              ]
             }
           },
           "required": [],
@@ -4726,6 +5630,16 @@
           "required": [],
           "title": "secretsNamespace",
           "type": "object"
+        },
+        "useRemoteAddress": {
+          "default": true,
+          "description": "Configure whether to use the remote address of the client when determining the source IP.\nWhen enabled, the source IP is determined from the remote address instead of the proxy protocol header.",
+          "required": [],
+          "title": "useRemoteAddress",
+          "type": [
+            "null",
+            "boolean"
+          ]
         },
         "xffNumTrustedHops": {
           "default": 0,
@@ -4871,12 +5785,26 @@
                       "items": {
                         "additionalProperties": true,
                         "properties": {
+                          "aggregationInterval": {
+                            "default": "0s",
+                            "required": [],
+                            "title": "aggregationInterval",
+                            "type": "string"
+                          },
                           "excludeFilters": {
                             "items": {
                               "required": []
                             },
                             "required": [],
                             "title": "excludeFilters",
+                            "type": "array"
+                          },
+                          "fieldAggregate": {
+                            "items": {
+                              "required": []
+                            },
+                            "required": [],
+                            "title": "fieldAggregate",
                             "type": "array"
                           },
                           "fieldMask": {
@@ -4960,8 +5888,14 @@
               "additionalProperties": true,
               "description": "- Static exporter configuration.\nStatic exporter is bound to agent lifecycle.",
               "properties": {
+                "aggregationInterval": {
+                  "default": "0s",
+                  "description": "- time\n- source\n- destination\n- verdict\n- Defines the interval at which to aggregate before exporting Hubble flows.\n    Aggregation feature is only enabled when fieldAggregate is specified and aggregationInterval \u003e 0s.",
+                  "required": [],
+                  "title": "aggregationInterval",
+                  "type": "string"
+                },
                 "allowList": {
-                  "description": "- time\n- source\n- destination\n- verdict",
                   "items": {
                     "required": []
                   },
@@ -4983,6 +5917,15 @@
                   "required": [],
                   "title": "enabled",
                   "type": "boolean"
+                },
+                "fieldAggregate": {
+                  "description": "- time\n- source\n- destination\n- verdict",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "fieldAggregate",
+                  "type": "array"
                 },
                 "fieldMask": {
                   "items": {
@@ -5028,6 +5971,16 @@
           "required": [],
           "title": "export",
           "type": "object"
+        },
+        "hostUsers": {
+          "default": "~",
+          "description": "(bool) Enable hostUsers for Hubble.\nThis will allow use of user-namespaces for hubble components. Not all\nclusters support user-namespaces.\nSee: https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/",
+          "required": [],
+          "title": "hostUsers",
+          "type": [
+            "null",
+            "boolean"
+          ]
         },
         "listenAddress": {
           "default": ":4244",
@@ -5412,7 +6365,7 @@
         },
         "preferIpv6": {
           "default": false,
-          "description": "Whether Hubble should prefer to announce IPv6 or IPv4 addresses if both are available.",
+          "description": "Whether Hubble should prefer to announce IPv6 or IPv4 addresses if both are available.\nDeprecated: use top-level preferIpv6 instead.",
           "required": [],
           "title": "preferIpv6",
           "type": "boolean"
@@ -5473,21 +6426,6 @@
               },
               "required": [],
               "title": "http",
-              "type": "object"
-            },
-            "kafka": {
-              "additionalProperties": true,
-              "properties": {
-                "apiKey": {
-                  "default": true,
-                  "description": "Enables redacting Kafka's API key (deprecated, will be removed in v1.19).\nExample:\n\n  redact:\n    enabled: true\n    kafka:\n      apiKey: true\n\nYou can specify the options from the helm CLI:\n\n  --set hubble.redact.enabled=\"true\"\n  --set hubble.redact.kafka.apiKey=\"true\"",
-                  "required": [],
-                  "title": "apiKey",
-                  "type": "boolean"
-                }
-              },
-              "required": [],
-              "title": "kafka",
               "type": "object"
             }
           },
@@ -5623,7 +6561,7 @@
               "description": "Hubble-relay container image.",
               "properties": {
                 "digest": {
-                  "default": "sha256:9bb9b2b1a4f4bef12a77738756cfbf970daa701e536e42f0a9c64a621bc7c9d5",
+                  "default": "sha256:59be0ae7d475ab9011a5e954618c0f27b5778b17140381425b308b55ba4917f4",
                   "description": "hubble-relay-digest",
                   "required": [],
                   "title": "digest",
@@ -5651,7 +6589,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.18.7",
+                  "default": "v1.20.1",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -5826,12 +6764,26 @@
                   "title": "address",
                   "type": "string"
                 },
+                "blockProfileRate": {
+                  "default": 0,
+                  "description": "Enable goroutine blocking profiling for hubble-relay and set the rate of sampled events in nanoseconds (set to 1 to sample all events [warning: performance overhead])",
+                  "required": [],
+                  "title": "blockProfileRate",
+                  "type": "integer"
+                },
                 "enabled": {
                   "default": false,
                   "description": "Enable pprof for hubble-relay",
                   "required": [],
                   "title": "enabled",
                   "type": "boolean"
+                },
+                "mutexProfileFraction": {
+                  "default": 0,
+                  "description": "Enable mutex contention profiling for hubble-relay and set the fraction of sampled events (set to 1 to sample all events)",
+                  "required": [],
+                  "title": "mutexProfileFraction",
+                  "type": "integer"
                 },
                 "port": {
                   "default": 6062,
@@ -5976,7 +6928,6 @@
               "properties": {
                 "allowPrivilegeEscalation": {
                   "default": false,
-                  "description": "readOnlyRootFilesystem: true",
                   "required": [],
                   "title": "allowPrivilegeEscalation",
                   "type": "boolean"
@@ -5997,6 +6948,12 @@
                   "required": [],
                   "title": "capabilities",
                   "type": "object"
+                },
+                "readOnlyRootFilesystem": {
+                  "default": true,
+                  "required": [],
+                  "title": "readOnlyRootFilesystem",
+                  "type": "boolean"
                 },
                 "runAsGroup": {
                   "default": 65532,
@@ -6301,12 +7258,26 @@
                   "title": "method",
                   "type": "string"
                 },
+                "privateKey": {
+                  "additionalProperties": true,
+                  "description": "[Example]\nprivateKey:\n  algorithm: ECDSA\nPrivate key options. These include the key algorithm and size, the used encoding and the rotation policy used when hubble.tls.auto.method=certmanager.\nhttps://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificatePrivateKey",
+                  "required": [],
+                  "title": "privateKey",
+                  "type": "object"
+                },
                 "schedule": {
                   "default": "0 0 1 */4 *",
                   "description": "Schedule for certificates regeneration (regardless of their expiration date).\nOnly used if method is \"cronJob\". If nil, then no recurring job will be created.\nInstead, only the one-shot job is deployed to generate the certificates at\ninstallation time.\n\nDefaults to midnight of the first day of every fourth month. For syntax, see\nhttps://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#schedule-syntax",
                   "required": [],
                   "title": "schedule",
                   "type": "string"
+                },
+                "subject": {
+                  "additionalProperties": true,
+                  "description": "[Example]\nsubject:\n  countries:\n    - US\n  provinces:\n    - California\nX509Subject Full X509 name specification used when hubble.tls.auto.method=certmanager.\nhttps://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.X509Subject",
+                  "required": [],
+                  "title": "subject",
+                  "type": "object"
                 }
               },
               "required": [],
@@ -6425,7 +7396,7 @@
                   "description": "Hubble-ui backend image.",
                   "properties": {
                     "digest": {
-                      "default": "sha256:db1454e45dc39ca41fbf7cad31eec95d99e5b9949c39daaad0fa81ef29d56953",
+                      "default": "sha256:fac0c300ae119274edca11fd89b1ad23c788792d8bc4ea2ba631c709e8d3c688",
                       "required": [],
                       "title": "digest",
                       "type": "string"
@@ -6452,7 +7423,7 @@
                       "type": "string"
                     },
                     "tag": {
-                      "default": "v0.13.3",
+                      "default": "v0.13.5",
                       "required": [],
                       "title": "tag",
                       "type": "string"
@@ -6468,36 +7439,6 @@
                   "title": "image",
                   "type": "object"
                 },
-                "livenessProbe": {
-                  "additionalProperties": true,
-                  "properties": {
-                    "enabled": {
-                      "default": false,
-                      "description": "Enable liveness probe for Hubble-ui backend (requires Hubble-ui 0.12+)",
-                      "required": [],
-                      "title": "enabled",
-                      "type": "boolean"
-                    }
-                  },
-                  "required": [],
-                  "title": "livenessProbe",
-                  "type": "object"
-                },
-                "readinessProbe": {
-                  "additionalProperties": true,
-                  "properties": {
-                    "enabled": {
-                      "default": false,
-                      "description": "Enable readiness probe for Hubble-ui backend (requires Hubble-ui 0.12+)",
-                      "required": [],
-                      "title": "enabled",
-                      "type": "boolean"
-                    }
-                  },
-                  "required": [],
-                  "title": "readinessProbe",
-                  "type": "object"
-                },
                 "resources": {
                   "additionalProperties": true,
                   "description": "Resource requests and limits for the 'backend' container of the 'hubble-ui' deployment.",
@@ -6511,9 +7452,27 @@
                   "properties": {
                     "allowPrivilegeEscalation": {
                       "default": false,
+                      "description": "readOnlyRootFilesystem: true",
                       "required": [],
                       "title": "allowPrivilegeEscalation",
                       "type": "boolean"
+                    },
+                    "capabilities": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "drop": {
+                          "items": {
+                            "required": [],
+                            "type": "string"
+                          },
+                          "required": [],
+                          "title": "drop",
+                          "type": "array"
+                        }
+                      },
+                      "required": [],
+                      "title": "capabilities",
+                      "type": "object"
                     }
                   },
                   "required": [],
@@ -6574,7 +7533,7 @@
                   "description": "Hubble-ui frontend image.",
                   "properties": {
                     "digest": {
-                      "default": "sha256:661d5de7050182d495c6497ff0b007a7a1e379648e60830dd68c4d78ae21761d",
+                      "default": "sha256:f7d514fc54d784ed6df9d58cf0e97648b143f92b766dd1780ed3fc845bd4c516",
                       "required": [],
                       "title": "digest",
                       "type": "string"
@@ -6601,7 +7560,7 @@
                       "type": "string"
                     },
                     "tag": {
-                      "default": "v0.13.3",
+                      "default": "v0.13.5",
                       "required": [],
                       "title": "tag",
                       "type": "string"
@@ -6630,9 +7589,27 @@
                   "properties": {
                     "allowPrivilegeEscalation": {
                       "default": false,
+                      "description": "readOnlyRootFilesystem: true",
                       "required": [],
                       "title": "allowPrivilegeEscalation",
                       "type": "boolean"
+                    },
+                    "capabilities": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "drop": {
+                          "items": {
+                            "required": [],
+                            "type": "string"
+                          },
+                          "required": [],
+                          "title": "drop",
+                          "type": "array"
+                        }
+                      },
+                      "required": [],
+                      "title": "capabilities",
+                      "type": "object"
                     }
                   },
                   "required": [],
@@ -6840,11 +7817,31 @@
                   "title": "runAsGroup",
                   "type": "integer"
                 },
+                "runAsNonRoot": {
+                  "default": true,
+                  "required": [],
+                  "title": "runAsNonRoot",
+                  "type": "boolean"
+                },
                 "runAsUser": {
                   "default": 1001,
                   "required": [],
                   "title": "runAsUser",
                   "type": "integer"
+                },
+                "seccompProfile": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "type": {
+                      "default": "RuntimeDefault",
+                      "required": [],
+                      "title": "type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "seccompProfile",
+                  "type": "object"
                 }
               },
               "required": [],
@@ -6955,6 +7952,13 @@
               "title": "tls",
               "type": "object"
             },
+            "tmpVolume": {
+              "additionalProperties": true,
+              "description": "Configure temporary volume for hubble-ui",
+              "required": [],
+              "title": "tmpVolume",
+              "type": "object"
+            },
             "tolerations": {
               "description": "Node tolerations for pod assignment on nodes with taints\nref: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/",
               "items": {
@@ -7045,7 +8049,7 @@
       "description": "Agent container image.",
       "properties": {
         "digest": {
-          "default": "sha256:99b029a0a7c2224dac8c1cc3b6b3ba52af00e2ff981d927e84260ee781e9753c",
+          "default": "sha256:ae9ea21f7427fe24bc6ea7247eb552157a1b0a431744045d3f641545ca71d11b",
           "description": "cilium-digest",
           "required": [],
           "title": "digest",
@@ -7073,7 +8077,7 @@
           "type": "string"
         },
         "tag": {
-          "default": "v1.18.7",
+          "default": "v1.20.1",
           "required": [],
           "title": "tag",
           "type": "string"
@@ -7160,6 +8164,20 @@
               "title": "enabled",
               "type": "boolean"
             },
+            "httpPort": {
+              "default": 0,
+              "description": "Configure a specific port on the host network that gets used for the shared HTTP listener.\nIf unset or 0, sharedListenerPort is used.",
+              "required": [],
+              "title": "httpPort",
+              "type": "integer"
+            },
+            "httpsPort": {
+              "default": 0,
+              "description": "Configure a specific port on the host network that gets used for the shared HTTPS listener.\nIf unset or 0, sharedListenerPort is used.",
+              "required": [],
+              "title": "httpsPort",
+              "type": "integer"
+            },
             "nodes": {
               "additionalProperties": true,
               "description": "Specify the nodes where the Ingress listeners should be exposed",
@@ -7181,6 +8199,13 @@
               "description": "Configure a specific port on the host network that gets used for the shared listener.",
               "required": [],
               "title": "sharedListenerPort",
+              "type": "integer"
+            },
+            "tlsPassthroughPort": {
+              "default": 0,
+              "description": "Configure a specific port on the host network that gets used for the shared TLS passthrough listener.\nIf unset or 0, sharedListenerPort is used.",
+              "required": [],
+              "title": "tlsPassthroughPort",
               "type": "integer"
             }
           },
@@ -7328,6 +8353,23 @@
           "required": [],
           "title": "service",
           "type": "object"
+        },
+        "useRemoteAddress": {
+          "default": true,
+          "description": "Configure whether to use the remote address of the client when determining the source IP.\nWhen enabled, the source IP is determined from the remote address instead of the proxy protocol header.",
+          "required": [],
+          "title": "useRemoteAddress",
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "xffNumTrustedHops": {
+          "default": 0,
+          "description": "The number of additional Ingress proxy hops from the right side of the HTTP header to trust when determining the origin client's IP address.",
+          "required": [],
+          "title": "xffNumTrustedHops",
+          "type": "integer"
         }
       },
       "required": [],
@@ -7394,6 +8436,54 @@
           "title": "multiPoolPreAllocation",
           "type": "string"
         },
+        "nodeSpec": {
+          "additionalProperties": true,
+          "description": "NodeSpec configuration for the IPAM",
+          "properties": {
+            "ipamMaxAllocate": {
+              "default": "~",
+              "description": "IPAM max allocate",
+              "required": [],
+              "title": "ipamMaxAllocate",
+              "type": [
+                "null",
+                "integer"
+              ]
+            },
+            "ipamMinAllocate": {
+              "default": "~",
+              "description": "IPAM min allocate",
+              "required": [],
+              "title": "ipamMinAllocate",
+              "type": [
+                "null",
+                "integer"
+              ]
+            },
+            "ipamPreAllocate": {
+              "default": "~",
+              "description": "IPAM pre allocate",
+              "required": [],
+              "title": "ipamPreAllocate",
+              "type": [
+                "null",
+                "integer"
+              ]
+            },
+            "ipamStaticIPTags": {
+              "description": "IPAM static IP tags (currently only works with AWS and Azure)",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "ipamStaticIPTags",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "nodeSpec",
+          "type": "object"
+        },
         "operator": {
           "additionalProperties": true,
           "properties": {
@@ -7446,7 +8536,7 @@
             },
             "externalAPILimitBurstSize": {
               "default": "~",
-              "description": "  default:\n    ipv4:\n      cidrs:\n        - 10.10.0.0/8\n      maskSize: 24\n  other:\n    ipv6:\n      cidrs:\n        - fd00:100::/80\n      maskSize: 96\n(int) The maximum burst size when rate limiting access to external APIs.\nAlso known as the token bucket capacity.",
+              "description": "  default:\n    ipv4:\n      cidrs:\n        - 10.10.0.0/8\n      maskSize: 24\n    allowFirstIP: true\n    allowLastIP: true\n  other:\n    ipv6:\n      cidrs:\n        - fd00:100::/80\n      maskSize: 96\n(int) The maximum burst size when rate limiting access to external APIs.\nAlso known as the token bucket capacity.",
               "required": [],
               "title": "externalAPILimitBurstSize",
               "type": [
@@ -7530,6 +8620,16 @@
       "additionalProperties": true,
       "description": "Configure Kubernetes specific configuration",
       "properties": {
+        "apiServerURLs": {
+          "default": "~",
+          "description": "A space separated list of Kubernetes API server URLs to use with the client.\nFor example \"https://192.168.0.1:6443 https://192.168.0.2:6443\"",
+          "required": [],
+          "title": "apiServerURLs",
+          "type": [
+            "null",
+            "string"
+          ]
+        },
         "requireIPv4PodCIDR": {
           "default": false,
           "description": "requireIPv4PodCIDR enables waiting for Kubernetes to provide the PodCIDR\nrange via the Kubernetes node resource",
@@ -7635,6 +8735,21 @@
       },
       "required": [],
       "title": "k8sClientRateLimit",
+      "type": "object"
+    },
+    "k8sClusterNetworkPolicy": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "description": "Enable support for K8s Cluster Network Policy",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "k8sClusterNetworkPolicy",
       "type": "object"
     },
     "k8sNetworkPolicy": {
@@ -7798,11 +8913,11 @@
           "title": "enabled",
           "type": "boolean"
         },
-        "interface": {
-          "default": "eth0",
-          "description": "Interface used for sending Gratuitous ARP pod announcements",
+        "interfacePattern": {
+          "default": "",
+          "description": "A regular expression matching interfaces used for sending Gratuitous ARP pod announcements",
           "required": [],
-          "title": "interface",
+          "title": "interfacePattern",
           "type": "string"
         }
       },
@@ -7888,6 +9003,13 @@
           "required": [],
           "title": "l7",
           "type": "object"
+        },
+        "serviceTopology": {
+          "default": false,
+          "description": "serviceTopology enables K8s Topology Aware Hints -based service\nendpoints filtering",
+          "required": [],
+          "title": "serviceTopology",
+          "type": "boolean"
         }
       },
       "required": [],
@@ -7940,6 +9062,13 @@
       "title": "maglev",
       "type": "object"
     },
+    "minReadySeconds": {
+      "default": 0,
+      "description": "Minimum number of seconds for which a newly created agent pod should be ready\nbefore it is considered available. Defaults to 0 (pod is considered available as soon as it is ready).\nref: https://kubernetes.io/docs/tasks/manage-daemon/update-daemon-set/",
+      "required": [],
+      "title": "minReadySeconds",
+      "type": "integer"
+    },
     "monitor": {
       "additionalProperties": true,
       "description": "cilium-monitor sidecar.",
@@ -7965,7 +9094,7 @@
     },
     "namespaceOverride": {
       "default": "",
-      "description": "namespaceOverride allows to override the destination namespace for Cilium resources.\nThis property allows to use Cilium as part of an Umbrella Chart with different targets.",
+      "description": "namespaceOverride allows to override the destination namespace for Cilium resources.",
       "required": [],
       "title": "namespaceOverride",
       "type": [
@@ -8011,6 +9140,13 @@
       "title": "nat46x64Gateway",
       "type": "object"
     },
+    "nativeRoutingCIDRFromClusterPool": {
+      "default": false,
+      "description": "Derive the native routing CIDRs from the cluster-pool IPAM CIDRs when\nipv4NativeRoutingCIDR / ipv6NativeRoutingCIDR are not explicitly set.\nOnly effective with ipam.mode=cluster-pool and requires exactly one CIDR\nper enabled IP family in clusterPoolIPv4PodCIDRList /\nclusterPoolIPv6PodCIDRList.",
+      "required": [],
+      "title": "nativeRoutingCIDRFromClusterPool",
+      "type": "boolean"
+    },
     "nodeIPAM": {
       "additionalProperties": true,
       "properties": {
@@ -8055,6 +9191,13 @@
           "title": "bindProtection",
           "type": "boolean"
         },
+        "enableDynamicSourceLookup": {
+          "default": false,
+          "description": "Enable dynamic source IP resolution for SNAT via linux's routing table.\nThe kernel must support this feature.",
+          "required": [],
+          "title": "enableDynamicSourceLookup",
+          "type": "boolean"
+        },
         "enableHealthCheck": {
           "default": true,
           "description": "Enable healthcheck nodePort server for NodePort services",
@@ -8067,13 +9210,6 @@
           "description": "Enable access of the healthcheck nodePort on the LoadBalancerIP. Needs\nEnableHealthCheck to be enabled",
           "required": [],
           "title": "enableHealthCheckLoadBalancerIP",
-          "type": "boolean"
-        },
-        "enabled": {
-          "default": false,
-          "description": "Enable the Cilium NodePort service implementation.",
-          "required": [],
-          "title": "enabled",
           "type": "boolean"
         }
       },
@@ -8166,7 +9302,7 @@
           "description": "node-init image.",
           "properties": {
             "digest": {
-              "default": "sha256:5bdca3c2dec2c79f58d45a7a560bf1098c2126350c901379fe850b7f78d3d757",
+              "default": "sha256:f99e2beda7324e93ba04d6240d9626a6b9ab023d7d56e3b029d3d9c823ce63ef",
               "required": [],
               "title": "digest",
               "type": "string"
@@ -8193,7 +9329,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "1755531540-60ee83e",
+              "default": "1782916218-36ae25f",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -8208,6 +9344,13 @@
           "required": [],
           "title": "image",
           "type": "object"
+        },
+        "minReadySeconds": {
+          "default": 0,
+          "description": "Minimum number of seconds for which a newly created node-init pod should be ready\nbefore it is considered available.",
+          "required": [],
+          "title": "minReadySeconds",
+          "type": "integer"
         },
         "nodeSelector": {
           "additionalProperties": true,
@@ -8301,7 +9444,10 @@
                   "default": "100m",
                   "required": [],
                   "title": "cpu",
-                  "type": "string"
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
                 },
                 "memory": {
                   "default": "100Mi",
@@ -8432,6 +9578,13 @@
           "required": [],
           "title": "updateStrategy",
           "type": "object"
+        },
+        "waitForCloudInit": {
+          "default": false,
+          "description": "wait for Cloud init to finish on the host and assume the node has cloud init installed",
+          "required": [],
+          "title": "waitForCloudInit",
+          "type": "boolean"
         }
       },
       "required": [],
@@ -8620,6 +9773,13 @@
           "title": "hostNetwork",
           "type": "boolean"
         },
+        "hostUsers": {
+          "default": true,
+          "description": "HostUsers setting (must be true if hostNetwork is true)",
+          "required": [],
+          "title": "hostUsers",
+          "type": "boolean"
+        },
         "identityGCInterval": {
           "default": "15m0s",
           "description": "Interval for identity garbage collection.",
@@ -8639,28 +9799,28 @@
           "description": "cilium-operator image.",
           "properties": {
             "alibabacloudDigest": {
-              "default": "sha256:ca3f0dd26a4b447524dce51ee8ef82485a08187b840c21ce4a1398c02b5174a0",
+              "default": "sha256:2af5dd3d85649ea36d365363b8eca82ad06116c6259c4aace700a7c036348e4c",
               "description": "operator-alibabacloud-digest",
               "required": [],
               "title": "alibabacloudDigest",
               "type": "string"
             },
             "awsDigest": {
-              "default": "sha256:fe56a6289afea7f6420f8de0218710ccaaa7af891df5fc180ddd33e6c7509b45",
+              "default": "sha256:7cf0cb0e6584f72ca8de951a1be03829f69fcaeba69dc6c7856fc4470545acd7",
               "description": "operator-aws-digest",
               "required": [],
               "title": "awsDigest",
               "type": "string"
             },
             "azureDigest": {
-              "default": "sha256:5fb753344c84ab0989d525f789738c874f3fa8f07fbb5cfce06034d027c9728f",
+              "default": "sha256:13746a479ca60395df8d83580b49464c6c975cca6fdb21ba4791a076ab01b031",
               "description": "operator-azure-digest",
               "required": [],
               "title": "azureDigest",
               "type": "string"
             },
             "genericDigest": {
-              "default": "sha256:244306c5e7c6b73dc7193424f46ed8a0530767b03f03baac80dd717a3a3f0ad7",
+              "default": "sha256:6c3885fc7b629099fdbe2a5c87869c86feb825fa18fae299eac0f61918d16ecf",
               "description": "operator-generic-digest",
               "required": [],
               "title": "genericDigest",
@@ -8694,7 +9854,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.18.7",
+              "default": "v1.20.1",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -8827,12 +9987,26 @@
               "title": "address",
               "type": "string"
             },
+            "blockProfileRate": {
+              "default": 0,
+              "description": "Enable goroutine blocking profiling for cilium-operator and set the rate of sampled events in nanoseconds (set to 1 to sample all events [warning: performance overhead])",
+              "required": [],
+              "title": "blockProfileRate",
+              "type": "integer"
+            },
             "enabled": {
               "default": false,
               "description": "Enable pprof for cilium-operator",
               "required": [],
               "title": "enabled",
               "type": "boolean"
+            },
+            "mutexProfileFraction": {
+              "default": 0,
+              "description": "Enable mutex contention profiling for cilium-operator and set the fraction of sampled events (set to 1 to sample all events)",
+              "required": [],
+              "title": "mutexProfileFraction",
+              "type": "integer"
             },
             "port": {
               "default": 6061,
@@ -8946,6 +10120,51 @@
               },
               "required": [],
               "title": "serviceMonitor",
+              "type": "object"
+            },
+            "tls": {
+              "additionalProperties": true,
+              "description": "TLS configuration for Prometheus",
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "server": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "existingSecret": {
+                      "default": "",
+                      "description": "Name of the Secret containing the certificate, key and CA files for the Prometheus server.",
+                      "required": [],
+                      "title": "existingSecret",
+                      "type": "string"
+                    },
+                    "mtls": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "enabled": {
+                          "default": false,
+                          "description": "When set to true enforces mutual TLS between Operator Prometheus server and its clients.\nFalse allow non-mutual TLS connections.\nThis option has no effect when TLS is disabled.",
+                          "required": [],
+                          "title": "enabled",
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [],
+                      "title": "mtls",
+                      "type": "object"
+                    }
+                  },
+                  "required": [],
+                  "title": "server",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "tls",
               "type": "object"
             }
           },
@@ -9090,6 +10309,16 @@
               "required": [],
               "title": "restart",
               "type": "boolean"
+            },
+            "selector": {
+              "default": "~",
+              "description": "Selector for pods that should be restarted when not managed by Cilium.\nIf not set, defaults to built-in selector \"k8s-app=kube-dns\". Set to empty string to select all pods.",
+              "required": [],
+              "title": "selector",
+              "type": [
+                "null",
+                "string"
+              ]
             }
           },
           "required": [],
@@ -9151,6 +10380,13 @@
           "required": [],
           "title": "enabled",
           "type": "boolean"
+        },
+        "packetizationLayerPMTUDMode": {
+          "default": "blackhole",
+          "description": "Enable kernel probing path MTU discovery for Pods which uses different message\nsizes to search for correct MTU value.\nValid values are: always, blackhole, disabled and unset (or empty). If value\nis 'unset' or left empty then will not try to override setting.",
+          "required": [],
+          "title": "packetizationLayerPMTUDMode",
+          "type": "string"
         }
       },
       "required": [],
@@ -9220,6 +10456,13 @@
         "array"
       ]
     },
+    "policyDenyResponse": {
+      "default": "none",
+      "description": "Configure what the response should be to pod egress traffic denied by network policy.\nPossible values:\n - none (default)\n - icmp",
+      "required": [],
+      "title": "policyDenyResponse",
+      "type": "string"
+    },
     "policyEnforcementMode": {
       "default": "default",
       "description": "The agent can be put into one of the three policy enforcement modes:\ndefault, always and never.\nref: https://docs.cilium.io/en/stable/security/policy/intro/#policy-enforcement-modes",
@@ -9237,12 +10480,26 @@
           "title": "address",
           "type": "string"
         },
+        "blockProfileRate": {
+          "default": 0,
+          "description": "Enable goroutine blocking profiling for cilium-agent and set the rate of sampled events in nanoseconds (set to 1 to sample all events [warning: performance overhead])",
+          "required": [],
+          "title": "blockProfileRate",
+          "type": "integer"
+        },
         "enabled": {
           "default": false,
           "description": "Enable pprof for cilium-agent",
           "required": [],
           "title": "enabled",
           "type": "boolean"
+        },
+        "mutexProfileFraction": {
+          "default": 0,
+          "description": "Enable mutex contention profiling for cilium-agent and set the fraction of sampled events (set to 1 to sample all events)",
+          "required": [],
+          "title": "mutexProfileFraction",
+          "type": "integer"
         },
         "port": {
           "default": 6060,
@@ -9255,6 +10512,13 @@
       "required": [],
       "title": "pprof",
       "type": "object"
+    },
+    "preferIpv6": {
+      "default": false,
+      "description": "Prefer IPv6 addresses over IPv4 when both are available for health probes\nand Hubble peer communication.",
+      "required": [],
+      "title": "preferIpv6",
+      "type": "boolean"
     },
     "preflight": {
       "additionalProperties": true,
@@ -9338,7 +10602,7 @@
               "description": "Envoy pre-flight image.",
               "properties": {
                 "digest": {
-                  "default": "sha256:da85124deeb42c8e56e55e9e6e155740f5df00e1064759a244bc246c3addb45d",
+                  "default": "sha256:75b8094c7127736a2ffd2dce3945e0931cb6df21b0372ff661940eca26730b91",
                   "required": [],
                   "title": "digest",
                   "type": "string"
@@ -9365,7 +10629,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.35.9-1770554954-8ce3bb4eca04188f4a0a1bfbd0a06a40f90883de",
+                  "default": "v1.37.5-1786810558-766ccfb37260a43e9d228837aa84ce3faf9f64e7",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -9418,7 +10682,7 @@
           "description": "Cilium pre-flight image.",
           "properties": {
             "digest": {
-              "default": "sha256:99b029a0a7c2224dac8c1cc3b6b3ba52af00e2ff981d927e84260ee781e9753c",
+              "default": "sha256:ae9ea21f7427fe24bc6ea7247eb552157a1b0a431744045d3f641545ca71d11b",
               "description": "cilium-digest",
               "required": [],
               "title": "digest",
@@ -9446,7 +10710,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.18.7",
+              "default": "v1.20.1",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -9603,13 +10867,6 @@
           "required": [],
           "title": "terminationGracePeriodSeconds",
           "type": "integer"
-        },
-        "tofqdnsPreCache": {
-          "default": "",
-          "description": "Path to write the `--tofqdns-pre-cache` file to.",
-          "required": [],
-          "title": "tofqdnsPreCache",
-          "type": "string"
         },
         "tolerations": {
           "description": "Node tolerations for preflight scheduling to nodes with taints\nref: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/",
@@ -9982,6 +11239,13 @@
       "title": "secretsNamespaceAnnotations",
       "type": "object"
     },
+    "secretsNamespaceLabels": {
+      "additionalProperties": true,
+      "description": "Labels to be added to all cilium-secret namespaces (resources under templates/cilium-secrets-namespace)",
+      "required": [],
+      "title": "secretsNamespaceLabels",
+      "type": "object"
+    },
     "securityContext": {
       "additionalProperties": true,
       "properties": {
@@ -10173,6 +11437,39 @@
           },
           "required": [],
           "title": "clustermeshcertgen",
+          "type": "object"
+        },
+        "corednsMCSAPI": {
+          "additionalProperties": true,
+          "description": "CorednsMCSAPI is used if clustermesh.mcsapi.corednsAutoConfigure.enabled=true",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "automount": {
+              "default": true,
+              "required": [],
+              "title": "automount",
+              "type": "boolean"
+            },
+            "create": {
+              "default": true,
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            },
+            "name": {
+              "default": "cilium-coredns-mcsapi-autoconfig",
+              "required": [],
+              "title": "name",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "corednsMCSAPI",
           "type": "object"
         },
         "envoy": {
@@ -10406,6 +11703,39 @@
           "required": [],
           "title": "ui",
           "type": "object"
+        },
+        "ztunnel": {
+          "additionalProperties": true,
+          "description": "Ztunnel is used if encryption.type=ztunnel",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "automount": {
+              "default": false,
+              "required": [],
+              "title": "automount",
+              "type": "boolean"
+            },
+            "create": {
+              "default": true,
+              "required": [],
+              "title": "create",
+              "type": "boolean"
+            },
+            "name": {
+              "default": "ztunnel-cilium",
+              "required": [],
+              "title": "name",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "ztunnel",
+          "type": "object"
         }
       },
       "required": [],
@@ -10442,6 +11772,171 @@
       "title": "socketLB",
       "type": "object"
     },
+    "standaloneDnsProxy": {
+      "additionalProperties": true,
+      "description": "Standalone DNS Proxy Configuration\nNote: The standalone DNS proxy uses the agent's dnsProxy.* configuration\nfor DNS settings (proxyPort, enableDnsCompression) to ensure consistency.",
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Standalone DNS proxy annotations",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "automountServiceAccountToken": {
+          "default": false,
+          "description": "Standalone DNS proxy auto mount service account token",
+          "required": [],
+          "title": "automountServiceAccountToken",
+          "type": "boolean"
+        },
+        "debug": {
+          "default": false,
+          "description": "Standalone DNS proxy debug mode",
+          "required": [],
+          "title": "debug",
+          "type": "boolean"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Enable standalone DNS proxy (alpha feature)",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "image": {
+          "additionalProperties": true,
+          "description": "Standalone DNS proxy image",
+          "properties": {
+            "digest": {
+              "default": "",
+              "required": [],
+              "title": "digest",
+              "type": "string"
+            },
+            "override": {
+              "default": "~",
+              "required": [],
+              "title": "override",
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            },
+            "useDigest": {
+              "default": true,
+              "required": [],
+              "title": "useDigest",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "minReadySeconds": {
+          "default": 5,
+          "description": "Minimum number of seconds for which a newly created standalone DNS proxy pod should be ready\nbefore it is considered available.",
+          "required": [],
+          "title": "minReadySeconds",
+          "type": "integer"
+        },
+        "nodeSelector": {
+          "additionalProperties": true,
+          "description": "Standalone DNS proxy Node Selector",
+          "properties": {
+            "kubernetes.io/os": {
+              "default": "linux",
+              "required": [],
+              "title": "kubernetes.io/os",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
+        "rollOutPods": {
+          "default": false,
+          "description": "Roll out Standalone DNS proxy automatically when configmap is updated.",
+          "required": [],
+          "title": "rollOutPods",
+          "type": "boolean"
+        },
+        "serverPort": {
+          "default": 10095,
+          "description": "Standalone DNS proxy server port",
+          "required": [],
+          "title": "serverPort",
+          "type": "integer"
+        },
+        "tolerations": {
+          "description": "Standalone DNS proxy tolerations",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
+        },
+        "updateStrategy": {
+          "additionalProperties": true,
+          "description": "Standalone DNS proxy update strategy",
+          "properties": {
+            "rollingUpdate": {
+              "additionalProperties": true,
+              "properties": {
+                "maxSurge": {
+                  "default": 2,
+                  "required": [],
+                  "title": "maxSurge",
+                  "type": "integer"
+                },
+                "maxUnavailable": {
+                  "default": 0,
+                  "required": [],
+                  "title": "maxUnavailable",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "rollingUpdate",
+              "type": "object"
+            },
+            "type": {
+              "default": "RollingUpdate",
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "updateStrategy",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "standaloneDnsProxy",
+      "type": "object"
+    },
     "startupProbe": {
       "additionalProperties": true,
       "properties": {
@@ -10463,13 +11958,6 @@
       "required": [],
       "title": "startupProbe",
       "type": "object"
-    },
-    "svcSourceRangeCheck": {
-      "default": true,
-      "description": "Enable check of service source ranges (currently, only for LoadBalancer).",
-      "required": [],
-      "title": "svcSourceRangeCheck",
-      "type": "boolean"
     },
     "synchronizeK8sNodes": {
       "default": true,
@@ -10639,6 +12127,13 @@
       "title": "tls",
       "type": "object"
     },
+    "tmpVolume": {
+      "additionalProperties": true,
+      "description": "Configure temporary volume for cilium-agent",
+      "required": [],
+      "title": "tmpVolume",
+      "type": "object"
+    },
     "tolerations": {
       "description": "Node tolerations for agent scheduling to nodes with taints\nref: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/",
       "items": {
@@ -10681,7 +12176,7 @@
     },
     "underlayProtocol": {
       "default": "",
-      "description": "IP family for the underlay.\nPossible values:\n  - \"ipv4\"\n  - \"ipv6\"",
+      "description": "IP family for the underlay.\nPossible values:\n  - \"ipv4\"\n  - \"ipv6\"\n  - \"auto\"",
       "required": [],
       "title": "underlayProtocol",
       "type": "string"
