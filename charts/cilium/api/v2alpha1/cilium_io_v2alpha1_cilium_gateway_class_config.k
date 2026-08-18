@@ -43,14 +43,58 @@ schema CiliumIoV2alpha1CiliumGatewayClassConfigSpec:
     ----------
     description : str, default is Undefined, optional
         Description helps describe a GatewayClass configuration with more details.
+    envoy : CiliumIoV2alpha1CiliumGatewayClassConfigSpecEnvoy, default is Undefined, optional
+        envoy
+    httpOptions : CiliumIoV2alpha1CiliumGatewayClassConfigSpecHTTPOptions, default is Undefined, optional
+        http options
     service : CiliumIoV2alpha1CiliumGatewayClassConfigSpecService, default is Undefined, optional
         service
+    telemetry : CiliumIoV2alpha1CiliumGatewayClassConfigSpecTelemetry, default is Undefined, optional
+        telemetry
     """
     description?: str
+    envoy?: CiliumIoV2alpha1CiliumGatewayClassConfigSpecEnvoy
+    httpOptions?: CiliumIoV2alpha1CiliumGatewayClassConfigSpecHTTPOptions
     service?: CiliumIoV2alpha1CiliumGatewayClassConfigSpecService
+    telemetry?: CiliumIoV2alpha1CiliumGatewayClassConfigSpecTelemetry
 
     check:
         len(description) <= 64 if description
+
+schema CiliumIoV2alpha1CiliumGatewayClassConfigSpecEnvoy:
+    r"""
+    Envoy specifies proxy configuration options.
+    These settings control Envoy-specific behavior that is not part of the Gateway API standard.
+
+    Attributes
+    ----------
+    serverHeaderTransformation : str, default is "OVERWRITE", optional
+        ServerHeaderTransformation controls the HTTP "Server" response header.
+        Defaults to OVERWRITE.
+    """
+    serverHeaderTransformation?: "OVERWRITE" | "APPEND_IF_ABSENT" | "PASS_THROUGH" = "OVERWRITE"
+
+schema CiliumIoV2alpha1CiliumGatewayClassConfigSpecHTTPOptions:
+    r"""
+    HTTPOptions specifies HTTP connection manager options.
+
+    Attributes
+    ----------
+    grpcWebTranslation : CiliumIoV2alpha1CiliumGatewayClassConfigSpecHTTPOptionsGrpcWebTranslation, default is Undefined, optional
+        grpc web translation
+    """
+    grpcWebTranslation?: CiliumIoV2alpha1CiliumGatewayClassConfigSpecHTTPOptionsGrpcWebTranslation
+
+schema CiliumIoV2alpha1CiliumGatewayClassConfigSpecHTTPOptionsGrpcWebTranslation:
+    r"""
+    GRPCWebTranslation controls Envoy's gRPC-web to gRPC request translation.
+
+    Attributes
+    ----------
+    enabled : bool, default is True, optional
+        Enabled controls Envoy's gRPC-web to gRPC request translation.
+    """
+    enabled?: bool = True
 
 schema CiliumIoV2alpha1CiliumGatewayClassConfigSpecService:
     r"""
@@ -89,6 +133,68 @@ schema CiliumIoV2alpha1CiliumGatewayClassConfigSpecService:
     loadBalancerSourceRangesPolicy?: "Allow" | "Deny" = "Allow"
     trafficDistribution?: str
     $type?: "LoadBalancer" | "NodePort" = "LoadBalancer"
+
+schema CiliumIoV2alpha1CiliumGatewayClassConfigSpecTelemetry:
+    r"""
+    Telemetry specifies observability options for Gateways using this
+    GatewayClass configuration.
+
+    Attributes
+    ----------
+    accessLogs : [CiliumIoV2alpha1CiliumGatewayClassConfigSpecTelemetryAccessLogsItems0], default is Undefined, optional
+        AccessLogs configures Envoy access logging for generated Gateway
+        listeners.
+    """
+    accessLogs?: [CiliumIoV2alpha1CiliumGatewayClassConfigSpecTelemetryAccessLogsItems0]
+
+    check:
+        len(accessLogs) >= 1 if accessLogs
+        len(accessLogs) <= 8 if accessLogs
+
+schema CiliumIoV2alpha1CiliumGatewayClassConfigSpecTelemetryAccessLogsItems0:
+    r"""
+    AccessLogs defines an Envoy access log configuration, including its output
+    format and the generated proxy components that should emit it.
+    Access logs are currently written to Envoy stdout.
+
+    Attributes
+    ----------
+    format : str, default is Undefined, required
+        Format specifies the access log output format.
+    json : {str:str}, default is {"authority": "%REQUEST_HEADER(:AUTHORITY)%", "bytes_sent": "%BYTES_SENT%", "path": "%REQUEST_HEADER(X-ENVOY-ORIGINAL-PATH?:PATH)%", "protocol": "%PROTOCOL%", "upstream_service_time": "%RESPONSE_HEADER(X-ENVOY-UPSTREAM-SERVICE-TIME)%", "user_agent": "%REQUEST_HEADER(USER-AGENT)%", "x_forwarded_for": "%REQUEST_HEADER(X-FORWARDED-FOR)%", "method": "%REQUEST_HEADER(:METHOD)%", "request_id": "%REQUEST_HEADER(X-REQUEST-ID)%", "response_code": "%RESPONSE_CODE%", "bytes_received": "%BYTES_RECEIVED%", "duration": "%DURATION%", "response_flags": "%RESPONSE_FLAGS%", "start_time": "%START_TIME%", "upstream_host": "%UPSTREAM_HOST%"}, optional
+        JSON maps access log field names to Envoy command operators.
+        It is used when Format is "JSON".
+        For available format specifiers, see the Envoy documentation:
+        - https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage
+        Note: Always refer to the documentation matching the specific Envoy version you are running.
+        The following Cilium-specific formatters are also supported:
+        - %CILIUM_GATEWAY_NAME% -- replaced with the Gateway resource name.
+        - %CILIUM_GATEWAY_NAMESPACE% -- replaced with the Gateway resource namespace.
+    targets : [str], default is ["HTTP"], optional
+        Targets specifies the generated Envoy proxy components where access logs
+        are emitted. If omitted, access logs are emitted for HTTP traffic only.
+        HTTP targets Envoy HTTP connection managers. TCP targets Envoy TCP proxies,
+        including TLS passthrough.
+    text : str, default is "[%START_TIME%] "%REQUEST_HEADER(:METHOD)% %REQUEST_HEADER(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%" %RESPONSE_CODE% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION% %RESPONSE_HEADER(X-ENVOY-UPSTREAM-SERVICE-TIME)% "%REQUEST_HEADER(X-FORWARDED-FOR)%" "%REQUEST_HEADER(USER-AGENT)%" "%REQUEST_HEADER(X-REQUEST-ID)%" "%REQUEST_HEADER(:AUTHORITY)%" "%UPSTREAM_HOST%"", optional
+        Text specifies the Envoy access log format string.
+        It is used when Format is "Text".
+        For available format specifiers, see the Envoy documentation:
+        - https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage
+        Note: Always refer to the documentation matching the specific Envoy version you are running.
+        The following Cilium-specific formatters are also supported:
+        - %CILIUM_GATEWAY_NAME% -- replaced with the Gateway resource name.
+        - %CILIUM_GATEWAY_NAMESPACE% -- replaced with the Gateway resource namespace.
+    """
+    format: "JSON" | "Text"
+
+    json?: {str:str} = {"user_agent": "%REQUEST_HEADER(USER-AGENT)%", "x_forwarded_for": "%REQUEST_HEADER(X-FORWARDED-FOR)%", "method": "%REQUEST_HEADER(:METHOD)%", "request_id": "%REQUEST_HEADER(X-REQUEST-ID)%", "response_code": "%RESPONSE_CODE%", "bytes_received": "%BYTES_RECEIVED%", "duration": "%DURATION%", "response_flags": "%RESPONSE_FLAGS%", "start_time": "%START_TIME%", "upstream_host": "%UPSTREAM_HOST%", "authority": "%REQUEST_HEADER(:AUTHORITY)%", "bytes_sent": "%BYTES_SENT%", "path": "%REQUEST_HEADER(X-ENVOY-ORIGINAL-PATH?:PATH)%", "protocol": "%PROTOCOL%", "upstream_service_time": "%RESPONSE_HEADER(X-ENVOY-UPSTREAM-SERVICE-TIME)%"}
+    targets?: [str] = ["HTTP"]
+    text?: str = "[%START_TIME%] " % REQUEST_HEADER(METHOD) %  % REQUEST_HEADER(X - ENVOY - ORIGINAL - PATH, PATH) %  % PROTOCOL % " %RESPONSE_CODE% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION% %RESPONSE_HEADER(X-ENVOY-UPSTREAM-SERVICE-TIME)% " % REQUEST_HEADER(X - FORWARDED - FOR) % " " % REQUEST_HEADER(USER - AGENT) % " " % REQUEST_HEADER(X - REQUEST - ID) % " " % REQUEST_HEADER(AUTHORITY) % " " % UPSTREAM_HOST % ""
+
+    check:
+        len(targets) >= 1 if targets
+        len(text) <= 4096 if text
+        len(text) >= 1 if text
 
 schema CiliumIoV2alpha1CiliumGatewayClassConfigStatus:
     r"""

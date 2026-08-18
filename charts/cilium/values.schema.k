@@ -41,8 +41,7 @@ schema Values:
         for rate-limiting traffic from individual Pods with EDT (Earliest Departure
         Time) through the "kubernetes.io/egress-bandwidth" Pod annotation.
     bgpControlPlane : ValuesBgpControlPlane, optional
-        This feature set enables virtual BGP routers to be created via
-        CiliumBGPPeeringPolicy CRDs.
+        This feature set enables virtual BGP routers to be created via BGP CRDs.
     bpf : ValuesBpf, optional
     bpfClockProbe : bool, optional, default is False
         Enable BPF clock source probing for more efficient tick retrieval.
@@ -73,6 +72,13 @@ schema Values:
     cni : ValuesCni, optional
     commonLabels : any, optional
         commonLabels allows users to add common labels for all Cilium resources.
+    configDriftDetection : ValuesConfigDriftDetection, optional
+        Configuration for the ConfigMap drift detection feature.
+        When enabled, the agent continuously watches the cilium-config ConfigMap
+        and exposes a cilium_drift_checker_config_delta Prometheus metric reporting
+        the number of keys that differ between the ConfigMap and the agent's active
+        settings. A non-zero value indicates that the agent has not yet applied all
+        current ConfigMap changes and needs to be restarted.
     connectivityProbeFrequencyRatio : float, optional, default is "~"
         (float64) Ratio of the connectivity probe frequency vs resource usage, a float in
         [0, 1]. 0 will give more frequent probing, 1 will give less frequent probing. Probing
@@ -87,17 +93,26 @@ schema Values:
         clean up unused identities created from ToFQDN policies.
     crdWaitTimeout : str, optional, default is ""
         (string) Configure timeout in which Cilium will exit if CRDs are not available
-    customCalls : ValuesCustomCalls, optional
-        Tail call hooks for custom eBPF programs.
     daemon : ValuesDaemon, optional
     dashboards : ValuesDashboards, optional
         Grafana dashboards for cilium-agent
         grafana can import dashboards based on the label and value
         ref: https://github.com/grafana/helm-charts/tree/main/charts/grafana#sidecar-for-dashboards
+    datapathPlugins : ValuesDatapathPlugins, optional
+        Plugins to inject custom BPF into the datapath.
     debug : ValuesDebug, optional
     defaultLBServiceIPAM : str, optional, default is "lbipam"
         defaultLBServiceIPAM indicates the default LoadBalancer Service IPAM when
         no LoadBalancer class is set. Applicable values: lbipam, nodeipam, none
+    devices : str | [any], optional, default is ""
+        Specify which network interfaces can run the eBPF datapath. This means
+        that a packet sent from a pod to a destination outside the cluster will be
+        masqueraded (to an output device IPv4 address), if the output device runs the
+        program. When not specified, probing will automatically detect devices that have
+        a non-local route. This should be used only when auto-detection is not suitable.
+        The devices are a comma-separated list and support '+' as a wildcard, e.g.
+        "net0,eth+" matches "net0" and any device starting with "eth". A device can be
+        excluded with "!", e.g. "net0,eth+,!eth0".
     directRoutingSkipUnreachable : bool, optional, default is False
         Enable skipping of PodCIDR routes between worker
         nodes if the worker nodes are in a different L2 network segment.
@@ -128,6 +143,8 @@ schema Values:
         Enable LoadBalancer IP Address Management
     enableMasqueradeRouteSource : bool, optional, default is False
         Enables masquerading to the source of the route for traffic leaving the node from endpoints.
+    enableNoServiceEndpointsRoutable : bool, optional, default is True
+        Enable routing to a service that has zero endpoints
     enableNonDefaultDenyPolicies : bool, optional, default is True
         Enable Non-Default-Deny policies
     enableXTSocketFallback : bool, optional, default is True
@@ -139,6 +156,8 @@ schema Values:
     endpointHealthChecking : ValuesEndpointHealthChecking, optional
     endpointLockdownOnMapOverflow : bool, optional, default is False
         Enable endpoint lockdown on policy map overflow.
+    endpointPolicyUpdateTimeoutDuration : str, optional, default is ""
+        Max duration to wait for envoy to respond to configuration changes. Default "10s".
     endpointRoutes : ValuesEndpointRoutes, optional
     eni : ValuesEni, optional
     envoy : ValuesEnvoy, optional
@@ -240,6 +259,7 @@ schema Values:
         If the amount of requests to the Kubernetes API server exceeds the configured
         rate limit, the agent will start to throttle requests by delaying
         them until there is budget or the request times out.
+    k8sClusterNetworkPolicy : ValuesK8SClusterNetworkPolicy, optional
     k8sNetworkPolicy : ValuesK8SNetworkPolicy, optional
     k8sServiceHost : str, optional, default is ""
         (string) Kubernetes service host - use "auto" for automatic lookup from the cluster-info ConfigMap
@@ -283,16 +303,25 @@ schema Values:
         Enables periodic logging of system load
     maglev : ValuesMaglev, optional
         Configure maglev consistent hashing
+    minReadySeconds : int, optional, default is 0
+        Minimum number of seconds for which a newly created agent pod should be ready
+        before it is considered available. Defaults to 0 (pod is considered available as soon as it is ready).
+        ref: https://kubernetes.io/docs/tasks/manage-daemon/update-daemon-set/
     monitor : ValuesMonitor, optional
         cilium-monitor sidecar.
     name : str, optional, default is "cilium"
         Agent daemonset name.
     namespaceOverride : str, optional, default is ""
         namespaceOverride allows to override the destination namespace for Cilium resources.
-        This property allows to use Cilium as part of an Umbrella Chart with different targets.
     nat : ValuesNat, optional
     nat46x64Gateway : ValuesNat46X64Gateway, optional
         Configure standalone NAT46/NAT64 gateway
+    nativeRoutingCIDRFromClusterPool : bool, optional, default is False
+        Derive the native routing CIDRs from the cluster-pool IPAM CIDRs when
+        ipv4NativeRoutingCIDR / ipv6NativeRoutingCIDR are not explicitly set.
+        Only effective with ipam.mode=cluster-pool and requires exactly one CIDR
+        per enabled IP family in clusterPoolIPv4PodCIDRList /
+        clusterPoolIPv6PodCIDRList.
     nodeIPAM : ValuesNodeIpam, optional
     nodePort : ValuesNodePort, optional
         Configure N-S k8s service loadbalancing
@@ -312,11 +341,19 @@ schema Values:
     policyCIDRMatchMode : str | [any], optional, default is ""
         policyCIDRMatchMode is a list of entities that may be selected by CIDR selector.
         The possible value is "nodes".
+    policyDenyResponse : str, optional, default is "none"
+        Configure what the response should be to pod egress traffic denied by network policy.
+        Possible values:
+         - none (default)
+         - icmp
     policyEnforcementMode : str, optional, default is "default"
         The agent can be put into one of the three policy enforcement modes:
         default, always and never.
         ref: https://docs.cilium.io/en/stable/security/policy/intro/#policy-enforcement-modes
     pprof : ValuesPprof, optional
+    preferIpv6 : bool, optional, default is False
+        Prefer IPv6 addresses over IPv4 when both are available for health probes
+        and Hubble peer communication.
     preflight : ValuesPreflight, optional
     priorityClassName : str, optional, default is ""
         The priority class to use for cilium-agent.
@@ -343,6 +380,8 @@ schema Values:
         SCTP Configuration Values
     secretsNamespaceAnnotations : ValuesSecretsNamespaceAnnotations, optional
         Annotations to be added to all cilium-secret namespaces (resources under templates/cilium-secrets-namespace)
+    secretsNamespaceLabels : ValuesSecretsNamespaceLabels, optional
+        Labels to be added to all cilium-secret namespaces (resources under templates/cilium-secrets-namespace)
     securityContext : ValuesSecurityContext, optional
     serviceAccounts : ValuesServiceAccounts, optional
         Define serviceAccount names for components.
@@ -357,9 +396,11 @@ schema Values:
         in the node.
     socketLB : ValuesSocketLb, optional
         Configure socket LB
+    standaloneDnsProxy : ValuesStandaloneDnsProxy, optional
+        Standalone DNS Proxy Configuration
+        Note: The standalone DNS proxy uses the agent's dnsProxy.* configuration
+        for DNS settings (proxyPort, enableDnsCompression) to ensure consistency.
     startupProbe : ValuesStartupProbe, optional
-    svcSourceRangeCheck : bool, optional, default is True
-        Enable check of service source ranges (currently, only for LoadBalancer).
     synchronizeK8sNodes : bool, optional, default is True
         Synchronize Kubernetes nodes to kvstore and perform CNP GC.
     sysctlfix : ValuesSysctlfix, optional
@@ -368,6 +409,8 @@ schema Values:
         Configure termination grace period for cilium-agent DaemonSet.
     tls : ValuesTls, optional
         Configure TLS configuration in the agent.
+    tmpVolume : ValuesTmpVolume, optional
+        Configure temporary volume for cilium-agent
     tolerations : [ValuesTolerationsItems0], optional
         Node tolerations for agent scheduling to nodes with taints
         ref: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
@@ -386,6 +429,7 @@ schema Values:
         Possible values:
           - "ipv4"
           - "ipv6"
+          - "auto"
     updateStrategy : ValuesUpdateStrategy, optional
         Cilium agent update strategy
     upgradeCompatibility : str, optional, default is "null"
@@ -427,15 +471,17 @@ schema Values:
     clustermesh?: ValuesClustermesh
     cni?: ValuesCni
     commonLabels?: any
+    configDriftDetection?: ValuesConfigDriftDetection
     connectivityProbeFrequencyRatio?: float
     conntrackGCInterval?: str
     conntrackGCMaxInterval?: str
     crdWaitTimeout?: str
-    customCalls?: ValuesCustomCalls
     daemon?: ValuesDaemon
     dashboards?: ValuesDashboards
+    datapathPlugins?: ValuesDatapathPlugins
     debug?: ValuesDebug
     defaultLBServiceIPAM?: str
+    devices?: str | [any]
     directRoutingSkipUnreachable?: bool
     disableEndpointCRD?: bool
     dnsPolicy?: str
@@ -449,11 +495,13 @@ schema Values:
     enableInternalTrafficPolicy?: bool
     enableLBIPAM?: bool
     enableMasqueradeRouteSource?: bool
+    enableNoServiceEndpointsRoutable?: bool
     enableNonDefaultDenyPolicies?: bool
     enableXTSocketFallback?: bool
     encryption?: ValuesEncryption
     endpointHealthChecking?: ValuesEndpointHealthChecking
     endpointLockdownOnMapOverflow?: bool
+    endpointPolicyUpdateTimeoutDuration?: str
     endpointRoutes?: ValuesEndpointRoutes
     eni?: ValuesEni
     envoy?: ValuesEnvoy
@@ -494,6 +542,7 @@ schema Values:
     k8s?: ValuesK8S
     k8sClientExponentialBackoff?: ValuesK8SClientExponentialBackoff
     k8sClientRateLimit?: ValuesK8SClientRateLimit
+    k8sClusterNetworkPolicy?: ValuesK8SClusterNetworkPolicy
     k8sNetworkPolicy?: ValuesK8SNetworkPolicy
     k8sServiceHost?: str
     k8sServiceHostRef?: ValuesK8SServiceHostRef
@@ -515,11 +564,13 @@ schema Values:
     localRedirectPolicy?: bool
     logSystemLoad?: bool
     maglev?: ValuesMaglev
+    minReadySeconds?: int
     monitor?: ValuesMonitor
     name?: str
     namespaceOverride?: str
     nat?: ValuesNat
     nat46x64Gateway?: ValuesNat46X64Gateway
+    nativeRoutingCIDRFromClusterPool?: bool
     nodeIPAM?: ValuesNodeIpam
     nodePort?: ValuesNodePort
     nodeSelector?: ValuesNodeSelector
@@ -531,8 +582,10 @@ schema Values:
     podLabels?: ValuesPodLabels
     podSecurityContext?: ValuesPodSecurityContext
     policyCIDRMatchMode?: str | [any]
+    policyDenyResponse?: str
     policyEnforcementMode?: str
     pprof?: ValuesPprof
+    preferIpv6?: bool
     preflight?: ValuesPreflight
     priorityClassName?: str
     prometheus?: ValuesPrometheus
@@ -545,17 +598,19 @@ schema Values:
     scheduling?: ValuesScheduling
     sctp?: ValuesSctp
     secretsNamespaceAnnotations?: ValuesSecretsNamespaceAnnotations
+    secretsNamespaceLabels?: ValuesSecretsNamespaceLabels
     securityContext?: ValuesSecurityContext
     serviceAccounts?: ValuesServiceAccounts
     serviceNoBackendResponse?: str
     sleepAfterInit?: bool
     socketLB?: ValuesSocketLb
+    standaloneDnsProxy?: ValuesStandaloneDnsProxy
     startupProbe?: ValuesStartupProbe
-    svcSourceRangeCheck?: bool
     synchronizeK8sNodes?: bool
     sysctlfix?: ValuesSysctlfix
     terminationGracePeriodSeconds?: int
     tls?: ValuesTls
+    tmpVolume?: ValuesTmpVolume
     tolerations?: [ValuesTolerationsItems0]
     tunnelPort?: int
     tunnelProtocol?: str
@@ -646,9 +701,28 @@ schema ValuesAlibabacloud:
     ----------
     enabled : bool, optional, default is False
         Enable AlibabaCloud ENI integration
+    nodeSpec : ValuesAlibabacloudNodeSpec, optional
     """
     [...str]: any
     enabled?: bool
+    nodeSpec?: ValuesAlibabacloudNodeSpec
+
+schema ValuesAlibabacloudNodeSpec:
+    r"""
+    ValuesAlibabacloudNodeSpec
+
+    Attributes
+    ----------
+    securityGroupTags : [any], optional
+    securityGroups : [any], optional
+    vSwitchTags : [any], optional
+    vSwitches : [any], optional
+    """
+    [...str]: any
+    securityGroupTags?: [any]
+    securityGroups?: [any]
+    vSwitchTags?: [any]
+    vSwitches?: [any]
 
 schema ValuesAnnotations:
     r"""
@@ -662,7 +736,7 @@ schema ValuesAuthentication:
 
     Attributes
     ----------
-    enabled : bool, optional, default is True
+    enabled : bool, optional, default is False
         Enable authentication processing and garbage collection.
         Note that if disabled, policy enforcement will still block requests that require authentication.
         But the resulting authentication requests for these requests will not be processed, therefore the requests not be allowed.
@@ -672,6 +746,9 @@ schema ValuesAuthentication:
         Configuration for Cilium's service-to-service mutual authentication using TLS handshakes.
         Note that this is not full mTLS support without also enabling encryption of some form.
         Current encryption options are WireGuard or IPsec, configured in encryption block above.
+
+        Deprecated as of Cilium v1.20, this feature will be removed in Cilium v1.21.
+        See https://github.com/cilium/cilium/issues/47132 for details.
     queueSize : int, optional, default is 1024
         Buffer size of the channel Cilium uses to receive authentication events from the signal map.
     rotatedIdentitiesQueueSize : int, optional, default is 1024
@@ -689,6 +766,9 @@ schema ValuesAuthenticationMutual:
     Configuration for Cilium's service-to-service mutual authentication using TLS handshakes.
     Note that this is not full mTLS support without also enabling encryption of some form.
     Current encryption options are WireGuard or IPsec, configured in encryption block above.
+
+    Deprecated as of Cilium v1.20, this feature will be removed in Cilium v1.21.
+    See https://github.com/cilium/cilium/issues/47132 for details.
 
     Attributes
     ----------
@@ -847,11 +927,11 @@ schema ValuesAuthenticationMutualSpireInstallAgentImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:163970884fba18860cac93655dc32b6af85a5dcf2ebb7e3e119a10888eff8fcd"
+    digest : str, optional, default is "sha256:1d042e4040466686e0ee46f74981ff2167c86adfadca19b3835946f4d6047536"
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "ghcr.io/spiffe/spire-agent"
-    tag : str, optional, default is "1.12.4"
+    tag : str, optional, default is "1.15.2"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -933,11 +1013,11 @@ schema ValuesAuthenticationMutualSpireInstallInitImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:b3255e7dfbcd10cb367af0d409747d511aeb66dfac98cf30e97e87e4207dd76f"
+    digest : str, optional, default is "sha256:dc2d74b28e4cf8984fa52af1f39bc7c3d9c73760b41a74d629f5d11b1ab28616"
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "docker.io/library/busybox"
-    tag : str, optional, default is "1.37.0"
+    tag : str, optional, default is "1.38.0"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -1078,11 +1158,11 @@ schema ValuesAuthenticationMutualSpireInstallServerImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:34147f27066ab2be5cc10ca1d4bfd361144196467155d46c45f3519f41596e49"
+    digest : str, optional, default is "sha256:aa74ef1be86bc8e0684007d84a4d9859d294384d842c30425048d73429f3216e"
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "ghcr.io/spiffe/spire-server"
-    tag : str, optional, default is "1.12.4"
+    tag : str, optional, default is "1.15.2"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -1182,9 +1262,35 @@ schema ValuesAzure:
         Enable Azure integration.
         Note that this is incompatible with AKS clusters created in BYOCNI mode: use
         AKS BYOCNI integration (`aksbyocni.enabled`) instead.
+    nodeSpec : ValuesAzureNodeSpec, optional
+        usePrimaryAddress: false
+        resourceGroup: group1
+        subscriptionID: 00000000-0000-0000-0000-000000000000
+        tenantID: 00000000-0000-0000-0000-000000000000
+        clientID: 00000000-0000-0000-0000-000000000000
+        clientSecret: 00000000-0000-0000-0000-000000000000
+        userAssignedIdentityID: 00000000-0000-0000-0000-000000000000
     """
     [...str]: any
     enabled?: bool
+    nodeSpec?: ValuesAzureNodeSpec
+
+schema ValuesAzureNodeSpec:
+    r"""
+    usePrimaryAddress: false
+    resourceGroup: group1
+    subscriptionID: 00000000-0000-0000-0000-000000000000
+    tenantID: 00000000-0000-0000-0000-000000000000
+    clientID: 00000000-0000-0000-0000-000000000000
+    clientSecret: 00000000-0000-0000-0000-000000000000
+    userAssignedIdentityID: 00000000-0000-0000-0000-000000000000
+
+    Attributes
+    ----------
+    azureInterfaceName : str, optional, default is ""
+    """
+    [...str]: any
+    azureInterfaceName?: str
 
 schema ValuesBandwidthManager:
     r"""
@@ -1208,21 +1314,20 @@ schema ValuesBandwidthManager:
 
 schema ValuesBgpControlPlane:
     r"""
-    This feature set enables virtual BGP routers to be created via
-    CiliumBGPPeeringPolicy CRDs.
+    This feature set enables virtual BGP routers to be created via BGP CRDs.
 
     Attributes
     ----------
     enabled : bool, optional, default is False
         Enables the BGP control plane.
     legacyOriginAttribute : ValuesBgpControlPlaneLegacyOriginAttribute, optional
-        Legacy BGP ORIGIN attribute settings (BGPv2 only)
+        Legacy BGP ORIGIN attribute settings
     routerIDAllocation : ValuesBgpControlPlaneRouterIdallocation, optional
         BGP router-id allocation mode
     secretsNamespace : ValuesBgpControlPlaneSecretsNamespace, optional
         SecretsNamespace is the namespace which BGP support will retrieve secrets from.
     statusReport : ValuesBgpControlPlaneStatusReport, optional
-        Status reporting settings (BGPv2 only)
+        Status reporting settings
     """
     [...str]: any
     enabled?: bool
@@ -1233,7 +1338,7 @@ schema ValuesBgpControlPlane:
 
 schema ValuesBgpControlPlaneLegacyOriginAttribute:
     r"""
-    Legacy BGP ORIGIN attribute settings (BGPv2 only)
+    Legacy BGP ORIGIN attribute settings
 
     Attributes
     ----------
@@ -1277,12 +1382,12 @@ schema ValuesBgpControlPlaneSecretsNamespace:
 
 schema ValuesBgpControlPlaneStatusReport:
     r"""
-    Status reporting settings (BGPv2 only)
+    Status reporting settings
 
     Attributes
     ----------
     enabled : bool, optional, default is True
-        Enable/Disable BGPv2 status reporting
+        Enable/Disable BGP status reporting
         It is recommended to enable status reporting in general, but if you have any issue
         such as high API server load, you can disable it by setting this to false.
     """
@@ -1307,7 +1412,8 @@ schema ValuesBpf:
         (int) Configure the maximum number of entries in the TCP connection tracking
         table.
     datapathMode : str, optional, default is "veth"
-        (string) Mode for Pod devices for the core datapath (veth, netkit, netkit-l2)
+        (string) Mode for Pod devices for the core datapath (auto, veth, netkit, netkit-l2).
+        Note netkit is incompatible with TPROXY (`bpf.tproxy`).
     disableExternalIPMitigation : bool, optional, default is False
         (bool) Disable ExternalIP mitigation (CVE-2020-8554)
     distributedLRU : ValuesBpfDistributedLru, optional
@@ -1356,6 +1462,10 @@ schema ValuesBpf:
     monitorInterval : str, optional, default is "5s"
         Configure the typical time between monitor notifications for
         active connections.
+    monitorTraceIPOption : int, optional, default is 0
+        Configure the IP tracing option type.
+        This option is used to specify the IP option type to use for tracing.
+        The value must be an integer between 0 and 255.
     natMax : int, optional, default is "~"
         (int) Configure the maximum number of entries for the NAT table.
     neighMax : int, optional, default is "~"
@@ -1365,6 +1475,8 @@ schema ValuesBpf:
         (int) Configures the maximum number of entries for the node table.
     policyMapMax : int, optional, default is 16384
         Configure the maximum number of entries in endpoint policy map (per endpoint).
+    policyMapPressureMetricsThreshold : float, optional, default is "~"
+        (float64) Configure threshold for emitting pressure metrics of policy maps.
     policyStatsMapMax : int, optional, default is 65536
         Configure the maximum number of entries in global policy stats map.
     preallocateMaps : bool, optional, default is False
@@ -1374,7 +1486,8 @@ schema ValuesBpf:
         Configure the mount point for the BPF filesystem
     tproxy : bool, optional, default is "~"
         (bool) Configure the eBPF-based TPROXY (beta) to reduce reliance on iptables rules
-        for implementing Layer 7 policy.
+        for implementing Layer 7 policy. Note this is incompatible with netkit (`bpf.datapathMode=netkit`,
+        `bpf.datapathMode=netkit-l2`).
     vlanBypass : [any], optional, default is "~"
         (list) Configure explicitly allowed VLAN id's for bpf logic bypass.
         [0] will allow all VLAN id's without any filtering.
@@ -1401,15 +1514,21 @@ schema ValuesBpf:
     monitorAggregation?: str
     monitorFlags?: str
     monitorInterval?: str
+    monitorTraceIPOption?: int
     natMax?: int
     neighMax?: int
     nodeMapMax?: int
     policyMapMax?: int
+    policyMapPressureMetricsThreshold?: float
     policyStatsMapMax?: int
     preallocateMaps?: bool
     root?: str
     tproxy?: bool
     vlanBypass?: [any]
+
+    check:
+        monitorTraceIPOption <= 255 if monitorTraceIPOption
+        monitorTraceIPOption >= 0 if monitorTraceIPOption
 
 schema ValuesBpfAutoMount:
     r"""
@@ -1452,7 +1571,7 @@ schema ValuesBpfEvents:
     Attributes
     ----------
     default : ValuesBpfEventsDefault, optional
-        Default settings for all types of events except dbg and pcap.
+        Default settings for all types of events except dbg.
     drop : ValuesBpfEventsDrop, optional
     policyVerdict : ValuesBpfEventsPolicyVerdict, optional
     trace : ValuesBpfEventsTrace, optional
@@ -1465,7 +1584,7 @@ schema ValuesBpfEvents:
 
 schema ValuesBpfEventsDefault:
     r"""
-    Default settings for all types of events except dbg and pcap.
+    Default settings for all types of events except dbg.
 
     Attributes
     ----------
@@ -1535,6 +1654,13 @@ schema ValuesCertgen:
         Affinity for certgen
     annotations : ValuesCertgenAnnotations, optional
         Annotations to be added to the hubble-certgen initial Job and CronJob
+    cronJob : ValuesCertgenCronJob, optional
+    enforceCAValidityThroughoutLeavesDuration : bool, optional, default is True
+        When set to true, certgen enforces that the certification authority chain
+        remains valid for the entire duration of the leaf certificates to be generated,
+        and fails with a hard error if that is not the case. This allows to flag early
+        situations in which the CA certificates need to be manually regenerated, before
+        they actually expire.
     extraVolumeMounts : [any], optional
         Additional certgen volumeMounts.
     extraVolumes : [any], optional
@@ -1556,12 +1682,14 @@ schema ValuesCertgen:
     tolerations : [any], optional
         Node tolerations for pod assignment on nodes with taints
         ref: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
-    ttlSecondsAfterFinished : int, optional, default is 1800
+    ttlSecondsAfterFinished : int, optional, default is "null"
         Seconds after which the completed job pod will be deleted
     """
     [...str]: any
     affinity?: ValuesCertgenAffinity
     annotations?: ValuesCertgenAnnotations
+    cronJob?: ValuesCertgenCronJob
+    enforceCAValidityThroughoutLeavesDuration?: bool
     extraVolumeMounts?: [any]
     extraVolumes?: [any]
     generateCA?: bool
@@ -1604,17 +1732,32 @@ schema ValuesCertgenAnnotationsJob:
     """
     [...str]: any
 
+schema ValuesCertgenCronJob:
+    r"""
+    ValuesCertgenCronJob
+
+    Attributes
+    ----------
+    failedJobsHistoryLimit : int, optional, default is 1
+        The number of failed finished jobs to keep
+    successfulJobsHistoryLimit : int, optional, default is 3
+        The number of successful finished jobs to keep
+    """
+    [...str]: any
+    failedJobsHistoryLimit?: int
+    successfulJobsHistoryLimit?: int
+
 schema ValuesCertgenImage:
     r"""
     ValuesCertgenImage
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:19921f48ee7e2295ea4dca955878a6cd8d70e6d4219d08f688e866ece9d95d4d"
+    digest : str, optional, default is "sha256:6213a4c54a1f36e14a9280765f058aaa2017550c28bc122f5b09ad146fd0da2b"
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/certgen"
-    tag : str, optional, default is "v0.3.2"
+    tag : str, optional, default is "v0.4.9"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -1752,31 +1895,66 @@ schema ValuesClustermesh:
     annotations : ValuesClustermeshAnnotations, optional
         Annotations to be added to all top-level clustermesh objects (resources under templates/clustermesh-apiserver and templates/clustermesh-config)
     apiserver : ValuesClustermeshApiserver, optional
+    cacheTTL : str, optional, default is "0s"
+        The time to live for the cache of a remote cluster after connectivity is
+        lost. If the connection is not re-established within this duration, the
+        cached data is revoked to prevent stale state. If not specified or set to
+        0s, the cache is never revoked (default).
     config : ValuesClustermeshConfig, optional
         Clustermesh explicit configuration.
+    defaultGlobalNamespace : bool, optional, default is True
+        Default behavior of namespaces in Clustermesh.
+
+        A "global" namespace means its resources (CiliumEndpoints, CiliumIdentities,
+        and Services) are exported and shared across all connected clusters in the mesh.
+        This enables:
+        - Cross-cluster pod-to-pod connectivity
+        - Cross-cluster network policy enforcement (policies can match labels on pods in remote clusters)
+        - Global services and Multi-Cluster Services (MCS-API)
+
+        A "local" namespace means its resources stay within the cluster and are NOT
+        exported to other clusters. Cross-cluster communication and network policies
+        will not work for pods in local namespaces.
+
+        If set to true, all namespaces are considered global by default unless
+        explicitly annotated with clustermesh.cilium.io/global=false.
+        If set to false, all namespaces are considered local by default unless
+        explicitly annotated with clustermesh.cilium.io/global=true.
+
+        Note: For cross-cluster communication to work, BOTH the source and destination
+        namespaces must be global. Additionally, for a service to be a Global Service,
+        it must both reside in a global namespace AND be annotated with
+        service.cilium.io/global=true.
+        This setting improves scalability by limiting the amount of state synchronized
+        across clusters.
+
+        Defaults to true (preserves existing behavior where all namespaces are global).
     enableEndpointSliceSynchronization : bool, optional, default is False
         Enable the synchronization of Kubernetes EndpointSlices corresponding to
         the remote endpoints of appropriately-annotated global services through ClusterMesh
-    enableMCSAPISupport : bool, optional, default is False
-        Enable Multi-Cluster Services API support
     maxConnectedClusters : int, optional, default is 255
         The maximum number of clusters to support in a ClusterMesh. This value
         cannot be changed on running clusters, and all clusters in a ClusterMesh
         must be configured with the same value. Values > 255 will decrease the
         maximum allocatable cluster-local identities.
         Supported values are 255 and 511.
-    policyDefaultLocalCluster : bool, optional, default is False
+    mcsapi : ValuesClustermeshMcsapi, optional
+    policyDefaultLocalCluster : bool, optional, default is True
         Control whether policy rules assume by default the local cluster if not explicitly selected
     useAPIServer : bool, optional, default is False
-        Deploy clustermesh-apiserver for clustermesh
+        Deploy clustermesh-apiserver for clustermesh. This option is typically
+        used with ``clustermesh.config.enabled=true``. Refer to the
+        ``clustermesh.config.enabled=true``documentation for more information.
     """
     [...str]: any
     annotations?: ValuesClustermeshAnnotations
     apiserver?: ValuesClustermeshApiserver
+    cacheTTL?: str
     config?: ValuesClustermeshConfig
+    defaultGlobalNamespace?: bool
     enableEndpointSliceSynchronization?: bool
-    enableMCSAPISupport?: bool
     maxConnectedClusters?: int
+    mcsapi?: ValuesClustermeshMcsapi
     policyDefaultLocalCluster?: bool
     useAPIServer?: bool
 
@@ -1795,6 +1973,9 @@ schema ValuesClustermeshApiserver:
     affinity : ValuesClustermeshApiserverAffinity, optional
         Affinity for clustermesh.apiserver
     etcd : ValuesClustermeshApiserverEtcd, optional
+    etcdQPS : int, optional, default is 50
+        Rate limit for the apiserver container while syncing Kubernetes
+        resources from the local cluster to the local etcd.
     extraArgs : [any], optional
         Additional clustermesh-apiserver arguments.
     extraEnv : [any], optional
@@ -1848,6 +2029,7 @@ schema ValuesClustermeshApiserver:
     [...str]: any
     affinity?: ValuesClustermeshApiserverAffinity
     etcd?: ValuesClustermeshApiserverEtcd
+    etcdQPS?: int
     extraArgs?: [any]
     extraEnv?: [any]
     extraVolumeMounts?: [any]
@@ -2037,12 +2219,12 @@ schema ValuesClustermeshApiserverImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:3d4512153afc5d8ceda3517f9b243619b55a67f9abaebcc92c4be2df94d43cfa"
+    digest : str, optional, default is "sha256:d905d614a332b2058cb81c193e481d1f460902b903f4eb57cc9764640b750fb5"
         clustermesh-apiserver-digest
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/clustermesh-apiserver"
-    tag : str, optional, default is "v1.18.7"
+    tag : str, optional, default is "v1.20.1"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -2062,6 +2244,9 @@ schema ValuesClustermeshApiserverKvstoremesh:
     enabled : bool, optional, default is True
         Enable KVStoreMesh. KVStoreMesh caches the information retrieved
         from the remote clusters in the local etcd instance (deprecated - KVStoreMesh will always be enabled once the option is removed).
+    etcdQPS : int, optional, default is 100
+        Rate limit for the kvstoremesh container while syncing resources
+        from all remote clusters to the local etcd.
     extraArgs : [any], optional
         Additional KVStoreMesh arguments.
     extraEnv : [any], optional
@@ -2086,6 +2271,7 @@ schema ValuesClustermeshApiserverKvstoremesh:
     """
     [...str]: any
     enabled?: bool
+    etcdQPS?: int
     extraArgs?: [any]
     extraEnv?: [any]
     extraVolumeMounts?: [any]
@@ -2415,6 +2601,9 @@ schema ValuesClustermeshApiserverService:
                    degraded performance due to more frequent reconnections.
     externalTrafficPolicy : "Local" | "Cluster", optional, default is "Cluster"
         The externalTrafficPolicy of service used for apiserver access.
+    externallyCreated : bool, optional, default is False
+        (bool) Set externallyCreated to true to create the clustermesh-apiserver service outside this helm chart.
+        For example after external load balancer controllers are created.
     internalTrafficPolicy : "Local" | "Cluster", optional, default is "Cluster"
         The internalTrafficPolicy of service used for apiserver access.
     labels : ValuesClustermeshApiserverServiceLabels, optional
@@ -2434,14 +2623,6 @@ schema ValuesClustermeshApiserverService:
         clustermesh-apiserver LB service in case the Service type is set to LoadBalancer.
     nodePort : int, optional, default is 32379
         Optional port to use as the node port for apiserver access.
-
-        WARNING: make sure to configure a different NodePort in each cluster if
-        kube-proxy replacement is enabled, as Cilium is currently affected by a known
-        bug (#24692) when NodePorts are handled by the KPR implementation. If a service
-        with the same NodePort exists both in the local and the remote cluster, all
-        traffic originating from inside the cluster and targeting the corresponding
-        NodePort will be redirected to a local backend, regardless of whether the
-        destination node belongs to the local or the remote cluster.
     $type : str, optional, default is "NodePort"
         The type of service used for apiserver access.
     """
@@ -2449,6 +2630,7 @@ schema ValuesClustermeshApiserverService:
     annotations?: ValuesClustermeshApiserverServiceAnnotations
     enableSessionAffinity?: "HAOnly" | "Always" | "Never"
     externalTrafficPolicy?: "Local" | "Cluster"
+    externallyCreated?: bool
     internalTrafficPolicy?: "Local" | "Cluster"
     labels?: ValuesClustermeshApiserverServiceLabels
     loadBalancerClass?: str
@@ -2479,10 +2661,7 @@ schema ValuesClustermeshApiserverTls:
 
     Attributes
     ----------
-    admin : ValuesClustermeshApiserverTlsAdmin, optional
-        base64 encoded PEM values for the clustermesh-apiserver admin certificate and private key.
-        Used if 'auto' is not enabled.
-    authMode : str, optional, default is "legacy"
+    authMode : str, optional, default is "migration"
         Configure the clustermesh authentication mode.
         Supported values:
         - legacy:     All clusters access remote clustermesh instances with the same
@@ -2503,45 +2682,10 @@ schema ValuesClustermeshApiserverTls:
         A Kubernetes CronJob is used the generate any
         certificates not provided by the user at installation
         time.
-    client : ValuesClustermeshApiserverTlsClient, optional
-        base64 encoded PEM values for the clustermesh-apiserver client certificate and private key.
-        Used if 'auto' is not enabled.
-    enableSecrets : bool, optional, default is True
-        Allow users to provide their own certificates
-        Users may need to provide their certificates using
-        a mechanism that requires they provide their own secrets.
-        This setting does not apply to any of the auto-generated
-        mechanisms below, it only restricts the creation of secrets
-        via the `tls-provided` templates.
-    remote : ValuesClustermeshApiserverTlsRemote, optional
-        base64 encoded PEM values for the clustermesh-apiserver remote cluster certificate and private key.
-        Used if 'auto' is not enabled.
-    server : ValuesClustermeshApiserverTlsServer, optional
-        base64 encoded PEM values for the clustermesh-apiserver server certificate and private key.
-        Used if 'auto' is not enabled.
     """
     [...str]: any
-    admin?: ValuesClustermeshApiserverTlsAdmin
     authMode?: str
     auto?: ValuesClustermeshApiserverTlsAuto
-    client?: ValuesClustermeshApiserverTlsClient
-    enableSecrets?: bool
-    remote?: ValuesClustermeshApiserverTlsRemote
-    server?: ValuesClustermeshApiserverTlsServer
-
-schema ValuesClustermeshApiserverTlsAdmin:
-    r"""
-    base64 encoded PEM values for the clustermesh-apiserver admin certificate and private key.
-    Used if 'auto' is not enabled.
-
-    Attributes
-    ----------
-    cert : str, optional, default is ""
-    key : str, optional, default is ""
-    """
-    [...str]: any
-    cert?: str
-    key?: str
 
 schema ValuesClustermeshApiserverTlsAuto:
     r"""
@@ -2559,12 +2703,19 @@ schema ValuesClustermeshApiserverTlsAuto:
           kind: ClusterIssuer
           name: ca-issuer
         certmanager issuer used when clustermesh.apiserver.tls.auto.method=certmanager.
-    certValidityDuration : int, optional, default is 1095
+    certValidityDuration : int, optional, default is 365
         Generated certificates validity duration in days.
     enabled : bool, optional, default is True
         When set to true, automatically generate a CA and certificates to
         enable mTLS between clustermesh-apiserver and external workload instances.
-        If set to false, the certs to be provided by setting appropriate values below.
+
+        When set to false you need to pre-create the following secrets:
+        - clustermesh-apiserver-server-cert
+        - clustermesh-apiserver-admin-cert
+        - clustermesh-apiserver-remote-cert
+        - clustermesh-apiserver-local-cert
+        The above secret should at least contains the keys `tls.crt` and `tls.key`
+        and optionally `ca.crt` if a CA bundle is not configured.
     method : str, optional, default is "helm"
         Sets the method to auto-generate certificates. Supported values:
         - helm:         This method uses Helm to generate all certificates.
@@ -2572,12 +2723,45 @@ schema ValuesClustermeshApiserverTlsAuto:
                         certificates not provided by the user at installation
                         time.
         - certmanager:  This method use cert-manager to generate & rotate certificates.
+    privateKey : ValuesClustermeshApiserverTlsAutoPrivateKey, optional
+        [Example]
+        privateKey:
+          algorithm: ECDSA
+        Private key options. These include the key algorithm and size, the used encoding and the rotation policy used when clustermesh.apiserver.tls.auto.method=certmanager.
+        https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificatePrivateKey
+    schedule : str, optional, default is "0 0 1 */4 *"
+        Schedule for certificates regeneration (regardless of their expiration date).
+        Only used if method is "cronJob". If nil, then no recurring job will be created.
+        Instead, only the one-shot job is deployed to generate the certificates at
+        installation time.
+
+        Due to the out-of-band distribution of client certs to external workloads the
+        CA is (re)regenerated only if it is not provided as a helm value and the k8s
+        secret is manually deleted.
+
+        Defaults to midnight of the first day of every fourth month. For syntax, see
+        https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#schedule-syntax
+    server : ValuesClustermeshApiserverTlsAutoServer, optional
+        Extra configurations for the auto generated server certificate.
+    subject : ValuesClustermeshApiserverTlsAutoSubject, optional
+        [Example]
+        subject:
+          countries:
+            - US
+          provinces:
+            - California
+        X509Subject Full X509 name specification used when clustermesh.apiserver.tls.auto.method=certmanager.
+        https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.X509Subject
     """
     [...str]: any
     certManagerIssuerRef?: ValuesClustermeshApiserverTlsAutoCertManagerIssuerRef
     certValidityDuration?: int
     enabled?: bool
     method?: str
+    privateKey?: ValuesClustermeshApiserverTlsAutoPrivateKey
+    schedule?: str
+    server?: ValuesClustermeshApiserverTlsAutoServer
+    subject?: ValuesClustermeshApiserverTlsAutoSubject
 
 schema ValuesClustermeshApiserverTlsAutoCertManagerIssuerRef:
     r"""
@@ -2590,53 +2774,43 @@ schema ValuesClustermeshApiserverTlsAutoCertManagerIssuerRef:
     """
     [...str]: any
 
-schema ValuesClustermeshApiserverTlsClient:
+schema ValuesClustermeshApiserverTlsAutoPrivateKey:
     r"""
-    base64 encoded PEM values for the clustermesh-apiserver client certificate and private key.
-    Used if 'auto' is not enabled.
-
-    Attributes
-    ----------
-    cert : str, optional, default is ""
-    key : str, optional, default is ""
+    [Example]
+    privateKey:
+      algorithm: ECDSA
+    Private key options. These include the key algorithm and size, the used encoding and the rotation policy used when clustermesh.apiserver.tls.auto.method=certmanager.
+    https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificatePrivateKey
     """
     [...str]: any
-    cert?: str
-    key?: str
 
-schema ValuesClustermeshApiserverTlsRemote:
+schema ValuesClustermeshApiserverTlsAutoServer:
     r"""
-    base64 encoded PEM values for the clustermesh-apiserver remote cluster certificate and private key.
-    Used if 'auto' is not enabled.
+    Extra configurations for the auto generated server certificate.
 
     Attributes
     ----------
-    cert : str, optional, default is ""
-    key : str, optional, default is ""
-    """
-    [...str]: any
-    cert?: str
-    key?: str
-
-schema ValuesClustermeshApiserverTlsServer:
-    r"""
-    base64 encoded PEM values for the clustermesh-apiserver server certificate and private key.
-    Used if 'auto' is not enabled.
-
-    Attributes
-    ----------
-    cert : str, optional, default is ""
     extraDnsNames : [any], optional
         Extra DNS names added to certificate when it's auto generated
     extraIpAddresses : [any], optional
         Extra IP addresses added to certificate when it's auto generated
-    key : str, optional, default is ""
     """
     [...str]: any
-    cert?: str
     extraDnsNames?: [any]
     extraIpAddresses?: [any]
-    key?: str
+
+schema ValuesClustermeshApiserverTlsAutoSubject:
+    r"""
+    [Example]
+    subject:
+      countries:
+        - US
+      provinces:
+        - California
+    X509Subject Full X509 name specification used when clustermesh.apiserver.tls.auto.method=certmanager.
+    https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.X509Subject
+    """
+    [...str]: any
 
 schema ValuesClustermeshApiserverUpdateStrategy:
     r"""
@@ -2670,19 +2844,155 @@ schema ValuesClustermeshConfig:
 
     Attributes
     ----------
-    clusters : [any], optional
-        List of clusters to be peered in the mesh.
+    clusters : any | [any] | any, optional
+        Clusters to be peered in the mesh.
     domain : str, optional, default is "mesh.cilium.io"
         Default dns domain for the Clustermesh API servers
         This is used in the case cluster addresses are not provided
         and IPs are used.
     enabled : bool, optional, default is False
         Enable the Clustermesh explicit configuration.
+        If set to false, you need to provide the following resources yourself:
+        - (Secret) cilium-clustermesh (used by cilium-agent/cilium-operator to connect to
+          the local etcd instance if KVStoreMesh is enabled or the remote clusters
+          if KVStoreMesh is disabled)
+        - (Secret) cilium-kvstoremesh (used by KVStoreMesh to connect to the remote clusters)
+        - (ConfigMap) clustermesh-remote-users (used to create one etcd user per remote cluster
+          if clustermesh-apiserver is used and `clustermesh.apiserver.tls.authMode` is not
+          set to `legacy`)
     """
     [...str]: any
-    clusters?: [any]
+    clusters?: any | [any] | any
     domain?: str
     enabled?: bool
+
+schema ValuesClustermeshMcsapi:
+    r"""
+    ValuesClustermeshMcsapi
+
+    Attributes
+    ----------
+    corednsAutoConfigure : ValuesClustermeshMcsapiCorednsAutoConfigure, optional
+    enabled : bool, optional, default is False
+        Enable Multi-Cluster Services API support
+    installCRDs : bool, optional, default is True
+        Enabled MCS-API CRDs auto-installation
+    """
+    [...str]: any
+    corednsAutoConfigure?: ValuesClustermeshMcsapiCorednsAutoConfigure
+    enabled?: bool
+    installCRDs?: bool
+
+schema ValuesClustermeshMcsapiCorednsAutoConfigure:
+    r"""
+    ValuesClustermeshMcsapiCorednsAutoConfigure
+
+    Attributes
+    ----------
+    affinity : ValuesClustermeshMcsapiCorednsAutoConfigureAffinity, optional
+        Affinity for coredns-mcsapi-autoconfig
+    annotations : ValuesClustermeshMcsapiCorednsAutoConfigureAnnotations, optional
+        Annotations to be added to the coredns-mcsapi-autoconfig Job
+    coredns : ValuesClustermeshMcsapiCorednsAutoConfigureCoredns, optional
+    enabled : bool, optional, default is False
+        Enable auto-configuration of CoreDNS for Multi-Cluster Services API.
+           CoreDNS MUST be at least in version v1.12.2 to run this.
+    extraArgs : [any], optional
+        Additional arguments to `clustermesh-apiserver coredns-mcsapi-auto-configure`.
+    extraVolumeMounts : [any], optional
+        Additional coredns-mcsapi-autoconfig volumeMounts.
+    extraVolumes : [any], optional
+        Additional coredns-mcsapi-autoconfig volumes.
+    nodeSelector : ValuesClustermeshMcsapiCorednsAutoConfigureNodeSelector, optional
+        Node selector for coredns-mcsapi-autoconfig
+        ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector
+    podLabels : ValuesClustermeshMcsapiCorednsAutoConfigurePodLabels, optional
+        Labels to be added to coredns-mcsapi-autoconfig pods
+    priorityClassName : str, optional, default is ""
+        Priority class for coredns-mcsapi-autoconfig
+        ref: https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#priorityclass
+    resources : ValuesClustermeshMcsapiCorednsAutoConfigureResources, optional
+        Resource limits for coredns-mcsapi-autoconfig
+        ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers
+    tolerations : [any], optional
+        Node tolerations for pod assignment on nodes with taints
+        ref: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+    ttlSecondsAfterFinished : int, optional, default is 1800
+        Seconds after which the completed job pod will be deleted
+    """
+    [...str]: any
+    affinity?: ValuesClustermeshMcsapiCorednsAutoConfigureAffinity
+    annotations?: ValuesClustermeshMcsapiCorednsAutoConfigureAnnotations
+    coredns?: ValuesClustermeshMcsapiCorednsAutoConfigureCoredns
+    enabled?: bool
+    extraArgs?: [any]
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
+    nodeSelector?: ValuesClustermeshMcsapiCorednsAutoConfigureNodeSelector
+    podLabels?: ValuesClustermeshMcsapiCorednsAutoConfigurePodLabels
+    priorityClassName?: str
+    resources?: ValuesClustermeshMcsapiCorednsAutoConfigureResources
+    tolerations?: [any]
+    ttlSecondsAfterFinished?: int
+
+schema ValuesClustermeshMcsapiCorednsAutoConfigureAffinity:
+    r"""
+    Affinity for coredns-mcsapi-autoconfig
+    """
+    [...str]: any
+
+schema ValuesClustermeshMcsapiCorednsAutoConfigureAnnotations:
+    r"""
+    Annotations to be added to the coredns-mcsapi-autoconfig Job
+    """
+    [...str]: any
+
+schema ValuesClustermeshMcsapiCorednsAutoConfigureCoredns:
+    r"""
+    ValuesClustermeshMcsapiCorednsAutoConfigureCoredns
+
+    Attributes
+    ----------
+    clusterDomain : str, optional, default is "cluster.local"
+        The cluster domain for the cluster CoreDNS service
+    clustersetDomain : str, optional, default is "clusterset.local"
+        The clusterset domain for the cluster CoreDNS service
+    configMapName : str, optional, default is "coredns"
+        The ConfigMap name for the cluster CoreDNS service
+    deploymentName : str, optional, default is "coredns"
+        The Deployment for the cluster CoreDNS service
+    namespace : str, optional, default is "kube-system"
+        The namespace for the cluster CoreDNS service
+    serviceAccountName : str, optional, default is "coredns"
+        The Service Account name for the cluster CoreDNS service
+    """
+    [...str]: any
+    clusterDomain?: str
+    clustersetDomain?: str
+    configMapName?: str
+    deploymentName?: str
+    namespace?: str
+    serviceAccountName?: str
+
+schema ValuesClustermeshMcsapiCorednsAutoConfigureNodeSelector:
+    r"""
+    Node selector for coredns-mcsapi-autoconfig
+    ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector
+    """
+    [...str]: any
+
+schema ValuesClustermeshMcsapiCorednsAutoConfigurePodLabels:
+    r"""
+    Labels to be added to coredns-mcsapi-autoconfig pods
+    """
+    [...str]: any
+
+schema ValuesClustermeshMcsapiCorednsAutoConfigureResources:
+    r"""
+    Resource limits for coredns-mcsapi-autoconfig
+    ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers
+    """
+    [...str]: any
 
 schema ValuesCni:
     r"""
@@ -2772,10 +3082,25 @@ schema ValuesCniResources:
 
     Attributes
     ----------
+    limits : ValuesCniResourcesLimits, optional
     requests : ValuesCniResourcesRequests, optional
     """
     [...str]: any
+    limits?: ValuesCniResourcesLimits
     requests?: ValuesCniResourcesRequests
+
+schema ValuesCniResourcesLimits:
+    r"""
+    ValuesCniResourcesLimits
+
+    Attributes
+    ----------
+    cpu : int | str, optional, default is 1
+    memory : str, optional, default is "1Gi"
+    """
+    [...str]: any
+    cpu?: int | str
+    memory?: str
 
 schema ValuesCniResourcesRequests:
     r"""
@@ -2783,24 +3108,38 @@ schema ValuesCniResourcesRequests:
 
     Attributes
     ----------
-    cpu : str, optional, default is "100m"
+    cpu : int | str, optional, default is "100m"
     memory : str, optional, default is "10Mi"
     """
     [...str]: any
-    cpu?: str
+    cpu?: int | str
     memory?: str
 
-schema ValuesCustomCalls:
+schema ValuesConfigDriftDetection:
     r"""
-    Tail call hooks for custom eBPF programs.
+    Configuration for the ConfigMap drift detection feature.
+    When enabled, the agent continuously watches the cilium-config ConfigMap
+    and exposes a cilium_drift_checker_config_delta Prometheus metric reporting
+    the number of keys that differ between the ConfigMap and the agent's active
+    settings. A non-zero value indicates that the agent has not yet applied all
+    current ConfigMap changes and needs to be restarted.
 
     Attributes
     ----------
-    enabled : bool, optional, default is False
-        Enable tail call hooks for custom eBPF programs.
+    driftChecker : bool, optional, default is True
+        Enable the drift checker which compares the DynamicConfig table against
+        the agent's active settings and publishes the
+        cilium_drift_checker_config_delta metric.
+    enabled : bool, optional, default is True
+        Enable watching of the cilium-config ConfigMap and reflecting its
+        contents into the agent's internal DynamicConfig table.
+    ignoredKeys : [any], optional
+        List of config-map keys to ignore when computing the drift delta.
     """
     [...str]: any
+    driftChecker?: bool
     enabled?: bool
+    ignoredKeys?: [any]
 
 schema ValuesDaemon:
     r"""
@@ -2872,6 +3211,21 @@ schema ValuesDashboardsAnnotations:
     """
     [...str]: any
 
+schema ValuesDatapathPlugins:
+    r"""
+    Plugins to inject custom BPF into the datapath.
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Enable datapath plugins.
+    stateDir : str, optional, default is "/var/run/cilium/plugins"
+        Parent directory for per-plugin state directories.
+    """
+    [...str]: any
+    enabled?: bool
+    stateDir?: str
+
 schema ValuesDebug:
     r"""
     ValuesDebug
@@ -2888,7 +3242,7 @@ schema ValuesDebug:
     verbose : str, optional, default is "~"
         Configure verbosity levels for debug logging
         This option is used to enable debug messages for operations related to such
-        sub-system such as (e.g. kvstore, envoy, datapath or policy), and flow is
+        sub-system such as (e.g. kvstore, envoy, datapath, policy, or tagged), and flow is
         for enabling debug messages emitted per request, message and connection.
         Multiple values can be set via a space-separated string (e.g. "datapath envoy").
 
@@ -2898,6 +3252,7 @@ schema ValuesDebug:
         - envoy
         - datapath
         - policy
+        - tagged
     """
     [...str]: any
     enabled?: bool
@@ -2931,7 +3286,7 @@ schema ValuesDnsProxy:
         Pre-allocate ToFQDN identities. This reduces DNS proxy tail latency, at the potential cost of some
         unnecessary policymap entries. Disable this if you have a large (200+) number of unique ToFQDN selectors.
     preCache : str, optional, default is ""
-        DNS cache data at this path is preloaded on agent startup.
+        DNS cache data at this path is preloaded on agent startup. (deprecated: will be removed in v1.21)
     proxyPort : int, optional, default is 0
         Global port on which the in-agent DNS proxy should listen. Default 0 is a OS-assigned port.
     proxyResponseMaxDelay : str, optional, default is "100ms"
@@ -2981,10 +3336,14 @@ schema ValuesEncryption:
         Enable encryption for pure node to node traffic.
         This option is only effective when encryption.type is set to "wireguard".
     strictMode : ValuesEncryptionStrictMode, optional
-        Configure the WireGuard Pod2Pod strict mode.
+        Configure the Encryption Pod2Pod strict mode.
     $type : str, optional, default is "ipsec"
-        Encryption method. Can be either ipsec or wireguard.
+        Encryption method. Can be one of ipsec, wireguard or ztunnel.
     wireguard : ValuesEncryptionWireguard, optional
+    ztunnel : ValuesEncryptionZtunnel, optional
+        ztunnel encryption configuration.
+        ztunnel is Istio's purpose-built, per-node proxy for handling L4 traffic in ambient mesh mode.
+        These settings only apply when encryption.type is set to "ztunnel".
     """
     [...str]: any
     enabled?: bool
@@ -2993,6 +3352,7 @@ schema ValuesEncryption:
     strictMode?: ValuesEncryptionStrictMode
     $type?: str
     wireguard?: ValuesEncryptionWireguard
+    ztunnel?: ValuesEncryptionZtunnel
 
 schema ValuesEncryptionIpsec:
     r"""
@@ -3000,8 +3360,6 @@ schema ValuesEncryptionIpsec:
 
     Attributes
     ----------
-    encryptedOverlay : bool, optional, default is False
-        Enable IPsec encrypted overlay
     interface : str, optional, default is ""
         The interface to use for encrypted traffic.
     keyFile : str, optional, default is "keys"
@@ -3018,7 +3376,6 @@ schema ValuesEncryptionIpsec:
         Name of the Kubernetes secret containing the encryption keys.
     """
     [...str]: any
-    encryptedOverlay?: bool
     interface?: str
     keyFile?: str
     keyRotationDuration?: str
@@ -3028,7 +3385,20 @@ schema ValuesEncryptionIpsec:
 
 schema ValuesEncryptionStrictMode:
     r"""
-    Configure the WireGuard Pod2Pod strict mode.
+    Configure the Encryption Pod2Pod strict mode.
+
+    Attributes
+    ----------
+    egress : ValuesEncryptionStrictModeEgress, optional
+    ingress : ValuesEncryptionStrictModeIngress, optional
+    """
+    [...str]: any
+    egress?: ValuesEncryptionStrictModeEgress
+    ingress?: ValuesEncryptionStrictModeIngress
+
+schema ValuesEncryptionStrictModeEgress:
+    r"""
+    ValuesEncryptionStrictModeEgress
 
     Attributes
     ----------
@@ -3036,13 +3406,27 @@ schema ValuesEncryptionStrictMode:
         Allow dynamic lookup of remote node identities.
         This is required when tunneling is used or direct routing is used and the node CIDR and pod CIDR overlap.
     cidr : str, optional, default is ""
-        CIDR for the WireGuard Pod2Pod strict mode.
+        CIDR for the Encryption Pod2Pod strict egress mode.
     enabled : bool, optional, default is False
-        Enable WireGuard Pod2Pod strict mode.
+        Enable strict egress encryption.
     """
     [...str]: any
     allowRemoteNodeIdentities?: bool
     cidr?: str
+    enabled?: bool
+
+schema ValuesEncryptionStrictModeIngress:
+    r"""
+    ValuesEncryptionStrictModeIngress
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Enable strict ingress encryption.
+        When enabled, all unencrypted pod-to-pod ingress traffic will be dropped.
+        This option requires WireGuard encryption.
+    """
+    [...str]: any
     enabled?: bool
 
 schema ValuesEncryptionWireguard:
@@ -3056,6 +3440,241 @@ schema ValuesEncryptionWireguard:
     """
     [...str]: any
     persistentKeepalive?: str
+
+schema ValuesEncryptionZtunnel:
+    r"""
+    ztunnel encryption configuration.
+    ztunnel is Istio's purpose-built, per-node proxy for handling L4 traffic in ambient mesh mode.
+    These settings only apply when encryption.type is set to "ztunnel".
+
+    Attributes
+    ----------
+    affinity : ValuesEncryptionZtunnelAffinity, optional
+        Affinity for ztunnel pods.
+    annotations : ValuesEncryptionZtunnelAnnotations, optional
+        Annotations to be added to all ztunnel resources.
+    ca : ValuesEncryptionZtunnelCa, optional
+        CA backend used by ztunnel to issue workload identities.
+    caAddress : str, optional, default is "https://localhost:15012"
+        CA server address for certificate requests.
+    extraEnv : [any], optional
+        Additional ztunnel container environment variables.
+    extraVolumeMounts : [any], optional
+        Additional ztunnel volumeMounts.
+    extraVolumes : [any], optional
+        Additional ztunnel volumes.
+    healthPort : int, optional, default is 15021
+        TCP port for the health API.
+    image : ValuesEncryptionZtunnelImage, optional
+        ztunnel container image.
+    minReadySeconds : int, optional, default is 0
+        Minimum number of seconds for which a newly created ztunnel pod should be ready
+        before it is considered available.
+    nodeSelector : ValuesEncryptionZtunnelNodeSelector, optional
+        Node selector for ztunnel pods.
+    podAnnotations : ValuesEncryptionZtunnelPodAnnotations, optional
+        Annotations to be added to ztunnel pods.
+    podLabels : ValuesEncryptionZtunnelPodLabels, optional
+        Labels to be added to ztunnel pods.
+    priorityClassName : str, optional, default is "~"
+        The priority class to use for ztunnel pods.
+    readinessProbe : ValuesEncryptionZtunnelReadinessProbe, optional
+        Readiness probe configuration.
+    resources : ValuesEncryptionZtunnelResources, optional
+        ztunnel resource limits & requests.
+    secrets : ValuesEncryptionZtunnelSecrets, optional
+        ztunnel secrets configuration.
+    terminationGracePeriodSeconds : int, optional, default is 30
+        Configure termination grace period for ztunnel DaemonSet.
+    tolerations : [ValuesEncryptionZtunnelTolerationsItems0], optional
+        Node tolerations for ztunnel scheduling.
+    updateStrategy : ValuesEncryptionZtunnelUpdateStrategy, optional
+        ztunnel update strategy.
+    """
+    [...str]: any
+    affinity?: ValuesEncryptionZtunnelAffinity
+    annotations?: ValuesEncryptionZtunnelAnnotations
+    ca?: ValuesEncryptionZtunnelCa
+    caAddress?: str
+    extraEnv?: [any]
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
+    healthPort?: int
+    image?: ValuesEncryptionZtunnelImage
+    minReadySeconds?: int
+    nodeSelector?: ValuesEncryptionZtunnelNodeSelector
+    podAnnotations?: ValuesEncryptionZtunnelPodAnnotations
+    podLabels?: ValuesEncryptionZtunnelPodLabels
+    priorityClassName?: str
+    readinessProbe?: ValuesEncryptionZtunnelReadinessProbe
+    resources?: ValuesEncryptionZtunnelResources
+    secrets?: ValuesEncryptionZtunnelSecrets
+    terminationGracePeriodSeconds?: int
+    tolerations?: [ValuesEncryptionZtunnelTolerationsItems0]
+    updateStrategy?: ValuesEncryptionZtunnelUpdateStrategy
+
+schema ValuesEncryptionZtunnelAffinity:
+    r"""
+    Affinity for ztunnel pods.
+    """
+    [...str]: any
+
+schema ValuesEncryptionZtunnelAnnotations:
+    r"""
+    Annotations to be added to all ztunnel resources.
+    """
+    [...str]: any
+
+schema ValuesEncryptionZtunnelCa:
+    r"""
+    CA backend used by ztunnel to issue workload identities.
+
+    Attributes
+    ----------
+    $type : "spire" | "internal", optional, default is "internal"
+        Type of CA. "spire" uses an external SPIRE server (the operator
+        then manages SPIRE entries for enrolled namespaces). "internal" uses
+        Cilium's built-in CA and skips the SPIRE enrollment reconciler.
+    """
+    [...str]: any
+    $type?: "spire" | "internal"
+
+schema ValuesEncryptionZtunnelImage:
+    r"""
+    ztunnel container image.
+
+    Attributes
+    ----------
+    digest : str, optional, default is "sha256:884de5adde400e39f58e36c7a729f7690466ca4a8eb4c2a8daa9c1c025115b24"
+    override : str, optional, default is "~"
+    pullPolicy : str, optional, default is "IfNotPresent"
+    repository : str, optional, default is "quay.io/cilium/ztunnel"
+    tag : str, optional, default is "v1.0.0"
+    useDigest : bool, optional, default is True
+    """
+    [...str]: any
+    digest?: str
+    override?: str
+    pullPolicy?: str
+    repository?: str
+    tag?: str
+    useDigest?: bool
+
+schema ValuesEncryptionZtunnelNodeSelector:
+    r"""
+    Node selector for ztunnel pods.
+
+    Attributes
+    ----------
+    "kubernetes.io/os" : str, optional, default is "linux"
+    """
+    [...str]: any
+    "kubernetes.io/os"?: str
+
+schema ValuesEncryptionZtunnelPodAnnotations:
+    r"""
+    Annotations to be added to ztunnel pods.
+    """
+    [...str]: any
+
+schema ValuesEncryptionZtunnelPodLabels:
+    r"""
+    Labels to be added to ztunnel pods.
+    """
+    [...str]: any
+
+schema ValuesEncryptionZtunnelReadinessProbe:
+    r"""
+    Readiness probe configuration.
+
+    Attributes
+    ----------
+    failureThreshold : int, optional, default is 3
+    initialDelaySeconds : int, optional, default is 0
+    periodSeconds : int, optional, default is 10
+    """
+    [...str]: any
+    failureThreshold?: int
+    initialDelaySeconds?: int
+    periodSeconds?: int
+
+schema ValuesEncryptionZtunnelResources:
+    r"""
+    ztunnel resource limits & requests.
+
+    Attributes
+    ----------
+    requests : ValuesEncryptionZtunnelResourcesRequests, optional
+    """
+    [...str]: any
+    requests?: ValuesEncryptionZtunnelResourcesRequests
+
+schema ValuesEncryptionZtunnelResourcesRequests:
+    r"""
+    ValuesEncryptionZtunnelResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "200m"
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesEncryptionZtunnelSecrets:
+    r"""
+    ztunnel secrets configuration.
+
+    Attributes
+    ----------
+    bootstrapRootCert : str, optional, default is "~"
+        Base64-encoded bootstrap root certificate content.
+        If not provided, the secret must be created manually before deploying.
+    """
+    [...str]: any
+    bootstrapRootCert?: str
+
+schema ValuesEncryptionZtunnelTolerationsItems0:
+    r"""
+    ValuesEncryptionZtunnelTolerationsItems0
+
+    Attributes
+    ----------
+    effect : str, optional, default is "NoExecute"
+    key : str, optional, default is "CriticalAddonsOnly"
+    operator : str, optional, default is "Exists"
+    """
+    [...str]: any
+    effect?: str
+    key?: str
+    operator?: str
+
+schema ValuesEncryptionZtunnelUpdateStrategy:
+    r"""
+    ztunnel update strategy.
+
+    Attributes
+    ----------
+    rollingUpdate : ValuesEncryptionZtunnelUpdateStrategyRollingUpdate, optional
+    $type : str, optional, default is "RollingUpdate"
+    """
+    [...str]: any
+    rollingUpdate?: ValuesEncryptionZtunnelUpdateStrategyRollingUpdate
+    $type?: str
+
+schema ValuesEncryptionZtunnelUpdateStrategyRollingUpdate:
+    r"""
+    ValuesEncryptionZtunnelUpdateStrategyRollingUpdate
+
+    Attributes
+    ----------
+    maxSurge : int, optional, default is 1
+    maxUnavailable : int, optional, default is 0
+    """
+    [...str]: any
+    maxSurge?: int
+    maxUnavailable?: int
 
 schema ValuesEndpointHealthChecking:
     r"""
@@ -3111,6 +3730,8 @@ schema ValuesEni:
     instanceTagsFilter : [any], optional
         Filter via AWS EC2 Instance tags (k=v) which will dictate which AWS EC2 Instances
         are going to be used to create new ENIs
+    nodeSpec : ValuesEniNodeSpec, optional
+        NodeSpec configuration for the ENI
     subnetIDsFilter : [any], optional
         Filter via subnet IDs which will dictate which subnets are going to be used to create new ENIs
         Important note: This requires that each instance has an ENI with a matching subnet attached
@@ -3132,6 +3753,7 @@ schema ValuesEni:
     gcTags?: ValuesEniGcTags
     iamRole?: str
     instanceTagsFilter?: [any]
+    nodeSpec?: ValuesEniNodeSpec
     subnetIDsFilter?: [any]
     subnetTagsFilter?: [any]
 
@@ -3147,6 +3769,42 @@ schema ValuesEniGcTags:
     Dangling ENIs with this tag will be garbage collected
     """
     [...str]: any
+
+schema ValuesEniNodeSpec:
+    r"""
+    NodeSpec configuration for the ENI
+
+    Attributes
+    ----------
+    deleteOnTermination : bool, optional, default is "~"
+        Delete ENI on termination
+    disablePrefixDelegation : bool, optional, default is False
+        Disable prefix delegation for IP allocation
+    excludeInterfaceTags : [any], optional
+        Exclude interface tags to use for IP allocation
+    firstInterfaceIndex : int, optional, default is "~"
+        First interface index to use for IP allocation
+    securityGroupTags : [any], optional
+        Security group tags to use for IP allocation
+    securityGroups : [any], optional
+        Security groups to use for IP allocation
+    subnetIDs : [any], optional
+        Subnet IDs to use for IP allocation
+    subnetTags : [any], optional
+        Subnet tags to use for IP allocation
+    usePrimaryAddress : bool, optional, default is False
+        Use primary address for IP allocation
+    """
+    [...str]: any
+    deleteOnTermination?: bool
+    disablePrefixDelegation?: bool
+    excludeInterfaceTags?: [any]
+    firstInterfaceIndex?: int
+    securityGroupTags?: [any]
+    securityGroups?: [any]
+    subnetIDs?: [any]
+    subnetTags?: [any]
+    usePrimaryAddress?: bool
 
 schema ValuesEnvoy:
     r"""
@@ -3168,6 +3826,12 @@ schema ValuesEnvoy:
         WARNING: Use of this setting has the potential to prevent cilium-envoy from starting up, and can cause unexpected behavior (e.g. due to
         syntax error or semantically incorrect configuration). Before submitting an issue, please ensure you have disabled this feature, as support
         cannot be provided for custom Envoy bootstrap configs.
+    clusterMaxConnections : int, optional, default is 1024
+        Maximum number of connections on Envoy clusters
+    clusterMaxPendingRequests : int, optional, default is 1024
+        Maximum number of pending requests on Envoy clusters
+    clusterMaxRequests : int, optional, default is 1024
+        Maximum number of requests on Envoy clusters
     connectTimeoutSeconds : int, optional, default is 2
         Time in seconds after which a TCP connection attempt times out
     debug : ValuesEnvoyDebug, optional
@@ -3193,13 +3857,15 @@ schema ValuesEnvoy:
         TCP port for the health API.
     httpRetryCount : int, optional, default is 3
         Maximum number of retries for each HTTP request
-    httpUpstreamLingerTimeout : any, optional, default is "null"
+    httpUpstreamLingerTimeout : int, optional, default is "null"
         Time in seconds to block Envoy worker thread while an upstream HTTP connection is closing. If set to 0, the connection is closed immediately (with TCP RST). If set to -1, the connection is closed asynchronously in the background.
     idleTimeoutDurationSeconds : int, optional, default is 60
         Set Envoy upstream HTTP idle connection timeout seconds.
         Does not apply to connections with pending requests. Default 60s
     image : ValuesEnvoyImage, optional
         Envoy container image.
+    initContainers : [any], optional
+        Init containers added to the cilium Envoy DaemonSet.
     initialFetchTimeoutSeconds : int, optional, default is 30
         Time in seconds after which the initial fetch on an xDS stream is considered timed out
     livenessProbe : ValuesEnvoyLivenessProbe, optional
@@ -3208,8 +3874,15 @@ schema ValuesEnvoy:
         Maximum number of concurrent retries on Envoy clusters
     maxConnectionDurationSeconds : int, optional, default is 0
         Set Envoy HTTP option max_connection_duration seconds. Default 0 (disable)
+    maxGlobalDownstreamConnections : int, optional, default is 50000
+        Maximum number of global downstream connections
     maxRequestsPerConnection : int, optional, default is 0
         ProxyMaxRequestsPerConnection specifies the max_requests_per_connection setting for Envoy
+    minReadySeconds : int, optional, default is 0
+        Minimum number of seconds for which a newly created envoy pod should be ready
+        before it is considered available.
+    nodeLocality : ValuesEnvoyNodeLocality, optional
+        Enable node locality lookup and pass resolved zone to cilium-envoy via `--service-zone`.
     nodeSelector : ValuesEnvoyNodeSelector, optional
         Node selector for cilium-envoy.
     podAnnotations : ValuesEnvoyPodAnnotations, optional
@@ -3244,6 +3917,16 @@ schema ValuesEnvoy:
     updateStrategy : ValuesEnvoyUpdateStrategy, optional
         cilium-envoy update strategy
         ref: https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/#updating-a-daemonset
+    useOriginalSourceAddress : bool, optional, default is True
+        For cases when CiliumEnvoyConfig is not used directly (Ingress, Gateway), configures Cilium BPF Metadata listener filter
+        to use the original source address when extracting the metadata for a request.
+    xdsMode : "split" | "ads" | "strict-ads", optional
+        xDS server operating mode for Envoy proxy configuration. Supported
+        values are: "split" for the existing per-resource-type xDS,
+        "ads" for the ADS (Aggregated Discovery Service) xDS, and
+        "strict-ads" for ADS with strict snapshot cache behavior and generated
+        snapshot consistency checks. Null value omits setting this option.
+        Cilium Agent defaults missing option to "split" to keep upgrades in the legacy mode.
     xffNumTrustedHopsL7PolicyEgress : int, optional, default is 0
         Number of trusted hops regarding the x-forwarded-for and related HTTP headers for the egress L7 policy enforcement Envoy listeners.
     xffNumTrustedHopsL7PolicyIngress : int, optional, default is 0
@@ -3254,6 +3937,9 @@ schema ValuesEnvoy:
     annotations?: ValuesEnvoyAnnotations
     baseID?: int
     bootstrapConfigMap?: str
+    clusterMaxConnections?: int
+    clusterMaxPendingRequests?: int
+    clusterMaxRequests?: int
     connectTimeoutSeconds?: int
     debug?: ValuesEnvoyDebug
     dnsPolicy?: str
@@ -3266,15 +3952,19 @@ schema ValuesEnvoy:
     extraVolumes?: [any]
     healthPort?: int
     httpRetryCount?: int
-    httpUpstreamLingerTimeout?: any
+    httpUpstreamLingerTimeout?: int
     idleTimeoutDurationSeconds?: int
     image?: ValuesEnvoyImage
+    initContainers?: [any]
     initialFetchTimeoutSeconds?: int
     livenessProbe?: ValuesEnvoyLivenessProbe
     log?: ValuesEnvoyLog
     maxConcurrentRetries?: int
     maxConnectionDurationSeconds?: int
+    maxGlobalDownstreamConnections?: int
     maxRequestsPerConnection?: int
+    minReadySeconds?: int
+    nodeLocality?: ValuesEnvoyNodeLocality
     nodeSelector?: ValuesEnvoyNodeSelector
     podAnnotations?: ValuesEnvoyPodAnnotations
     podLabels?: ValuesEnvoyPodLabels
@@ -3291,6 +3981,8 @@ schema ValuesEnvoy:
     terminationGracePeriodSeconds?: int
     tolerations?: [ValuesEnvoyTolerationsItems0]
     updateStrategy?: ValuesEnvoyUpdateStrategy
+    useOriginalSourceAddress?: bool
+    xdsMode?: "split" | "ads" | "strict-ads"
     xffNumTrustedHopsL7PolicyEgress?: int
     xffNumTrustedHopsL7PolicyIngress?: int
 
@@ -3523,11 +4215,11 @@ schema ValuesEnvoyImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:da85124deeb42c8e56e55e9e6e155740f5df00e1064759a244bc246c3addb45d"
+    digest : str, optional, default is "sha256:75b8094c7127736a2ffd2dce3945e0931cb6df21b0372ff661940eca26730b91"
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/cilium-envoy"
-    tag : str, optional, default is "v1.35.9-1770554954-8ce3bb4eca04188f4a0a1bfbd0a06a40f90883de"
+    tag : str, optional, default is "v1.37.5-1786810558-766ccfb37260a43e9d228837aa84ce3faf9f64e7"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -3548,13 +4240,19 @@ schema ValuesEnvoyLivenessProbe:
         Enable liveness probe for cilium-envoy
     failureThreshold : int, optional, default is 10
         failure threshold of liveness probe
+    initialDelaySeconds : int, optional, default is 0
+        Initial delay before the liveness probe begins
     periodSeconds : int, optional, default is 30
         interval between checks of the liveness probe
+    timeoutSeconds : int, optional, default is 5
+        Timeout for the liveness probe
     """
     [...str]: any
     enabled?: bool
     failureThreshold?: int
+    initialDelaySeconds?: int
     periodSeconds?: int
+    timeoutSeconds?: int
 
 schema ValuesEnvoyLog:
     r"""
@@ -3566,6 +4264,8 @@ schema ValuesEnvoyLog:
         Size of the Envoy access log buffer created within the agent in bytes.
         Tune this value up if you encounter "Envoy: Discarded truncated access log message" errors.
         Large request/response header sizes (e.g. 16KiB) will require a larger buffer size.
+    accessLogEnabled : bool, optional, default is True
+        Enable access log forwarding for integration with Hubble.
     defaultLevel : "trace" | "debug" | "info" | "warning" | "error" | "critical" | "off", optional
         Default log level of Envoy application log that is configured if Cilium debug / verbose logging isn't enabled.
         This option allows to have a different log level than the Cilium Agent - e.g. lower it to `critical`.
@@ -3587,10 +4287,25 @@ schema ValuesEnvoyLog:
     """
     [...str]: any
     accessLogBufferSize?: int
+    accessLogEnabled?: bool
     defaultLevel?: "trace" | "debug" | "info" | "warning" | "error" | "critical" | "off"
     format?: str
     format_json?: any
     path?: str
+
+schema ValuesEnvoyNodeLocality:
+    r"""
+    Enable node locality lookup and pass resolved zone to cilium-envoy via `--service-zone`.
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Enable node-locality support for cilium-envoy.
+        When enabled, Cilium looks up the node zone from the topology label and passes it to the Envoy process via `--service-zone`.
+        Startup fails if the zone cannot be resolved or the label is empty.
+    """
+    [...str]: any
+    enabled?: bool
 
 schema ValuesEnvoyNodeSelector:
     r"""
@@ -3731,12 +4446,18 @@ schema ValuesEnvoyReadinessProbe:
     ----------
     failureThreshold : int, optional, default is 3
         failure threshold of readiness probe
+    initialDelaySeconds : int, optional, default is 0
+        Initial delay before the readiness probe begins
     periodSeconds : int, optional, default is 30
         interval between checks of the readiness probe
+    timeoutSeconds : int, optional, default is 5
+        Timeout for the readiness probe
     """
     [...str]: any
     failureThreshold?: int
+    initialDelaySeconds?: int
     periodSeconds?: int
+    timeoutSeconds?: int
 
 schema ValuesEnvoyResources:
     r"""
@@ -3775,7 +4496,7 @@ schema ValuesEnvoySecurityContextCapabilities:
         Even though granted to the container, the cilium-envoy-starter wrapper drops
         all capabilities after forking the actual Envoy process.
         `NET_BIND_SERVICE` is the only capability that can be passed to the Envoy process by
-        setting `envoy.securityContext.capabilities.keepNetBindService=true` (in addition to granting the
+        setting `envoy.securityContext.capabilities.keepCapNetBindService=true` (in addition to granting the
         capability to the container).
         Note: In case of embedded envoy, the capability must  be granted to the cilium-agent container.
     keepCapNetBindService : bool, optional, default is False
@@ -3812,13 +4533,19 @@ schema ValuesEnvoyStartupProbe:
     failureThreshold : int, optional, default is 105
         failure threshold of startup probe.
         105 x 2s translates to the old behaviour of the readiness probe (120s delay + 30 x 3s)
+    initialDelaySeconds : int, optional, default is 5
+        Initial delay before the startup probe begins
     periodSeconds : int, optional, default is 2
         interval between checks of the startup probe
+    timeoutSeconds : int, optional, default is 5
+        Timeout for the startup probe
     """
     [...str]: any
     enabled?: bool
     failureThreshold?: int
+    initialDelaySeconds?: int
     periodSeconds?: int
+    timeoutSeconds?: int
 
 schema ValuesEnvoyTolerationsItems0:
     r"""
@@ -3906,6 +4633,9 @@ schema ValuesGatewayApi:
         Host Network related configuration
     secretsNamespace : ValuesGatewayApiSecretsNamespace, optional
         SecretsNamespace is the namespace in which envoy SDS will retrieve TLS secrets from.
+    useRemoteAddress : bool, optional, default is True
+        Configure whether to use the remote address of the client when determining the source IP.
+        When enabled, the source IP is determined from the remote address instead of the proxy protocol header.
     xffNumTrustedHops : int, optional, default is 0
         The number of additional GatewayAPI proxy hops from the right side of the HTTP header to trust when determining the origin client's IP address.
     """
@@ -3918,6 +4648,7 @@ schema ValuesGatewayApi:
     gatewayClass?: ValuesGatewayApiGatewayClass
     hostNetwork?: ValuesGatewayApiHostNetwork
     secretsNamespace?: ValuesGatewayApiSecretsNamespace
+    useRemoteAddress?: bool
     xffNumTrustedHops?: int
 
 schema ValuesGatewayApiGatewayClass:
@@ -3926,13 +4657,13 @@ schema ValuesGatewayApiGatewayClass:
 
     Attributes
     ----------
-    create : str, optional, default is "auto"
+    create : bool | str, optional, default is "auto"
         Enable creation of GatewayClass resource
         The default value is 'auto' which decides according to presence of gateway.networking.k8s.io/v1/GatewayClass in the cluster.
         Other possible values are 'true' and 'false', which will either always or never create the GatewayClass, respectively.
     """
     [...str]: any
-    create?: str
+    create?: bool | str
 
 schema ValuesGatewayApiHostNetwork:
     r"""
@@ -4040,6 +4771,11 @@ schema ValuesHubble:
         Enable Hubble (true by default).
     export : ValuesHubbleExport, optional
         Hubble flows export.
+    hostUsers : bool, optional, default is "~"
+        (bool) Enable hostUsers for Hubble.
+        This will allow use of user-namespaces for hubble components. Not all
+        clusters support user-namespaces.
+        See: https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/
     listenAddress : str, optional, default is ":4244"
         An additional address for Hubble to listen to.
         Set this field ":4244" if you are enabling Hubble Relay, as it assumes that
@@ -4053,6 +4789,7 @@ schema ValuesHubble:
     peerService : ValuesHubblePeerService, optional
     preferIpv6 : bool, optional, default is False
         Whether Hubble should prefer to announce IPv6 or IPv4 addresses if both are available.
+        Deprecated: use top-level preferIpv6 instead.
     redact : ValuesHubbleRedact, optional
         Enables redacting sensitive information present in Layer 7 flows.
     relay : ValuesHubbleRelay, optional
@@ -4069,6 +4806,7 @@ schema ValuesHubble:
     dropEventEmitter?: ValuesHubbleDropEventEmitter
     enabled?: bool
     export?: ValuesHubbleExport
+    hostUsers?: bool
     listenAddress?: str
     metrics?: ValuesHubbleMetrics
     networkPolicyCorrelation?: ValuesHubbleNetworkPolicyCorrelation
@@ -4162,7 +4900,9 @@ schema ValuesHubbleExportDynamicConfigContentItems0:
 
     Attributes
     ----------
+    aggregationInterval : str, optional, default is "0s"
     excludeFilters : [any], optional
+    fieldAggregate : [any], optional
     fieldMask : [any], optional
     fileCompress : bool, optional, default is False
     fileMaxBackups : int, optional, default is 5
@@ -4172,7 +4912,9 @@ schema ValuesHubbleExportDynamicConfigContentItems0:
     name : str, optional, default is "all"
     """
     [...str]: any
+    aggregationInterval?: str
     excludeFilters?: [any]
+    fieldAggregate?: [any]
     fieldMask?: [any]
     fileCompress?: bool
     fileMaxBackups?: int
@@ -4188,14 +4930,22 @@ schema ValuesHubbleExportStatic:
 
     Attributes
     ----------
-    allowList : [any], optional
+    aggregationInterval : str, optional, default is "0s"
         - time
         - source
         - destination
         - verdict
+        - Defines the interval at which to aggregate before exporting Hubble flows.
+            Aggregation feature is only enabled when fieldAggregate is specified and aggregationInterval > 0s.
+    allowList : [any], optional
     denyList : [any], optional
         - '{"verdict":["DROPPED","ERROR"]}'
     enabled : bool, optional, default is False
+    fieldAggregate : [any], optional
+        - time
+        - source
+        - destination
+        - verdict
     fieldMask : [any], optional
     fileCompress : bool, optional, default is False
         - Enable compression of rotated files.
@@ -4208,9 +4958,11 @@ schema ValuesHubbleExportStatic:
     filePath : str, optional, default is "/var/run/cilium/hubble/events.log"
     """
     [...str]: any
+    aggregationInterval?: str
     allowList?: [any]
     denyList?: [any]
     enabled?: bool
+    fieldAggregate?: [any]
     fieldMask?: [any]
     fileCompress?: bool
     fileMaxBackups?: int
@@ -4518,12 +5270,10 @@ schema ValuesHubbleRedact:
     ----------
     enabled : bool, optional, default is False
     http : ValuesHubbleRedactHttp, optional
-    kafka : ValuesHubbleRedactKafka, optional
     """
     [...str]: any
     enabled?: bool
     http?: ValuesHubbleRedactHttp
-    kafka?: ValuesHubbleRedactKafka
 
 schema ValuesHubbleRedactHttp:
     r"""
@@ -4603,29 +5353,6 @@ schema ValuesHubbleRedactHttpHeaders:
     [...str]: any
     allow?: [any]
     deny?: [any]
-
-schema ValuesHubbleRedactKafka:
-    r"""
-    ValuesHubbleRedactKafka
-
-    Attributes
-    ----------
-    apiKey : bool, optional, default is True
-        Enables redacting Kafka's API key (deprecated, will be removed in v1.19).
-        Example:
-
-          redact:
-            enabled: true
-            kafka:
-              apiKey: true
-
-        You can specify the options from the helm CLI:
-
-          --set hubble.redact.enabled="true"
-          --set hubble.redact.kafka.apiKey="true"
-    """
-    [...str]: any
-    apiKey?: bool
 
 schema ValuesHubbleRelay:
     r"""
@@ -4819,12 +5546,12 @@ schema ValuesHubbleRelayImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:9bb9b2b1a4f4bef12a77738756cfbf970daa701e536e42f0a9c64a621bc7c9d5"
+    digest : str, optional, default is "sha256:59be0ae7d475ab9011a5e954618c0f27b5778b17140381425b308b55ba4917f4"
         hubble-relay-digest
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/hubble-relay"
-    tag : str, optional, default is "v1.18.7"
+    tag : str, optional, default is "v1.20.1"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -4929,14 +5656,20 @@ schema ValuesHubbleRelayPprof:
     ----------
     address : str, optional, default is "localhost"
         Configure pprof listen address for hubble-relay
+    blockProfileRate : int, optional, default is 0
+        Enable goroutine blocking profiling for hubble-relay and set the rate of sampled events in nanoseconds (set to 1 to sample all events [warning: performance overhead])
     enabled : bool, optional, default is False
         Enable pprof for hubble-relay
+    mutexProfileFraction : int, optional, default is 0
+        Enable mutex contention profiling for hubble-relay and set the fraction of sampled events (set to 1 to sample all events)
     port : int, optional, default is 6062
         Configure pprof listen port for hubble-relay
     """
     [...str]: any
     address?: str
+    blockProfileRate?: int
     enabled?: bool
+    mutexProfileFraction?: int
     port?: int
 
 schema ValuesHubbleRelayPrometheus:
@@ -5014,8 +5747,8 @@ schema ValuesHubbleRelaySecurityContext:
     Attributes
     ----------
     allowPrivilegeEscalation : bool, optional, default is False
-        readOnlyRootFilesystem: true
     capabilities : ValuesHubbleRelaySecurityContextCapabilities, optional
+    readOnlyRootFilesystem : bool, optional, default is True
     runAsGroup : int, optional, default is 65532
     runAsNonRoot : bool, optional, default is True
     runAsUser : int, optional, default is 65532
@@ -5024,6 +5757,7 @@ schema ValuesHubbleRelaySecurityContext:
     [...str]: any
     allowPrivilegeEscalation?: bool
     capabilities?: ValuesHubbleRelaySecurityContextCapabilities
+    readOnlyRootFilesystem?: bool
     runAsGroup?: int
     runAsNonRoot?: bool
     runAsUser?: int
@@ -5226,6 +5960,12 @@ schema ValuesHubbleTlsAuto:
                         certificates not provided by the user at installation
                         time.
         - certmanager:  This method use cert-manager to generate & rotate certificates.
+    privateKey : ValuesHubbleTlsAutoPrivateKey, optional
+        [Example]
+        privateKey:
+          algorithm: ECDSA
+        Private key options. These include the key algorithm and size, the used encoding and the rotation policy used when hubble.tls.auto.method=certmanager.
+        https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificatePrivateKey
     schedule : str, optional, default is "0 0 1 */4 *"
         Schedule for certificates regeneration (regardless of their expiration date).
         Only used if method is "cronJob". If nil, then no recurring job will be created.
@@ -5234,13 +5974,24 @@ schema ValuesHubbleTlsAuto:
 
         Defaults to midnight of the first day of every fourth month. For syntax, see
         https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#schedule-syntax
+    subject : ValuesHubbleTlsAutoSubject, optional
+        [Example]
+        subject:
+          countries:
+            - US
+          provinces:
+            - California
+        X509Subject Full X509 name specification used when hubble.tls.auto.method=certmanager.
+        https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.X509Subject
     """
     [...str]: any
     certManagerIssuerRef?: ValuesHubbleTlsAutoCertManagerIssuerRef
     certValidityDuration?: int
     enabled?: bool
     method?: str
+    privateKey?: ValuesHubbleTlsAutoPrivateKey
     schedule?: str
+    subject?: ValuesHubbleTlsAutoSubject
 
 schema ValuesHubbleTlsAutoCertManagerIssuerRef:
     r"""
@@ -5250,6 +6001,29 @@ schema ValuesHubbleTlsAutoCertManagerIssuerRef:
       kind: ClusterIssuer
       name: ca-issuer
     certmanager issuer used when hubble.tls.auto.method=certmanager.
+    """
+    [...str]: any
+
+schema ValuesHubbleTlsAutoPrivateKey:
+    r"""
+    [Example]
+    privateKey:
+      algorithm: ECDSA
+    Private key options. These include the key algorithm and size, the used encoding and the rotation policy used when hubble.tls.auto.method=certmanager.
+    https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificatePrivateKey
+    """
+    [...str]: any
+
+schema ValuesHubbleTlsAutoSubject:
+    r"""
+    [Example]
+    subject:
+      countries:
+        - US
+      provinces:
+        - California
+    X509Subject Full X509 name specification used when hubble.tls.auto.method=certmanager.
+    https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.X509Subject
     """
     [...str]: any
 
@@ -5323,6 +6097,8 @@ schema ValuesHubbleUi:
         hubble-ui service configuration.
     standalone : ValuesHubbleUiStandalone, optional
     tls : ValuesHubbleUiTls, optional
+    tmpVolume : ValuesHubbleUiTmpVolume, optional
+        Configure temporary volume for hubble-ui
     tolerations : [any], optional
         Node tolerations for pod assignment on nodes with taints
         ref: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
@@ -5351,6 +6127,7 @@ schema ValuesHubbleUi:
     service?: ValuesHubbleUiService
     standalone?: ValuesHubbleUiStandalone
     tls?: ValuesHubbleUiTls
+    tmpVolume?: ValuesHubbleUiTmpVolume
     tolerations?: [any]
     topologySpreadConstraints?: [any]
     updateStrategy?: ValuesHubbleUiUpdateStrategy
@@ -5381,8 +6158,6 @@ schema ValuesHubbleUiBackend:
         Additional hubble-ui backend volumes.
     image : ValuesHubbleUiBackendImage, optional
         Hubble-ui backend image.
-    livenessProbe : ValuesHubbleUiBackendLivenessProbe, optional
-    readinessProbe : ValuesHubbleUiBackendReadinessProbe, optional
     resources : ValuesHubbleUiBackendResources, optional
         Resource requests and limits for the 'backend' container of the 'hubble-ui' deployment.
     securityContext : ValuesHubbleUiBackendSecurityContext, optional
@@ -5393,8 +6168,6 @@ schema ValuesHubbleUiBackend:
     extraVolumeMounts?: [any]
     extraVolumes?: [any]
     image?: ValuesHubbleUiBackendImage
-    livenessProbe?: ValuesHubbleUiBackendLivenessProbe
-    readinessProbe?: ValuesHubbleUiBackendReadinessProbe
     resources?: ValuesHubbleUiBackendResources
     securityContext?: ValuesHubbleUiBackendSecurityContext
 
@@ -5404,11 +6177,11 @@ schema ValuesHubbleUiBackendImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:db1454e45dc39ca41fbf7cad31eec95d99e5b9949c39daaad0fa81ef29d56953"
+    digest : str, optional, default is "sha256:fac0c300ae119274edca11fd89b1ad23c788792d8bc4ea2ba631c709e8d3c688"
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/hubble-ui-backend"
-    tag : str, optional, default is "v0.13.3"
+    tag : str, optional, default is "v0.13.5"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -5418,30 +6191,6 @@ schema ValuesHubbleUiBackendImage:
     repository?: str
     tag?: str
     useDigest?: bool
-
-schema ValuesHubbleUiBackendLivenessProbe:
-    r"""
-    ValuesHubbleUiBackendLivenessProbe
-
-    Attributes
-    ----------
-    enabled : bool, optional, default is False
-        Enable liveness probe for Hubble-ui backend (requires Hubble-ui 0.12+)
-    """
-    [...str]: any
-    enabled?: bool
-
-schema ValuesHubbleUiBackendReadinessProbe:
-    r"""
-    ValuesHubbleUiBackendReadinessProbe
-
-    Attributes
-    ----------
-    enabled : bool, optional, default is False
-        Enable readiness probe for Hubble-ui backend (requires Hubble-ui 0.12+)
-    """
-    [...str]: any
-    enabled?: bool
 
 schema ValuesHubbleUiBackendResources:
     r"""
@@ -5456,9 +6205,23 @@ schema ValuesHubbleUiBackendSecurityContext:
     Attributes
     ----------
     allowPrivilegeEscalation : bool, optional, default is False
+        readOnlyRootFilesystem: true
+    capabilities : ValuesHubbleUiBackendSecurityContextCapabilities, optional
     """
     [...str]: any
     allowPrivilegeEscalation?: bool
+    capabilities?: ValuesHubbleUiBackendSecurityContextCapabilities
+
+schema ValuesHubbleUiBackendSecurityContextCapabilities:
+    r"""
+    ValuesHubbleUiBackendSecurityContextCapabilities
+
+    Attributes
+    ----------
+    drop : [str], optional
+    """
+    [...str]: any
+    drop?: [str]
 
 schema ValuesHubbleUiFrontend:
     r"""
@@ -5501,11 +6264,11 @@ schema ValuesHubbleUiFrontendImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:661d5de7050182d495c6497ff0b007a7a1e379648e60830dd68c4d78ae21761d"
+    digest : str, optional, default is "sha256:f7d514fc54d784ed6df9d58cf0e97648b143f92b766dd1780ed3fc845bd4c516"
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/hubble-ui"
-    tag : str, optional, default is "v0.13.3"
+    tag : str, optional, default is "v0.13.5"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -5529,9 +6292,23 @@ schema ValuesHubbleUiFrontendSecurityContext:
     Attributes
     ----------
     allowPrivilegeEscalation : bool, optional, default is False
+        readOnlyRootFilesystem: true
+    capabilities : ValuesHubbleUiFrontendSecurityContextCapabilities, optional
     """
     [...str]: any
     allowPrivilegeEscalation?: bool
+    capabilities?: ValuesHubbleUiFrontendSecurityContextCapabilities
+
+schema ValuesHubbleUiFrontendSecurityContextCapabilities:
+    r"""
+    ValuesHubbleUiFrontendSecurityContextCapabilities
+
+    Attributes
+    ----------
+    drop : [str], optional
+    """
+    [...str]: any
+    drop?: [str]
 
 schema ValuesHubbleUiFrontendServer:
     r"""
@@ -5657,12 +6434,27 @@ schema ValuesHubbleUiSecurityContext:
     ----------
     fsGroup : int, optional, default is 1001
     runAsGroup : int, optional, default is 1001
+    runAsNonRoot : bool, optional, default is True
     runAsUser : int, optional, default is 1001
+    seccompProfile : ValuesHubbleUiSecurityContextSeccompProfile, optional
     """
     [...str]: any
     fsGroup?: int
     runAsGroup?: int
+    runAsNonRoot?: bool
     runAsUser?: int
+    seccompProfile?: ValuesHubbleUiSecurityContextSeccompProfile
+
+schema ValuesHubbleUiSecurityContextSeccompProfile:
+    r"""
+    ValuesHubbleUiSecurityContextSeccompProfile
+
+    Attributes
+    ----------
+    $type : str, optional, default is "RuntimeDefault"
+    """
+    [...str]: any
+    $type?: str
 
 schema ValuesHubbleUiService:
     r"""
@@ -5766,6 +6558,12 @@ schema ValuesHubbleUiTlsClient:
     existingSecret?: str
     key?: str
 
+schema ValuesHubbleUiTmpVolume:
+    r"""
+    Configure temporary volume for hubble-ui
+    """
+    [...str]: any
+
 schema ValuesHubbleUiUpdateStrategy:
     r"""
     hubble-ui update strategy.
@@ -5796,12 +6594,12 @@ schema ValuesImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:99b029a0a7c2224dac8c1cc3b6b3ba52af00e2ff981d927e84260ee781e9753c"
+    digest : str, optional, default is "sha256:ae9ea21f7427fe24bc6ea7247eb552157a1b0a431744045d3f641545ca71d11b"
         cilium-digest
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/cilium"
-    tag : str, optional, default is "v1.18.7"
+    tag : str, optional, default is "v1.20.1"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -5847,6 +6645,11 @@ schema ValuesIngressController:
     service : ValuesIngressControllerService, optional
         Load-balancer service in shared mode.
         This is a single load-balancer service for all Ingress resources.
+    useRemoteAddress : bool, optional, default is True
+        Configure whether to use the remote address of the client when determining the source IP.
+        When enabled, the source IP is determined from the remote address instead of the proxy protocol header.
+    xffNumTrustedHops : int, optional, default is 0
+        The number of additional Ingress proxy hops from the right side of the HTTP header to trust when determining the origin client's IP address.
     """
     [...str]: any
     default?: bool
@@ -5860,6 +6663,8 @@ schema ValuesIngressController:
     loadbalancerMode?: str
     secretsNamespace?: ValuesIngressControllerSecretsNamespace
     service?: ValuesIngressControllerService
+    useRemoteAddress?: bool
+    xffNumTrustedHops?: int
 
 schema ValuesIngressControllerHostNetwork:
     r"""
@@ -5869,15 +6674,27 @@ schema ValuesIngressControllerHostNetwork:
     ----------
     enabled : bool, optional, default is False
         Configure whether the Envoy listeners should be exposed on the host network.
+    httpPort : int, optional, default is 0
+        Configure a specific port on the host network that gets used for the shared HTTP listener.
+        If unset or 0, sharedListenerPort is used.
+    httpsPort : int, optional, default is 0
+        Configure a specific port on the host network that gets used for the shared HTTPS listener.
+        If unset or 0, sharedListenerPort is used.
     nodes : ValuesIngressControllerHostNetworkNodes, optional
         Specify the nodes where the Ingress listeners should be exposed
     sharedListenerPort : int, optional, default is 8080
         Configure a specific port on the host network that gets used for the shared listener.
+    tlsPassthroughPort : int, optional, default is 0
+        Configure a specific port on the host network that gets used for the shared TLS passthrough listener.
+        If unset or 0, sharedListenerPort is used.
     """
     [...str]: any
     enabled?: bool
+    httpPort?: int
+    httpsPort?: int
     nodes?: ValuesIngressControllerHostNetworkNodes
     sharedListenerPort?: int
+    tlsPassthroughPort?: int
 
 schema ValuesIngressControllerHostNetworkNodes:
     r"""
@@ -6011,6 +6828,8 @@ schema ValuesIpam:
         ref: https://docs.cilium.io/en/stable/network/concepts/ipam/
     multiPoolPreAllocation : str, optional, default is ""
         Pre-allocation settings for IPAM in Multi-Pool mode
+    nodeSpec : ValuesIpamNodeSpec, optional
+        NodeSpec configuration for the IPAM
     operator : ValuesIpamOperator, optional
     """
     [...str]: any
@@ -6018,7 +6837,29 @@ schema ValuesIpam:
     installUplinkRoutesForDelegatedIPAM?: bool
     mode?: str
     multiPoolPreAllocation?: str
+    nodeSpec?: ValuesIpamNodeSpec
     operator?: ValuesIpamOperator
+
+schema ValuesIpamNodeSpec:
+    r"""
+    NodeSpec configuration for the IPAM
+
+    Attributes
+    ----------
+    ipamMaxAllocate : int, optional, default is "~"
+        IPAM max allocate
+    ipamMinAllocate : int, optional, default is "~"
+        IPAM min allocate
+    ipamPreAllocate : int, optional, default is "~"
+        IPAM pre allocate
+    ipamStaticIPTags : [any], optional
+        IPAM static IP tags (currently only works with AWS and Azure)
+    """
+    [...str]: any
+    ipamMaxAllocate?: int
+    ipamMinAllocate?: int
+    ipamPreAllocate?: int
+    ipamStaticIPTags?: [any]
 
 schema ValuesIpamOperator:
     r"""
@@ -6042,6 +6883,8 @@ schema ValuesIpamOperator:
               cidrs:
                 - 10.10.0.0/8
               maskSize: 24
+            allowFirstIP: true
+            allowLastIP: true
           other:
             ipv6:
               cidrs:
@@ -6100,6 +6943,9 @@ schema ValuesK8S:
 
     Attributes
     ----------
+    apiServerURLs : str, optional, default is "~"
+        A space separated list of Kubernetes API server URLs to use with the client.
+        For example "https://192.168.0.1:6443 https://192.168.0.2:6443"
     requireIPv4PodCIDR : bool, optional, default is False
         requireIPv4PodCIDR enables waiting for Kubernetes to provide the PodCIDR
         range via the Kubernetes node resource
@@ -6108,6 +6954,7 @@ schema ValuesK8S:
         range via the Kubernetes node resource
     """
     [...str]: any
+    apiServerURLs?: str
     requireIPv4PodCIDR?: bool
     requireIPv6PodCIDR?: bool
 
@@ -6168,6 +7015,18 @@ schema ValuesK8SClientRateLimitOperator:
     burst?: int
     qps?: int
 
+schema ValuesK8SClusterNetworkPolicy:
+    r"""
+    ValuesK8SClusterNetworkPolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Enable support for K8s Cluster Network Policy
+    """
+    [...str]: any
+    enabled?: bool
+
 schema ValuesK8SNetworkPolicy:
     r"""
     ValuesK8SNetworkPolicy
@@ -6227,12 +7086,12 @@ schema ValuesL2PodAnnouncements:
     ----------
     enabled : bool, optional, default is False
         Enable L2 pod announcements
-    interface : str, optional, default is "eth0"
-        Interface used for sending Gratuitous ARP pod announcements
+    interfacePattern : str, optional, default is ""
+        A regular expression matching interfaces used for sending Gratuitous ARP pod announcements
     """
     [...str]: any
     enabled?: bool
-    interface?: str
+    interfacePattern?: str
 
 schema ValuesLivenessProbe:
     r"""
@@ -6266,10 +7125,14 @@ schema ValuesLoadBalancer:
         that support it).
     l7 : ValuesLoadBalancerL7, optional
         L7 LoadBalancer
+    serviceTopology : bool, optional, default is False
+        serviceTopology enables K8s Topology Aware Hints -based service
+        endpoints filtering
     """
     [...str]: any
     acceleration?: str
     l7?: ValuesLoadBalancerL7
+    serviceTopology?: bool
 
 schema ValuesLoadBalancerL7:
     r"""
@@ -6394,21 +7257,22 @@ schema ValuesNodePort:
         ports is detected.
     bindProtection : bool, optional, default is True
         Set to true to prevent applications binding to service ports.
+    enableDynamicSourceLookup : bool, optional, default is False
+        Enable dynamic source IP resolution for SNAT via linux's routing table.
+        The kernel must support this feature.
     enableHealthCheck : bool, optional, default is True
         Enable healthcheck nodePort server for NodePort services
     enableHealthCheckLoadBalancerIP : bool, optional, default is False
         Enable access of the healthcheck nodePort on the LoadBalancerIP. Needs
         EnableHealthCheck to be enabled
-    enabled : bool, optional, default is False
-        Enable the Cilium NodePort service implementation.
     """
     [...str]: any
     addresses?: str | [any]
     autoProtectPortRange?: bool
     bindProtection?: bool
+    enableDynamicSourceLookup?: bool
     enableHealthCheck?: bool
     enableHealthCheckLoadBalancerIP?: bool
-    enabled?: bool
 
 schema ValuesNodeSelector:
     r"""
@@ -6444,6 +7308,9 @@ schema ValuesNodeinit:
         Additional nodeinit volumes.
     image : ValuesNodeinitImage, optional
         node-init image.
+    minReadySeconds : int, optional, default is 0
+        Minimum number of seconds for which a newly created node-init pod should be ready
+        before it is considered available.
     nodeSelector : ValuesNodeinitNodeSelector, optional
         Node labels for nodeinit pod assignment
         ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector
@@ -6469,6 +7336,8 @@ schema ValuesNodeinit:
         ref: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
     updateStrategy : ValuesNodeinitUpdateStrategy, optional
         node-init update strategy
+    waitForCloudInit : bool, optional, default is False
+        wait for Cloud init to finish on the host and assume the node has cloud init installed
     """
     [...str]: any
     affinity?: ValuesNodeinitAffinity
@@ -6479,6 +7348,7 @@ schema ValuesNodeinit:
     extraVolumeMounts?: [any]
     extraVolumes?: [any]
     image?: ValuesNodeinitImage
+    minReadySeconds?: int
     nodeSelector?: ValuesNodeinitNodeSelector
     podAnnotations?: ValuesNodeinitPodAnnotations
     podLabels?: ValuesNodeinitPodLabels
@@ -6490,6 +7360,7 @@ schema ValuesNodeinit:
     startup?: ValuesNodeinitStartup
     tolerations?: [ValuesNodeinitTolerationsItems0]
     updateStrategy?: ValuesNodeinitUpdateStrategy
+    waitForCloudInit?: bool
 
 schema ValuesNodeinitAffinity:
     r"""
@@ -6509,11 +7380,11 @@ schema ValuesNodeinitImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:5bdca3c2dec2c79f58d45a7a560bf1098c2126350c901379fe850b7f78d3d757"
+    digest : str, optional, default is "sha256:f99e2beda7324e93ba04d6240d9626a6b9ab023d7d56e3b029d3d9c823ce63ef"
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/startup-script"
-    tag : str, optional, default is "1755531540-60ee83e"
+    tag : str, optional, default is "1782916218-36ae25f"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -6602,11 +7473,11 @@ schema ValuesNodeinitResourcesRequests:
 
     Attributes
     ----------
-    cpu : str, optional, default is "100m"
+    cpu : int | str, optional, default is "100m"
     memory : str, optional, default is "100Mi"
     """
     [...str]: any
-    cpu?: str
+    cpu?: int | str
     memory?: str
 
 schema ValuesNodeinitSecurityContext:
@@ -6721,6 +7592,8 @@ schema ValuesOperator:
         Additional cilium-operator volumes.
     hostNetwork : bool, optional, default is True
         HostNetwork setting
+    hostUsers : bool, optional, default is True
+        HostUsers setting (must be true if hostNetwork is true)
     identityGCInterval : str, optional, default is "15m0s"
         Interval for identity garbage collection.
     identityHeartbeatTimeout : str, optional, default is "30m0s"
@@ -6789,6 +7662,7 @@ schema ValuesOperator:
     extraVolumeMounts?: [any]
     extraVolumes?: [any]
     hostNetwork?: bool
+    hostUsers?: bool
     identityGCInterval?: str
     identityHeartbeatTimeout?: str
     image?: ValuesOperatorImage
@@ -6910,19 +7784,19 @@ schema ValuesOperatorImage:
 
     Attributes
     ----------
-    alibabacloudDigest : str, optional, default is "sha256:ca3f0dd26a4b447524dce51ee8ef82485a08187b840c21ce4a1398c02b5174a0"
+    alibabacloudDigest : str, optional, default is "sha256:2af5dd3d85649ea36d365363b8eca82ad06116c6259c4aace700a7c036348e4c"
         operator-alibabacloud-digest
-    awsDigest : str, optional, default is "sha256:fe56a6289afea7f6420f8de0218710ccaaa7af891df5fc180ddd33e6c7509b45"
+    awsDigest : str, optional, default is "sha256:7cf0cb0e6584f72ca8de951a1be03829f69fcaeba69dc6c7856fc4470545acd7"
         operator-aws-digest
-    azureDigest : str, optional, default is "sha256:5fb753344c84ab0989d525f789738c874f3fa8f07fbb5cfce06034d027c9728f"
+    azureDigest : str, optional, default is "sha256:13746a479ca60395df8d83580b49464c6c975cca6fdb21ba4791a076ab01b031"
         operator-azure-digest
-    genericDigest : str, optional, default is "sha256:244306c5e7c6b73dc7193424f46ed8a0530767b03f03baac80dd717a3a3f0ad7"
+    genericDigest : str, optional, default is "sha256:6c3885fc7b629099fdbe2a5c87869c86feb825fa18fae299eac0f61918d16ecf"
         operator-generic-digest
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/operator"
     suffix : str, optional, default is ""
-    tag : str, optional, default is "v1.18.7"
+    tag : str, optional, default is "v1.20.1"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -7014,14 +7888,20 @@ schema ValuesOperatorPprof:
     ----------
     address : str, optional, default is "localhost"
         Configure pprof listen address for cilium-operator
+    blockProfileRate : int, optional, default is 0
+        Enable goroutine blocking profiling for cilium-operator and set the rate of sampled events in nanoseconds (set to 1 to sample all events [warning: performance overhead])
     enabled : bool, optional, default is False
         Enable pprof for cilium-operator
+    mutexProfileFraction : int, optional, default is 0
+        Enable mutex contention profiling for cilium-operator and set the fraction of sampled events (set to 1 to sample all events)
     port : int, optional, default is 6061
         Configure pprof listen port for cilium-operator
     """
     [...str]: any
     address?: str
+    blockProfileRate?: int
     enabled?: bool
+    mutexProfileFraction?: int
     port?: int
 
 schema ValuesOperatorPrometheus:
@@ -7035,12 +7915,15 @@ schema ValuesOperatorPrometheus:
     metricsService : bool, optional, default is False
     port : int, optional, default is 9963
     serviceMonitor : ValuesOperatorPrometheusServiceMonitor, optional
+    tls : ValuesOperatorPrometheusTls, optional
+        TLS configuration for Prometheus
     """
     [...str]: any
     enabled?: bool
     metricsService?: bool
     port?: int
     serviceMonitor?: ValuesOperatorPrometheusServiceMonitor
+    tls?: ValuesOperatorPrometheusTls
 
 schema ValuesOperatorPrometheusServiceMonitor:
     r"""
@@ -7087,6 +7970,47 @@ schema ValuesOperatorPrometheusServiceMonitorLabels:
     Labels to add to ServiceMonitor cilium-operator
     """
     [...str]: any
+
+schema ValuesOperatorPrometheusTls:
+    r"""
+    TLS configuration for Prometheus
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+    server : ValuesOperatorPrometheusTlsServer, optional
+    """
+    [...str]: any
+    enabled?: bool
+    server?: ValuesOperatorPrometheusTlsServer
+
+schema ValuesOperatorPrometheusTlsServer:
+    r"""
+    ValuesOperatorPrometheusTlsServer
+
+    Attributes
+    ----------
+    existingSecret : str, optional, default is ""
+        Name of the Secret containing the certificate, key and CA files for the Prometheus server.
+    mtls : ValuesOperatorPrometheusTlsServerMtls, optional
+    """
+    [...str]: any
+    existingSecret?: str
+    mtls?: ValuesOperatorPrometheusTlsServerMtls
+
+schema ValuesOperatorPrometheusTlsServerMtls:
+    r"""
+    ValuesOperatorPrometheusTlsServerMtls
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        When set to true enforces mutual TLS between Operator Prometheus server and its clients.
+        False allow non-mutual TLS connections.
+        This option has no effect when TLS is disabled.
+    """
+    [...str]: any
+    enabled?: bool
 
 schema ValuesOperatorResources:
     r"""
@@ -7143,10 +8067,14 @@ schema ValuesOperatorUnmanagedPodWatcher:
         managed by Cilium.
     restart : bool, optional, default is True
         Restart any pod that are not managed by Cilium.
+    selector : str, optional, default is "~"
+        Selector for pods that should be restarted when not managed by Cilium.
+        If not set, defaults to built-in selector "k8s-app=kube-dns". Set to empty string to select all pods.
     """
     [...str]: any
     intervalSeconds?: int
     restart?: bool
+    selector?: str
 
 schema ValuesOperatorUpdateStrategy:
     r"""
@@ -7183,9 +8111,15 @@ schema ValuesPmtuDiscovery:
     enabled : bool, optional, default is False
         Enable path MTU discovery to send ICMP fragmentation-needed replies to
         the client.
+    packetizationLayerPMTUDMode : str, optional, default is "blackhole"
+        Enable kernel probing path MTU discovery for Pods which uses different message
+        sizes to search for correct MTU value.
+        Valid values are: always, blackhole, disabled and unset (or empty). If value
+        is 'unset' or left empty then will not try to override setting.
     """
     [...str]: any
     enabled?: bool
+    packetizationLayerPMTUDMode?: str
 
 schema ValuesPodAnnotations:
     r"""
@@ -7243,14 +8177,20 @@ schema ValuesPprof:
     ----------
     address : str, optional, default is "localhost"
         Configure pprof listen address for cilium-agent
+    blockProfileRate : int, optional, default is 0
+        Enable goroutine blocking profiling for cilium-agent and set the rate of sampled events in nanoseconds (set to 1 to sample all events [warning: performance overhead])
     enabled : bool, optional, default is False
         Enable pprof for cilium-agent
+    mutexProfileFraction : int, optional, default is 0
+        Enable mutex contention profiling for cilium-agent and set the fraction of sampled events (set to 1 to sample all events)
     port : int, optional, default is 6060
         Configure pprof listen port for cilium-agent
     """
     [...str]: any
     address?: str
+    blockProfileRate?: int
     enabled?: bool
+    mutexProfileFraction?: int
     port?: int
 
 schema ValuesPreflight:
@@ -7295,8 +8235,6 @@ schema ValuesPreflight:
         Security context to be added to preflight pods
     terminationGracePeriodSeconds : int, optional, default is 1
         Configure termination grace period for preflight Deployment and DaemonSet.
-    tofqdnsPreCache : str, optional, default is ""
-        Path to write the `--tofqdns-pre-cache` file to.
     tolerations : [ValuesPreflightTolerationsItems0], optional
         Node tolerations for preflight scheduling to nodes with taints
         ref: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
@@ -7326,7 +8264,6 @@ schema ValuesPreflight:
     resources?: ValuesPreflightResources
     securityContext?: ValuesPreflightSecurityContext
     terminationGracePeriodSeconds?: int
-    tofqdnsPreCache?: str
     tolerations?: [ValuesPreflightTolerationsItems0]
     updateStrategy?: ValuesPreflightUpdateStrategy
     validateCNPs?: bool
@@ -7412,11 +8349,11 @@ schema ValuesPreflightEnvoyImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:da85124deeb42c8e56e55e9e6e155740f5df00e1064759a244bc246c3addb45d"
+    digest : str, optional, default is "sha256:75b8094c7127736a2ffd2dce3945e0931cb6df21b0372ff661940eca26730b91"
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/cilium-envoy"
-    tag : str, optional, default is "v1.35.9-1770554954-8ce3bb4eca04188f4a0a1bfbd0a06a40f90883de"
+    tag : str, optional, default is "v1.37.5-1786810558-766ccfb37260a43e9d228837aa84ce3faf9f64e7"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -7433,12 +8370,12 @@ schema ValuesPreflightImage:
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:99b029a0a7c2224dac8c1cc3b6b3ba52af00e2ff981d927e84260ee781e9753c"
+    digest : str, optional, default is "sha256:ae9ea21f7427fe24bc6ea7247eb552157a1b0a431744045d3f641545ca71d11b"
         cilium-digest
     override : str, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/cilium"
-    tag : str, optional, default is "v1.18.7"
+    tag : str, optional, default is "v1.20.1"
     useDigest : bool, optional, default is True
     """
     [...str]: any
@@ -7785,6 +8722,12 @@ schema ValuesSecretsNamespaceAnnotations:
     """
     [...str]: any
 
+schema ValuesSecretsNamespaceLabels:
+    r"""
+    Labels to be added to all cilium-secret namespaces (resources under templates/cilium-secrets-namespace)
+    """
+    [...str]: any
+
 schema ValuesSecurityContext:
     r"""
     ValuesSecurityContext
@@ -7854,6 +8797,8 @@ schema ValuesServiceAccounts:
     clustermeshApiserver : ValuesServiceAccountsClustermeshApiserver, optional
     clustermeshcertgen : ValuesServiceAccountsClustermeshcertgen, optional
         Clustermeshcertgen is used if clustermesh.apiserver.tls.auto.method=cronJob
+    corednsMCSAPI : ValuesServiceAccountsCorednsMcsapi, optional
+        CorednsMCSAPI is used if clustermesh.mcsapi.corednsAutoConfigure.enabled=true
     envoy : ValuesServiceAccountsEnvoy, optional
     hubblecertgen : ValuesServiceAccountsHubblecertgen, optional
         Hubblecertgen is used if hubble.tls.auto.method=cronJob
@@ -7862,11 +8807,14 @@ schema ValuesServiceAccounts:
     preflight : ValuesServiceAccountsPreflight, optional
     relay : ValuesServiceAccountsRelay, optional
     ui : ValuesServiceAccountsUi, optional
+    ztunnel : ValuesServiceAccountsZtunnel, optional
+        Ztunnel is used if encryption.type=ztunnel
     """
     [...str]: any
     cilium?: ValuesServiceAccountsCilium
     clustermeshApiserver?: ValuesServiceAccountsClustermeshApiserver
     clustermeshcertgen?: ValuesServiceAccountsClustermeshcertgen
+    corednsMCSAPI?: ValuesServiceAccountsCorednsMcsapi
     envoy?: ValuesServiceAccountsEnvoy
     hubblecertgen?: ValuesServiceAccountsHubblecertgen
     nodeinit?: ValuesServiceAccountsNodeinit
@@ -7874,6 +8822,7 @@ schema ValuesServiceAccounts:
     preflight?: ValuesServiceAccountsPreflight
     relay?: ValuesServiceAccountsRelay
     ui?: ValuesServiceAccountsUi
+    ztunnel?: ValuesServiceAccountsZtunnel
 
 schema ValuesServiceAccountsCilium:
     r"""
@@ -7941,6 +8890,29 @@ schema ValuesServiceAccountsClustermeshcertgen:
 schema ValuesServiceAccountsClustermeshcertgenAnnotations:
     r"""
     ValuesServiceAccountsClustermeshcertgenAnnotations
+    """
+    [...str]: any
+
+schema ValuesServiceAccountsCorednsMcsapi:
+    r"""
+    CorednsMCSAPI is used if clustermesh.mcsapi.corednsAutoConfigure.enabled=true
+
+    Attributes
+    ----------
+    annotations : ValuesServiceAccountsCorednsMcsapiAnnotations, optional
+    automount : bool, optional, default is True
+    create : bool, optional, default is True
+    name : str, optional, default is "cilium-coredns-mcsapi-autoconfig"
+    """
+    [...str]: any
+    annotations?: ValuesServiceAccountsCorednsMcsapiAnnotations
+    automount?: bool
+    create?: bool
+    name?: str
+
+schema ValuesServiceAccountsCorednsMcsapiAnnotations:
+    r"""
+    ValuesServiceAccountsCorednsMcsapiAnnotations
     """
     [...str]: any
 
@@ -8112,6 +9084,29 @@ schema ValuesServiceAccountsUiAnnotations:
     """
     [...str]: any
 
+schema ValuesServiceAccountsZtunnel:
+    r"""
+    Ztunnel is used if encryption.type=ztunnel
+
+    Attributes
+    ----------
+    annotations : ValuesServiceAccountsZtunnelAnnotations, optional
+    automount : bool, optional, default is False
+    create : bool, optional, default is True
+    name : str, optional, default is "ztunnel-cilium"
+    """
+    [...str]: any
+    annotations?: ValuesServiceAccountsZtunnelAnnotations
+    automount?: bool
+    create?: bool
+    name?: str
+
+schema ValuesServiceAccountsZtunnelAnnotations:
+    r"""
+    ValuesServiceAccountsZtunnelAnnotations
+    """
+    [...str]: any
+
 schema ValuesSocketLb:
     r"""
     Configure socket LB
@@ -8123,6 +9118,115 @@ schema ValuesSocketLb:
     """
     [...str]: any
     enabled?: bool
+
+schema ValuesStandaloneDnsProxy:
+    r"""
+    Standalone DNS Proxy Configuration
+    Note: The standalone DNS proxy uses the agent's dnsProxy.* configuration
+    for DNS settings (proxyPort, enableDnsCompression) to ensure consistency.
+
+    Attributes
+    ----------
+    annotations : ValuesStandaloneDnsProxyAnnotations, optional
+        Standalone DNS proxy annotations
+    automountServiceAccountToken : bool, optional, default is False
+        Standalone DNS proxy auto mount service account token
+    debug : bool, optional, default is False
+        Standalone DNS proxy debug mode
+    enabled : bool, optional, default is False
+        Enable standalone DNS proxy (alpha feature)
+    image : ValuesStandaloneDnsProxyImage, optional
+        Standalone DNS proxy image
+    minReadySeconds : int, optional, default is 5
+        Minimum number of seconds for which a newly created standalone DNS proxy pod should be ready
+        before it is considered available.
+    nodeSelector : ValuesStandaloneDnsProxyNodeSelector, optional
+        Standalone DNS proxy Node Selector
+    rollOutPods : bool, optional, default is False
+        Roll out Standalone DNS proxy automatically when configmap is updated.
+    serverPort : int, optional, default is 10095
+        Standalone DNS proxy server port
+    tolerations : [any], optional
+        Standalone DNS proxy tolerations
+    updateStrategy : ValuesStandaloneDnsProxyUpdateStrategy, optional
+        Standalone DNS proxy update strategy
+    """
+    [...str]: any
+    annotations?: ValuesStandaloneDnsProxyAnnotations
+    automountServiceAccountToken?: bool
+    debug?: bool
+    enabled?: bool
+    image?: ValuesStandaloneDnsProxyImage
+    minReadySeconds?: int
+    nodeSelector?: ValuesStandaloneDnsProxyNodeSelector
+    rollOutPods?: bool
+    serverPort?: int
+    tolerations?: [any]
+    updateStrategy?: ValuesStandaloneDnsProxyUpdateStrategy
+
+schema ValuesStandaloneDnsProxyAnnotations:
+    r"""
+    Standalone DNS proxy annotations
+    """
+    [...str]: any
+
+schema ValuesStandaloneDnsProxyImage:
+    r"""
+    Standalone DNS proxy image
+
+    Attributes
+    ----------
+    digest : str, optional, default is ""
+    override : str, optional, default is "~"
+    pullPolicy : str, optional, default is "IfNotPresent"
+    repository : str, optional, default is ""
+    tag : str, optional, default is ""
+    useDigest : bool, optional, default is True
+    """
+    [...str]: any
+    digest?: str
+    override?: str
+    pullPolicy?: str
+    repository?: str
+    tag?: str
+    useDigest?: bool
+
+schema ValuesStandaloneDnsProxyNodeSelector:
+    r"""
+    Standalone DNS proxy Node Selector
+
+    Attributes
+    ----------
+    "kubernetes.io/os" : str, optional, default is "linux"
+    """
+    [...str]: any
+    "kubernetes.io/os"?: str
+
+schema ValuesStandaloneDnsProxyUpdateStrategy:
+    r"""
+    Standalone DNS proxy update strategy
+
+    Attributes
+    ----------
+    rollingUpdate : ValuesStandaloneDnsProxyUpdateStrategyRollingUpdate, optional
+    $type : str, optional, default is "RollingUpdate"
+    """
+    [...str]: any
+    rollingUpdate?: ValuesStandaloneDnsProxyUpdateStrategyRollingUpdate
+    $type?: str
+
+schema ValuesStandaloneDnsProxyUpdateStrategyRollingUpdate:
+    r"""
+    ValuesStandaloneDnsProxyUpdateStrategyRollingUpdate
+
+    Attributes
+    ----------
+    maxSurge : int, optional, default is 2
+    maxUnavailable : int, optional, default is 0
+    """
+    [...str]: any
+    maxSurge?: int
+    maxUnavailable?: int
 
 schema ValuesStartupProbe:
     r"""
@@ -8267,6 +9371,12 @@ schema ValuesTlsSecretsNamespace:
     [...str]: any
     create?: bool
     name?: str
+
+schema ValuesTmpVolume:
+    r"""
+    Configure temporary volume for cilium-agent
+    """
+    [...str]: any
 
 schema ValuesTolerationsItems0:
     r"""

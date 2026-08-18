@@ -66,6 +66,7 @@ schema CiliumIoV2CiliumEgressGatewayPolicySpec:
 
     check:
         all destinationCIDRs in destinationCIDRs {_regex_match(str(destinationCIDRs), r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/([0-9]|[1-2][0-9]|3[0-2])$|^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))$") if destinationCIDRs} if destinationCIDRs
+        len(egressGateways) <= 64 if egressGateways
         all excludedCIDRs in excludedCIDRs {_regex_match(str(excludedCIDRs), r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/([0-9]|[1-2][0-9]|3[0-2])$|^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))$") if excludedCIDRs} if excludedCIDRs
 
 schema CiliumIoV2CiliumEgressGatewayPolicySpecEgressGateway:
@@ -84,6 +85,10 @@ schema CiliumIoV2CiliumEgressGatewayPolicySpecEgressGateway:
         When set to "192.168.1.100", matching egress traffic will be
         redirected to the node matching the NodeSelector field and SNATed
         with IP address 192.168.1.100.
+
+        When set to "2001:db8::1", matching egress traffic will be
+        redirected to the node matching the NodeSelector field and SNATed
+        with IPv6 address 2001:db8::1.
 
         When none of the Interface or EgressIP fields is specified, the
         policy will use the first IPv4 assigned to the interface with the
@@ -106,6 +111,9 @@ schema CiliumIoV2CiliumEgressGatewayPolicySpecEgressGateway:
     egressIP?: str
     interface?: str
     nodeSelector: CiliumIoV2CiliumEgressGatewayPolicySpecEgressGatewayNodeSelector
+
+    check:
+        len(egressIP) <= 39 if egressIP
 
 schema CiliumIoV2CiliumEgressGatewayPolicySpecEgressGatewayNodeSelector:
     r"""
@@ -173,6 +181,10 @@ schema CiliumIoV2CiliumEgressGatewayPolicySpecEgressGatewaysItems0:
         redirected to the node matching the NodeSelector field and SNATed
         with IP address 192.168.1.100.
 
+        When set to "2001:db8::1", matching egress traffic will be
+        redirected to the node matching the NodeSelector field and SNATed
+        with IPv6 address 2001:db8::1.
+
         When none of the Interface or EgressIP fields is specified, the
         policy will use the first IPv4 assigned to the interface with the
         default route.
@@ -194,6 +206,9 @@ schema CiliumIoV2CiliumEgressGatewayPolicySpecEgressGatewaysItems0:
     egressIP?: str
     interface?: str
     nodeSelector: CiliumIoV2CiliumEgressGatewayPolicySpecEgressGatewaysItems0NodeSelector
+
+    check:
+        len(egressIP) <= 39 if egressIP
 
 schema CiliumIoV2CiliumEgressGatewayPolicySpecEgressGatewaysItems0NodeSelector:
     r"""
