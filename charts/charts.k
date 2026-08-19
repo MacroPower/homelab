@@ -68,7 +68,7 @@ charts: helm.Charts = {
     metrics_server: {
         chart = "metrics-server"
         repoURL = "https://kubernetes-sigs.github.io/metrics-server/"
-        targetRevision = "3.13.0"
+        targetRevision = "3.14.0"
         schemaGenerator = "AUTO"
     }
     cert_manager: {

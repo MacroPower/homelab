@@ -326,6 +326,12 @@
       "title": "hostNetwork",
       "type": "object"
     },
+    "hostUsers": {
+      "default": "",
+      "required": [],
+      "title": "hostUsers",
+      "type": "null"
+    },
     "image": {
       "additionalProperties": true,
       "properties": {
@@ -431,6 +437,12 @@
       "default": "",
       "required": [],
       "title": "nameOverride",
+      "type": "string"
+    },
+    "namespaceOverride": {
+      "default": "",
+      "required": [],
+      "title": "namespaceOverride",
       "type": "string"
     },
     "nodeSelector": {
