@@ -43,9 +43,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaServiceAccountSpec:
         Name of the Grafana instance to create the service account for
     isDisabled : bool, default is Undefined, optional
         Whether the service account is disabled
-    name : str, default is Undefined, required
+    name : str, default is Undefined, optional
         Name of the service account in Grafana
-    resyncPeriod : str, default is "10m0s", optional
+    resyncPeriod : str, default is Undefined, optional
         How often the resource is synced, defaults to 10m0s if not set
     role : str, default is Undefined, required
         Role of the service account (Viewer, Editor, Admin)
@@ -57,9 +57,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaServiceAccountSpec:
     instanceName: str
 
     isDisabled?: bool = False
-    name: str
-
-    resyncPeriod?: str = "10m0s"
+    name?: str
+    resyncPeriod?: str
     role: "Viewer" | "Editor" | "Admin"
 
     suspend?: bool = False
@@ -67,7 +66,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaServiceAccountSpec:
 
     check:
         len(instanceName) >= 1
-        len(name) >= 1
+        len(name) >= 1 if name
         _regex_match(str(resyncPeriod), r"^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$") if resyncPeriod
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaServiceAccountSpecTokensItems0:
@@ -101,7 +100,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaServiceAccountStatus:
     account : GrafanaIntegreatlyOrgV1beta1GrafanaServiceAccountStatusAccount, default is Undefined, optional
         account
     conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaServiceAccountStatusConditionsItems0], default is Undefined, optional
-        Results when synchonizing resource with Grafana instances
+        Results when synchronizing resource with Grafana instances
     lastResync : str, default is Undefined, optional
         Last time the resource was synchronized with Grafana instances
     """

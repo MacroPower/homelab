@@ -70,9 +70,13 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpec:
         Jsonnet
     jsonnetLib : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecJsonnetLib, default is Undefined, optional
         jsonnet lib
+    oci : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecOci, default is Undefined, optional
+        oci
     plugins : [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecPluginsItems0], default is Undefined, optional
         plugins
-    resyncPeriod : str, default is "10m0s", optional
+    publicSharing : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecPublicSharing, default is Undefined, optional
+        public sharing
+    resyncPeriod : str, default is Undefined, optional
         How often the resource is synced, defaults to 10m0s if not set
     suspend : bool, default is Undefined, optional
         Suspend pauses synchronizing attempts and tells the operator to ignore changes
@@ -83,6 +87,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpec:
         model url
     urlAuthorization : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorization, default is Undefined, optional
         url authorization
+    variables : [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecVariablesItems0], default is Undefined, optional
+        overrides the default (current) value of named template variables in the dashboard model.
+        Variables that are not present in the model are ignored.
     """
     allowCrossNamespaceImport?: bool = False
     configMapRef?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecConfigMapRef
@@ -100,17 +107,21 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpec:
     json?: str
     jsonnet?: str
     jsonnetLib?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecJsonnetLib
+    oci?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecOci
     plugins?: [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecPluginsItems0]
-    resyncPeriod?: str = "10m0s"
+    publicSharing?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecPublicSharing
+    resyncPeriod?: str
     suspend?: bool
     uid?: str
     url?: str
     urlAuthorization?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorization
+    variables?: [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecVariablesItems0]
 
     check:
         _regex_match(str(resyncPeriod), r"^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$") if resyncPeriod
         len(uid) <= 40 if uid
         _regex_match(str(uid), r"^[a-zA-Z0-9-_]+$") if uid
+        _regex_match(str(url), r"^https?://.+$") if url
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecConfigMapRef:
     r"""
@@ -358,6 +369,55 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecJsonnetLib:
 
     jPath?: [str]
 
+schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecOci:
+    r"""
+    model from an OCI artifact (e.g. ghcr.io/team/dashboards:v1)
+
+    Attributes
+    ----------
+    insecurePlainHTTP : bool, default is Undefined, optional
+        InsecurePlainHTTP switches the registry connection to plain HTTP (non-TLS) instead of HTTPS.
+        Intended for in-cluster or test registries; HTTPS registries with self-signed
+        certificates are not supported. Default false.
+    path : str, default is Undefined, required
+        Path is the path of the file to extract from the artifact.
+    pullSecretRef : GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecOciPullSecretRef, default is Undefined, optional
+        pull secret ref
+    reference : str, default is Undefined, required
+        Reference is the full OCI artifact reference including a tag or digest,
+        e.g. "ghcr.io/team/dashboards:v1.4.7" or
+        "ghcr.io/team/dashboards@sha256:abc123...". Prefer a digest for
+        reproducible deployments.
+    """
+    insecurePlainHTTP?: bool
+    path: str
+
+    pullSecretRef?: GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecOciPullSecretRef
+    reference: str
+
+    check:
+        len(path) <= 512
+        len(path) >= 1
+        len(reference) <= 512
+        len(reference) >= 3
+        _regex_match(str(reference), r"^[^:@]+(:[^:@/]+|@sha256:[a-fA-F0-9]{64})$")
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecOciPullSecretRef:
+    r"""
+    PullSecretRef references a kubernetes.io/dockerconfigjson Secret in the same namespace as the CR.
+    If omitted, anonymous pull is attempted.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+    """
+    name?: str = ""
+
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecPluginsItems0:
     r"""
     grafana integreatly org v1beta1 grafana dashboard spec plugins items0
@@ -376,6 +436,30 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecPluginsItems0:
     check:
         len(name) >= 1
         _regex_match(str(version), r"^((0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?|latest)$")
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecPublicSharing:
+    r"""
+    Allows configuration of sharing the dashboard publicly
+
+    Attributes
+    ----------
+    accessToken : str, default is Undefined, optional
+        Optional. Unique access token. If empty it will generate a new access token per instance.
+    annotationsEnabled : bool, default is Undefined, optional
+        Optional. When set to true, shows annotations. The default value is false.
+    enabled : bool, default is True, optional
+        Optional. Set to false to disable sharing, the public dashboard is still created. The default value is true.
+    timeSelectionEnabled : bool, default is Undefined, optional
+        Optional. when set to true, the time picker is enabled in the shared dashboard. The default value is false.
+    """
+    accessToken?: str
+    annotationsEnabled?: bool
+    enabled?: bool = True
+    timeSelectionEnabled?: bool
+
+    check:
+        len(accessToken) <= 36 if accessToken
+        len(accessToken) >= 36 if accessToken
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorization:
     r"""
@@ -446,6 +530,27 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecURLAuthorizationBasicAuth
     name?: str = ""
     optional?: bool
 
+schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardSpecVariablesItems0:
+    r"""
+    GrafanaContentVariable overrides the default (current) value of a named template
+    variable (templating.list[]) in the resolved dashboard model.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the template variable to override, matching templating.list[].name in the model.
+    value : str, default is Undefined, required
+        Value is the new default value. For datasource variables this is the datasource UID or
+        name; for query, custom, constant and textbox variables it is the selected value.
+        Multi-value (multi-select) variables are collapsed to this single value.
+    """
+    name: str
+
+    value: str
+
+    check:
+        len(name) >= 1
+
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatus:
     r"""
     GrafanaDashboardStatus defines the observed state of GrafanaDashboard
@@ -455,7 +560,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatus:
     NoMatchingInstances : bool, default is Undefined, optional
         The dashboard instanceSelector can't find matching grafana instances
     conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatusConditionsItems0], default is Undefined, optional
-        Results when synchonizing resource with Grafana instances
+        Results when synchronizing resource with Grafana instances
     contentCache : str, default is Undefined, optional
         content cache
     contentTimestamp : str, default is Undefined, optional
@@ -466,6 +571,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatus:
         hash
     lastResync : str, default is Undefined, optional
         Last time the resource was synchronized with Grafana instances
+    publicSharingPath : str, default is Undefined, optional
+        The resulting path where a public sharing config is available
     uid : str, default is Undefined, optional
         uid
     """
@@ -476,6 +583,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatus:
     contentUrl?: str
     hash?: str
     lastResync?: str
+    publicSharingPath?: str
     uid?: str
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaDashboardStatusConditionsItems0:
