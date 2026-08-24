@@ -68,9 +68,11 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpec:
         Jsonnet
     jsonnetLib : GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecJsonnetLib, default is Undefined, optional
         jsonnet lib
+    oci : GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecOci, default is Undefined, optional
+        oci
     plugins : [GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecPluginsItems0], default is Undefined, optional
         plugins
-    resyncPeriod : str, default is "10m0s", optional
+    resyncPeriod : str, default is Undefined, optional
         How often the resource is synced, defaults to 10m0s if not set
     suspend : bool, default is Undefined, optional
         Suspend pauses synchronizing attempts and tells the operator to ignore changes
@@ -97,8 +99,9 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpec:
     json?: str
     jsonnet?: str
     jsonnetLib?: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecJsonnetLib
+    oci?: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecOci
     plugins?: [GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecPluginsItems0]
-    resyncPeriod?: str = "10m0s"
+    resyncPeriod?: str
     suspend?: bool
     uid?: str
     url?: str
@@ -108,6 +111,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpec:
         _regex_match(str(resyncPeriod), r"^([0-9]+(\.[0-9]+)?(ns|us|µs|ms|s|m|h))+$") if resyncPeriod
         len(uid) <= 40 if uid
         _regex_match(str(uid), r"^[a-zA-Z0-9-_]+$") if uid
+        _regex_match(str(url), r"^https?://.+$") if url
 
 schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecConfigMapRef:
     r"""
@@ -355,6 +359,55 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecJsonnetLib:
 
     jPath?: [str]
 
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecOci:
+    r"""
+    model from an OCI artifact (e.g. ghcr.io/team/dashboards:v1)
+
+    Attributes
+    ----------
+    insecurePlainHTTP : bool, default is Undefined, optional
+        InsecurePlainHTTP switches the registry connection to plain HTTP (non-TLS) instead of HTTPS.
+        Intended for in-cluster or test registries; HTTPS registries with self-signed
+        certificates are not supported. Default false.
+    path : str, default is Undefined, required
+        Path is the path of the file to extract from the artifact.
+    pullSecretRef : GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecOciPullSecretRef, default is Undefined, optional
+        pull secret ref
+    reference : str, default is Undefined, required
+        Reference is the full OCI artifact reference including a tag or digest,
+        e.g. "ghcr.io/team/dashboards:v1.4.7" or
+        "ghcr.io/team/dashboards@sha256:abc123...". Prefer a digest for
+        reproducible deployments.
+    """
+    insecurePlainHTTP?: bool
+    path: str
+
+    pullSecretRef?: GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecOciPullSecretRef
+    reference: str
+
+    check:
+        len(path) <= 512
+        len(path) >= 1
+        len(reference) <= 512
+        len(reference) >= 3
+        _regex_match(str(reference), r"^[^:@]+(:[^:@/]+|@sha256:[a-fA-F0-9]{64})$")
+
+schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecOciPullSecretRef:
+    r"""
+    PullSecretRef references a kubernetes.io/dockerconfigjson Secret in the same namespace as the CR.
+    If omitted, anonymous pull is attempted.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+    """
+    name?: str = ""
+
 schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelSpecPluginsItems0:
     r"""
     grafana integreatly org v1beta1 grafana library panel spec plugins items0
@@ -450,7 +503,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelStatus:
     Attributes
     ----------
     conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaLibraryPanelStatusConditionsItems0], default is Undefined, optional
-        Results when synchonizing resource with Grafana instances
+        Results when synchronizing resource with Grafana instances
     contentCache : str, default is Undefined, optional
         content cache
     contentTimestamp : str, default is Undefined, optional
